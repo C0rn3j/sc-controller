@@ -1473,7 +1473,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 	def setup_commandline(self):
 		def aso(long_name, short_name, description,
-				arg=GLib.OptionArg.NONE,
+				arg=None,
 				flags=GLib.OptionFlags.IN_MAIN):
 			""" add_simple_option, adds program argument in simple way """
 			o = GLib.OptionEntry()
@@ -1482,7 +1482,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				o.short_name = short_name
 			o.description = description
 			o.flags = flags
-			o.arg = arg
+			if arg is not None:
+				o.arg = arg
 			self.add_main_option_entries([o])
 
 		self.connect('handle-local-options', self.do_local_options)
