@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 """
 SC-Controller - Daemon - CemuHookUDP motion provider
 
@@ -53,7 +53,7 @@ class CemuhookServer:
 		poller = daemon.get_poller()
 		daemon.poller.register(self.socket.fileno(), poller.POLLIN, self.on_data_received)
 		
-		server_port = os.getenv('SCC_SERVER_PORT') or PORT;
+		server_port = int(os.getenv('SCC_SERVER_PORT') or PORT);
 		server_ip = os.getenv('SCC_SERVER_IP') or IP;
 		self.socket.bind((server_ip, server_port))
 		log.info("Created CemuHookUDP Motion Provider")
