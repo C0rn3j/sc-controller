@@ -172,15 +172,15 @@ static void parse_message(int fd, const char* buffer, size_t size, struct sockad
 	struct Message out;
 	int i, x;
 	if ((size < 20) || (buffer[0] != 'D') || (buffer[1]!='S') || (buffer[2] != 'U') || (buffer[3] != 'C')) {
-		WARN("Recieved invalid message: Invalid header");
+		WARN("Received invalid message: Invalid header");
 		return;
 	}
 	if (msg->protocol_version > MAX_PROTO_VERSION) {
-		WARN("Recieved invalid message: Unsupported version");
+		WARN("Received invalid message: Unsupported version");
 		return;
 	}
 	if (size < msg->packet_size + 20 - 4) {
-		WARN("Recieved invalid message: Invalid size (expected %i, got %zu)", msg->packet_size + 20 - 4, size);
+		WARN("Received invalid message: Invalid size (expected %i, got %zu)", msg->packet_size + 20 - 4, size);
 		return;
 	}
 	
@@ -256,7 +256,7 @@ static void parse_message(int fd, const char* buffer, size_t size, struct sockad
 		break;
 	}
 	default:
-		// WARN("Recieved invalid message: Unknown message type");
+		// WARN("Received invalid message: Unknown message type");
 		return;
 	}
 }
@@ -302,10 +302,10 @@ const int cemuhook_module_version(void) {
 	return CEMUHOOK_MODULE_VERSION;
 }
 
-void cemuhook_data_recieved(int fd, int port, const char* buffer, size_t size) {
+void cemuhook_data_received(int fd, const char* ip, int port, const char* buffer, size_t size) {
 	struct sockaddr_in source;
 	source.sin_family = AF_INET;
-	source.sin_addr.s_addr = inet_addr("127.0.0.1");
+	source.sin_addr.s_addr = inet_addr(ip);
 	source.sin_port = htons(port);
 	
 	parse_message(fd, buffer, size, &source);
@@ -321,7 +321,7 @@ bool cemuhook_socket_enable() {
 
 #else
 
-static void on_data_recieved(Daemon* d, int fd, void* userdata) {
+static void on_data_received(Daemon* d, int fd, void* userdata) {
 	char buffer[BUFFER_SIZE];
 	struct sockaddr_in source;
 	socklen_t len = sizeof(struct sockaddr_in);
@@ -345,7 +345,11 @@ bool sccd_cemuhook_socket_enable() {
 	struct sockaddr_in server_addr;
 	memset(&server_addr, 0, sizeof(struct sockaddr_in));
 	server_addr.sin_family = AF_INET;
-	server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	if (const char* custom_ip = getenv("SCC_SERVER_IP")) {
+		server_addr.sin_addr.s_addr = inet_addr(custom_ip);
+	} else {
+		server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	}
 	if (const char* custom_port = getenv("SCC_SERVER_PORT")) {
 		server_addr.sin_port = atoi(custom_port);
 	} else {
@@ -381,7 +385,7 @@ bool sccd_cemuhook_socket_enable() {
 		return false;
 	}
 	
-	if (!sccd_poller_add(sock, &on_data_recieved, NULL)) {
+	if (!sccd_poller_add(sock, &on_data_received, NULL)) {
 		LERROR("sccd_poller_add failed to add listening socket");
 		return false;
 	}

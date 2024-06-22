@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 """
 SC-Controller - Daemon - CemuHookUDP motion provider
 
@@ -17,6 +17,7 @@ from datetime import datetime, timedelta
 log = logging.getLogger("CemuHook")
 
 BUFFER_SIZE = 1024
+IP = '127.0.0.1'
 PORT = 26760
 
 
@@ -35,8 +36,8 @@ class CemuhookServer:
 	
 	def __init__(self, daemon):
 		self._lib = find_library('libcemuhook')
-		self._lib.cemuhook_data_recieved.argtypes = [ c_int, c_int, c_char_p, c_size_t ]
-		self._lib.cemuhook_data_recieved.restype = None
+		self._lib.cemuhook_data_received.argtypes = [ c_int, c_char_p, c_int, c_char_p, c_size_t ]
+		self._lib.cemuhook_data_received.restype = None
 		self._lib.cemuhook_feed.argtypes = [ c_int, c_int, CemuhookServer.C_DATA_T ]
 		self._lib.cemuhook_feed.restype = None
 		self._lib.cemuhook_socket_enable.argtypes = []
@@ -50,10 +51,11 @@ class CemuhookServer:
 		self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		
 		poller = daemon.get_poller()
-		daemon.poller.register(self.socket.fileno(), poller.POLLIN, self.on_data_recieved)
+		daemon.poller.register(self.socket.fileno(), poller.POLLIN, self.on_data_received)
 		
-		server_port = os.getenv('SCC_SERVER_PORT') or PORT;
-		self.socket.bind(('127.0.0.1', server_port))
+		server_port = int(os.getenv('SCC_SERVER_PORT') or PORT);
+		server_ip = os.getenv('SCC_SERVER_IP') or IP;
+		self.socket.bind((server_ip, server_port))
 		log.info("Created CemuHookUDP Motion Provider")
 
 		Thread(target=self._keepalive).start()
@@ -66,11 +68,11 @@ class CemuhookServer:
 				self.feed((0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
 			sleep(1)
 	
-	def on_data_recieved(self, fd, event_type):
+	def on_data_received(self, fd, event_type):
 		if fd != self.socket.fileno(): return
 		message, (ip, port) = self.socket.recvfrom(BUFFER_SIZE)
 		buffer = create_string_buffer(BUFFER_SIZE)
-		self._lib.cemuhook_data_recieved(fd, port, message, len(message), buffer)
+		self._lib.cemuhook_data_received(fd, ip.encode('utf-8'), port, message, len(message), buffer)
 	
 	
 	def feed(self, data):

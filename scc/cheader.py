@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # The MIT License (MIT)
 #
@@ -59,8 +59,8 @@ def eval_expr(expr):
 	""" Eval and expression inside a #define using a suppart of python grammar """
 
 	def _eval(node):
-		if isinstance(node, ast.Num):
-			return node.n
+		if isinstance(node, ast.Constant):
+			return node.value
 		elif isinstance(node, ast.BinOp):
 			return OPERATORS[type(node.op)](_eval(node.left), _eval(node.right))
 		elif isinstance(node, ast.UnaryOp):

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 """
 SC-Controller - Scripts
 
@@ -143,7 +143,7 @@ def cmd_info(argv0, argv):
 	s = connect_to_daemon()
 	if s is None: return -1
 	# Daemon already sends situable info, so this is mostly reading
-	# until "Ready." message is recieved.
+	# until "Ready." message is received.
 	global_profile = None
 	any_controller = False
 	while True:

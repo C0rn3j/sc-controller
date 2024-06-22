@@ -93,7 +93,7 @@ class Dongle(USBDevice):
 	def _add_controller(self, endpoint):
 		"""
 		Called when new controller is detected either by HOTPLUG message or
-		by recieving first input event.
+		by receiving first input event.
 		"""
 		ccidx = FIRST_CONTROLIDX + endpoint - FIRST_ENDPOINT
 		c = SCController(self, ccidx, endpoint)

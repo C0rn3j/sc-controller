@@ -136,7 +136,7 @@ class ActionParser(object):
 	def _parse_parameter(self):
 		""" Parses single parameter """
 		t = self._next_token()
-		while t.type == TokenType.NEWLINE or t.value == "\n":
+		while t.type in (TokenType.NL, TokenType.NEWLINE) or t.value == "\n":
 			if not self._tokens_left():
 				raise ParseError("Expected parameter at end of string")
 			t = self._next_token()
@@ -236,7 +236,7 @@ class ActionParser(object):
 			parameters.append(self._parse_parameter())
 			# Check if next token is either ')' or ','
 			t = self._peek_token()
-			while t.type == TokenType.NEWLINE or t.value == "\n":
+			while t.type in (TokenType.NL, TokenType.NEWLINE) or t.value == "\n":
 				self._next_token()
 				if not self._tokens_left():
 					raise ParseError("Expected ',' or end of parameter list after parameter '%s'" % (parameters[-1],))
@@ -310,8 +310,8 @@ class ActionParser(object):
 			action1 = self._create_action(action_class, *parameters)
 			action2 = self._parse_action()
 			return MultiAction(action1, action2)
-		
-		if t.type == TokenType.NEWLINE or t.value == "\n":
+
+		if t.type in (TokenType.NL, TokenType.NEWLINE) or t.value == "\n":
 			# Newline can be used to join actions instead of 'and'
 			self._next_token()
 			if not self._tokens_left():
@@ -324,11 +324,11 @@ class ActionParser(object):
 			action1 = self._create_action(action_class, *parameters)
 			action2 = self._parse_action()
 			return MultiAction(action1, action2)
-		
+
 		if t.type == TokenType.OP and t.value == ';':
 			# Two (or more) actions joined by ';'
 			self._next_token()
-			while self._tokens_left() and self._peek_token().type == TokenType.NEWLINE:
+			while self._tokens_left() and self._peek_token().type in (TokenType.NL, TokenType.NEWLINE):
 				self._next_token()
 			if not self._tokens_left():
 				# Having ';' at end of string is not actually error

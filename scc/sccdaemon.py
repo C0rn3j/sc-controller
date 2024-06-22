@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 """
 SC-Controller - Daemon class
 """
@@ -176,7 +176,7 @@ class SCCDaemon(Daemon):
 	
 	def add_on_rescan(self, fn):
 		"""
-		Adds function that is called when `Rescan.` message is recieved.
+		Adds function that is called when `Rescan.` message is received.
 		"""
 		if fn not in self.on_exit_cbs:
 			self.rescan_cbs.append(fn)
@@ -758,7 +758,7 @@ class SCCDaemon(Daemon):
 	
 	def _handle_message(self, client, message):
 		"""
-		Handles message recieved from client.
+		Handles message received from client.
 		"""
 		if message.startswith(b"Profile:"):
 			with self.lock:
