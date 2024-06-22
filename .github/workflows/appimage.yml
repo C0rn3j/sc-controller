@@ -23,7 +23,6 @@ jobs:
             arch: arm64
         codename:
           - jammy
-          - lunar
           - mantic
           - noble
 
