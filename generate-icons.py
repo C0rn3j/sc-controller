@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 # Used to generate some icons
-# Requires inkscape and imagemagick pacages
-
-import os, subprocess, colorsys
+# Requires inkscape and imagemagick packages
+import subprocess
+import colorsys
+import oxipng
 from xml.etree import ElementTree as ET
 
-ICODIR = "./images/"					# Directory with icons
-CICONS = "./images/controller-icons/"	# Directory controller-icons
-RECOLORS = {							# Defines set of hue shifts for controller-icons
+ICODIR = "./images/"                  # Directory with icons
+CICONS = "./images/controller-icons/" # Directory controller-icons
+RECOLORS = {
+	# Defines set of hue shifts for controller-icons
 	# "0" : 0.0,	# Green - original
 	"1" : 0.3,		# Blue
 	"2" : 0.7,		# Red
@@ -21,17 +23,17 @@ RECOLORS = {							# Defines set of hue shifts for controller-icons
 # Generate svg state icons
 for size in (24, 256):
 	for state in ('alive', 'dead', 'error', 'unknown'):
-		print("scc-statusicon-%s.png" % (state,))
+		print(f"scc-statusicon-{state}.png")
 		subprocess.call([
 			"inkscape",
-			"%s/scc-statusicon-%s.svg" % (ICODIR, state),
+			f"{ICODIR}scc-statusicon-{state}.svg",
 			"--export-area-page",
-			"--export-png=%s/%sx%s/status/scc-%s.png" % (ICODIR, size, size, state),
-			"--export-width=%s" % (size,),
-			"--export-height=%s" % (size,) ])
+			f"--export-filename={ICODIR}{size}x{size}/status/scc-{state}.png",
+			f"--export-width={size}",
+			f"--export-height={size}"])
+		oxipng.optimize(f"{ICODIR}{size}x{size}/status/scc-{state}.png", level=6, deflate=oxipng.Deflaters.zopfli(100))
 
-
-def html_to_rgb(html):
+def html_to_rgb(html: str) -> tuple[int,int,int,int]:
 	""" Converts #rrggbbaa or #rrggbb to r, g, b,a in (0,1) ranges """
 	html = html.strip("#")
 	if len(html) == 6:
@@ -40,15 +42,15 @@ def html_to_rgb(html):
 		return 0, 0, 0, 0
 	elif len(html) != 8:
 		raise ValueError("Needs RRGGBB(AA) format, got '%s'" % (html, ))
-	return tuple(( float(int(html[i:i+2],16)) / 255.0 for i in xrange(0, len(html), 2) ))
+	return tuple(( float(int(html[i:i+2],16)) / 255.0 for i in range(0, len(html), 2) ))
 
 
-def rgb_to_html(r,g,b):
+def rgb_to_html(r,g,b) -> str:
 	""" Convets rgb back to html color code """
 	return "#" + "".join(( "%02x" % int(x * 255) for x in (r,g,b) ))
 
 
-def recolor(tree, add):
+def recolor(tree, add) -> None:
 	""" Recursive part of recolor_strokes and recolor_background """
 	if 'id' in tree.attrib and "overlay" in tree.attrib['id']:
 		return
@@ -68,7 +70,8 @@ def recolor(tree, add):
 						h,s,v = colorsys.rgb_to_hsv(r,g,b)
 						# Shift hue
 						h += add
-						while h > 1.0 : h -= 1.0
+						while h > 1.0:
+							h -= 1.0
 						# Convert it back
 						r,g,b = colorsys.hsv_to_rgb(h,s,v)
 						# Store
@@ -80,13 +83,18 @@ def recolor(tree, add):
 ET.register_namespace("","http://www.w3.org/2000/svg")
 for tp in ("sc", "scbt", "fake", "ds4", "hid", "rpad"):
 	# Read svg and parse it
-	data = file("%s/%s-0.svg" % (CICONS, tp), "r").read()
+	data = open(f"{CICONS}{tp}-0.svg", "r").read()
 	# Create recolored images
 	for key in RECOLORS:
 		tree = ET.fromstring(data)
 		# Walk recursively and recolor everything that has color
 		recolor(tree, RECOLORS[key])
-		
-		out = "%s/%s-%s.svg" % (CICONS, tp, key)
-		file(out, "w").write(ET.tostring(tree))
+
+		out = f"{CICONS}{tp}-{key}.svg"
+		with open(out, "w") as file:
+			file.write(ET.tostring(tree).decode('utf-8'))
+		subprocess.call([
+			"svgo",
+			"--multipass",
+			f"--input={out}"])
 		print(out)
