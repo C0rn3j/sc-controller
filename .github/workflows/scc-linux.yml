@@ -12,6 +12,7 @@ on:
     - master
     - python3
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
