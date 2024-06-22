@@ -1078,7 +1078,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		msg = _('There was an error with enabling emulation: <b>%s</b>') % (error,)
 		# Known errors are handled with aditional message
 		if "Device not found" in error:
-			msg += "\n" + _("Please, check if you have reciever dongle connected to USB port.")
+			msg += "\n" + _("Please, check if you have receiver dongle connected to USB port.")
 		elif "LIBUSB_ERROR_ACCESS" in error:
 			msg += "\n" + _("You don't have access to controller device.")
 			msg += "\n\n" + ( _("Consult your distribution manual, try installing Steam package or <a href='%s'>install required udev rules manually</a>.") %

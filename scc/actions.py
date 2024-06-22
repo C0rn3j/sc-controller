@@ -2400,7 +2400,7 @@ class TriggerAction(Action, HapticEnabledAction):
 			raise TypeError("Invalid number of parameters")
 		self.pressed = False
 		# Having AxisAction as child of TriggerAction is special case,
-		# child action recieves trigger events instead of button presses
+		# child action receives trigger events instead of button presses
 		# and button_releases.
 		self.child_is_axis = isinstance(self.action.strip(), AxisAction)
 	

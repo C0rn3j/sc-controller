@@ -370,7 +370,7 @@ def get_current_window(dpy):
 def get_window_type(dpy, window):
 	"""
 	Returns _NET_WM_WINDOW_TYPE value for window specified or None if anything
-	fails while recieving it.
+	fails while receiving it.
 	"""
 	trash, prop = get_window_prop(dpy, window, "_NET_WM_WINDOW_TYPE")
 	if prop is not None and prop.value is not None:

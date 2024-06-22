@@ -29,7 +29,7 @@ class USBDevice(object):
 		"""
 		Helper method for setting up input transfer.
 		
-		callback(endpoint, data) is called repeadedly with every packed recieved.
+		callback(endpoint, data) is called repeadedly with every packed received.
 		"""
 		def callback_wrapper(transfer):
 			if (transfer.getStatus() != usb1.TRANSFER_COMPLETED or
@@ -40,7 +40,7 @@ class USBDevice(object):
 			try:
 				callback(endpoint, data)
 			except Exception as e:
-				log.error("Failed to handle recieved data")
+				log.error("Failed to handle received data")
 				log.error(e)
 				log.error(traceback.format_exc())
 			finally:
@@ -87,7 +87,7 @@ class USBDevice(object):
 	def make_request(self, index, callback, data, size=64):
 		"""
 		Schedules synchronous request that requires response.
-		Request is done ASAP and provided callback is called with recieved data.
+		Request is done ASAP and provided callback is called with received data.
 		"""
 		self._rmsg.append((
 			(

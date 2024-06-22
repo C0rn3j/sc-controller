@@ -54,7 +54,7 @@ class DaemonManager(GObject.GObject):
 		
 		unknown-msg (message)
 			Emited when message that can't be parsed internally
-			is recieved from daemon.
+			is received from daemon.
 		
 		version (ver)
 			Emited daemon reports its version - usually only once per connection.
@@ -163,7 +163,7 @@ class DaemonManager(GObject.GObject):
 		try:
 			response = sc.read_bytes_finish(results)
 			if response == None:
-				raise Exception("No data recieved")
+				raise Exception("No data received")
 		except Exception as e:
 			# Broken sonnection, daemon was probbaly terminated
 			self._on_daemon_died()

@@ -172,15 +172,15 @@ static void parse_message(int fd, const char* buffer, size_t size, struct sockad
 	struct Message out;
 	int i, x;
 	if ((size < 20) || (buffer[0] != 'D') || (buffer[1]!='S') || (buffer[2] != 'U') || (buffer[3] != 'C')) {
-		WARN("Recieved invalid message: Invalid header");
+		WARN("Received invalid message: Invalid header");
 		return;
 	}
 	if (msg->protocol_version > MAX_PROTO_VERSION) {
-		WARN("Recieved invalid message: Unsupported version");
+		WARN("Received invalid message: Unsupported version");
 		return;
 	}
 	if (size < msg->packet_size + 20 - 4) {
-		WARN("Recieved invalid message: Invalid size (expected %i, got %zu)", msg->packet_size + 20 - 4, size);
+		WARN("Received invalid message: Invalid size (expected %i, got %zu)", msg->packet_size + 20 - 4, size);
 		return;
 	}
 	
@@ -256,7 +256,7 @@ static void parse_message(int fd, const char* buffer, size_t size, struct sockad
 		break;
 	}
 	default:
-		// WARN("Recieved invalid message: Unknown message type");
+		// WARN("Received invalid message: Unknown message type");
 		return;
 	}
 }

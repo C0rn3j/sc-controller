@@ -221,7 +221,7 @@ class Enumerator:
 
 class Monitor:
 	"""
-	Monitor object recieves device events.
+	Monitor object receives device events.
 	receive_device method blocks until next event is processed, so it can be
 	used either in dumb loop, or called when select syscall reports descriptor
 	returned by get_fd has data available.
