@@ -350,8 +350,8 @@ class StatusIconProxy(StatusIcon):
 			for StatusIconBackend in status_icon_backends:
 				try:
 					self._status_fb = StatusIconBackend(*self._arguments[0], **self._arguments[1])
-					self._status_fb.connect(b"clicked",        self._on_click)
-					self._status_fb.connect(b"notify::active", self._on_notify_active_fb)
+					self._status_fb.connect("clicked",        self._on_click)
+					self._status_fb.connect("notify::active", self._on_notify_active_fb)
 					self._on_notify_active_fb()
 					
 					log.warning("StatusIcon: Using backend %s (fallback)" % StatusIconBackend.__name__)
