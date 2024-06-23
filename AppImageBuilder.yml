@@ -13,7 +13,7 @@ script:
 
 AppDir:
   app_info:
-    id: org.ryochan7.sc-controller
+    id: org.c0rn3j.sc-controller
     name: sc-controller
     version: "{{APPIMAGE_VERSION}}"
     icon: sc-controller
@@ -26,7 +26,7 @@ AppDir:
     # appimage-builder expects .desktop file to start with appinfo-id
     desktop="$(find "${TARGET_APPDIR}/usr" -name sc-controller.desktop)"
     sed -i "s:Exec=.*:Exec=./usr/bin/scc gui:g" "${desktop}"
-    ln -sr "${desktop}" "${TARGET_APPDIR}/usr/share/applications/org.ryochan7.sc-controller.desktop"
+    ln -sr "${desktop}" "${TARGET_APPDIR}/usr/share/applications/org.c0rn3j.sc-controller.desktop"
 
     # appimage-builder expects utf-8 encoding when patching shebangs,
     # but pygettext3 has iso-8859-1 encoding
@@ -128,4 +128,4 @@ AppDir:
 
 AppImage:
   arch: "{{APPIMAGE_ARCH}}"
-  update-information: "gh-releases-zsync|Ryochan7|sc-controller|latest|sc-controller-*-{{APPIMAGE_APT_DISTRO}}-{{APPIMAGE_ARCH}}.AppImage.zsync"
+  update-information: "gh-releases-zsync|C0rn3j|sc-controller|latest|sc-controller-*-{{APPIMAGE_APT_DISTRO}}-{{APPIMAGE_ARCH}}.AppImage.zsync"

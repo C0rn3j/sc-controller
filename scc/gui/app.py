@@ -41,7 +41,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 	HILIGHT_COLOR = "#FF00FF00"		# ARGB
 	OBSERVE_COLOR = "#FF60A0FF"		# ARGB
 	CONFIG = "scc.config.json"
-	RELEASE_URL = "https://github.com/Ryochan7/sc-controller/releases/tag/v%s"
+	RELEASE_URL = "https://github.com/C0rn3j/sc-controller/releases/tag/v%s"
 	OSD_MODE_PROF_NAME = ".scc-osd.profile_editor"
 
 	def __init__(self, gladepath="/usr/share/scc",
