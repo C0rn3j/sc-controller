@@ -90,7 +90,7 @@ class SCCDaemon(Daemon):
 					if hasattr(mod, "init"):
 						to_init.append(mod)
 				else:
-					log.warn("Skipping disabled driver '%s'", modname)
+					log.warning("Skipping disabled driver '%s'", modname)
 		
 		from scc.drivers import MOD_INIT_ORDER as order
 		index_fn = lambda n: order.index(n) if n in order else 1024
@@ -500,7 +500,7 @@ class SCCDaemon(Daemon):
 							d.float()
 			except OSError as e:
 				# Most likely 'xinput' executable not found
-				log.warn("Failed to deatach gamepad from xinput master: %s", e)
+				log.warning("Failed to deatach gamepad from xinput master: %s", e)
 	
 	
 	def load_default_profile(self, mapper=None):

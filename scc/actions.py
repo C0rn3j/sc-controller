@@ -256,7 +256,7 @@ class Action(object):
 		Called when action is executed by pressing physical gamepad button.
 		'button_release' will be called later.
 		"""
-		log.warn("Action %s can't handle button press event", self.__class__.__name__)
+		log.warning("Action %s can't handle button press event", self.__class__.__name__)
 	
 	
 	def button_release(self, mapper):
@@ -264,7 +264,7 @@ class Action(object):
 		Called when action executed by pressing physical gamepad button is
 		expected to stop.
 		"""
-		log.warn("Action %s can't handle button release event", self.__class__.__name__)
+		log.warning("Action %s can't handle button release event", self.__class__.__name__)
 	
 	
 	def axis(self, mapper, position, what):
@@ -276,7 +276,7 @@ class Action(object):
 		'what' is one of LEFT, RIGHT or STICK (from scc.constants),
 		describing what is being updated
 		"""
-		log.warn("Action %s can't handle axis event", self.__class__.__name__)
+		log.warning("Action %s can't handle axis event", self.__class__.__name__)
 	
 	
 	def pad(self, mapper, position, what):
@@ -310,7 +310,7 @@ class Action(object):
 		'what' is one of LEFT, RIGHT, STICK (from scc.constants), describing what is
 		being updated
 		"""
-		log.warn("Action %s can't handle whole stick event", self.__class__.__name__)
+		log.warning("Action %s can't handle whole stick event", self.__class__.__name__)
 	
 	
 	def whole_blocked(self, mapper, x, y, what):
@@ -337,7 +337,7 @@ class Action(object):
 		
 		'what' can be None.
 		"""
-		log.warn("Action %s can't handle incremental changes", self.__class__.__name__)
+		log.warning("Action %s can't handle incremental changes", self.__class__.__name__)
 	
 	
 	def cancel(self, mapper):
@@ -397,7 +397,7 @@ class Action(object):
 		'position' contains current trigger position.
 		'old_position' contains last known trigger position.
 		"""
-		log.warn("Action %s can't handle trigger event", self.__class__.__name__)
+		log.warning("Action %s can't handle trigger event", self.__class__.__name__)
 
 
 class RangeOP(object):

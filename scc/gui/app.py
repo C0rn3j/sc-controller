@@ -633,7 +633,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 
 	def on_unknown_profile(self, ps, name):
-		log.warn("Daemon reported unknown profile: '%s'; Overriding.", name)
+		log.warning("Daemon reported unknown profile: '%s'; Overriding.", name)
 		if self.current_file is not None and ps.get_controller() is not None:
 			ps.get_controller().set_profile(self.current_file.get_path())
 
