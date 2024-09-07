@@ -41,6 +41,11 @@ AppDir:
       fi
     done
 
+    # install python3-vdf manually if not available as package
+    if ! apt-cache search --names-only python3-vdf | grep -q .; then
+      pip install --target "${TARGET_APPDIR}/usr/lib/python3/dist-packages/" vdf
+    fi
+
   after_runtime: |
     set -eu
 
@@ -76,7 +81,6 @@ AppDir:
       - python3-evdev
       - python3-gi-cairo
       - python3-pylibacl
-      - python3-vdf
       - binutils         # required for detection of bluetooth library
       - coreutils        # provides /usr/bin/env
       - shared-mime-info # required for gui if host provides no MIME info, e.g. when XDG_DATA_DIRS is missing
@@ -125,6 +129,15 @@ AppDir:
       - libtirpc*       # development
       - libuuid*        # development
       - media-types     # codec
+
+      # Ubuntu Focal
+      - glib-networking* # network
+      - gsettings*       # gui configuration
+      - libidn2*         # codec
+      - libjson*         # codec
+      - libsoup*         # networking
+      - libunistring*    # unicode
+      - mime-support     # codec
 
       # Ubuntu Noble
       - libgprofng*     # development

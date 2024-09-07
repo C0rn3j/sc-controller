@@ -55,13 +55,11 @@ AppDir:
     arch:
       - "{{APPIMAGE_APT_ARCH}}"
     sources:
-      - sourceline: deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ {{APPIMAGE_APT_DISTRO}} main universe
+      - sourceline: deb http://deb.debian.org/debian {{APPIMAGE_APT_DISTRO}} main
         key_url: http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x{{APPIMAGE_APT_PUBKEY}}
-      - sourceline: deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ {{APPIMAGE_APT_DISTRO}}-updates main universe
-      - sourceline: deb [arch=amd64] http://security.ubuntu.com/ubuntu/ {{APPIMAGE_APT_DISTRO}}-security main universe
-      - sourceline: deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ {{APPIMAGE_APT_DISTRO}} main universe
-      - sourceline: deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ {{APPIMAGE_APT_DISTRO}}-updates main universe
-      - sourceline: deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ {{APPIMAGE_APT_DISTRO}}-security main universe
+      - sourceline: deb http://deb.debian.org/debian {{APPIMAGE_APT_DISTRO}}-updates main
+      - sourceline: deb http://deb.debian.org/debian-security/ {{APPIMAGE_APT_DISTRO}}-security main
+        key_url: http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x{{APPIMAGE_APT_PUBKEY_SECURITY}}
 
     include:
       - gir1.2-gtk-3.0
@@ -126,10 +124,11 @@ AppDir:
       - libuuid*        # development
       - media-types     # codec
 
-      # Ubuntu Noble
+      # Debian Trixie
       - libgprofng*     # development
       - libjansson*     # codec
       - libsframe*      # development
+      - libcloudproviders* # networking
       - netbase         # network
       - tzdata          # date/time
 

@@ -5,25 +5,45 @@ on:
     types: [published]
   workflow_dispatch:
 
-env:
-  BASE_OS: ubuntu
-  APT_PUBKEY: 871920D1991BC93C
-
 jobs:
   build:
     runs-on: ubuntu-latest
 
     strategy:
-      fail-fast: true
       matrix:
         target:
           - platform: linux/amd64
             arch: amd64
           - platform: linux/arm64
             arch: arm64
-        codename:
-          - jammy
-          - noble
+        base:
+          - os: ubuntu
+            codename: focal
+            pubkey: 871920D1991BC93C
+            recipe: AppImageBuilder.ubuntu-focal.yml
+          - os: ubuntu
+            codename: jammy
+            pubkey: 871920D1991BC93C
+            recipe: AppImageBuilder.yml
+          - os: ubuntu
+            codename: noble
+            pubkey: 871920D1991BC93C
+            recipe: AppImageBuilder.yml
+          - os: debian
+            codename: bullseye
+            pubkey: 0E98404D386FA1D9
+            pubkey_security: 54404762BBB6E853
+            recipe: AppImageBuilder.debian-bullseye.yml
+          - os: debian
+            codename: bookworm
+            pubkey: 0E98404D386FA1D9
+            pubkey_security: 54404762BBB6E853
+            recipe: AppImageBuilder.debian.yml
+          - os: debian
+            codename: trixie
+            pubkey: 0E98404D386FA1D9
+            pubkey_security: 54404762BBB6E853
+            recipe: AppImageBuilder.debian.yml
 
     steps:
       - uses: actions/checkout@v4
@@ -42,8 +62,8 @@ jobs:
           platforms: ${{ matrix.target.platform }}
           outputs: build
           build-args: |
-            BASE_OS
-            BASE_CODENAME=${{ matrix.codename }}
+            BASE_OS=${{ matrix.base.os }}
+            BASE_CODENAME=${{ matrix.base.codename }}
 
       - name: Prepare environment to build AppImage
         env:
@@ -56,24 +76,85 @@ jobs:
             rm build/.build-metadata.env
           fi
           APPIMAGE_SOURCE=build
-          APPIMAGE_VERSION="${GITHUB_REF_SLUG}-${{ matrix.codename }}"
+          APPIMAGE_VERSION="${GITHUB_REF_SLUG}-${{ matrix.base.codename }}"
           APPIMAGE_APT_ARCH="${TARGETARCH}"
-          APPIMAGE_APT_DISTRO="${{ matrix.codename }}"
-          APPIMAGE_APT_PUBKEY="${APT_PUBKEY}"
+          APPIMAGE_APT_DISTRO="${{ matrix.base.codename }}"
+          APPIMAGE_APT_PUBKEY="${{ matrix.base.pubkey }}"
+          APPIMAGE_APT_PUBKEY_SECURITY="${{ matrix.base.pubkey_security }}"
           APPIMAGE_ARCH="${TARGETMACHINE}"
           printenv | grep ^APPIMAGE_ >>"${GITHUB_ENV}"
 
       - name: Build AppImage
         uses: AppImageCrafters/build-appimage@v1.3
+        with:
+          recipe: "${{ matrix.base.recipe }}"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: appimage-${{ matrix.codename }}-${{ matrix.target.arch }}
+          name: appimage-${{ matrix.base.codename }}-${{ matrix.target.arch }}
           path: |
             ./*.AppImage
             ./*.AppImage.zsync
           if-no-files-found: error
+
+  test:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - platform: linux/amd64
+            arch: amd64
+        base:
+          - os: ubuntu
+            codename: focal
+          - os: ubuntu
+            codename: jammy
+          - os: ubuntu
+            codename: noble
+          - os: debian
+            codename: bullseye
+          - os: debian
+            codename: bookworm
+          - os: debian
+            codename: trixie
+          - os: fedora
+            codename: "39"
+          - os: fedora
+            codename: "40"
+          - os: archlinux
+            codename: base
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: appimage-*-${{ matrix.target.arch }}
+          path: appimages
+          merge-multiple: true
+
+      - name: Setup qemu for docker
+        uses: docker/setup-qemu-action@v3
+        if: matrix.target.platform != 'linux/amd64'
+
+      - name: Setup buildx for docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: Test AppImages
+        uses: docker/build-push-action@v5
+        with:
+          file: AppImageBuilder.test.Dockerfile
+          context: appimages
+          platforms: ${{ matrix.target.platform }}
+          build-args: |
+            BASE_OS=${{ matrix.base.os }}
+            BASE_CODENAME=${{ matrix.base.codename }}
 
   release:
     if: startsWith(github.ref, 'refs/tags/')
@@ -81,6 +162,7 @@ jobs:
 
     needs:
       - build
+      - test
 
     permissions:
       contents: write
