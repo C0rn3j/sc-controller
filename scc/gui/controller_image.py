@@ -93,7 +93,7 @@ class ControllerImage(SVGWidget):
 		"""
 		self.backup = backup
 		self.current = self._ensure_config(config or {}, controller)
-		self.set_image(os.path.join(self.app.imagepath, f"controller-images/{self.current["gui"]["background"]}.svg"))
+		self.set_image(os.path.join(self.app.imagepath, f"controller-images/{self.current['gui']['background']}.svg"))
 		if not self.current["gui"]["no_buttons_in_gui"]:
 			self._fill_button_images(self.current["gui"]["buttons"])
 		self.hilight({})
