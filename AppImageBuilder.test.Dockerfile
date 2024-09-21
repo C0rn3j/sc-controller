@@ -39,7 +39,7 @@ RUN <<EOR
       "${file}" --appimage-extract >/dev/null
       (
        cd squashfs-root/runtime/compat
-       ../../AppRun dependency-check || handle_failure "$?" "${file}"
+       { ../../AppRun dependency-check && ../../AppRun daemon --help; } || handle_failure "$?" "${file}"
       )
       rm -f "${file}"
     done
