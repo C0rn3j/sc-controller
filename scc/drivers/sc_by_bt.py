@@ -13,7 +13,11 @@ from scc.tools import find_library
 from .sc_dongle import SCPacketType, SCPacketLength, SCConfigType
 from .sc_dongle import SCController
 from math import sin, cos
-import os, sys, struct, ctypes, logging
+import os
+import sys
+import struct
+import ctypes
+import logging
 
 VENDOR_ID = 0x28de
 PRODUCT_ID = 0x1106
@@ -63,7 +67,7 @@ SCByBtCPtr = ctypes.POINTER(SCByBtC)
 class Driver:
 	""" Similar to USB driver, but with hidraw used for backend """
 	# TODO: It should be possible to merge this, usb and hiddrv
-	
+
 	def __init__(self, daemon, config):
 		self.config = config
 		self.daemon = daemon
@@ -74,8 +78,8 @@ class Driver:
 		read_input.argtypes = [ SCByBtCPtr ]
 		daemon.get_device_monitor().add_callback("bluetooth",
 				VENDOR_ID, PRODUCT_ID, self.new_device_callback, None)
-	
-	
+
+
 	def retry(self, syspath):
 		"""
 		Schedules reconnecting controller after read operation fails.
@@ -85,13 +89,13 @@ class Driver:
 				self.reconnecting.remove(syspath)
 				log.debug("Reconnecting to controller...")
 				self.new_device_callback(syspath)
-		
+
 		self.reconnecting.add(syspath)
 		self.daemon.get_device_monitor().add_remove_callback(
 			syspath, self._retry_cancel)
 		self.daemon.get_scheduler().schedule(1.0, reconnect)
-	
-	
+
+
 	def _retry_cancel(self, syspath, vendor, product):
 		"""
 		Cancels reconnection scheduled by 'retry'. Called when device monitor
@@ -99,8 +103,8 @@ class Driver:
 		"""
 		if syspath in self.reconnecting:
 			self.reconnecting.remove(syspath)
-	
-	
+
+
 	def new_device_callback(self, syspath, *whatever):
 		hidrawname = self.daemon.get_device_monitor().get_hidraw(syspath)
 		if hidrawname is None:
@@ -115,7 +119,7 @@ class Driver:
 
 class SCByBt(SCController):
 	flags = 0 | ControllerFlags.SEPARATE_STICK
-	
+
 	def __init__(self, driver, syspath, hidrawdev):
 		self._cmsg = []  # controll messages
 		self._transfer_list = []
@@ -140,27 +144,27 @@ class SCByBt(SCController):
 		self.configure()
 		self.flush()
 		self.daemon.add_controller(self)
-	
-	
+
+
 	def get_device_name(self):
 		# Method needed by evdev driver
 		# return self._device_name
 		return "Steam Controller over Bluetooth"
-	
-	
+
+
 	def get_type(self):
 		return "scbt"
-	
-	
+
+
 	def __repr__(self):
 		return "<SCByBt %s>" % (self.get_id(),)
-	
-	
+
+
 	def configure(self, idle_timeout=None, enable_gyros=None, led_level=None):
 		"""
 		Sets and, if possible, sends configuration to controller.
 		See SCController.configure method in sc_dongle.py;
-		
+
 		This method is almost the same, with different set of hardcoded constants.
 		"""
 		# ------
@@ -170,23 +174,25 @@ class SCByBt(SCController):
 		 - uint8_t size - SCPacketLength.CONFIGURE_BT or SCPacketLength.LED
 		 - uint8_t config_type - SCConfigType.CONFIGURE_BT or SCConfigType.LED
 		 - (variable) data
-		
+
 		Format for data when configuring controller:
 		 - 12B		unknown1 - (hex 0000310200080700070700300)
 		 - uint8	enable gyro sensor - 0x14 enables, 0x00 disables
 		 - 2b		unknown2 - (0x00, 0x2e)
-		 
+
 		Format for data when configuring led:
 		 - uint8	led
 		 - 60b		unused
 		"""
 		# idle_timeout is ignored
-		if enable_gyros is not None : self._enable_gyros = enable_gyros
-		if led_level is not None: self._led_level = int(led_level)
-		
+		if enable_gyros is not None:
+			self._enable_gyros = enable_gyros
+		if led_level is not None:
+			self._led_level = int(led_level)
+
 		unknown1 = b'\x00\x00\x31\x02\x00\x08\x07\x00\x07\x07\x00\x30'
 		unknown2 = b'\x00\x2e'
-		
+
 		# Timeout & Gyros
 		self.overwrite_control(self._ccidx, struct.pack('>BBB12sB2s',
 			SCPacketType.CONFIGURE,
@@ -196,7 +202,7 @@ class SCByBt(SCController):
 			# 0x10 (Gyro) | 0x08 (Accel) | 0x04 (Quat)
 			0x1C if self._enable_gyros else 0,
 			unknown2))
-		
+
 		# LED
 		self.overwrite_control(self._ccidx, struct.pack('>BBBB',
 			SCPacketType.CONFIGURE,
@@ -204,20 +210,20 @@ class SCByBt(SCController):
 			SCConfigType.LED,
 			self._led_level
 		))
-	
-	
+
+
 	def read_serial(self):
 		self._serial = (self._hidrawdev
 			.getPhysicalAddress().replace(b":", b""))
-	
-	
+
+
 	def send_control(self, index, data):
 		""" Schedules writing control to device """
 		# For BT controller, index is ignored
 		zeros = b'\x00' * (PACKET_SIZE - len(data) - 1)
 		self._cmsg.insert(0, b'\xc0' + data + zeros)
-	
-	
+
+
 	def overwrite_control(self, index, data):
 		"""
 		Similar to send_control, but this one checks and overwrites
@@ -230,16 +236,16 @@ class SCByBt(SCController):
 				self._cmsg.remove(x)
 				break
 		self.send_control(index, data)
-	
-	
+
+
 	def make_request(self, index, callback, data, size=PACKET_SIZE):
 		"""
 		There are no requests one can send to BT controller,
 		so this just causes exception.
 		"""
 		raise RuntimeError("make_request over BT not implemented")
-	
-	
+
+
 	def flush(self):
 		""" Flushes all prepared control messages to the device """
 		while len(self._cmsg):
@@ -248,8 +254,8 @@ class SCByBt(SCController):
 			# or Input/output error will occur with later BlueZ versions (5.64)
 			# Does not affect older BlueZ versions
 			self._hidrawdev.sendFeatureReport(msg, 3)
-	
-	
+
+
 	def input(self, idata):
 		raise RuntimeError("This shouldn't be called, ever")
 
@@ -258,22 +264,22 @@ class SCByBt(SCController):
 		# Need to call flush to make sure packet
 		# is sent to controller
 		self.flush()
-	
-	
+
+
 	def close(self, *a):
 		if self._poller:
 			self._poller.unregister(self._fileno)
 		self.daemon.remove_controller(self)
 		self._hidrawdev._device.close()
-	
-	
+
+
 	def disconnected(self):
 		pass
-	
-	
+
+
 	def _input(self, *a):
 		r = self.driver._lib.read_input(self._c_data_ptr)
-		
+
 		if r == 1:
 			if self.mapper is not None:
 				if self._input_rotation_l and (self._state.type & 0x0100) != 0:
@@ -298,7 +304,7 @@ class SCByBt(SCController):
 					# Adjust RY for rotation and clamp
 					value = int(rx * s + ry * c)
 					self._state.rpad_y = max(STICK_PAD_MIN, min(STICK_PAD_MAX, value))
-				
+
 				self.mapper.input(self, self._old_state, self._state)
 			self.flush()
 		elif r > 1:
@@ -321,11 +327,11 @@ def hidraw_test(filename):
 
 		def get_poller(self):
 			return None
-	
+
 	class TestSC(SCByBt):
 		def input(self, tup):
 			print(tup)
-	
+
 	dev = HIDRaw(open(filename, "w+b"))
 	driver = Driver(FakeDaemon(), {})
 	c = TestSC(driver, None, dev)

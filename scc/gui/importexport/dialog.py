@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 SC-Controller - Import / Export Dialog
 """

@@ -1,51 +1,54 @@
-#!/usr/bin/env python3
-"""
-SC Controller - DualSense driver
+"""SC Controller - DualSense driver.
 
 Extends HID driver with DS5-specific options.
 """
 
 import ctypes
 import logging
-import os, sys
-import zlib
-from datetime import datetime
-import time
-import binascii
 import math
-
+import os
+import sys
+import time
+import zlib
+from enum import IntEnum
 
 from scc.constants import (
-    ControllerFlags, HapticPos, SCButtons,
-    STICK_PAD_MAX, STICK_PAD_MIN, STICK_PAD_RES,
-    OUTPUT_360_STICK_MAX, OUTPUT_360_STICK_MIN, OUTPUT_360_STICK_RES,
+    OUTPUT_360_STICK_MAX,
+    OUTPUT_360_STICK_MIN,
+    OUTPUT_360_STICK_RES,
+    STICK_PAD_MAX,
+    STICK_PAD_MIN,
+    STICK_PAD_RES,
+    ControllerFlags,
+    HapticPos,
+    SCButtons,
 )
+from scc.controller import Controller
 from scc.drivers.evdevdrv import (
-    EvdevController,
     HAVE_EVDEV,
+    EvdevController,
     get_axes,
     get_evdev_devices_from_syspath,
     make_new_device,
 )
 from scc.drivers.hiddrv import (
+    BUTTON_COUNT,
     AxisData,
     AxisDataUnion,
     AxisMode,
     AxisModeData,
     AxisType,
-    BUTTON_COUNT,
     ButtonData,
+    HatswitchModeData,
     HIDController,
     HIDDecoder,
-    HatswitchModeData,
     _lib,
     hiddrv_test,
 )
 from scc.drivers.usb import register_hotplug_device
-from scc.lib import IntEnum, usb1
-from scc.tools import init_logging, set_logging_level
-from scc.controller import Controller
 from scc.lib.hidraw import HIDRaw
+from scc.sccdaemon import SCCDaemon
+from scc.tools import init_logging, set_logging_level
 
 log = logging.getLogger("DS5")
 
@@ -456,15 +459,15 @@ class DS5Controller(HIDController):
 
 
 class DS5HidRawDriver:
-    def __init__(self, daemon, config):
+    def __init__(self, daemon: SCCDaemon, config: dict):
         self.config = config
         self.daemon = daemon
         daemon.get_device_monitor().add_callback("bluetooth", VENDOR_ID, PRODUCT_ID, self.make_bt_hidraw_callback, None)
 
-    def retry(self, syspath):
+    def retry(self, syspath: str):
         pass
 
-    def make_bt_hidraw_callback(self, syspath, *whatever):
+    def make_bt_hidraw_callback(self, syspath: str, *whatever):
         hidrawname = self.daemon.get_device_monitor().get_hidraw(syspath)
         if hidrawname is None:
             return None
@@ -1171,10 +1174,7 @@ class DS5EvdevController(EvdevController):
         return "<DS5EvdevController %s>" % (self.get_id(),)
 
     def _generate_id(self):
-        """
-        ID is generated as 'ds5' or 'ds5:X' where 'X' starts as 1 and increases
-        as controllers with same ids are connected.
-        """
+        """ID is generated as 'ds5' or 'ds5:X' where 'X' starts as 1 and increases as controllers with same ids are connected."""
         magic_number = 1
         id = "ds5"
         while id in self.daemon.get_active_ids():
@@ -1184,12 +1184,12 @@ class DS5EvdevController(EvdevController):
 
 
 def init(daemon, config):
-    """ Registers hotplug callback for ds5 device """
+    """Register hotplug callback for DS5 device."""
 
     def hid_callback(device, handle):
         return DS5Controller(device, daemon, handle, None, None)
 
-    def make_evdev_device(syspath, *whatever):
+    def make_evdev_device(syspath: str, *whatever):
         devices = get_evdev_devices_from_syspath(syspath)
         # With kernel 4.10 or later, PS4 controller pretends to be 3 different devices.
         # 1st, determining which one is actual controller is needed
@@ -1225,7 +1225,7 @@ def init(daemon, config):
         if controllerdevice and gyro and touchpad:
             return make_new_device(DS5EvdevController, controllerdevice, gyro, touchpad)
 
-    def fail_cb(syspath, vid, pid):
+    def fail_cb(syspath: str, vid: int, pid: int):
         if HAVE_EVDEV:
             log.warning(
                 "Failed to acquire USB device, falling back to evdev driver. This is far from optimal."
@@ -1243,13 +1243,12 @@ def init(daemon, config):
         if config["drivers"].get("hiddrv"):
             # Only enable HIDRaw support for BT connections if hiddrv is enabled
             _drv = DS5HidRawDriver(daemon, config)
-        else:
+        elif HAVE_EVDEV and config["drivers"].get("evdevdrv"):
             # Attempt evdev as a backup
-            if HAVE_EVDEV and config["drivers"].get("evdevdrv"):
-                daemon.get_device_monitor().add_callback(
-                    "bluetooth",
-                    VENDOR_ID, PRODUCT_ID, make_evdev_device, None
-                )
+            daemon.get_device_monitor().add_callback(
+                "bluetooth",
+                VENDOR_ID, PRODUCT_ID, make_evdev_device, None,
+            )
         return True
     else:
         log.warning("Neither HID nor Evdev driver is enabled, DS5 support cannot be enabled.")

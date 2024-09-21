@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-"""
-SC Controller - Modifiers
+"""SC Controller - Modifiers.
 
 Modifier is Action that just sits between input and actual action, changing
 way how resulting action works.
@@ -20,7 +18,9 @@ from scc.uinput import Axes, Rels
 from math import pi as PI, sqrt, copysign, atan2, sin, cos
 from collections import OrderedDict, deque
 
-import time, logging, inspect
+import time
+import logging
+import inspect
 import itertools
 log = logging.getLogger("Modifiers")
 _ = lambda x : x
@@ -60,7 +60,7 @@ class Modifier(Action):
 
 
 	def _mod_to_string(self, params, multiline, pad):
-		""" Adds action at end of params list and generates string """
+		"""Add action at end of params list and generate a string."""
 		if multiline:
 			childstr = self.action.to_string(True, pad + 2)
 			if len(params) > 0:

@@ -1,18 +1,19 @@
-#!/usr/bin/env python3
-"""
-SC-Controller - Daemon - CemuHookUDP motion provider
+"""SC-Controller - Daemon - CemuHookUDP motion provider.
 
 Accepts all connections from clients and sends data captured
 by 'cemuhook' actions to them.
 """
-from scc.tools import find_library
-from scc.lib.enum import IntEnum
-from ctypes import c_uint32, c_int, c_bool, c_char_p, c_size_t, c_float
-from ctypes import create_string_buffer
-import logging, os, socket
+import logging
+import os
+import socket
+from ctypes import c_bool, c_char_p, c_float, c_int, c_size_t, create_string_buffer
+from datetime import datetime, timedelta
+from enum import IntEnum
 from threading import Thread
 from time import sleep
-from datetime import datetime, timedelta
+
+from scc.tools import find_library
+
 log = logging.getLogger("CemuHook")
 
 BUFFER_SIZE = 1024

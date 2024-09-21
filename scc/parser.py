@@ -1,38 +1,37 @@
-#!/usr/bin/env python3
-"""
-SC Controller - ActionParser
+"""SC Controller - ActionParser.
 
 Parses action(s) expressed as string or in dict loaded from json file into
 one or more Action instances.
 """
-from tokenize import generate_tokens, TokenError
-from collections import namedtuple
+from __future__ import annotations
 
-from scc.constants import SCButtons, HapticPos, PARSER_CONSTANTS, STICK
-from scc.actions import Action, RangeOP, NoAction, MultiAction
-from scc.special_actions import OSDAction
-from scc.uinput import Keys, Axes, Rels
+import sys
+import token as TokenType
+from enum import EnumType
+from tokenize import TokenError, generate_tokens
+from typing import NamedTuple
+
+from scc.actions import Action, MultiAction, NoAction, RangeOP
+from scc.constants import PARSER_CONSTANTS, STICK, HapticPos, SCButtons
 from scc.macros import Macro
 from scc.tools import nameof
-import scc.aliases
-
-import token as TokenType
-import sys
+from scc.uinput import Axes, Keys, Rels
 
 
-class ParseError(Exception): pass
+class ParseError(Exception):
+	pass
 
 
-def build_action_constants():
-	""" Generates dicts for ActionParser.CONSTS """
+def build_action_constants() -> dict:
+	"""Generate dicts for ActionParser.CONSTS."""
 	rv = {
-		'Keys'		: Keys,
-		'Axes'		: Axes,
-		'Rels'		: Rels,
-		'HapticPos'	: HapticPos,
-		'None'		: NoAction(),
-		'True'		: True,
-		'False'		: False,
+		"Keys": Keys,
+		"Axes": Axes,
+		"Rels": Rels,
+		"HapticPos": HapticPos,
+		"None": NoAction(),
+		"True": True,
+		"False": False,
 	}
 	for c in PARSER_CONSTANTS:
 		rv[c] = c
@@ -40,14 +39,13 @@ def build_action_constants():
 		for x in tpl:
 			rv[x.name] = x
 	for b in ("A", "B", "X", "Y", "START", "SELECT"):
-		name = "BTN_%s" % (b,)
+		name = f"BTN_{b}"
 		rv[name] = getattr(Keys, name)
 	return rv
 
 
 class ActionParser(object):
-	"""
-	Parses action expressed as string into Action instances.
+	"""Parse action expressed as string into Action instances.
 
 	Usage:
 		ap = ActionParser(string)
@@ -56,59 +54,56 @@ class ActionParser(object):
 			error = ap.get_error()
 			# do something with error
 	"""
-	Token = namedtuple('Token', 'type value')
+
+	class Token(NamedTuple):
+		type: int
+		value: str
 
 	CONSTS = build_action_constants()
 
 
-	def __init__(self, string=""):
+	def __init__(self, string:str = ""):
 		self.restart(string)
 
 
-	def from_json_data(self, data, key=None):
-		"""
-		Converts dict stored in profile file into action.
+	def from_json_data(self, data: dict, key: str | None = None):
+		"""Convert dict stored in profile file into action.
 
 		May throw ParseError.
 		"""
 		if key is not None:
 			# Don't fail if called for non-existent key, return NoAction instead.
-			# Using this is sorter than
-			# calling 'if button in data["buttons"]: ...' everywhere
+			# Using this is shorter than calling 'if button in data["buttons"]: ...' everywhere
 			if key in data:
 				return self.from_json_data(data[key], None)
-			else:
-				return NoAction()
+			return NoAction()
 
-		if "action" in data:
-			a = self.restart(data["action"]).parse() or NoAction()
-		else:
-			a = NoAction()
+		a = self.restart(data["action"]).parse() or NoAction() if "action" in data else NoAction()
 		decoders = set()
-		for key in data:
-			if key in Action.PKEYS:
-				decoders.add(Action.PKEYS[key])
+		for data_key in data:
+			if data_key in Action.PKEYS:
+				decoders.add(Action.PKEYS[data_key])
 
 		if decoders:
 			for cls in sorted(decoders, key=lambda a : a.PROFILE_KEY_PRIORITY ):
-				a = cls.decode(data, a, self, 0)	# Profile version is not yet used anywhere
+				a = cls.decode(data, a, self, 0) # Profile version is not yet used anywhere
 		return a
 
 
-	def restart(self, s):
-		"""
-		Restarts parsing with new string
+	def restart(self, s: str | bytes) -> ActionParser:
+		"""Restart parsing with a new string.
+
 		Returns self for chaining.
 		"""
-		if type(s) == bytes:
+		if type(s) is bytes:
 			s = s.decode("utf-8")
 
 		try:
 			self.tokens = [
-				ActionParser.Token(type, string)
-				for type, string, *_
+				ActionParser.Token(token_type, string)
+				for token_type, string, *_
 				in generate_tokens( iter([s]).__next__ )
-				if type != TokenType.ENDMARKER
+				if token_type != TokenType.ENDMARKER
 			]
 		except TokenError:
 			self.tokens = None
@@ -116,24 +111,30 @@ class ActionParser(object):
 		return self
 
 
-	def _next_token(self):
+	def _next_token(self) -> Token:
+		if self.tokens is None:
+			sys.exit("This shouldn't happen, self.tokens is none")
 		rv = self.tokens[self.index]
 		self.index += 1
 		return rv
 
 
-	def _peek_token(self):
-		""" As _next_token, but without increasing counter """
+	def _peek_token(self) -> Token:
+		"""As _next_token, but without increasing counter."""
+		if self.tokens is None:
+			sys.exit("This shouldn't happen, self.tokens is none")
 		return self.tokens[self.index]
 
 
-	def _tokens_left(self):
-		""" Returns True if there are any tokens left """
+	def _tokens_left(self) -> bool:
+		"""Return True if there are any tokens left."""
+		if self.tokens is None:
+			sys.exit("This shouldn't happen, self.tokens is none")
 		return self.index < len(self.tokens)
 
 
 	def _parse_parameter(self):
-		""" Parses single parameter """
+		"""Parse a single parameter."""
 		t = self._next_token()
 		while t.type in (TokenType.NL, TokenType.NEWLINE) or t.value == "\n":
 			if not self._tokens_left():
@@ -142,17 +143,17 @@ class ActionParser(object):
 
 		if t.type == TokenType.NAME:
 			# Constant or action used as parameter
-			if self._tokens_left() and self._peek_token().type == TokenType.OP and self._peek_token().value == '(':
+			if self._tokens_left() and self._peek_token().type == TokenType.OP and self._peek_token().value == "(":
 				# Action used as parameter
 				self.index -= 1 # go step back and reparse as action
 				parameter = self._parse_action()
-			elif self._tokens_left() and t.value in Action.ALL and type(Action.ALL[t.value]) == dict and self._peek_token().value == '.':
+			elif self._tokens_left() and t.value in Action.ALL and type(Action.ALL[t.value]) is dict and self._peek_token().value == ".":
 				# SOMETHING.Action used as parameter
 				self.index -= 1 # go step back and reparse as action
 				parameter = self._parse_action()
 			else:
 				# Constant
-				if not t.value in ActionParser.CONSTS:
+				if t.value not in ActionParser.CONSTS:
 					raise ParseError("Expected parameter, got '%s' which is not defined" % (t.value,))
 				parameter = ActionParser.CONSTS[t.value]
 
@@ -194,40 +195,36 @@ class ActionParser(object):
 			return self._parse_number()
 
 		if t.type == TokenType.STRING:
-			#return t.value[1:-1].decode('unicode_escape')
 			return t.value[1:-1]
 
 		raise ParseError("Expected parameter, got '%s'" % (t.value,))
 
 
-	def _parse_number(self):
+	def _parse_number(self) -> float | int:
 		t = self._next_token()
 		if t.type != TokenType.NUMBER:
 			raise ParseError("Expected number, got '%s'" % (t.value,))
-		if "." in t.value:
+		if "." in t.value or "e" in t.value.lower():
 			return float(t.value)
-		elif "e" in t.value.lower():
-			return float(t.value)
-		elif t.value.lower().startswith("0x"):
+		if t.value.lower().startswith("0x"):
 			return int(t.value, 16)
-		elif t.value.lower().startswith("0b"):
+		if t.value.lower().startswith("0b"):
 			return int(t.value, 2)
-		else:
-			return int(t.value)
+		return int(t.value)
 
 
-	def _parse_parameters(self):
-		""" Parses parameter list """
+	def _parse_parameters(self) -> list:
+		"""Parse a parameter list."""
 		# Check and skip over '('
 		t = self._next_token()
-		if t.type != TokenType.OP or t.value != '(':
+		if t.type != TokenType.OP or t.value != "(":
 			raise ParseError("Expected '(' of parameter list, got '%s'" % (t.value,))
 
 		parameters = []
 		while self._tokens_left():
 			# Check for ')' that would end parameter list
 			t = self._peek_token()
-			if t.type == TokenType.OP and t.value == ')':
+			if t.type == TokenType.OP and t.value == ")":
 				self._next_token()
 				return parameters
 
@@ -240,9 +237,9 @@ class ActionParser(object):
 				if not self._tokens_left():
 					raise ParseError("Expected ',' or end of parameter list after parameter '%s'" % (parameters[-1],))
 				t = self._peek_token()
-			if t.type == TokenType.OP and t.value == ')':
+			if t.type == TokenType.OP and t.value == ")":
 				pass
-			elif t.type == TokenType.OP and t.value == ',':
+			elif t.type == TokenType.OP and t.value == ",":
 				self._next_token()
 			else:
 				raise ParseError("Expected ',' or end of parameter list after parameter '%s'" % (parameters[-1],))
@@ -262,13 +259,8 @@ class ActionParser(object):
 			raise ParseError("Invalid number of parameters for '%s'" % (cls.COMMAND))
 
 
-	def _parse_action(self, frm=Action.ALL):
-		"""
-		Parses one action, that is one of:
-		 - something(params)
-		 - something()
-		 - something
-		"""
+	def _parse_action(self, frm: dict = Action.ALL):
+		"""Parse one action, that is one of: something(params) | something() | something."""
 		# Check if next token is TokenType.NAME and grab action name from it
 		t = self._next_token()
 		if t.type != TokenType.NAME:
@@ -277,31 +269,27 @@ class ActionParser(object):
 			raise ParseError("Unknown action '%s'" % (t.value,))
 		action_name = t.value
 		action_class = frm[action_name]
-
-		# Check if there are any tokens left - return action without parameters
-		# if not
+		# Check if there are any tokens left - if not, return action without parameters
 		if not self._tokens_left():
 			return self._create_action(action_class)
 
-		# Check if token after action name is parenthesis and if yes, parse
-		# parameters from it
+		# Check if token after action name is parenthesis and if yes, parse parameters from it
 		t = self._peek_token()
 		parameters = []
-		if t.type == TokenType.OP and t.value == '.':
+		if t.type == TokenType.OP and t.value == ".":
 			# ACTION dict can have nested dicts; SOMETHING.action
-			if type(action_class) == dict:
+			if type(action_class) is dict:
 				self._next_token()
 				return self._parse_action(action_class)
-			else:
-				raise ParseError("Unexpected '.' after '%s'" % (action_name,))
-		if t.type == TokenType.OP and t.value == '(':
-			parameters  = self._parse_parameters()
+			raise ParseError("Unexpected '.' after '%s'" % (action_name,))
+		if t.type == TokenType.OP and t.value == "(":
+			parameters = self._parse_parameters()
 			if not self._tokens_left():
 				return self._create_action(action_class, *parameters)
 			t = self._peek_token()
 
 		# ... or, if it is one of ';', 'and' or 'or' and if yes, parse next action
-		if t.type == TokenType.NAME and t.value == 'and':
+		if t.type == TokenType.NAME and t.value == "and":
 			# Two (or more) actions joined by 'and'
 			self._next_token()
 			if not self._tokens_left():
@@ -317,14 +305,14 @@ class ActionParser(object):
 				# Newline at end of string is not error
 				return self._create_action(action_class, *parameters)
 			t = self._peek_token()
-			if t.type == TokenType.OP and t.value in (')', ','):
+			if t.type == TokenType.OP and t.value in (")", ","):
 				# ')' starts next line
 				return self._create_action(action_class, *parameters)
 			action1 = self._create_action(action_class, *parameters)
 			action2 = self._parse_action()
 			return MultiAction(action1, action2)
 
-		if t.type == TokenType.OP and t.value == ';':
+		if t.type == TokenType.OP and t.value == ";":
 			# Two (or more) actions joined by ';'
 			self._next_token()
 			while self._tokens_left() and self._peek_token().type in (TokenType.NL, TokenType.NEWLINE):
@@ -340,11 +328,11 @@ class ActionParser(object):
 
 
 	def parse(self):
-		"""
-		Returns parsed action.
+		"""Return parsed action.
+
 		Throws ParseError if action cannot be parsed.
 		"""
-		if self.tokens == None:
+		if self.tokens is None:
 			raise ParseError("Syntax error")
 		a = self._parse_action()
 		if self._tokens_left():
@@ -353,21 +341,16 @@ class ActionParser(object):
 
 
 class TalkingActionParser(ActionParser):
-	"""
-	ActionParser that returns None when parsing fails instead of
-	trowing exception and outputs message to stderr
-	"""
+	"""ActionParser that returns None when parsing fails instead of trowing exception and outputs message to stderr."""
 
-	def restart(self, string):
+	def restart(self, string: str):
 		self.string = string
 		return ActionParser.restart(self, string)
 
 
 	def parse(self):
-		"""
-		Returns parsed action or None if action cannot be parsed.
-		"""
+		"""Return parsed action or None if action cannot be parsed."""
 		try:
 			return ActionParser.parse(self)
 		except ParseError as e:
-			print("Warning: Failed to parse '%s':" % (self.string,), e, file=sys.stderr)
+			print(f"Warning: Failed to parse '{self.string}':", e, file=sys.stderr)

@@ -1,18 +1,24 @@
 #!/usr/bin/env python3
 
-"""
-SC-Controller - OSD Daemon
+"""SC-Controller - OSD Daemon.
 
 Controls stuff displayed as OSD.
 """
-from scc.tools import _, set_logging_level
+import logging
+import os
+import sys
+import time
+import traceback
 
 import gi
+
+from scc.tools import set_logging_level
+
 gi.require_version('Gtk', '3.0')
 gi.require_version('Rsvg', '2.0')
 gi.require_version('GdkX11', '3.0')
-
 from gi.repository import Gtk, Gdk, GdkX11, GLib
+
 from scc.gui.daemon_manager import DaemonManager
 from scc.osd.gesture_display import GestureDisplay
 from scc.osd.radial_menu import RadialMenu
@@ -26,10 +32,10 @@ from scc.osd import OSDWindow
 from scc.osd.menu import Menu
 from scc.osd.area import Area
 from scc.special_actions import OSDAction
-from scc.tools import shsplit, shjoin
+from scc.tools import shsplit
 from scc.config import Config
 
-import os, sys, logging, time, traceback
+
 log = logging.getLogger("osd.daemon")
 
 class OSDDaemon(object):

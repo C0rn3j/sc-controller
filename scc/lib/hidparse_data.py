@@ -1,10 +1,9 @@
-"""
-hidparse_data - long enums moved from hidparse.py
+"""hidparse_data - long enums moved from hidparse.py.
 
 Licensed under GPL 2.0
 """
 
-from scc.lib import IntEnum
+from enum import IntEnum
 
 
 class MainItem(IntEnum):

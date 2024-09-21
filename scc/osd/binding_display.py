@@ -1,32 +1,32 @@
-#!/usr/bin/env python3
-"""
-SC-Controller - OSD Launcher
+"""SC-Controller - OSD Launcher.
 
 Display launcher with phone-like keyboard that user can use to select
 application (list is generated using xdg) and start it.
 
 Reuses styles from OSD Menu and OSD Dialog
 """
-from scc.tools import _, set_logging_level
+import base64
+import logging
+import os
+import sys
+from enum import IntEnum
 
 from gi.repository import Gtk
-from scc.actions import DPadAction, AxisAction, MouseAction
-from scc.actions import Action, MultiAction, XYAction
-from scc.modifiers import ModeModifier, DoubleclickModifier
-from scc.paths import get_share_path, get_config_path
-from scc.menu_data import MenuData, MenuItem
-from scc.lib import xwrappers as X, IntEnum
-from scc.special_actions import MenuAction
-from scc.parser import TalkingActionParser
-from scc.constants import SCButtons
-from scc.profile import Profile
+
+from scc.actions import Action, AxisAction, DPadAction, MouseAction, MultiAction, XYAction
 from scc.config import Config
-from scc.tools import nameof
-from scc.uinput import Rels
-from scc.gui.svg_widget import SVGWidget, SVGEditor
+from scc.constants import SCButtons
 from scc.gui.daemon_manager import DaemonManager
+from scc.gui.svg_widget import SVGEditor, SVGWidget
+from scc.modifiers import DoubleclickModifier, ModeModifier
 from scc.osd import OSDWindow
-import os, sys, re, base64, logging
+from scc.parser import TalkingActionParser
+from scc.paths import get_config_path, get_share_path
+from scc.profile import Profile
+from scc.special_actions import MenuAction
+from scc.tools import _, nameof
+from scc.uinput import Rels
+
 log = logging.getLogger("osd.binds")
 
 
@@ -58,9 +58,7 @@ class BindingDisplay(OSDWindow):
 
 
 	def use_daemon(self, d):
-		"""
-		Allows (re)using already existing DaemonManager instance in same process
-		"""
+		"""Allows (re)using already existing DaemonManager instance in same process."""
 		self.daemon = d
 		self._cononect_handlers()
 		self.on_daemon_connected(self.daemon)
@@ -76,10 +74,7 @@ class BindingDisplay(OSDWindow):
 
 
 	def compute_position(self):
-		"""
-		Unlike other OSD windows, this one is scaled to 80% of screen size
-		and centered in on active screen.
-		"""
+		"""Unlike other OSD windows, this one is scaled to 80% of screen size and centered in on active screen."""
 		x, y = 10, 10
 		iw, ih = self.background.image_width, self.background.image_height
 		geometry = self.get_active_screen_geometry()

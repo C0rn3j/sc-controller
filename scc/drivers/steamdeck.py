@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-"""
-SCC - Steam Deck Driver
+"""SCC - Steam Deck Driver.
 
 Based on sc_by_cable and steamdeck.c
 
@@ -10,23 +8,23 @@ On top of that, deck will automatically enable lizard mode unless requested
 to not do so periodically.
 """
 
-from scc.lib import IntEnum
-from scc.lib.usb1 import USBError
+import ctypes
+import logging
+import struct
+from enum import IntEnum
+
+from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons
+from scc.drivers.sc_dongle import SCController, SCPacketType
 from scc.drivers.usb import USBDevice, register_hotplug_device
-from scc.constants import STICK_PAD_MIN, STICK_PAD_MAX
-from scc.constants import SCButtons, ControllerFlags
-from scc.drivers.sc_dongle import ControllerInput, SCController, SCPacketType
-import struct, logging, ctypes
 
-
-VENDOR_ID			= 0x28de
-PRODUCT_ID			= 0x1205
-ENDPOINT			= 3
-CONTROLIDX			= 2
-PACKET_SIZE			= 128
-UNLIZARD_INTERVAL	= 100
+VENDOR_ID         = 0x28de
+PRODUCT_ID        = 0x1205
+ENDPOINT          = 3
+CONTROLIDX        = 2
+PACKET_SIZE       = 128
+UNLIZARD_INTERVAL = 100
 # Basically, sticks on deck tend to return to non-zero position
-STICK_DEADZONE		= 3000
+STICK_DEADZONE    = 3000
 
 log = logging.getLogger("deck")
 
@@ -41,7 +39,7 @@ class DeckInput(ctypes.Structure):
 		('lpad_y', ctypes.c_int16),
 		('rpad_x', ctypes.c_int16),
 		('rpad_y', ctypes.c_int16),
-		
+
 		('accel_x', ctypes.c_int16),
 		('accel_y', ctypes.c_int16),
 		('accel_z', ctypes.c_int16),
@@ -52,14 +50,14 @@ class DeckInput(ctypes.Structure):
 		('q2', ctypes.c_uint16),
 		('q3', ctypes.c_uint16),
 		('q4', ctypes.c_uint16),
-		
+
 		('ltrig', ctypes.c_uint16),
 		('rtrig', ctypes.c_uint16),
 		('stick_x', ctypes.c_int16),
 		('stick_y', ctypes.c_int16),
 		('rstick_x', ctypes.c_int16),
 		('rstick_y', ctypes.c_int16),
-		
+
 		# Values above are readed directly from deck
 		# Values bellow are converted so mapper can understand them
 		('dpad_x', ctypes.c_int16),
@@ -135,7 +133,7 @@ class Deck(USBDevice, SCController):
 		| ControllerFlags.IS_DECK
 		| ControllerFlags.HAS_RSTICK
 	)
-	
+
 	def __init__(self, device, handle, daemon):
 		self.daemon = daemon
 		USBDevice.__init__(self, device, handle)
@@ -143,51 +141,51 @@ class Deck(USBDevice, SCController):
 		self._old_state = DeckInput()
 		self._input = DeckInput()
 		self._ready = False
-		
+
 		self.claim_by(klass=3, subclass=0, protocol=0)
 		self.read_serial()
-	
+
 	def generate_serial(self):
 		self._serial = "%s:%s" % (self.device.getBusNumber(), self.device.getPortNumber())
-	
+
 	def disconnected(self):
 		# Overrided to skip returning serial# to pool.
 		pass
-	
+
 	def set_gyro_enabled(self, enabled):
 		# Always on on deck
 		pass
-	
+
 	def get_gyro_enabled(self):
 		# Always on on deck
 		return True
-	
+
 	def get_type(self):
 		return "deck"
-	
+
 	def __repr__(self):
 		return "<Deck %s>" % (self.get_id(),)
-	
+
 	def get_gui_config_file(self):
 		return "deck.config.json"
-	
+
 	def configure(self, idle_timeout=None, enable_gyros=None, led_level=None):
 		FORMAT = b'>BBBB60x'
 		# Timeout & Gyros
 		self._driver.overwrite_control(self._ccidx, struct.pack(
 			FORMAT, SCPacketType.CONFIGURE, 0x03, 0x08, 0x07))
-	
+
 	def clear_mappings(self):
 		FORMAT = b'>BB62x'
 		# Timeout & Gyros
 		self._driver.overwrite_control(self._ccidx,
 			struct.pack(FORMAT, SCPacketType.CLEAR_MAPPINGS, 0x01))
-	
+
 	def on_serial_got(self):
 		log.debug("Got SteamDeck with serial %s", self._serial)
 		self._id = "deck%s" % (self._serial,)
-		self.set_input_interrupt(ENDPOINT, 64, self._on_input)	
-	
+		self.set_input_interrupt(ENDPOINT, 64, self._on_input)
+
 	def _on_input(self, endpoint, data):
 		if not self._ready:
 			self.daemon.add_controller(self)
@@ -199,7 +197,7 @@ class Deck(USBDevice, SCController):
 		if self._input.seq % UNLIZARD_INTERVAL == 0:
 			# Keeps lizard mode from happening
 			self.clear_mappings()
-		
+
 		# Handle dpad
 		self._input.dpad_x = map_dpad(self._input, DeckButton.DPAD_LEFT, DeckButton.DPAD_RIGHT)
 		self._input.dpad_y = map_dpad(self._input, DeckButton.DPAD_DOWN, DeckButton.DPAD_UP)
@@ -222,20 +220,20 @@ class Deck(USBDevice, SCController):
 		self._input.stick_y = apply_deadzone(self._input.stick_y, STICK_DEADZONE)
 		self._input.rstick_x = apply_deadzone(self._input.rstick_x, STICK_DEADZONE)
 		self._input.rstick_y = apply_deadzone(self._input.rstick_y, STICK_DEADZONE)
-		
+
 		# Invert Gyro Roll to match Steam Controller coordinate system
 		self._input.groll = -self._input.groll
 
 		m = self.get_mapper()
 		if m:
 			self.mapper.input(self, self._old_state, self._input)
-	
+
 	def close(self):
 		if self._ready:
 			self.daemon.remove_controller(self)
 			self._ready = False
 		USBDevice.close(self)
-	
+
 	def turnoff(self):
 		log.warning("Ignoring request to turn off steamdeck.")
 
@@ -244,7 +242,6 @@ def init(daemon, config):
 	""" Registers hotplug callback for controller dongle """
 	def cb(device, handle):
 		return Deck(device, handle, daemon)
-	
+
 	register_hotplug_device(cb, VENDOR_ID, PRODUCT_ID)
 	return True
-

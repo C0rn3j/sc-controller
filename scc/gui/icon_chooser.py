@@ -10,7 +10,10 @@ from scc.gui.dwsnc import headerbar
 from scc.gui.editor import Editor
 from scc.paths import get_menuicons_path
 from scc.tools import find_icon
-import os, traceback, logging, re
+import os
+import traceback
+import logging
+import re
 log = logging.getLogger("IconChooser")
 RE_URL = re.compile(r"(.*)(https?://[^ ]+)(.*)")
 DEFAULT_ICON_CATEGORIES = ( "items", "media", "weapons", "system" )
@@ -47,7 +50,7 @@ class IconChooser(Editor, UserDataManager):
 		for c in DEFAULT_ICON_CATEGORIES:
 			try:
 				os.makedirs(os.path.join(get_menuicons_path(), c))
-			except:
+			except Exception:
 				# Dir. exists
 				pass
 
@@ -163,13 +166,14 @@ class IconChooser(Editor, UserDataManager):
 				# Try to select 1st category, but ignore if that fails
 				tvCategories.get_selection().select_path(( 0, ))
 				self.on_tvCategories_cursor_changed(tvCategories)
-			except: pass
+			except Exception:
+				pass
 
 
 	@staticmethod
 	def find_license(path, name):
 		""" Parses LICENSE file, if any, and returns license for give file """
-		licensefile = os.path.join(path, "LICENCES")
+		licensefile = os.path.join(path, "LICENSES")
 		if not os.path.exists(licensefile):
 			return None
 		for line in open(licensefile, "r").readlines():

@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-"""
-Python wrapper for some X-related stuff.
+"""Python wrapper for some X-related stuff.
 
 Copyright (C) 2017 Kozec
 
@@ -18,9 +16,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 """
 
-from ctypes import CDLL, POINTER, c_void_p, Structure, byref, cast
-from ctypes import c_long, c_ulong, c_int, c_uint, c_short
-from ctypes import c_ushort, c_ubyte, c_char_p, c_bool
+from ctypes import (
+	CDLL,
+	POINTER,
+	Structure,
+	byref,
+	c_bool,
+	c_char_p,
+	c_int,
+	c_long,
+	c_short,
+	c_ubyte,
+	c_uint,
+	c_ulong,
+	c_ushort,
+	c_void_p,
+	cast,
+)
 
 
 def _load_lib(*names):
@@ -308,7 +320,7 @@ def get_mouse_pos(dpy, relative_to=None):
 	x, y = c_int(), c_int()
 	child_x, child_y = c_int(), c_int()
 	mask = c_uint()
-	
+
 	query_pointer(dpy, relative_to, byref(root_return), byref(child),
 		byref(x), byref(y),
 		byref(child_x), byref(child_y), byref(mask))
@@ -338,7 +350,7 @@ def get_window_prop(dpy, window, prop_name, max_size=2):
 	type_return, format_return = Atom(), Atom()
 	nitems, bytes_after = c_ulong(), c_ulong()
 	prop = c_void_p()
-	
+
 	if SUCCESS == get_window_property(dpy, window,
 				prop_atom, 0, max_size, False, ANYPROPERTYTYPE,
 				byref(type_return), byref(format_return), byref(nitems),
@@ -358,7 +370,7 @@ def get_current_window(dpy):
 		rv = cast(prop, POINTER(Atom)).contents.value
 		free(prop)
 		return rv
-	
+
 	# Fall-back to something what probably can't work anyway
 	win, revert_to = XID(), c_int()
 	get_input_focus(dpy, byref(win), byref(revert_to))
@@ -407,7 +419,7 @@ def get_window_class(dpy, window):
 			free(s)
 			return value
 		free(s)
-	
+
 	return None, None
 
 

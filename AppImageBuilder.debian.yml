@@ -1,18 +1,18 @@
 version: 1
 
 script:
-- |
-  set -eu
+  - |
+    set -eu
 
-  if [ "{{APPIMAGE_SOURCE}}" != "${TARGET_APPDIR}" ]; then
-    mv "{{APPIMAGE_SOURCE}}" "${TARGET_APPDIR}"
-  fi
+    if [ "{{APPIMAGE_SOURCE}}" != "${TARGET_APPDIR}" ]; then
+      mv "{{APPIMAGE_SOURCE}}" "${TARGET_APPDIR}"
+    fi
 
-  # Manual installation of squashfs-tools is required
-  # until https://github.com/AppImageCrafters/build-appimage/issues/5 is fixed
-  if ! command -v mksquashfs >/dev/null; then
-    apt-get update && apt-get install -y --no-install-recommends squashfs-tools
-  fi
+    # Manual installation of squashfs-tools is required
+    # until https://github.com/AppImageCrafters/build-appimage/issues/5 is fixed
+    if ! command -v mksquashfs >/dev/null; then
+      apt-get update && apt-get install -y --no-install-recommends squashfs-tools
+    fi
 
 AppDir:
   app_info:
@@ -75,6 +75,7 @@ AppDir:
       - python3-gi-cairo
       - python3-pylibacl
       - python3-vdf
+      - python3-usb1
       - binutils         # required for detection of bluetooth library
       - coreutils        # provides /usr/bin/env
       - shared-mime-info # required for gui if host provides no MIME info, e.g. when XDG_DATA_DIRS is missing

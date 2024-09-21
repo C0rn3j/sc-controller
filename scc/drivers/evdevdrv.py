@@ -1,17 +1,16 @@
-"""
-Universal driver for gamepads managed by evdev.
+"""Universal driver for gamepads managed by evdev.
 
 Handles no devices by default. Instead of trying to guess which evdev device
 is a gamepad and which user actually wants to be handled by SCC, list of enabled
 devices is read from config file.
 """
 
-from scc.constants import STICK_PAD_MIN, STICK_PAD_MAX, TRIGGER_MIN, TRIGGER_MAX
-from scc.constants import SCButtons, ControllerFlags
+from evdev import InputDevice
+from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, TRIGGER_MAX, TRIGGER_MIN, ControllerFlags, SCButtons
 from scc.controller import Controller
 from scc.paths import get_config_path
+from scc.sccdaemon import SCCDaemon
 from scc.tools import clamp
-
 
 HAVE_EVDEV = False
 try:
@@ -25,8 +24,13 @@ except ImportError:
 			return key
 	ecodes = FakeECodes()
 
+import binascii
+import json
+import logging
+import os
+import sys
 from collections import namedtuple
-import os, sys, binascii, json, logging
+
 log = logging.getLogger("evdev")
 
 TRIGGERS = "ltrig", "rtrig"
@@ -44,11 +48,12 @@ AxisCalibrationData = namedtuple('AxisCalibrationData',
 )
 
 class EvdevController(Controller):
-	"""
-	Wrapper around evdev device.
+	"""Wrapper around evdev device.
+
 	To keep stuff simple, this class tries to provide and use same methods
 	as SCController class does.
 	"""
+
 	PADPRESS_EMULATION_TIMEOUT = 0.2
 	ECODES = ecodes
 	flags = ( ControllerFlags.HAS_RSTICK
@@ -56,7 +61,7 @@ class EvdevController(Controller):
 			| ControllerFlags.HAS_DPAD
 			| ControllerFlags.NO_GRIPS )
 
-	def __init__(self, daemon, device, config_file, config):
+	def __init__(self, daemon: SCCDaemon, device: InputDevice, config_file: str, config: dict):
 		try:
 			self._parse_config(config)
 		except Exception:
@@ -77,7 +82,7 @@ class EvdevController(Controller):
 		self._padpressemu_task = None
 
 
-	def _parse_config(self, config):
+	def _parse_config(self, config: dict):
 		self._button_map = {}
 		self._axis_map = {}
 		self._dpad_map = {}
@@ -91,7 +96,8 @@ class EvdevController(Controller):
 				else:
 					sc = getattr(SCButtons, value)
 					self._button_map[keycode] = sc
-			except: pass
+			except:
+				pass
 		for x, value in config.get("axes", {}).items():
 			code, axis = int(x), value.get("axis")
 			if axis in EvdevControllerInput._fields:
@@ -109,7 +115,8 @@ class EvdevController(Controller):
 		self.poller.unregister(self.device.fd)
 		try:
 			self.device.ungrab()
-		except: pass
+		except:
+			pass
 		self.device.close()
 
 
@@ -122,7 +129,7 @@ class EvdevController(Controller):
 
 
 	def get_device_filename(self):
-		return self.device.fn
+		return self.device.path
 
 
 	def get_device_name(self):
@@ -149,7 +156,7 @@ class EvdevController(Controller):
 
 
 	def __repr__(self):
-		return "<Evdev %s>" % self.device.name
+		return f"<Evdev {self.device.name}>"
 
 
 	def input(self, *a):
@@ -216,7 +223,7 @@ class EvdevController(Controller):
 			# TODO: Maybe check e.errno to determine exact error
 			# all of them are fatal for now
 			log.error(e)
-			_evdevdrv.device_removed(self.device.fn)
+			_evdevdrv.device_removed(self.device.path)
 
 		if new_state is not self._state:
 			# Something got changed
@@ -363,32 +370,33 @@ class EvdevDriver(object):
 
 
 	def start(self):
-		self.daemon.get_device_monitor().add_callback("input", None, None,
-				self.handle_new_device, self.handle_removed_device)
+		self.daemon.get_device_monitor().add_callback("input", None, None, self.handle_new_device, self.handle_removed_device)
 
 
-	def set_daemon(self, daemon):
+	def set_daemon(self, daemon: SCCDaemon):
 		self.daemon = daemon
 
 
 	@staticmethod
-	def get_event_node(syspath):
+	def get_event_node(syspath: str):
 		filename = syspath.split("/")[-1]
 		if not filename.startswith("event"):
 			return None
-		return "/dev/input/%s" % (filename, )
+		return f"/dev/input/{filename}"
 
 
-	def handle_new_device(self, syspath, *bunchofnones):
+	def handle_new_device(self, syspath: str, *bunchofnones) -> bool:
 		# There is no way to get anything usefull from /sys/.../input node,
 		# but I'm interested about event devices here anyway
 		eventnode = EvdevDriver.get_event_node(syspath)
-		if eventnode is None: return False				# Not evdev
-		if eventnode in self._devices: return False		# Already handled
+		if eventnode is None:
+			return False # Not evdev
+		if eventnode in self._devices:
+			return False # Already handled
 
 		try:
 			dev = evdev.InputDevice(eventnode)
-			assert dev.fn == eventnode
+			assert dev.path == eventnode
 			config_fn = "evdev-%s.json" % (dev.name.strip().replace("/", ""),)
 			config_file = os.path.join(get_config_path(), "devices", config_fn)
 		except OSError as ose:
@@ -418,6 +426,7 @@ class EvdevDriver(object):
 			self.daemon.add_controller(controller)
 			log.debug("Evdev device added: %s", dev.name)
 			return True
+		return False
 
 
 	def handle_removed_device(self, syspath, *bunchofnones):
@@ -446,9 +455,9 @@ class EvdevDriver(object):
 			log.debug("Evdev device added: %s", controller.get_device_name())
 
 
-	def make_new_device(self, factory, evdevdevice, *userdata):
-		"""
-		Similar to handle_new_device, but meant for use by other drivers.
+	def make_new_device(self, factory, evdevdevice: InputDevice, *userdata):
+		"""Similar to handle_new_device, but meant for use by other drivers.
+
 		See global make_new_device method for more info
 		"""
 		try:
@@ -457,7 +466,7 @@ class EvdevDriver(object):
 			print("Failed to open device:", str(e), file=sys.stderr)
 			return None
 		if controller:
-			self._devices[evdevdevice.fn] = controller
+			self._devices[evdevdevice.path] = controller
 			self.daemon.add_controller(controller)
 			log.debug("Evdev device added: %s", controller.get_device_name())
 		return controller
@@ -482,8 +491,8 @@ def init(daemon, config):
 
 
 def make_new_device(factory, evdevdevice, *userdata):
-	"""
-	Creates and registers device using given evdev device and given factory method.
+	"""Create and register device using given evdev device and given factory method.
+
 	Factory is called as factory(daemon, device, *userdata) and if it returns device,
 	this device is added into watch list, so it can be closed automatically.
 
@@ -493,10 +502,11 @@ def make_new_device(factory, evdevdevice, *userdata):
 	return _evdevdrv.make_new_device(factory, evdevdevice, *userdata)
 
 
-def get_evdev_devices_from_syspath(syspath):
-	"""
-	For given syspath, returns all assotiated event devices.
-	"""
+def get_evdev_devices_from_syspath(syspath: str) -> list:
+	"""For given syspath, returns all assotiated event devices."""
+	# Broken because sometimes it uses UHID which the HCI string does not point to for some reason - https://github.com/C0rn3j/sc-controller/issues/21
+	# /sys/devices/pci0000:00/0000:00:02.1/0000:03:00.0/0000:04:0c.0/0000:13:00.0/usb3/3-7/3-7:1.0/bluetooth/hci0/hci0:50
+	# /sys/bus/hid/devices/0005:054C:05C4.0038
 	assert HAVE_EVDEV, "evdev driver is not available"
 	rv = []
 	for name in os.listdir(syspath):
@@ -506,7 +516,7 @@ def get_evdev_devices_from_syspath(syspath):
 			if eventnode is not None:
 				try:
 					dev = evdev.InputDevice(eventnode)
-					assert dev.fn == eventnode
+					assert dev.path == eventnode
 					rv.append(dev)
 				except Exception as e:
 					log.exception(e)
@@ -518,15 +528,15 @@ def get_evdev_devices_from_syspath(syspath):
 
 
 def get_axes(dev):
-	""" Helper function to get list ofa available axes """
+	"""Get list of available axes."""
 	assert HAVE_EVDEV, "evdev driver is not available"
 	caps = dev.capabilities(verbose=False)
 	return [ axis for (axis, trash) in caps.get(ecodes.EV_ABS, []) ]
 
 
 def evdevdrv_test(args):
-	"""
-	Small input test used by GUI while setting up the device.
+	"""Small input test used by GUI while setting up the device.
+
 	Output and usage matches one from hiddrv.
 	"""
 	from scc.scripts import InvalidArguments
@@ -559,4 +569,3 @@ if __name__ == "__main__":
 	init_logging()
 	set_logging_level(True, True)
 	sys.exit(evdevdrv_test(sys.argv[1:]))
-

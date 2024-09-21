@@ -3,27 +3,27 @@ name: SCC Linux CI
 on:
   push:
     branches:
-    - main
-    - master
-    - python3
+      - main
+      - master
+      - python3
   pull_request:
     branches:
-    - main
-    - master
-    - python3
+      - main
+      - master
+      - python3
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
-      with:
-        python-version: '3.11' 
-    # Install dependencies
-    - run: pip install pytest vdf
-    # Build
-    - run: python setup.py build 
-    # Test
-    - run: python -m pytest tests
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      # Install dependencies
+      - run: pip install pytest vdf libusb1
+      # Build
+      - run: python setup.py build
+      # Test
+      - run: python -m pytest tests

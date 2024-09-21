@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-"""
-SC Controller - On Screen Keyboard Actions
+"""SC Controller - On Screen Keyboard Actions.
 
 Special Actions that are used to bind functions like closing keyboard or moving
 cursors around.
@@ -9,11 +7,11 @@ Actions defined here are *not* automatically registered, but OSD Keyboard
 and its binding editor enables them to use with 'OSK.something'
 syntax.
 """
-from scc.lib import Enum
-from scc.constants import TRIGGER_HALF, LEFT, RIGHT
-from scc.actions import Action, SpecialAction
+import logging
 
-import time, logging
+from scc.actions import Action, SpecialAction
+from scc.constants import LEFT, RIGHT, TRIGGER_HALF
+
 log = logging.getLogger("OSDKeyActs")
 _ = lambda x : x
 

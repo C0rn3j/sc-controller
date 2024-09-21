@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-"""
-SC-Controller - Config
+"""SC-Controller - Config.
 
 Handles loading, storing and querying config file
 """

@@ -1,27 +1,48 @@
-#!/usr/bin/env python3
-"""
-SC Controller - Dualshock 4 Driver
+"""SC Controller - Dualshock 4 Driver.
 
 Extends HID driver with DS4-specific options.
 """
 
-from scc.drivers.hiddrv import BUTTON_COUNT, ButtonData, AxisType, AxisData
-from scc.drivers.hiddrv import HIDController, HIDDecoder, hiddrv_test
-from scc.drivers.hiddrv import AxisMode, AxisDataUnion, AxisModeData
-from scc.drivers.hiddrv import HatswitchModeData, _lib
-from scc.drivers.evdevdrv import HAVE_EVDEV, EvdevController, get_axes
-from scc.drivers.evdevdrv import get_evdev_devices_from_syspath
-from scc.drivers.evdevdrv import make_new_device
+import ctypes
+import logging
+import sys
+from typing import TYPE_CHECKING
+
+from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons
+from scc.drivers.evdevdrv import (
+	HAVE_EVDEV,
+	EvdevController,
+	get_axes,
+	get_evdev_devices_from_syspath,
+	make_new_device,
+)
+from scc.drivers.hiddrv import (
+	BUTTON_COUNT,
+	AxisData,
+	AxisDataUnion,
+	AxisMode,
+	AxisModeData,
+	AxisType,
+	ButtonData,
+	HatswitchModeData,
+	HIDController,
+	HIDDecoder,
+	_lib,
+	hiddrv_test,
+)
 from scc.drivers.usb import register_hotplug_device
-from scc.constants import SCButtons, ControllerFlags
-from scc.constants import STICK_PAD_MIN, STICK_PAD_MAX
 from scc.tools import init_logging, set_logging_level
-import sys, logging, ctypes
+
+if TYPE_CHECKING:
+	from evdev import InputDevice
+
+	from scc.sccdaemon import SCCDaemon
+
 log = logging.getLogger("DS4")
 
-VENDOR_ID = 0x054c
-PRODUCT_ID = 0x09cc
-DS4_V1_PRODUCT_ID = 0x5C4
+VENDOR_ID         = 0x054C
+PRODUCT_ID        = 0x09CC
+DS4_V1_PRODUCT_ID = 0x05C4
 
 
 class DS4Controller(HIDController):
@@ -42,7 +63,7 @@ class DS4Controller(HIDController):
 		SCButtons.C,
 		SCButtons.CPADPRESS,
 	)
-	
+
 	flags = ( ControllerFlags.EUREL_GYROS
 			| ControllerFlags.HAS_RSTICK
 			| ControllerFlags.HAS_CPAD
@@ -50,8 +71,8 @@ class DS4Controller(HIDController):
 			| ControllerFlags.SEPARATE_STICK
 			| ControllerFlags.NO_GRIPS
 	)
-	
-	
+
+
 	def _load_hid_descriptor(self, config, max_size, vid, pid, test_mode):
 		# Overrided and hardcoded
 		self._decoder = HIDDecoder()
@@ -59,39 +80,39 @@ class DS4Controller(HIDController):
 			mode = AxisMode.HATSWITCH, byte_offset = 5, size = 8,
 			data = AxisDataUnion(hatswitch = HatswitchModeData(
 				button = SCButtons.LPAD | SCButtons.LPADTOUCH,
-				min = STICK_PAD_MIN, max = STICK_PAD_MAX
+				min = STICK_PAD_MIN, max = STICK_PAD_MAX,
 		)))
 		self._decoder.axes[AxisType.AXIS_STICK_X] = AxisData(
 			mode = AxisMode.AXIS, byte_offset = 1, size = 8,
 			data = AxisDataUnion(axis = AxisModeData(
-				scale = 1.0, offset = -127.5, clamp_max = 257, deadzone = 10
+				scale = 1.0, offset = -127.5, clamp_max = 257, deadzone = 10,
 		)))
 		self._decoder.axes[AxisType.AXIS_STICK_Y] = AxisData(
 			mode = AxisMode.AXIS, byte_offset = 2, size = 8,
 			data = AxisDataUnion(axis = AxisModeData(
-				scale = -1.0, offset = 127.5, clamp_max = 257, deadzone = 10
+				scale = -1.0, offset = 127.5, clamp_max = 257, deadzone = 10,
 		)))
 		self._decoder.axes[AxisType.AXIS_RPAD_X] = AxisData(
 			mode = AxisMode.AXIS, byte_offset = 3, size = 8,
 			data = AxisDataUnion(axis = AxisModeData(
 				button = SCButtons.RPADTOUCH,
-				scale = 1.0, offset = -127.5, clamp_max = 257, deadzone = 10
+				scale = 1.0, offset = -127.5, clamp_max = 257, deadzone = 10,
 		)))
 		self._decoder.axes[AxisType.AXIS_RPAD_Y] = AxisData(
 			mode = AxisMode.AXIS, byte_offset = 4, size = 8,
 			data = AxisDataUnion(axis = AxisModeData(
 				button = SCButtons.RPADTOUCH,
-				scale = -1.0, offset = 127.5, clamp_max = 257, deadzone = 10
+				scale = -1.0, offset = 127.5, clamp_max = 257, deadzone = 10,
 		)))
 		self._decoder.axes[AxisType.AXIS_LTRIG] = AxisData(
 			mode = AxisMode.AXIS, byte_offset = 8, size = 8,
 			data = AxisDataUnion(axis = AxisModeData(
-				scale = 1.0, clamp_max = 1, deadzone = 10
+				scale = 1.0, clamp_max = 1, deadzone = 10,
 		)))
 		self._decoder.axes[AxisType.AXIS_RTRIG] = AxisData(
 			mode = AxisMode.AXIS, byte_offset = 9, size = 8,
 			data = AxisDataUnion(axis = AxisModeData(
-				scale = 1.0, clamp_max = 1, deadzone = 10
+				scale = 1.0, clamp_max = 1, deadzone = 10,
 		)))
 		self._decoder.axes[AxisType.AXIS_GPITCH] = AxisData(
 			mode = AxisMode.DS4ACCEL, byte_offset = 13)
@@ -105,16 +126,16 @@ class DS4Controller(HIDController):
 			mode = AxisMode.DS4GYRO, byte_offset = 19)
 		self._decoder.axes[AxisType.AXIS_Q3] = AxisData(
 			mode = AxisMode.DS4GYRO, byte_offset = 21)
-		
+
 		self._decoder.axes[AxisType.AXIS_CPAD_X] = AxisData(
 			mode = AxisMode.DS4TOUCHPAD, byte_offset = 36)
 		self._decoder.axes[AxisType.AXIS_CPAD_Y] = AxisData(
 			mode = AxisMode.DS4TOUCHPAD, byte_offset = 37, bit_offset=4)
 		self._decoder.buttons = ButtonData(
 			enabled = True, byte_offset=5, bit_offset=4, size=14,
-			button_count = 14
+			button_count = 14,
 		)
-		
+
 		if test_mode:
 			for x in range(BUTTON_COUNT):
 				self._decoder.buttons.button_map[x] = x
@@ -123,13 +144,13 @@ class DS4Controller(HIDController):
 				self._decoder.buttons.button_map[x] = 64
 			for x, sc in enumerate(DS4Controller.BUTTON_MAP):
 				self._decoder.buttons.button_map[x] = self.button_to_bit(sc)
-		
+
 		self._packet_size = 64
-	
-	
-	def input(self, endpoint, data):
+
+# TODO: Which commit made data switch from bytes to bytearray?
+	def input(self, endpoint: int, data: bytearray) -> None:
 		# Special override for CPAD touch button
-		if _lib.decode(ctypes.byref(self._decoder), data):
+		if _lib.decode(ctypes.byref(self._decoder), bytes(data)):
 			if self.mapper:
 				if data[35] >> 7:
 					# cpad is not touched
@@ -139,26 +160,26 @@ class DS4Controller(HIDController):
 				self.mapper.input(self,
 						self._decoder.old_state, self._decoder.state)
 
-	
-	def get_gyro_enabled(self):
+
+	def get_gyro_enabled(self) -> bool:
 		# Cannot be actually turned off, so it's always active
 		# TODO: Maybe emulate turning off?
 		return True
-	
-	
-	def get_type(self):
+
+
+	def get_type(self) -> str:
 		return "ds4"
-	
-	
-	def get_gui_config_file(self):
+
+
+	def get_gui_config_file(self) -> str:
 		return "ds4-config.json"
-	
-	
-	def __repr__(self):
-		return "<DS4Controller %s>" % (self.get_id(), )
-	
-	
-	def _generate_id(self):
+
+
+	def __repr__(self) -> str:
+		return f"<DS4Controller {self.get_id()}>"
+
+
+	def _generate_id(self) -> str:
 		"""
 		ID is generated as 'ds4' or 'ds4:X' where 'X' starts as 1 and increases
 		as controllers with same ids are connected.
@@ -166,7 +187,7 @@ class DS4Controller(HIDController):
 		magic_number = 1
 		id = "ds4"
 		while id in self.daemon.get_active_ids():
-			id = "ds4:%s" % (magic_number, )
+			id = f"ds4:{magic_number}"
 			magic_number += 1
 		return id
 
@@ -223,12 +244,12 @@ class DS4EvdevController(EvdevController):
 		17: { "axis": "lpad_y", "deadzone": 0, "max": -1, "min": 1 }
 	}
 	GYRO_MAP = {
-		EvdevController.ECODES.ABS_RX : ('gpitch', 0.01),
-		EvdevController.ECODES.ABS_RY : ('gyaw', 0.01),
-		EvdevController.ECODES.ABS_RZ : ('groll', 0.01),
-		EvdevController.ECODES.ABS_X : (None, 1),		# 'q2'
-		EvdevController.ECODES.ABS_Y : (None, 1),		# 'q3'
-		EvdevController.ECODES.ABS_Z : (None, -1),		# 'q1'
+		EvdevController.ECODES.ABS_RX: ('gpitch', 0.01),
+		EvdevController.ECODES.ABS_RY: ('gyaw', 0.01),
+		EvdevController.ECODES.ABS_RZ: ('groll', 0.01),
+		EvdevController.ECODES.ABS_X: (None, 1),  # 'q2'
+		EvdevController.ECODES.ABS_Y: (None, 1),  # 'q3'
+		EvdevController.ECODES.ABS_Z: (None, -1), # 'q1'
 	}
 	flags = ( ControllerFlags.EUREL_GYROS
 			| ControllerFlags.HAS_RSTICK
@@ -237,12 +258,12 @@ class DS4EvdevController(EvdevController):
 			| ControllerFlags.SEPARATE_STICK
 			| ControllerFlags.NO_GRIPS
 	)
-	
-	def __init__(self, daemon, controllerdevice, gyro, touchpad):
+
+	def __init__(self, daemon: "SCCDaemon", controllerdevice: "InputDevice", gyro: "InputDevice", touchpad: "InputDevice"):
 		config = {
 			'axes' : DS4EvdevController.AXIS_MAP,
 			'buttons' : DS4EvdevController.BUTTON_MAP,
-			'dpads' : {}
+			'dpads' : {},
 		}
 		if controllerdevice.info.version & 0x8000 == 0:
 			# Older kernel uses different mappings
@@ -258,8 +279,8 @@ class DS4EvdevController(EvdevController):
 		if self.poller:
 			self.poller.register(touchpad.fd, self.poller.POLLIN, self._touchpad_input)
 			self.poller.register(gyro.fd, self.poller.POLLIN, self._gyro_input)
-	
-	
+
+
 	def _gyro_input(self, *a):
 		new_state = self._state
 		try:
@@ -269,16 +290,16 @@ class DS4EvdevController(EvdevController):
 					if axis:
 						new_state = new_state._replace(
 								**{ axis : int(event.value * factor) })
-		except IOError:
+		except OSError:
 			# Errors here are not even reported, evdev class handles important ones
 			return
-		
+
 		if new_state is not self._state:
 			old_state, self._state = self._state, new_state
 			if self.mapper:
 				self.mapper.input(self, old_state, new_state)
-	
-	
+
+
 	def _touchpad_input(self, *a):
 		new_state = self._state
 		try:
@@ -309,64 +330,62 @@ class DS4EvdevController(EvdevController):
 						b = new_state.buttons & ~SCButtons.CPADTOUCH
 						new_state = new_state._replace(buttons = b,
 								cpad_x = 0, cpad_y = 0)
-		except IOError:
+		except OSError:
 			# Errors here are not even reported, evdev class handles important ones
 			return
-		
+
 		if new_state is not self._state:
 			old_state, self._state = self._state, new_state
 			if self.mapper:
 				self.mapper.input(self, old_state, new_state)
-	
-	
+
+
 	def close(self):
 		EvdevController.close(self)
 		for device in (self._gyro, self._touchpad):
 			try:
 				self.poller.unregister(device.fd)
 				device.ungrab()
-			except: pass
-	
-	
-	def get_gyro_enabled(self):
+			except Exception:
+				pass
+
+
+	def get_gyro_enabled(self) -> bool:
 		# Cannot be actually turned off, so it's always active
 		# TODO: Maybe emulate turning off?
 		return True
-	
-	
-	def get_type(self):
+
+
+	def get_type(self) -> str:
 		return "ds4evdev"
-	
-	
-	def get_gui_config_file(self):
+
+
+	def get_gui_config_file(self) -> str:
 		return "ds4-config.json"
-	
-	
-	def __repr__(self):
-		return "<DS4EvdevController %s>" % (self.get_id(), )
-	
-	
-	def _generate_id(self):
-		"""
-		ID is generated as 'ds4' or 'ds4:X' where 'X' starts as 1 and increases
-		as controllers with same ids are connected.
-		"""
+
+
+	def __repr__(self) -> str:
+		return f"<DS4EvdevController {self.get_id()}>"
+
+
+	def _generate_id(self) -> str:
+		"""ID is generated as 'ds4' or 'ds4:X' where 'X' starts as 1 and increases as controllers with same ids are connected."""
 		magic_number = 1
 		id = "ds4"
 		while id in self.daemon.get_active_ids():
-			id = "ds4:%s" % (magic_number, )
+			id = f"ds4:{magic_number}"
 			magic_number += 1
 		return id
 
 
-def init(daemon, config):
-	""" Registers hotplug callback for ds4 device """
-		
-	def hid_callback(device, handle):
+def init(daemon: "SCCDaemon", config: dict) -> bool:
+	"""Register hotplug callback for DS4 device."""
+
+	def hid_callback(device, handle) -> DS4Controller:
 		return DS4Controller(device, daemon, handle, None, None)
-	
-	def make_evdev_device(syspath, *whatever):
-		devices = get_evdev_devices_from_syspath(syspath)
+
+	def make_evdev_device(sys_dev_path: str, *whatever):
+		devices = get_evdev_devices_from_syspath(sys_dev_path)
 		# With kernel 4.10 or later, PS4 controller pretends to be 3 different devices.
 		# 1st, determining which one is actual controller is needed
 		controllerdevice = None
@@ -400,17 +419,17 @@ def init(daemon, config):
 		# 3rd, do a magic
 		if controllerdevice and gyro and touchpad:
 			return make_new_device(DS4EvdevController, controllerdevice, gyro, touchpad)
-	
-	
-	def fail_cb(syspath, vid, pid):
+
+
+	def fail_cb(syspath: str, vid: int, pid: int) -> None:
 		if HAVE_EVDEV:
 			log.warning("Failed to acquire USB device, falling back to evdev driver. This is far from optimal.")
 			make_evdev_device(syspath)
 		else:
 			log.error("Failed to acquire USB device and evdev is not available. Everything is lost and DS4 support disabled.")
-			# TODO: Maybe add_error here, but error reporting needs little rework so it's not threated as fatal
+			# TODO: Maybe add_error here, but error reporting needs a little rework, so it's not treated as fatal
 			# daemon.add_error("ds4", "No access to DS4 device")
-	
+
 	if config["drivers"].get("hiddrv") or (HAVE_EVDEV and config["drivers"].get("evdevdrv")):
 		# DS4 v.2
 		register_hotplug_device(hid_callback, VENDOR_ID, PRODUCT_ID, on_failure=fail_cb)
@@ -418,15 +437,12 @@ def init(daemon, config):
 		register_hotplug_device(hid_callback, VENDOR_ID, DS4_V1_PRODUCT_ID, on_failure=fail_cb)
 		if HAVE_EVDEV and config["drivers"].get("evdevdrv"):
 			# DS4 v.2
-			daemon.get_device_monitor().add_callback("bluetooth",
-							VENDOR_ID, PRODUCT_ID, make_evdev_device, None)
+			daemon.get_device_monitor().add_callback("bluetooth", VENDOR_ID, PRODUCT_ID, make_evdev_device, None)
 			# DS4 v.1
-			daemon.get_device_monitor().add_callback("bluetooth",
-				VENDOR_ID, DS4_V1_PRODUCT_ID, make_evdev_device, None)
+			daemon.get_device_monitor().add_callback("bluetooth", VENDOR_ID, DS4_V1_PRODUCT_ID, make_evdev_device, None)
 		return True
-	else:
-		log.warning("Neither HID nor Evdev driver is enabled, DS4 support cannot be enabled.")
-		return False
+	log.warning("Neither HID nor Evdev driver is enabled, DS4 support cannot be enabled.")
+	return False
 
 
 if __name__ == "__main__":

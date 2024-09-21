@@ -1,123 +1,129 @@
-#!/usr/bin/env python3
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from scc.constants import HapticPos
-import time
+
+if TYPE_CHECKING:
+	from scc.controller import HapticData
+	from scc.mapper import Mapper
 import logging
+import time
 
 log = logging.getLogger("SCController")
 
-next_id = 1		# Used with fallback controller id generator
+next_id = 1 # Used with fallback controller id generator
 
 class Controller(object):
-	"""
-	Base class for all controller drivers. Implementations are in
-	scc.drivers package.
-	
+	"""Base class for all controller drivers. Implementations are in scc.drivers package.
+
 	Derived class should implement every method from here.
 	"""
+
 	flags = 0
-	
-	def __init__(self):
+
+	def __init__(self) -> None:
 		global next_id
-		self.mapper = None
+		self.mapper: Mapper | None = None
 		self._id = next_id
 		next_id += 1
 		self.lastTime = time.time()
 		self.time_elapsed = 0.0
-	
-	
-	def get_type(self):
+
+
+	def get_type(self) -> None:
 		"""
 		This method has to return type identifier - short string without spaces
 		that describes type of controller which should be unique for each
 		driver.
 		String is used by UI to assign icons and, along with ID,
 		to store controller settings.
-		
+
 		This method has to be overriden.
 		"""
 		raise RuntimeError("Controller.get_type not overriden")
-	
-	
+
+
 	def get_id(self):
 		"""
 		Returns identifier that has to be unique at least until daemon
 		is restarted, ideally derived from HW device serial number.
 		"""
 		return self._id
-	
-	
-	def get_gui_config_file(self):
+
+
+	def get_gui_config_file(self) -> None:
 		"""
 		Returns file name of json file that GUI can use to load more data about
 		controller (background image, button images, available buttons and
 		axes, etc...) File name may be absolute path or just name of file in
 		/usr/share/scc
-		
+
 		Returns None if there is no configuration file (GUI will use
 		defaults in such case)
 		"""
 		return None
-	
-	
-	def set_mapper(self, mapper):
+
+
+	def set_mapper(self, mapper: Mapper):
 		""" Sets mapper for controller """
 		self.mapper = mapper
-	
-	
+
+
 	def get_mapper(self):
 		""" Returns mapper set for controller """
 		return self.mapper
-	
-	
-	def apply_config(self, config):
+
+
+	def apply_config(self, config) -> None:
 		"""
 		Called from daemon to apply controller configuration stored
 		in config file.
-		
+
 		Does nothing by default.
 		"""
 		pass
-	
-	
-	def set_led_level(self, level):
+
+
+	def set_led_level(self, level) -> None:
 		"""
 		Configures LED intensity, if supported.
 		'level' goes from 0.0 to 100.0
 		"""
 		pass
-	
-	
-	def set_gyro_enabled(self, enabled):
+
+
+	def set_gyro_enabled(self, enabled) -> None:
 		""" Enables or disables gyroscope, if supported """
 		pass
-	
-	
-	def get_gyro_enabled(self):
+
+
+	def get_gyro_enabled(self) -> bool:
 		""" Returns True if gyroscope is enabled """
 		return False
-	
-	
-	def feedback(self, data):
+
+
+	def feedback(self, data) -> None:
 		"""
 		Generates feedback effect, if supported.
 		'data' is HapticData instance.
 		"""
 		pass
-	
-	
-	def turnoff(self):
+
+
+	def turnoff(self) -> None:
 		""" Turns off controller, if supported """
 		pass
-	
-	
-	def disconnected(self):
+
+
+	def disconnected(self) -> None:
 		""" Called from daemon after controller is disconnected """
 		pass
-	
+
 
 class HapticData(object):
 	""" Simple container to hold haptic feedback settings """
-	
+
 	def __init__(self, position, amplitude=512, frequency=4, period=1024, count=1):
 		"""
 		'frequency' is used only when emulating touchpad and describes how many
@@ -132,33 +138,33 @@ class HapticData(object):
 		# frequency is multiplied by 1000 just so I don't have big numbers everywhere;
 		# it's float until here, so user still can make pad squeak if he wish
 		frequency = int(max(1.0, frequency * 1000.0))
-		
+
 		self.data = data				# send to controller
 		self.frequency = frequency		# used internally
-	
-	
+
+
 	def with_position(self, position):
 		""" Creates copy of HapticData with position value changed """
 		trash, amplitude, period, count = self.data
 		return HapticData(position, amplitude, self.frequency, period, count)
-	
-	
+
+
 	def get_position(self):
 		return HapticPos(self.data[0])
-	
+
 	def get_amplitude(self):
 		return self.data[1]
-	
+
 	def get_frequency(self):
 		return float(self.frequency) / 1000.0
-	
+
 	def get_period(self):
 		return self.data[2]
-	
+
 	def get_count(self):
 		return self.data[3]
-	
-	def __mul__(self, by):
+
+	def __mul__(self, by) -> 'HapticData':
 		"""
 		Allows multiplying HapticData by scalar to get same values
 		with increased amplitude.

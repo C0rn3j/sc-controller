@@ -53,7 +53,7 @@ done
 
 # Set PATH
 SCRIPTS="$(pwd)/scripts"
-export PATH="$SCRIPTS":"$PATH"
+export PATH="${SCRIPTS}":"${PATH}"
 export PYTHONPATH=".":"${PYTHONPATH-}"
 export SCC_SHARED="$(pwd)"
 

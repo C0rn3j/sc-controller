@@ -4,17 +4,19 @@ SC-Controller - OSD
 
 Common methods for OSD-related stuff
 """
-from scc.tools import _, set_logging_level
+from scc.tools import set_logging_level
 
 from gi.repository import Gtk, Gdk, GLib, GObject, GdkX11
 from scc.constants import STICK_PAD_MIN, STICK_PAD_MAX
 from scc.osd.timermanager import TimerManager
 from scc.paths import get_share_path
-from scc.lib import xwrappers as X
 from scc.config import Config
 
 import cairo
-import os, argparse, traceback, logging
+import os
+import argparse
+import traceback
+import logging
 log = logging.getLogger("osd")
 
 

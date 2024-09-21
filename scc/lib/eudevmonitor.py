@@ -1,7 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-udevmonitor.py - enumerates and monitors devices using (e)udev
+"""udevmonitor.py - enumerates and monitors devices using (e)udev.
 
 Copyright (C) 2018 by Kozec
 
@@ -18,15 +15,21 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 """
+from __future__ import annotations
 
-from collections import namedtuple
+import ctypes
+import errno
+import os
 from ctypes.util import find_library
-import os, ctypes, errno
+from typing import NamedTuple, TypeVar
+
 
 class Eudev:
+	"""Wrapped udev system library."""
+
 	LIB_NAME = "udev"
 
-	def __init__(self):
+	def __init__(self) -> None:
 		self._ctx = None
 		try:
 			self._lib = ctypes.cdll.LoadLibrary("libudev.so")
@@ -40,66 +43,66 @@ class Eudev:
 			raise OSError("Failed to initialize udev context")
 
 	@staticmethod
-	def _setup_lib(l):
-		""" Just so it's away from init and can be folded in IDE """
+	def _setup_lib(lib: ctypes.CDLL) -> None:
+		"""Just so it's away from init and can be folded in IDE."""
 		# udev
-		l.udev_new.restype = ctypes.c_void_p
-		l.udev_unref.argtypes = [ ctypes.c_void_p ]
+		lib.udev_new.restype = ctypes.c_void_p
+		lib.udev_unref.argtypes = [ ctypes.c_void_p ]
 		# enumeration
-		l.udev_enumerate_new.argtypes = [ ctypes.c_void_p ]
-		l.udev_enumerate_new.restype = ctypes.c_void_p
-		l.udev_enumerate_unref.argtypes = [ ctypes.c_void_p ]
-		l.udev_enumerate_scan_devices.argtypes = [ ctypes.c_void_p ]
-		l.udev_enumerate_scan_devices.restype = ctypes.c_int
-		l.udev_enumerate_get_list_entry.argtypes = [ ctypes.c_void_p ]
-		l.udev_enumerate_get_list_entry.restype = ctypes.c_void_p
-		l.udev_list_entry_get_next.argtypes = [ ctypes.c_void_p ]
-		l.udev_list_entry_get_next.restype = ctypes.c_void_p
-		l.udev_list_entry_get_value.argtypes = [ ctypes.c_void_p ]
-		l.udev_list_entry_get_value.restype = ctypes.c_char_p
-		l.udev_list_entry_get_name.argtypes = [ ctypes.c_void_p ]
-		l.udev_list_entry_get_name.restype = ctypes.c_char_p
+		lib.udev_enumerate_new.argtypes = [ ctypes.c_void_p ]
+		lib.udev_enumerate_new.restype = ctypes.c_void_p
+		lib.udev_enumerate_unref.argtypes = [ ctypes.c_void_p ]
+		lib.udev_enumerate_scan_devices.argtypes = [ ctypes.c_void_p ]
+		lib.udev_enumerate_scan_devices.restype = ctypes.c_int
+		lib.udev_enumerate_get_list_entry.argtypes = [ ctypes.c_void_p ]
+		lib.udev_enumerate_get_list_entry.restype = ctypes.c_void_p
+		lib.udev_list_entry_get_next.argtypes = [ ctypes.c_void_p ]
+		lib.udev_list_entry_get_next.restype = ctypes.c_void_p
+		lib.udev_list_entry_get_value.argtypes = [ ctypes.c_void_p ]
+		lib.udev_list_entry_get_value.restype = ctypes.c_char_p
+		lib.udev_list_entry_get_name.argtypes = [ ctypes.c_void_p ]
+		lib.udev_list_entry_get_name.restype = ctypes.c_char_p
 		# monitoring
-		l.udev_monitor_new_from_netlink.argtypes = [ ctypes.c_void_p, ctypes.c_char_p ]
-		l.udev_monitor_new_from_netlink.restype = ctypes.c_void_p
-		l.udev_monitor_unref.argtypes = [ ctypes.c_void_p ]
-		l.udev_monitor_enable_receiving.argtypes = [ ctypes.c_void_p ]
-		l.udev_monitor_enable_receiving.restype = ctypes.c_int
-		l.udev_monitor_set_receive_buffer_size.argtypes = [ ctypes.c_void_p, ctypes.c_int ]
-		l.udev_monitor_set_receive_buffer_size.restype = ctypes.c_int
-		l.udev_monitor_get_fd.argtypes = [ ctypes.c_void_p ]
-		l.udev_monitor_get_fd.restype = ctypes.c_int
-		l.udev_monitor_receive_device.argtypes = [ ctypes.c_void_p ]
-		l.udev_monitor_receive_device.restype = ctypes.c_void_p
-		l.udev_monitor_filter_update.argtypes = [ ctypes.c_void_p ]
-		l.udev_monitor_filter_update.restype = ctypes.c_int
-		l.udev_monitor_filter_add_match_subsystem_devtype.argtypes = [ ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p ]
-		l.udev_monitor_filter_add_match_subsystem_devtype.restype = ctypes.c_int
-		l.udev_monitor_filter_add_match_tag.argtypes = [ ctypes.c_void_p, ctypes.c_char_p ]
-		l.udev_monitor_filter_add_match_tag.restype = ctypes.c_int
+		lib.udev_monitor_new_from_netlink.argtypes = [ ctypes.c_void_p, ctypes.c_char_p ]
+		lib.udev_monitor_new_from_netlink.restype = ctypes.c_void_p
+		lib.udev_monitor_unref.argtypes = [ ctypes.c_void_p ]
+		lib.udev_monitor_enable_receiving.argtypes = [ ctypes.c_void_p ]
+		lib.udev_monitor_enable_receiving.restype = ctypes.c_int
+		lib.udev_monitor_set_receive_buffer_size.argtypes = [ ctypes.c_void_p, ctypes.c_int ]
+		lib.udev_monitor_set_receive_buffer_size.restype = ctypes.c_int
+		lib.udev_monitor_get_fd.argtypes = [ ctypes.c_void_p ]
+		lib.udev_monitor_get_fd.restype = ctypes.c_int
+		lib.udev_monitor_receive_device.argtypes = [ ctypes.c_void_p ]
+		lib.udev_monitor_receive_device.restype = ctypes.c_void_p
+		lib.udev_monitor_filter_update.argtypes = [ ctypes.c_void_p ]
+		lib.udev_monitor_filter_update.restype = ctypes.c_int
+		lib.udev_monitor_filter_add_match_subsystem_devtype.argtypes = [ ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p ]
+		lib.udev_monitor_filter_add_match_subsystem_devtype.restype = ctypes.c_int
+		lib.udev_monitor_filter_add_match_tag.argtypes = [ ctypes.c_void_p, ctypes.c_char_p ]
+		lib.udev_monitor_filter_add_match_tag.restype = ctypes.c_int
 		# device
-		l.udev_device_get_action.argtypes = [ ctypes.c_void_p ]
-		l.udev_device_get_action.restype = ctypes.c_char_p
-		l.udev_device_get_devnode.argtypes = [ ctypes.c_void_p ]
-		l.udev_device_get_devnode.restype = ctypes.c_char_p
-		l.udev_device_get_subsystem.argtypes = [ ctypes.c_void_p ]
-		l.udev_device_get_subsystem.restype = ctypes.c_char_p
-		l.udev_device_get_devtype.argtypes = [ ctypes.c_void_p ]
-		l.udev_device_get_devtype.restype = ctypes.c_char_p
-		l.udev_device_get_syspath.argtypes = [ ctypes.c_void_p ]
-		l.udev_device_get_syspath.restype = ctypes.c_char_p
-		l.udev_device_get_sysname.argtypes = [ ctypes.c_void_p ]
-		l.udev_device_get_sysname.restype = ctypes.c_char_p
-		l.udev_device_get_is_initialized.argtypes = [ ctypes.c_void_p ]
-		l.udev_device_get_is_initialized.restype = ctypes.c_int
-		l.udev_device_get_devnum.argtypes = [ ctypes.c_void_p ]
-		l.udev_device_get_devnum.restype = ctypes.c_int
-		l.udev_device_unref.argtypes = [ ctypes.c_void_p ]
+		lib.udev_device_get_action.argtypes = [ ctypes.c_void_p ]
+		lib.udev_device_get_action.restype = ctypes.c_char_p
+		lib.udev_device_get_devnode.argtypes = [ ctypes.c_void_p ]
+		lib.udev_device_get_devnode.restype = ctypes.c_char_p
+		lib.udev_device_get_subsystem.argtypes = [ ctypes.c_void_p ]
+		lib.udev_device_get_subsystem.restype = ctypes.c_char_p
+		lib.udev_device_get_devtype.argtypes = [ ctypes.c_void_p ]
+		lib.udev_device_get_devtype.restype = ctypes.c_char_p
+		lib.udev_device_get_syspath.argtypes = [ ctypes.c_void_p ]
+		lib.udev_device_get_syspath.restype = ctypes.c_char_p
+		lib.udev_device_get_sysname.argtypes = [ ctypes.c_void_p ]
+		lib.udev_device_get_sysname.restype = ctypes.c_char_p
+		lib.udev_device_get_is_initialized.argtypes = [ ctypes.c_void_p ]
+		lib.udev_device_get_is_initialized.restype = ctypes.c_int
+		lib.udev_device_get_devnum.argtypes = [ ctypes.c_void_p ]
+		lib.udev_device_get_devnum.restype = ctypes.c_int
+		lib.udev_device_unref.argtypes = [ ctypes.c_void_p ]
 
 		for name in dir(Enumerator):
 			if "match_" in name:
 				twoargs = getattr(getattr(Enumerator, name), "twoargs", False)
-				fn = getattr(l, "udev_enumerate_add_" + name)
+				fn = getattr(lib, "udev_enumerate_add_" + name)
 				if twoargs:
 					fn.argtypes = [ ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p ]
 				else:
@@ -107,36 +110,33 @@ class Eudev:
 				fn.restype = ctypes.c_int
 
 
-	def __del__(self):
+	def __del__(self) -> None:
 		if self._ctx is not None:
 			self._lib.udev_unref(self._ctx)
 			self._ctx = None
 
-
-	def enumerate(self, subclass=None):
-		"""
-		Returns new Enumerator instance.
-		"""
-		enumerator = self._lib.udev_enumerate_new(self._ctx)
+	enumerate_typevar = TypeVar("enumerate_typevar", bound="Enumerator")
+	def enumerate(self, subclass: type [enumerate_typevar] | None = None) -> enumerate_typevar | Enumerator:
+		"""Return new Enumerator instance."""
+		enumerator: ctypes.c_void_p | None = self._lib.udev_enumerate_new(self._ctx)
 		if enumerator is None:
 			raise OSError("Failed to initialize enumerator")
 		if subclass is not None:
-			assert issubclass(subclass, Enumerator)
-		subclass = subclass or Enumerator
-		return subclass(self, enumerator)
+			assert issubclass(subclass, Enumerator), f"subclass must be a subclass of Enumerator but {subclass} was provided"
+#		print('enumerate - ', type(enumerator), enumerator)
+		final_class = subclass or Enumerator
+		return final_class(self, enumerator)
 
-
-	def monitor(self, subclass=None):
-		"""
-		Returns new Monitor instance.
-		"""
-		monitor = self._lib.udev_monitor_new_from_netlink(self._ctx, b"udev")
+	monitor_typevar = TypeVar("monitor_typevar", bound="Monitor")
+	def monitor(self, subclass: type [monitor_typevar] | None = None) -> monitor_typevar | Monitor:
+		"""Return new Monitor instance."""
+		monitor: ctypes.c_void_p | None = self._lib.udev_monitor_new_from_netlink(self._ctx, b"udev")
 		if monitor is None:
 			raise OSError("Failed to initialize monitor")
 		if subclass is not None:
-			assert issubclass(subclass, Monitor)
-		subclass = subclass or Monitor
-		return subclass(self, monitor)
+			assert issubclass(subclass, Monitor), f"subclass must be a subclass of Monitor but {subclass} was provided"
+		final_class = subclass or Monitor
+		return final_class(self, monitor)
 
 
 def twoargs(fn):
@@ -145,27 +145,28 @@ def twoargs(fn):
 
 
 class Enumerator:
-	"""
-	Iterable object used for enumerating available devices.
+	"""Iterable object used for enumerating available devices.
+
 	Yields syspaths (strings).
 
 	All match_* methods are returning self for chaining.
 	"""
-	def __init__(self, eudev, enumerator):
+
+	def __init__(self, eudev: Eudev, enumerator: ctypes.c_void_p) -> None:
 		self._eudev = eudev
 		self._enumerator = enumerator
 		self._keep_in_mem = []
 		self._enumeration_started = False
-		self._next = None
+		self._next: ctypes.c_void_p | None = None
 
 
-	def __del__(self):
+	def __del__(self) -> None:
 		if self._enumerator is not None:
 			self._eudev._lib.udev_enumerate_unref(self._enumerator)
 			self._enumerator = None
 
 
-	def _add_match(self, whichone, *pars):
+	def _add_match(self, whichone: str, *pars) -> Enumerator:
 		if self._enumeration_started:
 			raise RuntimeError("Cannot add match after enumeration is started")
 		fn = getattr(self._eudev._lib, "udev_enumerate_add_" + whichone)
@@ -183,15 +184,15 @@ class Enumerator:
 	def nomatch_sysattr(self, sysattr, value): return self._add_match("nomatch_sysattr", sysattr, value)
 	@twoargs
 	def match_property(self, property, value): return self._add_match("match_property", property, value)
-	def match_subsystem(self, subsystem): return self._add_match("match_subsystem", subsystem)
-	def nomatch_subsystem(self, subsystem): return self._add_match("nomatch_subsystem", subsystem)
-	def match_sysname(self, sysname): return self._add_match("match_sysname", sysname)
+	def match_subsystem(self, subsystem: str): return self._add_match("match_subsystem", subsystem)
+	def nomatch_subsystem(self, subsystem: str): return self._add_match("nomatch_subsystem", subsystem)
+	def match_sysname(self, sysname: str): return self._add_match("match_sysname", sysname)
 	def match_tag(self, tag): return self._add_match("match_tag", tag)
 	def match_is_initialized(self): return self._add_match("match_is_initialized")
 	# match_parent is not implemented
 
 
-	def __iter__(self):
+	def __iter__(self) -> Enumerator:
 		if self._enumeration_started:
 			raise RuntimeError("Cannot iterate same Enumerator twice")
 		self._enumeration_started = True
@@ -202,35 +203,41 @@ class Enumerator:
 		return self
 
 
-	def next(self):
+	def next(self) -> str:
 		return self.__next__()
 
 
-	def __next__(self):
-	#def next(self):
+	def __next__(self) -> str:
 		if not self._enumeration_started:
-			self.__iter__()	# Starts the enumeration
+			self.__iter__() # Starts the enumeration
 		if self._next is None:
-			raise StopIteration()
-		rv = self._eudev._lib.udev_list_entry_get_name(self._next)
-		if rv is None:
-			raise OSError("udev_list_entry_get_name failed")
+			raise StopIteration
+		udev_name_pointer: ctypes.c_char_p | None = self._eudev._lib.udev_list_entry_get_name(self._next)
+		if udev_name_pointer is None:
+			raise OSError("udev_list_entry_get_name failed, can't get syspath")
 		self._next = self._eudev._lib.udev_list_entry_get_next(self._next)
-		return str(rv, "utf-8")
+		return str(udev_name_pointer, "utf-8")
 
+class DeviceEvent(NamedTuple):
+	action: str
+	node: str | None
+	initialized: bool
+	subsystem: str
+	devtype: str
+	syspath: str
+	devnum: str
 
 class Monitor:
-	"""
-	Monitor object receives device events.
+	"""Monitor object that receives device events.
+
 	receive_device method blocks until next event is processed, so it can be
 	used either in dumb loop, or called when select syscall reports descriptor
 	returned by get_fd has data available.
 
 	All match_* methods are returning self for chaining
 	"""
-	DeviceEvent = namedtuple("DeviceEvent", "action,node,initialized,subsystem,devtype,syspath,devnum")
 
-	def __init__(self, eudev, monitor):
+	def __init__(self, eudev: Eudev, monitor: ctypes.c_void_p) -> None:
 		self._eudev = eudev
 		self._monitor = monitor
 		self._monitor_started = False
@@ -238,7 +245,7 @@ class Monitor:
 		self._enabled_matches = set()
 
 
-	def __del__(self):
+	def __del__(self) -> None:
 		if self._monitor is not None:
 			self._eudev._lib.udev_monitor_unref(self._monitor)
 			self._monitor = None
@@ -263,9 +270,9 @@ class Monitor:
 		return self
 
 
-	def match_subsystem_devtype(self, subsystem, devtype=None):
+	def match_subsystem_devtype(self, subsystem: str, devtype=None):
 		return self._add_match("match_subsystem_devtype", subsystem, devtype)
-	def match_subsystem(self, subsystem):
+	def match_subsystem(self, subsystem: str):
 		return self._add_match("match_subsystem_devtype", subsystem, None)
 	def match_tag(self, tag):
 		return self._add_match("match_tag", tag)
@@ -304,7 +311,7 @@ class Monitor:
 	start = enable_receiving	# I like this name better
 
 
-	def receive_device(self):
+	def receive_device(self) -> DeviceEvent:
 		if not self._monitor_started:
 			self.enable_receiving()
 
@@ -320,7 +327,7 @@ class Monitor:
 		devtype = self._eudev._lib.udev_device_get_devtype(dev)
 		devtype_str = str(devtype, "utf-8") if devtype else None
 
-		event = Monitor.DeviceEvent(
+		event = DeviceEvent(
 			str(self._eudev._lib.udev_device_get_action(dev), "utf-8"),
 			devnode_str,
 			self._eudev._lib.udev_device_get_is_initialized(dev) == 1,
@@ -342,6 +349,6 @@ if __name__ == "__main__":
 
 	m = udev.monitor().match_subsystem("hidraw").start()
 	while True:
-		d = m.receive_device()
-		if d:
-			print(os.major(d.devnum), os.minor(d.devnum), d)
+		dev = m.receive_device()
+		if dev:
+			print(os.major(dev.devnum), os.minor(dev.devnum), dev)

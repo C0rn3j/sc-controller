@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 SC-Controller - tools
 
@@ -26,7 +25,7 @@ except ImportError:
 log = logging.getLogger("tools.py")
 _ = lambda x : x
 
-LOG_FORMAT				= "%(levelname)s %(name)-13s %(message)s"
+LOG_FORMAT = "%(levelname)s %(name)-13s %(message)s"
 
 def init_logging(prefix="", suffix=""):
 	"""
@@ -340,8 +339,7 @@ def find_library(libname):
 			break
 
 	if not lib:
-		raise OSError('Cant find %s.so. searched at:\n %s' % (
-			libname, '\n'.join(search_paths)))
+		raise OSError('Cant find %s.so. searched at:\n %s' % (libname, '\n'.join(search_paths)))
 	return ctypes.CDLL(lib)
 
 

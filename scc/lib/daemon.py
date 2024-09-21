@@ -1,28 +1,27 @@
-#!/usr/bin/env python3
-
-"""Generic linux daemon base class"""
+"""Generic linux daemon base class."""
 
 # Adapted from http://www.jejik.com/files/examples/daemon3x.py
 # thanks to the original author
 
-import sys
-import os
-import time
 import atexit
+import os
 import signal
+import sys
 import syslog
+import time
+
 
 class Daemon(object):
 	"""A generic daemon class.
 
-	Usage: subclass the daemon class and override the run() method."""
+	Usage: subclass the daemon class and override the run() method.
+	"""
 
 	def __init__(self, pidfile):
 		self.pidfile = pidfile
 
 	def daemonize(self):
 		"""Deamonize class. UNIX double fork mechanism."""
-
 		try:
 			pid = os.fork()
 			if pid > 0:
@@ -115,7 +114,7 @@ class Daemon(object):
 
 	def on_start(self):
 		pass
-	
+
 	def stop(self, once=False):
 		"""Stop the daemon."""
 
@@ -162,4 +161,5 @@ class Daemon(object):
 		"""You should override this method when you subclass Daemon.
 
 		It will be called after the process has been daemonized by
-		start() or restart()."""
+		start() or restart().
+		"""

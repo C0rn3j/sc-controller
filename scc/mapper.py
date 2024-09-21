@@ -1,18 +1,33 @@
-#!/usr/bin/env python3
-from collections import deque
-from scc.lib import xwrappers as X
-from scc.uinput import UInput, Keyboard, Mouse, Dummy, Rels
-from scc.constants import FE_STICK, FE_TRIGGER, FE_PAD, GYRO, STICK, RSTICK
-from scc.constants import SCButtons, LEFT, RIGHT, CPAD, DPAD, HapticPos
-from scc.constants import STICK_PAD_MAX, STICKTILT, ControllerFlags
-from scc.aliases import ALL_AXES, ALL_BUTTONS
+import logging
+import os
+import time
+import traceback
+
 from scc.actions import ButtonAction, GyroAbsAction
-from scc.controller import HapticData
+from scc.aliases import ALL_AXES, ALL_BUTTONS
 from scc.config import Config
+from scc.constants import (
+	CPAD,
+	DPAD,
+	FE_PAD,
+	FE_STICK,
+	FE_TRIGGER,
+	GYRO,
+	LEFT,
+	RIGHT,
+	RSTICK,
+	STICK,
+	STICK_PAD_MAX,
+	STICKTILT,
+	ControllerFlags,
+	HapticPos,
+	SCButtons,
+)
+from scc.controller import HapticData
+from scc.lib import xwrappers as X
 from scc.profile import Profile
+from scc.uinput import Dummy, Keyboard, Mouse, Rels, UInput
 
-
-import traceback, logging, time, os
 log = logging.getLogger("Mapper")
 
 class Mapper(object):
@@ -21,11 +36,9 @@ class Mapper(object):
 	def __init__(self, profile, scheduler, keyboard=b"SCController Keyboard",
 				mouse=b"SCController Mouse",
 				gamepad=True, poller=None):
-		"""
-		If any of keyboard, mouse or gamepad is set to None, that device
-		will not be emulated.
-		Emulated gamepad will have rumble enabled only if poller is set to
-		instance and configuration allows it.
+		"""If any of keyboard, mouse or gamepad is set to None, that device will not be emulated.
+
+		Emulated gamepad will have rumble enabled only if poller is set to instance and configuration allows it.
 		"""
 		self.profile = profile
 		self.controller = None
@@ -249,7 +262,7 @@ class Mapper(object):
 		return 0 if self.controller is None else self.controller.flags
 
 
-	def is_touched(self, what):
+	def is_touched(self, what) -> bool:
 		"""
 		Returns True if specified pad is being touched.
 		May randomly return False for aphephobic pads.
@@ -381,6 +394,7 @@ class Mapper(object):
 
 
 	def input(self, controller, old_state, state):
+#		print(type(controller), type(old_state), type(state))
 		# Store states
 		self.old_state = old_state
 		self.old_buttons = self.buttons

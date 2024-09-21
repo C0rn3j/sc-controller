@@ -1,5 +1,4 @@
-"""
-hidparse - just enough code to parse HID report from hidraw descriptor.
+"""hidparse - just enough code to parse HID report from hidraw descriptor.
 
 Based on
   - Pythonic binding for linux's hidraw ioctls
@@ -9,17 +8,35 @@ Based on
 
 Licensed under GPL 2.0
 """
-from scc.lib.hidparse_data import GlobalItem, MainItem, LocalItem, UsagePage
-from scc.lib.hidparse_data import SensorPage, SensorSelector, LightSensor
-from scc.lib.hidparse_data import GenericDesktopPage, page_to_enum
-from scc.lib.hidparse_data import MotionSensor, OrientationSensor
-from scc.lib.hidparse_data import ModifierI2a, HidSensorProperty
-from scc.lib.hidparse_data import ItemType, ItemLength, ItemBase
-from scc.lib.hidparse_data import SensorEvent, SensorDataField
-from scc.lib.hidparse_data import Collection, Unit, UnitType
+import ctypes
+import fcntl
+import struct
+from enum import IntEnum
+
 from scc.lib import ioctl_opt
-from scc.lib import IntEnum
-import ctypes, fcntl, collections, struct
+from scc.lib.hidparse_data import (
+	Collection,
+	GenericDesktopPage,
+	GlobalItem,
+	HidSensorProperty,
+	ItemBase,
+	ItemLength,
+	ItemType,
+	LightSensor,
+	LocalItem,
+	MainItem,
+	ModifierI2a,
+	MotionSensor,
+	OrientationSensor,
+	SensorDataField,
+	SensorEvent,
+	SensorPage,
+	SensorSelector,
+	Unit,
+	UnitType,
+	UsagePage,
+	page_to_enum,
+)
 
 # hid.h
 _HID_MAX_DESCRIPTOR_SIZE = 4096
@@ -58,16 +75,16 @@ class BusType(IntEnum):
 
 class ReservedItem(object):
 	_CACHE = {}
-	
+
 	def __init__(self, value):
 		self.value = value
-	
-	
+
+
 	def __repr__(self):
 		return "<Reserved ID 0x%x>" % (self.value,)
-	
+
 	__str__ = __repr__
-	
+
 	def __new__(cls, value):
 		if value not in cls._CACHE:
 			cls._CACHE[value] = object.__new__(cls)
@@ -84,7 +101,7 @@ def enum_or_reserved(enum, value):
 _HIDIOCGRDESCSIZE =	ioctl_opt.IOR(ord('H'), 0x01, ctypes.c_int)
 _HIDIOCGRDESC =		ioctl_opt.IOR(ord('H'), 0x02, _hidraw_report_descriptor)
 _HIDIOCGRAWINFO =	ioctl_opt.IOR(ord('H'), 0x03, _hidraw_devinfo)
-#_HIDIOCGFEATURE =	lambda len : ioctl_opt.IORW(ord('H'), 0x07, len)
+#_HIDIOCGFEATURE =	lambda len : ioctl_opt.IOWR(ord('H'), 0x07, len)
 _HIDIOCGFEATURE = lambda len: ioctl_opt.IOC(
 	ioctl_opt.IOC_WRITE|ioctl_opt.IOC_READ, ord('H'), 0x07, len)
 
@@ -158,7 +175,7 @@ def parse_item(it, page):
 		isize = it[1]
 		itag = it[3] * 256 + it[2]
 		raise ValueError("Not implemented: long item!!")
-	
+
 	if itype == 0x00:					# main items
 		item = enum_or_reserved(MainItem, itag)
 		if item == MainItem.Collection:
@@ -277,7 +294,7 @@ def _split_hid_items(data):
 def parse_report_descriptor(data, flat_list=False):
 	"""
 	Parses HID report descriptor to list of elements.
-	
+
 	If flat_list is set to True, only one list is returned.
 	Otherwise, each collection is stored in its own nested list.
 	"""
@@ -302,14 +319,14 @@ def parse_report_descriptor(data, flat_list=False):
 			col.append(item)
 		else:
 			col.append(item)
-	
+
 	return rv
 
 
 def get_report_descriptor(devfile, flat_list=False):
 	"""
 	Returns parsed HID report descriptor as list of elements.
-	
+
 	If flat_list is set to True, only one list is returned.
 	Otherwise, each collection is stored in its own nested list.
 	"""
@@ -318,7 +335,7 @@ def get_report_descriptor(devfile, flat_list=False):
 
 
 class Parser(object):
-	
+
 	def __init__(self, code, offset, count, size):
 		self.code = code
 		self.value = 0
@@ -342,8 +359,8 @@ class Parser(object):
 			self.byte_len = 1
 			self.fmt = "<B"
 		self.additional_bits = offset % 8
-	
-	
+
+
 	def decode(self, data):
 		self.value, = struct.unpack(self.fmt, data[self.byte_offset: self.byte_offset + self.byte_len])
 		self.value >>= self.additional_bits
@@ -354,14 +371,14 @@ HIDPARSE_TYPE_BUTTONS = 2
 
 class HIDButtonParser(Parser):
 	TYPE = HIDPARSE_TYPE_BUTTONS
-	
+
 	def __repr__(self):
 		return "<HID Buttons @%s len %s value %s>" % (self.offset, self.len, self.value)
 
 
 class HIDAxisParser(Parser):
 	TYPE = HIDPARSE_TYPE_AXIS
-	
+
 	def __repr__(self):
 		return "<HID Axis @%s len %s value %s>" % (self.offset, self.len, self.value)
 

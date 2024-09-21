@@ -2248,7 +2248,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                     <property name="margin-left">25</property>
                     <property name="margin-right">25</property>
                     <property name="margin-top">5</property>
-                    <property name="label" translatable="yes">Try disabling this option your controller stops working randomly.</property>
+                    <property name="label" translatable="yes">Try disabling this option if your controller stops working randomly.</property>
                     <property name="use-markup">True</property>
                     <property name="wrap">True</property>
                     <property name="xalign">0</property>

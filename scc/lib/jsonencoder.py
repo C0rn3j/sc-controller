@@ -1,6 +1,4 @@
-"""
-Copied directly from python because I can't find way how to override
-_iterencode_list, function burried in 7th level of hell.
+"""Copied directly from python because I can't find way how to override _iterencode_list, function burried in 7th level of hell.
 
 Only idea here is to have lists encoded in single line.
 """

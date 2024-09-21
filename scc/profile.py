@@ -331,7 +331,7 @@ class Profile(object):
 						# Both buttons were set
 						n = MultiAction(
 							TriggerAction(numbers[0], numbers[1], ButtonAction(buttons[0])),
-							TriggerAction(numbers[1], TRIGGER_MAX, ButtonAction(buttons[1]))
+							TriggerAction(numbers[1], TRIGGER_MAX, ButtonAction(buttons[1])),
 						)
 
 					if n:
@@ -339,7 +339,7 @@ class Profile(object):
 							self.triggers[p].to_string(), n.to_string())
 						self.triggers[p] = n
 		if from_version < 1.3:
-			# Action format completly changed in v0.4, but profile foramat is same.
+			# Action format completly changed in v0.4, but profile format is same.
 			pass
 
 class Encoder(JSONEncoder):

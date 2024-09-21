@@ -1,16 +1,18 @@
 #!/bin/bash
+set -ex
+
 APP="sc-controller"
 EXEC="scc"
 LIB="lib"
 
 EVDEV_VERSION=0.7.0
-[ x"$BUILD_APPDIR" == "x" ] && BUILD_APPDIR=$(pwd)/appimage
+[[ "$BUILD_APPDIR" == "" ]] && BUILD_APPDIR=$(pwd)/appimage
 PYTHON_VERSION=$(python3 -c 'import sys; version=sys.version_info[:3]; print("{0}.{1}".format(*version))')
 SITE_PACKAGES_PATH=$(python3 -c "import os,sys; print([p for p in sys.path if p.endswith('site-packages') and sys.prefix in p][0])")
 
-if [ -z ${SITE_PACKAGES_PATH} ]; then
-  echo "Could not determine global site-packages path. Exiting";
-  exit 1;
+if [[ -z "${SITE_PACKAGES_PATH}" ]]; then
+	echo "Could not determine global site-packages path. Exiting"
+	exit 1
 fi
 
 function download_dep() {
@@ -48,8 +50,6 @@ function unpack_dep() {
 			--exclude="usr/lib/python2.7**" -f /tmp/${NAME}.tar.gz
 	popd
 }
-
-set -ex		# display commands, terminate after 1st failure
 
 # Download deps
 download_dep "python-evdev-0.7.0" "https://github.com/gvalkov/python-evdev/archive/v0.7.0.tar.gz"

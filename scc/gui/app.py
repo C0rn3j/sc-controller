@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-"""
-SC-Controller - App
+"""SC-Controller - App.
 
 Main application window
 """
@@ -347,9 +345,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 
 	def apply_temporary_fix(self, trash, shell_command, message):
-		"""
-		Displays MessageBox with confirmation, tries to run passed shell
-		command and restarts daemon.
+		"""Display MessageBox with confirmation, try to run passed shell command and restart daemon.
 
 		Doing this allows user to teporary fix some uinput-related problems
 		by his vaim belief I'll not format his harddrive.

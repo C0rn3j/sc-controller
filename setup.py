@@ -29,7 +29,7 @@ data_files = [
 ] + [ # menu icons subfolders
 	(
 		'share/scc/images/menu-icons/' + x.split("/")[-1],
-		[ x + "/LICENCES" ] + glob.glob(x + "/*.png")
+		[ x + "/LICENSES" ] + glob.glob(x + "/*.png")
 	) for x in glob.glob("images/menu-icons/*")
 ]
 
@@ -62,7 +62,7 @@ if __name__ == "__main__":
 				'scripts/scc-osd-radial-menu',
 				'scripts/scc-osd-show-bindings',
 			],
-			license = 'GPL2',
+			license = 'GPL-2.0-only',
 			platforms = ['Linux'],
 			ext_modules = [
 				Extension('libuinput', sources = ['scc/uinput.c']),

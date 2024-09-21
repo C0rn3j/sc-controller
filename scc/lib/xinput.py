@@ -1,7 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-XInput tools
+"""XInput tools.
 
 Interfaces with XInput by calling `xinput` command.
 Currently allows only querying list of xinput devices and floating them.
