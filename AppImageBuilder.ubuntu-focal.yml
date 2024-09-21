@@ -26,6 +26,9 @@ AppDir:
   after_bundle: |
     set -eu
 
+    # install python3-ioctl-opt manually as it is not packaged anywhere
+    pip install --target "${TARGET_APPDIR}/usr/lib/python3/dist-packages/" ioctl-opt
+
     # appimage-builder expects .desktop file to start with appinfo-id
     desktop="$(find "${TARGET_APPDIR}/usr" -name sc-controller.desktop)"
     sed -i "s:Exec=.*:Exec=./usr/bin/scc gui:g" "${desktop}"

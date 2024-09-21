@@ -22,7 +22,7 @@ jobs:
         with:
           python-version: '3.11'
       # Install dependencies
-      - run: pip install pytest vdf libusb1
+      - run: pip install pytest vdf libusb1 ioctl-opt
       # Build
       - run: python setup.py build
       # Test
