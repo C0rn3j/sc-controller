@@ -31,7 +31,7 @@ RUN <<EOR
     if command -v apt-get >/dev/null; then
       apt-get update && apt-get install -y --no-install-recommends libx11-6
     elif command -v pacman >/dev/null; then
-      pacman -S --noconfirm libx11
+      pacman -Syu --noconfirm libx11
     elif command -v dnf >/dev/null; then
       dnf list updates && dnf install -y libX11
     fi
