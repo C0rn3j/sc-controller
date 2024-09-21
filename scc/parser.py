@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import sys
 import token as TokenType
-from enum import EnumType
 from tokenize import TokenError, generate_tokens
 from typing import NamedTuple
 

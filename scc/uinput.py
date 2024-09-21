@@ -45,20 +45,16 @@ else:
 MAX_FEEDBACK_EFFECTS = 4
 
 # Keys enum contains all keys and button from linux/uinput.h (KEY_* BTN_*)
-class Keys(IntEnum):
-	locals().update({i: CHEAD[i] for i in CHEAD if i.startswith(("KEY_", "BTN_"))})
+Keys = IntEnum('Keys', {i: CHEAD[i] for i in CHEAD.keys() if (i.startswith('KEY_') or i.startswith('BTN_'))})
 
 # Keys enum contains all keys and button from linux/uinput.h (KEY_* BTN_*)
-class KeysOnly(IntEnum):
-	locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("KEY_")})
+KeysOnly = IntEnum('KeysOnly', {i: CHEAD[i] for i in CHEAD.keys() if i.startswith('KEY_')})
 
 # Axes enum contains all axes from linux/uinput.h (ABS_*)
-class Axes(IntEnum):
-	locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("ABS_")})
+Axes = IntEnum('Axes', {i: CHEAD[i] for i in CHEAD.keys() if i.startswith('ABS_')})
 
 # Rels enum contains all rels from linux/uinput.h (REL_*)
-class Rels(IntEnum):
-	locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("REL_")})
+Rels = IntEnum('Rels', {i: CHEAD[i] for i in CHEAD.keys() if i.startswith('REL_')})
 
 # Scan codes for each keys (taken from a logitech keyboard)
 Scans = {
