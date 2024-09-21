@@ -41,11 +41,37 @@ AppDir:
       fi
     done
 
+    # remove unused icons
+    icons="${TARGET_APPDIR}/usr/share/icons"
+    keep=$(
+      # Subset of: `wget -q https://specifications.freedesktop.org/icon-naming-spec/latest -O- | sed -nE 's:.*</td></tr><tr><td>([^<]+).*:\1:p' | sort`
+      printf '%s\n' index.theme close- edit- go- list- pan- window-
+      grep -rhoP '"icon_name">\K[^<]+(?=<)' glade
+      grep -rhoP 'icon_name *= *"\K[^"]+(?=")' scc
+    )
+    map_item() { echo "${1}" | while read -r item; do printf -- "${2}" "${item}"; done; }
+    paths=$(find "${icons}" '(' -false $(map_item "${keep}" ' -o -name %s*') ')' -print -type l -printf '%h/%l\n' | sort | uniq)
+    find "${icons}" \( -type d -empty -or -not -type d $(map_item "${paths}" ' -not -samefile %s') \) -delete
+    cancel() { echo >&2 "ERROR: ${@}" && return 1; }
+    if find "${icons}" -xtype l | grep .; then
+      cancel 'The symlinks shown above are broken.'
+    fi
+    if echo "${keep}" | while read -r icon; do echo "${paths}" | grep -q "${icon}[^/]*$" || echo "${icon}"; done | grep .; then
+      cancel 'The icons above are missing.'
+    fi
+
+    # Enable icon theme
+    xdg_settings="${TARGET_APPDIR}/etc/xdg/gtk-3.0/settings.ini"
+    if [ ! -e "${xdg_settings}" ]; then
+      mkdir -p "$(dirname "${xdg_settings}")"
+      theme=$(find "${icons}" -mindepth 1 -maxdepth 1 -type d -printf %f -quit)
+      printf '[Settings]\ngtk-icon-theme-name = %s\n' "${theme}" >"${xdg_settings}"
+    fi
+
   after_runtime: |
     set -eu
 
-    # python3 is linked against 'lib64/ld-linux-x86-64.so.2'
-    # but 'compat/lib64' is missing for Ubuntu Noble
+    # python3 is linked against 'lib64/ld-linux-x86-64.so.2' but 'compat/lib64' is missing
     compat="${TARGET_APPDIR}/runtime/compat"
     if [ ! -e "${compat}/lib64" ] && [ -d "${compat}/usr/lib64" ]; then
       ln -s "usr/lib64" "${compat}/"
@@ -54,6 +80,7 @@ AppDir:
   apt:
     arch:
       - "{{APPIMAGE_APT_ARCH}}"
+
     sources:
       - sourceline: deb http://deb.debian.org/debian {{APPIMAGE_APT_DISTRO}} main
         key_url: http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x{{APPIMAGE_APT_PUBKEY}}
@@ -67,17 +94,14 @@ AppDir:
       - libbluetooth3
       - libgtk-3-0
       - librsvg2-common
-      - libx11-6
-      - libxcb1
-      - libxext6
-      - libxfixes3
       - python3-evdev
       - python3-gi-cairo
       - python3-pylibacl
-      - python3-vdf
       - python3-usb1
+      - python3-vdf
       - binutils         # required for detection of bluetooth library
       - coreutils        # provides /usr/bin/env
+      - paper-icon-theme # required for icons
       - shared-mime-info # required for gui if host provides no MIME info, e.g. when XDG_DATA_DIRS is missing
 
     exclude:
@@ -138,7 +162,7 @@ AppDir:
       - usr/bin/*gold*              # alternative for ld
       - usr/bin/*gp-display-html*   # requires perl
       - usr/lib/*/gconv             # unicode
-      - usr/lib/*/gdk-pixbuf-2.0/*/loaders/libpixbufloader-??[!g].so # only png & svg are required
+      - usr/lib/*/gdk-pixbuf-2.0/*/loaders/libpixbufloader-??[!g]*.so # only png & svg are required
       - usr/lib/*/glib-2.0
       - usr/lib/python*/cgi.py
       - usr/lib/python*/email

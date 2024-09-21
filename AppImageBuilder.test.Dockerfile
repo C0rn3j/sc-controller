@@ -27,11 +27,22 @@ RUN <<EOR
     fi
   }
 
+  prepare() {
+    if command -v apt-get >/dev/null; then
+      apt-get update && apt-get install -y --no-install-recommends libx11-6
+    elif command -v pacman >/dev/null; then
+      pacman -Syu --noconfirm libx11
+    elif command -v dnf >/dev/null; then
+      dnf list updates && dnf install -y libX11
+    fi
+  }
+
   main() {
     files="$(find /opt/ -maxdepth 1 -type f -name '*.AppImage')"
     if [ -z "${files}" ]; then
       cancel "Error: No AppImage file found."
     fi
+    prepare
     echo "${files}" | while read -r file; do
       log "${file}"
       chmod +x "${file}"

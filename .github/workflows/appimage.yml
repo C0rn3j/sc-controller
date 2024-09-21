@@ -182,6 +182,6 @@ jobs:
             shasum --binary --algorithm "${algo}" "${asset}" >"${asset}.sha${algo}"
           done
       - name: Upload artifacts to GitHub release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: assets/*
