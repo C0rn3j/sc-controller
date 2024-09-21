@@ -191,7 +191,7 @@ class DeviceMonitor(Monitor):
 					self._on_new_syspath(subsystem, syspath)
 
 
-	def get_vendor_product(self, syspath: str, subsystem: str | None = None) -> tuple[int, int]:
+	def get_vendor_product(self, syspath: str, subsystem) -> tuple[int, int]:
 		"""For given syspath, reads and returns (vendor_id, product_id) as ints.
 
 		May throw all kinds of OSErrors
