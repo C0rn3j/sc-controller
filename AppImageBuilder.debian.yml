@@ -79,6 +79,7 @@ AppDir:
     done
 
     # Trixie expects libpixbufloader libs with a dash suffix, not underscore
+    # see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1082676
     find "${TARGET_APPDIR}" -type f -name 'libpixbufloader_*' | while read -r file; do
       path="$(dirname "${file}")"
       link="${path}/$(echo "$(basename "${file}")" | tr _ -)"
