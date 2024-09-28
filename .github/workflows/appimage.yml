@@ -85,9 +85,15 @@ jobs:
           printenv | grep ^APPIMAGE_ >>"${GITHUB_ENV}"
 
       - name: Build AppImage
-        uses: AppImageCrafters/build-appimage@v1.3
+        uses: git-developer/build-appimage@v1.3
         with:
-          recipe: "${{ matrix.base.recipe }}"
+          command: ${{
+                     format('sh -c "set -eu; {0}; {1}; {2}; appimage-builder --recipe {3}"',
+                       'pip install --upgrade setuptools packaging packaging-legacy',
+                       'pip install --extra-index-url https://lief.s3-website.fr-par.scw.cloud/latest \"lief>=0.16.0.dev0\"',
+                       'find /usr/local/lib -name package.py | while read -r file; do sed -i -e \"s/^from.packaging/&_legacy/\" \"${file}\"; done',
+                       matrix.base.recipe)
+                   }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

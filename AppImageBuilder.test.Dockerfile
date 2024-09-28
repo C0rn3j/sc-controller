@@ -16,17 +16,6 @@ RUN <<EOR
     return 1
   }
 
-  handle_failure() {
-    return_code="${1}"
-    file="${2}"
-    if [ "${return_code}" = 139 ] && echo "${file}" | grep -q -P -- '-(noble|trixie|bookworm)-'; then
-      log "Ignoring failure ${return_code} for ${file}" \
-          "which is currently known to cause a segmentation fault"
-    else
-      return "${return_code}"
-    fi
-  }
-
   prepare() {
     if command -v apt-get >/dev/null; then
       apt-get update && apt-get install -y --no-install-recommends libx11-6
@@ -43,15 +32,19 @@ RUN <<EOR
       cancel "Error: No AppImage file found."
     fi
     prepare
+    config_path="${HOME}/.config/scc"
+    mkdir -p "${config_path}"
+    echo '{}' >"${config_path}/config.json"
+
     echo "${files}" | while read -r file; do
-      log "${file}"
+      log "Testing ${file}"
       chmod +x "${file}"
       rm -rf squashfs-root/
       "${file}" --appimage-extract >/dev/null
-      (
-        cd squashfs-root/runtime/compat
-        { ../../AppRun dependency-check && ../../AppRun daemon --help; } || handle_failure "$?" "${file}"
-      )
+      cd squashfs-root/runtime/compat
+      ../../AppRun dependency-check
+      output=$(../../AppRun daemon --help 2>&1 | tee -a /dev/stderr)
+      if echo "${output}" | grep -q Error; then return 1; fi
       rm -f "${file}"
     done
   }
