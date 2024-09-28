@@ -9,29 +9,30 @@ import os, sys, subprocess
 
 class InvalidArguments(Exception): pass
 
-def run_binary(binary_name, argv):
+def run_binary(binary_name: str, argv):
+	"""Run scc-daemon with passed parameters."""
 	binary = find_binary(binary_name)
 	child = subprocess.Popen([binary] + argv)
 	child.communicate()
 	return child.returncode
 
 def cmd_daemon(argv0, argv):
-	""" Controls scc-daemon """
-	# Actually just passes parameters to scc-daemon
+	"""Run scc-daemon with passing parameters to it."""
 	return run_binary("scc-daemon", argv)
 
 
 def help_daemon():
+	"""Run scc-daemon --help."""
 	return run_binary("scc-daemon", ["--help"])
 
 
 def cmd_gui(argv0, argv):
-	""" Starts GUI """
-	# Passes parameters to sc-controller
+	"""Run sc-controller(GUI) with passed parameters."""
 	return run_binary("sc-controller", argv)
 
 
 def help_gui():
+	"""Run sc-controller --help."""
 	return run_binary("sc-controller", ["--help"])
 
 
