@@ -3,21 +3,31 @@
 Contains code for most of what can be done using 'scc' script.
 Created so scc-* stuff doesn't polute /usr/bin.
 """
-from scc.tools import init_logging, set_logging_level, find_binary
-from typing import List
-import os, sys, subprocess
+from __future__ import annotations
+
+import os
+import subprocess
+import sys
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+	from io import TextIOWrapper
 
 
-class InvalidArguments(Exception): pass
+from scc.tools import find_binary, init_logging, set_logging_level
 
-def run_binary(binary_name: str, argv: List[str]) -> int:
+
+class InvalidArguments(Exception):
+	pass
+
+def run_binary(binary_name: str, argv: list[str]) -> int:
 	"""Run scc-daemon with passed parameters."""
 	binary = find_binary(binary_name)
 	child = subprocess.Popen([binary] + argv)
 	child.communicate()
 	return child.returncode
 
-def cmd_daemon(argv0: str, argv: List[str]) -> int:
+def cmd_daemon(argv0: str, argv: list[str]) -> int:
 	"""Run scc-daemon with passed parameters."""
 	return run_binary("scc-daemon", argv)
 
@@ -27,7 +37,7 @@ def help_daemon() -> int:
 	return run_binary("scc-daemon", ["--help"])
 
 
-def cmd_gui(argv0: str, argv: List[str]) -> int:
+def cmd_gui(argv0: str, argv: list[str]) -> int:
 	"""Run sc-controller(GUI) with passed parameters."""
 	return run_binary("sc-controller", argv)
 
@@ -37,7 +47,7 @@ def help_gui() -> int:
 	return run_binary("sc-controller", ["--help"])
 
 
-def cmd_test_evdev(argv0: str, argv: List[str]) -> int:
+def cmd_test_evdev(argv0: str, argv: list[str]) -> int:
 	"""
 	Evdev driver test. Displays gamepad inputs using evdev driver.
 
@@ -51,7 +61,7 @@ def cmd_test_evdev(argv0: str, argv: List[str]) -> int:
 	return evdevdrv_test(argv)
 
 
-def cmd_test_hid(argv0: str, argv: List[str]) -> int:
+def cmd_test_hid(argv0: str, argv: list[str]) -> int:
 	"""
 	HID driver test. Displays gamepad inputs using hid driver.
 
@@ -67,27 +77,26 @@ def cmd_test_hid(argv0: str, argv: List[str]) -> int:
 	return hiddrv_test(HIDController, argv)
 
 
-def help_osd_keyboard() -> int:
+def help_osd_keyboard() -> None:
 	import_osd()
 	from scc.osd.keyboard import Keyboard
 	return run_osd_tool(Keyboard(), "osd-keyboard", ["--help"])
 
 
-def cmd_osd_keyboard(argv0: str, argv: List[str]) -> int:
-	""" Displays on-screen keyboard """
+def cmd_osd_keyboard(argv0: str, argv: list[str]) -> None:
+	"""Display on-screen keyboard."""
 	import_osd()
 	from scc.osd.keyboard import Keyboard
 	return run_osd_tool(Keyboard(), argv0, argv)
 
 
-def cmd_list_profiles(argv0: str, argv: List[str]) -> int:
-	"""
-	Lists available profiles
+def cmd_list_profiles(argv0: str, argv: list[str]) -> int:
+	"""List available profiles.
 
 	Usage: scc list-profiles [-a]
 
 	Arguments:
-	  -a   Include names begining with dot
+		-a   Include names begining with dot
 	"""
 	from scc.paths import get_profiles_path, get_default_profiles_path
 	paths = [ get_default_profiles_path(), get_profiles_path() ]
@@ -107,9 +116,8 @@ def cmd_list_profiles(argv0: str, argv: List[str]) -> int:
 	return 0
 
 
-def cmd_set_profile(argv0: str, argv: List[str]) -> int:
-	"""
-	Sets controller profile
+def cmd_set_profile(argv0: str, argv: list[str]) -> int:
+	"""Set controller profile.
 
 	Usage: scc set-profile [controller_id] "profile name"
 	"""
@@ -139,8 +147,8 @@ def cmd_set_profile(argv0: str, argv: List[str]) -> int:
 	return 0
 
 
-def cmd_info(argv0: str, argv: List[str]) -> int:
-	""" Displays basic information about running driver """
+def cmd_info(argv0: str, argv: list[str]) -> int:
+	"""Display basic information about running driver."""
 	s = connect_to_daemon()
 	if s is None: return -1
 	# Daemon already sends situable info, so this is mostly reading
@@ -154,12 +162,12 @@ def cmd_info(argv0: str, argv: List[str]) -> int:
 		line = line.strip("\r\n\t ")
 		if line == "Ready.":
 			break
-		elif line.startswith("Current profile:"):
+		if line.startswith("Current profile:"):
 			global_profile = line
 			continue
-		elif line.startswith("Controller:"):
+		if line.startswith("Controller:"):
 			continue
-		elif line.startswith("Controller profile:"):
+		if line.startswith("Controller profile:"):
 			any_controller = True
 		elif line.startswith("Error:"):
 			print(line)
@@ -171,8 +179,8 @@ def cmd_info(argv0: str, argv: List[str]) -> int:
 	return 0
 
 
-def cmd_dependency_check(argv0: str, argv: List[str]) -> int:
-	""" Checks if all required libraries are installed on this system """
+def cmd_dependency_check(argv0: str, argv: list[str]) -> int:
+	"""Check if all required libraries are installed on this system."""
 	try:
 		import gi
 		gi.require_version('Gtk', '3.0')
@@ -204,9 +212,8 @@ def cmd_dependency_check(argv0: str, argv: List[str]) -> int:
 	return 0
 
 
-def cmd_lock_inputs(argv0: str, argv: List[str], lock: str = "Lock: ") -> int:
-	"""
-	Locks and prints pressed buttons, pads and sticks
+def cmd_lock_inputs(argv0: str, argv: list[str], lock: str = "Lock: ") -> int:
+	"""Lock and print pressed buttons, pads and sticks.
 
 	Locks controller inputs and prints buttons, pads and stick as they are
 	pressed or moved on controller.
@@ -250,9 +257,8 @@ def cmd_lock_inputs(argv0: str, argv: List[str], lock: str = "Lock: ") -> int:
 		s.close()
 
 
-def cmd_print_inputs(argv0: str, argv: List[str], lock: str = "Lock: ") -> int:
-	"""
-	Prints pressed buttons, pads and sticks
+def cmd_print_inputs(argv0: str, argv: list[str], lock: str = "Lock: ") -> int:
+	"""Print pressed buttons, pads and sticks.
 
 	Prints controller inputs and prints buttons, pads and stick as they are
 	pressed or moved on controller, without locking them exclusivelly.
@@ -271,12 +277,13 @@ def cmd_print_inputs(argv0: str, argv: List[str], lock: str = "Lock: ") -> int:
 	return cmd_lock_inputs(argv0, argv, lock="Observe: ")
 
 
-def connect_to_daemon() -> int:
-	"""
-	Returns socket connected to daemon or None if connection failed.
+def connect_to_daemon() -> TextIOWrapper | None:
+	"""Return socket connected to daemon or None if connection failed.
+
 	Outputs error message in later case.
 	"""
 	import socket
+
 	from scc.paths import get_daemon_socket
 	try:
 		s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -309,19 +316,19 @@ def check_error(s) -> bool:
 			return False
 
 
-def sigint(*a):
+def sigint(*a) -> None:
 	print("\n*break*")
 	sys.exit(0)
 
 
-def import_osd():
+def import_osd() -> None:
 	import gi
 	gi.require_version('Gtk', '3.0')
 	gi.require_version('Rsvg', '2.0')
 	gi.require_version('GdkX11', '3.0')
 
 
-def run_osd_tool(tool, argv0: str, argv: List[str]):
+def run_osd_tool(tool, argv0: str, argv: list[str]) -> None:
 	import signal, argparse
 	signal.signal(signal.SIGINT, sigint)
 
@@ -364,7 +371,7 @@ def show_help(command = None, out=sys.stdout) -> int:
 	return 0
 
 
-def main():
+def main() -> None:
 	init_logging()
 	if len(sys.argv) < 2:
 		sys.exit(show_help())
