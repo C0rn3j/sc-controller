@@ -9,7 +9,7 @@ import os, sys, subprocess
 
 class InvalidArguments(Exception): pass
 
-def run_binary(binary_name: str, argv: list[str]) -> int:
+def run_binary(binary_name, argv):
 	binary = find_binary(binary_name)
 	child = subprocess.Popen([binary] + argv)
 	child.communicate()
