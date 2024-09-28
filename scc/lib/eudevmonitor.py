@@ -32,11 +32,12 @@ class Eudev:
 	def __init__(self) -> None:
 		self._ctx = None
 		try:
-			self._lib = ctypes.cdll.LoadLibrary("libudev.so")
+			self._lib = ctypes.cdll.LoadLibrary("libudev.so.1")
 		except OSError:
-			self._lib = ctypes.CDLL(find_library(self.LIB_NAME))
-			if self._lib is None:
+			lib_name = find_library(self.LIB_NAME)
+			if lib_name is None:
 				raise ImportError("No library named udev")
+			self._lib = ctypes.CDLL(lib_name)
 		Eudev._setup_lib(self._lib)
 		self._ctx = self._lib.udev_new()
 		if self._ctx is None:
