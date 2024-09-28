@@ -9,29 +9,30 @@ import os, sys, subprocess
 
 class InvalidArguments(Exception): pass
 
+def run_binary(binary_name: str, argv: list[str]) -> int:
+	binary = find_binary(binary_name)
+	child = subprocess.Popen([binary] + argv)
+	child.communicate()
+	return child.returncode
 
 def cmd_daemon(argv0, argv):
 	""" Controls scc-daemon """
 	# Actually just passes parameters to scc-daemon
-	scc_daemon = find_binary("scc-daemon")
-	subprocess.Popen([scc_daemon] + argv).communicate()
+	return run_binary("scc-daemon", argv)
 
 
 def help_daemon():
-	scc_daemon = find_binary("scc-daemon")
-	subprocess.Popen([scc_daemon, "--help"]).communicate()
+	return run_binary("scc-daemon", ["--help"])
 
 
 def cmd_gui(argv0, argv):
 	""" Starts GUI """
 	# Passes parameters to sc-controller
-	scc_daemon = find_binary("sc-controller")
-	subprocess.Popen([scc_daemon] + argv).communicate()
+	return run_binary("sc-controller", argv)
 
 
 def help_gui():
-	scc_daemon = find_binary("sc-controller")
-	subprocess.Popen([scc_daemon, "--help"]).communicate()
+	return run_binary("sc-controller", ["--help"])
 
 
 def cmd_test_evdev(argv0, argv):
