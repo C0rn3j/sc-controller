@@ -4,39 +4,40 @@ Contains code for most of what can be done using 'scc' script.
 Created so scc-* stuff doesn't polute /usr/bin.
 """
 from scc.tools import init_logging, set_logging_level, find_binary
+from typing import List
 import os, sys, subprocess
 
 
 class InvalidArguments(Exception): pass
 
-def run_binary(binary_name: str, argv):
+def run_binary(binary_name: str, argv: List[str]) -> int:
 	"""Run scc-daemon with passed parameters."""
 	binary = find_binary(binary_name)
 	child = subprocess.Popen([binary] + argv)
 	child.communicate()
 	return child.returncode
 
-def cmd_daemon(argv0, argv):
+def cmd_daemon(argv0: str, argv: List[str]) -> int:
 	"""Run scc-daemon with passed parameters."""
 	return run_binary("scc-daemon", argv)
 
 
-def help_daemon():
+def help_daemon() -> int:
 	"""Run scc-daemon --help."""
 	return run_binary("scc-daemon", ["--help"])
 
 
-def cmd_gui(argv0, argv):
+def cmd_gui(argv0: str, argv: List[str]) -> int:
 	"""Run sc-controller(GUI) with passed parameters."""
 	return run_binary("sc-controller", argv)
 
 
-def help_gui():
+def help_gui() -> int:
 	"""Run sc-controller --help."""
 	return run_binary("sc-controller", ["--help"])
 
 
-def cmd_test_evdev(argv0, argv):
+def cmd_test_evdev(argv0: str, argv: List[str]) -> int:
 	"""
 	Evdev driver test. Displays gamepad inputs using evdev driver.
 
@@ -50,7 +51,7 @@ def cmd_test_evdev(argv0, argv):
 	return evdevdrv_test(argv)
 
 
-def cmd_test_hid(argv0, argv):
+def cmd_test_hid(argv0: str, argv: List[str]) -> int:
 	"""
 	HID driver test. Displays gamepad inputs using hid driver.
 
@@ -66,20 +67,20 @@ def cmd_test_hid(argv0, argv):
 	return hiddrv_test(HIDController, argv)
 
 
-def help_osd_keyboard():
+def help_osd_keyboard() -> int:
 	import_osd()
 	from scc.osd.keyboard import Keyboard
 	return run_osd_tool(Keyboard(), "osd-keyboard", ["--help"])
 
 
-def cmd_osd_keyboard(argv0, argv):
+def cmd_osd_keyboard(argv0: str, argv: List[str]) -> int:
 	""" Displays on-screen keyboard """
 	import_osd()
 	from scc.osd.keyboard import Keyboard
 	return run_osd_tool(Keyboard(), argv0, argv)
 
 
-def cmd_list_profiles(argv0, argv):
+def cmd_list_profiles(argv0: str, argv: List[str]) -> int:
 	"""
 	Lists available profiles
 
@@ -106,7 +107,7 @@ def cmd_list_profiles(argv0, argv):
 	return 0
 
 
-def cmd_set_profile(argv0, argv):
+def cmd_set_profile(argv0: str, argv: List[str]) -> int:
 	"""
 	Sets controller profile
 
@@ -138,7 +139,7 @@ def cmd_set_profile(argv0, argv):
 	return 0
 
 
-def cmd_info(argv0, argv):
+def cmd_info(argv0: str, argv: List[str]) -> int:
 	""" Displays basic information about running driver """
 	s = connect_to_daemon()
 	if s is None: return -1
@@ -170,7 +171,7 @@ def cmd_info(argv0, argv):
 	return 0
 
 
-def cmd_dependency_check(argv0, argv):
+def cmd_dependency_check(argv0: str, argv: List[str]) -> int:
 	""" Checks if all required libraries are installed on this system """
 	try:
 		import gi
@@ -203,7 +204,7 @@ def cmd_dependency_check(argv0, argv):
 	return 0
 
 
-def cmd_lock_inputs(argv0, argv, lock="Lock: "):
+def cmd_lock_inputs(argv0: str, argv: List[str], lock: str = "Lock: ") -> int:
 	"""
 	Locks and prints pressed buttons, pads and sticks
 
@@ -249,7 +250,7 @@ def cmd_lock_inputs(argv0, argv, lock="Lock: "):
 		s.close()
 
 
-def cmd_print_inputs(argv0, argv, lock="Lock: "):
+def cmd_print_inputs(argv0: str, argv: List[str], lock: str = "Lock: ") -> int:
 	"""
 	Prints pressed buttons, pads and sticks
 
@@ -270,7 +271,7 @@ def cmd_print_inputs(argv0, argv, lock="Lock: "):
 	return cmd_lock_inputs(argv0, argv, lock="Observe: ")
 
 
-def connect_to_daemon():
+def connect_to_daemon() -> int:
 	"""
 	Returns socket connected to daemon or None if connection failed.
 	Outputs error message in later case.
@@ -286,7 +287,7 @@ def connect_to_daemon():
 	return s.makefile(mode="rw")
 
 
-def check_error(s):
+def check_error(s) -> bool:
 	"""
 	Reads line(s) from socket until "OK." or "Fail:" is read.
 	Then return True if message is "OK." or prints message to stderr
@@ -320,7 +321,7 @@ def import_osd():
 	gi.require_version('GdkX11', '3.0')
 
 
-def run_osd_tool(tool, argv0, argv):
+def run_osd_tool(tool, argv0: str, argv: List[str]):
 	import signal, argparse
 	signal.signal(signal.SIGINT, sigint)
 
@@ -335,7 +336,7 @@ def run_osd_tool(tool, argv0, argv):
 	sys.exit(tool.get_exit_code())
 
 
-def show_help(command = None, out=sys.stdout):
+def show_help(command = None, out=sys.stdout) -> int:
 	names = [ x[4:] for x in globals() if x.startswith("cmd_") ]
 	max_len = max([ len(x) for x in names ])
 	if command in names:
