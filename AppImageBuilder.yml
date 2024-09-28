@@ -71,6 +71,13 @@ AppDir:
       printf '[Settings]\ngtk-icon-theme-name = %s\n' "${theme}" >"${xdg_settings}"
     fi
 
+    # python3-usb1 expects 'libusb-1.0.so', see https://github.com/vpelletier/python-libusb1/issues/78
+    find "${TARGET_APPDIR}" -name 'libusb-1.0.so.[0-9]' | while read -r file; do
+      path="$(dirname "${file}")"
+      link="${file%.[0-9]}"
+      [ -e "${link}" ] || ln -sr "${file}" "${link}"
+    done
+
   after_runtime: |
     set -eu
 
@@ -111,8 +118,6 @@ AppDir:
 
     exclude:
       # coreutils
-      - libacl*         # filesystem
-      - libattr*        # filesystem
       - libgmp*         # arithmetics
 
       # gir1.2-rsvg-2.0
@@ -136,7 +141,6 @@ AppDir:
       - libfribidi*     # i18n
       - libgtk-3-common # gui
       - liblz*          # codec
-      - libmount*       # filesystem
       - libtiff*        # codec
       - libwebp*        # codec
 
