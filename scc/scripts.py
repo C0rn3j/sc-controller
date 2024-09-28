@@ -17,7 +17,7 @@ def run_binary(binary_name: str, argv):
 	return child.returncode
 
 def cmd_daemon(argv0, argv):
-	"""Run scc-daemon with passing parameters to it."""
+	"""Run scc-daemon with passed parameters."""
 	return run_binary("scc-daemon", argv)
 
 
