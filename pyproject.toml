@@ -43,7 +43,7 @@ sc-controller         = "scc.bin.sc_controller:main"
 
 [project.scripts]
 scc-daemon            = "scc.bin.scc_daemon:main"
-scc                   = "scc.scripts:main"
+scc                   = "scc.bin:main"
 scc-osd-dialog        = "scc.bin.scc_osd_dialog:main"
 scc-osd-keyboard      = "scc.bin.scc_osd_keyboard:main"
 scc-osd-launcher      = "scc.bin.scc_osd_launcher:main"
