@@ -110,8 +110,8 @@ class StatusIcon(GObject.GObject):
 		self.__hidden = False
 		self._set_visible(self.__visible)
 
-	def is_clickable(self):
-		""" Basically, returns False is appindicator is used """
+	def is_clickable(self) -> bool:
+		"""Basically, returns False is appindicator is used."""
 		return True
 
 	def _is_forced(self):
@@ -279,7 +279,7 @@ class StatusIconAppIndicator(StatusIconDBus):
 
 		self._tray.set_status(self._status_active if active else self._status_passive)
 
-	def is_clickable(self):
+	def is_clickable(self) -> bool:
 		return False
 
 	def destroy(self):
@@ -362,7 +362,7 @@ class StatusIconProxy(StatusIcon):
 		# Update fallback icon
 		self.set(self._icon, self._text)
 
-	def is_clickable(self):
+	def is_clickable(self) -> bool:
 		if self._status_gtk:
 			return self._status_gtk.is_clickable()
 		if self._status_fb:

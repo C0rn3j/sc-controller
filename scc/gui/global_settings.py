@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-"""
-SC-Controller - Global Settings
+"""SC Controller - Global Settings.
 
 Currently setups only one thing...
 """
@@ -29,7 +27,12 @@ from scc.osd.keyboard import Keyboard as OSDKeyboard
 from scc.osd.osk_actions import OSKCursorAction
 import scc.osd.osk_actions
 
-import re, sys, os, json, logging, traceback
+import re
+import sys
+import os
+import json
+import logging
+import traceback
 log = logging.getLogger("GS")
 
 class GlobalSettings(Editor, UserDataManager, ComboSetter):
@@ -304,8 +307,8 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		self._timer = GLib.timeout_add_seconds(3, cb)
 
 
-	def save_config(self):
-		""" Transfers settings from UI back to config """
+	def save_config(self) -> None:
+		"""Transfers settings from UI back to config."""
 		# Store hard stuff
 		tvItems = self.builder.get_object("tvItems")
 		cbShowOSD = self.builder.get_object("cbShowOSD")

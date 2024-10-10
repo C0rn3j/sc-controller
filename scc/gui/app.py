@@ -1,4 +1,4 @@
-"""SC-Controller - App.
+"""SC Controller - App.
 
 Main application window
 """
@@ -40,8 +40,8 @@ log = logging.getLogger("App")
 class App(Gtk.Application, UserDataManager, BindingEditor):
 	"""Main application / window."""
 
-	HILIGHT_COLOR = "#FF00FF00"		# ARGB
-	OBSERVE_COLOR = "#FF60A0FF"		# ARGB
+	HILIGHT_COLOR = "#FF00FF00" # ARGB
+	OBSERVE_COLOR = "#FF60A0FF" # ARGB
 	CONFIG = "scc.config.json"
 	RELEASE_URL = "https://github.com/C0rn3j/sc-controller/releases/tag/v%s"
 	OSD_MODE_PROF_NAME = ".scc-osd.profile_editor"
@@ -276,14 +276,15 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			btLGRIP.get_parent().reorder_child(btDPAD, 5)
 
 
-	def setup_statusicon(self):
+	def setup_statusicon(self) -> None:
 		menu = self.builder.get_object("mnuTray")
 		self.statusicon = get_status_icon(self.imagepath, menu)
-		self.statusicon.connect('clicked', self.on_statusicon_clicked)
-		if not self.statusicon.is_clickable():
-			self.builder.get_object("mnuShowWindowTray").set_visible(True)
-		GLib.idle_add(self.statusicon.set, "scc-%s" % (self.status,), _("SC Controller"))
-
+		self.statusicon.connect("clicked", self.on_statusicon_clicked)
+#		if not self.statusicon.is_clickable():
+#			self.builder.get_object("mnuShowWindowTray").set_visible(True)
+		# Workaround - always add it to the menu, see https://github.com/C0rn3j/sc-controller/issues/53
+		self.builder.get_object("mnuShowWindowTray").set_visible(True)
+		GLib.idle_add(self.statusicon.set, f"scc-{self.status}", _("SC Controller"))
 
 	def destroy_statusicon(self):
 		self.statusicon.destroy()
@@ -454,8 +455,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.enable_test_mode()
 
 
-	def on_statusicon_clicked(self, *a):
-		""" Handler for user clicking on tray icon button """
+	def on_statusicon_clicked(self, *a) -> None:
+		"""Handler for user clicking on tray icon button."""
 		self.window.set_visible(not self.window.get_visible())
 
 
@@ -865,7 +866,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			self.quit()
 
 
-	def on_mnuAbout_activate(self, *a):
+	def on_mnuAbout_activate(self, *a) -> None:
 		from scc.gui.aboutdialog import AboutDialog
 		AboutDialog(self).show(self.window)
 
@@ -1354,7 +1355,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			self.dm.stop()
 
 
-	def do_startup(self, *a):
+	def do_startup(self, *a) -> None:
 		Gtk.Application.do_startup(self, *a)
 		self.load_profile_list()
 		self.setup_widgets()
