@@ -11,13 +11,14 @@ User-mode driver, mapper and GTK3 based GUI for Steam Controller, DS4 and many o
 [![screenshot3](docs/screenshot4-tn.png?raw=true)](docs/screenshot4.png?raw=true)
 
 ## Features
-- Allows to setup, configure and use Steam Controllers without ever launching Steam
+- Allows to setup, configure and use the Steam Controller without ever launching Steam
+- Connect multiple controllers at the same time
 - Supports profiles switchable in GUI or with controller button
 - Stick, Pads and Gyroscope input
 - Haptic Feedback and in-game Rumble support
 - OSD, Menus, On-Screen Keyboard for desktop *and* in games.
 - Automatic profile switching based on active window.
-- Macros, button cycling, rapid fire, modeshift, mouse regions...
+- Macros, button cycling, rapid fire, modeshift, mouse regions, …
 - Emulates Xbox360 controller, mouse, trackball and keyboard.
 
 Based on [Standalone Steam Controller Driver](https://github.com/ynsta/steamcontroller) by [Ynsta](https://github.com/ynsta).
@@ -56,24 +57,24 @@ Windows:
   - [python-ioctl-opt](https://pypi.org/project/ioctl-opt/)
   - [gtk-layer-shell](https://github.com/wmww/gtk-layer-shell)
 
-### Installing
-  - Download and extract [latest release](https://github.com/C0rn3j/sc-controller/releases/latest)
-  - `python3 setup.py build`
-  - `python3 setup.py install`
+### Via Python into a local build directory
+  - ~~Download and extract [latest release](https://github.com/C0rn3j/sc-controller/releases/latest)~~ .zip releases without .git directory are currently broken - tracked in [#50](https://github.com/C0rn3j/sc-controller/issues/50)
+  - Clone the repository `git clone https://github.com/C0rn3j/sc-controller.git` and navigate into it: `cd sc-controller`
+  - `python3 -m build --wheel`
+  - `python3 -m installer --destdir="./build" dist/*.whl`
+  - Run the app via: `./build/usr/bin/sc-controller`
 
-### Docker
+
+### Via Docker
 A test build with Docker can be created using the following way:
 
 ```bash
 docker build -o build-output --build-arg BASE_CODENAME=noble .
 ```
 
-## Running with non distro-specific package
-  - Download and extract [latest release](https://github.com/C0rn3j/sc-controller/releases/latest)
-  - Navigate to extracted directory: `cd sc-controller`
-  - If you do not wish to use system dependencies, you can setup a venv and install them there:
-    - Create the venv: `python -m venv venv`
-    - Activate it, you will need to do this before each launch: `source venv/bin/activate`
-    - Install dependencies: `pip install -r requirements.txt`
-  - Execute `./run.sh`
-  - If you are debuggin an issue, running `./run.sh daemon` first will launch the daemon in debug mode, allowing you to launch sc-controller in another terminal with `./run.sh`
+### Via Python venv through run.sh
+  - ~~Download and extract [latest release](https://github.com/C0rn3j/sc-controller/releases/latest)~~ .zip releases without .git directory are currently broken - tracked in [#50](https://github.com/C0rn3j/sc-controller/issues/50)
+  - Clone the repository `git clone https://github.com/C0rn3j/sc-controller.git` and navigate into it: `cd sc-controller`
+  - Optionally checkout a branch or a tag, like `python3`(default) or `v0.4.9.8.8`
+  - Execute `./run.sh`, this automatically builds the project into a venv called `.env`, activates it and runs sc-controller, which in turn runs scc-daemon if one does not run already
+  - If you are debugging an issue, running `./run.sh daemon` first will launch the daemon in debug mode, allowing you to launch sc-controller in another terminal with `./run.sh`
