@@ -185,14 +185,14 @@ class Deck(USBDevice, SCController):
 		self._id = f"deck{self._serial}"
 		self.set_input_interrupt(ENDPOINT, 64, self._on_input)
 
-	def _on_input(self, endpoint, data):
+	def _on_input(self, endpoint: int, data: bytearray) -> None:
 		if not self._ready:
 			self.daemon.add_controller(self)
 			self.configure()
 			self._ready = True
 
 		self._old_state, self._input = self._input, self._old_state
-		ctypes.memmove(ctypes.addressof(self._input), data, len(data))
+		ctypes.memmove(ctypes.addressof(self._input), bytes(data), len(data))
 		if self._input.seq % UNLIZARD_INTERVAL == 0:
 			# Keeps lizard mode from happening
 			self.clear_mappings()
