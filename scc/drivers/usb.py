@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING
 import usb1
 
 if TYPE_CHECKING:
-	from usb1 import USBDeviceHandle
+	from usb1 import USBDeviceHandle, USBTransfer
 
 	from scc.sccdaemon import SCCDaemon
 
@@ -41,7 +41,7 @@ class USBDevice(object):
 
 		callback(endpoint, data) is called repeadedly with every packed received.
 		"""
-		def callback_wrapper(transfer) -> None:
+		def callback_wrapper(transfer: USBTransfer) -> None:
 			if (transfer.getStatus() != usb1.TRANSFER_COMPLETED or
 				transfer.getActualLength() != size):
 				return
@@ -54,7 +54,10 @@ class USBDevice(object):
 				log.error(e)
 				log.error(traceback.format_exc())
 			finally:
-				transfer.submit()
+				try: # https://github.com/C0rn3j/sc-controller/issues/57
+					transfer.submit()
+				except Exception:
+					log.exception("Failed to submit the transfer!")
 
 		transfer = self.handle.getTransfer()
 		transfer.setInterrupt(
@@ -134,7 +137,7 @@ class USBDevice(object):
 		_usb._retry_devices.append(tp)
 
 
-	def claim(self, number):
+	def claim(self, number: int):
 		"""Remember list of claimed interfaces and allow to unclaim them all at once using unclaim() method
 
 		or automatically when device is closed.
