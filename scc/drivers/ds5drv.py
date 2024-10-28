@@ -436,14 +436,11 @@ class DS5Controller(HIDController):
 		return "<DS5Controller %s>" % (self.get_id(),)
 
 	def _generate_id(self):
-		"""
-		ID is generated as 'ds5' or 'ds5:X' where 'X' starts as 1 and increases
-		as controllers with same ids are connected.
-		"""
+		"""ID is generated as 'ds5' or 'ds5:X' where 'X' starts as 1 and increases as controllers with same ids are connected."""
 		magic_number = 1
 		id = "ds5"
 		while id in self.daemon.get_active_ids():
-			id = "ds5:%s" % (magic_number,)
+			id = f"ds5:{magic_number}"
 			magic_number += 1
 		return id
 

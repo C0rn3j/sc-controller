@@ -36,12 +36,12 @@ class USBDevice(object):
 		self._transfer_list = []
 
 
-	def set_input_interrupt(self, endpoint, size, callback):
-		"""Set up input transfer.
+	def set_input_interrupt(self, endpoint: int, size: int, callback) -> None:
+		"""Set up input transfer
 
 		callback(endpoint, data) is called repeadedly with every packed received.
 		"""
-		def callback_wrapper(transfer):
+		def callback_wrapper(transfer) -> None:
 			if (transfer.getStatus() != usb1.TRANSFER_COMPLETED or
 				transfer.getActualLength() != size):
 				return
@@ -98,16 +98,16 @@ class USBDevice(object):
 		"""
 		self._rmsg.append((
 			(
-				0x21,	# request_type
-				0x09,	# request
-				0x0300,	# value
-				index, data
-			), index, size, callback
+				0x21,   # request_type
+				0x09,   # request
+				0x0300, # value
+				index, data,
+			), index, size, callback,
 		))
 
 
 	def flush(self):
-		"""Flushes all prepared control messages to the device."""
+		"""Flush all prepared control messages to the device."""
 		while len(self._cmsg):
 			msg = self._cmsg.pop()
 			self.handle.controlWrite(*msg)
@@ -116,10 +116,10 @@ class USBDevice(object):
 			msg, index, size, callback = self._rmsg.pop()
 			self.handle.controlWrite(*msg)
 			data = self.handle.controlRead(
-				0xA1,	# request_type
-				0x01,	# request
-				0x0300,	# value
-				index, size
+				0xA1,   # request_type
+				0x01,   # request
+				0x0300, # value
+				index, size,
 			)
 			callback(data)
 
@@ -135,19 +135,18 @@ class USBDevice(object):
 
 
 	def claim(self, number):
-		"""
-		Helper method; Remembers list of claimed interfaces and allows to
-		unclaim them all at once using unclaim() method or automatically when
-		device is closed.
+		"""Remember list of claimed interfaces and allow to unclaim them all at once using unclaim() method
+
+		or automatically when device is closed.
 		"""
 		self.handle.claimInterface(number)
 		self._claimed.append(number)
 
 
-	def claim_by(self, klass, subclass, protocol):
-		"""
-		Claims all interfaces with specified parameters.
-		Returns number of claimed interfaces
+	def claim_by(self, klass, subclass, protocol) -> int:
+		"""Claim all interfaces with specified parameters.
+
+		Return number of claimed interfaces
 		"""
 		rv = 0
 		for inter in self.device[0]:
@@ -197,7 +196,7 @@ class USBDriver(object):
 		self._started = False
 		self._retry_devices = []
 		self._retry_devices_timer = 0
-		self._ctx = None	# Set by start method
+		self._ctx = None # Set by start method
 		self._changed = 0
 
 
@@ -250,8 +249,8 @@ class USBDriver(object):
 						return
 					if self.daemon:
 						self.daemon.add_error(
-							"usb:%s:%s" % (tp[0], tp[1]),
-							"Failed to open USB device: %s" % (e,)
+							f"usb:{tp[0]}:{tp[1]}",
+							f"Failed to open USB device: {e}",
 						)
 					return
 		else:
@@ -269,8 +268,8 @@ class USBDriver(object):
 				return False
 			if self.daemon:
 				self.daemon.add_error(
-					"usb:%s:%s" % (tp[0], tp[1]),
-					"Failed to claim USB device: %s" % (e,)
+					f"usb:{tp[0]}:{tp[1]}",
+					f"Failed to claim USB device: {e}",
 				)
 			self._retry_devices.append((syspath, tp))
 			device.close()
@@ -279,14 +278,14 @@ class USBDriver(object):
 			self._devices[device] = handled_device
 			self._syspaths[syspath] = device
 			log.debug("USB device added: %.4x:%.4x", *tp)
-			self.daemon.remove_error("usb:%s:%s" % (tp[0], tp[1]))
+			self.daemon.remove_error(f"usb:{tp[0]}:{tp[1]}")
 			return True
 		log.warning("Known USB device ignored: %.4x:%.4x", *tp)
 		device.close()
 		return False
 
 
-	def handle_removed_device(self, syspath: str, vendor: int, product: int):
+	def handle_removed_device(self, syspath: str, vendor: int, product: int) -> None:
 		if syspath in self._syspaths:
 			device = self._syspaths[syspath]
 			handled_device = self._devices[device]
@@ -296,11 +295,11 @@ class USBDriver(object):
 			try:
 				device.close()
 			except usb1.USBErrorNoDevice:
-				# Safe to ignore, happens when device is physiucally removed
+				# Safe to ignore, happens when device is physically removed
 				pass
 
 
-	def register_hotplug_device(self, callback, vendor_id: int, product_id: int, on_failure):
+	def register_hotplug_device(self, callback, vendor_id: int, product_id: int, on_failure) -> None:
 		self._known_ids[vendor_id, product_id] = callback
 		if on_failure:
 			self._fail_cbs[vendor_id, product_id] = on_failure
@@ -310,7 +309,7 @@ class USBDriver(object):
 		log.debug("Registered USB driver for %.4x:%.4x", vendor_id, product_id)
 
 
-	def unregister_hotplug_device(self, callback, vendor_id, product_id):
+	def unregister_hotplug_device(self, callback, vendor_id: int, product_id: int) -> None:
 		if self._known_ids.get((vendor_id, product_id)) == callback:
 			del self._known_ids[vendor_id, product_id]
 			if (vendor_id, product_id) in self._fail_cbs:
@@ -347,13 +346,13 @@ def init(daemon: SCCDaemon, config: dict) -> bool:
 	daemon.add_mainloop(_usb.mainloop)
 	return True
 
-def start(daemon: SCCDaemon):
+def start(daemon: SCCDaemon) -> None:
 	_usb.start()
 
 
-def register_hotplug_device(callback, vendor_id: int, product_id: int, on_failure=None):
+def register_hotplug_device(callback, vendor_id: int, product_id: int, on_failure=None) -> None:
 	_usb.register_hotplug_device(callback, vendor_id, product_id, on_failure)
 
 
-def unregister_hotplug_device(callback, vendor_id: int, product_id: int):
+def unregister_hotplug_device(callback, vendor_id: int, product_id: int) -> None:
 	_usb.unregister_hotplug_device(callback, vendor_id, product_id)

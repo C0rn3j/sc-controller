@@ -1,4 +1,4 @@
-"""Universal driver for gamepads managed by evdev.
+"""Universal driver for gamepads managed by evdev
 
 Handles no devices by default. Instead of trying to guess which evdev device
 is a gamepad and which user actually wants to be handled by SCC, list of enabled
@@ -397,7 +397,7 @@ class EvdevDriver(object):
 		try:
 			dev = evdev.InputDevice(eventnode)
 			assert dev.path == eventnode
-			config_fn = "evdev-%s.json" % (dev.name.strip().replace("/", ""),)
+			config_fn = "evdev-{}.json".format(dev.name.strip().replace("/", ""))
 			config_file = os.path.join(get_config_path(), "devices", config_fn)
 		except OSError as ose:
 			if ose.errno == 13:
