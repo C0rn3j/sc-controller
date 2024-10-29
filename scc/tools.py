@@ -9,6 +9,7 @@ import importlib.machinery
 import logging
 import os
 import shlex
+import sysconfig
 from math import atan2, cos, sin, sqrt
 from math import pi as PI
 
@@ -332,8 +333,13 @@ def find_library(libname: str) -> ctypes.CDLL:
 	base_path = os.path.dirname(__file__)
 	lib, search_paths = None, []
 	so_extensions = importlib.machinery.EXTENSION_SUFFIXES
+	site_packages_path = sysconfig.get_path("purelib")
+
+	# Try looking in site-packages of the current environment, pwd and ../pwd
 	for extension in so_extensions:
 		search_paths += [
+			os.path.abspath(os.path.normpath(
+				os.path.join( site_packages_path, libname + extension ))),
 			os.path.abspath(os.path.normpath(
 				os.path.join( base_path, "..", libname + extension ))),
 			os.path.abspath(os.path.normpath(

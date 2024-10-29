@@ -57,14 +57,18 @@ testDeps
 # Ensure correct cwd
 cd "$(dirname "$0")"
 
+#export PYTHONPATH="${PWD}:${PWD}/env:${PYTHONPATH-}"
 export PYTHONPATH=".":"${PYTHONPATH-}"
-export SCC_SHARED="$(pwd)"
+export SCC_SHARED="${PWD}"
+#export PATH="${PWD}/.env/bin:${PATH}"
 
 rm -rf dist
-python -m build --wheel
 python -m venv .env
 source .env/bin/activate
-pip install --prefix "build" dist/*.whl
+pip install -r requirements.txt
+python -m build --wheel
+#python -m installer --destdir=".env" dist/*.whl
+pip install --prefix ".env" dist/*.whl --force-reinstall
 
 # Start either the daemon in debug mode if first parameter is 'debug', or the regular sc-controller app
 if [[ ${1-} == 'daemon' ]]; then
