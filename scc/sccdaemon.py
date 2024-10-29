@@ -90,7 +90,7 @@ class SCCDaemon(Daemon):
 			if not ispkg and modname != "driver":
 				if modname == "usb" or cfg["drivers"].get(modname):
 					# 'usb' driver has to be always active
-					mod = getattr(__import__('scc.drivers.%s' % (modname,)).drivers, modname)
+					mod = getattr(__import__(f"scc.drivers.{modname}").drivers, modname)
 					if hasattr(mod, "init"):
 						to_init.append(mod)
 				else:

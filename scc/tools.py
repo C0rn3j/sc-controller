@@ -1,19 +1,28 @@
-"""
-SC-Controller - tools
+"""SC Controller - tools
 
 Various stuff that I don't care to fit anywhere else.
 """
-from scc.paths import get_controller_icons_path, get_default_controller_icons_path
-from scc.paths import get_menuicons_path, get_default_menuicons_path
-from scc.paths import get_profiles_path, get_default_profiles_path
-from scc.paths import get_menus_path, get_default_menus_path
-from scc.paths import get_button_images_path
-from math import pi as PI, sin, cos, atan2, sqrt
-import os
+from __future__ import annotations
+
 import ctypes
-import shlex
-import logging
 import importlib.machinery
+import logging
+import os
+import shlex
+from math import atan2, cos, sin, sqrt
+from math import pi as PI
+
+from scc.paths import (
+	get_button_images_path,
+	get_controller_icons_path,
+	get_default_controller_icons_path,
+	get_default_menuicons_path,
+	get_default_menus_path,
+	get_default_profiles_path,
+	get_menuicons_path,
+	get_menus_path,
+	get_profiles_path,
+)
 
 HAVE_POSIX1E = False
 try:
@@ -27,10 +36,8 @@ _ = lambda x : x
 
 LOG_FORMAT = "%(levelname)s %(name)-13s %(message)s"
 
-def init_logging(prefix="", suffix=""):
-	"""
-	Initializes logging, sets custom logging format and adds one
-	logging level with name and method to call.
+def init_logging(prefix: str = "", suffix: str = ""):
+	"""Initialize logging, set custom logging format and add one logging level with name and method to call.
 
 	prefix and suffix arguments can be used to modify log level prefixes.
 	"""
@@ -60,19 +67,19 @@ def init_logging(prefix="", suffix=""):
 
 
 def set_logging_level(verbose, debug):
-	""" Sets logging level """
+	"""Set logging level"""
 	logger = logging.getLogger()
-	if debug:		# everything
+	if debug: # everything
 		logger.setLevel(0)
-	elif verbose:	# everything but debug
+	elif verbose: # everything but debug
 		logger.setLevel(11)
-	else:			# INFO and worse
+	else: # INFO and worse
 		logger.setLevel(20)
 
 
 def ensure_size(n, lst, fill_with=None):
-	"""
-	Returns copy of lst with size 'n'.
+	"""Return copy of lst with size 'n'.
+
 	If lst is shorter, None's are appended.
 	If lst is longer, it is cat.
 	"""
@@ -82,8 +89,8 @@ def ensure_size(n, lst, fill_with=None):
 
 
 def quat2euler(q0, q1, q2, q3):
-	"""
-	Converts quaterion to (pitch, yaw, roll).
+	"""Convert quaterion to (pitch, yaw, roll).
+
 	Values are in -PI to PI range.
 	"""
 	qq0, qq1, qq2, qq3 = q0**2, q1**2, q2**2, q3**2
@@ -105,19 +112,19 @@ def point_in_gtkrect(rect, x, y):
 
 
 def anglediff(a1, a2):
-	""" Excpects values in radians """
+	"""Expects values in radians"""
 	return (a2 - a1 + PI) % (2.0*PI) - PI
 
 
 def degdiff(a1, a2):
-	""" Excpects values in degrees """
+	"""Expects values in degrees"""
 	return (a2 - a1 + 180.0) % 360.0 - 180.0
 
 
 def nameof(e):
-	"""
-	If 'e' is enum value, returns e.name.
-	Otherwise, returns str(e).
+	"""If 'e' is enum value, return e.name.
+
+	Otherwise, return str(e).
 	"""
 	return e.name if hasattr(e, "name") else str(e)
 
@@ -316,11 +323,11 @@ def find_binary(name):
 	return name
 
 
-def find_library(libname):
-	"""
-	Search for 'libname.so'.
-	Returns library loaded with ctypes.CDLL
-	Raises OSError if library is not found
+def find_library(libname: str) -> ctypes.CDLL:
+	"""Search for 'libname.so'.
+
+	Return library loaded with ctypes.CDLL
+	Raise OSError if library is not found
 	"""
 	base_path = os.path.dirname(__file__)
 	lib, search_paths = None, []
@@ -328,9 +335,9 @@ def find_library(libname):
 	for extension in so_extensions:
 		search_paths += [
 			os.path.abspath(os.path.normpath(
-				os.path.join( base_path, '..', libname + extension ))),
+				os.path.join( base_path, "..", libname + extension ))),
 			os.path.abspath(os.path.normpath(
-				os.path.join( base_path, '../..', libname + extension )))
+				os.path.join( base_path, "../..", libname + extension )))
 			]
 
 	for path in search_paths:
@@ -339,14 +346,14 @@ def find_library(libname):
 			break
 
 	if not lib:
-		raise OSError('Cant find %s.so. searched at:\n %s' % (libname, '\n'.join(search_paths)))
+		raise OSError("Cant find {}.so. searched at:\n {}".format(libname, "\n".join(search_paths)))
 	return ctypes.CDLL(lib)
 
 
-def find_gksudo():
-	"""
-	Searchs for gksudo or other known graphical sudoing tool.
-	Returns list of arguments.
+def find_gksudo() -> list[str] | None:
+	"""Search for gksudo or other known graphical sudoing tool.
+
+	Return a list of arguments.
 	"""
 	SUDOS = ["gksudo", "gksu", "kdesudo", "pkexec", "xdg-su"]
 	for name in SUDOS:
@@ -357,11 +364,11 @@ def find_gksudo():
 	return None
 
 
-def check_access(filename, write_required=True):
-	"""
-	Checks if user has read and optionaly write access to specified file.
-	Uses acl first and possix file permisions if acl cannot be used.
-	Returns true only if user has both required access rights.
+def check_access(filename, write_required=True) -> bool:
+	"""Check if user has read and optionally write access to the specified file.
+
+	Use acl first and posix file permisions if acl cannot be used.
+	Return true only if user has both required access rights.
 	"""
 	if HAVE_POSIX1E:
 		for pset in posix1e.ACL(file=filename):
