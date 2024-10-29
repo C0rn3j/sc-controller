@@ -46,8 +46,8 @@ function testDeps() {
 #		echo -e "${Red}gi.Gtk not found, install it. ${Yellow}The package may be named gtk3 or gir1.2-gtk-3.0 on your distribution!${NoColor}"
 #		exit 1
 #	fi
-	if ! command -v x86_64-linux-gnu-gcc >/dev/null; then
-		echo -e "${Red}x86_64-linux-gnu-gcc not found, install it. ${Yellow}The package is usually named gcc!${NoColor}"
+	if ! command -v x86_64-pc-linux-gnu-gcc >/dev/null; then
+		echo -e "${Red}x86_64-pc-linux-gnu-gcc not found, install it. ${Yellow}The package is usually named gcc!${NoColor}"
 		exit 1
 	fi
 }
