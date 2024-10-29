@@ -66,6 +66,7 @@ rm -rf dist
 python -m venv .env
 source .env/bin/activate
 pip install -r requirements.txt
+pip install build
 python -m build --wheel
 #python -m installer --destdir=".env" dist/*.whl
 pip install --prefix ".env" dist/*.whl --force-reinstall
