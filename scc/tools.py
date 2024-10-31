@@ -339,9 +339,9 @@ def find_library(libname: str) -> ctypes.CDLL:
 	for extension in so_extensions:
 		search_paths += [
 			os.path.abspath(os.path.normpath(
-				os.path.join( site_packages_path, libname + extension ))),
-			os.path.abspath(os.path.normpath(
 				os.path.join( base_path, "..", libname + extension ))),
+			os.path.abspath(os.path.normpath(
+				os.path.join( base_path, "../..", libname + extension ))),
 			os.path.abspath(os.path.normpath(
 				os.path.join( site_packages_path, libname + extension ))),
 			]
