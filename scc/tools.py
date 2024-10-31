@@ -343,7 +343,7 @@ def find_library(libname: str) -> ctypes.CDLL:
 			os.path.abspath(os.path.normpath(
 				os.path.join( base_path, "..", libname + extension ))),
 			os.path.abspath(os.path.normpath(
-				os.path.join( base_path, "../..", libname + extension )))
+				os.path.join( site_packages_path, libname + extension ))),
 			]
 
 	for path in search_paths:
@@ -352,7 +352,7 @@ def find_library(libname: str) -> ctypes.CDLL:
 			break
 
 	if not lib:
-		raise OSError("Cant find {}.so. searched at:\n {}".format(libname, "\n".join(search_paths)))
+		raise OSError("Cant find {}.so. searched at:\n  {}".format(libname, "\n  ".join(search_paths)))
 	return ctypes.CDLL(lib)
 
 

@@ -62,8 +62,7 @@ Windows:
   - Clone the repository `git clone https://github.com/C0rn3j/sc-controller.git` and navigate into it: `cd sc-controller`
   - `python3 -m build --wheel`
   - `python3 -m installer --destdir="./build" dist/*.whl`
-  - Run the app via: `./build/usr/bin/sc-controller`
-
+  - Run the app via: `SCC_SHARED="${PWD}" PYTHONPATH="./build/usr/lib/python3.12/site-packages" PATH="${PWD}/build/usr/bin:${PATH}" ./build/usr/bin/sc-controller`
 
 ### Via Docker
 A test build with Docker can be created using the following way:
