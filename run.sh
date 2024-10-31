@@ -75,7 +75,8 @@ pip install --prefix ".env" dist/*.whl --force-reinstall
 if [[ ${1-} == 'daemon' ]]; then
 	# Kill any existing daemons before spawning our own
 	pkill -f scc-daemon || true
-	scc-daemon debug
+	shift
+	scc-daemon debug $@
 else
 	sc-controller $@
 fi
