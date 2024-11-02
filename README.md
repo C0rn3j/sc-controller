@@ -31,7 +31,7 @@ Donation links for kozec, who is the original developer, can be found on the [ol
 
 ## Packages
 
-[![Packaging status](https://repology.org/badge/vertical-allrepos/sc-controller.svg)](https://repology.org/project/sc-controller/versions)
+[![Packaging status](https://repology.org/badge/vertical-allrepos/sc-controller.svg?exclude_unsupported=1)](https://repology.org/project/sc-controller/versions)
 
 Linux:
   - **Arch Linux:** Found in [AUR/sc-controller](https://aur.archlinux.org/packages/sc-controller/) and [AUR/sc-controller-git](https://aur.archlinux.org/packages/sc-controller-git/)
