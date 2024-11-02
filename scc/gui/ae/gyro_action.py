@@ -299,7 +299,7 @@ class GyroActionComponent(AEComponent):
 
 
 def is_gyro_enable(modemod) -> bool:
-	""" Returns True if ModeModifier instance is used to create "Gyro Enable Button" """
+	"""Return True if ModeModifier instance is used to create 'Gyro Enable Button'."""
 	if isinstance(modemod, ModeModifier):
 		if len(modemod.mods) != 1:
 			return False

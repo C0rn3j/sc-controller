@@ -113,7 +113,7 @@ class RememberingDummy(Dummy):
 		pass
 
 
-class TestInputs(object):
+class TestInputs:
 	@input_test
 	def test_button(self, mapper: Mapper):
 		"""Just a test for a test, this should work every time."""

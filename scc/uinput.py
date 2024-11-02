@@ -213,7 +213,7 @@ class FeedbackEvent(ctypes.Structure):
 		self.in_use = False
 
 
-class UInput(object):
+class UInput:
 	"""UInput class permits to create a uinput device.
 
 	See Gamepad, Mouse, Keyboard for examples
@@ -694,7 +694,7 @@ class Keyboard(UInput):
 			self._pressed -= set(rem)
 
 
-class Dummy(object):
+class Dummy:
 	"""Fake uinput device that does nothing, but has all required methods."""
 
 	def __init__(self, *a, **b):

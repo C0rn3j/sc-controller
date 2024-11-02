@@ -1,4 +1,4 @@
-"""SC-Controller - Action Editor.
+"""SC Controller - Action Editor
 
 Allows to edit button or trigger action.
 """
@@ -17,11 +17,11 @@ import os, logging
 log = logging.getLogger("Editor")
 
 
-class ComboSetter(object):
+class ComboSetter:
 
-	def set_cb(self, cb, key, keyindex=0):
-		"""
-		Sets combobox value.
+	def set_cb(self, cb, key, keyindex=0) -> bool:
+		"""Set combobox value.
+
 		Returns True on success or False if key is not found.
 		"""
 		model = cb.get_model()
@@ -31,8 +31,7 @@ class ComboSetter(object):
 				cb.set_active_iter(row.iter)
 				self._recursing = False
 				return True
-		else:
-			log.warning("Failed to set combobox value, key '%s' not found", key)
+		log.warning("Failed to set combobox value, key '%s' not found", key)
 		self._recursing = False
 		return False
 

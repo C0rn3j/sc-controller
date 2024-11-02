@@ -55,7 +55,7 @@ class DevInfo(NamedTuple):
 	vendor: int
 	product: int
 
-class HIDRaw(object):
+class HIDRaw:
     """Provide methods to access hidraw device's ioctls."""
 
     def __init__(self, device):

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from scc.tools import _
 
 from gi.repository import Gtk, Gio, GLib, GObject
@@ -13,7 +12,7 @@ from .export import Export
 import sys, os, json, tarfile, tempfile, logging
 log = logging.getLogger("IE.ImportSSCC")
 
-class ImportSccprofile(object):
+class ImportSccprofile:
 
 	def on_btImportSccprofile_clicked(self, *a):
 		# Create filters

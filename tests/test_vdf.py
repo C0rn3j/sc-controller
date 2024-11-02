@@ -1,13 +1,16 @@
-from scc.lib.vdf import parse_vdf
-from scc.foreign.vdf import VDFProfile
-from io import StringIO
 import os
+from io import StringIO
+
 import pytest
 import vdf
 
-class TestVDF(object):
+from scc.foreign.vdf import VDFProfile
+from scc.lib.vdf import parse_vdf
+
+
+class TestVDF:
 	""" Tests VDF parser """
-	
+
 	def test_parsing(self):
 		""" Tests if VDF parser parses VDF """
 		sio = StringIO("""
@@ -24,8 +27,8 @@ class TestVDF(object):
 		assert type(parsed["data"]) == vdf.vdict.VDFDict
 		assert parsed["data"]["version"] == "3"
 		assert parsed["data"]["more data"]["version"] == "7"
-	
-	
+
+
 	def test_dict_without_key(self):
 		"""
 		Tests if VDF parser throws exception when there is dict with key missing
@@ -41,8 +44,8 @@ class TestVDF(object):
 		""")
 		with pytest.raises(SyntaxError) as excinfo:
 			parsed = parse_vdf(sio)
-	
-	
+
+
 	def test_unclosed_bracket(self):
 		"""
 		Tests if VDF parser throws exception when there is unclosed {
@@ -57,8 +60,8 @@ class TestVDF(object):
 		""")
 		with pytest.raises(SyntaxError) as excinfo:
 			parsed = parse_vdf(sio)
-	
-	
+
+
 	def test_too_many_brackets(self):
 		"""
 		Tests if VDF parser throws exception when there is } wihtout matching {
@@ -75,8 +78,8 @@ class TestVDF(object):
 		""")
 		with pytest.raises(SyntaxError) as excinfo:
 			parsed = parse_vdf(sio)
-	
-	
+
+
 	def test_import(self):
 		"""
 		Tests if every *.vdf file in tests/vdfs can be imported.

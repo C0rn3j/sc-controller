@@ -1,4 +1,4 @@
-"""SC-Controller - Profile Manager.
+"""SC Controller - Profile Manager.
 
 Simple class that manages stuff related to creating, loading, listing (...) of
 user-editable data - that are profiles, menus and controller-icons.
@@ -23,7 +23,7 @@ from scc.profile import Profile
 
 log = logging.getLogger("UDataManager")
 
-class UserDataManager(object):
+class UserDataManager:
 
 	def __init__(self) -> None:
 		profiles_path = get_profiles_path()

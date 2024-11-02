@@ -1,7 +1,4 @@
-#!/usr/bin/env python3
-# coding=utf-8
-"""
-SC-Controller - Action Editor - Gesture Component
+"""SC Controller - Action Editor - Gesture Component
 
 Handles gesture recognition settings.
 """
@@ -205,7 +202,7 @@ class GestureComponent(AEComponent):
 		self.editor.set_action(a)
 
 
-class GestureGrabber(object):
+class GestureGrabber:
 	def __init__(self, editor, builder):
 		self.editor = editor
 		self.builder = builder

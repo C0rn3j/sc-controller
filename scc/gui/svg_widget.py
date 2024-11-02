@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-"""
-SC-Controller - Background
+"""SC Controller - Background
 
 Changes SVG on the fly and uptates that magnificent image on background with it.
 Also supports clicking on areas defined in SVG image.
@@ -19,7 +17,7 @@ import importlib
 #ET = importlib.import_module('xml.etree.ElementTree')
 
 log = logging.getLogger("Background")
-ET.register_namespace('', "http://www.w3.org/2000/svg")
+ET.register_namespace("", "http://www.w3.org/2000/svg")
 
 
 class SVGWidget(Gtk.EventBox):
@@ -262,7 +260,7 @@ class Area:
 		return "<Area %s,%s %sx%s>" % (self.x, self.y, self.w, self.h)
 
 
-class SVGEditor(object):
+class SVGEditor:
 	"""
 	Allows some basic edit operations by parsing SVG into dom tree and doing
 	unholly mess on that.

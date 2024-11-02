@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-"""
-SC-Controller - Controller Registration - Grabs
+"""SC Controller - Controller Registration - Grabs
 
 Helper classes for grabbing buttons and axes from physical gamepads.
 
@@ -16,11 +14,8 @@ import logging
 log = logging.getLogger("CReg.grabs")
 
 
-class InputGrabber(object):
-	"""
-	Base class for input grabbing. Waits for physical button being pressed
-	by default.
-	"""
+class InputGrabber:
+	"""Base class for input grabbing. Waits for physical button being pressed by default."""
 
 	def __init__(self, parent, what, text=_("Press a button...")):
 		self.parent = parent

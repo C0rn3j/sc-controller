@@ -1,4 +1,4 @@
-"""SC-Controller - Config.
+"""SC Controller - Config
 
 Handles loading, storing and querying config file
 """
@@ -10,7 +10,7 @@ import os, json, logging
 log = logging.getLogger("Config")
 
 
-class Config(object):
+class Config:
 	DEFAULTS = {
 		"autoswitch_osd":	True,	# True to show OSD message when profile is autoswitched
 		"autoswitch":		[],		# Empty list of conditions

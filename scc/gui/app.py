@@ -1699,7 +1699,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 					log.warning("Failed to convert %s: %s", name, e)
 
 
-class UndoRedo(object):
+class UndoRedo:
 	""" Just dummy container """
 	def __init__(self, id, before, after):
 		self.id = id

@@ -4,7 +4,7 @@ from scc.modifiers import BallModifier, ModeModifier, RotateInputModifier, Sensi
 from . import parser
 
 
-class TestModeshift(object):
+class TestModeshift:
 	"""Test various combinations of modeshift and modifiers.
 
 	Most are based on stuff that was failing in past.

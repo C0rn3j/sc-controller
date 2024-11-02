@@ -1,4 +1,4 @@
-"""SC-Controller - OSD Launcher.
+"""SC Controller - OSD Launcher
 
 Display launcher with phone-like keyboard that user can use to select
 application (list is generated using xdg) and start it.
@@ -178,7 +178,7 @@ def find_image(name):
 	return None
 
 
-class Line(object):
+class Line:
 
 	def __init__(self, icon, text):
 		self.icons = [ icon ]
@@ -199,7 +199,7 @@ class Line(object):
 		return "%-10s: %s" % (",".join([ x for x in self.icons if x ]), self.text)
 
 
-class LineCollection(object):
+class LineCollection:
 	""" Allows calling add_icon on multiple lines at once """
 
 	def __init__(self, *lines):
@@ -212,7 +212,7 @@ class LineCollection(object):
 		return self
 
 
-class Box(object):
+class Box:
 	PADDING = 5
 	SPACING = 2
 	MIN_WIDTH = 100
@@ -409,7 +409,7 @@ class Box(object):
 			)
 
 
-class Generator(object):
+class Generator:
 	PADDING = 10
 
 	def __init__(self, editor, profile):

@@ -14,7 +14,7 @@ log = logging.getLogger("SCController")
 
 next_id = 1 # Used with fallback controller id generator
 
-class Controller(object):
+class Controller:
 	"""Base class for all controller drivers. Implementations are in scc.drivers package.
 
 	Derived class should implement every method from here.
@@ -121,7 +121,7 @@ class Controller(object):
 		pass
 
 
-class HapticData(object):
+class HapticData:
 	""" Simple container to hold haptic feedback settings """
 
 	def __init__(self, position, amplitude=512, frequency=4, period=1024, count=1):

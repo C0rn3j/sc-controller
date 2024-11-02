@@ -1,4 +1,4 @@
-"""SC-Controller - Global Settings.
+"""SC Controller - Global Settings.
 
 Currently setups only one thing...
 """
@@ -18,7 +18,7 @@ from scc.tools import _, get_profiles_path
 
 log = logging.getLogger("IE.ImportVdf")
 
-class ImportVdf(object):
+class ImportVdf:
 	PROFILE_LIST = "config/localconfig.vdf"
 	STEAMPATH = "~/.steam/steam/"
 

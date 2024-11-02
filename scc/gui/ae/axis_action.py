@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-"""
-SC-Controller - Action Editor - Axis Component
+"""SC Controller - Action Editor - Axis Component
 
 Assigns emulated axis to trigger
 """
@@ -494,7 +492,7 @@ class AxisActionComponent(AEComponent, TimerManager):
 		self.editor.set_action(action)
 
 
-class FakeMapper(object):
+class FakeMapper:
 	"""
 	Class that pretends to be mapper used when calling update_osd_area.
 	It has two purposes: To provide get_xdisplay() method that does what it says

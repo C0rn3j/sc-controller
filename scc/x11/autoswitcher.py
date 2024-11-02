@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-"""
-SC-Controller - Autoswitch Daemon
+"""SC Controller - Autoswitch Daemon
 
 Observes active window and commands scc-daemon to change profiles as needed.
 """
@@ -19,7 +17,7 @@ from scc.config import Config
 import os, sys, re, time, socket, traceback, threading, logging
 log = logging.getLogger("AutoSwitcher")
 
-class AutoSwitcher(object):
+class AutoSwitcher:
 	INTERVAL = 1
 
 	def __init__(self):
@@ -198,7 +196,7 @@ class AutoSwitcher(object):
 		return 1
 
 
-class Condition(object):
+class Condition:
 	"""
 	Represents AutoSwitcher condition loaded from configuration file.
 

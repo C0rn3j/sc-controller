@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-"""
-SC-Controller - Controller Registration data
+"""SC Controller - Controller Registration data
 
 Dummy container classes
 """
@@ -11,9 +9,9 @@ import logging
 log = logging.getLogger("CReg.data")
 
 
-class AxisData(object):
-	"""
-	(Almost) dumb container.
+class AxisData:
+	"""(Almost) dumb container.
+
 	Stores position, center and limits for single axis.
 	"""
 
@@ -31,9 +29,7 @@ class AxisData(object):
 
 
 	def reset(self):
-		"""
-		Resets min and max value so axis can (has to be) recalibrated again
-		"""
+		"""Reset min and max value so axis can (has to be) recalibrated again"""
 		self.min = STICK_PAD_MAX
 		self.max = STICK_PAD_MIN
 
@@ -43,9 +39,8 @@ class AxisData(object):
 
 
 	def set_position(self, value):
-		"""
-		Returns (changed, x), value determining if axis limits were changed and
-		current position position.
+		"""Return (changed, x), value determining if axis limits were changed and current position position.
+
 		translated to range of (STICK_PAD_MIN, STICK_PAD_MAX)
 		"""
 		changed = False
@@ -67,9 +62,9 @@ class AxisData(object):
 			return changed, 0
 
 
-class DPadEmuData(object):
-	"""
-	Dumb container that stores dpad emulation data.
+class DPadEmuData:
+	"""Dumb container that stores dpad emulation data.
+
 	DPAd emulation is used, for example, on PS3 controller, where dpad does not
 	inputs as 2 axes, but as 4 buttons.
 

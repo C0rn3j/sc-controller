@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""SC-Controller - OSD Daemon.
+"""SC Controller - OSD Daemon
 
 Controls stuff displayed as OSD.
 """
@@ -38,7 +38,7 @@ from scc.config import Config
 
 log = logging.getLogger("osd.daemon")
 
-class OSDDaemon(object):
+class OSDDaemon:
 	def __init__(self):
 		self.exit_code = -1
 		self.mainloop = GLib.MainLoop()

@@ -1,23 +1,24 @@
-"""SC-Controller - Profile.
+"""SC Controller - Profile
 
 Handles mapping profile stored in json file
 """
-from scc.constants import LEFT, RIGHT, CPAD, DPAD, WHOLE, STICK, RSTICK, GYRO
-from scc.constants import SCButtons, HapticPos
-from scc.special_actions import MenuAction
-from scc.modifiers import HoldModifier
-from scc.lib.jsonencoder import JSONEncoder
-from scc.parser import TalkingActionParser
-from scc.menu_data import MenuData
-from scc.actions import NoAction
+import json
+import logging
 
-import json, logging
+from scc.actions import NoAction
+from scc.constants import CPAD, DPAD, GYRO, LEFT, RIGHT, RSTICK, STICK, WHOLE, HapticPos, SCButtons
+from scc.lib.jsonencoder import JSONEncoder
+from scc.menu_data import MenuData
+from scc.modifiers import HoldModifier
+from scc.parser import TalkingActionParser
+from scc.special_actions import MenuAction
+
 log = logging.getLogger("profile")
 
 
-class Profile(object):
-	VERSION = 1.4	# Current profile version. When loading profile file
-					# with version lower than this, auto-conversion may happen
+class Profile:
+	# Current profile version. When loading profile file with version lower than this, auto-conversion may happen
+	VERSION = 1.4
 
 	LEFT  = LEFT
 	RIGHT = RIGHT

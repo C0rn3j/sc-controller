@@ -1,4 +1,4 @@
-"""SC-Controller - Action Editor.
+"""SC Controller - Action Editor
 
 Allows to edit button or trigger action.
 """
@@ -29,7 +29,7 @@ def merge_modifiers(mods):
 
 
 # Just to speed shit up, KeyGrabber is singleton
-class KeyGrabber(object):
+class KeyGrabber:
 	GLADE = "key_grabber.glade"
 	_singleton = None
 
@@ -73,8 +73,7 @@ class KeyGrabber(object):
 
 
 	def on_keyGrab_key_press_event(self, trash, event):
-		"""
-		Handles keypress on "Grab Key" dialog.
+		"""Handle keypress on "Grab Key" dialog.
 
 		Remembers modifiers and displays text in middle of dialog.
 		Dialog is dismissed (and key is accepted) by key_release handler bellow.

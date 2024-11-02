@@ -1,4 +1,4 @@
-"""SC Controller - ActionParser.
+"""SC Controller - ActionParser
 
 Parses action(s) expressed as string or in dict loaded from json file into
 one or more Action instances.
@@ -43,7 +43,7 @@ def build_action_constants() -> dict:
 	return rv
 
 
-class ActionParser(object):
+class ActionParser:
 	"""Parse action expressed as string into Action instances.
 
 	Usage:

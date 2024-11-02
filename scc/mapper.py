@@ -30,7 +30,7 @@ from scc.uinput import Dummy, Keyboard, Mouse, Rels, UInput
 
 log = logging.getLogger("Mapper")
 
-class Mapper(object):
+class Mapper:
 	DEBUG = False
 
 	def __init__(self, profile, scheduler, keyboard=b"SCController Keyboard",

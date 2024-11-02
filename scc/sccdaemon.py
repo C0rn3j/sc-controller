@@ -1,4 +1,4 @@
-"""SC-Controller - Daemon class."""
+"""SC Controller - Daemon class."""
 import stat
 
 from scc.lib import xwrappers as X
@@ -1136,7 +1136,7 @@ class SCCDaemon(Daemon):
 		self.sigterm()
 
 
-class Client(object):
+class Client:
 	def __init__(self, connection, mapper, rfile, wfile):
 		self.connection = connection
 		self.rfile = rfile
@@ -1419,7 +1419,7 @@ class ObservingAction(ReportingAction):
 		self.original_action.whole(mapper, x, y, what)
 
 
-class Subprocess(object):
+class Subprocess:
 	"""
 	Part of scc-daemon executed as another process, killed along with scc-daemon.
 	Currently scc-osd-daemon and scc-windowswitch-daemon.

@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-"""
-SC-Controller - OSD Mode Mapper
+"""SC Controller - OSD Mode Mapper
 
 Very special case of mapper used when main application is launched in "odd mode".
 That means it's drawn in OSD layer, cannot be clicked and cannot react to
@@ -44,7 +42,7 @@ class OSDModeMapper(SlaveMapper):
 		return OSDModeMouse(self)
 
 
-class OSDModeKeyboard(object):
+class OSDModeKeyboard:
 	""" Emulates uinput keyboard emulator """
 
 	def __init__(self, mapper):
@@ -78,7 +76,7 @@ class OSDModeKeyboard(object):
 			Gtk.main_do_event(event)
 
 
-class OSDModeMouse(object):
+class OSDModeMouse:
 	""" Emulates uinput keyboard emulator too """
 
 	def __init__(self, mapper):
@@ -126,7 +124,7 @@ class OSDModeMouse(object):
 		Gtk.main_do_event(event)
 
 
-class OSDModeMappings(object):
+class OSDModeMappings:
 
 	ICONS = {
 		'imgOsdmodeAct'    : SCButtons.A,

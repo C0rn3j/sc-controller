@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-"""
-SC-Controller - BindingEditor
+"""SC Controller - BindingEditor
 
 Base class for main application window and OSD Keyboard bindings editor.
 """
@@ -23,7 +21,7 @@ from scc.gui.macro_editor import MacroEditor
 from scc.gui.ring_editor import RingEditor
 
 
-class BindingEditor(object):
+class BindingEditor:
 
 	def __init__(self, app):
 		self.button_widgets = {}
@@ -31,10 +29,7 @@ class BindingEditor(object):
 
 
 	def create_binding_buttons(self, use_icons=True, enable_press=True):
-		"""
-		Creates ControllerWidget instances for available Gtk.Buttons defined
-		in glade file.
-		"""
+		"""Create ControllerWidget instances for available Gtk.Buttons defined in glade file."""
 		for b in BUTTONS:
 			w = self.builder.get_object("bt" + b.name)
 			if w:

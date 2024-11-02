@@ -1,4 +1,4 @@
-"""SC Controller - Actions.
+"""SC Controller - Actions
 
 Action describes what should be done when event from physical controller button,
 stick, pad or trigger is generated - typicaly what emulated button, stick or
@@ -37,7 +37,7 @@ MOUSE_BUTTONS = ( Keys.BTN_LEFT, Keys.BTN_MIDDLE, Keys.BTN_RIGHT, Keys.BTN_SIDE,
 TRIGGERS = ( Axes["ABS_Z"], Axes["ABS_RZ"] )
 
 
-class Action(object):
+class Action:
 	"""Action is what actually does something in SC-Controller. User can assotiate one or more Action to each available button, stick or pad in profile file."""
 
 	# Static dict of all available actions, filled later
@@ -400,11 +400,8 @@ class Action(object):
 		log.warning("Action %s can't handle trigger event", self.__class__.__name__)
 
 
-class RangeOP(object):
-	"""
-	Allows to specify and store axis range and then use it in modeshift
-	instead of button.
-	"""
+class RangeOP:
+	"""Allows to specify and store axis range and then use it in modeshift instead of button."""
 	OPS = ("<", ">", "<=", ">=")
 
 	def __init__(self, what, op, value):
@@ -498,7 +495,7 @@ class RangeOP(object):
 		return "%s %s %s" % (nameof(self.what), self.op, self.value)
 
 
-class HapticEnabledAction(object):
+class HapticEnabledAction:
 	""" Action that can generate haptic feedback """
 	def __init__(self):
 		self.haptic = None
@@ -516,7 +513,7 @@ class HapticEnabledAction(object):
 		return self.haptic
 
 
-class OSDEnabledAction(object):
+class OSDEnabledAction:
 	""" Action that displays some sort of OSD when executed """
 	def __init__(self):
 		self.osd_enabled = False
@@ -531,7 +528,7 @@ class OSDEnabledAction(object):
 		self.osd_enabled = True
 
 
-class SpecialAction(object):
+class SpecialAction:
 	"""
 	Action that needs to call special_actions_handler (aka sccdaemon instance)
 	to actually do something.

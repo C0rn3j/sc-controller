@@ -1,5 +1,6 @@
-import xml.etree.cElementTree as ET
 import os
+import xml.etree.cElementTree as ET
+
 
 def _get_files():
 	"""
@@ -14,7 +15,7 @@ def _get_files():
 				recursive(filename)
 			elif filename.endswith(".glade"):
 				rv.append(filename)
-	
+
 	recursive("glade/")
 	return rv
 
@@ -33,14 +34,14 @@ def _check_ids(el, filename, parent_id):
 				if subel.tag == "child":
 					_check_ids(subel, filename, child.attrib['id'])
 
-class TestGlade(object):
+class TestGlade:
 	"""
 	Tests every glade file in glade/ directory (and subdirectories) for known
 	problems that may cause GUI to crash in some environments.
-	
+
 	(one case on one environment so far)
 	"""
-	
+
 	def test_every_widget_has_id(self):
 		"""
 		Tests if every defined widget has ID.

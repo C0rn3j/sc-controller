@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
 log = logging.getLogger("USB")
 
-class USBDevice(object):
+class USBDevice:
 	"""Base class for all handled usb devices."""
 
 	def __init__(self, device: USBDevice, handle: USBDeviceHandle) -> None:
@@ -130,7 +130,7 @@ class USBDevice(object):
 	def force_restart(self):
 		"""Restart device, close handle and try to re-grab it again.
 
-		Don't use unless absolutelly necessary.
+		Don't use unless absolutely necessary.
 		"""
 		tp = self.device.getVendorID(), self.device.getProductID()
 		self.close()
@@ -189,7 +189,7 @@ class USBDevice(object):
 			pass
 
 
-class USBDriver(object):
+class USBDriver:
 	def __init__(self):
 		self.daemon = None
 		self._known_ids = {}

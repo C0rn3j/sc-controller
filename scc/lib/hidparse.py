@@ -74,7 +74,7 @@ class BusType(IntEnum):
 	VIRTUAL = 0x06
 
 
-class ReservedItem(object):
+class ReservedItem:
 	_CACHE = {}
 
 	def __init__(self, value):
@@ -330,7 +330,7 @@ def get_report_descriptor(devfile, flat_list=False):
 	return parse_report_descriptor(data, flat_list)
 
 
-class Parser(object):
+class Parser:
 
 	def __init__(self, code, offset, count, size):
 		self.code = code

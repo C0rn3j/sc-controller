@@ -359,7 +359,7 @@ def parse_axis(axis):
 	return AxisCalibrationData(scale, offset, center, clamp_min, clamp_max, deadzone)
 
 
-class EvdevDriver(object):
+class EvdevDriver:
 	SCAN_INTERVAL = 5
 
 	def __init__(self):

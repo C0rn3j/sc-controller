@@ -18,15 +18,16 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 """
-import logging, re, subprocess
+import logging
+import re
+import subprocess
+
 log = logging.getLogger("XI")
 
 RE_DEVICE = re.compile(r"[ \t⎜]+↳ (.*)\tid=([0-9]+)[ \t]+\[([a-z ]+)")
 
 def get_devices():
-	"""
-	Returns list of devices reported by xinput.
-	"""
+	"""Return list of devices reported by xinput."""
 	rv = []
 	try:
 		lst = (subprocess.Popen([ "xinput" ], stdout=subprocess.PIPE, stdin=None)
@@ -48,7 +49,7 @@ def get_devices():
 	return rv
 
 
-class XIDevice(object):
+class XIDevice:
 	def __init__(self, id, name, type):
 		self._id = id
 		self._name = name

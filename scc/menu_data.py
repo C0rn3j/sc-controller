@@ -1,15 +1,15 @@
-#!/usr/bin/env python3
-"""
-SC-Controller - Menu Data
+"""SC Controller - Menu Data
 
 Container for list of menu items + required parsers
 """
-from scc.tools import _, set_logging_level
+import json
+import os
+
 from scc.actions import Action
+from scc.tools import _, set_logging_level
 
-import json, os
 
-class MenuData(object):
+class MenuData:
 	""" Contains list of menu items. Indexable """
 	def __init__(self, *items):
 		self.__items = list(items)
@@ -189,7 +189,7 @@ class MenuData(object):
 		return MenuData.from_json_data(data["menus"][menuname], action_parser)
 
 
-class MenuItem(object):
+class MenuItem:
 	""" Really just dummy container """
 	def __init__(self, id, label, action=None, callback=None, icon=None):
 		self.id = id
@@ -260,7 +260,7 @@ class Submenu(MenuItem):
 		return rv
 
 
-class MenuGenerator(object):
+class MenuGenerator:
 	GENERATOR_NAME = None
 	""" Generates list of MenuItems """
 

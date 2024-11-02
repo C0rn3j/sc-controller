@@ -1,4 +1,4 @@
-"""SC Controller - Steam Controller Driver.
+"""SC Controller - Steam Controller Driver
 
 Driver for Steam Controller over bluetooth (evdev)
 
@@ -312,7 +312,7 @@ class SCByBt(SCController):
 
 
 def hidraw_test(filename):
-	class FakeDaemon(object):
+	class FakeDaemon:
 
 		def add_error(self, id, error):
 			log.error(error)

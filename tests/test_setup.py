@@ -5,7 +5,7 @@ import toml
 import scc
 
 
-class TestSetup(object):
+class TestSetup:
 	"""Test if SCC should be installable."""
 
 	def test_packages(self):

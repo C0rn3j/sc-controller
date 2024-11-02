@@ -576,7 +576,7 @@ class HIDController(USBDevice, Controller):
 		pass
 
 
-class HIDDrv(object):
+class HIDDrv:
 
 	def __init__(self, daemon: SCCDaemon):
 		self.registered = set()
@@ -650,7 +650,7 @@ def hiddrv_test(cls, args) -> int:
 	except Exception:
 		raise InvalidArguments()
 
-	class FakeDaemon(object):
+	class FakeDaemon:
 
 		def __init__(self) -> None:
 			self.poller = Poller()
