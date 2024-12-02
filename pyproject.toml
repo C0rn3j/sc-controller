@@ -17,7 +17,8 @@ keywords = ["controller", "mapping", "tools"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
-    "Operating System :: POSIX :: Linux"
+    "Operating System :: POSIX :: Linux",
+    "Typing :: Typed",
 ]
 requires-python = ">=3.9"
 #platforms = ["Linux"]
