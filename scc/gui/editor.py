@@ -2,6 +2,8 @@
 
 Allows to edit button or trigger action.
 """
+import os, logging
+
 from scc.tools import _
 
 from gi.repository import Gtk, Gdk, GLib
@@ -13,7 +15,6 @@ from scc.gui.svg_widget import SVGWidget
 from scc.gui.gdk_to_key import keyevent_to_key
 from scc.gui.area_to_action import AREA_TO_ACTION
 
-import os, logging
 log = logging.getLogger("Editor")
 
 
@@ -37,7 +38,8 @@ class ComboSetter:
 
 
 class Editor(ComboSetter):
-	""" Common stuff for all editor windows """
+	"""Common stuff for all editor windows"""
+
 	ERROR_CSS = " #error {background-color:green; color:red;} "
 	_error_css_provider = None
 
@@ -46,7 +48,7 @@ class Editor(ComboSetter):
 
 
 	def on_window_key_press_event(self, trash, event):
-		""" Checks if pressed key was escape and if yes, closes window """
+		"""Checks if pressed key was escape and if yes, closes window"""
 		if event.keyval == Gdk.KEY_Escape:
 			self.close()
 
@@ -70,10 +72,7 @@ class Editor(ComboSetter):
 
 
 	def hide_dont_destroy(self, w, *a):
-		"""
-		When used as handler for 'delete-event' signal, prevents window from
-		being destroyed after closing.
-		"""
+		"""When used as handler for 'delete-event' signal, prevents window from being destroyed after closing."""
 		w.hide()
 		return True
 
@@ -88,9 +87,7 @@ class Editor(ComboSetter):
 
 
 	def get_transient_for(self):
-		"""
-		Returns parent window for this editor. Usually main application window
-		"""
+		"""Return parent window for this editor. Usually main application window"""
 		return self._transient_for
 
 
@@ -103,8 +100,7 @@ class Editor(ComboSetter):
 
 
 	def add_widget(self, label, widget):
-		"""
-		Adds new widget into row before Action Name.
+		"""Add new widget into row before Action Name.
 
 		Widget is automatically passed to Macro Editor or Modeshift Editor
 		if either one is opened from editor window.
@@ -124,8 +120,8 @@ class Editor(ComboSetter):
 
 
 	def remove_added_widget(self):
-		"""
-		Removes added widget, if any.
+		"""Remove added widget, if any.
+
 		Should be called from on_destory handlers.
 		"""
 		vbAddedWidget = self.builder.get_object("vbAddedWidget")
@@ -135,7 +131,7 @@ class Editor(ComboSetter):
 
 
 	def send_added_widget(self, target):
-		""" Transfers added widget to new editor window """
+		"""Transfer added widget to new editor window"""
 		if self.added_widget:
 			vbAddedWidget  = self.builder.get_object("vbAddedWidget")
 			lblAddedWidget = self.builder.get_object("lblAddedWidget")
