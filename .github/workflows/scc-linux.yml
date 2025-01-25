@@ -22,8 +22,10 @@ jobs:
         with:
           python-version: '3.13'
       # Install dependencies
-      - run: pip install ioctl-opt libusb1 toml vdf pytest
+      - run: |
+        apt install -y python3-setuptools
+        pip install ioctl-opt libusb1 toml vdf pytest
       # Build
-      - run: python setup.py build
+      - run: python -m build
       # Test
       - run: python -m pytest tests
