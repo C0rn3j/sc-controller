@@ -115,10 +115,13 @@ jobs:
             codename: noble
           - os: debian
             codename: bookworm
+# ARM64 builds fail for Trixie and F41, something in the dockerfile throws code 139 and it segfaults
 #          - os: debian
 #            codename: trixie
+#          - os: fedora
+#            codename: "41"
           - os: fedora
-            codename: "41"
+            codename: "40"
           - os: archlinux
             codename: base
 
