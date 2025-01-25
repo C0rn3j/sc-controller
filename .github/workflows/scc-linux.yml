@@ -24,7 +24,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt install -y python3-setuptools
+          sudo apt update && sudo apt install -y python3-setuptools
           pip install ioctl-opt libusb1 toml vdf pytest
 
       - name: Build SCC
