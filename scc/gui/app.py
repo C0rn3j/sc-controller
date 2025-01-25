@@ -1516,11 +1516,13 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 	def get_release(n:int = 4) -> str:
 		"""
 		Returns current version rounded to max. 'n' numbers.
-		( v0.14.1.3 ; n=3 -> v0.14.1 )
+		( v0.14.1.3 ; n=3 -> v0.14.1   )
+		( v0.14.0.0 ; n=3 -> v0.14.0.0 )
 		"""
 		split = DAEMON_VERSION.split(".")[0:n]
-		while split[-1] == "0":
-			split = split[0:len(split) - 1]
+		# Remove final zeroes ( v0.14.0.0 ; n=3 -> v0.14 ) - disabled, let's include them
+		#while split[-1] == "0":
+		#	split = split[0:len(split) - 1]
 		return ".".join(split)
 
 
