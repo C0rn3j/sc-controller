@@ -21,14 +21,9 @@
 # THE SOFTWARE.
 
 from enum import IntEnum
+from importlib.metadata import packages_distributions, version
 
-# python >= 3.10
-#from importlib.metadata import version, packages_distributions
-#distribution_name = packages_distributions()[__package__][0]
-# python < 3.10 (Focal, Bullseye)
-from importlib.metadata import distributions, version
-
-distribution_name = next(dist.metadata["Name"] for dist in distributions() if __package__ in (dist.read_text("top_level.txt") or "").split())
+distribution_name = packages_distributions()[__package__][0]
 
 """
 If SC Controller is updated while daemon is running, DAEMON_VERSION send by

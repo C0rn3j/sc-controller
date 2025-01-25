@@ -22,21 +22,12 @@ RUN <<EOR
 		librsvg2-bin \
 		libxfixes3 \
 		linux-headers-generic \
+		python3-build \
 		python3-dev \
 		python3-setuptools \
 		python3-usb \
 		python3-venv \
 		python-is-python3
-
-	# Workaround for Focal lacking an apt package for python3-build
-	dep=build
-	package="python3-${dep}"
-	if apt-cache search --names-only "^${package}$" | grep -q .; then
-		apt-get install -y --no-install-recommends "${package}"
-	else
-		apt-get install -y --no-install-recommends python3-pip
-		pip install "${dep}"
-	fi
 
 	apt-get clean && rm -rf /var/lib/apt/lists/*
 EOR
@@ -48,12 +39,6 @@ ARG TARGET=/build
 # Build and install
 RUN <<EOR
 	set -eu
-
-	# Focal workaround, until it is removed completely, builds a semi-broken image (About does not work at minimum)
-	. /etc/os-release
-	if [ ${UBUNTU_CODENAME-} = 'focal' ]; then
-		sed -i -e 's/>=3.9/>=3.8/' -e 's/py39/py38/' pyproject.toml
-	fi
 
 	python -m build --wheel
 	python -m venv .env

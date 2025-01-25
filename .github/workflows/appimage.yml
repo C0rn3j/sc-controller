@@ -18,10 +18,6 @@ jobs:
             arch: arm64
         base:
           - os: ubuntu
-            codename: focal
-            pubkey: 871920D1991BC93C
-            recipe: AppImageBuilder.ubuntu-focal.yml
-          - os: ubuntu
             codename: jammy
             pubkey: 871920D1991BC93C
             recipe: AppImageBuilder.yml
@@ -29,11 +25,6 @@ jobs:
             codename: noble
             pubkey: 871920D1991BC93C
             recipe: AppImageBuilder.yml
-          - os: debian
-            codename: bullseye
-            pubkey: 0E98404D386FA1D9
-            pubkey_security: 54404762BBB6E853
-            recipe: AppImageBuilder.debian-bullseye.yml
           - os: debian
             codename: bookworm
             pubkey: 0E98404D386FA1D9
@@ -119,21 +110,15 @@ jobs:
             arch: amd64
         base:
           - os: ubuntu
-            codename: focal
-          - os: ubuntu
             codename: jammy
           - os: ubuntu
             codename: noble
-          - os: debian
-            codename: bullseye
           - os: debian
             codename: bookworm
           - os: debian
             codename: trixie
           - os: fedora
-            codename: "39"
-          - os: fedora
-            codename: "40"
+            codename: "41"
           - os: archlinux
             codename: base
 
