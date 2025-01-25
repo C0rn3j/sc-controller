@@ -21,11 +21,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      # Install dependencies
-      - run: |
-        apt install -y python3-setuptools
-        pip install ioctl-opt libusb1 toml vdf pytest
-      # Build
-      - run: python -m build
-      # Test
-      - run: python -m pytest tests
+
+      - name: Install dependencies
+        run: |
+          apt install -y python3-setuptools
+          pip install ioctl-opt libusb1 toml vdf pytest
+
+      - name: Build SCC
+        run: python -m build
+
+      - name: Run tests
+        run: python -m pytest tests
