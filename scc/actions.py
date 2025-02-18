@@ -17,7 +17,7 @@ from scc.constants import (STICK_PAD_MIN, STICK_PAD_MAX, STICK_PAD_MIN_HALF,
 OUTPUT_360_STICK_MIN, OUTPUT_360_STICK_MAX)
 from scc.constants import STICK_PAD_MAX_HALF, TRIGGER_MIN, TRIGGER_HALF
 from scc.constants import HIPFIRE_NORMAL, HIPFIRE_SENSIBLE, HIPFIRE_EXCLUSIVE
-from scc.constants import LEFT, RIGHT, CPAD, STICK, PITCH, YAW, ROLL
+from scc.constants import LEFT, RIGHT, CPAD, STICK, RSTICK, PITCH, YAW, ROLL
 from scc.constants import PARSER_CONSTANTS, ControllerFlags
 from scc.constants import FE_STICK, FE_TRIGGER, FE_PAD
 from scc.constants import TRIGGER_CLICK, TRIGGER_MAX
@@ -441,6 +441,13 @@ class RangeOP:
 		elif what == STICK:
 			# Most special case of all special cases
 			self.axis_name = STICK
+			op = "ABS" + op.replace("=", "")
+			self.children = RangeOP(SCButtons.X, op, value), RangeOP(SCButtons.Y, op, value)
+			self.min, self.max = float(STICK_PAD_MIN), float(STICK_PAD_MAX)
+			self.op_method = self.cmp_or
+		elif what == RSTICK:
+			# Most special case of all special cases
+			self.axis_name = RSTICK
 			op = "ABS" + op.replace("=", "")
 			self.children = RangeOP(SCButtons.X, op, value), RangeOP(SCButtons.Y, op, value)
 			self.min, self.max = float(STICK_PAD_MIN), float(STICK_PAD_MAX)
@@ -915,6 +922,7 @@ class MouseAction(WholeHapticAction, Action):
 		#	mapper.mouse_move(x * self.speed[0] * 0.01, y * self.speed[1] * 0.01)
 		#	mapper.force_event.add(FE_STICK)
 		if ((what == STICK) or
+		    (what == RSTICK) or
 			(what == RIGHT and mapper.controller_flags() & ControllerFlags.HAS_RSTICK)):
 			ratio_x = x / (STICK_PAD_MAX if x > 0 else STICK_PAD_MIN) * copysign(1, x)
 			ratio_y = y / (STICK_PAD_MAX if y > 0 else STICK_PAD_MIN) * copysign(1, y)
@@ -1609,7 +1617,7 @@ class ButtonAction(HapticEnabledAction, Action):
 
 
 	def whole(self, mapper: Mapper, x, y, what):
-		if what == STICK:
+		if what == STICK or what == RSTICK:
 			# Stick used used as one big button (probably as part of ring bindings)
 			if abs(x) < ButtonAction.STICK_DEADZONE and abs(y) < ButtonAction.STICK_DEADZONE:
 				if self._pressed_key == self.button:
@@ -2128,7 +2136,7 @@ class RingAction(MultichildAction):
 
 
 	def whole(self, mapper: Mapper, x, y, what):
-		if what == STICK or mapper.is_touched(what):
+		if what == STICK or what == RSTICK or mapper.is_touched(what):
 			angle = atan2(x, y)
 			distance = sqrt(x*x + y*y)
 			if distance < self._radius_m:
@@ -2143,7 +2151,7 @@ class RingAction(MultichildAction):
 
 			if action == self._active:
 				action.whole(mapper, x, y, what)
-			elif what == STICK:
+			elif what == STICK or what == RSTICK:
 				# Stck crossed radius border, so active action is changing.
 				# Simulate centering stick for former...
 				self._active.whole(mapper, 0, 0, what)
@@ -2166,7 +2174,7 @@ class RingAction(MultichildAction):
 			# Pad just released
 			self._active.whole(mapper, x, y, what)
 			self._active = NoAction()
-		elif self._active and what == STICK and x == 0 and y == 0:
+		elif self._active and (what == STICK or what == RSTICK) and x == 0 and y == 0:
 			# Stick is centered
 			self._active.whole(mapper, x, y, what)
 			self._active = NoAction()
@@ -2292,7 +2300,7 @@ class XYAction(WholeHapticAction, Action):
 			else:
 				self._old_pos = None
 
-		if mapper.controller_flags() & ControllerFlags.HAS_RSTICK and what == RIGHT:
+		if mapper.controller_flags() & ControllerFlags.HAS_RSTICK and (what == RIGHT or what == RSTICK):
 			self.x.axis(mapper, x, what)
 			self.y.axis(mapper, y, what)
 			mapper.force_event.add(FE_PAD)
