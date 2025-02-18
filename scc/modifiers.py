@@ -565,7 +565,7 @@ class BallModifier(Modifier, WholeHapticAction):
 
 
 	def whole(self, mapper, x, y, what):
-		if mapper.controller_flags() & ControllerFlags.HAS_RSTICK and what == RIGHT:
+		if mapper.controller_flags() & ControllerFlags.HAS_RSTICK and not mapper.controller_flags() & ControllerFlags.IS_DECK and what == RIGHT:
 			return self.action.whole(mapper, x, y, what)
 		if mapper.is_touched(what):
 			if mapper.is_touched(what) and not mapper.was_touched(what):
