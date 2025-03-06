@@ -83,7 +83,8 @@ def recolor(tree, add) -> None:
 ET.register_namespace("","http://www.w3.org/2000/svg")
 for tp in ("sc", "scbt", "fake", "ds4", "hid", "rpad"):
 	# Read svg and parse it
-	data = open(f"{CICONS}{tp}-0.svg", "r").read()
+	with open(f"{CICONS}{tp}-0.svg", "r") as file:
+		data = file.read()
 	# Create recolored images
 	for key in RECOLORS:
 		tree = ET.fromstring(data)

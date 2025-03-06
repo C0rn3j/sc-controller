@@ -55,7 +55,8 @@ class SVGWidget(Gtk.EventBox):
 
 
 	def set_image(self, filename):
-		self.current_svg = open(filename, "r").read()
+		with open(filename, "r") as file:
+			self.current_svg = file.read()
 		self.cache = OrderedDict()
 		self.areas = []
 		self.parse_image()

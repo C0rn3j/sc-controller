@@ -131,62 +131,63 @@ class ControllerRegistration(Editor):
 			log.exception(e)
 			return False
 
-		for line in db.readlines():
-			if line.startswith(weird_id):
-				log.info("Loading mappings for '%s' from gamecontrollerdb", weird_id)
-				log.debug("Buttons: %s", buttons)
-				log.debug("Axes: %s", axes)
-				for token in line.strip().split(","):
-					if ":" in token:
-						k, v = token.split(":", 1)
-						k = SDL_TO_SCC_NAMES.get(k, k)
-						if v.startswith("b") and hasattr(SCButtons, k.upper()):
-							try:
-								keycode = buttons[int(v.strip("b"))]
-							except IndexError:
-								log.warning("Skipping unknown gamecontrollerdb button->button mapping: '%s'", v)
-								continue
-							button  = getattr(SCButtons, k.upper())
-							self._mappings[keycode] = button
-						elif v.startswith("b") and k in SDL_AXES:
-							try:
-								keycode = buttons[int(v.strip("b"))]
-							except IndexError:
-								log.warning("Skipping unknown gamecontrollerdb button->axis mapping: '%s'", v)
-								continue
-							log.info("Adding button -> axis mapping for %s", k)
-							self._mappings[keycode] = self._axis_data[SDL_AXES.index(k)]
-							self._mappings[keycode].min = STICK_PAD_MIN
-							self._mappings[keycode].max = STICK_PAD_MAX
-						elif v.startswith("h") and 16 in axes and 17 in axes:
-							# Special case for evdev hatswitch
-							if v == "h0.1" and k == "dpup":
-								self._mappings[16] = self._axis_data[SDL_AXES.index("dpadx")]
-								self._mappings[17] = self._axis_data[SDL_AXES.index("dpady")]
-						elif k in SDL_AXES:
-							try:
-								code = axes[int(v.strip("a"))]
-							except IndexError:
-								log.warning("Skipping unknown gamecontrollerdb axis: '%s'", v)
-								continue
-							self._mappings[code] = self._axis_data[SDL_AXES.index(k)]
-						elif k in SDL_DPAD and v.startswith("b"):
-							try:
-								keycode = buttons[int(v.strip("b"))]
-							except IndexError:
-								log.warning("Skipping unknown gamecontrollerdb button->dpad mapping: %s", v)
-								continue
-							index, positive = SDL_DPAD[k]
-							data = DPadEmuData(self._axis_data[index], positive)
-							self._mappings[keycode] = data
-						elif k == "platform":
-							# Not interesting
-							pass
-						else:
-							log.warning("Skipping unknown gamecontrollerdb mapping %s:%s", k, v)
-				return True
-		else:
-			log.debug("Mappings for '%s' not found in gamecontrollerdb", weird_id)
+		with db:
+			for line in db.readlines():
+				if line.startswith(weird_id):
+					log.info("Loading mappings for '%s' from gamecontrollerdb", weird_id)
+					log.debug("Buttons: %s", buttons)
+					log.debug("Axes: %s", axes)
+					for token in line.strip().split(","):
+						if ":" in token:
+							k, v = token.split(":", 1)
+							k = SDL_TO_SCC_NAMES.get(k, k)
+							if v.startswith("b") and hasattr(SCButtons, k.upper()):
+								try:
+									keycode = buttons[int(v.strip("b"))]
+								except IndexError:
+									log.warning("Skipping unknown gamecontrollerdb button->button mapping: '%s'", v)
+									continue
+								button  = getattr(SCButtons, k.upper())
+								self._mappings[keycode] = button
+							elif v.startswith("b") and k in SDL_AXES:
+								try:
+									keycode = buttons[int(v.strip("b"))]
+								except IndexError:
+									log.warning("Skipping unknown gamecontrollerdb button->axis mapping: '%s'", v)
+									continue
+								log.info("Adding button -> axis mapping for %s", k)
+								self._mappings[keycode] = self._axis_data[SDL_AXES.index(k)]
+								self._mappings[keycode].min = STICK_PAD_MIN
+								self._mappings[keycode].max = STICK_PAD_MAX
+							elif v.startswith("h") and 16 in axes and 17 in axes:
+								# Special case for evdev hatswitch
+								if v == "h0.1" and k == "dpup":
+									self._mappings[16] = self._axis_data[SDL_AXES.index("dpadx")]
+									self._mappings[17] = self._axis_data[SDL_AXES.index("dpady")]
+							elif k in SDL_AXES:
+								try:
+									code = axes[int(v.strip("a"))]
+								except IndexError:
+									log.warning("Skipping unknown gamecontrollerdb axis: '%s'", v)
+									continue
+								self._mappings[code] = self._axis_data[SDL_AXES.index(k)]
+							elif k in SDL_DPAD and v.startswith("b"):
+								try:
+									keycode = buttons[int(v.strip("b"))]
+								except IndexError:
+									log.warning("Skipping unknown gamecontrollerdb button->dpad mapping: %s", v)
+									continue
+								index, positive = SDL_DPAD[k]
+								data = DPadEmuData(self._axis_data[index], positive)
+								self._mappings[keycode] = data
+							elif k == "platform":
+								# Not interesting
+								pass
+							else:
+								log.warning("Skipping unknown gamecontrollerdb mapping %s:%s", k, v)
+					return True
+			else:
+				log.debug("Mappings for '%s' not found in gamecontrollerdb", weird_id)
 
 		return False
 

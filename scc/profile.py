@@ -47,9 +47,8 @@ class Profile:
 
 	def save(self, filename):
 		""" Saves profile into file. Returns self """
-		fileobj = open(filename, "w")
-		self.save_fileobj(fileobj)
-		fileobj.close()
+		with open(filename, "w") as fileobj:
+			self.save_fileobj(fileobj)
 		return self
 
 
@@ -85,8 +84,8 @@ class Profile:
 
 	def load(self, filename):
 		""" Loads profile from file. Returns self """
-		fileobj = open(filename, "r")
-		self.load_fileobj(fileobj)
+		with open(filename, "r") as fileobj:
+			self.load_fileobj(fileobj)
 		self.filename = filename
 		return self
 
