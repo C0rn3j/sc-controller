@@ -1,6 +1,6 @@
 import pkgutil
 
-import toml
+import tomllib
 
 import scc
 
@@ -19,7 +19,8 @@ class TestSetup:
 			pass
 
 		# Load the packages from pyproject.toml
-		pyproject = toml.load("pyproject.toml")
+		with open("pyproject.toml", "rb") as file:
+			pyproject = tomllib.load(file)
 		packages = pyproject["tool"]["setuptools"]["packages"]
 
 		for importer, modname, ispkg in pkgutil.walk_packages(path=scc.__path__, prefix="scc.", onerror=lambda x: None):
