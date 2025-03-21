@@ -449,8 +449,8 @@ class ControllerRegistration(Editor):
 				# Special case, device may be usable, but there is no access
 				rvHIDWarning = self.builder.get_object("rvHIDWarning")
 				rvHIDWarning.set_reveal_child(False)
-			log.debug("Trying to use '%s' with evdev driver...", dev.fn)
-			self._tester = Tester("evdev", dev.fn)
+			log.debug(f"Trying to use '{dev.path}' with evdev driver...")
+			self._tester = Tester("evdev", dev.path)
 			self._tester.__signals = [
 				self._tester.connect('ready', self.on_registration_ready),
 				self._tester.connect('error', self.on_device_open_failed)
