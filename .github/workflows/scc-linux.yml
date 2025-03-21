@@ -23,7 +23,7 @@ jobs:
           python-version: '3.13'
 
       - name: Install dependencies
-        run: pip install build setuptools ioctl-opt libusb1 toml vdf pytest
+        run: pip install build setuptools ioctl-opt libusb1 vdf pytest
 
       - name: Build SCC
         run: python -m build

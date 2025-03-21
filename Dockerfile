@@ -43,8 +43,11 @@ RUN <<EOR
 	python -m build --wheel
 	python -m venv .env
 	. .env/bin/activate
-	pip install libusb1 pytest toml vdf
-	python -m pytest tests
+	pip install libusb1 pytest vdf
+	# Tests need Python 3.11+
+	if [ ${UBUNTU_CODENAME-} != 'jammy' ]; then
+		python -m pytest tests
+	fi
 	pip install --prefix "${TARGET}/usr" --no-warn-script-location dist/*.whl
 
 	# Save version
