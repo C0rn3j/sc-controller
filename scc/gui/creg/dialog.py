@@ -556,7 +556,7 @@ class ControllerRegistration(Editor):
 					self._tester = Tester("hid", "%.4x:%.4x" % (
 						self._evdevice.info.vendor, self._evdevice.info.product))
 				else:
-					self._tester = Tester("evdev", self._evdevice.fn)
+					self._tester = Tester("evdev", self._evdevice.path)
 				self._tester.__signals = [
 					self._tester.connect('ready', self.on_registration_ready),
 					self._tester.connect('error', self.on_device_open_failed),
