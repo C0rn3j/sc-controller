@@ -34,7 +34,8 @@ class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 		or None if type is not supported.
 		"""
 		try:
-			f = open(filename, 'rb').read(1024)
+			with open(filename, 'rb') as file:
+				f = file.read(1024)
 		except Exception as e:
 			# File not readable
 			log.error(traceback.format_exc())
@@ -54,8 +55,8 @@ class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 		if f[0:2] == b"\x1f\x8b":
 			# gzip, hopefully tar.gz
 			try:
-				tar = tarfile.open(filename, "r:gz")
-				names = [ x.name for x in tar ]
+				with tarfile.open(filename, "r:gz") as tar:
+					names = [ x.name for x in tar ]
 				any_profile = any([ x.endswith(".sccprofile") for x in names ])
 				if any_profile and "profile-name" in names:
 					return "sccprofile.tar.gz"

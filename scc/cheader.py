@@ -82,108 +82,109 @@ def defines(base, include):
 	fname = os.path.normpath(os.path.abspath(os.path.join(base, include)))
 	parsed.add(fname)
 
-	lexer = shlex.shlex(open(fname), posix=True)
+	with open(fname) as file:
+		lexer = shlex.shlex(file, posix=True)
 
-	lexer.whitespace = ' \t\r'
-	lexer.commenters = ''
-	lexer.quotes = '"'
+		lexer.whitespace = ' \t\r'
+		lexer.commenters = ''
+		lexer.quotes = '"'
 
-	out = OrderedDict()
+		out = OrderedDict()
 
-	def parse_c_comments(lexer, tok, ntok):
-		if tok != '/' or ntok != '*':
-			return False
-		quotes = lexer.quotes
-		lexer.quotes = ''
-		while True:
-			tok = lexer.get_token()
-			ntok = lexer.get_token()
-			if tok == '*' and ntok == '/':
-				lexer.quotes = quotes
-				break
-			else:
-				lexer.push_token(ntok)
-		return True
-
-	def parse_cpp_comments(lexer, tok, ntok):
-		if tok != '/' or ntok != '/':
-			return False
-		quotes = lexer.quotes
-		lexer.quotes = ''
-		while True:
-			tok = lexer.get_token()
-			if tok == '\n':
-				lexer.quotes = quotes
-				lexer.push_token(tok)
-				break
-		return True
-
-	while True:
-		tok = lexer.get_token()
-		if not tok or tok == '':
-			break
-		ntok = lexer.get_token()
-
-		if parse_c_comments(lexer, tok, ntok):
-			continue
-		if parse_cpp_comments(lexer, tok, ntok):
-			continue
-
-		if tok != '\n' or ntok != '#':
-			lexer.push_token(ntok)
-			continue
-
-		tok = lexer.get_token()
-		if tok == 'define':
-			name = lexer.get_token()
-			expr = ''
+		def parse_c_comments(lexer, tok, ntok):
+			if tok != '/' or ntok != '*':
+				return False
+			quotes = lexer.quotes
+			lexer.quotes = ''
 			while True:
-
 				tok = lexer.get_token()
 				ntok = lexer.get_token()
-
-				if parse_c_comments(lexer, tok, ntok):
-					continue
-				if parse_cpp_comments(lexer, tok, ntok):
-					continue
-				lexer.push_token(ntok)
-
-				if not tok or tok == '':
+				if tok == '*' and ntok == '/':
+					lexer.quotes = quotes
 					break
+				else:
+					lexer.push_token(ntok)
+			return True
+
+		def parse_cpp_comments(lexer, tok, ntok):
+			if tok != '/' or ntok != '/':
+				return False
+			quotes = lexer.quotes
+			lexer.quotes = ''
+			while True:
+				tok = lexer.get_token()
 				if tok == '\n':
+					lexer.quotes = quotes
 					lexer.push_token(tok)
 					break
+			return True
 
-				if tok in out:
-					tok = str(out[tok])
-				expr = expr + tok
+		while True:
+			tok = lexer.get_token()
+			if not tok or tok == '':
+				break
+			ntok = lexer.get_token()
 
-			try:
-				val = eval_expr(expr)
-				out[name] = val
-			except (SyntaxError, TypeError):
-				pass
-		elif tok == 'include':
+			if parse_c_comments(lexer, tok, ntok):
+				continue
+			if parse_cpp_comments(lexer, tok, ntok):
+				continue
+
+			if tok != '\n' or ntok != '#':
+				lexer.push_token(ntok)
+				continue
 
 			tok = lexer.get_token()
-			if tok == '<':
-				name = ''
+			if tok == 'define':
+				name = lexer.get_token()
+				expr = ''
 				while True:
+
 					tok = lexer.get_token()
-					if tok == '>':
+					ntok = lexer.get_token()
+
+					if parse_c_comments(lexer, tok, ntok):
+						continue
+					if parse_cpp_comments(lexer, tok, ntok):
+						continue
+					lexer.push_token(ntok)
+
+					if not tok or tok == '':
 						break
-					name = name + tok
+					if tok == '\n':
+						lexer.push_token(tok)
+						break
+
+					if tok in out:
+						tok = str(out[tok])
+					expr = expr + tok
+
+				try:
+					val = eval_expr(expr)
+					out[name] = val
+				except (SyntaxError, TypeError):
+					pass
+			elif tok == 'include':
+
+				tok = lexer.get_token()
+				if tok == '<':
+					name = ''
+					while True:
+						tok = lexer.get_token()
+						if tok == '>':
+							break
+						name = name + tok
+				else:
+					name = tok
+				fname = os.path.normpath(os.path.abspath(os.path.join(base, name)))
+				if os.path.isfile(fname) and not fname in parsed:
+					parsed.add(fname)
+					lexer.push_source(open(fname))
 			else:
-				name = tok
-			fname = os.path.normpath(os.path.abspath(os.path.join(base, name)))
-			if os.path.isfile(fname) and not fname in parsed:
-				parsed.add(fname)
-				lexer.push_source(open(fname))
-		else:
-			lexer.push_token(tok)
+				lexer.push_token(tok)
 
 
-	return out
+		return out
 
 
 if __name__ == '__main__':

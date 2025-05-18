@@ -11,23 +11,25 @@ def try_run(cmd: str) -> None:
 def merge(file_from: str, file_to: str, from_: str, to: str) -> None:
 	"""Merge lines from line containing 'from_' to line containing 'to' from f1 to f2."""
 	lines1, inside = [], False
-	for line in open(file_from):
-		if from_ in line.strip("\r\n\t "):
-			inside = True
-		elif to in line.strip("\r\n\t "):
-			inside = False
-		if inside:
-			lines1.append(line)
+	with open(file_from) as file:
+		for line in file:
+			if from_ in line.strip("\r\n\t "):
+				inside = True
+			elif to in line.strip("\r\n\t "):
+				inside = False
+			if inside:
+				lines1.append(line)
 
 	lines2, inside = [], False
-	for line in open(file_to):
-		if from_ in line.strip("\r\n\t "):
-			inside = True
-			lines2 += lines1
-		elif to in line.strip("\r\n\t "):
-			inside = False
-		elif not inside:
-			lines2.append(line)
+	with open(file_to) as file:
+		for line in file:
+			if from_ in line.strip("\r\n\t "):
+				inside = True
+				lines2 += lines1
+			elif to in line.strip("\r\n\t "):
+				inside = False
+			elif not inside:
+				lines2.append(line)
 
 	open(file_to, "w").write("".join(lines2))
 

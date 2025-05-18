@@ -581,7 +581,8 @@ class VDFProfile(Profile):
 
 		May raise ValueError.
 		"""
-		data = parse_vdf(open(filename, "r"))
+		with open(filename, "r") as file:
+			data = parse_vdf(file)
 		self.load_data(data)
 
 

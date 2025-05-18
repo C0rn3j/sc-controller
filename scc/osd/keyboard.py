@@ -100,7 +100,8 @@ class KeyboardImage(Gtk.DrawingArea):
 		self.set_size_request(*SVGEditor.get_size(background))
 		self.overlay.edit().keep("overlay").commit()
 		self.overlay.hilight({})
-		# open("/tmp/a.svg", "w").write(self.overlay.current_svg.encode("utf-8"))
+		# with open("/tmp/a.svg", "w") as file:
+		# 	file.write(self.overlay.current_svg.encode("utf-8"))
 
 
 	def hilight(self, hilight, pressed):

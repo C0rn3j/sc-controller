@@ -245,7 +245,8 @@ class DeviceMonitor(Monitor):
 		"""Recursivelly searchs for "input*" subdirectories until "uniq" file is found. Then, returns address from that file."""
 		uniq = os.path.join(syspath, "uniq")
 		if os.path.exists(uniq):
-			return open(uniq, "r").read().strip()
+			with open(uniq, "r") as file:
+				return file.read().strip()
 		for name in os.listdir(syspath):
 			if name.startswith("input"):
 				path = os.path.join(syspath, name)
