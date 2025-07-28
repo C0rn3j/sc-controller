@@ -59,6 +59,16 @@ BLACKLIST = [
 ]
 
 
+def button_to_bit(sc) -> int:
+	sc, bit = int(sc), 0
+	while sc and (sc & 1 == 0):
+		sc >>= 1
+		bit += 1
+	if sc & 1 == 1:
+		return bit
+	return BUTTON_COUNT - 1
+
+
 class HIDDrvError(Exception):
 	pass
 class NotHIDDevice(HIDDrvError):
@@ -286,22 +296,11 @@ class HIDController(USBDevice, Controller):
 					# Not used here
 					pass
 				else:
-					buttons[keycode] = self.button_to_bit(getattr(SCButtons, value))
+					buttons[keycode] = button_to_bit(getattr(SCButtons, value))
 		else:
 			buttons = list(range(BUTTON_COUNT))
 
 		return (ctypes.c_uint8 * BUTTON_COUNT)(*buttons)
-
-
-	@staticmethod
-	def button_to_bit(sc) -> int:
-		sc, bit = int(sc), 0
-		while sc and (sc & 1 == 0):
-			sc >>= 1
-			bit += 1
-		if sc & 1 == 1:
-			return bit
-		return BUTTON_COUNT - 1
 
 
 	def _build_axis_maping(self, axis, config: dict, mode = AxisMode.AXIS):
