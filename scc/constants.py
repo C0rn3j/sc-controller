@@ -20,16 +20,21 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import logging
 from enum import IntEnum
 from importlib.metadata import packages_distributions, version
 
-distribution_name = packages_distributions()[__package__][0]
+try:
+	distribution_name = packages_distributions()[__package__][0]
+except Exception:
+	logging.exception("Failure getting distribution name")
+	distribution_name = "scc"
 
 """
 If SC Controller is updated while daemon is running, DAEMON_VERSION send by
 daemon will differ one one expected by UI and daemon will be forcefully restarted.
 """
-DAEMON_VERSION = version(distribution_name)
+DAEMON_VERSION = "0.5.3"
 
 HPERIOD  = 0.02
 LPERIOD  = 0.5
