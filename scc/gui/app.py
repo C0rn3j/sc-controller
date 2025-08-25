@@ -46,7 +46,6 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 	CONFIG = "scc.config.json"
 	RELEASE_URL = "https://github.com/C0rn3j/sc-controller/releases/tag/v%s"
 	OSD_MODE_PROF_NAME = ".scc-osd.profile_editor"
-	install_directory = Path(__file__).resolve().parent
 
 	def __init__(self, gladepath: str = "/usr/share/scc",
 						imagepath: str = "/usr/share/scc/images"):
@@ -71,9 +70,9 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		load_custom_module(log, "gui")
 		# Set variables
 		self.config = Config()
-		install_directory = Path(__file__).resolve().parent
-		self.gladepath = gladepath if Path(gladepath).exists() else str(install_directory / ".." / ".." / "glade")
-		self.imagepath = imagepath if Path(imagepath).exists() else str(install_directory / ".." / ".." / "images")
+		app_py_directory = Path(__file__).resolve().parent
+		self.gladepath = gladepath if Path(gladepath).exists() else str(app_py_directory.parent.parent / "glade")
+		self.imagepath = imagepath if Path(imagepath).exists() else str(app_py_directory.parent.parent / "images")
 		self.builder = None
 		self.recursing = False
 		self.statusicon = None
