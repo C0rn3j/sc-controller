@@ -18,7 +18,7 @@ a = Analysis(
 		# ("lib/udev/rules.d", glob.glob("scripts/*.rules")),
 	],
 	hiddenimports=[
-		"scc"
+		"scc",
 		"scc.bin",
 		"scc.drivers",
 		"scc.lib",
@@ -45,7 +45,7 @@ exe = EXE(
 	a.scripts,
 	[],
 	exclude_binaries=True,
-	name='sc_controller',
+	name='sc-controller',
 	debug=False,
 	bootloader_ignore_signals=False,
 	strip=False,
@@ -64,5 +64,5 @@ coll = COLLECT(
 	strip=False,
 	upx=True,
 	upx_exclude=[],
-	name='sc_controller',
+	name='sc-controller',
 )
