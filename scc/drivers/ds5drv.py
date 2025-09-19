@@ -342,9 +342,9 @@ class DS5Controller(HIDController):
 
 		self._packet_size = 64
 
-	def input(self, endpoint, data):
+	def input(self, endpoint: int, data: bytearray) -> None:
 		# Special override for CPAD touch button
-		if _lib.decode(ctypes.byref(self._decoder), data):
+		if _lib.decode(ctypes.byref(self._decoder), bytes(data)):
 			if self.mapper:
 				if data[33] >> 7:
 					# cpad is not touched
