@@ -147,7 +147,6 @@ class DS4Controller(HIDController):
 
 		self._packet_size = 64
 
-# TODO: Which commit made data switch from bytes to bytearray?
 	def input(self, endpoint: int, data: bytearray) -> None:
 		# Special override for CPAD touch button
 		if _lib.decode(ctypes.byref(self._decoder), bytes(data)):
@@ -180,10 +179,7 @@ class DS4Controller(HIDController):
 
 
 	def _generate_id(self) -> str:
-		"""
-		ID is generated as 'ds4' or 'ds4:X' where 'X' starts as 1 and increases
-		as controllers with same ids are connected.
-		"""
+		"""ID is generated as 'ds4' or 'ds4:X' where 'X' starts as 1 and increases as controllers with same ids are connected."""
 		magic_number = 1
 		id = "ds4"
 		while id in self.daemon.get_active_ids():
