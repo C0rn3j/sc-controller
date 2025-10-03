@@ -105,11 +105,6 @@ AppDir:
       - sourceline: deb http://deb.debian.org/debian {{APPIMAGE_APT_DISTRO}}-updates main
       - sourceline: deb http://deb.debian.org/debian-security/ {{APPIMAGE_APT_DISTRO}}-security main
         key_url: http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x{{APPIMAGE_APT_PUBKEY_SECURITY}}
-    # TODO(Martin): Hardcode for now
-    keys:
-      - "0x6ED0E7B82643E131"
-      - "0x78DBA3BC47EF2265"
-      - "0xF8D2585B8783D481"
 
     include:
       - gir1.2-gtk-3.0
