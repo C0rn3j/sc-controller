@@ -27,8 +27,8 @@ jobs:
             recipe: AppImageBuilder.yml
           - os: debian
             codename: bookworm
-            pubkey: 0E98404D386FA1D9
-            pubkey_security: 54404762BBB6E853
+            pubkey: 54404762BBB6E853
+            pubkey_security: 6ED0E7B82643E131
             recipe: AppImageBuilder.debian.yml
 #          - os: debian
 #            codename: trixie
