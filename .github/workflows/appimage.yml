@@ -30,14 +30,15 @@ jobs:
             pubkey: 54404762BBB6E853
             pubkey_security: 6ED0E7B82643E131
             recipe: AppImageBuilder.debian.yml
-#          - os: debian
-#            codename: trixie
-#            pubkey: 0E98404D386FA1D9
-#            pubkey_security: 54404762BBB6E853
-#            recipe: AppImageBuilder.debian.yml
+          - os: debian
+            codename: trixie
+            pubkey: BDE6D2B9216EC7A8
+            pubkey_security: 8E9F831205B4BA95
+            pubkey_updates: 78DBA3BC47EF2265
+            recipe: AppImageBuilder.debian.yml
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: rlespinasse/github-slug-action@v4
@@ -74,6 +75,7 @@ jobs:
           APPIMAGE_APT_ARCH="${TARGETARCH}"
           APPIMAGE_APT_DISTRO="${{ matrix.base.codename }}"
           APPIMAGE_APT_PUBKEY="${{ matrix.base.pubkey }}"
+          APPIMAGE_APT_PUBKEY_UPDATES="${{ matrix.base.pubkey_updates }}"
           APPIMAGE_APT_PUBKEY_SECURITY="${{ matrix.base.pubkey_security }}"
           APPIMAGE_ARCH="${TARGETMACHINE}"
           printenv | grep ^APPIMAGE_ >>"${GITHUB_ENV}"
@@ -99,7 +101,7 @@ jobs:
           if-no-files-found: error
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.target.os }}
     needs:
       - build
     strategy:
@@ -108,6 +110,17 @@ jobs:
         target:
           - platform: linux/amd64
             arch: amd64
+            os: ubuntu-latest
+
+          # arm64 AppImages created by appimage-builder <= v1.1.0 are broken
+          # and fail with `APPRUN_ERROR: No such file or directory` on amd64
+          # due to https://github.com/AppImageCrafters/appimage-builder/issues/272
+          #
+          # This comment can be removed when a fixed appimage-builder release is available.
+          #- platform: linux/arm64
+          #  arch: arm64
+          #  os: ubuntu-24.04-arm
+
         base:
           - os: ubuntu
             codename: jammy
@@ -115,30 +128,23 @@ jobs:
             codename: noble
           - os: debian
             codename: bookworm
-# ARM64 builds fail for Trixie and F41, something in the dockerfile throws code 139 and it segfaults
-#          - os: debian
-#            codename: trixie
-#          - os: fedora
-#            codename: "41"
+          - os: debian
+            codename: trixie
           - os: fedora
-            codename: "40"
-          - os: archlinux
-            codename: base
+            codename: "41"
+          - os: fedora
+            codename: "42"
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           pattern: appimage-*-${{ matrix.target.arch }}
           path: appimages
           merge-multiple: true
-
-      - name: Setup qemu for docker
-        uses: docker/setup-qemu-action@v3
-        if: matrix.target.platform != 'linux/amd64'
 
       - name: Setup buildx for docker
         uses: docker/setup-buildx-action@v3
@@ -165,7 +171,7 @@ jobs:
 
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           pattern: appimage-*
           path: assets

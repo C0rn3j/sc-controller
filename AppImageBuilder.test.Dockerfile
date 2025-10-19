@@ -22,7 +22,7 @@ RUN <<EOR
     elif command -v pacman >/dev/null; then
       pacman -Syu --noconfirm libx11
     elif command -v dnf >/dev/null; then
-      dnf list updates && dnf install -y libX11
+      dnf install -y libX11
     fi
   }
 
