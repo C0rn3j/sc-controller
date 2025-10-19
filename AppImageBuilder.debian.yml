@@ -103,6 +103,7 @@ AppDir:
       - sourceline: deb http://deb.debian.org/debian {{APPIMAGE_APT_DISTRO}} main
         key_url: http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x{{APPIMAGE_APT_PUBKEY}}
       - sourceline: deb http://deb.debian.org/debian {{APPIMAGE_APT_DISTRO}}-updates main
+        key_url: http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x{{APPIMAGE_APT_PUBKEY_UPDATES}}
       - sourceline: deb http://deb.debian.org/debian-security/ {{APPIMAGE_APT_DISTRO}}-security main
         key_url: http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x{{APPIMAGE_APT_PUBKEY_SECURITY}}
 
