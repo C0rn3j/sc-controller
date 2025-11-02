@@ -73,7 +73,7 @@ class Daemon:
 		"""Delete pid file"""
 		os.remove(self.pidfile)
 
-	def start(self):
+	def start(self, foreground=False):
 		"""Start the daemon."""
 
 		# Check for a pidfile to see if the daemon already runs
@@ -103,7 +103,10 @@ class Daemon:
 			sys.stderr.write("Overwriting stale pidfile\n")
 
 		# Start the daemon
-		self.daemonize()
+		if not foreground:
+			self.daemonize()
+		else:
+			self.write_pid()
 		syslog.syslog(syslog.LOG_INFO, '{}: started'.format(os.path.basename(sys.argv[0])))
 		self.on_start()
 		while True:
