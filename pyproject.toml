@@ -12,11 +12,10 @@ name = "sccontroller"
 dynamic = ["version"]
 description = "User-mode driver, mapper and GTK3 based GUI for Steam Controller, DS4 and similar controllers."
 authors = [{name = "C0rn3j", email = "martin@rys.rs"}]
-license = {text = "GPL-2.0-only"}
+license = "GPL-2.0-only"
 keywords = ["controller", "mapping", "tools"]
 classifiers = [
 	"Programming Language :: Python :: 3",
-	"License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
 	"Operating System :: POSIX :: Linux",
 	"Typing :: Typed",
 ]
