@@ -43,6 +43,7 @@ from scc.drivers.hiddrv import (
 	HIDController,
 	HIDDecoder,
 	_lib,
+	button_to_bit,
 	hiddrv_test,
 )
 from scc.drivers.usb import register_hotplug_device
@@ -338,7 +339,7 @@ class DS5Controller(HIDController):
 			for x in range(BUTTON_COUNT):
 				self._decoder.buttons.button_map[x] = 64
 			for x, sc in enumerate(DS5Controller.BUTTON_MAP):
-				self._decoder.buttons.button_map[x] = self.button_to_bit(sc)
+				self._decoder.buttons.button_map[x] = button_to_bit(sc)
 
 		self._packet_size = 64
 

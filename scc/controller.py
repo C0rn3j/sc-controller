@@ -31,7 +31,7 @@ class Controller:
 		self.time_elapsed = 0.0
 
 
-	def get_type(self) -> None:
+	def get_type(self) -> str:
 		"""
 		This method has to return type identifier - short string without spaces
 		that describes type of controller which should be unique for each

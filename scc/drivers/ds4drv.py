@@ -5,10 +5,14 @@ Extends HID driver with DS4-specific options.
 
 import ctypes
 import logging
+import os
 import sys
 from typing import TYPE_CHECKING
 
+from usb1 import USBDeviceHandle
+
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons
+from scc.controller import Controller
 from scc.drivers.evdevdrv import (
 	HAVE_EVDEV,
 	EvdevController,
@@ -28,9 +32,11 @@ from scc.drivers.hiddrv import (
 	HIDController,
 	HIDDecoder,
 	_lib,
+	button_to_bit,
 	hiddrv_test,
 )
-from scc.drivers.usb import register_hotplug_device
+from scc.drivers.usb import USBDevice, register_hotplug_device
+from scc.lib.hidraw import HIDRaw
 from scc.tools import init_logging, set_logging_level
 
 if TYPE_CHECKING:
@@ -45,7 +51,7 @@ PRODUCT_ID        = 0x09CC
 DS4_V1_PRODUCT_ID = 0x05C4
 
 
-class DS4Controller(HIDController):
+class DS4Controller(Controller):
 	# Most of axes are the same
 	BUTTON_MAP = (
 		SCButtons.X,
@@ -71,6 +77,11 @@ class DS4Controller(HIDController):
 			| ControllerFlags.SEPARATE_STICK
 			| ControllerFlags.NO_GRIPS
 	)
+
+
+	def __init__(self, daemon: "SCCDaemon") -> None:
+		self.daemon = daemon
+		Controller.__init__(self)
 
 
 	def _load_hid_descriptor(self, config, max_size, vid, pid, test_mode):
@@ -143,9 +154,8 @@ class DS4Controller(HIDController):
 			for x in range(BUTTON_COUNT):
 				self._decoder.buttons.button_map[x] = 64
 			for x, sc in enumerate(DS4Controller.BUTTON_MAP):
-				self._decoder.buttons.button_map[x] = self.button_to_bit(sc)
+				self._decoder.buttons.button_map[x] = button_to_bit(sc)
 
-		self._packet_size = 64
 
 	def input(self, endpoint: int, data: bytearray) -> None:
 		# Special override for CPAD touch button
@@ -186,6 +196,82 @@ class DS4Controller(HIDController):
 			id = f"ds4:{magic_number}"
 			magic_number += 1
 		return id
+
+
+class DS4HIDController(DS4Controller, HIDController):
+	def __init__(self, device: "USBDevice", daemon: "SCCDaemon", handle: "USBDeviceHandle", config_file, config, test_mode = False):
+		DS4Controller.__init__(self, daemon)
+		HIDController.__init__(self, device, daemon, handle, config_file, config, test_mode)
+
+
+class DS4HIDRawController(DS4Controller, Controller):
+	def __init__(self, driver: "DS4HIDRawDriver", syspath, hidrawdev: "HIDRaw", vid, pid) -> None:
+		self.driver = driver
+		self.syspath = syspath
+
+		DS4Controller.__init__(self, driver.daemon)
+
+		self._device_name = hidrawdev.getName()
+		self._hidrawdev = hidrawdev
+		self._fileno = hidrawdev._device.fileno()
+		self._id = self._generate_id() if driver else "-"
+
+		self._packet_size = 78
+		self._load_hid_descriptor(driver.config, self._packet_size, vid, pid, None)
+
+		# self._set_operational()
+		self.read_serial()
+		self._poller = self.daemon.get_poller()
+		if self._poller:
+			self._poller.register(self._fileno, self._poller.POLLIN, self._input)
+		# self.daemon.get_device_monitor().add_remove_callback(syspath, self.close)
+		self.daemon.add_controller(self)
+
+	def read_serial(self):
+		self._serial = (self._hidrawdev
+			.getPhysicalAddress().replace(b":", b""))
+
+	def _input(self, *args):
+		data = self._hidrawdev.read(self._packet_size)
+		if data[0] != 0x11:
+			return
+		self.input(self._fileno, data[2:])
+
+	def close(self):
+		if self._poller:
+			self._poller.unregister(self._fileno)
+
+		self.daemon.remove_controller(self)
+		self._hidrawdev._device.close()
+
+
+class DS4HIDRawDriver:
+	def __init__(self, daemon: "SCCDaemon", config: dict):
+		self.config = config
+		self.daemon = daemon
+		daemon.get_device_monitor().add_callback("bluetooth", VENDOR_ID, PRODUCT_ID, self.make_bt_hidraw_callback, None)
+		daemon.get_device_monitor().add_callback("bluetooth", VENDOR_ID, DS4_V1_PRODUCT_ID, self.make_bt_hidraw_callback, None)
+
+	def retry(self, syspath: str):
+		pass
+
+	def make_bt_hidraw_callback(self, syspath: str, vid, pid, *whatever):
+		hidrawname = self.daemon.get_device_monitor().get_hidraw(syspath)
+		if hidrawname is None:
+			return None
+		try:
+			dev = HIDRaw(open(os.path.join("/dev/", hidrawname), "w+b"))
+			return DS4HIDRawController(self, syspath, dev, vid, pid)
+		except Exception as e:
+			log.exception(e)
+			return None
+
+	def get_device_name(self):
+		return "Dualshock 4 over Bluetooth HIDRaw"
+
+	def get_type(self):
+		return "ds4bt_hidraw"
+
 
 
 class DS4EvdevController(EvdevController):
@@ -377,8 +463,8 @@ class DS4EvdevController(EvdevController):
 def init(daemon: "SCCDaemon", config: dict) -> bool:
 	"""Register hotplug callback for DS4 device."""
 
-	def hid_callback(device, handle) -> DS4Controller:
-		return DS4Controller(device, daemon, handle, None, None)
+	def hid_callback(device, handle) -> DS4HIDController:
+		return DS4HIDController(device, daemon, handle, None, None)
 
 	def make_evdev_device(sys_dev_path: str, *whatever):
 		devices = get_evdev_devices_from_syspath(sys_dev_path)
@@ -431,7 +517,10 @@ def init(daemon: "SCCDaemon", config: dict) -> bool:
 		register_hotplug_device(hid_callback, VENDOR_ID, PRODUCT_ID, on_failure=fail_cb)
 		# DS4 v.1
 		register_hotplug_device(hid_callback, VENDOR_ID, DS4_V1_PRODUCT_ID, on_failure=fail_cb)
-		if HAVE_EVDEV and config["drivers"].get("evdevdrv"):
+		if config["drivers"].get("hiddrv"):
+			# Only enable HIDRaw support for BT connections if hiddrv is enabled
+			_drv = DS4HIDRawDriver(daemon, config)
+		elif HAVE_EVDEV and config["drivers"].get("evdevdrv"):
 			# DS4 v.2
 			daemon.get_device_monitor().add_callback("bluetooth", VENDOR_ID, PRODUCT_ID, make_evdev_device, None)
 			# DS4 v.1
@@ -445,4 +534,4 @@ if __name__ == "__main__":
 	""" Called when executed as script """
 	init_logging()
 	set_logging_level(True, True)
-	sys.exit(hiddrv_test(DS4Controller, [ "054c:09cc" ]))
+	sys.exit(hiddrv_test(DS4HIDController, [ "054c:09cc" ]))
