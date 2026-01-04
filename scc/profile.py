@@ -2,6 +2,8 @@
 
 Handles mapping profile stored in json file
 """
+from __future__ import annotations
+
 import json
 import logging
 
@@ -36,33 +38,33 @@ class Profile:
 	RPAD_AXES  = { X : "rpad_x", Y : "rpad_y" }
 	TRIGGERS   = [ LEFT, RIGHT ]
 
-	def __init__(self, parser):
+	def __init__(self, parser) -> None:
 		self.parser = parser
 		self.clear()
-		self.filename = None
+		self.filename: str | None = None
 		# UI-only values
-		self.is_template = False
-		self.description = ""
+		self.is_template: bool = False
+		self.description: str = ""
 
 
-	def save(self, filename):
-		""" Saves profile into file. Returns self """
+	def save(self, filename: str) -> Profile:
+		"""Saves profile into file. Returns self"""
 		with open(filename, "w") as fileobj:
 			self.save_fileobj(fileobj)
 		return self
 
 
-	def save_fileobj(self, fileobj):
-		""" Saves profile into file-like object. Returns self """
+	def save_fileobj(self, fileobj) -> Profile:
+		"""Saves profile into file-like object. Returns self"""
 		data = {
 			"_"				: (self.description if "\n" not in self.description
 								else self.description.strip("\n").split("\n")),
-			'buttons'		: {},
-			'stick'			: self.stick,
-			'rstick'		: self.rstick,
-			'gyro'			: self.gyro,
-			'trigger_left'	: self.triggers[Profile.LEFT],
-			'trigger_right'	: self.triggers[Profile.RIGHT],
+			"buttons"		: {},
+			"stick"			: self.stick,
+			"rstick"		: self.rstick,
+			"gyro"			: self.gyro,
+			"trigger_left"	: self.triggers[Profile.LEFT],
+			"trigger_right"	: self.triggers[Profile.RIGHT],
 			"pad_left"		: self.pads[Profile.LEFT],
 			"pad_right"		: self.pads[Profile.RIGHT],
 			"cpad"			: self.pads[Profile.CPAD],
@@ -82,17 +84,17 @@ class Profile:
 		return self
 
 
-	def load(self, filename):
-		""" Loads profile from file. Returns self """
-		with open(filename, "r") as fileobj:
+	def load(self, filename: str) -> Profile:
+		"""Loads profile from file. Returns self"""
+		with open(filename) as fileobj:
 			self.load_fileobj(fileobj)
 		self.filename = filename
 		return self
 
 
-	def load_fileobj(self, fileobj):
-		"""
-		Loads profile from file-like object.
+	def load_fileobj(self, fileobj) -> Profile:
+		"""Loads profile from file-like object.
+
 		Filename attribute is not set, what may cause some trouble if used in GUI.
 
 		Returns self.
@@ -101,7 +103,8 @@ class Profile:
 		# Version
 		try:
 			version = float(data["version"])
-		except:
+		except Exception:
+			logging.exception("Failed to load file-like object")
 			version = 0
 
 		# Settings - Description
@@ -182,8 +185,8 @@ class Profile:
 		return self
 
 
-	def clear(self):
-		""" Clears all actions and adds default menu action on center button """
+	def clear(self) -> None:
+		"""Clears all actions and adds default menu action on center button"""
 		self.buttons = { x : NoAction() for x in SCButtons }
 		self.buttons[SCButtons.C] = HoldModifier(
 			MenuAction("Default.menu"),
@@ -204,8 +207,8 @@ class Profile:
 
 
 	def get_all_actions(self):
-		"""
-		Returns generator with every action defined in this profile,
+		"""Returns generator with every action defined in this profile,
+
 		including actions in menus.
 		Recursively walks into macros, dpads and everything else that can have
 		nested actions, so both parent and all child actions are yielded.
@@ -223,10 +226,7 @@ class Profile:
 
 
 	def get_actions(self):
-		"""
-		As get_all_actions, but returns only root actions, without children,
-		and ignores menus.
-		"""
+		"""As get_all_actions, but returns only root actions, without children, and ignores menus."""
 		for dct in (self.buttons, self.triggers, self.pads):
 			for k in dct:
 				yield dct[k]
@@ -235,15 +235,13 @@ class Profile:
 
 
 	def get_filename(self):
-		"""
-		Returns filename of last loaded file or None.
-		"""
+		"""Returns filename of last loaded file or None."""
 		return self.filename
 
 
-	def compress(self):
-		"""
-		Calls compress on every action to throw out some redundant stuff.
+	def compress(self) -> None:
+		"""Calls compress on every action to throw out some redundant stuff.
+
 		Note that calling save() after compress() will cause data loss.
 		"""
 		for dct in (self.buttons, self.triggers, self.pads):
@@ -257,7 +255,7 @@ class Profile:
 
 
 	def _convert(self, from_version):
-		""" Performs conversion from older profile version """
+		"""Performs conversion from older profile version"""
 		if from_version < 1:
 			from scc.modifiers import ModeModifier
 			# Add 'display Default.menu if center button is held' for old profiles

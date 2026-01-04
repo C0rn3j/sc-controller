@@ -11,6 +11,7 @@ from source tarball *and* debugable in working folder.
 import os
 import sys
 
+
 def get_config_path() -> str:
 	"""Return configuration directory.
 

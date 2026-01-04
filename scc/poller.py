@@ -19,7 +19,7 @@ class Poller:
 	POLLOUT = select.POLLOUT
 	POLLPRI = select.POLLPRI
 
-	def __init__(self):
+	def __init__(self) -> None:
 		self._events = {}
 		self._callbacks = {}
 		self._pool_in = ()
@@ -27,7 +27,7 @@ class Poller:
 		self._pool_pri = ()
 
 
-	def register(self, fd, events, callback):
+	def register(self, fd, events, callback) -> None:
 		if fd < 0:
 			raise ValueError("Invalid file descriptor")
 		self._events[fd] = events
@@ -35,19 +35,19 @@ class Poller:
 		self._generate_lists()
 
 
-	def unregister(self, fd):
+	def unregister(self, fd) -> None:
 		if fd in self._events: del self._events[fd]
 		if fd in self._callbacks: del self._callbacks[fd]
 		self._generate_lists()
 
 
-	def _generate_lists(self):
+	def _generate_lists(self) -> None:
 		self._pool_in = [ fd for fd, events in self._events.items() if events & Poller.POLLIN ]
 		self._pool_out = [ fd for fd, events in self._events.items() if events & Poller.POLLOUT ]
 		self._pool_pri = [ fd for fd, events in self._events.items() if events & Poller.POLLPRI ]
 
 
-	def poll(self, timeout=0.01):
+	def poll(self, timeout=0.01) -> None:
 		inn, out, pri = select.select( self._pool_in, self._pool_out, self._pool_pri, timeout )
 
 		for fd in inn:

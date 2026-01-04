@@ -61,8 +61,9 @@ class ActionParser:
 	CONSTS = build_action_constants()
 
 
-	def __init__(self, string:str = ""):
+	def __init__(self, string:str = "") -> None:
 		self.restart(string)
+		self.tokens: list[ActionParser.Token] | None
 
 
 	def from_json_data(self, data: dict, key: str | None = None):

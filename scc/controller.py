@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 from scc.constants import HapticPos
 
 if TYPE_CHECKING:
-	from scc.controller import HapticData
 	from scc.mapper import Mapper
 import logging
 import time
@@ -32,8 +31,9 @@ class Controller:
 
 
 	def get_type(self) -> None:
-		"""
-		This method has to return type identifier - short string without spaces
+		"""Has to return type identifier
+
+		Returns a short string without spaces
 		that describes type of controller which should be unique for each
 		driver.
 		String is used by UI to assign icons and, along with ID,
@@ -45,16 +45,15 @@ class Controller:
 
 
 	def get_id(self):
-		"""
-		Returns identifier that has to be unique at least until daemon
-		is restarted, ideally derived from HW device serial number.
+		"""Returns identifier that has to be unique at least until daemon is restarted.
+
+		Ideally derived from HW device serial number.
 		"""
 		return self._id
 
 
 	def get_gui_config_file(self) -> None:
-		"""
-		Returns file name of json file that GUI can use to load more data about
+		"""Returns file name of json file that GUI can use to load more data about
 		controller (background image, button images, available buttons and
 		axes, etc...) File name may be absolute path or just name of file in
 		/usr/share/scc
@@ -71,14 +70,12 @@ class Controller:
 
 
 	def get_mapper(self):
-		""" Returns mapper set for controller """
+		"""Returns mapper set for controller"""
 		return self.mapper
 
 
 	def apply_config(self, config) -> None:
-		"""
-		Called from daemon to apply controller configuration stored
-		in config file.
+		"""Called from daemon to apply controller configuration stored in config file.
 
 		Does nothing by default.
 		"""
@@ -86,38 +83,38 @@ class Controller:
 
 
 	def set_led_level(self, level) -> None:
-		"""
-		Configures LED intensity, if supported.
+		"""Configures LED intensity, if supported.
+
 		'level' goes from 0.0 to 100.0
 		"""
 		pass
 
 
 	def set_gyro_enabled(self, enabled) -> None:
-		""" Enables or disables gyroscope, if supported """
+		"""Enables or disables gyroscope, if supported"""
 		pass
 
 
 	def get_gyro_enabled(self) -> bool:
-		""" Returns True if gyroscope is enabled """
+		"""Returns True if gyroscope is enabled"""
 		return False
 
 
 	def feedback(self, data) -> None:
-		"""
-		Generates feedback effect, if supported.
+		"""Generates feedback effect, if supported.
+
 		'data' is HapticData instance.
 		"""
 		pass
 
 
 	def turnoff(self) -> None:
-		""" Turns off controller, if supported """
+		"""Turns off controller, if supported"""
 		pass
 
 
 	def disconnected(self) -> None:
-		""" Called from daemon after controller is disconnected """
+		"""Called from daemon after controller is disconnected"""
 		pass
 
 
@@ -125,9 +122,9 @@ class HapticData:
 	""" Simple container to hold haptic feedback settings """
 
 	def __init__(self, position, amplitude=512, frequency=4, period=1024, count=1):
-		"""
-		'frequency' is used only when emulating touchpad and describes how many
-		pixels should mouse travell between two feedback ticks.
+		"""'frequency' is used only when emulating touchpad
+
+		and describes how many pixels should mouse travel between two feedback ticks.
 		"""
 		data = tuple([ int(x) for x in (position, amplitude, period, count) ])
 		if data[0] not in (HapticPos.LEFT, HapticPos.RIGHT, HapticPos.BOTH):
@@ -143,19 +140,19 @@ class HapticData:
 		self.frequency = frequency		# used internally
 
 
-	def with_position(self, position):
-		""" Creates copy of HapticData with position value changed """
+	def with_position(self, position) -> HapticData:
+		"""Creates copy of HapticData with position value changed"""
 		trash, amplitude, period, count = self.data
 		return HapticData(position, amplitude, self.frequency, period, count)
 
 
-	def get_position(self):
+	def get_position(self) -> HapticPos:
 		return HapticPos(self.data[0])
 
 	def get_amplitude(self):
 		return self.data[1]
 
-	def get_frequency(self):
+	def get_frequency(self) -> float:
 		return float(self.frequency) / 1000.0
 
 	def get_period(self):
@@ -164,11 +161,8 @@ class HapticData:
 	def get_count(self):
 		return self.data[3]
 
-	def __mul__(self, by) -> 'HapticData':
-		"""
-		Allows multiplying HapticData by scalar to get same values
-		with increased amplitude.
-		"""
+	def __mul__(self, by) -> HapticData:
+		"""Allows multiplying HapticData by scalar to get same values with increased amplitude."""
 		position, amplitude, period, count = self.data
 		amplitude = min(amplitude * by, 0x8000)
 		return HapticData(position, amplitude, self.frequency, period, count)
