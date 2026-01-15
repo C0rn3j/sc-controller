@@ -34,7 +34,7 @@ Donation links for kozec, who is the original developer, can be found on the [ol
 [![Packaging status](https://repology.org/badge/vertical-allrepos/sc-controller.svg?exclude_unsupported=1)](https://repology.org/project/sc-controller/versions)
 
 Linux:
-  - **Arch Linux:** Found in [AUR/sc-controller](https://aur.archlinux.org/packages/sc-controller/) and [AUR/sc-controller-git](https://aur.archlinux.org/packages/sc-controller-git/)
+  - **Arch Linux:** Found in official [extra](https://archlinux.org/packages/extra/x86_64/sc-controller/) repository and [AUR/sc-controller-git](https://aur.archlinux.org/packages/sc-controller-git/)
   - **Ubuntu (22.04-jammy, 24.04-noble):** Packaged as AppImage in [GitHub releases](https://github.com/C0rn3j/sc-controller/releases), ***which may also run fine on other operating systems - jammy image is currently the most compatible one***
   - **Gentoo:** Packaged as [game-util/sc-controller](https://packages.gentoo.org/packages/games-util/sc-controller)
   - **Void Linux:** Packaged as [sc-controller](https://github.com/void-linux/void-packages/blob/master/srcpkgs/sc-controller/template) - Run `xbps-install -S sc-controller` in a terminal, points to archived Ryochan7's fork at the time of writing
