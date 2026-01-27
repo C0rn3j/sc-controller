@@ -23,13 +23,14 @@ from __future__ import annotations
 from _ctypes import _Pointer, Array
 from collections import OrderedDict
 
-
-from collections.abc import Sequence
-from logging import debug
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+	from ctypes import CDLL
+	from collections.abc import Sequence
 
 import ctypes
 import os
-from ctypes import CDLL, POINTER, byref, c_bool, c_int16, c_int32, c_uint16
+from ctypes import POINTER, byref, c_bool, c_int16, c_int32, c_uint16
 from enum import IntEnum
 from math import copysign, fmod, sqrt
 
@@ -204,21 +205,21 @@ Scans = {
 
 class InputEvent(ctypes.Structure):
 	_fields_: list[tuple[str, type]] = [  # pyright: ignore[reportIncompatibleVariableOverride]
-		('time', timeval),
-		('type', c_uint16),
-		('code', c_uint16),
-		('value', c_int32)
+		("time", timeval),
+		("type", c_uint16),
+		("code", c_uint16),
+		("value", c_int32)
 	]
 
 class FeedbackEvent(ctypes.Structure):
 	_fields_: list[tuple[str, type]] = [  # pyright: ignore[reportIncompatibleVariableOverride]
-		('in_use', c_bool),
-		('continuous_rumble', c_bool),
-		('duration', c_int32),
-		('delay', c_int32),
-		('repetitions', c_int32),
-		('type', c_uint16),
-		('level', c_int16),
+		("in_use", c_bool),
+		("continuous_rumble", c_bool),
+		("duration", c_int32),
+		("delay", c_int32),
+		("repetitions", c_int32),
+		("type", c_uint16),
+		("level", c_int16),
 	]
 
 	def __init__(self):

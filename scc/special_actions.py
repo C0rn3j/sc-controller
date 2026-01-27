@@ -10,8 +10,10 @@ action only prints warning to console.
 """
 
 from __future__ import annotations
-from collections.abc import Callable
-from typing import Self, override
+
+from typing import override, TYPE_CHECKING
+if TYPE_CHECKING:
+	from collections.abc import Callable
 
 
 from scc.constants import SCButtons
@@ -261,7 +263,7 @@ class OSDAction(Action, SpecialAction):
 
 
 	@override
-	def strip(self) -> Action | Self:
+	def strip(self) -> Action | OSDAction:
 		if self.action:
 			return self.action.strip()
 		return self

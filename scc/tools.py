@@ -5,7 +5,11 @@ Various stuff that I don't care to fit anywhere else.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+	from collections.abc import Sequence
+	from typing import Any, Callable
+
 import ctypes
 import importlib.machinery
 import logging
@@ -14,7 +18,6 @@ import shlex
 import sysconfig
 from math import atan2, cos, sin, sqrt
 from math import pi as PI
-from typing import Any, Callable
 
 from scc.paths import (
 	get_button_images_path,

@@ -3,17 +3,16 @@
 Accepts all connections from clients and sends data captured
 by 'cemuhook' actions to them.
 """
-from socket import socket
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from _ctypes import Array
-	from ctypes import CDLL
+	from ctypes import CDLL, c_char
 
 import logging
 import os
 import socket as sock
-from ctypes import c_bool, c_char, c_char_p, c_float, c_int, c_size_t, create_string_buffer
+from ctypes import c_bool, c_char_p, c_float, c_int, c_size_t, create_string_buffer
 from datetime import datetime, timedelta
 from enum import IntEnum
 from threading import Thread
@@ -55,7 +54,7 @@ class CemuhookServer:
 		if not self._lib.cemuhook_socket_enable():
 			raise OSError("cemuhook_socket_enable failed")
 
-		self.socket: socket = sock.socket(sock.AF_INET, sock.SOCK_DGRAM)
+		self.socket: sock.socket = sock.socket(sock.AF_INET, sock.SOCK_DGRAM)
 		self.socket.setsockopt(sock.SOL_SOCKET, sock.SO_REUSEADDR, 1)
 
 		poller = daemon.get_poller()
