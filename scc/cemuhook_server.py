@@ -5,14 +5,15 @@ by 'cemuhook' actions to them.
 """
 from socket import socket
 
-
-from _ctypes import Array
-
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+	from _ctypes import Array
+	from ctypes import CDLL
 
 import logging
 import os
 import socket as sock
-from ctypes import CDLL, c_bool, c_char, c_char_p, c_float, c_int, c_size_t, create_string_buffer
+from ctypes import c_bool, c_char, c_char_p, c_float, c_int, c_size_t, create_string_buffer
 from datetime import datetime, timedelta
 from enum import IntEnum
 from threading import Thread
