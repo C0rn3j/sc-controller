@@ -490,7 +490,7 @@ class HapticEnabledAction:
 	"""Action that can generate haptic feedback"""
 
 	def __init__(self):
-		self.haptic: Any | None = None
+		self.haptic = None
 
 
 	def get_compatible_modifiers(self) -> int:

@@ -8,8 +8,10 @@ mapper.set_special_actions_handler() is called to do whatever action is supposed
 to do. If handler is not set, or doesn't have reqiuired method defined,
 action only prints warning to console.
 """
+
+from __future__ import annotations
 from collections.abc import Callable
-from typing import Any, Self, override
+from typing import Self, override
 
 
 from scc.constants import SCButtons
@@ -165,7 +167,7 @@ class LedAction(Action, SpecialAction):
 	SA: str = "led"
 	COMMAND: str = "led"
 
-	def __init__(self, brightness: float | int):
+	def __init__(self, brightness: float):
 		Action.__init__(self, brightness)
 		self.brightness: int = int(clamp(0, int(brightness), 100))
 
@@ -360,7 +362,6 @@ class MenuAction(Action, SpecialAction, HapticEnabledAction):
 		self.show_with_release: bool = bool(show_with_release)
 		self._stick_distance: float = 0
 
-
 	@override
 	def describe(self, context) -> str:
 		if self.name: return self.name
@@ -544,20 +545,32 @@ class RadialMenuAction(MenuAction):
 	COMMAND: str = "radialmenu"
 	MENU_TYPE: str = "radialmenu"
 
-	def __init__(self, menu_id: str, control_with: str | int=DEFAULT, confirm_with: str=DEFAULT,
-					cancel_with: str=DEFAULT, show_with_release: bool=False, size: int = 0):
-		MenuAction.__init__(self, menu_id, control_with, confirm_with,
-						cancel_with, show_with_release, size)
+	def __init__(
+		self,
+		menu_id: str,
+		control_with: str | int = DEFAULT,
+		confirm_with: str = DEFAULT,
+		cancel_with: str = DEFAULT,
+		show_with_release: bool = False,
+		size: int = 0,
+	):
+		MenuAction.__init__(
+			self,
+			menu_id,
+			control_with,
+			confirm_with,
+			cancel_with,
+			show_with_release,
+			size,
+		)
 		self.rotation: float = 0
 
-
 	@override
-	def whole(self, mapper, x: float, y: float, what: str, *_params):
+	def whole(self, mapper, x: int | float, y: int | float, what: str, *_params):
 		if self.rotation:
 			MenuAction.whole(self, mapper, x, y, what, "--rotation", self.rotation)
 		else:
 			MenuAction.whole(self, mapper, x, y, what)
-
 
 	def set_rotation(self, angle: float):
 		self.rotation = angle

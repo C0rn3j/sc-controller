@@ -14,7 +14,7 @@ import shlex
 import sysconfig
 from math import atan2, cos, sin, sqrt
 from math import pi as PI
-from typing import Any, Callable, Literal
+from typing import Any, Callable
 
 from scc.paths import (
 	get_button_images_path,
@@ -116,9 +116,8 @@ def quat2euler(q0: float, q1: float, q2: float, q3: float) -> tuple[float, float
 	return pitch, yaw, roll
 
 
-def point_in_gtkrect(rect, x: float | int, y: float|int) -> bool:
-	return (x > rect.x and y > rect.y and
-		x < rect.x + rect.width and y < rect.y + rect.height)
+def point_in_gtkrect(rect, x: float, y: float) -> bool:
+	return x > rect.x and y > rect.y and x < rect.x + rect.width and y < rect.y + rect.height
 
 
 def anglediff(a1: float, a2: float) -> float:
@@ -220,7 +219,12 @@ def find_profile(name: str) -> str | None:
 	return None
 
 
-def find_icon(name: str | None, prefer_bw: bool=False, paths: Sequence[str] | None=None, extensions: Sequence[str]=("png", "svg")) -> tuple[None, Literal[False]] | tuple[str, Literal[False]] | tuple[str, Literal[True]]:
+def find_icon(
+	name: str | None,
+	prefer_bw: bool = False,
+	paths: Sequence[str] | None = None,
+	extensions: Sequence[str] = ("png", "svg"),
+) -> tuple[None, bool] | tuple[str, bool] | tuple[str, bool]:
 	"""
 	Returns (filename, has_colors) for specified icon name.
 	This is done by searching for name + '.png' and name + ".bw.png"
@@ -267,10 +271,11 @@ def find_icon(name: str | None, prefer_bw: bool=False, paths: Sequence[str] | No
 	return None, False
 
 
-def find_button_image(name: str | None, prefer_bw: bool=False) -> tuple[None, bool] | tuple[str, bool] | tuple[str, bool]:
-	""" Similar to find_icon, but searches for button image """
-	return find_icon(nameof(name), prefer_bw,
-			paths=[get_button_images_path()], extensions=("svg",))
+def find_button_image(
+	name: str | None, prefer_bw: bool = False
+) -> tuple[None, bool] | tuple[str, bool] | tuple[str, bool]:
+	"""Similar to find_icon, but searches for button image"""
+	return find_icon(nameof(name), prefer_bw, paths=[get_button_images_path()], extensions=("svg",))
 
 
 def menu_is_default(name: str) -> bool:
@@ -415,7 +420,8 @@ def strip_gesture(gstr: str):
 		uniq = ["i"] + uniq
 	return "".join(uniq)
 
-clamp: Callable[[float, float, float], float] = lambda low, value, high : min(high, max(low, value))
+
+clamp: Callable[[float, float, float], float] = lambda low, value, high: min(high, max(low, value))
 
 
 PId4 = PI / 4.0

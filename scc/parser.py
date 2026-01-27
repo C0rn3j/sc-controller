@@ -203,7 +203,7 @@ class ActionParser:
 
 		raise ParseError("Expected parameter, got '%s'" % (t.value,))
 
-	def _parse_number(self) -> float | int:
+	def _parse_number(self) -> float:
 		t = self._next_token()
 		if t.type != TokenType.NUMBER:
 			raise ParseError("Expected number, got '%s'" % (t.value,))

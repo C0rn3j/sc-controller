@@ -3,6 +3,7 @@
 Handles loading, storing and querying config file
 """
 
+from __future__ import annotations
 from scc.paths import get_config_path
 from scc.profile import Encoder
 from scc.special_actions import ChangeProfileAction
@@ -13,11 +14,11 @@ log = logging.getLogger("Config")
 
 
 class Config:
-	DEFAULTS: dict[str, Any] = {
-		"autoswitch_osd":	True,	# True to show OSD message when profile is autoswitched
-		"autoswitch":		[],		# Empty list of conditions
-		"recent_max":		10,		# Number of profiles to keep
-		"recent_profiles":	[		# Hard-coded list of profiles from default_profiles/
+	DEFAULTS = {
+		"autoswitch_osd": True,  # True to show OSD message when profile is autoswitched
+		"autoswitch": [],  # Empty list of conditions
+		"recent_max": 10,  # Number of profiles to keep
+		"recent_profiles": [  # Hard-coded list of profiles from default_profiles/
 			# This is actually updated by scc-osd-daemon, as that's
 			# only thing actually knowing what to put here.
 			"Desktop",
