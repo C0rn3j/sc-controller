@@ -6,6 +6,7 @@ Various stuff that I don't care to fit anywhere else.
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
 	from collections.abc import Sequence
 	from typing import Any, Callable
@@ -34,14 +35,15 @@ from scc.paths import (
 HAVE_POSIX1E = False
 try:
 	import posix1e
-	HAVE_POSIX1E = True   # pyright: ignore[reportConstantRedefinition]
+
+	HAVE_POSIX1E = True  # pyright: ignore[reportConstantRedefinition]
 except ImportError:
 	pass
 
 log = logging.getLogger("tools.py")
 
-#???
-_ = lambda x : x
+# ???
+_ = lambda x: x
 
 LOG_FORMAT = "%(levelname)s %(name)-13s %(message)s"
 
@@ -65,7 +67,8 @@ def init_logging(prefix: str = "", suffix: str = ""):
 	# Add 'logging.verbose' method
 	def verbose(self: logging.Logger, msg: str, *args, **kwargs):
 		return self.log(15, msg, *args, **kwargs)
-	logging.Logger.verbose = verbose # do we really need that?
+
+	logging.Logger.verbose = verbose  # do we really need that?
 
 	# Wrap Logger._log in something that can handle utf-8 exceptions
 	old_log = logging.Logger._log
@@ -89,7 +92,7 @@ def set_logging_level(verbose, debug):
 		logger.setLevel(20)
 
 
-def ensure_size(n: int, lst: list[Any], fill_with: Any=None) -> list[Any]:
+def ensure_size(n: int, lst: list[Any], fill_with: Any = None) -> list[Any]:
 	"""Return copy of lst with size 'n'.
 
 	If lst is shorter, None's are appended.
@@ -133,7 +136,7 @@ def degdiff(a1: float, a2: float) -> float:
 	return (a2 - a1 + 180.0) % 360.0 - 180.0
 
 
-def nameof(e: Any)-> str:
+def nameof(e: Any) -> str:
 	"""If 'e' is enum value, return e.name.
 
 	Otherwise, return str(e).
@@ -142,21 +145,22 @@ def nameof(e: Any)-> str:
 
 
 def shjoin(lst: Sequence[str]) -> str:
-	""" Joins list into shell-escaped, utf-8 encoded string """
-	s = [ x.encode("utf-8") for x in lst ]
+	"""Joins list into shell-escaped, utf-8 encoded string"""
+	s = [x.encode("utf-8") for x in lst]
 	#   - escape quotes
 	s = [x.encode("unicode_escape") if (b'"' in x or b"'" in x) else x for x in s]
 	#   - quote strings with spaces
-	s = [ b"'%s'" % (x,) if b" " in x else x for x in s ]
+	s = [b"'%s'" % (x,) if b" " in x else x for x in s]
 	return str(b" ".join(s))
 
 
 def shsplit(s: str) -> list[str]:
-	""" Returs original list from what shjoin returned """
+	"""Returs original list from what shjoin returned"""
 	lex = shlex.shlex(s, posix=True)
 	lex.escapedquotes = "\"'"
 	lex.whitespace_split = True
 	return [x for x in list(lex)]
+
 
 # this looks like functools.partial, please advise
 def static_vars(**kwargs):
@@ -388,7 +392,7 @@ def find_gksudo() -> list[str] | None:
 	return None
 
 
-def check_access(filename: str, write_required: bool=True) -> bool:
+def check_access(filename: str, write_required: bool = True) -> bool:
 	"""Check if user has read and optionally write access to the specified file.
 
 	Use acl first and posix file permisions if acl cannot be used.
@@ -428,6 +432,8 @@ clamp: Callable[[float, float, float], float] = lambda low, value, high: min(hig
 
 
 PId4 = PI / 4.0
+
+
 def circle_to_square(x: float, y: float) -> tuple[float, float]:
 	"""
 	Projects coordinate in circle (of radius 1.0) to coordinate in square.

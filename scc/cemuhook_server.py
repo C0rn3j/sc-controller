@@ -5,6 +5,7 @@ by 'cemuhook' actions to them.
 """
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
 	from _ctypes import Array
 	from ctypes import CDLL, c_char
@@ -42,8 +43,8 @@ class CemuhookServer:
 	timeout: timedelta = timedelta(seconds=1)
 
 	def __init__(self, daemon):
-		self._lib: CDLL = find_library('libcemuhook')
-		self._lib.cemuhook_data_received.argtypes = [ c_int, c_char_p, c_int, c_char_p, c_size_t ]
+		self._lib: CDLL = find_library("libcemuhook")
+		self._lib.cemuhook_data_received.argtypes = [c_int, c_char_p, c_int, c_char_p, c_size_t]
 		self._lib.cemuhook_data_received.restype = None
 		self._lib.cemuhook_feed.argtypes = [c_int, c_int, CemuhookServer.C_DATA_T]
 		self._lib.cemuhook_feed.restype = None
@@ -75,11 +76,11 @@ class CemuhookServer:
 			sleep(1)
 
 	def on_data_received(self, fd: int, _event_type):
-		if fd != self.socket.fileno(): return
+		if fd != self.socket.fileno():
+			return
 		message, (ip, port) = self.socket.recvfrom(BUFFER_SIZE)
 		buffer: Array[c_char] = create_string_buffer(BUFFER_SIZE)
-		self._lib.cemuhook_data_received(fd, ip.encode('utf-8'), port, message, len(message), buffer)
-
+		self._lib.cemuhook_data_received(fd, ip.encode("utf-8"), port, message, len(message), buffer)
 
 	def feed(self, data: Sequence[float]):
 		self.last_signal = datetime.now()

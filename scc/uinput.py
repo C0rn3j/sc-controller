@@ -24,6 +24,7 @@ from _ctypes import _Pointer, Array
 from collections import OrderedDict
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
 	from ctypes import CDLL
 	from collections.abc import Sequence
@@ -59,28 +60,35 @@ class Keys(IntEnum):
 	# File "/usr/lib/python3.9/enum.py", line 408, in __getitem__
 	# return cls._member_map_[name]
 
-#	locals().update({i: CHEAD[i] for i in CHEAD if i.startswith(("KEY_", "BTN_"))})
+
+# locals().update({i: CHEAD[i] for i in CHEAD if i.startswith(("KEY_", "BTN_"))})
 Keys: IntEnum = IntEnum("Keys", {i: CHEAD[i] for i in CHEAD.keys() if (i.startswith("KEY_") or i.startswith("BTN_"))})
 
 
 class KeysOnly(IntEnum):
 	"""Keys enum contains all keys and button from linux/uinput.h (KEY_* BTN_*)."""
 
-	#locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("KEY_")})
+	# locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("KEY_")})
+
+
 KeysOnly: IntEnum = IntEnum("KeysOnly", {i: CHEAD[i] for i in CHEAD.keys() if (i.startswith("KEY_"))})
 
 
 class Axes(IntEnum):
 	"""Axes enum contains all axes from linux/uinput.h (ABS_*)."""
 
-	#locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("ABS_")})
+	# locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("ABS_")})
+
+
 Axes: IntEnum = IntEnum("Axes", {i: CHEAD[i] for i in CHEAD.keys() if (i.startswith("ABS_"))})
 
 
 class Rels(IntEnum):
 	"""Rels enum contains all rels from linux/uinput.h (REL_*)."""
 
-	#locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("REL_")})
+	# locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("REL_")})
+
+
 Rels: IntEnum = IntEnum("Rels", {i: CHEAD[i] for i in CHEAD.keys() if (i.startswith("REL_"))})
 
 # Scan codes for each keys (taken from a logitech keyboard)
@@ -208,8 +216,9 @@ class InputEvent(ctypes.Structure):
 		("time", timeval),
 		("type", c_uint16),
 		("code", c_uint16),
-		("value", c_int32)
+		("value", c_int32),
 	]
+
 
 class FeedbackEvent(ctypes.Structure):
 	_fields_: list[tuple[str, type]] = [  # pyright: ignore[reportIncompatibleVariableOverride]
@@ -235,11 +244,22 @@ class UInput:
 
 	# i assume that's sequence[int] here but not totally sure :p
 	# TODO: finish this, not sure how exactly this works
-	def __init__(self, vendor: int, product: int, version: int, name: str, keys: Sequence[int], axes: Sequence[tuple[int]], rels: Sequence[int], keyboard: bool = False, rumble: bool = False):
+	def __init__(
+		self,
+		vendor: int,
+		product: int,
+		version: int,
+		name: str,
+		keys: Sequence[int],
+		axes: Sequence[tuple[int]],
+		rels: Sequence[int],
+		keyboard: bool = False,
+		rumble: bool = False,
+	):
 		self._k: Sequence[int] = keys
 		self.name: str = name
 		if not axes or len(axes) == 0:
-			self._a  = []
+			self._a = []
 			self._amin = []
 			self._amax = []
 			self._afuzz = []
