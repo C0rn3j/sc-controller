@@ -20,7 +20,7 @@ from scc.constants import STICK_PAD_MAX_HALF, TRIGGER_MIN, TRIGGER_HALF
 from scc.constants import HIPFIRE_NORMAL, HIPFIRE_SENSIBLE, HIPFIRE_EXCLUSIVE
 from scc.constants import LEFT, RIGHT, CPAD, STICK, RSTICK, PITCH, YAW, ROLL
 from scc.constants import PARSER_CONSTANTS, ControllerFlags
-from scc.constants import FE_STICK, FE_TRIGGER, FE_PAD
+from scc.constants import FE_STICK, FE_PAD
 from scc.constants import TRIGGER_CLICK, TRIGGER_MAX
 from scc.constants import SCButtons, BASE_STICK_MOUSE_SPEED
 from scc.aliases import ALL_BUTTONS as GAMEPAD_BUTTONS
@@ -195,7 +195,8 @@ class Action:
 
 	__repr__ = __str__
 
-	def describe(self, context):
+
+	def describe(self, _context: int):
 		"""
 		Returns string that describes what action does in human-readable form.
 		Used in GUI.
@@ -489,12 +490,14 @@ class HapticEnabledAction:
 	"""Action that can generate haptic feedback"""
 
 	def __init__(self):
-		self.haptic = None
+		self.haptic: Any | None = None
 
-	def get_compatible_modifiers(self):
+
+	def get_compatible_modifiers(self) -> int:
 		return Action.MOD_FEEDBACK
 
-	def set_haptic(self, hd):
+
+	def set_haptic(self, hd: Action):
 		self.haptic = hd
 
 	def get_haptic(self):

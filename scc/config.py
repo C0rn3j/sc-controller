@@ -13,11 +13,11 @@ log = logging.getLogger("Config")
 
 
 class Config:
-	DEFAULTS = {
-		"autoswitch_osd": True,  # True to show OSD message when profile is autoswitched
-		"autoswitch": [],  # Empty list of conditions
-		"recent_max": 10,  # Number of profiles to keep
-		"recent_profiles": [  # Hard-coded list of profiles from default_profiles/
+	DEFAULTS: dict[str, Any] = {
+		"autoswitch_osd":	True,	# True to show OSD message when profile is autoswitched
+		"autoswitch":		[],		# Empty list of conditions
+		"recent_max":		10,		# Number of profiles to keep
+		"recent_profiles":	[		# Hard-coded list of profiles from default_profiles/
 			# This is actually updated by scc-osd-daemon, as that's
 			# only thing actually knowing what to put here.
 			"Desktop",
@@ -111,7 +111,7 @@ class Config:
 		"ignore_serials": True,
 	}
 
-	CONTROLLER_DEFAULTS = {
+	CONTROLLER_DEFAULTS: dict[str, int | str | None] = {
 		# Defaults for controller config
 		"name": None,  # Filled with controller ID on runtime
 		"icon": None,  # Determined by magic by UI
@@ -126,7 +126,7 @@ class Config:
 	}
 
 	def __init__(self):
-		self.filename = os.path.join(get_config_path(), "config.json")
+		self.filename: str = os.path.join(get_config_path(), "config.json")
 		self.reload()
 
 	def reload(self):
@@ -142,7 +142,7 @@ class Config:
 
 	def _check_dict(self, values, defaults):
 		"""
-		Recursivelly checks if 'config' contains all keys in 'defaults'.
+		Recursively checks if 'config' contains all keys in 'defaults'.
 		Creates keys with default values where missing.
 
 		Returns True if anything was changed.

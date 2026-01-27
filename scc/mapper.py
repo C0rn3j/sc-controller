@@ -2,6 +2,7 @@ import logging
 import os
 import time
 import traceback
+from typing import Any
 
 from scc.actions import ButtonAction, GyroAbsAction
 from scc.aliases import ALL_AXES, ALL_BUTTONS
@@ -86,20 +87,20 @@ class Mapper:
 			self.gamepad = Dummy()
 			return
 		cfg = Config()
-		keys = ALL_BUTTONS[0 : cfg["output"]["buttons"]]
-		vendor = int(cfg["output"]["vendor"], 16)
-		product = int(cfg["output"]["product"], 16)
-		version = int(cfg["output"]["version"], 16)
+		keys = ALL_BUTTONS[0:cfg["output"]["buttons"]]
+		vendor: int = int(cfg["output"]["vendor"], 16)
+		product: int = int(cfg["output"]["product"], 16)
+		version: int = int(cfg["output"]["version"], 16)
 		name = cfg["output"]["name"]
 		rumble = cfg["output"]["rumble"] and poller != None
-		axes = []
+		axes: list[tuple[int, int, int, int, int]] = []
 		i = 0
 		for min, max in cfg["output"]["axes"]:
 			fuzz, flat = 0, 0
 			if abs(max - min) > STICK_PAD_MAX:
 				fuzz, flat = 16, 128
 			try:
-				axes.append((ALL_AXES[i], min, max, fuzz, flat))
+				axes.append(( int(ALL_AXES[i]), int(min), int(max), int(fuzz), int(flat) ))
 			except IndexError:
 				# Out of axes
 				break
