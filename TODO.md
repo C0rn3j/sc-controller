@@ -1,5 +1,6 @@
 List of (possibly) planned features in no particular order:
 
+- Fully typed code
 - Multiple on-screen menus (and possibly keyboards) when using multiple controllers
 - Injecting emulated xbox controller into wine
 

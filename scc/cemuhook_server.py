@@ -3,15 +3,21 @@
 Accepts all connections from clients and sends data captured
 by 'cemuhook' actions to them.
 """
+from socket import socket
+
+
+from _ctypes import Array
+
 
 import logging
 import os
-import socket
-from ctypes import c_bool, c_char_p, c_float, c_int, c_size_t, create_string_buffer
+import socket as sock
+from ctypes import CDLL, c_bool, c_char, c_char_p, c_float, c_int, c_size_t, create_string_buffer
 from datetime import datetime, timedelta
 from enum import IntEnum
 from threading import Thread
 from time import sleep
+from collections.abc import Sequence
 
 from scc.tools import find_library
 
@@ -32,24 +38,24 @@ class MessageType(IntEnum):
 
 
 class CemuhookServer:
-	C_DATA_T = c_float * 6
-	timeout = timedelta(seconds=1)
+	C_DATA_T: type[Array[c_float]] = c_float * 6
+	timeout: timedelta = timedelta(seconds=1)
 
 	def __init__(self, daemon):
-		self._lib = find_library("libcemuhook")
-		self._lib.cemuhook_data_received.argtypes = [c_int, c_char_p, c_int, c_char_p, c_size_t]
+		self._lib: CDLL = find_library('libcemuhook')
+		self._lib.cemuhook_data_received.argtypes = [ c_int, c_char_p, c_int, c_char_p, c_size_t ]
 		self._lib.cemuhook_data_received.restype = None
 		self._lib.cemuhook_feed.argtypes = [c_int, c_int, CemuhookServer.C_DATA_T]
 		self._lib.cemuhook_feed.restype = None
 		self._lib.cemuhook_socket_enable.argtypes = []
 		self._lib.cemuhook_socket_enable.restype = c_bool
-		self.last_signal = datetime.now()
+		self.last_signal: datetime = datetime.now()
 
 		if not self._lib.cemuhook_socket_enable():
 			raise OSError("cemuhook_socket_enable failed")
 
-		self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-		self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		self.socket: socket = sock.socket(sock.AF_INET, sock.SOCK_DGRAM)
+		self.socket.setsockopt(sock.SOL_SOCKET, sock.SO_REUSEADDR, 1)
 
 		poller = daemon.get_poller()
 		daemon.poller.register(self.socket.fileno(), poller.POLLIN, self.on_data_received)
@@ -68,14 +74,14 @@ class CemuhookServer:
 				self.feed((0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
 			sleep(1)
 
-	def on_data_received(self, fd, event_type):
-		if fd != self.socket.fileno():
-			return
+	def on_data_received(self, fd: int, _event_type):
+		if fd != self.socket.fileno(): return
 		message, (ip, port) = self.socket.recvfrom(BUFFER_SIZE)
-		buffer = create_string_buffer(BUFFER_SIZE)
-		self._lib.cemuhook_data_received(fd, ip.encode("utf-8"), port, message, len(message), buffer)
+		buffer: Array[c_char] = create_string_buffer(BUFFER_SIZE)
+		self._lib.cemuhook_data_received(fd, ip.encode('utf-8'), port, message, len(message), buffer)
 
-	def feed(self, data):
+
+	def feed(self, data: Sequence[float]):
 		self.last_signal = datetime.now()
 		c_data = CemuhookServer.C_DATA_T()
 		# log.debug(data)
