@@ -20,6 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 from __future__ import annotations
+from _ctypes import _Pointer, Array
+from collections import OrderedDict
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+	from ctypes import CDLL
+	from collections.abc import Sequence
 
 import ctypes
 import os
@@ -33,7 +41,7 @@ from scc.cheader import defines
 from scc.tools import find_library
 
 UNPUT_MODULE_VERSION = 9
-
+CHEAD: OrderedDict[str, int]
 # Get All defines from linux headers
 if os.path.exists("/usr/include/linux/input-event-codes.h"):
 	CHEAD = defines("/usr/include", "linux/input-event-codes.h")
@@ -54,7 +62,7 @@ class Keys(IntEnum):
 
 
 # locals().update({i: CHEAD[i] for i in CHEAD if i.startswith(("KEY_", "BTN_"))})
-Keys = IntEnum("Keys", {i: CHEAD[i] for i in CHEAD.keys() if (i.startswith("KEY_") or i.startswith("BTN_"))})
+Keys: IntEnum = IntEnum("Keys", {i: CHEAD[i] for i in CHEAD.keys() if (i.startswith("KEY_") or i.startswith("BTN_"))})
 
 
 class KeysOnly(IntEnum):
@@ -63,7 +71,7 @@ class KeysOnly(IntEnum):
 	# locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("KEY_")})
 
 
-KeysOnly = IntEnum("KeysOnly", {i: CHEAD[i] for i in CHEAD.keys() if (i.startswith("KEY_"))})
+KeysOnly: IntEnum = IntEnum("KeysOnly", {i: CHEAD[i] for i in CHEAD.keys() if (i.startswith("KEY_"))})
 
 
 class Axes(IntEnum):
@@ -72,7 +80,7 @@ class Axes(IntEnum):
 	# locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("ABS_")})
 
 
-Axes = IntEnum("Axes", {i: CHEAD[i] for i in CHEAD.keys() if (i.startswith("ABS_"))})
+Axes: IntEnum = IntEnum("Axes", {i: CHEAD[i] for i in CHEAD.keys() if (i.startswith("ABS_"))})
 
 
 class Rels(IntEnum):
@@ -81,7 +89,7 @@ class Rels(IntEnum):
 	# locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("REL_")})
 
 
-Rels = IntEnum("Rels", {i: CHEAD[i] for i in CHEAD.keys() if (i.startswith("REL_"))})
+Rels: IntEnum = IntEnum("Rels", {i: CHEAD[i] for i in CHEAD.keys() if (i.startswith("REL_"))})
 
 # Scan codes for each keys (taken from a logitech keyboard)
 Scans = {
@@ -204,11 +212,16 @@ Scans = {
 
 
 class InputEvent(ctypes.Structure):
-	_fields_ = [("time", timeval), ("type", c_uint16), ("code", c_uint16), ("value", c_int32)]
+	_fields_: list[tuple[str, type]] = [  # pyright: ignore[reportIncompatibleVariableOverride]
+		("time", timeval),
+		("type", c_uint16),
+		("code", c_uint16),
+		("value", c_int32),
+	]
 
 
 class FeedbackEvent(ctypes.Structure):
-	_fields_ = [
+	_fields_: list[tuple[str, type]] = [  # pyright: ignore[reportIncompatibleVariableOverride]
 		("in_use", c_bool),
 		("continuous_rumble", c_bool),
 		("duration", c_int32),
@@ -219,7 +232,8 @@ class FeedbackEvent(ctypes.Structure):
 	]
 
 	def __init__(self):
-		self.in_use = False
+		super().__init__()
+		self.in_use: bool = False
 
 
 class UInput:
@@ -228,19 +242,34 @@ class UInput:
 	See Gamepad, Mouse, Keyboard for examples
 	"""
 
-	def __init__(self, vendor, product, version, name, keys, axes, rels, keyboard: bool = False, rumble: bool = False):
-		self._lib = None
-		self._k = keys
-		self.name = name
+	# i assume that's sequence[int] here but not totally sure :p
+	# TODO: finish this, not sure how exactly this works
+	def __init__(
+		self,
+		vendor: int,
+		product: int,
+		version: int,
+		name: str,
+		keys: Sequence[int],
+		axes: Sequence[tuple[int]],
+		rels: Sequence[int],
+		keyboard: bool = False,
+		rumble: bool = False,
+	):
+		self._k: Sequence[int] = keys
+		self.name: str = name
 		if not axes or len(axes) == 0:
-			self._a, self._amin, self._amax, self._afuzz, self._aflat = [[]] * 5
+			self._a = []
+			self._amin = []
+			self._amax = []
+			self._afuzz = []
+			self._aflat = []
 		else:
 			self._a, self._amin, self._amax, self._afuzz, self._aflat = zip(*axes)
+		self._r: Sequence[int] = rels
 
-		self._r = rels
-
-		self._lib = find_library("libuinput")
-		self._ff_events = None
+		self._lib: CDLL = find_library("libuinput")
+		self._ff_events: Array[_Pointer[FeedbackEvent]] | None = None
 		if rumble:
 			self._ff_events = (POINTER(FeedbackEvent) * MAX_FEEDBACK_EFFECTS)()
 			for i in range(MAX_FEEDBACK_EFFECTS):

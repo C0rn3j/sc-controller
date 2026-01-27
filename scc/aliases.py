@@ -3,9 +3,12 @@
 This module generates Keys.BTN_x and Axes.AXIS_x aliases when imported
 """
 
+from __future__ import annotations
+from collections.abc import Sequence
 from scc.uinput import Axes, Keys
 
-ALL_BUTTONS = (
+# TODO: look at this closer
+ALL_BUTTONS: Sequence[int] = (
 	Keys.BTN_START,
 	Keys.BTN_MODE,
 	Keys.BTN_SELECT,
@@ -35,7 +38,7 @@ ALL_BUTTONS = (
 	Keys.KEY_EPG,
 )
 
-ALL_AXES = (
+ALL_AXES: Sequence[int] = (
 	Axes.ABS_X,
 	Axes.ABS_Y,
 	Axes.ABS_RX,
