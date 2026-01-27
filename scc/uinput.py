@@ -616,7 +616,7 @@ class Mouse(UInput):
 				signy = copysign(1.0, dy)
 				ratioY = abs(dy) / offman
 				# print("OLD {} | NEW {}".format(tempy, tempy ** 1.5))
-				dy = ratioY**thrfloatottla * signy * offman
+				dy = ratioY**throttla * signy * offman
 
 		if dy != 0.0:
 			tempy = dy * (time_elapsed * 125.0) * self._yscale + (abs(unity) * copysign(offset, dy))
