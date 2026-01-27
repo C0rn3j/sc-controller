@@ -2,10 +2,12 @@
 
 Dummy container classes
 """
+
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN
 from scc.gui.creg.constants import AXIS_TO_BUTTON
 
 import logging
+
 log = logging.getLogger("CReg.data")
 
 
@@ -18,7 +20,8 @@ class AxisData:
 	def __init__(self, name, xy, min=STICK_PAD_MAX, max=STICK_PAD_MIN):
 		self.name = name
 		self.area = name.split("_")[0].upper()
-		if self.area.endswith("TRIG"): self.area = self.area[0:-3]
+		if self.area.endswith("TRIG"):
+			self.area = self.area[0:-3]
 		self.xy = xy
 		self.pos = 0
 		self.center = 0
@@ -27,16 +30,13 @@ class AxisData:
 		self.invert = False
 		self.cursor = None
 
-
 	def reset(self):
 		"""Reset min and max value so axis can (has to be) recalibrated again"""
 		self.min = STICK_PAD_MAX
 		self.max = STICK_PAD_MIN
 
-
 	def __repr__(self):
-		return "<Axis data '%s'>" % (self.name, )
-
+		return "<Axis data '%s'>" % (self.name,)
 
 	def set_position(self, value):
 		"""Return (changed, x), value determining if axis limits were changed and current position position.
@@ -73,5 +73,5 @@ class DPadEmuData:
 
 	def __init__(self, axis_data, positive):
 		self.axis_data = axis_data
-		self.positive  = positive
+		self.positive = positive
 		self.button = AXIS_TO_BUTTON[axis_data.name]

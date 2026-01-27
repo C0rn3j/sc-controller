@@ -1,4 +1,5 @@
 """Syncthing-GTK - StatusIcon."""
+
 import os
 import logging
 
@@ -7,7 +8,7 @@ from gi.repository import GLib
 from gi.repository import Gtk
 
 from scc.gui.dwsnc import IS_UNITY, IS_GNOME
-from scc.tools import _ # gettext function
+from scc.tools import _  # gettext function
 
 log = logging.getLogger("StatusIcon")
 
@@ -16,7 +17,7 @@ log = logging.getLogger("StatusIcon")
 
 
 #                | MATE      | Unity      | Cinnamon   | Cairo-Dock (classic) | Cairo-Dock (modern) |
-#----------------+-----------+------------+------------+----------------------+---------------------+
+# ----------------+-----------+------------+------------+----------------------+---------------------+
 # StatusIconAppI | none      | excellent  | none       | none                 | excellent           |
 # StatusIconGTK3 | excellent | none       | very good¹ | very good¹           | none                |
 #
@@ -29,7 +30,7 @@ log = logging.getLogger("StatusIcon")
 class StatusIcon(GObject.GObject):
 	"""Base class for all status icon backends."""
 
-	TRAY_TITLE     = _("SC Controller")
+	TRAY_TITLE = _("SC Controller")
 
 	__gsignals__ = {
 		"clicked": (GObject.SignalFlags.RUN_FIRST, None, ()),
@@ -41,7 +42,7 @@ class StatusIcon(GObject.GObject):
 			"is the icon user-visible?",
 			"does the icon back-end think that anything is might be shown to the user?",
 			True,
-			GObject.PARAM_READWRITE if hasattr(GObject, "PARAM_READWRITE") else GObject.ParamFlags.READWRITE
+			GObject.PARAM_READWRITE if hasattr(GObject, "PARAM_READWRITE") else GObject.ParamFlags.READWRITE,
 		)
 	}
 
@@ -49,12 +50,12 @@ class StatusIcon(GObject.GObject):
 		GObject.GObject.__init__(self)
 		self.__icon_path = os.path.normpath(os.path.abspath(icon_path))
 		self.__popupmenu = popupmenu
-		self.__active    = True
-		self.__visible   = False
-		self.__hidden    = False
-		self.__icon      = "scc-unknown"
-		self.__text      = ""
-		self.__force     = force
+		self.__active = True
+		self.__visible = False
+		self.__hidden = False
+		self.__icon = "scc-unknown"
+		self.__text = ""
+		self.__force = force
 
 	def get_active(self):
 		"""
@@ -80,7 +81,7 @@ class StatusIcon(GObject.GObject):
 		@param {String} text
 		       Some text that indicates what the application is currently doing (generally this be used for the tooltip)
 		"""
-		if not icon.endswith("-0"): # si-syncthing-0
+		if not icon.endswith("-0"):  # si-syncthing-0
 			# Ignore first syncing icon state to prevent the icon from flickering
 			# into the main notification bar during initialization
 			self.__visible = True
@@ -169,6 +170,7 @@ class StatusIconDummy(StatusIcon):
 	"""
 	Dummy status icon implementation that does nothing
 	"""
+
 	def __init__(self, *args, **kwargs):
 		StatusIcon.__init__(self, *args, **kwargs)
 
@@ -186,6 +188,7 @@ class StatusIconGTK3(StatusIcon):
 	"""
 	Gtk.StatusIcon based status icon backend
 	"""
+
 	def __init__(self, *args, **kwargs):
 		StatusIcon.__init__(self, *args, **kwargs)
 
@@ -249,20 +252,24 @@ class StatusIconAppIndicator(StatusIconDBus):
 	"""
 	Unity's AppIndicator3.Indicator based status icon backend
 	"""
+
 	def __init__(self, *args, **kwargs):
 		StatusIcon.__init__(self, *args, **kwargs)
 
 		try:
 			import gi
+
 			try:
 				gi.require_version("AyatanaAppIndicator3", "0.1")
 				from gi.repository import AyatanaAppIndicator3 as appindicator
 			except ImportError:
-				log.warning("Failed to import AyatanaAppIndicator3, trying fallback to an old implementation of AppIndicator3!")
+				log.warning(
+					"Failed to import AyatanaAppIndicator3, trying fallback to an old implementation of AppIndicator3!"
+				)
 				gi.require_version("AppIndicator3", "0.1")
 				from gi.repository import AppIndicator3 as appindicator
 
-			self._status_active  = appindicator.IndicatorStatus.ACTIVE
+			self._status_active = appindicator.IndicatorStatus.ACTIVE
 			self._status_passive = appindicator.IndicatorStatus.PASSIVE
 		except ImportError:
 			log.warning("Failed to import AppIndicator3")
@@ -293,12 +300,11 @@ class StatusIconAppIndicator(StatusIconDBus):
 
 
 class StatusIconProxy(StatusIcon):
-
 	def __init__(self, *args, **kwargs):
 		StatusIcon.__init__(self, *args, **kwargs)
 
-		self._arguments  = (args, kwargs)
-		self._status_fb  = None
+		self._arguments = (args, kwargs)
+		self._status_fb = None
 		self._status_gtk = None
 		self.set("scc-unknown", "")
 
@@ -309,7 +315,7 @@ class StatusIconProxy(StatusIcon):
 		try:
 			# Try loading GTK native status icon
 			self._status_gtk = StatusIconGTK3(*args, **kwargs)
-			self._status_gtk.connect("clicked",        self._on_click)
+			self._status_gtk.connect("clicked", self._on_click)
 			self._status_gtk.connect("notify::active", self._on_notify_active_gtk)
 			self._on_notify_active_gtk()
 
@@ -347,7 +353,7 @@ class StatusIconProxy(StatusIcon):
 			for StatusIconBackend in status_icon_backends:
 				try:
 					self._status_fb = StatusIconBackend(*self._arguments[0], **self._arguments[1])
-					self._status_fb.connect("clicked",        self._on_click)
+					self._status_fb.connect("clicked", self._on_click)
 					self._status_fb.connect("notify::active", self._on_notify_active_fb)
 					self._on_notify_active_fb()
 
@@ -395,6 +401,7 @@ class StatusIconProxy(StatusIcon):
 			self._status_gtk.show()
 		if self._status_fb:
 			self._status_fb.show()
+
 
 def get_status_icon(*args, **kwargs):
 	# Try selecting backend based on environment variable

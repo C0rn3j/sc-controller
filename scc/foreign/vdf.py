@@ -2,6 +2,7 @@
 """
 Imports VDF profile and converts it to Profile object.
 """
+
 from scc.uinput import Keys, Axes, Rels
 from scc.actions import Action, NoAction, ButtonAction, DPadAction, XYAction
 from scc.actions import HatRightAction, TriggerAction, MouseAction
@@ -18,72 +19,72 @@ from scc.profile import Profile
 from scc.lib.vdf import parse_vdf, ensure_list
 
 import logging
+
 log = logging.getLogger("import.vdf")
+
 
 class VDFProfile(Profile):
 	BUTTON_TO_BUTTON = {
 		# maps button keys from vdf file to SCButtons constants
 		# It looks like uppercase button and lowercase button aliases are needed
-		'button_a'			: SCButtons.A,
-		'button_A'			: SCButtons.A,
-		'button_b'			: SCButtons.B,
-		'button_B'			: SCButtons.B,
-		'button_x'			: SCButtons.X,
-		'button_X'			: SCButtons.X,
-		'button_y'			: SCButtons.Y,
-		'button_Y'			: SCButtons.Y,
-		'button_back_left'	: SCButtons.LGRIP,
-		'button_back_right'	: SCButtons.RGRIP,
-		'button_menu'		: SCButtons.BACK,
-		'button_escape'		: SCButtons.START,	# what what what
-		'left_bumper'		: SCButtons.LB,
-		'right_bumper'		: SCButtons.RB,
-		'left_click'		: SCButtons.LPAD,
-		'right_click'		: SCButtons.RPAD,
+		"button_a": SCButtons.A,
+		"button_A": SCButtons.A,
+		"button_b": SCButtons.B,
+		"button_B": SCButtons.B,
+		"button_x": SCButtons.X,
+		"button_X": SCButtons.X,
+		"button_y": SCButtons.Y,
+		"button_Y": SCButtons.Y,
+		"button_back_left": SCButtons.LGRIP,
+		"button_back_right": SCButtons.RGRIP,
+		"button_menu": SCButtons.BACK,
+		"button_escape": SCButtons.START,  # what what what
+		"left_bumper": SCButtons.LB,
+		"right_bumper": SCButtons.RB,
+		"left_click": SCButtons.LPAD,
+		"right_click": SCButtons.RPAD,
 	}
 
 	SPECIAL_KEYS = {
 		# Maps some key names from vdf file to Keys.* constants.
 		# Rest of key names are converted in convert_key_name.
-		'FORWARD_SLASH' : Keys.KEY_SLASH,
-		'VOLUME_DOWN' : Keys.KEY_VOLUMEDOWN,
-		'VOLUME_UP' : Keys.KEY_VOLUMEUP,
-		'NEXT_TRACK' : Keys.KEY_NEXTSONG,
-		'PREV_TRACK' : Keys.KEY_PREVIOUSSONG,
-		'PAGE_UP' : Keys.KEY_PAGEUP,
-		'PAGE_DOWN' : Keys.KEY_PAGEDOWN,
-		'SINGLE_QUOTE' : Keys.KEY_APOSTROPHE,
-		'DASH' : Keys.KEY_MINUS,
-		'RETURN' : Keys.KEY_ENTER,
-		'ESCAPE' : Keys.KEY_ESC,
-		'PERIOD' : Keys.KEY_DOT,
-		"LEFT_BRACKET" : Keys.KEY_LEFTBRACE,
-		"RIGHT_BRACKET" : Keys.KEY_RIGHTBRACE,
-		'KEYPAD_DASH' : Keys.KEY_KPMINUS,
-		'KEYPAD_FORWARD_SLASH' : Keys.KEY_KPSLASH,
-		'LEFT_CONTROL' : Keys.KEY_LEFTCTRL,
-		'RIGHT_CONTROL' : Keys.KEY_RIGHTCTRL,
+		"FORWARD_SLASH": Keys.KEY_SLASH,
+		"VOLUME_DOWN": Keys.KEY_VOLUMEDOWN,
+		"VOLUME_UP": Keys.KEY_VOLUMEUP,
+		"NEXT_TRACK": Keys.KEY_NEXTSONG,
+		"PREV_TRACK": Keys.KEY_PREVIOUSSONG,
+		"PAGE_UP": Keys.KEY_PAGEUP,
+		"PAGE_DOWN": Keys.KEY_PAGEDOWN,
+		"SINGLE_QUOTE": Keys.KEY_APOSTROPHE,
+		"DASH": Keys.KEY_MINUS,
+		"RETURN": Keys.KEY_ENTER,
+		"ESCAPE": Keys.KEY_ESC,
+		"PERIOD": Keys.KEY_DOT,
+		"LEFT_BRACKET": Keys.KEY_LEFTBRACE,
+		"RIGHT_BRACKET": Keys.KEY_RIGHTBRACE,
+		"KEYPAD_DASH": Keys.KEY_KPMINUS,
+		"KEYPAD_FORWARD_SLASH": Keys.KEY_KPSLASH,
+		"LEFT_CONTROL": Keys.KEY_LEFTCTRL,
+		"RIGHT_CONTROL": Keys.KEY_RIGHTCTRL,
 	}
 
 	SPECIAL_BUTTONS = {
 		# As SPECIAL_KEYS, but for buttons.
-		'shoulder_left' : Keys.BTN_TL,
-		'shoulder_right' : Keys.BTN_TR,
-		'joystick_left' : Keys.BTN_THUMBL,
-		'joystick_right' : Keys.BTN_THUMBR,
+		"shoulder_left": Keys.BTN_TL,
+		"shoulder_right": Keys.BTN_TR,
+		"joystick_left": Keys.BTN_THUMBL,
+		"joystick_right": Keys.BTN_THUMBR,
 	}
 
-	REGION_IMPORT_FACTOR = 0.6		# Bulgarian const.
+	REGION_IMPORT_FACTOR = 0.6  # Bulgarian const.
 
-
-	def __init__(self, name = "Unnamed"):
+	def __init__(self, name="Unnamed"):
 		Profile.__init__(self, ActionParser())
 		self.name = name
 		self.next_menu_id = 1
 		self.action_set_id = 0
-		self.action_sets = { 'default' : self }
+		self.action_sets = {"default": self}
 		self.action_set_switches = set()
-
 
 	def parse_action(self, lst_or_str, button=None):
 		"""
@@ -93,7 +94,7 @@ class VDFProfile(Profile):
 		Returns Action instance or ParseError if action is not recognized.
 		"""
 		if type(lst_or_str) == list:
-			return MultiAction.make(*[ self.parse_action(x) for x in lst_or_str ])
+			return MultiAction.make(*[self.parse_action(x) for x in lst_or_str])
 		# Split string into binding type, name and parameters
 		binding, params = lst_or_str.split(" ", 1)
 		if "," in params:
@@ -134,9 +135,7 @@ class VDFProfile(Profile):
 			if button not in VDFProfile.BUTTON_TO_BUTTON:
 				log.warning("Ignoring modeshift assigned to unknown button: '%s'" % (button,))
 				return NoAction()
-			self.modeshift_buttons[VDFProfile.BUTTON_TO_BUTTON[button]] = (
-				params[1], params[0]
-			)
+			self.modeshift_buttons[VDFProfile.BUTTON_TO_BUTTON[button]] = (params[1], params[0])
 			return NoAction()
 		if binding in ("controller_action"):
 			if params[0] == "CHANGE_PRESET":
@@ -157,7 +156,6 @@ class VDFProfile(Profile):
 
 		raise ParseError("Unknown binding: '%s'" % (binding,))
 
-
 	@staticmethod
 	def parse_modifiers(group, action, side):
 		"""
@@ -175,7 +173,10 @@ class VDFProfile(Profile):
 			if "haptic_intensity" in settings:
 				action = FeedbackModifier(
 					HapticPos.LEFT if side == Profile.LEFT else HapticPos.RIGHT,
-					512 * int(settings["haptic_intensity"]), 8, action)
+					512 * int(settings["haptic_intensity"]),
+					8,
+					action,
+				)
 			if "invert_x" in settings and int(settings["invert_x"]):
 				sens = -1.0 * sens[0], sens[1], sens[2]
 			if "invert_y" in settings and int(settings["invert_y"]):
@@ -186,9 +187,7 @@ class VDFProfile(Profile):
 			if sens != (1.0, 1.0, 1.0):
 				action = SensitivityModifier(sens[0], sens[1], sens[2], action)
 
-
 		return action
-
 
 	@staticmethod
 	def convert_key_name(name):
@@ -211,7 +210,6 @@ class VDFProfile(Profile):
 			return getattr(Keys, key.upper())
 		raise ParseError("Unknown key: '%s'" % (name,))
 
-
 	@staticmethod
 	def convert_button_name(name):
 		"""Convert button names used in vdf profiles to Keys.BTN_* constants."""
@@ -221,7 +219,6 @@ class VDFProfile(Profile):
 		if hasattr(Keys, key):
 			return getattr(Keys, key)
 		raise ParseError("Unknown button: '%s'" % (name,))
-
 
 	def parse_button(self, bdef, button=None):
 		"""
@@ -233,7 +230,7 @@ class VDFProfile(Profile):
 			return self.parse_action(bdef, button)
 		elif type(bdef) == list:
 			# V2
-			return MultiAction.make(*[ self.parse_action(x, button) for x in bdef ])
+			return MultiAction.make(*[self.parse_action(x, button) for x in bdef])
 		elif "activators" in bdef:
 			# V3
 			act_actions = []
@@ -258,7 +255,6 @@ class VDFProfile(Profile):
 		else:
 			log.warning("Failed to parse button definition: %s" % (bdef,))
 
-
 	@staticmethod
 	def get_inputs(group):
 		"""
@@ -271,15 +267,13 @@ class VDFProfile(Profile):
 			return group["bindings"]
 		return {}
 
-
 	@staticmethod
 	def find_group(data, id):
-		""" Returns group with specified ID or None """
-		for g in data.get_all_for('group'):
+		"""Returns group with specified ID or None"""
+		for g in data.get_all_for("group"):
 			if "id" in g and g["id"] == id:
 				return g
 		return None
-
 
 	def parse_group(self, group, side):
 		"""
@@ -324,8 +318,8 @@ class VDFProfile(Profile):
 				action = XYAction(AxisAction(Axes.ABS_RX), AxisAction(Axes.ABS_RY))
 		elif mode == "joystick_camera":
 			output_joystick = 0
-			if 'output_joystick' in settings:
-				output_joystick = int(settings['output_joystick'])
+			if "output_joystick" in settings:
+				output_joystick = int(settings["output_joystick"])
 			if output_joystick == 0:
 				action = BallModifier(XYAction(AxisAction(Axes.ABS_X), AxisAction(Axes.ABS_Y)))
 			elif output_joystick == 1:
@@ -343,46 +337,47 @@ class VDFProfile(Profile):
 			next_item_id = 1
 			for k in inputs:
 				action = self.parse_button(inputs[k])
-				items.append(MenuItem(
-					"item_%s" % (next_item_id,),
-					action.describe(Action.AC_BUTTON),
-					action,
-				))
+				items.append(
+					MenuItem(
+						"item_%s" % (next_item_id,),
+						action.describe(Action.AC_BUTTON),
+						action,
+					)
+				)
 				next_item_id += 1
 			# Menu is stored in profile, with generated ID
 			menu_id = "menu_%s" % (self.next_menu_id,)
 			self.next_menu_id += 1
 			self.menus[menu_id] = MenuData(*items)
 
-			action = GridMenuAction(menu_id,
-				'LEFT' if side == Profile.LEFT else 'RIGHT',
-				SCButtons.LPAD if side == Profile.LEFT else SCButtons.RPAD
+			action = GridMenuAction(
+				menu_id,
+				"LEFT" if side == Profile.LEFT else "RIGHT",
+				SCButtons.LPAD if side == Profile.LEFT else SCButtons.RPAD,
 			)
 		elif mode == "radial_menu":
 			items = []
 			next_item_id = 1
 			for k in inputs:
 				action = self.parse_button(inputs[k])
-				items.append(MenuItem(
-					"item_%s" % (next_item_id,), action.describe(Action.AC_BUTTON), action ))
+				items.append(MenuItem("item_%s" % (next_item_id,), action.describe(Action.AC_BUTTON), action))
 				next_item_id += 1
 			# Menu is stored in profile, with generated ID
 			menu_id = "menu_%s" % (self.next_menu_id,)
 			self.next_menu_id += 1
 			self.menus[menu_id] = MenuData(*items)
 
-			action = RadialMenuAction(menu_id,
-				'LEFT' if side == Profile.LEFT else 'RIGHT',
-				SCButtons.LPAD if side == Profile.LEFT else SCButtons.RPAD
+			action = RadialMenuAction(
+				menu_id,
+				"LEFT" if side == Profile.LEFT else "RIGHT",
+				SCButtons.LPAD if side == Profile.LEFT else SCButtons.RPAD,
 			)
 		elif mode == "absolute_mouse":
 			if "click" in inputs:
 				if side == Profile.LEFT:
-					self.add_by_binding(SCButtons.LPAD,
-							self.parse_button(inputs["click"]))
+					self.add_by_binding(SCButtons.LPAD, self.parse_button(inputs["click"]))
 				else:
-					self.add_by_binding(SCButtons.RPAD,
-							self.parse_button(inputs["click"]))
+					self.add_by_binding(SCButtons.RPAD, self.parse_button(inputs["click"]))
 			if "gyro_axis" in settings:
 				if int(settings["gyro_axis"]) == 1:
 					action = MouseAction(ROLL)
@@ -395,8 +390,7 @@ class VDFProfile(Profile):
 		elif mode == "trigger":
 			actions = []
 			if "click" in inputs:
-				actions.append(TriggerAction(TRIGGER_CLICK,
-					self.parse_button(inputs["click"])))
+				actions.append(TriggerAction(TRIGGER_CLICK, self.parse_button(inputs["click"])))
 
 			if side == Profile.LEFT:
 				actions.append(AxisAction(Axes.ABS_Z))
@@ -430,7 +424,6 @@ class VDFProfile(Profile):
 		action = VDFProfile.parse_modifiers(group, action, side)
 		return action
 
-
 	def parse_switches(self, group):
 		"""Use for special cases of input groups that contain buttons."""
 		inputs = VDFProfile.get_inputs(group)
@@ -446,13 +439,9 @@ class VDFProfile(Profile):
 					AxisAction(Axes.ABS_RZ),
 				)
 			elif button in VDFProfile.BUTTON_TO_BUTTON:
-				self.add_by_binding(
-					VDFProfile.BUTTON_TO_BUTTON[button],
-					self.parse_button(inputs[button], button)
-				)
+				self.add_by_binding(VDFProfile.BUTTON_TO_BUTTON[button], self.parse_button(inputs[button], button))
 			else:
 				raise ParseError("Unknown button: '%s'" % (button,))
-
 
 	def parse_input_binding(self, data, group_id, binding):
 		group = VDFProfile.find_group(data, group_id)
@@ -471,7 +460,6 @@ class VDFProfile(Profile):
 					self.modeshifts[modeshift_id] = action
 				else:
 					self.set_by_binding(binding, action)
-
 
 	def set_by_binding(self, binding, action):
 		"""Set action specified by binding, one of group_source_bindings keys used in vdf profile. Also supports SCButtons constants for buttons.
@@ -495,7 +483,6 @@ class VDFProfile(Profile):
 		else:
 			raise ParseError("Unknown group source binding: '%s'" % (binding,))
 
-
 	def add_by_binding(self, binding, action):
 		"""As set_by_binding, but if there is alrady action for specified binding set, creates MultiAction."""
 		old = self.get_by_binding(binding)
@@ -503,7 +490,6 @@ class VDFProfile(Profile):
 		if isinstance(new, MultiAction):
 			new = new.deduplicate()
 		self.set_by_binding(binding, new)
-
 
 	def get_by_binding(self, binding):
 		"""Return action specified by binding, one of group_source_bindings keys used in vdf profile. Also supports SCButtons constants for buttons.
@@ -526,23 +512,22 @@ class VDFProfile(Profile):
 			return self.gyro
 		raise ParseError("Unknown group source binding: '%s'" % (binding,))
 
-
 	@staticmethod
 	def _load_preset(data, profile, preset):
 		profile.modeshifts = {}
 		profile.modeshift_buttons = {}
-		if not 'group_source_bindings' in preset:
+		if not "group_source_bindings" in preset:
 			# Empty preset
 			return
 
-		gsb = preset['group_source_bindings']
+		gsb = preset["group_source_bindings"]
 		for group_id in gsb:
 			binding = gsb[group_id]
 			if not binding.endswith("inactive"):
 				profile.parse_input_binding(data, group_id, binding)
 
 		if "switch_bindings" in preset:
-			profile.parse_switches(preset['switch_bindings'])
+			profile.parse_switches(preset["switch_bindings"])
 
 		for b in profile.modeshift_buttons:
 			if profile.modeshift_buttons[b] in profile.modeshifts:
@@ -553,20 +538,22 @@ class VDFProfile(Profile):
 			action = profile.modeshifts[modeshift]
 			trash, binding = modeshift
 			old = profile.get_by_binding(binding)
-			profile.set_by_binding(binding, ModeModifier(
-				b, action,
-				old,
-			))
-
+			profile.set_by_binding(
+				binding,
+				ModeModifier(
+					b,
+					action,
+					old,
+				),
+			)
 
 	@staticmethod
 	def _get_preset_name(data, preset):
 		"""Return name of specified preset."""
 		name = preset["name"].lower()
-		if "actions" in data and name in data['actions']:
-			name = data['actions'][name]['title']
+		if "actions" in data and name in data["actions"]:
+			name = data["actions"][name]["title"]
 		return name
-
 
 	def action_set_by_id(self, id):
 		"""Return name of action set with specified id."""
@@ -574,7 +561,6 @@ class VDFProfile(Profile):
 			if self.action_sets[s].action_set_id == id:
 				return s
 		return None
-
 
 	def load(self, filename):
 		"""Load profile from vdf file. Returns self.
@@ -585,16 +571,15 @@ class VDFProfile(Profile):
 			data = parse_vdf(file)
 		self.load_data(data)
 
-
 	def load_data(self, data):
-		if 'controller_mappings' not in data:
+		if "controller_mappings" not in data:
 			raise ValueError("Invalid profile file")
-		data = data['controller_mappings']
-		if 'title' in data:
-			name = data['title'].strip()
+		data = data["controller_mappings"]
+		if "title" in data:
+			name = data["title"].strip()
 			if name:
 				self.name = name
-		presets = ensure_list(data['preset'])
+		presets = ensure_list(data["preset"])
 		for p in presets:
 			id = int(p["id"])
 			if id == 0:
@@ -609,7 +594,8 @@ class VDFProfile(Profile):
 
 		for aset in self.action_sets.values():
 			aset.buttons[SCButtons.C] = HoldModifier(
-				MenuAction("Default.menu"), MenuAction("Default.menu"),
+				MenuAction("Default.menu"),
+				MenuAction("Default.menu"),
 			)
 
 		return self
@@ -619,6 +605,7 @@ if __name__ == "__main__":
 	import sys
 
 	from scc.tools import init_logging
+
 	init_logging()
 	f = VDFProfile().load(sys.argv[1])
 	f.save("output.sccprofile")

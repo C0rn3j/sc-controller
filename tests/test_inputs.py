@@ -14,6 +14,7 @@ Tests various inputs for crashes and incorrect behaviour,
 mostly using dummy outputs and FakeController
 """
 
+
 class FakeControllerInput(NamedTuple):
 	buttons: int
 	ltrig: int
@@ -32,18 +33,23 @@ class FakeControllerInput(NamedTuple):
 	q3: int
 	q4: int
 
-ZERO_STATE = FakeControllerInput( *[0] * len(FakeControllerInput._fields) )
+
+ZERO_STATE = FakeControllerInput(*[0] * len(FakeControllerInput._fields))
 parser = ActionParser()
+
 
 def input_test(fn):
 	"""Decorator that creates usable mapper."""
+
 	def wrapper(*a):
 		_time = time.time
 
 		def fake_time():
 			return fake_time.t
+
 		def add(n):
 			fake_time.t += n
+
 		fake_time.t = _time()
 		fake_time.add = add
 		time.time = fake_time
@@ -60,17 +66,20 @@ def input_test(fn):
 		mapper._tick_rate = 0.01
 
 		_mapper_input = mapper.input
+
 		def mapper_input(*a):
 			add(mapper._tick_rate)
 			_mapper_input(*a)
 			scheduler.run()
+
 		mapper.input = mapper_input
 
-		a = list(a) + [ mapper ]
+		a = list(a) + [mapper]
 		try:
 			return fn(*a)
 		finally:
 			time.time = _time
+
 	return wrapper
 
 
@@ -87,22 +96,18 @@ class RememberingDummy(Dummy):
 	def axisEvent(self, axis, val):
 		self.axes[axis] = val
 
-
 	def moveEvent(self, dx=0, dy=0):
 		self.mouse_x += dx
 		self.mouse_y += dy
-
 
 	def scrollEvent(self, dx=0, dy=0):
 		self.scroll_x += dx
 		self.scroll_y += dx
 
-
 	def pressEvent(self, keys):
 		for k in keys:
 			assert k not in self.pressed
 			self.pressed.add(k)
-
 
 	def releaseEvent(self, keys=[]):
 		for k in keys:
@@ -123,7 +128,6 @@ class TestInputs:
 		assert Keys["KEY_ENTER"] in mapper.keyboard.pressed
 		mapper.input(mapper.controller, state, state._replace(buttons=0))
 		assert Keys["KEY_ENTER"] not in mapper.keyboard.pressed
-
 
 	@input_test
 	def test_trackball(self, mapper: Mapper):

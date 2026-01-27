@@ -2,6 +2,7 @@
 
 Allows to edit button or trigger action.
 """
+
 import os, logging
 
 from scc.tools import _
@@ -19,7 +20,6 @@ log = logging.getLogger("Editor")
 
 
 class ComboSetter:
-
 	def set_cb(self, cb, key, keyindex=0) -> bool:
 		"""Set combobox value.
 
@@ -44,14 +44,12 @@ class Editor(ComboSetter):
 	_error_css_provider = None
 
 	def __init__(self):
-		self.added_widget = None		# See add_widget method
-
+		self.added_widget = None  # See add_widget method
 
 	def on_window_key_press_event(self, trash, event):
 		"""Checks if pressed key was escape and if yes, closes window"""
 		if event.keyval == Gdk.KEY_Escape:
 			self.close()
-
 
 	def setup_widgets(self):
 		self.builder = Gtk.Builder()
@@ -59,37 +57,30 @@ class Editor(ComboSetter):
 		self.window = self.builder.get_object("Dialog")
 		self.builder.connect_signals(self)
 
-
 	@staticmethod
 	def install_error_css():
 		if Editor._error_css_provider is None:
 			Editor._error_css_provider = Gtk.CssProvider()
-			Editor._error_css_provider.load_from_data(Editor.ERROR_CSS.encode('utf-8'))
+			Editor._error_css_provider.load_from_data(Editor.ERROR_CSS.encode("utf-8"))
 			Gtk.StyleContext.add_provider_for_screen(
-					Gdk.Screen.get_default(),
-					Editor._error_css_provider,
-					Gtk.STYLE_PROVIDER_PRIORITY_USER)
-
+				Gdk.Screen.get_default(), Editor._error_css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
+			)
 
 	def hide_dont_destroy(self, w, *a):
 		"""When used as handler for 'delete-event' signal, prevents window from being destroyed after closing."""
 		w.hide()
 		return True
 
-
 	def set_title(self, title):
 		self.window.set_title(title)
 		self.builder.get_object("header").set_title(title)
 
-
 	def close(self, *a):
 		self.window.destroy()
-
 
 	def get_transient_for(self):
 		"""Return parent window for this editor. Usually main application window"""
 		return self._transient_for
-
 
 	def show(self, transient_for):
 		if transient_for:
@@ -97,7 +88,6 @@ class Editor(ComboSetter):
 			self.window.set_transient_for(transient_for)
 			self.window.set_modal(True)
 		self.window.show()
-
 
 	def add_widget(self, label, widget):
 		"""Add new widget into row before Action Name.
@@ -118,7 +108,6 @@ class Editor(ComboSetter):
 		vbAddedWidget.pack_start(widget, True, False, 0)
 		vbAddedWidget.set_visible(True)
 
-
 	def remove_added_widget(self):
 		"""Remove added widget, if any.
 
@@ -129,11 +118,10 @@ class Editor(ComboSetter):
 			vbAddedWidget.remove(ch)
 		self.added_widget = None
 
-
 	def send_added_widget(self, target):
 		"""Transfer added widget to new editor window"""
 		if self.added_widget:
-			vbAddedWidget  = self.builder.get_object("vbAddedWidget")
+			vbAddedWidget = self.builder.get_object("vbAddedWidget")
 			lblAddedWidget = self.builder.get_object("lblAddedWidget")
 			label = lblAddedWidget.get_label()
 			w = self.added_widget

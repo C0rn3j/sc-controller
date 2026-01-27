@@ -1,4 +1,5 @@
 """SC-Controller - About dialog."""
+
 from scc.gui.editor import Editor
 
 
@@ -10,7 +11,6 @@ class AboutDialog(Editor):
 	def __init__(self, app) -> None:
 		self.app = app
 		self.setup_widgets()
-
 
 	def setup_widgets(self) -> None:
 		"""Setup widgets and get and set app version in the About.
@@ -26,6 +26,7 @@ class AboutDialog(Editor):
 		import importlib.resources
 
 		import scc
+
 		sccontroller_version = importlib.metadata.version("sccontroller")
 		sccontroller_module = importlib.resources.files("scc")
 		if sccontroller_module is not None:
@@ -37,17 +38,16 @@ class AboutDialog(Editor):
 					"Could not get version, locations possibly could not match.",
 					f"scc.__file__:{scc.__file__}",
 					f"sccontroller_module: {sccontroller_module}",
-					f"sccontroller_version: {sccontroller_version}")
+					f"sccontroller_version: {sccontroller_version}",
+				)
 		# Display version in UI
 		self.builder.get_object("lblVersion").set_label(app_ver)
-
 
 	def show(self, modal_for) -> None:
 		if modal_for:
 			self.window.set_transient_for(modal_for)
 			self.window.set_modal(True)
 		self.window.show()
-
 
 	def on_dialog_response(self, *a) -> None:
 		self.close()

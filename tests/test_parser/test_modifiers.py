@@ -9,7 +9,6 @@ from . import _parse_compressed, _parses_as_itself, parser
 
 
 class TestModifiers:
-
 	def test_tests(self):
 		"""
 		Tests if this class has test for each known modifier defined.
@@ -17,9 +16,7 @@ class TestModifiers:
 		for cls in Action.ALL.values():
 			if "/modifiers.py" in inspect.getfile(cls):
 				method_name = "test_%s" % (cls.COMMAND,)
-				assert hasattr(self, method_name), \
-					"There is no test for %s modifier" % (cls.COMMAND)
-
+				assert hasattr(self, method_name), "There is no test for %s modifier" % (cls.COMMAND)
 
 	def test_name(self):
 		"""
@@ -29,14 +26,12 @@ class TestModifiers:
 		assert isinstance(a, ButtonAction)
 		assert a.name == "Not A Button"
 
-
 	def test_click(self):
 		"""
 		Tests if ClickModifier is parsed
 		"""
 		a = _parse_compressed("click(button(KEY_A))")
 		assert isinstance(a, ClickModifier)
-
 
 	def test_pressed(self):
 		"""
@@ -45,14 +40,12 @@ class TestModifiers:
 		a = _parse_compressed("released(button(KEY_A))")
 		assert isinstance(a, ReleasedModifier)
 
-
 	def test_released(self):
 		"""
 		Tests if PressedModifier is parsed
 		"""
 		a = _parse_compressed("pressed(axis(KEY_A))")
 		assert isinstance(a, PressedModifier)
-
 
 	def test_touched(self):
 		"""
@@ -61,14 +54,12 @@ class TestModifiers:
 		a = _parse_compressed("touched(button(KEY_A))")
 		assert isinstance(a, TouchedModifier)
 
-
 	def test_untouched(self):
 		"""
 		Tests if UntouchedModifier is parsed
 		"""
 		a = _parse_compressed("untouched(button(KEY_A))")
 		assert isinstance(a, UntouchedModifier)
-
 
 	def test_circular(self):
 		"""
@@ -77,14 +68,12 @@ class TestModifiers:
 		assert isinstance(_parse_compressed("circular(axis(ABS_X))"), CircularModifier)
 		assert isinstance(_parse_compressed("circular(axis(REL_WHEEL))"), CircularModifier)
 
-
 	def test_circularabs(self):
 		"""
 		Tests if CircularAbsModifier is parsed
 		"""
 		assert isinstance(_parse_compressed("circularabs(axis(ABS_X))"), CircularAbsModifier)
 		assert isinstance(_parse_compressed("circularabs(axis(REL_WHEEL))"), CircularAbsModifier)
-
 
 	def test_ball(self):
 		"""
@@ -98,7 +87,6 @@ class TestModifiers:
 		assert isinstance(a, BallModifier)
 		assert isinstance(a.action, MouseAction)
 
-
 	def test_smooth(self):
 		"""
 		Tests if SmoothModifier is parsed
@@ -109,7 +97,6 @@ class TestModifiers:
 		assert a.action.id == Axes.ABS_X
 		assert a.level == 5
 		assert a.multiplier == 0.3
-
 
 	def test_deadzone(self):
 		"""
@@ -127,7 +114,6 @@ class TestModifiers:
 		assert a.lower == 100 and a.upper == 2000
 		assert isinstance(a.action, AxisAction)
 		assert a.action.id == Axes.ABS_X
-
 
 	def test_mode(self):
 		"""
@@ -153,7 +139,6 @@ class TestModifiers:
 		assert isinstance(a.default, ButtonAction)
 		assert a.default.button == Keys.KEY_A
 
-
 	def test_doubleclick(self):
 		"""
 		Tests if DoubleclickModifier is parsed
@@ -174,7 +159,6 @@ class TestModifiers:
 		assert not a.holdaction
 		assert a.timeout == 1.5
 
-
 	def test_hold(self):
 		"""
 		Tests if HoldModifier is parsed
@@ -194,7 +178,6 @@ class TestModifiers:
 		assert isinstance(a.normalaction, AxisAction) and a.normalaction.id == Axes.ABS_Y
 		assert not a.action
 		assert a.timeout == 1.5
-
 
 	def test_hold_doubleclick_combinations(self):
 		"""
@@ -218,7 +201,6 @@ class TestModifiers:
 		assert isinstance(a.holdaction, AxisAction) and a.holdaction.id == Axes.ABS_RZ
 		assert isinstance(a.normalaction, AxisAction) and a.normalaction.id == Axes.ABS_X
 
-
 	def test_sens(self):
 		"""
 		Tests if SensitivityModifier can be converted to string and parsed
@@ -240,7 +222,6 @@ class TestModifiers:
 		assert isinstance(a.action, MouseAction) and a.action.get_speed() == (1.0, 1.0)
 		assert isinstance(a, BallModifier) and a.get_speed() == (2.0, 3.0)
 
-
 	def test_feedback(self):
 		"""
 		Tests if FeedbackModifier can be converted to string and parsed
@@ -254,7 +235,6 @@ class TestModifiers:
 		# Bellow was failing in past
 		assert _parses_as_itself(FeedbackModifier(HapticPos.LEFT, MouseAction()))
 		assert _parses_as_itself(FeedbackModifier(HapticPos.RIGHT, MouseAction()))
-
 
 	def test_rotate(self):
 		"""

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Installation script for everything that could not be migrated to pyproject.toml so far."""
+
 import glob
 
 from setuptools import Extension, setup
@@ -22,26 +23,24 @@ data_files = [
 	("share/scc/osd-styles", glob.glob("osd-styles/*.json")),
 	("share/scc/osd-styles", glob.glob("osd-styles/*.css")),
 	("share/scc/", ["gamecontrollerdb.txt"]),
-	("share/pixmaps", [ "images/sc-controller.svg" ]),
-	("share/mime/packages", [ "scc-mime-types.xml" ]),
-	("share/applications", ["scripts/sc-controller.desktop" ]),
+	("share/pixmaps", ["images/sc-controller.svg"]),
+	("share/mime/packages", ["scc-mime-types.xml"]),
+	("share/applications", ["scripts/sc-controller.desktop"]),
 	("lib/udev/rules.d", glob.glob("scripts/*.rules")),
-] + [ # menu icons subfolders
-	(
-		"share/scc/images/menu-icons/" + x.split("/")[-1],
-		[ x + "/LICENSES" ] + glob.glob(x + "/*.png")
-	) for x in glob.glob("images/menu-icons/*")
+] + [  # menu icons subfolders
+	("share/scc/images/menu-icons/" + x.split("/")[-1], [x + "/LICENSES"] + glob.glob(x + "/*.png"))
+	for x in glob.glob("images/menu-icons/*")
 ]
 
 extensions = [
-	Extension("libuinput",    sources=["scc/uinput.c"]),
-	Extension("libcemuhook",  sources=["scc/cemuhook_server.c"], libraries=["z"], define_macros=[("PYTHON", "1")]),
-	Extension("libhiddrv",    sources=["scc/drivers/hiddrv.c"]),
-	Extension("libsc_by_bt",  sources=["scc/drivers/sc_by_bt.c"]),
+	Extension("libuinput", sources=["scc/uinput.c"]),
+	Extension("libcemuhook", sources=["scc/cemuhook_server.c"], libraries=["z"], define_macros=[("PYTHON", "1")]),
+	Extension("libhiddrv", sources=["scc/drivers/hiddrv.c"]),
+	Extension("libsc_by_bt", sources=["scc/drivers/sc_by_bt.c"]),
 	Extension("libremotepad", sources=["scc/drivers/remotepad_controller.c"]),
 ]
 
 setup(
 	ext_modules=extensions,
-	data_files = data_files,
+	data_files=data_files,
 )

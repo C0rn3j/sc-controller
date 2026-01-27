@@ -3,6 +3,7 @@
 Helper classes for grabbing buttons and axes from physical gamepads.
 
 """
+
 from scc.tools import _
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN
@@ -11,6 +12,7 @@ from scc.gui.creg.constants import X, Y
 from scc.tools import nameof
 
 import logging
+
 log = logging.getLogger("CReg.grabs")
 
 
@@ -24,20 +26,16 @@ class InputGrabber:
 		self.dlgPressButton = parent.builder.get_object("dlgPressButton")
 		self.dlgPressButton.show()
 
-
 	def set_message(self, text):
 		self.parent.builder.get_object("lblPressButton").set_text(text)
-
 
 	def cancel(self):
 		self.dlgPressButton.hide()
 		self.parent._grabber = None
 
-
 	def on_button(self, keycode, pressed):
 		if not pressed:
 			self.set_mapping(keycode, self.what)
-
 
 	def set_mapping(self, keycode, what):
 		parent = self.parent
@@ -58,7 +56,6 @@ class InputGrabber:
 		self.parent.generate_raw_data()
 		self.cancel()
 
-
 	def on_axis(self, number, value):
 		pass
 
@@ -68,18 +65,17 @@ class TriggerGrabber(InputGrabber):
 	InputGrabber modified to grab trigger bindings.
 	That may be button or axis with at least 0-250 range is accepted.
 	"""
+
 	def __init__(self, parent, what, text=_("Pull a trigger...")):
 		InputGrabber.__init__(self, parent, what, text)
-		self.orig_pos = { k: parent._input_axes[k] for k in parent._input_axes }
-		self.new_pos  = { k: parent._input_axes[k] for k in parent._input_axes }
-
+		self.orig_pos = {k: parent._input_axes[k] for k in parent._input_axes}
+		self.new_pos = {k: parent._input_axes[k] for k in parent._input_axes}
 
 	def on_button(self, keycode, pressed):
 		if not pressed:
 			self.set_mapping(keycode, self.what)
 			self.what.min = STICK_PAD_MIN
 			self.what.max = STICK_PAD_MAX
-
 
 	def on_axis(self, number, value):
 		if number > 50:
@@ -90,18 +86,14 @@ class TriggerGrabber(InputGrabber):
 			self.orig_pos[number] = 0
 
 		# Get avgerage absolute change for all axes
-		avg = float(sum([
-				abs( self.orig_pos[k] - self.new_pos[k] )
-				for k in self.new_pos
-			])) / float(len(self.new_pos))
+		avg = float(sum([abs(self.orig_pos[k] - self.new_pos[k]) for k in self.new_pos])) / float(len(self.new_pos))
 
 		# Get absolute change for _this_ axis
-		change = abs( self.orig_pos[number] - self.new_pos[number] )
+		change = abs(self.orig_pos[number] - self.new_pos[number])
 		if change > 2 and change > avg * 0.5:
 			# TODO: change > 2 may be too strict
 			# if there is pad going from -1 to 1 somewhere around
 			self.axis_change(number, value, change)
-
 
 	def axis_change(self, number, value, change):
 		if value > 250:
@@ -119,22 +111,20 @@ class StickGrabber(TriggerGrabber):
 	"""
 
 	def __init__(self, parent, what):
-		TriggerGrabber.__init__(self, parent, what,
-				text=_("Move stick left and right..."))
+		TriggerGrabber.__init__(self, parent, what, text=_("Move stick left and right..."))
 		self.xy = X
-		self.grabbed = [ None, None ]
-
+		self.grabbed = [None, None]
 
 	def on_button(self, keycode, pressed):
-		#if len(self.grabbed) == 2 and self.grabbed[X] != None:
-		#	# Already grabbed one axis, don't grab buttons
-		#	return
+		# if len(self.grabbed) == 2 and self.grabbed[X] != None:
+		# # Already grabbed one axis, don't grab buttons
+		# return
 		if keycode in self.grabbed:
 			# Don't allow same button to be used twice
 			return
 		if not pressed:
 			if len(self.grabbed) < 4:
-				self.grabbed = [ None ] * 4
+				self.grabbed = [None] * 4
 			if self.grabbed[0] is None:
 				self.grabbed[0] = keycode
 				self.set_message(_("Move DPAD to right"))
@@ -156,7 +146,6 @@ class StickGrabber(TriggerGrabber):
 				self.parent.generate_unassigned()
 				self.parent.generate_raw_data()
 				self.cancel()
-
 
 	def on_axis(self, number, value):
 		if len(self.grabbed) > 2:

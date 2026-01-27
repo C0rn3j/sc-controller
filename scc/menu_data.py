@@ -2,6 +2,7 @@
 
 Container for list of menu items + required parsers
 """
+
 import json
 import os
 
@@ -10,10 +11,10 @@ from scc.tools import _, set_logging_level
 
 
 class MenuData:
-	""" Contains list of menu items. Indexable """
+	"""Contains list of menu items. Indexable"""
+
 	def __init__(self, *items):
 		self.__items = list(items)
-
 
 	def generate(self, menuhandler):
 		"""
@@ -30,24 +31,19 @@ class MenuData:
 				items.append(i)
 		return MenuData(*items)
 
-
 	def compress(self):
 		for i in self.__items:
 			if i.action:
 				i.action = i.action.compress()
 
-
 	def __len__(self):
 		return len(self.__items)
-
 
 	def __getitem__(self, index):
 		return self.__items[index]
 
-
 	def __iter__(self):
 		return iter(self.__items)
-
 
 	def get_all_actions(self):
 		"""
@@ -59,7 +55,6 @@ class MenuData:
 				for i in item.action.get_all_actions():
 					yield i
 
-
 	def get_by_id(self, id):
 		"""
 		Returns item with specified ID.
@@ -70,18 +65,15 @@ class MenuData:
 				return a
 		raise KeyError("No such item")
 
-
 	def index(self, a):
 		return self.__items.index(a)
 
-
 	def encode(self):
-		""" Returns menu data as dict storable in json (profile) file """
+		"""Returns menu data as dict storable in json (profile) file"""
 		rv = []
 		for i in self:
 			rv.append(i.encode())
 		return rv
-
 
 	@staticmethod
 	def from_args(data):
@@ -95,17 +87,13 @@ class MenuData:
 			raise ValueError("Not items")
 
 		# Rearange data into list of pair tuples
-		data = [
-			(data[i * 2], data[(i * 2) + 1])
-			for i in range(0, len(data) / 2)
-		]
+		data = [(data[i * 2], data[(i * 2) + 1]) for i in range(0, len(data) / 2)]
 
 		# Parse data
 		m = MenuData()
 		for id, label in data:
 			m.__items.append(MenuItem(id, label))
 		return m
-
 
 	@staticmethod
 	def from_json_data(data, action_parser=None):
@@ -122,9 +110,10 @@ class MenuData:
 			elif "separator" in i:
 				item = Separator(i["name"] if "name" in i else None)
 			elif "submenu" in i:
-				item = Submenu(i["submenu"],
+				item = Submenu(
+					i["submenu"],
 					i["name"] if "name" in i else None,
-					icon = i["icon"] if "icon" in i else None,
+					icon=i["icon"] if "icon" in i else None,
 				)
 			elif "id" not in i:
 				# Cannot add menu without ID
@@ -150,7 +139,6 @@ class MenuData:
 
 		return m
 
-
 	@staticmethod
 	def from_fileobj(fileobj, action_parser=None):
 		"""
@@ -160,7 +148,6 @@ class MenuData:
 		data = json.loads(fileobj.read())
 		return MenuData.from_json_data(data, action_parser)
 
-
 	@staticmethod
 	def from_file(filename, action_parser=None):
 		"""
@@ -168,7 +155,6 @@ class MenuData:
 		Actions are parsed only if action_parser is set to ActionParser instance.
 		"""
 		return MenuData.from_fileobj(open(filename, "r"), action_parser)
-
 
 	@staticmethod
 	def from_profile(filename, menuname, action_parser=None):
@@ -190,15 +176,15 @@ class MenuData:
 
 
 class MenuItem:
-	""" Really just dummy container """
+	"""Really just dummy container"""
+
 	def __init__(self, id, label, action=None, callback=None, icon=None):
 		self.id = id
 		self.label = label
 		self.action = action
 		self.icon = icon
-		self.callback = callback	# If defined, called when user chooses menu instead of using action
-		self.widget = None			# May be set by UI code
-
+		self.callback = callback  # If defined, called when user chooses menu instead of using action
+		self.widget = None  # May be set by UI code
 
 	def describe(self):
 		"""
@@ -206,26 +192,26 @@ class MenuItem:
 		"""
 		return self.label
 
-
 	def encode(self):
-		""" Returns item data as dict storable in json (profile) file """
+		"""Returns item data as dict storable in json (profile) file"""
 		if self.action and type(self.action) in (str,):
-			rv = { 'action' : self.action }
+			rv = {"action": self.action}
 		elif self.action:
 			rv = self.action.encode()
 		else:
 			rv = {}
-		rv['id'] = self.id
-		rv['name'] = self.label
-		if self.icon: rv['icon'] = self.icon
+		rv["id"] = self.id
+		rv["name"] = self.label
+		if self.icon:
+			rv["icon"] = self.icon
 		return rv
 
 
 class Separator(MenuItem):
-	""" Internally, separator is MenuItem without action and id """
+	"""Internally, separator is MenuItem without action and id"""
+
 	def __init__(self, label=None):
 		MenuItem.__init__(self, None, label)
-
 
 	def describe(self):
 		if self.label:
@@ -233,30 +219,30 @@ class Separator(MenuItem):
 		else:
 			return _("---- Separator ----")
 
-
 	def encode(self):
 		if self.label:
-			return { "separator" : True, "name" : self.label }
-		return { "separator" : True }
+			return {"separator": True, "name": self.label}
+		return {"separator": True}
 
 
 class Submenu(MenuItem):
-	""" Internally, separator is MenuItem without action and id """
+	"""Internally, separator is MenuItem without action and id"""
+
 	def __init__(self, filename, label=None, icon=None):
 		if not label:
 			label = ".".join(os.path.split(filename)[-1].split(".")[0:-1])
 		self.filename = filename
 		MenuItem.__init__(self, str(id(self)), label=label, icon=icon)
 
-
 	def describe(self):
 		return self.label + "  " + _(">>")
 
-
 	def encode(self):
-		rv = { "submenu" : self.filename }
-		if self.label: rv["name"] = self.label
-		if self.icon: rv["icon"] = self.icon
+		rv = {"submenu": self.filename}
+		if self.label:
+			rv["name"] = self.label
+		if self.icon:
+			rv["icon"] = self.icon
 		return rv
 
 
@@ -269,9 +255,8 @@ class MenuGenerator:
 		Passed are all keys loaded from json dict that defined this generator.
 		__init__ of generator should ignore all unknown keys.
 		"""
-		self.id = None		# Used only in editor
-		self.icon = None	# same
-
+		self.id = None  # Used only in editor
+		self.icon = None  # same
 
 	def describe(self):
 		"""
@@ -279,14 +264,13 @@ class MenuGenerator:
 		"""
 		return "[ %s ] " % (self.__class__.__name__,)
 
-
 	def encode(self):
-		""" Returns generator data as dict storable in json (profile) file """
-		return { "generator" : self.GENERATOR_NAME }
+		"""Returns generator data as dict storable in json (profile) file"""
+		return {"generator": self.GENERATOR_NAME}
 
 	def generate(self, menuhandler):
 		return []
 
 
 # Holds dict of knowm menu ganerators, but generated elsewhere
-MENU_GENERATORS = { }
+MENU_GENERATORS = {}

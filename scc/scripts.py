@@ -3,6 +3,7 @@
 Contains code for most of what can be done using 'scc' script.
 Created so scc-* stuff doesn't polute /usr/bin.
 """
+
 from __future__ import annotations
 
 import os
@@ -20,12 +21,14 @@ from scc.tools import find_binary, init_logging, set_logging_level
 class InvalidArguments(Exception):
 	pass
 
+
 def run_binary(binary_name: str, argv: list[str]) -> int:
 	"""Run scc-daemon with passed parameters."""
 	binary = find_binary(binary_name)
 	child = subprocess.Popen([binary] + argv)
 	child.communicate()
 	return child.returncode
+
 
 def cmd_daemon(argv0: str, argv: list[str]) -> int:
 	"""Run scc-daemon with passed parameters."""
@@ -58,6 +61,7 @@ def cmd_test_evdev(argv0: str, argv: list[str]) -> int:
 	  2 - failed to open device
 	"""
 	from scc.drivers.evdevdrv import evdevdrv_test
+
 	return evdevdrv_test(argv)
 
 
@@ -74,12 +78,14 @@ def cmd_test_hid(argv0: str, argv: list[str]) -> int:
 	  4 - failed to parse HID descriptor
 	"""
 	from scc.drivers.hiddrv import hiddrv_test, HIDController
+
 	return hiddrv_test(HIDController, argv)
 
 
 def help_osd_keyboard() -> None:
 	import_osd()
 	from scc.osd.keyboard import Keyboard
+
 	return run_osd_tool(Keyboard(), "osd-keyboard", ["--help"])
 
 
@@ -87,6 +93,7 @@ def cmd_osd_keyboard(argv0: str, argv: list[str]) -> None:
 	"""Display on-screen keyboard."""
 	import_osd()
 	from scc.osd.keyboard import Keyboard
+
 	return run_osd_tool(Keyboard(), argv0, argv)
 
 
@@ -99,7 +106,8 @@ def cmd_list_profiles(argv0: str, argv: list[str]) -> int:
 		-a   Include names begining with dot
 	"""
 	from scc.paths import get_profiles_path, get_default_profiles_path
-	paths = [ get_default_profiles_path(), get_profiles_path() ]
+
+	paths = [get_default_profiles_path(), get_profiles_path()]
 	include_hidden = "-a" in argv
 	lst = set()
 	for path in paths:
@@ -108,7 +116,7 @@ def cmd_list_profiles(argv0: str, argv: list[str]) -> int:
 				if x.endswith(".sccprofile"):
 					if not include_hidden and x.startswith("."):
 						continue
-					lst.add(x[0:-len(".sccprofile")])
+					lst.add(x[0 : -len(".sccprofile")])
 		except OSError:
 			pass
 	for x in sorted(lst):
@@ -124,33 +132,38 @@ def cmd_set_profile(argv0: str, argv: list[str]) -> int:
 	from scc.tools import find_profile
 
 	if len(argv) < 1:
-		show_help(command = "set_profile", out=sys.stderr)
+		show_help(command="set_profile", out=sys.stderr)
 		return 1
 	s = connect_to_daemon()
-	if s is None: return -1
+	if s is None:
+		return -1
 	if len(argv) >= 2:
 		profile = find_profile(argv[1])
 		if profile is None:
 			print("Unknown profile:", argv[1], file=sys.stderr)
 			return 1
 		print("Controller: %s" % (argv[0],), file=s)
-		if not check_error(s): return 1
+		if not check_error(s):
+			return 1
 		print("Profile: %s" % (profile,), file=s)
-		if not check_error(s): return 1
+		if not check_error(s):
+			return 1
 	else:
 		profile = find_profile(argv[0])
 		if profile is None:
 			print("Unknown profile:", argv[0], file=sys.stderr)
 			return 1
 		print("Profile: %s" % (profile,), file=s)
-		if not check_error(s): return 1
+		if not check_error(s):
+			return 1
 	return 0
 
 
 def cmd_info(argv0: str, argv: list[str]) -> int:
 	"""Display basic information about running driver."""
 	s = connect_to_daemon()
-	if s is None: return -1
+	if s is None:
+		return -1
 	# Daemon already sends situable info, so this is mostly reading
 	# until "Ready." message is received.
 	global_profile = None
@@ -183,9 +196,10 @@ def cmd_dependency_check(argv0: str, argv: list[str]) -> int:
 	"""Check if all required libraries are installed on this system."""
 	try:
 		import gi
-		gi.require_version('Gtk', '3.0')
-		gi.require_version('GdkX11', '3.0')
-		gi.require_version('Rsvg', '2.0')
+
+		gi.require_version("Gtk", "3.0")
+		gi.require_version("GdkX11", "3.0")
+		gi.require_version("Rsvg", "2.0")
 	except ValueError as e1:
 		print(e1, file=sys.stderr)
 		if "Rsvg" in str(e1):
@@ -204,6 +218,7 @@ def cmd_dependency_check(argv0: str, argv: list[str]) -> int:
 		print("Please, install python-evdev package to enable non-steam controller support", file=sys.stderr)
 	try:
 		import scc.lib.xwrappers as X
+
 		X.Atom
 	except Exception as e:
 		print(e, file=sys.stderr)
@@ -230,14 +245,15 @@ def cmd_lock_inputs(argv0: str, argv: list[str], lock: str = "Lock: ") -> int:
 		-4  - daemon reported error
 	"""
 	s = connect_to_daemon()
-	if s is None: return -1
+	if s is None:
+		return -1
 	try:
 		while True:
 			line = s.readline()
 			if line == "":
 				return -3
 			elif line.startswith("Ready."):
-				print(lock + " ".join([ x.upper() for x in argv ]), file=s)
+				print(lock + " ".join([x.upper() for x in argv]), file=s)
 				s.flush()
 			elif line.startswith("Error:"):
 				print(line.strip(), file=sys.stderr)
@@ -285,11 +301,12 @@ def connect_to_daemon() -> TextIOWrapper | None:
 	import socket
 
 	from scc.paths import get_daemon_socket
+
 	try:
 		s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 		s.connect(get_daemon_socket())
 	except Exception as e:
-		print("Connection to scc-daemon failed: %s" % (e, ), file=sys.stderr)
+		print("Connection to scc-daemon failed: %s" % (e,), file=sys.stderr)
 		return None
 	return s.makefile(mode="rw")
 
@@ -323,17 +340,20 @@ def sigint(*a) -> None:
 
 def import_osd() -> None:
 	import gi
-	gi.require_version('Gtk', '3.0')
-	gi.require_version('Rsvg', '2.0')
-	gi.require_version('GdkX11', '3.0')
+
+	gi.require_version("Gtk", "3.0")
+	gi.require_version("Rsvg", "2.0")
+	gi.require_version("GdkX11", "3.0")
 
 
 def run_osd_tool(tool, argv0: str, argv: list[str]) -> None:
 	import signal, argparse
+
 	signal.signal(signal.SIGINT, sigint)
 
 	from scc.tools import init_logging
 	from scc.paths import get_share_path
+
 	init_logging()
 
 	sys.argv[0] = "scc osd-keyboard"
@@ -343,9 +363,9 @@ def run_osd_tool(tool, argv0: str, argv: list[str]) -> None:
 	sys.exit(tool.get_exit_code())
 
 
-def show_help(command = None, out=sys.stdout) -> int:
-	names = [ x[4:] for x in globals() if x.startswith("cmd_") ]
-	max_len = max([ len(x) for x in names ])
+def show_help(command=None, out=sys.stdout) -> int:
+	names = [x[4:] for x in globals() if x.startswith("cmd_")]
+	max_len = max([len(x) for x in names])
 	if command in names:
 		if "help_" + command in globals():
 			return globals()["help_" + command]()
@@ -354,20 +374,17 @@ def show_help(command = None, out=sys.stdout) -> int:
 			lines = hlp.split("\n")
 			if len(lines) > 0:
 				for line in lines:
-					line = (line
-						.replace("Usage: scc", "Usage: %s" % (sys.argv[0], )))
-					if line.startswith("\t"): line = line[1:]
+					line = line.replace("Usage: scc", "Usage: %s" % (sys.argv[0],))
+					if line.startswith("\t"):
+						line = line[1:]
 					print(line, file=out)
 				return 0
-	print("Usage: %s <command> [ arguments ]" % (sys.argv[0], ), file=out)
+	print("Usage: %s <command> [ arguments ]" % (sys.argv[0],), file=out)
 	print("", file=out)
 	print("List of commands:", file=out)
 	for name in sorted(names):
-		hlp = ((globals()["cmd_" + name].__doc__ or "")
-					.strip("\t \r\n")
-					.split("\n")[0])
-		print((" - %%-%ss %%s" % (max_len, )) % (
-			name.replace("_", "-"), hlp), file=out)
+		hlp = (globals()["cmd_" + name].__doc__ or "").strip("\t \r\n").split("\n")[0]
+		print((" - %%-%ss %%s" % (max_len,)) % (name.replace("_", "-"), hlp), file=out)
 	return 0
 
 
@@ -390,7 +407,7 @@ def main() -> None:
 	try:
 		command = globals()["cmd_" + sys.argv[1].replace("-", "_")]
 	except:
-		print("Unknown command: %s" % (sys.argv[1], ), file=sys.stderr)
+		print("Unknown command: %s" % (sys.argv[1],), file=sys.stderr)
 		sys.exit(show_help(out=sys.stderr))
 
 	try:

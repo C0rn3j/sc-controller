@@ -2,6 +2,7 @@
 
 Handles gesture recognition settings.
 """
+
 from scc.tools import _
 
 from gi.repository import Gtk, Gdk, GLib, GdkX11, GObject
@@ -17,9 +18,10 @@ from scc.modifiers import NameModifier
 from scc.tools import strip_gesture
 
 import os, logging
+
 log = logging.getLogger("AE.PerAxis")
 
-__all__ = [ 'GestureComponent' ]
+__all__ = ["GestureComponent"]
 
 
 class GestureComponent(AEComponent):
@@ -34,19 +36,19 @@ class GestureComponent(AEComponent):
 		self._edited_gesture = None
 		self._grabber = None
 
-
 	def load(self):
 		if AEComponent.load(self):
 			# Unlike mose region, gesutres kinda work with XWayland
 			self.on_wayland = not isinstance(Gdk.Display.get_default(), GdkX11.X11Display)
 			if self.on_wayland:
-				self.builder.get_object("lblGestureMessage").set_text(_("Note: Gestures are not available with Wayland-based display server"))
+				self.builder.get_object("lblGestureMessage").set_text(
+					_("Note: Gestures are not available with Wayland-based display server")
+				)
 				self.builder.get_object("lblGestureMessage").set_visible(True)
 				self.builder.get_object("gesture").set_sensitive(False)
 			else:
 				self._grabber = GestureGrabber(self.editor, self.builder)
 			return True
-
 
 	def set_action(self, mode, action):
 		lstGestures = self.builder.get_object("lstGestures")
@@ -55,25 +57,25 @@ class GestureComponent(AEComponent):
 			for gstr in action.gestures:
 				self._add_gesture(gstr, action.gestures[gstr])
 
-
 	def _add_gesture(self, gstr, action, select=False):
 		lstGestures = self.builder.get_object("lstGestures")
 		o = GObject.GObject()
 		o.gstr = gstr
 		o.action = action
-		iter = lstGestures.append( (
-			GestureComponent.nice_gstr(gstr),
-			action.describe(Action.AC_MENU),
-			o
-		) )
+		iter = lstGestures.append((GestureComponent.nice_gstr(gstr), action.describe(Action.AC_MENU), o))
 		if select:
 			tvGestures = self.builder.get_object("tvGestures")
 			tvGestures.get_selection().select_iter(iter)
 			self.on_tvGestures_cursor_changed()
 			self.on_btEditAction_clicked()
 
+	ARROWS = {
+		"U": "↑",
+		"D": "↓",
+		"L": "←",
+		"R": "→",
+	}
 
-	ARROWS = { 'U' : '↑', 'D' : '↓', 'L' : '←', 'R' : '→', }
 	@staticmethod
 	def nice_gstr(gstr):
 		"""
@@ -82,17 +84,14 @@ class GestureComponent(AEComponent):
 		"""
 		if "i" in gstr:
 			gstr = strip_gesture(gstr)
-		l = lambda x : GestureComponent.ARROWS[x] if x in GestureComponent.ARROWS else ""
+		l = lambda x: GestureComponent.ARROWS[x] if x in GestureComponent.ARROWS else ""
 		return "".join(map(l, gstr))
-
 
 	def get_button_title(self):
 		return _("Gestures")
 
-
 	def handles(self, mode, action):
 		return isinstance(action, GesturesAction)
-
 
 	def on_tvGestures_cursor_changed(self, *a):
 		tvGestures = self.builder.get_object("tvGestures")
@@ -106,9 +105,8 @@ class GestureComponent(AEComponent):
 			btEditAction.set_sensitive(True)
 			btRemove.set_sensitive(True)
 
-
 	def on_btEditAction_clicked(self, *a):
-		""" Handler for "Edit Action" button """
+		"""Handler for "Edit Action" button"""
 		tvGestures = self.builder.get_object("tvGestures")
 		txGesture = self.builder.get_object("txGesture")
 		cbIgnoreStroke = self.builder.get_object("cbIgnoreStroke")
@@ -122,20 +120,20 @@ class GestureComponent(AEComponent):
 		# Setup editor
 		e = ActionEditor(self.app, self.on_action_chosen)
 		e.set_title(_("Edit Gesture Action"))
-		e.set_input("ID", item.action, mode = Action.AC_BUTTON)
+		e.set_input("ID", item.action, mode=Action.AC_BUTTON)
 		e.add_widget(_("Gesture"), gesture_editor)
 		e.hide_modeshift()
 		# Display editor
 		e.show(self.editor.window)
 
-
 	def on_btChangeGesture_clicked(self, *a):
 		txGesture = self.builder.get_object("txGesture")
+
 		def grabbed(gesture):
 			self._edited_gesture = gesture
 			txGesture.set_text(GestureComponent.nice_gstr(self._edited_gesture))
-		self._grabber.grab(grabbed)
 
+		self._grabber.grab(grabbed)
 
 	def on_cbIgnoreStroke_toggled(self, cb):
 		txGesture = self.builder.get_object("txGesture")
@@ -146,17 +144,16 @@ class GestureComponent(AEComponent):
 			self._edited_gesture = self._edited_gesture.strip("i")
 			txGesture.set_text(GestureComponent.nice_gstr(self._edited_gesture))
 
-
 	def on_btRemove_clicked(self, *a):
 		tvGestures = self.builder.get_object("tvGestures")
 		model, iter = tvGestures.get_selection().get_selected()
 		model.remove(iter)
 		self.on_tvGestures_cursor_changed()
 
-
 	def on_btAdd_clicked(self, *a):
 		def grabbed(gesture):
 			self._add_gesture(gesture, NoAction(), True)
+
 		tvGestures = self.builder.get_object("tvGestures")
 		if len(tvGestures.get_model()) == 0:
 			# I believe user will not actually find this option, so OSD checkbox
@@ -164,18 +161,14 @@ class GestureComponent(AEComponent):
 			self.editor.set_osd_enabled(True)
 		self._grabber.grab(grabbed)
 
-
 	def on_sclPrecision_format_value(self, scl, value):
 		return "%s%%" % (int(value * 100.0),)
-
 
 	def on_sclPrecision_value_changed(self, *a):
 		self.update()
 
-
 	def on_btClearTolerance_clicked(self, *a):
 		self.builder.get_object("sclPrecision").set_value(GesturesAction.DEFAULT_PRECISION)
-
 
 	def on_action_chosen(self, id, action, mark_changed=True):
 		tvGestures = self.builder.get_object("tvGestures")
@@ -186,7 +179,6 @@ class GestureComponent(AEComponent):
 		model.set_value(iter, 0, GestureComponent.nice_gstr(item.gstr))
 		model.set_value(iter, 1, action.describe(Action.AC_MENU))
 		self.update()
-
 
 	def update(self):
 		a = GesturesAction()
@@ -222,14 +214,12 @@ class GestureGrabber:
 		self.builder.get_object("btnStartGestureOver").connect("clicked", self.start_over)
 		self.builder.get_object("btnConfirmGesutre").connect("clicked", self.use)
 
-
 	def fail(self, *a):
 		"""
 		Called when something goes bad, usually because there is
 		no controller connected.
 		"""
 		log.error("Failed to grab gesture: %s", a)
-
 
 	def disconnect_signals(self):
 		"""
@@ -241,21 +231,20 @@ class GestureGrabber:
 				source.disconnect(eid)
 			self._signals = []
 
-
 	def lock_buttons(self):
 		self.disconnect_signals()
 		try:
 			c = self.editor.app.dm.get_controllers()[0]
 			c.lock(
-				lambda *a: True,	# success_cb
-				self.fail,			# error_cb
-				'A', 'Y'
+				lambda *a: True,  # success_cb
+				self.fail,  # error_cb
+				"A",
+				"Y",
 			)
-			self._signals = [ (c, c.connect('event', self.on_event)) ]
+			self._signals = [(c, c.connect("event", self.on_event))]
 		except IndexError as e:
 			# No controllers
 			self.fail()
-
 
 	def on_event(self, c, button, data):
 		if self.rvGestureGrab.get_reveal_child():
@@ -264,7 +253,6 @@ class GestureGrabber:
 			elif button == "Y" and data[0] == 0:
 				self.start_over()
 
-
 	def grab(self, callback):
 		self._callback = callback
 		self.start_over()
@@ -272,11 +260,9 @@ class GestureGrabber:
 		self.gesture_grabber.show()
 		self._create_gd()
 
-
 	def use(self, *a):
 		self._callback(self._gesture)
 		self.close()
-
 
 	def close(self, *a):
 		if self._gd:
@@ -284,7 +270,6 @@ class GestureGrabber:
 		self._gd = None
 		self.gesture_grabber.hide()
 		return True
-
 
 	def start_over(self, *a):
 		if self.editor.get_id() == "RPAD":
@@ -299,30 +284,27 @@ class GestureGrabber:
 		self._gesture = None
 		self._repeats = 0
 
-
 	def _create_gd(self):
-		""" Creates GestureDisplay object """
+		"""Creates GestureDisplay object"""
 		if self._gd:
 			self._gd.quit()
 		self._gd = GestureDisplay(self.editor.app.config)
 		if self.editor.get_id() == "RPAD":
-			self._gd.parse_argumets([ "GestureDisplay", "--control-with", "RIGHT" ])
+			self._gd.parse_argumets(["GestureDisplay", "--control-with", "RIGHT"])
 		elif self.editor.get_id() == "CPAD":
-			self._gd.parse_argumets([ "GestureDisplay", "--control-with", "CPAD" ])
+			self._gd.parse_argumets(["GestureDisplay", "--control-with", "CPAD"])
 		else:
-			self._gd.parse_argumets([ "GestureDisplay", "--control-with", "LEFT" ])
+			self._gd.parse_argumets(["GestureDisplay", "--control-with", "LEFT"])
 		self._gd.use_daemon(self.editor.app.dm)
 		self._gd.show()
-		self._gd.connect('gesture-updated', self.on_gesture_updated)
-		self._gd.connect('destroy', self.on_gesture_recognized)
+		self._gd.connect("gesture-updated", self.on_gesture_updated)
+		self._gd.connect("destroy", self.on_gesture_recognized)
 		self.lock_buttons()
-
 
 	def on_gesture_updated(self, gd, gstr):
 		txt = GestureComponent.nice_gstr(gstr)
 		self.txGestureGrab.set_text(txt)
 		self.txGestureGrab.set_position(len(txt))
-
 
 	def on_gesture_recognized(self, gd):
 		self.disconnect_signals()

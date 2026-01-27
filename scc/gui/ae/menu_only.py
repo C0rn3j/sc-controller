@@ -4,6 +4,7 @@ SC-Controller - Action Editor - Menu Only Component
 
 Displays page that can edito only MenuAction
 """
+
 from scc.tools import _
 
 from scc.special_actions import MenuAction, PositionModifier
@@ -13,9 +14,10 @@ from scc.gui.ae.menu_action import MenuActionCofC
 from scc.gui.ae import AEComponent
 
 import os, logging
+
 log = logging.getLogger("AE.SA")
 
-__all__ = [ 'MenuOnlyComponent' ]
+__all__ = ["MenuOnlyComponent"]
 
 
 class MenuOnlyComponent(AEComponent, MenuActionCofC):
@@ -30,12 +32,10 @@ class MenuOnlyComponent(AEComponent, MenuActionCofC):
 		self._userdata_load_started = False
 		self._recursing = False
 
-
 	def shown(self):
 		if not self._userdata_load_started:
 			self._userdata_load_started = True
 			self.load_menu_list()
-
 
 	def set_action(self, mode, action):
 		if isinstance(action, PositionModifier):
@@ -43,11 +43,9 @@ class MenuOnlyComponent(AEComponent, MenuActionCofC):
 		if isinstance(action, MenuAction):
 			self._current_menu = action.menu_id
 
-
 	def get_button_title(self):
 		return _("Menu")
 
-
 	def handles(self, mode, action):
-		""" Not visible by default """
+		"""Not visible by default"""
 		return False

@@ -8,6 +8,7 @@ python can't handle.
 All this is needed since I want to have entire thing installable, runnable
 from source tarball *and* debugable in working folder.
 """
+
 import os
 import sys
 
@@ -19,7 +20,7 @@ def get_config_path() -> str:
 	"""
 	confdir = os.path.expanduser("~/.config")
 	if "XDG_CONFIG_HOME" in os.environ:
-		confdir = os.environ['XDG_CONFIG_HOME']
+		confdir = os.environ["XDG_CONFIG_HOME"]
 	return os.path.join(confdir, "scc")
 
 

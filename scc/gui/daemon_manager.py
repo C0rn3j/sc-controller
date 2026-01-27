@@ -7,6 +7,7 @@ I'd call it DaemonController normally, but having something with
 full name of "Steam Controller Controller Daemon Controller" sounds
 probably too crazy even for me.
 """
+
 from scc.tools import find_binary, find_button_image, nameof
 from scc.paths import get_daemon_socket
 from scc.constants import SCButtons
@@ -14,6 +15,7 @@ from scc.gui import BUTTON_ORDER
 from gi.repository import GObject, Gio, GLib
 
 import os, json, logging
+
 log = logging.getLogger("DaemonCtrl")
 
 
@@ -58,15 +60,15 @@ class DaemonManager(GObject.GObject):
 	"""
 
 	__gsignals__ = {
-			"alive"					: (GObject.SignalFlags.RUN_FIRST, None, ()),
-			"controller-count-changed"	: (GObject.SignalFlags.RUN_FIRST, None, (int,)),
-			"dead"						: (GObject.SignalFlags.RUN_FIRST, None, ()),
-			"error"					: (GObject.SignalFlags.RUN_FIRST, None, (object,)),
-			"event"					: (GObject.SignalFlags.RUN_FIRST, None, (object,object,object)),
-			"profile-changed"			: (GObject.SignalFlags.RUN_FIRST, None, (object,)),
-			"reconfigured"				: (GObject.SignalFlags.RUN_FIRST, None, ()),
-			"unknown-msg"				: (GObject.SignalFlags.RUN_FIRST, None, (object,)),
-			"version"					: (GObject.SignalFlags.RUN_FIRST, None, (object,)),
+		"alive": (GObject.SignalFlags.RUN_FIRST, None, ()),
+		"controller-count-changed": (GObject.SignalFlags.RUN_FIRST, None, (int,)),
+		"dead": (GObject.SignalFlags.RUN_FIRST, None, ()),
+		"error": (GObject.SignalFlags.RUN_FIRST, None, (object,)),
+		"event": (GObject.SignalFlags.RUN_FIRST, None, (object, object, object)),
+		"profile-changed": (GObject.SignalFlags.RUN_FIRST, None, (object,)),
+		"reconfigured": (GObject.SignalFlags.RUN_FIRST, None, ()),
+		"unknown-msg": (GObject.SignalFlags.RUN_FIRST, None, (object,)),
+		"version": (GObject.SignalFlags.RUN_FIRST, None, (object,)),
 	}
 
 	RECONNECT_INTERVAL = 5
@@ -79,9 +81,8 @@ class DaemonManager(GObject.GObject):
 		self.buffer = b""
 		self._connect()
 		self._requests = []
-		self._controllers = []			# Ordered as daemon says
-		self._controller_by_id = {}		# Source of memory leak
-
+		self._controllers = []  # Ordered as daemon says
+		self._controller_by_id = {}  # Source of memory leak
 
 	def get_controllers(self):
 		"""
@@ -89,7 +90,6 @@ class DaemonManager(GObject.GObject):
 		Value is cached locally.
 		"""
 		return [] + self._controllers
-
 
 	def get_controller(self, controller_id, type=None):
 		"""
@@ -106,24 +106,22 @@ class DaemonManager(GObject.GObject):
 			c.set_type(type)
 		return c
 
-
 	def has_controller(self):
 		"""
 		Returns True if there is at lease one controller connected to daemon.
 		"""
 		return len(self._controllers) > 0
 
-
 	def _connect(self):
-		if self.connecting : return
+		if self.connecting:
+			return
 		self.connecting = True
 		sc = Gio.SocketClient()
 		address = Gio.UnixSocketAddress.new(get_daemon_socket())
 		sc.connect_async(address, None, self._on_connected)
 
-
 	def _on_daemon_died(self, *a):
-		""" Called from various places when daemon looks like dead """
+		"""Called from various places when daemon looks like dead"""
 		# Log stuff
 		if self.alive is True:
 			log.debug("Connection to daemon lost")
@@ -139,9 +137,8 @@ class DaemonManager(GObject.GObject):
 		# Try to reconnect
 		GLib.timeout_add_seconds(self.RECONNECT_INTERVAL, self._connect)
 
-
 	def _on_connected(self, sc, results):
-		""" Called when connection to daemon socket is initiated """
+		"""Called when connection to daemon socket is initiated"""
 		self.connecting = False
 		try:
 			self.connection = sc.connect_finish(results)
@@ -151,12 +148,10 @@ class DaemonManager(GObject.GObject):
 			self._on_daemon_died()
 			return
 		self.buffer = b""
-		self.connection.get_input_stream().read_bytes_async(102400,
-			1, None, self._on_read_data)
-
+		self.connection.get_input_stream().read_bytes_async(102400, 1, None, self._on_read_data)
 
 	def _on_read_data(self, sc, results):
-		""" Called when daemon sends some data """
+		"""Called when daemon sends some data"""
 		try:
 			response = sc.read_bytes_finish(results)
 			if response == None:
@@ -177,11 +172,11 @@ class DaemonManager(GObject.GObject):
 			if line.startswith("Version:"):
 				version = line.split(":", 1)[-1].strip()
 				log.debug("Connected to daemon, version %s", version)
-				self.emit('version', version)
+				self.emit("version", version)
 			elif line.startswith("Ready."):
 				log.debug("Daemon is ready.")
 				self.alive = True
-				self.emit('alive')
+				self.emit("alive")
 			elif line.startswith("OK."):
 				if len(self._requests) > 0:
 					success_cb, error_cb = self._requests[0]
@@ -214,40 +209,37 @@ class DaemonManager(GObject.GObject):
 					old, self._controllers = self._controllers, []
 				else:
 					old, self._controllers = self._controllers, self._controllers[-count:]
-				self.emit('controller-count-changed', count)
+				self.emit("controller-count-changed", count)
 				for c in old:
 					if c not in self._controllers:
-						c.emit('lost')
+						c.emit("lost")
 			elif line.startswith("Event:"):
 				data = line[6:].strip().split(" ")
 				c = self.get_controller(data[0])
-				c.emit('event', data[1], [ int(float(x)) for x in data[2:] ])
-				self.emit('event', c, data[1], [ int(float(x)) for x in data[2:] ])
+				c.emit("event", data[1], [int(float(x)) for x in data[2:]])
+				self.emit("event", c, data[1], [int(float(x)) for x in data[2:]])
 			elif line.startswith("Error:"):
 				error = line.split(":", 1)[-1].strip()
 				self.alive = True
 				log.debug("Daemon reported error '%s'", error)
-				self.emit('error', error)
+				self.emit("error", error)
 			elif line.startswith("Current profile:"):
 				self._profile = line.split(":", 1)[-1].strip()
-				self.emit('profile-changed', self._profile)
+				self.emit("profile-changed", self._profile)
 			elif line.startswith("Reconfigured."):
-				self.emit('reconfigured')
+				self.emit("reconfigured")
 			elif line.startswith("PID:") or line == "SCCDaemon":
 				# ignore
 				pass
 			else:
-				self.emit('unknown-msg', line)
+				self.emit("unknown-msg", line)
 		# Connection is held forever to detect when daemon exits
 		if self.connection:
-			self.connection.get_input_stream().read_bytes_async(102400,
-				1, None, self._on_read_data)
-
+			self.connection.get_input_stream().read_bytes_async(102400, 1, None, self._on_read_data)
 
 	def is_alive(self):
-		""" Returns True if daemon is running """
+		"""Returns True if daemon is running"""
 		return self.alive
-
 
 	def request(self, message, success_cb, error_cb):
 		"""
@@ -255,43 +247,33 @@ class DaemonManager(GObject.GObject):
 		"""
 		if self.alive and self.connection is not None:
 			tmp = message if type(message) == bytes else bytes(message, "utf-8")
-			self._requests.append(( success_cb, error_cb ))
-			(self.connection.get_output_stream()
-				.write_all(tmp + b'\n', None))
+			self._requests.append((success_cb, error_cb))
+			(self.connection.get_output_stream().write_all(tmp + b"\n", None))
 		else:
 			# Instant failure
 			error_cb("Not connected.")
 
-
 	@classmethod
 	def nocallback(*a):
-		""" Used when request doesn't needs callback """
+		"""Used when request doesn't needs callback"""
 		pass
 
-
 	def set_profile(self, filename):
-		""" Asks daemon to change 1st controller profile """
-		self.request("Controller.\nProfile: %s" % (filename,),
-				DaemonManager.nocallback, DaemonManager.nocallback)
-
+		"""Asks daemon to change 1st controller profile"""
+		self.request("Controller.\nProfile: %s" % (filename,), DaemonManager.nocallback, DaemonManager.nocallback)
 
 	def reconfigure(self):
-		""" Asks daemon reload configuration file """
-		self.request("Reconfigure.", DaemonManager.nocallback,
-				DaemonManager.nocallback)
-
+		"""Asks daemon reload configuration file"""
+		self.request("Reconfigure.", DaemonManager.nocallback, DaemonManager.nocallback)
 
 	def rescan(self):
-		""" Asks daemon to rescan for new devices """
-		self.request("Rescan.", DaemonManager.nocallback,
-				DaemonManager.nocallback)
-
+		"""Asks daemon to rescan for new devices"""
+		self.request("Rescan.", DaemonManager.nocallback, DaemonManager.nocallback)
 
 	def stop(self):
-		""" Stops the daemon """
-		Gio.Subprocess.new([ find_binary('scc-daemon'), "/dev/null", "stop" ], Gio.SubprocessFlags.NONE)
+		"""Stops the daemon"""
+		Gio.Subprocess.new([find_binary("scc-daemon"), "/dev/null", "stop"], Gio.SubprocessFlags.NONE)
 		self.connecting = False
-
 
 	def start(self, mode="start"):
 		"""
@@ -301,10 +283,9 @@ class DaemonManager(GObject.GObject):
 			# Just to clean up living connection
 			self.alive = None
 			self._on_daemon_died()
-		Gio.Subprocess.new([ find_binary('scc-daemon'), "/dev/null", mode ], Gio.SubprocessFlags.NONE)
+		Gio.Subprocess.new([find_binary("scc-daemon"), "/dev/null", mode], Gio.SubprocessFlags.NONE)
 		self._connect()
 		GLib.timeout_add_seconds(10, self._check_connected)
-
 
 	def restart(self):
 		"""
@@ -312,11 +293,10 @@ class DaemonManager(GObject.GObject):
 		"""
 		self.start(mode="restart")
 
-
 	def _check_connected(self):
 		if not self.alive:
 			log.debug("Started daemon but connection is not ready")
-			self.emit('error', "CANT_SUMMON_THE_DAEMON")
+			self.emit("error", "CANT_SUMMON_THE_DAEMON")
 		return False
 
 
@@ -339,13 +319,30 @@ class ControllerManager(GObject.GObject):
 	"""
 
 	__gsignals__ = {
-			"event"			: (GObject.SignalFlags.RUN_FIRST, None, (object,object)),
-			"lost"				: (GObject.SignalFlags.RUN_FIRST, None, ()),
-			"profile-changed"	: (GObject.SignalFlags.RUN_FIRST, None, (object,)),
+		"event": (GObject.SignalFlags.RUN_FIRST, None, (object, object)),
+		"lost": (GObject.SignalFlags.RUN_FIRST, None, ()),
+		"profile-changed": (GObject.SignalFlags.RUN_FIRST, None, (object,)),
 	}
 
-	DEFAULT_ICONS = [ "A", "B", "X", "Y", "BACK", "C", "START",
-		"LB", "RB", "LT", "RT", "STICK", "LPAD", "RPAD", "RGRIP", "LGRIP", "DOTS" ]
+	DEFAULT_ICONS = [
+		"A",
+		"B",
+		"X",
+		"Y",
+		"BACK",
+		"C",
+		"START",
+		"LB",
+		"RB",
+		"LT",
+		"RT",
+		"STICK",
+		"LPAD",
+		"RPAD",
+		"RGRIP",
+		"LGRIP",
+		"DOTS",
+	]
 	# ^^ those are icon names
 
 	def __init__(self, daemon_manager, controller_id, controller_type):
@@ -359,19 +356,15 @@ class ControllerManager(GObject.GObject):
 		self._type = None
 		self._flags = 0
 
-
 	def __repr__(self):
 		return "<ControllerManager for ID '%s'>" % (self._controller_id,)
-
 
 	def _send_id(self):
 		"""
 		Sends Controller: message to daemon, so next message goes to correct
 		controller.
 		"""
-		self._dm.request("Controller: %s" % (self._controller_id,),
-				DaemonManager.nocallback, DaemonManager.nocallback)
-
+		self._dm.request("Controller: %s" % (self._controller_id,), DaemonManager.nocallback, DaemonManager.nocallback)
 
 	def is_connected(self):
 		"""
@@ -379,7 +372,6 @@ class ControllerManager(GObject.GObject):
 		Value is cached locally.
 		"""
 		return self._connected
-
 
 	def get_type(self):
 		"""
@@ -404,11 +396,9 @@ class ControllerManager(GObject.GObject):
 		"""
 		return self._flags
 
-
 	def get_id(self):
-		""" Returns ID of this controller. Value is cached locally. """
+		"""Returns ID of this controller. Value is cached locally."""
 		return self._controller_id
-
 
 	def get_gui_config_file(self):
 		"""
@@ -421,7 +411,6 @@ class ControllerManager(GObject.GObject):
 		defaults in such case)
 		"""
 		return self._config_file
-
 
 	def load_gui_config(self, default_path):
 		"""
@@ -446,11 +435,7 @@ class ControllerManager(GObject.GObject):
 		returns icon filename assigned to that button in controller config or
 		default if config is invalid or button unassigned.
 		"""
-		return find_button_image(
-			ControllerManager.get_button_name(config, button),
-			prefer_bw=prefer_bw
-		)
-
+		return find_button_image(ControllerManager.get_button_name(config, button), prefer_bw=prefer_bw)
 
 	@staticmethod
 	def get_button_name(config, button):
@@ -464,17 +449,16 @@ class ControllerManager(GObject.GObject):
 				button = SCButtons.__members__[button]
 			index = BUTTON_ORDER.index(button)
 			name = ControllerManager.DEFAULT_ICONS[index]
-			btn_index = config['gui']['buttons'].index(name)
+			btn_index = config["gui"]["buttons"].index(name)
 			if btn_index != -1:
-				name = config['gui']['buttons'][btn_index]
-		except: pass
+				name = config["gui"]["buttons"][btn_index]
+		except:
+			pass
 		return name
 
-
 	def get_profile(self):
-		""" Returns profile set for this controller. Value is cached locally. """
+		"""Returns profile set for this controller. Value is cached locally."""
 		return self._profile
-
 
 	def lock(self, success_cb, error_cb, *what_to_lock):
 		"""
@@ -488,36 +472,27 @@ class ControllerManager(GObject.GObject):
 		self._send_id()
 		self._dm.request("Lock: %s" % (what,), success_cb, error_cb)
 
-
 	def set_led_level(self, value):
 		"""
 		Sets brightness of controller led.
 		"""
 		self._send_id()
-		self._dm.request("Led: %s" % (int(value),), DaemonManager.nocallback,
-			DaemonManager.nocallback)
-
+		self._dm.request("Led: %s" % (int(value),), DaemonManager.nocallback, DaemonManager.nocallback)
 
 	def set_profile(self, filename):
-		""" Asks daemon to change this controller profile """
+		"""Asks daemon to change this controller profile"""
 		self._send_id()
-		self._dm.request("Profile: %s" % (filename,),
-				DaemonManager.nocallback, DaemonManager.nocallback)
-
+		self._dm.request("Profile: %s" % (filename,), DaemonManager.nocallback, DaemonManager.nocallback)
 
 	def turnoff(self):
-		""" Asks daemon to turn off this controller """
+		"""Asks daemon to turn off this controller"""
 		self._send_id()
-		self._dm.request("Turnoff.",
-				DaemonManager.nocallback, DaemonManager.nocallback)
-
+		self._dm.request("Turnoff.", DaemonManager.nocallback, DaemonManager.nocallback)
 
 	def feedback(self, position, amplitude):
-		""" Generates feedback effect on controller """
+		"""Generates feedback effect on controller"""
 		self._send_id()
-		self._dm.request("Feedback: %s %s" % (position, amplitude),
-				DaemonManager.nocallback, DaemonManager.nocallback)
-
+		self._dm.request("Feedback: %s %s" % (position, amplitude), DaemonManager.nocallback, DaemonManager.nocallback)
 
 	def observe(self, success_cb, error_cb, *what_to_lock):
 		"""
@@ -531,7 +506,6 @@ class ControllerManager(GObject.GObject):
 		self._send_id()
 		self._dm.request("Observe: %s" % (what,), success_cb, error_cb)
 
-
 	def replace(self, success_cb, error_cb, what, action):
 		"""
 		Temporally replaces action on physical button, axis or pad,
@@ -540,9 +514,7 @@ class ControllerManager(GObject.GObject):
 		Calls success_cb() on success or error_cb(error) on failure.
 		"""
 		actionstr = action.to_string().replace("\n", " ")
-		self._dm.request("Replace: %s %s" % (what, actionstr),
-				success_cb, error_cb)
-
+		self._dm.request("Replace: %s %s" % (what, actionstr), success_cb, error_cb)
 
 	def unlock_all(self):
 		if self._dm.alive:

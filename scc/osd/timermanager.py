@@ -2,6 +2,7 @@
 
 Simple abstract class for named, cancelable timers
 """
+
 from gi.repository import GLib
 
 
@@ -27,7 +28,7 @@ class TimerManager:
 
 	def timer_active(self, name) -> bool:
 		"""Return True if named timer is active"""
-		return (name in self._timers)
+		return name in self._timers
 
 	def cancel_timer(self, name) -> bool:
 		"""Cancel named timer. Returns True on success, False if there is no such timer."""

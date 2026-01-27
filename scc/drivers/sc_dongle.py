@@ -3,6 +3,7 @@
 Called and used when Dongle is detected on USB bus.
 Handles one or multiple controllers connected to dongle.
 """
+
 from __future__ import annotations
 
 import logging
@@ -17,50 +18,53 @@ from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, STICKTILT, SCButtons
 from scc.controller import Controller
 from scc.drivers.usb import USBDevice, register_hotplug_device
 
-VENDOR_ID  = 0x28de
+VENDOR_ID = 0x28DE
 PRODUCT_ID = 0x1142
 FIRST_ENDPOINT = 2
 FIRST_CONTROLIDX = 1
 INPUT_FORMAT = [
-	('b',   'type'),
-	('x',   'ukn_01'),
-	('B',   'status'),
-	('x',   'ukn_02'),
-	('H',   'seq'),
-	('x',   'ukn_03'),
-	('I',   'buttons'),
-	('B',   'ltrig'),
-	('B',   'rtrig'),
-	('x',   'ukn_04'),
-	('x',   'ukn_05'),
-	('x',   'ukn_06'),
-	('h',   'lpad_x'),
-	('h',   'lpad_y'),
-	('h',   'rpad_x'),
-	('h',   'rpad_y'),
-	('4x',  'ukn_06'),
-	('h',   'accel_x'),
-	('h',   'accel_y'),
-	('h',   'accel_z'),
-	('h',   'gpitch'),
-	('h',   'groll'),
-	('h',   'gyaw'),
-	('h',   'q1'),
-	('h',   'q2'),
-	('h',   'q3'),
-	('h',   'q4'),
-	('16x', 'ukn_07')]
+	("b", "type"),
+	("x", "ukn_01"),
+	("B", "status"),
+	("x", "ukn_02"),
+	("H", "seq"),
+	("x", "ukn_03"),
+	("I", "buttons"),
+	("B", "ltrig"),
+	("B", "rtrig"),
+	("x", "ukn_04"),
+	("x", "ukn_05"),
+	("x", "ukn_06"),
+	("h", "lpad_x"),
+	("h", "lpad_y"),
+	("h", "rpad_x"),
+	("h", "rpad_y"),
+	("4x", "ukn_06"),
+	("h", "accel_x"),
+	("h", "accel_y"),
+	("h", "accel_z"),
+	("h", "gpitch"),
+	("h", "groll"),
+	("h", "gyaw"),
+	("h", "q1"),
+	("h", "q2"),
+	("h", "q3"),
+	("h", "q4"),
+	("16x", "ukn_07"),
+]
 FORMATS, NAMES = zip(*INPUT_FORMAT)
-TUP_FORMAT = '<' + ''.join(FORMATS)
-ControllerInput = namedtuple('ControllerInput', ' '.join([ x for x in NAMES if not x.startswith('ukn_') ]))
-SCI_NULL = ControllerInput._make(struct.unpack('<' + ''.join(FORMATS), b'\x00' * 64))
+TUP_FORMAT = "<" + "".join(FORMATS)
+ControllerInput = namedtuple("ControllerInput", " ".join([x for x in NAMES if not x.startswith("ukn_")]))
+SCI_NULL = ControllerInput._make(struct.unpack("<" + "".join(FORMATS), b"\x00" * 64))
 STICKPRESS = 0b1000000000000000000000000000000
 
 
 log = logging.getLogger("SCDongle")
+
+
 class Dongle(USBDevice):
 	MAX_ENDPOINTS = 4
-	_available_serials = set()		# used only is ignore_serials option is enabled
+	_available_serials = set()  # used only is ignore_serials option is enabled
 
 	def __init__(self, device, handle, daemon):
 		self.daemon = daemon
@@ -73,14 +77,12 @@ class Dongle(USBDevice):
 			# Steam dongle apparently can do only 4 controllers at once
 			self.set_input_interrupt(FIRST_ENDPOINT + i, 64, self._on_input)
 
-
 	def close(self):
 		# Called when dongle is removed
 		for c in self._controllers.values():
 			self.daemon.remove_controller(c)
 		self._controllers = {}
 		USBDevice.close(self)
-
 
 	def _add_controller(self, endpoint):
 		"""
@@ -92,7 +94,6 @@ class Dongle(USBDevice):
 		c.configure()
 		c.read_serial()
 		self._controllers[endpoint] = c
-
 
 	def _on_input(self, endpoint, data):
 		tup = ControllerInput._make(struct.unpack(TUP_FORMAT, data))
@@ -118,22 +119,24 @@ class Dongle(USBDevice):
 			else:
 				self._controllers[endpoint].input(tup)
 
+
 class SCStatus(IntEnum):
-	IDLE    = 0x04
-	INPUT   = 0x01
+	IDLE = 0x04
+	INPUT = 0x01
 	HOTPLUG = 0x03
 
+
 class SCPacketType(IntEnum):
-	OFF = 0x9f
-	AUDIO = 0xb6
+	OFF = 0x9F
+	AUDIO = 0xB6
 	CLEAR_MAPPINGS = 0x81
 	CONFIGURE = 0x87
 	LED = 0x87
-	CALIBRATE_JOYSTICK = 0xbf
-	CALIBRATE_TRACKPAD = 0xa7
-	SET_AUDIO_INDICES = 0xc1
-	LIZARD_MODE = 0x8e
-	FEEDBACK = 0x8f
+	CALIBRATE_JOYSTICK = 0xBF
+	CALIBRATE_TRACKPAD = 0xA7
+	SET_AUDIO_INDICES = 0xC1
+	LIZARD_MODE = 0x8E
+	FEEDBACK = 0x8F
 	RESET = 0x95
 	GET_SERIAL = 0xAE
 
@@ -143,12 +146,12 @@ class SCPacketLength(IntEnum):
 	OFF = 0x04
 	FEEDBACK = 0x07
 	CONFIGURE = 0x15
-	CONFIGURE_BT = 0x0f
+	CONFIGURE_BT = 0x0F
 	GET_SERIAL = 0x15
 
 
 class SCConfigType(IntEnum):
-	LED = 0x2d
+	LED = 0x2D
 	CONFIGURE = 0x32
 	CONFIGURE_BT = 0x18
 
@@ -169,22 +172,19 @@ class SCController(Controller):
 		self._old_state = SCI_NULL
 		self._ccidx = ccidx
 
-
 	def get_type(self) -> str:
 		return "sc"
-
 
 	def __repr__(self) -> str:
 		return "<SCWireless %s>" % (self.get_id(),)
 
-
 	def input(self, idata: ControllerInput) -> None:
 		old_state, self._old_state = self._old_state, idata
 		if self.mapper:
-			#if idata.buttons & SCButtons.LPAD:
-			#	# STICKPRESS button may signalize pressing stick instead
-			#	if (idata.buttons & STICKPRESS) and not (idata.buttons & STICKTILT):
-			#		idata = ControllerInput.replace(buttons=idata.buttons & ~SCButtons.LPAD)
+			# if idata.buttons & SCButtons.LPAD:
+			# # STICKPRESS button may signalize pressing stick instead
+			# if (idata.buttons & STICKPRESS) and not (idata.buttons & STICKTILT):
+			# idata = ControllerInput.replace(buttons=idata.buttons & ~SCButtons.LPAD)
 
 			if self._input_rotation_l or self._input_rotation_r:
 				lx, ly = idata.lpad_x, idata.lpad_y
@@ -213,16 +213,29 @@ class SCController(Controller):
 
 				# TODO: This is awfull :(
 				idata = ControllerInput(
-						idata.type, idata.status, idata.seq, idata.buttons,
-						idata.ltrig, idata.rtrig,
-						lx, ly, rx, ry,
-						idata.accel_x, idata.accel_y, idata.accel_z,
-						idata.gpitch, idata.groll, idata.gyaw,
-						idata.q1, idata.q2, idata.q3, idata.q4
+					idata.type,
+					idata.status,
+					idata.seq,
+					idata.buttons,
+					idata.ltrig,
+					idata.rtrig,
+					lx,
+					ly,
+					rx,
+					ry,
+					idata.accel_x,
+					idata.accel_y,
+					idata.accel_z,
+					idata.gpitch,
+					idata.groll,
+					idata.gyaw,
+					idata.q1,
+					idata.q2,
+					idata.q3,
+					idata.q4,
 				)
 
 			self.mapper.input(self, old_state, idata)
-
 
 	def _generate_id(self):
 		"""
@@ -236,13 +249,15 @@ class SCController(Controller):
 		tp = self.get_type()
 		id = None
 		while id is None or id in self._driver.daemon.get_active_ids():
-			id = "%s%s" % (tp, magic_number,)
+			id = "%s%s" % (
+				tp,
+				magic_number,
+			)
 			magic_number += 1
 		return id
 
-
 	def read_serial(self):
-		""" Requests and reads serial number from controller """
+		"""Requests and reads serial number from controller"""
 		if Config()["ignore_serials"]:
 			# Special exception for cases when controller drops instead of
 			# sending serial number. See issue #103
@@ -253,26 +268,23 @@ class SCController(Controller):
 		def cb(rawserial):
 			size, serial = struct.unpack(">xBx12s49x", rawserial)
 			if size > 1:
-				serial = serial.strip(b" \x00").decode('ASCII')
+				serial = serial.strip(b" \x00").decode("ASCII")
 				self._serial = serial
 				self.on_serial_got()
 			else:
 				self._driver._no_serial.append(self)
 
 		self._driver.make_request(
-			self._ccidx, cb,
-			struct.pack('>BBB61x',
-				SCPacketType.GET_SERIAL, SCPacketLength.GET_SERIAL, 0x01))
-
+			self._ccidx, cb, struct.pack(">BBB61x", SCPacketType.GET_SERIAL, SCPacketLength.GET_SERIAL, 0x01)
+		)
 
 	def generate_serial(self):
-		""" Called only if ignore_serials is enabled """
+		"""Called only if ignore_serials is enabled"""
 		if len(self._driver._available_serials) > 0:
 			self._serial = self._driver._available_serials.pop()
 		else:
 			self._serial = self.get_id()
 		log.debug("Not requesting serial number for SC %s", self._serial)
-
 
 	def on_serial_got(self):
 		try:
@@ -283,13 +295,10 @@ class SCController(Controller):
 		self._id = str(self._serial)
 		self._driver.daemon.add_controller(self)
 
-
 	def apply_config(self, config: dict):
-		self.configure(idle_timeout=int(config['idle_timeout']),
-				led_level=float(config['led_level']))
-		self._input_rotation_l = float(config['input_rotation_l']) * PI / -180.0
-		self._input_rotation_r = float(config['input_rotation_r']) * PI / -180.0
-
+		self.configure(idle_timeout=int(config["idle_timeout"]), led_level=float(config["led_level"]))
+		self._input_rotation_l = float(config["input_rotation_l"]) * PI / -180.0
+		self._input_rotation_r = float(config["input_rotation_r"]) * PI / -180.0
 
 	def disconnected(self):
 		# If ignore_serials config option is enabled, fake serial used by this
@@ -297,11 +306,13 @@ class SCController(Controller):
 		if Config()["ignore_serials"]:
 			self._driver._available_serials.add(self._serial)
 
-	FORMAT1 = b'>BBBBB13sB2s43x'
+	FORMAT1 = b">BBBBB13sB2s43x"
 	# Has to be overriden in sc_by_cable
-	FORMAT2 = b'>BBBB59x'
+	FORMAT2 = b">BBBB59x"
 
-	def configure(self, idle_timeout: int | None = None, enable_gyros: bool | None = None, led_level: int | None = None):
+	def configure(
+		self, idle_timeout: int | None = None, enable_gyros: bool | None = None, led_level: int | None = None
+	):
 		"""
 		Sets and, if possible, sends configuration to controller.
 		Only value that is provided is changed.
@@ -335,63 +346,59 @@ class SCController(Controller):
 		if led_level is not None:
 			self._led_level = led_level
 
-		unknown1 = b'\x18\x00\x00\x31\x02\x00\x08\x07\x00\x07\x07\x00\x30'
-		unknown2 = b'\x00\x2e'
+		unknown1 = b"\x18\x00\x00\x31\x02\x00\x08\x07\x00\x07\x07\x00\x30"
+		unknown2 = b"\x00\x2e"
 		timeout1 = self._idle_timeout & 0x00FF
 		timeout2 = (self._idle_timeout & 0xFF00) >> 8
 
 		# Timeout & Gyros
-		self._driver.overwrite_control(self._ccidx, struct.pack(self.FORMAT1,
-			SCPacketType.CONFIGURE,
-			SCPacketLength.CONFIGURE,
-			SCConfigType.CONFIGURE,
-			timeout1, timeout2,
-			unknown1,
-			# 0x10 (Gyro) | 0x08 (Accel) | 0x04 (Quat)
-			0x1C if self._enable_gyros else 0,
-			unknown2))
+		self._driver.overwrite_control(
+			self._ccidx,
+			struct.pack(
+				self.FORMAT1,
+				SCPacketType.CONFIGURE,
+				SCPacketLength.CONFIGURE,
+				SCConfigType.CONFIGURE,
+				timeout1,
+				timeout2,
+				unknown1,
+				# 0x10 (Gyro) | 0x08 (Accel) | 0x04 (Quat)
+				0x1C if self._enable_gyros else 0,
+				unknown2,
+			),
+		)
 
 		# LED
-		self._driver.overwrite_control(self._ccidx, struct.pack(self.FORMAT2,
-			SCPacketType.CONFIGURE,
-			SCPacketLength.LED,
-			SCConfigType.LED,
-			int(self._led_level)
-		))
+		self._driver.overwrite_control(
+			self._ccidx,
+			struct.pack(
+				self.FORMAT2, SCPacketType.CONFIGURE, SCPacketLength.LED, SCConfigType.LED, int(self._led_level)
+			),
+		)
 
-
-	def set_led_level(self, level:int):
+	def set_led_level(self, level: int):
 		level = min(100, int(level)) & 0xFF
 		if self._led_level != level:
 			self._led_level = level
-			self._driver.overwrite_control(self._ccidx, struct.pack('>BBBB59x',
-				SCPacketType.CONFIGURE,
-				0x03,
-				SCConfigType.LED,
-				self._led_level
-			))
-
+			self._driver.overwrite_control(
+				self._ccidx, struct.pack(">BBBB59x", SCPacketType.CONFIGURE, 0x03, SCConfigType.LED, self._led_level)
+			)
 
 	def set_gyro_enabled(self, enabled: bool):
-		self.configure(enable_gyros = enabled)
-
+		self.configure(enable_gyros=enabled)
 
 	def turnoff(self):
 		log.debug("Turning off the controller...")
 
 		# Mercilessly stolen from scraw library
-		self._driver.send_control(self._ccidx, struct.pack('<BBBBBB',
-				SCPacketType.OFF, 0x04, 0x6f, 0x66, 0x66, 0x21))
-
+		self._driver.send_control(self._ccidx, struct.pack("<BBBBBB", SCPacketType.OFF, 0x04, 0x6F, 0x66, 0x66, 0x21))
 
 	def get_gyro_enabled(self):
-		""" Returns True if gyroscope input is currently enabled """
+		"""Returns True if gyroscope input is currently enabled"""
 		return self._enable_gyros
-
 
 	def feedback(self, data):
 		self._feedback(*data.data)
-
 
 	def _feedback(self, position, amplitude=128, period=0, count=1):
 		"""Add haptic feedback to be send on next usb tick.
@@ -402,12 +409,14 @@ class SCController(Controller):
 		@param int count		number of period to play
 		"""
 		if amplitude >= 0:
-			self._driver.send_control(self._ccidx, struct.pack('<BBBHHH',
-					SCPacketType.FEEDBACK, 0x07, position,
-					amplitude, period, count))
+			self._driver.send_control(
+				self._ccidx, struct.pack("<BBBHHH", SCPacketType.FEEDBACK, 0x07, position, amplitude, period, count)
+			)
+
 
 def init(daemon, config: dict) -> Dongle | bool:
-	""" Registers hotplug callback for controller dongle """
+	"""Registers hotplug callback for controller dongle"""
+
 	def cb(device, handle):
 		return Dongle(device, handle, daemon)
 

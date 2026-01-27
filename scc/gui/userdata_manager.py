@@ -5,6 +5,7 @@ user-editable data - that are profiles, menus and controller-icons.
 
 Main App class interits from this.
 """
+
 import logging
 import os
 
@@ -23,8 +24,8 @@ from scc.profile import Profile
 
 log = logging.getLogger("UDataManager")
 
-class UserDataManager:
 
+class UserDataManager:
 	def __init__(self) -> None:
 		profiles_path = get_profiles_path()
 		if not os.path.exists(profiles_path):
@@ -51,7 +52,6 @@ class UserDataManager:
 		profile.load(giofile.get_path())
 		self.on_profile_loaded(profile, giofile)
 
-
 	def save_profile(self, giofile: Gio.File, profile: Profile) -> None:
 		"""Save profile from 'profile' object into 'giofile'.
 
@@ -68,47 +68,45 @@ class UserDataManager:
 		profile.save(giofile.get_path())
 		self.on_profile_saved(giofile)
 
-
 	def _save_profile_local(self, giofile: Gio.File, profile: Profile) -> None:
 		filename = os.path.split(giofile.get_path())[-1]
 		localpath = os.path.join(get_profiles_path(), filename)
 		giofile = Gio.File.new_for_path(localpath)
 		self.save_profile(giofile, profile)
 
-
 	def load_profile_list(self, category=None) -> None:
-		paths = [ get_default_profiles_path(), get_profiles_path() ]
+		paths = [get_default_profiles_path(), get_profiles_path()]
 		self.load_user_data(paths, "*.sccprofile", category, self.on_profiles_loaded)
 
-
 	def load_menu_list(self, category=None) -> None:
-		paths = [ get_default_menus_path(), get_menus_path() ]
+		paths = [get_default_menus_path(), get_menus_path()]
 		self.load_user_data(paths, "*.menu", category, self.on_menus_loaded)
 
-
 	def load_menu_icons(self, category=None) -> None:
-		paths = [ get_default_menuicons_path(), get_menuicons_path() ]
+		paths = [get_default_menuicons_path(), get_menuicons_path()]
 		self.load_user_data(paths, "*.png", category, self.on_menuicons_loaded)
-
 
 	def load_user_data(self, paths, pattern, category, callback) -> None:
 		"""Load data such as of profiles. Uses GLib to do it in the background."""
 		if category:
-			paths = [ os.path.join(p, category) for p in paths ]
+			paths = [os.path.join(p, category) for p in paths]
 
 		# First list is for default stuff, then for user-defined
 		# Number is increased when list is loaded until it reaches 2
-		data = [ None ] * len(paths)
+		data = [None] * len(paths)
 
 		for i in range(0, len(paths)):
 			f = Gio.File.new_for_path(paths[i])
 			f.enumerate_children_async(
 				pattern,
 				Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS,
-				1, None, self._on_user_data_loaded,
-				data, i, callback,
+				1,
+				None,
+				self._on_user_data_loaded,
+				data,
+				i,
+				callback,
 			)
-
 
 	def _on_user_data_loaded(self, pdir, res, data, i, callback) -> None:
 		"""Called when enumerate_children_async gets lists of files.
@@ -119,7 +117,7 @@ class UserDataManager:
 			data[i] = pdir, pdir.enumerate_children_finish(res)
 		except Exception as e:
 			# Usually when directory doesn't exists
-			log.warning("enumerate_children_finish for %s failed: %s",  pdir.get_path(), e)
+			log.warning("enumerate_children_finish for %s failed: %s", pdir.get_path(), e)
 			data[i] = None, []
 		if None not in data:
 			files = {}
@@ -133,16 +131,13 @@ class UserDataManager:
 			except Exception as e:
 				# https://github.com/kozec/sc-controller/issues/50
 				log.warning("enumerate_children_async failed: %s", e)
-				files = self._sync_load([ pdir for pdir, enumerator in data
-											if pdir is not None])
+				files = self._sync_load([pdir for pdir, enumerator in data if pdir is not None])
 			if len(files) < 1:
 				# https://github.com/kozec/sc-controller/issues/327
 				log.warning("enumerate_children_async returned no files")
-				files = self._sync_load([ pdir for pdir, enumerator in data
-											if pdir is not None])
+				files = self._sync_load([pdir for pdir, enumerator in data if pdir is not None])
 
 			callback(files.values())
-
 
 	def _sync_load(self, pdirs) -> dict:
 		"""Synchronous (= UI lagging) fallback method for those (hopefully) rare cases when enumerate_children_finish returns nonsense."""
@@ -152,22 +147,17 @@ class UserDataManager:
 				files[name] = pdir.get_child(name)
 		return files
 
-
-	def on_menus_loaded(self, menus) -> None: # Overriden by subclass
+	def on_menus_loaded(self, menus) -> None:  # Overriden by subclass
 		pass
 
-
-	def on_profiles_loaded(self, profiles) -> None: # Overriden by subclass
+	def on_profiles_loaded(self, profiles) -> None:  # Overriden by subclass
 		pass
 
-
-	def on_menuicons_loaded(self, icons) -> None: # Overriden by subclass
+	def on_menuicons_loaded(self, icons) -> None:  # Overriden by subclass
 		pass
 
-
-	def on_profile_saved(self, giofile: Gio.File) -> None: # Overriden in App
+	def on_profile_saved(self, giofile: Gio.File) -> None:  # Overriden in App
 		pass
 
-
-	def on_profile_loaded(self, profile: Profile, giofile: Gio.File) -> None: # Overriden in App
+	def on_profile_loaded(self, profile: Profile, giofile: Gio.File) -> None:  # Overriden in App
 		pass

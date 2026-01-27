@@ -12,9 +12,10 @@ class TestSetup:
 		"""Test if every known Action is documented in docs/actions.md."""
 		try:
 			import gi
-			gi.require_version('Gtk', '3.0')
-			gi.require_version('GdkX11', '3.0')
-			gi.require_version('Rsvg', '2.0')
+
+			gi.require_version("Gtk", "3.0")
+			gi.require_version("GdkX11", "3.0")
+			gi.require_version("Rsvg", "2.0")
 		except ImportError:
 			pass
 

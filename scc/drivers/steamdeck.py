@@ -17,51 +17,48 @@ from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButto
 from scc.drivers.sc_dongle import SCController, SCPacketType
 from scc.drivers.usb import USBDevice, register_hotplug_device
 
-VENDOR_ID         = 0x28de
-PRODUCT_ID        = 0x1205
-ENDPOINT          = 3
-CONTROLIDX        = 2
-PACKET_SIZE       = 128
+VENDOR_ID = 0x28DE
+PRODUCT_ID = 0x1205
+ENDPOINT = 3
+CONTROLIDX = 2
+PACKET_SIZE = 128
 UNLIZARD_INTERVAL = 100
 # Basically, sticks on deck tend to return to non-zero position
-STICK_DEADZONE    = 3000
+STICK_DEADZONE = 3000
 
 log = logging.getLogger("deck")
 
 
 class DeckInput(ctypes.Structure):
 	_fields_ = [
-		('type', ctypes.c_uint8),
-		('_a1', ctypes.c_uint8 * 3),
-		('seq', ctypes.c_uint32),
-		('buttons', ctypes.c_uint64),
-		('lpad_x', ctypes.c_int16),
-		('lpad_y', ctypes.c_int16),
-		('rpad_x', ctypes.c_int16),
-		('rpad_y', ctypes.c_int16),
-
-		('accel_x', ctypes.c_int16),
-		('accel_y', ctypes.c_int16),
-		('accel_z', ctypes.c_int16),
-		('gpitch', ctypes.c_int16),
-		('groll', ctypes.c_int16),
-		('gyaw', ctypes.c_int16),
-		('q1', ctypes.c_uint16),
-		('q2', ctypes.c_uint16),
-		('q3', ctypes.c_uint16),
-		('q4', ctypes.c_uint16),
-
-		('ltrig', ctypes.c_uint16),
-		('rtrig', ctypes.c_uint16),
-		('stick_x', ctypes.c_int16),
-		('stick_y', ctypes.c_int16),
-		('rstick_x', ctypes.c_int16),
-		('rstick_y', ctypes.c_int16),
-
+		("type", ctypes.c_uint8),
+		("_a1", ctypes.c_uint8 * 3),
+		("seq", ctypes.c_uint32),
+		("buttons", ctypes.c_uint64),
+		("lpad_x", ctypes.c_int16),
+		("lpad_y", ctypes.c_int16),
+		("rpad_x", ctypes.c_int16),
+		("rpad_y", ctypes.c_int16),
+		("accel_x", ctypes.c_int16),
+		("accel_y", ctypes.c_int16),
+		("accel_z", ctypes.c_int16),
+		("gpitch", ctypes.c_int16),
+		("groll", ctypes.c_int16),
+		("gyaw", ctypes.c_int16),
+		("q1", ctypes.c_uint16),
+		("q2", ctypes.c_uint16),
+		("q3", ctypes.c_uint16),
+		("q4", ctypes.c_uint16),
+		("ltrig", ctypes.c_uint16),
+		("rtrig", ctypes.c_uint16),
+		("stick_x", ctypes.c_int16),
+		("stick_y", ctypes.c_int16),
+		("rstick_x", ctypes.c_int16),
+		("rstick_y", ctypes.c_int16),
 		# Values above are readed directly from deck
 		# Values bellow are converted so mapper can understand them
-		('dpad_x', ctypes.c_int16),
-		('dpad_y', ctypes.c_int16),
+		("dpad_x", ctypes.c_int16),
+		("dpad_y", ctypes.c_int16),
 	]
 
 
@@ -97,14 +94,26 @@ class DeckButton(IntEnum):
 	RT          = 0b000000000000000000000000000000000000000000000000001
 
 
-DIRECTLY_TRANSLATABLE_BUTTONS = (0
-	| DeckButton.A | DeckButton.B | DeckButton.X | DeckButton.Y
-	| DeckButton.LB | DeckButton.RB | DeckButton.LT | DeckButton.RT
-	| DeckButton.START | DeckButton.C | DeckButton.BACK
-	| DeckButton.RGRIP | DeckButton.LGRIP
-	| DeckButton.RPADTOUCH | DeckButton.LPADTOUCH
-	| DeckButton.RPADPRESS | DeckButton.LPADPRESS
-);
+DIRECTLY_TRANSLATABLE_BUTTONS = (
+	0
+	| DeckButton.A
+	| DeckButton.B
+	| DeckButton.X
+	| DeckButton.Y
+	| DeckButton.LB
+	| DeckButton.RB
+	| DeckButton.LT
+	| DeckButton.RT
+	| DeckButton.START
+	| DeckButton.C
+	| DeckButton.BACK
+	| DeckButton.RGRIP
+	| DeckButton.LGRIP
+	| DeckButton.RPADTOUCH
+	| DeckButton.LPADTOUCH
+	| DeckButton.RPADPRESS
+	| DeckButton.LPADPRESS
+)
 
 
 def map_button(i, from_, to):
@@ -126,7 +135,8 @@ def apply_deadzone(value, deadzone):
 
 
 class Deck(USBDevice, SCController):
-	flags = ( 0
+	flags = (
+		0
 		| ControllerFlags.SEPARATE_STICK
 		| ControllerFlags.HAS_DPAD
 		| ControllerFlags.IS_DECK
@@ -169,16 +179,14 @@ class Deck(USBDevice, SCController):
 		return "deck.config.json"
 
 	def configure(self, idle_timeout=None, enable_gyros=None, led_level=None) -> None:
-		FORMAT = b'>BBBB60x'
+		FORMAT = b">BBBB60x"
 		# Timeout & Gyros
-		self._driver.overwrite_control(self._ccidx, struct.pack(
-			FORMAT, SCPacketType.CONFIGURE, 0x03, 0x08, 0x07))
+		self._driver.overwrite_control(self._ccidx, struct.pack(FORMAT, SCPacketType.CONFIGURE, 0x03, 0x08, 0x07))
 
 	def clear_mappings(self):
-		FORMAT = b'>BB62x'
+		FORMAT = b">BB62x"
 		# Timeout & Gyros
-		self._driver.overwrite_control(self._ccidx,
-			struct.pack(FORMAT, SCPacketType.CLEAR_MAPPINGS, 0x01))
+		self._driver.overwrite_control(self._ccidx, struct.pack(FORMAT, SCPacketType.CLEAR_MAPPINGS, 0x01))
 
 	def on_serial_got(self):
 		log.debug("Got SteamDeck with serial %s", self._serial)
@@ -201,7 +209,8 @@ class Deck(USBDevice, SCController):
 		self._input.dpad_x = map_dpad(self._input, DeckButton.DPAD_LEFT, DeckButton.DPAD_RIGHT)
 		self._input.dpad_y = map_dpad(self._input, DeckButton.DPAD_DOWN, DeckButton.DPAD_UP)
 		# Convert buttons
-		self._input.buttons = (0
+		self._input.buttons = (
+			0
 			| ((self._input.buttons & DIRECTLY_TRANSLATABLE_BUTTONS) << 8)
 			| map_button(self._input, DeckButton.DOTS, SCButtons.DOTS)
 			# | map_button(self._input, DeckButton.RSTICKTOUCH, ....)	// not mapped
@@ -239,6 +248,7 @@ class Deck(USBDevice, SCController):
 
 def init(daemon, config):
 	"""Register hotplug callback for controller dongle"""
+
 	def cb(device, handle):
 		return Deck(device, handle, daemon)
 

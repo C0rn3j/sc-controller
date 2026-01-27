@@ -52,11 +52,12 @@ from scc.tools import init_logging, set_logging_level
 
 log = logging.getLogger("DS5")
 
-VENDOR_ID = 0x054c
-PRODUCT_ID = 0x0ce6
+VENDOR_ID = 0x054C
+PRODUCT_ID = 0x0CE6
 
 
 OPERATING_MODE_DS5_BT = 0x31
+
 
 class OperatingMode(IntEnum):
 	DS4_COMPATIBILITY_MODE = 1 << 0
@@ -80,100 +81,92 @@ class LightEffectControl(IntEnum):
 
 class DualSenseHIDOutput(ctypes.Structure):
 	_fields_ = [
-		('operating_mode', ctypes.c_ubyte),
-		('physical_effect_control', ctypes.c_ubyte),
-		('light_effect_control', ctypes.c_ubyte),
-
-		('motor_right', ctypes.c_ubyte),
-		('motor_left', ctypes.c_ubyte),
-
-		('unknown2', ctypes.c_ubyte * 4),
-		('mute_button_led', ctypes.c_ubyte),
-		('power_save_control', ctypes.c_ubyte),
-		('right_trigger_effect', ctypes.c_ubyte * 11),
-		('left_trigger_effect', ctypes.c_ubyte * 11),
-
-		('unknown3', ctypes.c_ubyte * 8),
-
-		('lightbar_control', ctypes.c_ubyte),
-		('lightbar_setup', ctypes.c_ubyte),
-		('led_brightness', ctypes.c_ubyte),
-
-		('player_leds', ctypes.c_ubyte),
-		('lightbar_red', ctypes.c_ubyte),
-		('lightbar_green', ctypes.c_ubyte),
-		('lightbar_blue', ctypes.c_ubyte),
+		("operating_mode", ctypes.c_ubyte),
+		("physical_effect_control", ctypes.c_ubyte),
+		("light_effect_control", ctypes.c_ubyte),
+		("motor_right", ctypes.c_ubyte),
+		("motor_left", ctypes.c_ubyte),
+		("unknown2", ctypes.c_ubyte * 4),
+		("mute_button_led", ctypes.c_ubyte),
+		("power_save_control", ctypes.c_ubyte),
+		("right_trigger_effect", ctypes.c_ubyte * 11),
+		("left_trigger_effect", ctypes.c_ubyte * 11),
+		("unknown3", ctypes.c_ubyte * 8),
+		("lightbar_control", ctypes.c_ubyte),
+		("lightbar_setup", ctypes.c_ubyte),
+		("led_brightness", ctypes.c_ubyte),
+		("player_leds", ctypes.c_ubyte),
+		("lightbar_red", ctypes.c_ubyte),
+		("lightbar_green", ctypes.c_ubyte),
+		("lightbar_blue", ctypes.c_ubyte),
 	]
+
 
 class DualSenseHIDOutputBT(ctypes.Structure):
 	_fields_ = [
-		('operating_mode', ctypes.c_byte),
-		('data_id_byte', ctypes.c_byte),
-		('physical_effect_control', ctypes.c_byte),
-		('light_effect_control', ctypes.c_byte),
-
-		('motor_right', ctypes.c_byte),
-		('motor_left', ctypes.c_byte),
-
-		('unknown2', ctypes.c_byte * 4),
-		('mute_button_led', ctypes.c_byte),
-		('power_save_control', ctypes.c_byte),
-		('right_trigger_effect', ctypes.c_byte * 11),
-		('left_trigger_effect', ctypes.c_byte * 11),
-
-		('unknown3', ctypes.c_byte * 6),
-
-		('brightlite', ctypes.c_byte),
-		('unknown6', ctypes.c_byte * 2),
-
-		('lightbar_control', ctypes.c_byte),
-		#('lightbar_setup', ctypes.c_byte),
-		('led_brightness', ctypes.c_byte),
-
-		('player_leds', ctypes.c_byte),
-		('lightbar_red', ctypes.c_byte),
-		('lightbar_green', ctypes.c_byte),
-		('lightbar_blue', ctypes.c_byte),
-
-		('unknown4', ctypes.c_byte * 25),
-		#('unknown5', ctypes.c_byte * 4),
-		('crc32', ctypes.c_byte * 4),
-		#('crc32', ctypes.c_uint16),
+		("operating_mode", ctypes.c_byte),
+		("data_id_byte", ctypes.c_byte),
+		("physical_effect_control", ctypes.c_byte),
+		("light_effect_control", ctypes.c_byte),
+		("motor_right", ctypes.c_byte),
+		("motor_left", ctypes.c_byte),
+		("unknown2", ctypes.c_byte * 4),
+		("mute_button_led", ctypes.c_byte),
+		("power_save_control", ctypes.c_byte),
+		("right_trigger_effect", ctypes.c_byte * 11),
+		("left_trigger_effect", ctypes.c_byte * 11),
+		("unknown3", ctypes.c_byte * 6),
+		("brightlite", ctypes.c_byte),
+		("unknown6", ctypes.c_byte * 2),
+		("lightbar_control", ctypes.c_byte),
+		# ('lightbar_setup', ctypes.c_byte),
+		("led_brightness", ctypes.c_byte),
+		("player_leds", ctypes.c_byte),
+		("lightbar_red", ctypes.c_byte),
+		("lightbar_green", ctypes.c_byte),
+		("lightbar_blue", ctypes.c_byte),
+		("unknown4", ctypes.c_byte * 25),
+		# ('unknown5', ctypes.c_byte * 4),
+		("crc32", ctypes.c_byte * 4),
+		# ('crc32', ctypes.c_uint16),
 	]
+
 
 class DualSenseHIDInputBT(ctypes.Structure):
 	_fields_ = [
-		('report_id', ctypes.c_byte),
-		('unknown1', ctypes.c_byte),
-		('lx', ctypes.c_ubyte),
-		('ly', ctypes.c_ubyte),
+		("report_id", ctypes.c_byte),
+		("unknown1", ctypes.c_byte),
+		("lx", ctypes.c_ubyte),
+		("ly", ctypes.c_ubyte),
 	]
+
 
 class DualSenseBTControllerInput(ctypes.Structure):
 	_fields_ = [
-		('type', ctypes.c_uint16),
-		('buttons', ctypes.c_uint32),
-		('ltrig', ctypes.c_uint8),
-		('rtrig', ctypes.c_uint8),
-		('stick_x', ctypes.c_int32),
-		('stick_y', ctypes.c_int32),
-		('lpad_x', ctypes.c_int32),
-		('lpad_y', ctypes.c_int32),
-		('rpad_x', ctypes.c_int32),
-		('rpad_y', ctypes.c_int32),
-		('accel_x', ctypes.c_int32),
-		('accel_y', ctypes.c_int32),
-		('accel_z', ctypes.c_int32),
-		('gpitch', ctypes.c_int32),
-		('groll', ctypes.c_int32),
-		('gyaw', ctypes.c_int32),
-		('q1', ctypes.c_int32),
-		('q2', ctypes.c_int32),
-		('q3', ctypes.c_int32),
-		('q4', ctypes.c_int32),
-		('cpad_x', ctypes.c_uint16),
-		('cpad_y', ctypes.c_uint16),
+		("type", ctypes.c_uint16),
+		("buttons", ctypes.c_uint32),
+		("ltrig", ctypes.c_uint8),
+		("rtrig", ctypes.c_uint8),
+		("stick_x", ctypes.c_int32),
+		("stick_y", ctypes.c_int32),
+		("lpad_x", ctypes.c_int32),
+		("lpad_y", ctypes.c_int32),
+		("rpad_x", ctypes.c_int32),
+		("rpad_y", ctypes.c_int32),
+		("accel_x", ctypes.c_int32),
+		("accel_y", ctypes.c_int32),
+		("accel_z", ctypes.c_int32),
+		("gpitch", ctypes.c_int32),
+		("groll", ctypes.c_int32),
+		("gyaw", ctypes.c_int32),
+		("q1", ctypes.c_int32),
+		("q2", ctypes.c_int32),
+		("q3", ctypes.c_int32),
+		("q4", ctypes.c_int32),
+		("cpad_x", ctypes.c_uint16),
+		("cpad_y", ctypes.c_uint16),
 	]
+
 
 ICON_COLORS = [
 	(0.0, 1.0, 0.0),  # 0
@@ -206,12 +199,12 @@ class DS5Controller(HIDController):
 	)
 
 	flags = (
-		ControllerFlags.EUREL_GYROS |
-		ControllerFlags.HAS_RSTICK |
-		ControllerFlags.HAS_CPAD |
-		ControllerFlags.HAS_DPAD |
-		ControllerFlags.SEPARATE_STICK |
-		ControllerFlags.NO_GRIPS
+		ControllerFlags.EUREL_GYROS
+		| ControllerFlags.HAS_RSTICK
+		| ControllerFlags.HAS_CPAD
+		| ControllerFlags.HAS_DPAD
+		| ControllerFlags.SEPARATE_STICK
+		| ControllerFlags.NO_GRIPS
 	)
 
 	def __init__(self, device, daemon, handle, config_file, config, test_mode=False):
@@ -231,94 +224,71 @@ class DS5Controller(HIDController):
 
 		# Dpad works on DualSense!
 		self._decoder.axes[AxisType.AXIS_LPAD_X] = AxisData(
-			mode=AxisMode.HATSWITCH, byte_offset=8, size=8,
+			mode=AxisMode.HATSWITCH,
+			byte_offset=8,
+			size=8,
 			data=AxisDataUnion(
 				hatswitch=HatswitchModeData(
-					button=SCButtons.LPAD | SCButtons.LPADTOUCH,
-					min=STICK_PAD_MIN, max=STICK_PAD_MAX
+					button=SCButtons.LPAD | SCButtons.LPADTOUCH, min=STICK_PAD_MIN, max=STICK_PAD_MAX
 				)
-			)
+			),
 		)
 
 		# Sticks are the same as DS4
 		self._decoder.axes[AxisType.AXIS_STICK_X] = AxisData(
-			mode=AxisMode.AXIS, byte_offset=1, size=8,
-			data=AxisDataUnion(
-				axis=AxisModeData(
-					scale=1.0, offset=-127.5, clamp_max=257, deadzone=2
-				)
-			)
+			mode=AxisMode.AXIS,
+			byte_offset=1,
+			size=8,
+			data=AxisDataUnion(axis=AxisModeData(scale=1.0, offset=-127.5, clamp_max=257, deadzone=2)),
 		)
 		self._decoder.axes[AxisType.AXIS_STICK_Y] = AxisData(
-			mode=AxisMode.AXIS, byte_offset=2, size=8,
-			data=AxisDataUnion(
-				axis=AxisModeData(
-					scale=-1.0, offset=127.5, clamp_max=257, deadzone=2
-				)
-			)
+			mode=AxisMode.AXIS,
+			byte_offset=2,
+			size=8,
+			data=AxisDataUnion(axis=AxisModeData(scale=-1.0, offset=127.5, clamp_max=257, deadzone=2)),
 		)
 		self._decoder.axes[AxisType.AXIS_RPAD_X] = AxisData(
-			mode=AxisMode.AXIS, byte_offset=3, size=8,
+			mode=AxisMode.AXIS,
+			byte_offset=3,
+			size=8,
 			data=AxisDataUnion(
-				axis=AxisModeData(
-					button=SCButtons.RPADTOUCH,
-					scale=1.0, offset=-127.5, clamp_max=257, deadzone=2
-				)
-			)
+				axis=AxisModeData(button=SCButtons.RPADTOUCH, scale=1.0, offset=-127.5, clamp_max=257, deadzone=2)
+			),
 		)
 		self._decoder.axes[AxisType.AXIS_RPAD_Y] = AxisData(
-			mode=AxisMode.AXIS, byte_offset=4, size=8,
+			mode=AxisMode.AXIS,
+			byte_offset=4,
+			size=8,
 			data=AxisDataUnion(
-				axis=AxisModeData(
-					button=SCButtons.RPADTOUCH,
-					scale=-1.0, offset=127.5, clamp_max=257, deadzone=2
-				)
-			)
+				axis=AxisModeData(button=SCButtons.RPADTOUCH, scale=-1.0, offset=127.5, clamp_max=257, deadzone=2)
+			),
 		)
 
 		# Triggers
 		self._decoder.axes[AxisType.AXIS_LTRIG] = AxisData(
-			mode=AxisMode.AXIS, byte_offset=5, size=8,  # Not sure about the size
-			data=AxisDataUnion(
-				axis=AxisModeData(
-					scale=1.0, clamp_max=1, deadzone=10
-				)
-			)
+			mode=AxisMode.AXIS,
+			byte_offset=5,
+			size=8,  # Not sure about the size
+			data=AxisDataUnion(axis=AxisModeData(scale=1.0, clamp_max=1, deadzone=10)),
 		)
 		self._decoder.axes[AxisType.AXIS_RTRIG] = AxisData(
-			mode=AxisMode.AXIS, byte_offset=6, size=8,  # Not sure about the size
-			data=AxisDataUnion(
-				axis=AxisModeData(
-					scale=1.0, clamp_max=1, deadzone=10
-				)
-			)
+			mode=AxisMode.AXIS,
+			byte_offset=6,
+			size=8,  # Not sure about the size
+			data=AxisDataUnion(axis=AxisModeData(scale=1.0, clamp_max=1, deadzone=10)),
 		)
 
 		# Gyro
 		# Leaving the AxisMode naming to match DS4
-		self._decoder.axes[AxisType.AXIS_GPITCH] = AxisData(
-			mode=AxisMode.DS4ACCEL, byte_offset=16
-		)  # Pitch found
-		self._decoder.axes[AxisType.AXIS_GROLL] = AxisData(
-			mode=AxisMode.DS4ACCEL, byte_offset=20
-		)  # Roll
-		self._decoder.axes[AxisType.AXIS_GYAW] = AxisData(
-			mode=AxisMode.DS4ACCEL, byte_offset=18
-		)  # Yaw found
-		self._decoder.axes[AxisType.AXIS_Q1] = AxisData(
-			mode=AxisMode.DS4GYRO, byte_offset=26
-		)
-		self._decoder.axes[AxisType.AXIS_Q2] = AxisData(
-			mode=AxisMode.DS4GYRO, byte_offset=22
-		)
-		self._decoder.axes[AxisType.AXIS_Q3] = AxisData(
-			mode=AxisMode.DS4GYRO, byte_offset=24
-		)
+		self._decoder.axes[AxisType.AXIS_GPITCH] = AxisData(mode=AxisMode.DS4ACCEL, byte_offset=16)  # Pitch found
+		self._decoder.axes[AxisType.AXIS_GROLL] = AxisData(mode=AxisMode.DS4ACCEL, byte_offset=20)  # Roll
+		self._decoder.axes[AxisType.AXIS_GYAW] = AxisData(mode=AxisMode.DS4ACCEL, byte_offset=18)  # Yaw found
+		self._decoder.axes[AxisType.AXIS_Q1] = AxisData(mode=AxisMode.DS4GYRO, byte_offset=26)
+		self._decoder.axes[AxisType.AXIS_Q2] = AxisData(mode=AxisMode.DS4GYRO, byte_offset=22)
+		self._decoder.axes[AxisType.AXIS_Q3] = AxisData(mode=AxisMode.DS4GYRO, byte_offset=24)
 
 		# Touchpad
-		self._decoder.axes[AxisType.AXIS_CPAD_X] = AxisData(
-			mode=AxisMode.DS4TOUCHPAD, byte_offset=34
-		)  # DualSense X
+		self._decoder.axes[AxisType.AXIS_CPAD_X] = AxisData(mode=AxisMode.DS4TOUCHPAD, byte_offset=34)  # DualSense X
 		self._decoder.axes[AxisType.AXIS_CPAD_Y] = AxisData(
 			mode=AxisMode.DS4TOUCHPAD, byte_offset=35, bit_offset=4
 		)  # DualSense Y
@@ -327,8 +297,11 @@ class DS5Controller(HIDController):
 		# Not enough information about the button event triggered when LT && RT are pressed?
 		# Could be connected to adaptive triggers?
 		self._decoder.buttons = ButtonData(
-			enabled=True, byte_offset=8, bit_offset=4, size=14,  # Not sure about bit offset
-			button_count=14
+			enabled=True,
+			byte_offset=8,
+			bit_offset=4,
+			size=14,  # Not sure about bit offset
+			button_count=14,
 		)
 
 		if test_mode:
@@ -351,16 +324,13 @@ class DS5Controller(HIDController):
 					self._decoder.state.buttons &= ~SCButtons.CPADTOUCH
 				else:
 					self._decoder.state.buttons |= SCButtons.CPADTOUCH
-				self.mapper.input(
-					self,
-					self._decoder.old_state, self._decoder.state
-				)
+				self.mapper.input(self, self._decoder.old_state, self._decoder.state)
 
 	def feedback(self, data):
 		position, amplitude, period, count = data.data
 
 		normalized_amp = float(amplitude) / 0x8000
-		clamped_amp = int(normalized_amp * 0xff)
+		clamped_amp = int(normalized_amp * 0xFF)
 		half_amp = int(normalized_amp * 0x80)
 
 		if position == HapticPos.LEFT:
@@ -376,26 +346,26 @@ class DS5Controller(HIDController):
 		# The motors don't seem to perform reliably when shut off under 20ms
 		duration = max(duration, 0.02)
 
-		self.schedule_output('feedback', self._feedback_output)
+		self.schedule_output("feedback", self._feedback_output)
 
 		def clear_feedback(mapper):
 			self._feedback_output.motor_right = self._feedback_output.motor_left = 0
-			self.schedule_output('feedback', self._feedback_output)
+			self.schedule_output("feedback", self._feedback_output)
 
 		if self._feedback_cancel_task:
 			self._feedback_cancel_task.cancel()
 		self._feedback_cancel_task = self.mapper.schedule(duration, clear_feedback)
 
 	def apply_config(self, config):
-		icon = config['icon']
-		led_level = config['led_level']
+		icon = config["icon"]
+		led_level = config["led_level"]
 		self.configure(icon=icon, led_level=led_level)
 
 	def configure(self, icon=None, led_level=100):
 		lightbar_color = (0.0, 0.0, 1.0)  # blue by default
 		if icon:
-			basename, ext = icon.rsplit('.', 1)
-			parts = basename.rsplit('-', 1)
+			basename, ext = icon.rsplit(".", 1)
+			parts = basename.rsplit("-", 1)
 			if parts:
 				raw_idx = parts[-1]
 				try:
@@ -407,10 +377,7 @@ class DS5Controller(HIDController):
 						lightbar_color = ICON_COLORS[icon_idx]
 
 		led_level_norm = float(led_level) / 100
-		lightbar_color_bytes = tuple(
-			int(color_norm * led_level_norm * 255)
-			for color_norm in lightbar_color
-		)
+		lightbar_color_bytes = tuple(int(color_norm * led_level_norm * 255) for color_norm in lightbar_color)
 
 		output = DualSenseHIDOutput(
 			operating_mode=OperatingMode.DS5_MODE,
@@ -419,7 +386,7 @@ class DS5Controller(HIDController):
 			lightbar_green=lightbar_color_bytes[1],
 			lightbar_blue=lightbar_color_bytes[2],
 		)
-		self.schedule_output('lightbar', output)
+		self.schedule_output("lightbar", output)
 
 	def get_gyro_enabled(self):
 		# Cannot be actually turned off, so it's always active
@@ -452,7 +419,7 @@ class DS5Controller(HIDController):
 
 		while self._outputs:
 			output_id, output = self._outputs.popitem()
-			data = bytes(bytearray(output).ljust(64, b'\x00'))
+			data = bytes(bytearray(output).ljust(64, b"\x00"))
 			self.handle.interruptWrite(3, data)
 
 
@@ -470,7 +437,7 @@ class DS5HidRawDriver:
 		if hidrawname is None:
 			return None
 
-		#log.debug(whatever)
+		# log.debug(whatever)
 		try:
 			dev = HIDRaw(open(os.path.join("/dev/", hidrawname), "w+b"))
 			return DS5HidRawController(self, syspath, dev)
@@ -501,47 +468,48 @@ class DS5HidRawController(Controller):
 
 	# (x, y) values
 	DPAD_STATE_TYPES = {
-		0: _DPadOutputValues(0, STICK_PAD_MAX), # Up
-		1: _DPadOutputValues(STICK_PAD_MAX, STICK_PAD_MAX), # UpRight
-		2: _DPadOutputValues(STICK_PAD_MAX, 0), # Right
-		3: _DPadOutputValues(STICK_PAD_MAX, STICK_PAD_MIN), # DownRight
-		4: _DPadOutputValues(0, STICK_PAD_MIN), # Down
-		5: _DPadOutputValues(STICK_PAD_MIN, STICK_PAD_MIN), # DownLeft
-		6: _DPadOutputValues(STICK_PAD_MIN, 0), # Left
-		7: _DPadOutputValues(STICK_PAD_MIN, STICK_PAD_MAX), # UpLeft
-		8: _DPadOutputValues(0, 0) # Centered
+		0: _DPadOutputValues(0, STICK_PAD_MAX),  # Up
+		1: _DPadOutputValues(STICK_PAD_MAX, STICK_PAD_MAX),  # UpRight
+		2: _DPadOutputValues(STICK_PAD_MAX, 0),  # Right
+		3: _DPadOutputValues(STICK_PAD_MAX, STICK_PAD_MIN),  # DownRight
+		4: _DPadOutputValues(0, STICK_PAD_MIN),  # Down
+		5: _DPadOutputValues(STICK_PAD_MIN, STICK_PAD_MIN),  # DownLeft
+		6: _DPadOutputValues(STICK_PAD_MIN, 0),  # Left
+		7: _DPadOutputValues(STICK_PAD_MIN, STICK_PAD_MAX),  # UpLeft
+		8: _DPadOutputValues(0, 0),  # Centered
 	}
 
 	DPAD_CENTERED_STATE = _DPadOutputValues(0, 0)
 	# Leading byte not included in sent output report data.
 	# Needed to add for proper CRC32 computation that controller
 	# will accept
-	BT_CRC32_HEAD = b"\xA2"
+	BT_CRC32_HEAD = b"\xa2"
 	# Leading byte not included in feature report data.
 	# Needed if performing CRC32 computation on returned feature
 	# report data (for IMU calibration data)
-	BT_CALIBRATION_CRC32_HEAD = b"\xA3"
+	BT_CALIBRATION_CRC32_HEAD = b"\xa3"
 
-	flags = ( ControllerFlags.EUREL_GYROS
-			| ControllerFlags.HAS_RSTICK
-			| ControllerFlags.HAS_CPAD
-			| ControllerFlags.HAS_DPAD
-			| ControllerFlags.SEPARATE_STICK
-			| ControllerFlags.NO_GRIPS
+	flags = (
+		ControllerFlags.EUREL_GYROS
+		| ControllerFlags.HAS_RSTICK
+		| ControllerFlags.HAS_CPAD
+		| ControllerFlags.HAS_DPAD
+		| ControllerFlags.SEPARATE_STICK
+		| ControllerFlags.NO_GRIPS
 	)
 
-	#def __init__(self, device, daemon, handle, config_file, config, test_mode=False):
+	# def __init__(self, device, daemon, handle, config_file, config, test_mode=False):
 	def __init__(self, driver, syspath, hidrawdev):
 		self.driver = driver
 		self.daemon = driver.daemon
 		self.syspath = syspath
 
 		super().__init__()
-		#super().__init__(device, daemon, handle, config_file, config, test_mode=False)
+		# super().__init__(device, daemon, handle, config_file, config, test_mode=False)
 
 		self._feedback_output = DualSenseHIDOutputBT(
 			operating_mode=OperatingMode.DS5_MODE_BT,
-			data_id_byte = 0x02,
+			data_id_byte=0x02,
 			physical_effect_control=PhysicalEffectControl.ENABLE_HAPTICS,
 			motor_left=0,
 			motor_right=0,
@@ -559,10 +527,10 @@ class DS5HidRawController(Controller):
 		self._delta_time = time.time()
 		self._previous_time = time.time()
 
-		#time.sleep(1)
+		# time.sleep(1)
 		self._set_operational()
 		self.read_serial()
-		#self.configure()
+		# self.configure()
 		self._poller = self.daemon.get_poller()
 		if self._poller:
 			self._poller.register(self._fileno, self._poller.POLLIN, self._input)
@@ -576,18 +544,18 @@ class DS5HidRawController(Controller):
 		return "ds5bt_hidraw"
 
 	def apply_config(self, config):
-		icon = config['icon']
-		led_level = config['led_level']
+		icon = config["icon"]
+		led_level = config["led_level"]
 		self.configure(icon=icon, led_level=led_level)
 
 	def configure(self, icon=None, led_level=100):
-		#log.debug("CALLED CONFIGURE")
-		#return
+		# log.debug("CALLED CONFIGURE")
+		# return
 
 		lightbar_color = (0.0, 0.0, 1.0)  # blue by default
 		if icon:
-			basename, ext = icon.rsplit('.', 1)
-			parts = basename.rsplit('-', 1)
+			basename, ext = icon.rsplit(".", 1)
+			parts = basename.rsplit("-", 1)
 			if parts:
 				raw_idx = parts[-1]
 				try:
@@ -599,18 +567,15 @@ class DS5HidRawController(Controller):
 						lightbar_color = ICON_COLORS[icon_idx]
 
 		led_level_norm = float(led_level) / 100
-		lightbar_color_bytes = tuple(
-			int(color_norm * led_level_norm * 255)
-			for color_norm in lightbar_color
-		)
+		lightbar_color_bytes = tuple(int(color_norm * led_level_norm * 255) for color_norm in lightbar_color)
 
-		#print(lightbar_color_bytes)
-		#lightbar_red=lightbar_color_bytes[0],
-		#lightbar_green=lightbar_color_bytes[1],
-		#lightbar_blue=lightbar_color_bytes[2],
+		# print(lightbar_color_bytes)
+		# lightbar_red=lightbar_color_bytes[0],
+		# lightbar_green=lightbar_color_bytes[1],
+		# lightbar_blue=lightbar_color_bytes[2],
 		output = DualSenseHIDOutputBT(
 			operating_mode=OperatingMode.DS5_MODE_BT,
-			data_id_byte = 0x02,
+			data_id_byte=0x02,
 			light_effect_control=LightEffectControl.LIGHTBAR_CONTROL_ENABLE,
 			lightbar_red=lightbar_color_bytes[0],
 			lightbar_green=lightbar_color_bytes[1],
@@ -618,25 +583,25 @@ class DS5HidRawController(Controller):
 		)
 
 		tempbuffer = bytearray(output)
-		#print("ITS A BLUE: {}".format(output.lightbar_blue))
+		# print("ITS A BLUE: {}".format(output.lightbar_blue))
 		self._prepare_buffer_crc(tempbuffer)
-		self.schedule_output('lightbar', tempbuffer)
-		#time.sleep(2)
+		self.schedule_output("lightbar", tempbuffer)
+		# time.sleep(2)
 		self.flush()
-		#self._hidrawdev.read(78)
-		#feature_data = self._hidrawdev.getFeatureReport(9)
-		#time.sleep(2)
-		#self._hidrawdev.read(78)
+		# self._hidrawdev.read(78)
+		# feature_data = self._hidrawdev.getFeatureReport(9)
+		# time.sleep(2)
+		# self._hidrawdev.read(78)
 
 	def _set_operational(self):
-		#log.debug("CALLING SET_OPERATIONAL")
+		# log.debug("CALLING SET_OPERATIONAL")
 		# Get feature report for serial performs initial switch
 		# to DS5 mode
 		feature_data = self._hidrawdev.getFeatureReport(9)
 
 		init_output = DualSenseHIDOutputBT(
-			operating_mode = OperatingMode.DS5_MODE_BT,
-			data_id_byte = 0x02,
+			operating_mode=OperatingMode.DS5_MODE_BT,
+			data_id_byte=0x02,
 			light_effect_control=0x55,
 			lightbar_red=0,
 			lightbar_green=0,
@@ -644,26 +609,26 @@ class DS5HidRawController(Controller):
 		)
 
 		tempman = bytearray(init_output)
-		"""calcCrc32 = zlib.crc32(b"\xA2") & 0xFFFFFFFF
+		"""calcCrc32 = zlib.crc32(b"\xa2") & 0xFFFFFFFF
 		calcCrc32 = zlib.crc32(tempman[0:74], calcCrc32) & 0xFFFFFFFF
 		tempman[74] = calcCrc32 & 0xFF
 		tempman[75] = (calcCrc32 >> 8) & 0xFF
 		tempman[76] = (calcCrc32 >> 16) & 0xFF
 		tempman[77] = (calcCrc32 >> 24) & 0xFF
 		"""
-		#self._hidrawdev.write(tempman)
-		#time.sleep(1)
+		# self._hidrawdev.write(tempman)
+		# time.sleep(1)
 		self._prepare_buffer_crc(tempman)
 		self.schedule_output("init", tempman)
 		self.flush()
 		# Seems to not register until the next device read. Need
 		# to see if there is a way around that
 		self._hidrawdev.read(78)
-		#feature_data = self._hidrawdev.getFeatureReport(9)
-		#time.sleep(2)
+		# feature_data = self._hidrawdev.getFeatureReport(9)
+		# time.sleep(2)
 
 	def _prepare_buffer_crc(self, buf):
-		calcCrc32 = zlib.crc32(b"\xA2") & 0xFFFFFFFF
+		calcCrc32 = zlib.crc32(b"\xa2") & 0xFFFFFFFF
 		calcCrc32 = zlib.crc32(buf[0:74], calcCrc32) & 0xFFFFFFFF
 		buf[74] = calcCrc32 & 0xFF
 		buf[75] = (calcCrc32 >> 8) & 0xFF
@@ -674,7 +639,7 @@ class DS5HidRawController(Controller):
 		position, amplitude, period, count = data.data
 
 		normalized_amp = float(amplitude) / 0x8000
-		clamped_amp = int(normalized_amp * 0xff)
+		clamped_amp = int(normalized_amp * 0xFF)
 		half_amp = int(normalized_amp * 0x80)
 
 		if position == HapticPos.LEFT:
@@ -692,14 +657,14 @@ class DS5HidRawController(Controller):
 
 		tempman = bytearray(self._feedback_output)
 		self._prepare_buffer_crc(tempman)
-		self.schedule_output('feedback', tempman)
+		self.schedule_output("feedback", tempman)
 		self.flush()
 
 		def clear_feedback(mapper):
 			self._feedback_output.motor_right = self._feedback_output.motor_left = 0
 			tempman = bytearray(self._feedback_output)
 			self._prepare_buffer_crc(tempman)
-			self.schedule_output('feedback', tempman)
+			self.schedule_output("feedback", tempman)
 			self.flush()
 
 		if self._feedback_cancel_task:
@@ -707,18 +672,18 @@ class DS5HidRawController(Controller):
 		self._feedback_cancel_task = self.mapper.schedule(duration, clear_feedback)
 
 	def _input(self, *a):
-		#log.debug("FOUND INPUT")
+		# log.debug("FOUND INPUT")
 		tempdata = self._hidrawdev.read(78)
 		# Skip over packet if not a DS5 mode input packet
 		if tempdata[0] != 0x31:
 			return
 
-		#log.debug(tempdata)
+		# log.debug(tempdata)
 		old_state = self._old_state
 		current_time = time.time()
 		self._delta_time = current_time - self._previous_time
-		#hamtaro = DualSenseHIDInputBT.from_buffer_copy(tempdata)
-		#log.debug("LX: {} {}".format(hamtaro.lx, tempdata[2]))
+		# hamtaro = DualSenseHIDInputBT.from_buffer_copy(tempdata)
+		# log.debug("LX: {} {}".format(hamtaro.lx, tempdata[2]))
 		state_data = self._convert_input_data(tempdata)
 		"""print("INPUT [", end="")
 		for index, value in enumerate(tempdata):
@@ -727,9 +692,9 @@ class DS5HidRawController(Controller):
 		print("")
 		"""
 
-		#log.debug(self._hidrawdev._device)
-		#self.flush()
-		#self.close()
+		# log.debug(self._hidrawdev._device)
+		# self.flush()
+		# self.close()
 		if self.mapper:
 			self.mapper.input(self, old_state, state_data)
 
@@ -757,10 +722,9 @@ class DS5HidRawController(Controller):
 		if (tempbyte & (1 << 4)) != 0:
 			state.buttons |= SCButtons.X
 		dpad_state = data[9] & 0x0F
-		if (dpad_state != 8):
+		if dpad_state != 8:
 			state.buttons |= SCButtons.LPAD | SCButtons.LPADTOUCH
-			tempDPad = DS5HidRawController.DPAD_STATE_TYPES.get(dpad_state,
-				DS5HidRawController.DPAD_CENTERED_STATE)
+			tempDPad = DS5HidRawController.DPAD_STATE_TYPES.get(dpad_state, DS5HidRawController.DPAD_CENTERED_STATE)
 			state.lpad_x = tempDPad.x
 			state.lpad_y = tempDPad.y
 
@@ -799,8 +763,8 @@ class DS5HidRawController(Controller):
 		# Invert pitch
 		state.accel_y = ctypes.c_int16((data[28] << 8) | data[27]).value * -2
 		state.accel_z = ctypes.c_int16((data[26] << 8) | data[25]).value * 2
-		#print("GYRO: {} {} {}".format(state.gyaw, state.gpitch, state.groll))
-		#print("ACCEL: {} | {} | {}".format(state.accel_x, state.accel_y, state.accel_z))
+		# print("GYRO: {} {} {}".format(state.gyaw, state.gpitch, state.groll))
+		# print("ACCEL: {} | {} | {}".format(state.accel_x, state.accel_y, state.accel_z))
 		# Calculate quaternion for gyro data. Needed for tilt controls output.
 		# TODO: Try to add sensor fusion and complementary filter later
 		self._calculate_quaternion(state)
@@ -833,27 +797,37 @@ class DS5HidRawController(Controller):
 	def _calculate_quaternion(self, state):
 		# Convert raw gyro values to degrees per second
 		GYRO_RES_IN_DEG_SEC = 16
-		(yaw, pitch, roll) = ((state.gyaw / GYRO_RES_IN_DEG_SEC),
+		(yaw, pitch, roll) = (
+			(state.gyaw / GYRO_RES_IN_DEG_SEC),
 			(state.gpitch / GYRO_RES_IN_DEG_SEC),
-			(state.groll / GYRO_RES_IN_DEG_SEC))
+			(state.groll / GYRO_RES_IN_DEG_SEC),
+		)
 
 		# Remove time delta element to get gyro angles and convert to radians
 		old_yaw = yaw
 		yaw = yaw * self._delta_time
 		yaw_rad = yaw * math.pi / 180.0
 		pitch = pitch * self._delta_time
-		pitch_rad = pitch *  math.pi / 180.0
+		pitch_rad = pitch * math.pi / 180.0
 		roll = roll * self._delta_time
 		roll_rad = roll * math.pi / 180.0
-		#print("GYRO: {} {} {}".format(yaw, pitch, roll))
-		#print("GYRO: {} | {} | {} | {} | {}".format(state.gyaw, old_yaw, yaw, yaw_rad, self._delta_time))
+		# print("GYRO: {} {} {}".format(yaw, pitch, roll))
+		# print("GYRO: {} | {} | {} | {} | {}".format(state.gyaw, old_yaw, yaw, yaw_rad, self._delta_time))
 
 		# Obtain current quaternion
 		# qx (Roll), qy (Pitch), qz (Yaw), qw (Theta)
-		qx = math.sin(roll_rad/2) * math.cos(pitch_rad/2) * math.cos(yaw_rad/2) - math.cos(roll_rad/2) * math.sin(pitch_rad/2) * math.sin(yaw_rad/2)
-		qy = math.cos(roll_rad/2) * math.sin(pitch_rad/2) * math.cos(yaw_rad/2) + math.sin(roll_rad/2) * math.cos(pitch_rad/2) * math.sin(yaw_rad/2)
-		qz = math.cos(roll_rad/2) * math.cos(pitch_rad/2) * math.sin(yaw_rad/2) - math.sin(roll_rad/2) * math.sin(pitch_rad/2) * math.cos(yaw_rad/2)
-		qw = math.cos(roll_rad/2) * math.cos(pitch_rad/2) * math.cos(yaw_rad/2) + math.sin(roll_rad/2) * math.sin(pitch_rad/2) * math.sin(yaw_rad/2)
+		qx = math.sin(roll_rad / 2) * math.cos(pitch_rad / 2) * math.cos(yaw_rad / 2) - math.cos(
+			roll_rad / 2
+		) * math.sin(pitch_rad / 2) * math.sin(yaw_rad / 2)
+		qy = math.cos(roll_rad / 2) * math.sin(pitch_rad / 2) * math.cos(yaw_rad / 2) + math.sin(
+			roll_rad / 2
+		) * math.cos(pitch_rad / 2) * math.sin(yaw_rad / 2)
+		qz = math.cos(roll_rad / 2) * math.cos(pitch_rad / 2) * math.sin(yaw_rad / 2) - math.sin(
+			roll_rad / 2
+		) * math.sin(pitch_rad / 2) * math.cos(yaw_rad / 2)
+		qw = math.cos(roll_rad / 2) * math.cos(pitch_rad / 2) * math.cos(yaw_rad / 2) + math.sin(
+			roll_rad / 2
+		) * math.sin(pitch_rad / 2) * math.sin(yaw_rad / 2)
 
 		# Multiply previous calculated quaternion by new quaternion
 		(old_qw, old_qx, old_qy, old_qz) = self._previous_quat
@@ -872,8 +846,8 @@ class DS5HidRawController(Controller):
 		state.q4 = int(Q0Q1_z * -32767.0)
 		# Store calculated quaternion for next poll
 		self._previous_quat = [Q0Q1_w, Q0Q1_x, Q0Q1_y, Q0Q1_z]
-		#print("TEST QUAT: {}".format(self._previous_quat))
-		#print("TEST QUAT Z: {}".format(self._previous_quat[3] * -1))
+		# print("TEST QUAT: {}".format(self._previous_quat))
+		# print("TEST QUAT Z: {}".format(self._previous_quat[3] * -1))
 
 	def close(self):
 		if self._poller:
@@ -881,11 +855,10 @@ class DS5HidRawController(Controller):
 
 		self.daemon.remove_controller(self)
 		self._hidrawdev._device.close()
-		#log.debug("CLOSING")
+		# log.debug("CLOSING")
 
 	def read_serial(self):
-		self._serial = (self._hidrawdev
-			.getPhysicalAddress().replace(b":", b""))
+		self._serial = self._hidrawdev.getPhysicalAddress().replace(b":", b"")
 
 	def schedule_output(self, output_id, output):
 		self._outputs[output_id] = output
@@ -893,37 +866,37 @@ class DS5HidRawController(Controller):
 	def flush(self):
 		while self._outputs:
 			output_id, output = self._outputs.popitem()
-			#print("PAYLOAD {} {}".format(output_id, output))
+			# print("PAYLOAD {} {}".format(output_id, output))
 			self._hidrawdev.write(output)
-			#time.sleep(0.1)
-			#print("")
+			# time.sleep(0.1)
+			# print("")
 
-		#print("SLEEPING")
-		#time.sleep(0.5)
+		# print("SLEEPING")
+		# time.sleep(0.5)
 
 	# TODO: Remove. Temporarily keep as a reference to the nonsense
 	# I went through to figure out how to compute valid CRC32 that
 	# the controller would accept
 	def flushni(self):
 		output = []
-		print(hex(zlib.crc32(b"hello-world") & 0xffffffff))
+		print(hex(zlib.crc32(b"hello-world") & 0xFFFFFFFF))
 
 		feedback_output2 = DualSenseHIDOutputBT(
-			operating_mode = 0x31,
-			data_id_byte = 0x02,
-			physical_effect_control = 0x0F,
+			operating_mode=0x31,
+			data_id_byte=0x02,
+			physical_effect_control=0x0F,
 			light_effect_control=0x55,
-			motor_right = 0x00,
-			brightlite = 0x06,
-			lightbar_control = 0x02,
-			led_brightness = 0x02,
+			motor_right=0x00,
+			brightlite=0x06,
+			lightbar_control=0x02,
+			led_brightness=0x02,
 			lightbar_red=200,
 			lightbar_green=90,
 			lightbar_blue=211,
 		)
 
-		calcCrc32 = zlib.crc32(b"\xA2") & 0xFFFFFFFF
-		#calcCrc32 = ~zlib.crc32(b"\x31", calcCrc32)
+		calcCrc32 = zlib.crc32(b"\xa2") & 0xFFFFFFFF
+		# calcCrc32 = ~zlib.crc32(b"\x31", calcCrc32)
 		log.debug("CRC BETA")
 		log.debug(calcCrc32)
 
@@ -931,17 +904,17 @@ class DS5HidRawController(Controller):
 		damn = [int(i) for i in bytearray(feedback_output2)[0:78]]
 		log.debug(damn)
 		# Working
-		#tempman = bytearray([0x31, 0x02, 0x0f, 0x55, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x02, 0x02, 0x00, 0x14, 0x14, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+		# tempman = bytearray([0x31, 0x02, 0x0f, 0x55, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x02, 0x02, 0x00, 0x14, 0x14, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
 		tempman = bytearray(feedback_output2)
 		# Working
-		#calcCrc32 = binascii.crc32(bytearray([0x31, 0x02, 0x0f, 0x55, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x02, 0x02, 0x00, 0x14, 0xFF, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]), ~calcCrc32)
-		#calcCrc32 = binascii.crc32(tempman[0:74], ~calcCrc32)
+		# calcCrc32 = binascii.crc32(bytearray([0x31, 0x02, 0x0f, 0x55, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x02, 0x02, 0x00, 0x14, 0xFF, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]), ~calcCrc32)
+		# calcCrc32 = binascii.crc32(tempman[0:74], ~calcCrc32)
 		calcCrc32 = zlib.crc32(tempman[0:74], calcCrc32) & 0xFFFFFFFF
-		#_feedback_output.crc32 = calcCrc32
-		#_feedback_output.crc32[0] = calcCrc32
-		#_feedback_output.crc32[1] = calcCrc32 >> 8
-		#_feedback_output.crc32[2] = calcCrc32 >> 16
-		#_feedback_output.crc32[3] = calcCrc32 >> 24
+		# _feedback_output.crc32 = calcCrc32
+		# _feedback_output.crc32[0] = calcCrc32
+		# _feedback_output.crc32[1] = calcCrc32 >> 8
+		# _feedback_output.crc32[2] = calcCrc32 >> 16
+		# _feedback_output.crc32[3] = calcCrc32 >> 24
 		tempman[74] = calcCrc32 & 0xFF
 		tempman[75] = (calcCrc32 >> 8) & 0xFF
 		tempman[76] = (calcCrc32 >> 16) & 0xFF
@@ -950,7 +923,7 @@ class DS5HidRawController(Controller):
 		log.debug(calcCrc32)
 
 		print("RADIO EDIT")
-		#print(bytearray(_feedback_output))
+		# print(bytearray(_feedback_output))
 		"""print("[", end="")
 		for index, value in enumerate(tempman):
 			print("[{},{}]".format(index, value), end=", ")
@@ -958,14 +931,14 @@ class DS5HidRawController(Controller):
 		print("")
 		"""
 
-		#_test = bytes(_feedback_output)
-		#_test = bytearray([0x31, 0x02, 0x0f, 0x55, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x02, 0x02, 0x00, 0x14, 0x14, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
-		#_test[74] = calcCrc32 & 0xFF
-		#_test[75] = (calcCrc32 >> 8) & 0xFF
-		#_test[76] = (calcCrc32 >> 16) & 0xFF
-		#_test[77] = (calcCrc32 >> 24) & 0xFF
-		#print(len(_test))
-		#print("THE THING {} {} {}".format(_test[40], _test[46], _test[77]))
+		# _test = bytes(_feedback_output)
+		# _test = bytearray([0x31, 0x02, 0x0f, 0x55, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x02, 0x02, 0x00, 0x14, 0x14, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+		# _test[74] = calcCrc32 & 0xFF
+		# _test[75] = (calcCrc32 >> 8) & 0xFF
+		# _test[76] = (calcCrc32 >> 16) & 0xFF
+		# _test[77] = (calcCrc32 >> 24) & 0xFF
+		# print(len(_test))
+		# print("THE THING {} {} {}".format(_test[40], _test[46], _test[77]))
 
 		result = self._hidrawdev.write(tempman)
 		time.sleep(0.1)
@@ -1012,7 +985,7 @@ class DS5EvdevController(EvdevController):
 		315: "START",
 		316: "C",
 		317: "STICKPRESS",
-		318: "RPAD"
+		318: "RPAD",
 		# 319: "CPAD",
 	}
 	AXIS_MAP = {
@@ -1023,7 +996,7 @@ class DS5EvdevController(EvdevController):
 		2: {"axis": "ltrig", "max": 255, "min": 0},
 		5: {"axis": "rtrig", "max": 255, "min": 0},
 		16: {"axis": "lpad_x", "deadzone": 0, "max": 1, "min": -1},
-		17: {"axis": "lpad_y", "deadzone": 0, "max": -1, "min": 1}
+		17: {"axis": "lpad_y", "deadzone": 0, "max": -1, "min": 1},
 	}
 	# TODO: Should the old button for DS4 map be removed? DualSense support came with kernel 5.12
 	# BUTTON_MAP_OLD = {
@@ -1051,28 +1024,24 @@ class DS5EvdevController(EvdevController):
 	# 	17: { "axis": "lpad_y", "deadzone": 0, "max": -1, "min": 1 }
 	# }
 	GYRO_MAP = {
-		EvdevController.ECODES.ABS_RX: ('gpitch', 0.01),
-		EvdevController.ECODES.ABS_RY: ('gyaw', 0.01),
-		EvdevController.ECODES.ABS_RZ: ('groll', 0.01),
+		EvdevController.ECODES.ABS_RX: ("gpitch", 0.01),
+		EvdevController.ECODES.ABS_RY: ("gyaw", 0.01),
+		EvdevController.ECODES.ABS_RZ: ("groll", 0.01),
 		EvdevController.ECODES.ABS_X: (None, 1),  # 'q2'
 		EvdevController.ECODES.ABS_Y: (None, 1),  # 'q3'
 		EvdevController.ECODES.ABS_Z: (None, -1),  # 'q1'
 	}
 	flags = (
-		ControllerFlags.EUREL_GYROS|
-		ControllerFlags.HAS_RSTICK |
-		ControllerFlags.HAS_CPAD |
-		ControllerFlags.HAS_DPAD |
-		ControllerFlags.SEPARATE_STICK |
-		ControllerFlags.NO_GRIPS
+		ControllerFlags.EUREL_GYROS
+		| ControllerFlags.HAS_RSTICK
+		| ControllerFlags.HAS_CPAD
+		| ControllerFlags.HAS_DPAD
+		| ControllerFlags.SEPARATE_STICK
+		| ControllerFlags.NO_GRIPS
 	)
 
 	def __init__(self, daemon, controllerdevice, gyro, touchpad):
-		config = {
-			'axes': DS5EvdevController.AXIS_MAP,
-			'buttons': DS5EvdevController.BUTTON_MAP,
-			'dpads': {}
-		}
+		config = {"axes": DS5EvdevController.AXIS_MAP, "buttons": DS5EvdevController.BUTTON_MAP, "dpads": {}}
 		# if controllerdevice.info.version & 0x8000 == 0:
 		# 	# Older kernel uses different mappings
 		# 	# see kernel source, drivers/hid/hid-sony.c#L2748
@@ -1095,9 +1064,7 @@ class DS5EvdevController(EvdevController):
 				if event.type == self.ECODES.EV_ABS:
 					axis, factor = DS5EvdevController.GYRO_MAP[event.code]
 					if axis:
-						new_state = new_state._replace(
-							**{axis: int(event.value * factor)}
-						)
+						new_state = new_state._replace(**{axis: int(event.value * factor)})
 		except OSError:
 			# Errors here are not even reported, evdev class handles important ones
 			return
@@ -1135,10 +1102,7 @@ class DS5EvdevController(EvdevController):
 						new_state = new_state._replace(buttons=b)
 					else:
 						b = new_state.buttons & ~SCButtons.CPADTOUCH
-						new_state = new_state._replace(
-							buttons=b,
-							cpad_x=0, cpad_y=0
-							)
+						new_state = new_state._replace(buttons=b, cpad_x=0, cpad_y=0)
 		except OSError:
 			# Errors here are not even reported, evdev class handles important ones
 			return
@@ -1226,14 +1190,12 @@ def init(daemon, config):
 
 	def fail_cb(syspath: str, vid: int, pid: int):
 		if HAVE_EVDEV:
-			log.warning(
-				"Failed to acquire USB device, falling back to evdev driver. This is far from optimal."
-				)
+			log.warning("Failed to acquire USB device, falling back to evdev driver. This is far from optimal.")
 			make_evdev_device(syspath)
 		else:
 			log.error(
 				"Failed to acquire USB device and evdev is not available. Everything is lost and DS5 support disabled."
-				)
+			)
 		# TODO: Maybe add_error here, but error reporting needs little rework so it's not threated as fatal
 		# daemon.add_error("ds5", "No access to DS5 device")
 
@@ -1246,7 +1208,10 @@ def init(daemon, config):
 			# Attempt evdev as a backup
 			daemon.get_device_monitor().add_callback(
 				"bluetooth",
-				VENDOR_ID, PRODUCT_ID, make_evdev_device, None,
+				VENDOR_ID,
+				PRODUCT_ID,
+				make_evdev_device,
+				None,
 			)
 		return True
 	else:

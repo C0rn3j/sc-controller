@@ -3,6 +3,7 @@
 
 Created so scc-* stuff doesn't polute /usr/bin.
 """
+
 from scc.scripts import main
 
 if __name__ == "__main__":

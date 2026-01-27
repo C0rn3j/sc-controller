@@ -2,6 +2,7 @@
 
 Also doubles as Menu Item Editor in some cases
 """
+
 from __future__ import annotations
 import importlib
 import logging
@@ -43,29 +44,29 @@ from scc.tools import _, nameof
 log = logging.getLogger("ActionEditor")
 
 
-COMPONENTS = ( # List of known modules (components) in scc.gui.ae package
-	'axis',
-	'axis_action',
-	'buttons',
-	'custom',
-	'dpad',
-	'gesture',
-	'gyro',
-	'gyro_action',
-	'per_axis',
-	'special_action',
-	'tilt',
-	'trigger',
+COMPONENTS = (  # List of known modules (components) in scc.gui.ae package
+	"axis",
+	"axis_action",
+	"buttons",
+	"custom",
+	"dpad",
+	"gesture",
+	"gyro",
+	"gyro_action",
+	"per_axis",
+	"special_action",
+	"tilt",
+	"trigger",
 	# OSK-only components
-	'osk_action',
-	'osk_buttons',
+	"osk_action",
+	"osk_buttons",
 )
-XYZ = "XYZ"                                # Sensitivity settings keys
-AFP = ("Amplitude", "Frequency", "Period") # Feedback settings keys
-SMT = ("Level", "Weight", "Filter")        # Smoothing setting keys
-DZN = ("Lower", "Upper")                   # Deadzone settings key
-FEEDBACK_SIDES = [ HapticPos.LEFT, HapticPos.RIGHT, HapticPos.BOTH ]
-DEADZONE_MODES = [ CUT, ROUND, LINEAR, MINIMUM ]
+XYZ = "XYZ"  # Sensitivity settings keys
+AFP = ("Amplitude", "Frequency", "Period")  # Feedback settings keys
+SMT = ("Level", "Weight", "Filter")  # Smoothing setting keys
+DZN = ("Lower", "Upper")  # Deadzone settings key
+FEEDBACK_SIDES = [HapticPos.LEFT, HapticPos.RIGHT, HapticPos.BOTH]
+DEADZONE_MODES = [CUT, ROUND, LINEAR, MINIMUM]
 
 
 class ActionEditor(Editor):
@@ -78,16 +79,32 @@ class ActionEditor(Editor):
 		# Specified which modifiers are compatibile with which editor mode.
 		# That way, stuff like Rotation settings is not shown when editor
 		# is used to edit menu actions.
-		Action.AC_BUTTON:  Action.MOD_OSD | Action.MOD_FEEDBACK,
+		Action.AC_BUTTON: Action.MOD_OSD | Action.MOD_FEEDBACK,
 		Action.AC_TRIGGER: Action.MOD_OSD | Action.MOD_SENSITIVITY | Action.MOD_FEEDBACK | Action.MOD_DEADZONE,
-		Action.AC_STICK:   Action.MOD_OSD | Action.MOD_CLICK | Action.MOD_DEADZONE | Action.MOD_ROTATE | Action.MOD_SENSITIVITY | Action.MOD_FEEDBACK | Action.MOD_SMOOTH,
-		Action.AC_PAD:     Action.MOD_OSD | Action.MOD_CLICK | Action.MOD_DEADZONE | Action.MOD_ROTATE | Action.MOD_SENSITIVITY | Action.MOD_FEEDBACK | Action.MOD_SMOOTH | Action.MOD_BALL,
-		Action.AC_GYRO:    Action.MOD_OSD | Action.MOD_SENSITIVITY | Action.MOD_SENS_Z | Action.MOD_DEADZONE | Action.MOD_FEEDBACK,
-		Action.AC_OSK:     0,
-		Action.AC_MENU:    Action.MOD_OSD,
-		AEC_MENUITEM:      0,
+		Action.AC_STICK: Action.MOD_OSD
+		| Action.MOD_CLICK
+		| Action.MOD_DEADZONE
+		| Action.MOD_ROTATE
+		| Action.MOD_SENSITIVITY
+		| Action.MOD_FEEDBACK
+		| Action.MOD_SMOOTH,
+		Action.AC_PAD: Action.MOD_OSD
+		| Action.MOD_CLICK
+		| Action.MOD_DEADZONE
+		| Action.MOD_ROTATE
+		| Action.MOD_SENSITIVITY
+		| Action.MOD_FEEDBACK
+		| Action.MOD_SMOOTH
+		| Action.MOD_BALL,
+		Action.AC_GYRO: Action.MOD_OSD
+		| Action.MOD_SENSITIVITY
+		| Action.MOD_SENS_Z
+		| Action.MOD_DEADZONE
+		| Action.MOD_FEEDBACK,
+		Action.AC_OSK: 0,
+		Action.AC_MENU: Action.MOD_OSD,
+		AEC_MENUITEM: 0,
 	}
-
 
 	def __init__(self, app, callback) -> None:
 		Editor.__init__(self)
@@ -114,65 +131,70 @@ class ActionEditor(Editor):
 		self.first_page_allowed = False
 		self.setup_widgets()
 		self.load_components()
-		self.ac_callback = callback    # This is different callback than ButtonChooser uses
+		self.ac_callback = callback  # This is different callback than ButtonChooser uses
 		Editor.install_error_css()
 		self._action = NoAction()
 		self._replaced_action = None
 		self._selected_component = None
 		self._modifiers_enabled = True
-		self._multiparams = [ None ] * 8
+		self._multiparams = [None] * 8
 		self._mode = None
 		self._recursing = False
-
 
 	def setup_widgets(self):
 		Editor.setup_widgets(self)
 		headerbar(self.builder.get_object("header"))
 		for i in (0, 1, 2):
-			self.sens_widgets.append((
-				self.builder.get_object("sclSens%s" % (XYZ[i],)),
-				self.builder.get_object("lblSens%s" % (XYZ[i],)),
-				self.builder.get_object("btClearSens%s" % (XYZ[i],)),
-				self.builder.get_object("cbSensInvert%s" % (XYZ[i],)),
-			))
+			self.sens_widgets.append(
+				(
+					self.builder.get_object("sclSens%s" % (XYZ[i],)),
+					self.builder.get_object("lblSens%s" % (XYZ[i],)),
+					self.builder.get_object("btClearSens%s" % (XYZ[i],)),
+					self.builder.get_object("cbSensInvert%s" % (XYZ[i],)),
+				)
+			)
 		for key in AFP:
 			i = AFP.index(key)
 			self.feedback[i] = self.builder.get_object("sclF%s" % (key,)).get_value()
-			self.feedback_widgets.append((
-				self.builder.get_object("sclF%s" % (key,)),
-				self.builder.get_object("lblF%s" % (key,)),
-				self.builder.get_object("btClearF%s" % (key,)),
-				self.feedback[i]	# default value
-			))
+			self.feedback_widgets.append(
+				(
+					self.builder.get_object("sclF%s" % (key,)),
+					self.builder.get_object("lblF%s" % (key,)),
+					self.builder.get_object("btClearF%s" % (key,)),
+					self.feedback[i],  # default value
+				)
+			)
 		for key in SMT:
 			i = SMT.index(key)
-			self.smoothing_widgets.append((
-				self.builder.get_object("lblSmooth%s" % (key,)),
-				self.builder.get_object("sclSmooth%s" % (key,)),
-				self.builder.get_object("btClearSmooth%s" % (key,)),
-				self.builder.get_object("sclSmooth%s" % (key,)).get_value(),
-			))
+			self.smoothing_widgets.append(
+				(
+					self.builder.get_object("lblSmooth%s" % (key,)),
+					self.builder.get_object("sclSmooth%s" % (key,)),
+					self.builder.get_object("btClearSmooth%s" % (key,)),
+					self.builder.get_object("sclSmooth%s" % (key,)).get_value(),
+				)
+			)
 		for key in DZN:
 			i = DZN.index(key)
 			self.deadzone[i] = self.builder.get_object("sclDZ%s" % (key,)).get_value()
-			self.deadzone_widgets.append((
-				self.builder.get_object("lblDZ%s" % (key,)),
-				self.builder.get_object("sclDZ%s" % (key,)),
-				self.builder.get_object("btClearDZ%s" % (key,)),
-				self.deadzone[i], # default value
-			))
+			self.deadzone_widgets.append(
+				(
+					self.builder.get_object("lblDZ%s" % (key,)),
+					self.builder.get_object("sclDZ%s" % (key,)),
+					self.builder.get_object("btClearDZ%s" % (key,)),
+					self.deadzone[i],  # default value
+				)
+			)
 
 		if self.app.osd_mode:
 			self.builder.get_object("entName").set_sensitive(False)
 
-
 	def load_components(self):
-		""" Loads list of editor components """
+		"""Loads list of editor components"""
 		# Import and load components
 		for c in COMPONENTS:
 			self.load_component(c)
 		self._selected_component = None
-
 
 	def load_component(self, class_name: str):
 		"""Loads and adds new component to editor.
@@ -191,7 +213,6 @@ class ActionEditor(Editor):
 					self.components.append(instance)
 					return instance
 
-
 	def on_Dialog_destroy(self, *a):
 		cbPreview = self.builder.get_object("cbPreview")
 		cbPreview.set_active(False)
@@ -199,11 +220,9 @@ class ActionEditor(Editor):
 		if self._selected_component is not None:
 			self._selected_component.hidden()
 
-
 	def on_Dialog_key_press_event(self, window, event):
 		if self.app.osd_mode and event.keyval == 65471:
 			self.on_btOK_clicked()
-
 
 	def set_osd_enabled(self, value):
 		"""Sets value of OSD modifier checkbox, without firing any more events."""
@@ -212,20 +231,16 @@ class ActionEditor(Editor):
 		self.builder.get_object("cbOSD").set_active(value)
 		self._recursing = False
 
-
 	def show(self, transient_for):
 		Editor.show(self, transient_for)
-
 
 	def close(self):
 		self.on_Dialog_destroy()
 		Editor.close(self)
 
-
 	def get_id(self):
 		"""Returns ID of input that is being edited."""
 		return self.id
-
 
 	def on_link(self, link):
 		parser = GuiActionParser()
@@ -234,17 +249,21 @@ class ActionEditor(Editor):
 			self.reset_active_component()
 			self.set_action(action, from_custom=True)
 		elif link == "grab://trigger_button":
+
 			def cb(action):
 				action = TriggerAction(254, 255, action)
 				self.set_action(action, from_custom=True)
 				self.force_page("trigger")
+
 			b = SimpleChooser(self.app, "buttons", cb)
 			b.set_title(_("Select Button"))
 			b.hide_axes()
 			b.show(self.window)
 		elif link.startswith("page://"):
+
 			def cb():
 				self.force_page(link[7:])
+
 			GLib.timeout_add(0.1, cb)
 		elif link.startswith("advanced://"):
 			exMore = self.builder.get_object("exMore")
@@ -293,7 +312,6 @@ class ActionEditor(Editor):
 
 		stActionModes.show_all()
 
-
 	def force_page(self, component, remove_rest: bool = False):
 		"""Force action editor to display page with the specified component.
 
@@ -326,17 +344,14 @@ class ActionEditor(Editor):
 
 		return component
 
-
 	def get_name(self):
 		"""Returns action name as set in editor entry."""
 		entName = self.builder.get_object("entName")
 		return entName.get_text().strip(" \t")
 
-
 	def get_current_page(self):
 		"""Returns currently displayed page (component)."""
 		return self._selected_component
-
 
 	def _set_title(self):
 		"""Copies title from text entry into action instance."""
@@ -347,14 +362,11 @@ class ActionEditor(Editor):
 		elif not self._action:
 			self._action = NameModifier(name, self._action)
 		else:
-			#print(">>>", "_set_title", self._action, entName)
+			# print(">>>", "_set_title", self._action, entName)
 			self._action.name = name
 
-
 	def blink_widget(self, name, time=500):
-		GROUPS = {
-			'cbBallMode': ('cbBallMode', 'lblFriction', 'sclFriction', 'btClearFriction')
-		}
+		GROUPS = {"cbBallMode": ("cbBallMode", "lblFriction", "sclFriction", "btClearFriction")}
 
 		def blink(widgets, count):
 			count = count - 1
@@ -368,12 +380,10 @@ class ActionEditor(Editor):
 		else:
 			blink([self.builder.get_object(name)], 7)
 
-
 	def hide_modifiers(self):
-		""" Hides (and disables) all modifiers """
+		"""Hides (and disables) all modifiers"""
 		self.set_modifiers_enabled(False)
 		self.builder.get_object("exMore").set_visible(False)
-
 
 	def hide_advanced_settings(self):
 		"""
@@ -382,14 +392,12 @@ class ActionEditor(Editor):
 		self.builder.get_object("exMore").set_visible(False)
 		self.builder.get_object("rvMore").set_visible(False)
 
-
 	def hide_modeshift(self):
 		"""
 		Hides Mode Shift button.
 		Used when displaying ActionEditor from ModeshiftEditor
 		"""
 		self.builder.get_object("btModeshift").set_visible(False)
-
 
 	def hide_macro(self):
 		"""
@@ -398,7 +406,6 @@ class ActionEditor(Editor):
 		"""
 		self.builder.get_object("btMacro").set_visible(False)
 
-
 	def hide_ring(self):
 		"""
 		Hides Ring Bindings button.
@@ -406,30 +413,26 @@ class ActionEditor(Editor):
 		"""
 		self.builder.get_object("btInnerRing").set_visible(False)
 
-
 	def hide_action_buttons(self):
-		""" Hides action buttons, effectivelly disallowing user to change action type """
+		"""Hides action buttons, effectivelly disallowing user to change action type"""
 		for x in ("lblActionType", "vbActionButtons"):
 			self.builder.get_object(x).set_visible(False)
 		self.hide_modeshift()
 		self.hide_macro()
 		self.hide_ring()
 
-
 	def hide_action_str(self):
-		""" Hides bottom part with action displayed as string """
+		"""Hides bottom part with action displayed as string"""
 		self.builder.get_object("vbActionStr").set_visible(False)
 		self.builder.get_object("grEditor").set_property("margin-bottom", 30)
 
-
 	def hide_editor(self):
-		""" Hides everything but action buttons and action name field """
+		"""Hides everything but action buttons and action name field"""
 		self.builder.get_object("stActionModes").set_visible(False)
 		self.hide_action_str()
 		self.hide_modeshift()
 		self.hide_macro()
 		self.hide_ring()
-
 
 	def hide_name(self):
 		"""Hide (and clear) name field.
@@ -440,15 +443,12 @@ class ActionEditor(Editor):
 		self.builder.get_object("entName").set_visible(False)
 		self.builder.get_object("entName").set_text("")
 
-
 	def hide_clear(self):
 		"""Hide clear buttton."""
 		self.builder.get_object("btClear").set_visible(False)
 
-
 	def on_btClearRotation_clicked(self, *a):
 		self.builder.get_object("sclRotation").set_value(0.0)
-
 
 	def on_btClearSens_clicked(self, source, *a):
 		i = 0
@@ -457,82 +457,72 @@ class ActionEditor(Editor):
 				scale.set_value(self.sens_defaults[i])
 				i += 1
 
-
 	def on_btClearFeedback_clicked(self, source, *a):
 		for scale, label, button, default in self.feedback_widgets:
 			if source == button:
 				scale.set_value(default)
-
 
 	def on_btClearSmoothing_clicked(self, source, *a):
 		for label, scale, button, default in self.smoothing_widgets:
 			if source == button:
 				scale.set_value(default)
 
-
 	def on_btClearDeadzone_clicked(self, source, *a):
 		for label, scale, button, default in self.deadzone_widgets:
 			if source == button:
 				scale.set_value(default)
 
-
 	def on_btClear_clicked(self, *a):
-		""" Handler for clear button """
+		"""Handler for clear button"""
 		action = NoAction()
 		if self.ac_callback is not None:
 			self.ac_callback(self.id, action)
 		self.close()
 
-
 	def on_btOK_clicked(self, *a):
-		""" Handler for OK button """
+		"""Handler for OK button"""
 		if self.ac_callback is not None:
 			self._set_title()
 			if self._mode == ActionEditor.AEC_MENUITEM:
 				self.ac_callback(self.id, self)
 			else:
-				a = self.generate_modifiers(self._action, self._selected_component.NAME=="custom")
+				a = self.generate_modifiers(self._action, self._selected_component.NAME == "custom")
 				self.ac_callback(self.id, a)
 				self.ac_callback = None
 			if self._selected_component:
 				self._selected_component.on_ok(a)
 		self.close()
 
-
 	def on_btModeshift_clicked(self, *a):
-		""" Convert current action into modeshift and send it to ModeshiftEditor """
+		"""Convert current action into modeshift and send it to ModeshiftEditor"""
 		e = ModeshiftEditor(self.app, self.ac_callback)
-		action = ModeModifier(self.generate_modifiers(self._action, self._selected_component.NAME=="custom"))
+		action = ModeModifier(self.generate_modifiers(self._action, self._selected_component.NAME == "custom"))
 		e.set_input(self.id, action, mode=self._mode)
 		self.send_added_widget(e)
 		self.close()
 		e.show(self.get_transient_for())
-
 
 	def on_btMacro_clicked(self, *a):
-		""" Convert current action into macro and send it to MacroEditor """
+		"""Convert current action into macro and send it to MacroEditor"""
 		e = MacroEditor(self.app, self.ac_callback)
-		action = Macro(self.generate_modifiers(self._action, self._selected_component.NAME=="custom"))
+		action = Macro(self.generate_modifiers(self._action, self._selected_component.NAME == "custom"))
 		e.set_input(self.id, action, mode=self._mode)
 		self.send_added_widget(e)
 		self.close()
 		e.show(self.get_transient_for())
-
 
 	def on_btInnerRing_clicked(self, *a):
-		""" Convert current action into ring bindings and send it to RingEditor """
+		"""Convert current action into ring bindings and send it to RingEditor"""
 		e = RingEditor(self.app, self.ac_callback)
-		action = RingAction(self.generate_modifiers(self._action, self._selected_component.NAME=="custom"))
+		action = RingAction(self.generate_modifiers(self._action, self._selected_component.NAME == "custom"))
 		e.set_input(self.id, action, mode=self._mode)
 		self.send_added_widget(e)
 		self.close()
 		e.show(self.get_transient_for())
-
 
 	def on_exMore_activate(self, ex, *a):
 		rvMore = self.builder.get_object("rvMore")
 		rvMore.set_reveal_child(not ex.get_expanded())
-
 
 	def update_modifiers(self, *a):
 		"""Called when sensitivity, feedback or other modifier setting changes."""
@@ -558,7 +548,7 @@ class ActionEditor(Editor):
 		elif sclFriction.get_value() == 0:
 			friction = 0
 		else:
-			friction = ((10.0 ** sclFriction.get_value()) / 1000.0)
+			friction = (10.0 ** sclFriction.get_value()) / 1000.0
 		if self.friction != friction:
 			self.friction = friction
 			set_action = True
@@ -592,8 +582,7 @@ class ActionEditor(Editor):
 				set_action = True
 
 		# Deadzone
-		mode = (DEADZONE_MODES[cbDeadzoneMode.get_active()]
-					if cbDeadzone.get_active() else None)
+		mode = DEADZONE_MODES[cbDeadzoneMode.get_active()] if cbDeadzone.get_active() else None
 		if self.deadzone_mode != mode:
 			self.deadzone_mode = mode
 			set_action = True
@@ -602,7 +591,6 @@ class ActionEditor(Editor):
 			if self.deadzone[i] != self.deadzone_widgets[i][1].get_value():
 				self.deadzone[i] = self.deadzone_widgets[i][1].get_value()
 				set_action = True
-
 
 		# Smoothing
 		if cbSmoothing.get_active():
@@ -616,7 +604,6 @@ class ActionEditor(Editor):
 		if self.smoothing != smoothing:
 			self.smoothing = smoothing
 			set_action = True
-
 
 		# Rest
 		if self.click is not None and cbRequireClick.get_active() != self.click:
@@ -635,7 +622,6 @@ class ActionEditor(Editor):
 			self.set_action(self._action)
 			self._selected_component.modifier_updated()
 
-
 	def generate_modifiers(self, action, from_custom: bool = False):
 		"""Return Action with all modifiers from UI applied."""
 		if not self._modifiers_enabled and not from_custom:
@@ -646,15 +632,15 @@ class ActionEditor(Editor):
 			args = []
 			for k in action.mods:
 				if action.mods[k] is not None:
-					args += [ k, self.generate_modifiers(ActionEditor.strip_modifiers(action.mods[k])) ]
+					args += [k, self.generate_modifiers(ActionEditor.strip_modifiers(action.mods[k]))]
 			if action.default:
-				args += [ self.generate_modifiers(ActionEditor.strip_modifiers(action.default)) ]
+				args += [self.generate_modifiers(ActionEditor.strip_modifiers(action.default))]
 			return ModeModifier(*args)
 
 		cm = action.get_compatible_modifiers()
 
 		if (cm & Action.MOD_BALL) != 0 and self.friction >= 0:
-				action = BallModifier(round(self.friction, 3), action)
+			action = BallModifier(round(self.friction, 3), action)
 
 		if (cm & Action.MOD_SENSITIVITY) != 0:
 			# Strip 1.0's from sensitivity values
@@ -672,7 +658,7 @@ class ActionEditor(Editor):
 			if self.feedback_position != None:
 				# Strip defaults from feedback values
 				feedback = [] + self.feedback
-				while len(feedback) > 0 and feedback[-1] == self.feedback_widgets[len(feedback)-1][-1]:
+				while len(feedback) > 0 and feedback[-1] == self.feedback_widgets[len(feedback) - 1][-1]:
 					feedback = feedback[0:-1]
 
 				cbFeedbackSide = self.builder.get_object("cbFeedbackSide")
@@ -680,14 +666,14 @@ class ActionEditor(Editor):
 				grFeedback = self.builder.get_object("grFeedback")
 				if from_custom or (cbFeedback.get_active() and grFeedback.get_sensitive()):
 					# Build FeedbackModifier arguments
-					feedback = [ FEEDBACK_SIDES[cbFeedbackSide.get_active()] ] + feedback
-					feedback += [ action ]
+					feedback = [FEEDBACK_SIDES[cbFeedbackSide.get_active()]] + feedback
+					feedback += [action]
 					# Create modifier
 					action = FeedbackModifier(*feedback)
 
 		if (cm & Action.MOD_SMOOTH) != 0:
 			if self.smoothing != None:
-				action = SmoothModifier(*( list(self.smoothing) + [ action ]))
+				action = SmoothModifier(*(list(self.smoothing) + [action]))
 
 		if (cm & Action.MOD_DEADZONE) != 0:
 			if self.deadzone_mode is not None:
@@ -713,12 +699,20 @@ class ActionEditor(Editor):
 
 		Return False for everything else, even if it is instalce of Modifier subclass.
 		"""
-		if isinstance(action, (ClickModifier, SensitivityModifier,
-				DeadzoneModifier, FeedbackModifier, RotateInputModifier,
-				SmoothModifier, BallModifier)):
+		if isinstance(
+			action,
+			(
+				ClickModifier,
+				SensitivityModifier,
+				DeadzoneModifier,
+				FeedbackModifier,
+				RotateInputModifier,
+				SmoothModifier,
+				BallModifier,
+			),
+		):
 			return True
 		return bool(isinstance(action, OSDAction) and action.action is not None)
-
 
 	@staticmethod
 	def strip_modifiers(action):
@@ -729,7 +723,6 @@ class ActionEditor(Editor):
 			else:
 				return action
 		return action
-
 
 	def load_modifiers(self, action, index: int = -1):
 		"""Parse action for modifiers and update UI accordingly.
@@ -757,7 +750,7 @@ class ActionEditor(Editor):
 				self.feedback[2] = action.haptic.get_period()
 				action = action.action
 			if isinstance(action, SmoothModifier):
-				self.smoothing = ( action.level, action.multiplier, action.filter)
+				self.smoothing = (action.level, action.multiplier, action.filter)
 				action = action.action
 			if isinstance(action, DeadzoneModifier):
 				self.deadzone_mode = action.mode
@@ -839,16 +832,13 @@ class ActionEditor(Editor):
 
 		return action
 
-
 	def allow_first_page(self) -> None:
 		"""Allow the first page to be used."""
 		self.first_page_allowed = True
 
-
 	def reset_active_component(self) -> None:
 		"""Forget what component was selected so next call to set_action selects new one."""
 		self._selected_component = None
-
 
 	def set_action(self, action, from_custom: bool = False) -> None:
 		"""Update Action field(s) on bottom and recolors apropriate image area, if such area exists."""
@@ -881,7 +871,7 @@ class ActionEditor(Editor):
 
 		# Send changed action into selected component
 		if self._selected_component is None:
-			for component in reversed(sorted(self.components, key = lambda a : a.PRIORITY)):
+			for component in reversed(sorted(self.components, key=lambda a: a.PRIORITY)):
 				if (component.CTXS & self._mode) != 0:
 					if component.handles(self._mode, ActionEditor.strip_modifiers(action)):
 						self._selected_component = component
@@ -911,24 +901,21 @@ class ActionEditor(Editor):
 		if cbPreview.get_sensitive() and cbPreview.get_active():
 			self.apply_preview(action)
 
-
 	def apply_preview(self, action):
 		if self._replaced_action is None:
 			self._replaced_action = self.ac_callback(self.id, action, mark_changed=False)
 		else:
 			self.ac_callback(self.id, action, mark_changed=False)
 
-
 	def on_cbPreview_toggled(self, cb):
 		if cb.get_active():
-			a = self.generate_modifiers(self._action, self._selected_component.NAME=="custom")
+			a = self.generate_modifiers(self._action, self._selected_component.NAME == "custom")
 			self.apply_preview(a)
 		elif self._replaced_action is not None:
 			if self.ac_callback:
 				# Is None if OK button handler was executed
 				self.ac_callback(self.id, self._replaced_action, mark_changed=False)
 			self._replaced_action = None
-
 
 	def enable_preview(self, action):
 		"""
@@ -939,7 +926,6 @@ class ActionEditor(Editor):
 
 		enabled = action.strip().get_previewable()
 		cbPreview.set_sensitive(enabled)
-
 
 	def enable_modifiers(self, action):
 		"""
@@ -989,11 +975,10 @@ class ActionEditor(Editor):
 		cbOSD = self.builder.get_object("cbOSD")
 		cbOSD.set_sensitive(cm & Action.MOD_OSD != 0)
 
-
 	def set_sensitivity(self, x: float, y: float = 1.0, z: float = 1.0) -> None:
 		"""Sets sensitivity for edited action."""
 		self._recursing = True
-		xyz = [ x, y, z ]
+		xyz = [x, y, z]
 		for i in range(len(self.sens)):
 			self.sens[i] = xyz[i]
 			self.sens_widgets[i][3].set_active(self.sens[i] < 0)
@@ -1002,12 +987,10 @@ class ActionEditor(Editor):
 		self.set_action(self._action)
 		self._selected_component.modifier_updated()
 
-
 	def get_sensitivity(self) -> list[float]:
 		"""Returns sensitivity currently set in editor."""
 		print(f"CURRENT SENS: {self.sens}")
 		return self.sens
-
 
 	def set_default_sensitivity(self, x: float, y: float = 1.0, z: float = 1.0):
 		"""Sets default sensitivity values and, if sensitivity is currently set to defaults, updates it to these values."""
@@ -1024,13 +1007,11 @@ class ActionEditor(Editor):
 		if update:
 			self.update_modifiers()
 
-
 	def get_mode(self):
 		return self._mode
 
-
 	def _set_mode(self, action, mode):
-		""" Common part of editor setup """
+		"""Common part of editor setup"""
 		self._mode = mode
 		# Clear pages and 'action type' buttons
 		entName = self.builder.get_object("entName")
@@ -1040,11 +1021,11 @@ class ActionEditor(Editor):
 		# Go throgh list of components and display buttons that are usable
 		# with this mode
 		self.c_buttons = {}
-		for component in reversed(sorted(self.components, key = lambda a : a.PRIORITY)):
+		for component in reversed(sorted(self.components, key=lambda a: a.PRIORITY)):
 			if (mode & component.CTXS) != 0:
 				b = Gtk.ToggleButton.new_with_label(component.get_button_title())
 				vbActionButtons.pack_start(b, True, True, 2)
-				b.connect('toggled', self.on_action_type_changed)
+				b.connect("toggled", self.on_action_type_changed)
 				self.c_buttons[component] = b
 
 				component.load()
@@ -1061,9 +1042,8 @@ class ActionEditor(Editor):
 	def on_sclFFrequency_format_value(self, scale, value):
 		if value == 1:
 			# Special case
-			return " %0.2fHz" % (1.0/value,)
-		return "%0.2fmHz" % (100.0/value,)
-
+			return " %0.2fHz" % (1.0 / value,)
+		return "%0.2fmHz" % (100.0 / value,)
 
 	def on_sclFriction_format_value(self, scale, value):
 		if value <= 0:
@@ -1071,13 +1051,11 @@ class ActionEditor(Editor):
 		elif value >= 6:
 			return "%0.3f" % (1000.00,)
 		else:
-			return "%0.3f" % ((10.0**value)/1000.0)
-
+			return "%0.3f" % ((10.0**value) / 1000.0)
 
 	def on_btClearFriction_clicked(self, *a):
 		sclFriction = self.builder.get_object("sclFriction")
 		sclFriction.set_value(math.log(10 * 1000.0, 10))
-
 
 	def set_input(self, id, action, mode=None):
 		"""Setups action editor for editing specified input.
@@ -1090,7 +1068,9 @@ class ActionEditor(Editor):
 			if id in PRESSABLE:
 				self.set_title(_("%s Press") % (nameof(id),))
 			elif id in SCButtons.__members__.values():
-				self.set_title(nameof(id),)
+				self.set_title(
+					nameof(id),
+				)
 			self._set_mode(action, mode or Action.AC_BUTTON)
 			self.hide_modifiers()
 			self.set_action(action)
@@ -1142,7 +1122,6 @@ class ActionEditor(Editor):
 			self.hide_macro()
 			self.hide_ring()
 
-
 	def set_menu_item(self, item, title_for_name_label: bool | None = None):
 		"""Setups action editor in way that allows editing only action name.
 
@@ -1162,7 +1141,6 @@ class ActionEditor(Editor):
 		self.id = item.id
 		if title_for_name_label:
 			self.builder.get_object("lblName").set_label(title_for_name_label)
-
 
 	def set_modifiers_enabled(self, enabled: bool) -> None:
 		exMore = self.builder.get_object("exMore")

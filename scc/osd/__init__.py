@@ -2,6 +2,7 @@
 
 Common methods for OSD-related stuff
 """
+
 import argparse
 import logging
 import os
@@ -9,8 +10,9 @@ import traceback
 import cairo
 
 import gi
-gi.require_version("Gtk",    "3.0")
-gi.require_version("Gdk",    "3.0")
+
+gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "3.0")
 gi.require_version("GtkLayerShell", "0.1")
 
 from gi.repository import Gdk, GLib, GObject, Gtk
@@ -42,15 +44,15 @@ class OSDWindow(Gtk.Window):
 	"""
 
 	EPILOG = ""
-	css_provider = None # Used by staticmethods
+	css_provider = None  # Used by staticmethods
 
-	def __init__(self, wmclass, layer = None) -> None:
+	def __init__(self, wmclass, layer=None) -> None:
 		Gtk.Window.__init__(self)
 		OSDWindow._apply_css(Config())
 
-		self.argparser = argparse.ArgumentParser(description=__doc__,
-			formatter_class=argparse.RawDescriptionHelpFormatter,
-			epilog=self.EPILOG)
+		self.argparser = argparse.ArgumentParser(
+			description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter, epilog=self.EPILOG
+		)
 		self._add_arguments()
 		self.exit_code = -1
 		self.position = (20, -20)
@@ -61,10 +63,12 @@ class OSDWindow(Gtk.Window):
 		self.using_wlroots = False
 		try:
 			import gi
+
 			gi.require_version("GtkLayerShell", "0.1")
 			from gi.repository import GtkLayerShell
+
 			if GtkLayerShell.is_supported():
-				self.using_wlroots=True
+				self.using_wlroots = True
 				self.x_layer_anchor = GtkLayerShell.Edge.LEFT
 				self.y_layer_anchor = GtkLayerShell.Edge.BOTTOM
 				GtkLayerShell.init_for_window(self)
@@ -72,7 +76,7 @@ class OSDWindow(Gtk.Window):
 				GtkLayerShell.set_anchor(self, self.x_layer_anchor, True)
 				GtkLayerShell.set_anchor(self, self.y_layer_anchor, True)
 				self.layer_shell = GtkLayerShell
-		except (ImportError):
+		except ImportError:
 			pass
 		if not self.using_wlroots:
 			self.set_decorated(False)
@@ -82,29 +86,28 @@ class OSDWindow(Gtk.Window):
 			self.set_keep_above(True)
 			self.set_type_hint(Gdk.WindowTypeHint.NOTIFICATION)
 
-
 	@staticmethod
 	def _apply_css(config: dict) -> None:
 		if OSDWindow.css_provider:
-			Gtk.StyleContext.remove_provider_for_screen(
-				Gdk.Screen.get_default(), OSDWindow.css_provider)
+			Gtk.StyleContext.remove_provider_for_screen(Gdk.Screen.get_default(), OSDWindow.css_provider)
 
 		colors = {}
-		for x in config['osk_colors'] : colors["osk_%s" % (x,)] = config['osk_colors'][x]
-		for x in config['osd_colors'] : colors[x] = config['osd_colors'][x]
+		for x in config["osk_colors"]:
+			colors["osk_%s" % (x,)] = config["osk_colors"][x]
+		for x in config["osd_colors"]:
+			colors[x] = config["osd_colors"][x]
 		colors = OSDCssMagic(colors)
 		try:
 			css_file = os.path.join(get_share_path(), "osd-styles", config["osd_style"])
 			with open(css_file, "r") as file:
 				css = file.read()
-			if ((Gtk.get_major_version(), Gtk.get_minor_version()) > (3, 20)):
+			if (Gtk.get_major_version(), Gtk.get_minor_version()) > (3, 20):
 				css += OSDWindow.CSS_3_20
 			OSDWindow.css_provider = Gtk.CssProvider()
 			OSDWindow.css_provider.load_from_data((css % colors).encode("utf-8"))
 			Gtk.StyleContext.add_provider_for_screen(
-					Gdk.Screen.get_default(),
-					OSDWindow.css_provider,
-					Gtk.STYLE_PROVIDER_PRIORITY_USER)
+				Gdk.Screen.get_default(), OSDWindow.css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
+			)
 		except GLib.Error as e:
 			log.error("Failed to apply css with user settings:")
 			log.error(e)
@@ -114,28 +117,33 @@ class OSDWindow(Gtk.Window):
 			css_file = os.path.join(get_share_path(), "osd-styles", "Classic.gtkstyle.css")
 			with open(css_file, "r") as file:
 				css = file.read()
-			if ((Gtk.get_major_version(), Gtk.get_minor_version()) > (3, 20)):
+			if (Gtk.get_major_version(), Gtk.get_minor_version()) > (3, 20):
 				css += OSDWindow.CSS_3_20
 			OSDWindow.css_provider.load_from_data((css % colors).encode("utf-8"))
 			Gtk.StyleContext.add_provider_for_screen(
-					Gdk.Screen.get_default(),
-					OSDWindow.css_provider,
-					Gtk.STYLE_PROVIDER_PRIORITY_USER)
-
+				Gdk.Screen.get_default(), OSDWindow.css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
+			)
 
 	def _add_arguments(self) -> None:
 		"""Should be overriden AND called by child class."""
-		self.argparser.add_argument('-x', type=int, metavar="pixels", default=20,
+		self.argparser.add_argument(
+			"-x",
+			type=int,
+			metavar="pixels",
+			default=20,
 			help="""horizontal position in pixels, from left side of screen.
-			Use negative value to specify as distance from right side (default: 20)""")
-		self.argparser.add_argument('-y', type=int, metavar="pixels", default=-20,
+			Use negative value to specify as distance from right side (default: 20)""",
+		)
+		self.argparser.add_argument(
+			"-y",
+			type=int,
+			metavar="pixels",
+			default=-20,
 			help="""vertical position in pixels, from top side of screen.
-			Use negative value to specify as distance from bottom side (default: -20)""")
-		self.argparser.add_argument('--controller', type=str,
-			help="""id of controller to use""")
-		self.argparser.add_argument('-d', action='store_true',
-			help="""display debug messages""")
-
+			Use negative value to specify as distance from bottom side (default: -20)""",
+		)
+		self.argparser.add_argument("--controller", type=str, help="""id of controller to use""")
+		self.argparser.add_argument("-d", action="store_true", help="""display debug messages""")
 
 	def choose_controller(self, daemonmanager: DaemonManager) -> Controller:
 		"""Return first available controller, or, if --controller argument was specified, controller with a matching ID."""
@@ -145,11 +153,9 @@ class OSDWindow(Gtk.Window):
 			self._controller = self.daemon.get_controllers()[0]
 		return self._controller
 
-
 	def get_controller(self) -> Controller:
 		"""Return controller chosen by choose_controller."""
 		return self._controller
-
 
 	def parse_argumets(self, argv) -> bool:
 		"""Returns True on success."""
@@ -157,7 +163,7 @@ class OSDWindow(Gtk.Window):
 			self.args = self.argparser.parse_args(argv[1:])
 		except SystemExit:
 			return False
-		except BaseException as e:	# Includes SystemExit
+		except BaseException as e:  # Includes SystemExit
 			log.error(traceback.format_exc())
 			return False
 		del self.argparser
@@ -165,7 +171,6 @@ class OSDWindow(Gtk.Window):
 		if self.args.d:
 			set_logging_level(True, True)
 		return True
-
 
 	def make_window_clicktrough(self):
 		(width, height) = self.get_size()
@@ -177,8 +182,6 @@ class OSDWindow(Gtk.Window):
 		reg = Gdk.cairo_region_create_from_surface(surface)
 		self.input_shape_combine_region(reg)
 
-
-
 	def get_active_screen_geometry(self):
 		"""Return geometry of active screen or None if active screen cannot be determined."""
 		screen = self.get_window().get_screen()
@@ -188,7 +191,6 @@ class OSDWindow(Gtk.Window):
 			if monitor is not None:
 				return screen.get_monitor_geometry(monitor)
 		return None
-
 
 	def compute_position(self):
 		"""Adjust position for currently active screen (display)."""
@@ -207,10 +209,8 @@ class OSDWindow(Gtk.Window):
 
 		return x, y
 
-
 	def get_window_size(self):
 		return self.get_window().get_width(), self.get_window().get_height()
-
 
 	def show(self) -> None:
 		self.get_children()[0].show_all()
@@ -231,41 +231,35 @@ class OSDWindow(Gtk.Window):
 				y = -y
 			self.layer_shell.set_margin(self, self.x_layer_anchor, x)
 			self.layer_shell.set_margin(self, self.y_layer_anchor, y)
-		else: # X11
-			if x < 0:	# Negative X position is counted from right border
+		else:  # X11
+			if x < 0:  # Negative X position is counted from right border
 				x = Gdk.Screen.width() - self.get_allocated_width() + x + 1
-			if y < 0:	# Negative Y position is counted from bottom border
+			if y < 0:  # Negative Y position is counted from bottom border
 				y = Gdk.Screen.height() - self.get_allocated_height() + y + 1
 			self.move(x, y)
 
 		Gtk.Window.show(self)
 		self.make_window_clicktrough()
 
-
 	def on_controller_lost(self, *a) -> None:
 		log.error("Controller lost")
 		self.quit(2)
-
 
 	def on_daemon_died(self, *a) -> None:
 		log.error("Daemon died")
 		self.quit(2)
 
-
 	def on_failed_to_lock(self, error: str) -> None:
 		log.error("Failed to lock input: %s", error)
 		self.quit(3)
 
-
 	def get_exit_code(self) -> int:
 		return self.exit_code
-
 
 	def run(self) -> None:
 		self.mainloop = GLib.MainLoop()
 		self.show()
 		self.mainloop.run()
-
 
 	def quit(self, code: int = -1) -> None:
 		self.exit_code = code
@@ -290,7 +284,6 @@ class OSDCssMagic(dict):
 	def __init__(self, dict_to_wrap) -> None:
 		self._dict = dict_to_wrap
 
-
 	def __getitem__(self, a) -> str:
 		if "+" in a:
 			key, number = a.rsplit("+", 1)
@@ -302,7 +295,8 @@ class OSDCssMagic(dict):
 			return "%s%s%s" % (
 				hex(int(rgba.red * 255)).split("x")[-1].zfill(2),
 				hex(int(rgba.green * 255)).split("x")[-1].zfill(2),
-				hex(int(rgba.blue * 255)).split("x")[-1].zfill(2))
+				hex(int(rgba.blue * 255)).split("x")[-1].zfill(2),
+			)
 		elif "-" in a:
 			key, number = a.rsplit("-", 1)
 			rgba = parse_rgba(self[key])
@@ -313,7 +307,8 @@ class OSDCssMagic(dict):
 			return "%s%s%s" % (
 				hex(int(rgba.red * 255)).split("x")[-1].zfill(2),
 				hex(int(rgba.green * 255)).split("x")[-1].zfill(2),
-				hex(int(rgba.blue * 255)).split("x")[-1].zfill(2))
+				hex(int(rgba.blue * 255)).split("x")[-1].zfill(2),
+			)
 		return self._dict[a]
 
 
@@ -343,14 +338,12 @@ class StickController(GObject.GObject, TimerManager):
 		TimerManager.__init__(self)
 		self._direction = 0
 
-
 	def _move(self, *a):
 		self.emit("direction", *self.DIRECTION_TO_XY[self._direction])
 		if self._direction != 0:
 			self.timer("move", self.REPEAT_DELAY, self._move)
 		else:
 			self.cancel_timer("move")
-
 
 	def set_stick(self, *data):
 		direction = 0

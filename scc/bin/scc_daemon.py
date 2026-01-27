@@ -12,8 +12,12 @@ def main() -> None:
 	parser = argparse.ArgumentParser()
 	parser.add_argument("profile", type=str, nargs="*")
 	parser.add_argument("command", type=str, choices=["start", "stop", "restart", "debug"])
-	parser.add_argument("--alone", action="store_true", help="prevent scc-daemon from launching osd-daemon and autoswitch-daemon")
-	parser.add_argument("--once", action="store_true", help="use with 'stop' to send single SIGTERM without waiting for daemon to exit")
+	parser.add_argument(
+		"--alone", action="store_true", help="prevent scc-daemon from launching osd-daemon and autoswitch-daemon"
+	)
+	parser.add_argument(
+		"--once", action="store_true", help="use with 'stop' to send single SIGTERM without waiting for daemon to exit"
+	)
 	parser.add_argument("--foreground", action="store_true", help="run scc-daemon in foreground")
 	daemon = SCCDaemon(get_pid_file(), get_daemon_socket())
 	args = parser.parse_args()
@@ -26,9 +30,9 @@ def main() -> None:
 		# from config
 
 	if args.command == "start":
-		daemon.start(foreground = args.foreground)
+		daemon.start(foreground=args.foreground)
 	elif args.command == "stop":
-		daemon.stop(once = args.once)
+		daemon.stop(once=args.once)
 	elif args.command == "restart":
 		daemon.restart()
 	elif args.command == "debug":

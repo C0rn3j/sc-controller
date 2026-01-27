@@ -5,6 +5,7 @@ application (list is generated using xdg) and start it.
 
 Reuses styles from OSD Menu and OSD Dialog
 """
+
 import base64
 import logging
 import os
@@ -31,12 +32,11 @@ log = logging.getLogger("osd.binds")
 
 
 class BindingDisplay(OSDWindow):
-
 	def __init__(self, config=None):
-		self.bdisplay = os.path.join(get_config_path(), 'binding-display.svg')
+		self.bdisplay = os.path.join(get_config_path(), "binding-display.svg")
 		if not os.path.exists(self.bdisplay):
 			# Prefer image in ~/.config/scc, but load default one as fallback
-			self.bdisplay = os.path.join(get_share_path(), "images", 'binding-display.svg')
+			self.bdisplay = os.path.join(get_share_path(), "images", "binding-display.svg")
 
 		OSDWindow.__init__(self, "osd-keyboard")
 		self.daemon = None
@@ -51,11 +51,9 @@ class BindingDisplay(OSDWindow):
 		self.c = Gtk.Box()
 		self.c.set_name("osd-keyboard-container")
 
-
 	def on_profile_changed(self, daemon: DaemonManager, filename: str):
 		profile = Profile(TalkingActionParser()).load(filename)
 		Generator(SVGEditor(self.background), profile)
-
 
 	def use_daemon(self, d):
 		"""Allows (re)using already existing DaemonManager instance in same process."""
@@ -63,15 +61,12 @@ class BindingDisplay(OSDWindow):
 		self._cononect_handlers()
 		self.on_daemon_connected(self.daemon)
 
-
 	def _add_arguments(self):
 		OSDWindow._add_arguments(self)
-		self.argparser.add_argument('image', type=str, nargs="?",
-			default = self.bdisplay, help="keyboard image to use")
-		self.argparser.add_argument('--cancel-with', type=str,
-			metavar="button", default='B',
-			help="button used to close display (default: B)")
-
+		self.argparser.add_argument("image", type=str, nargs="?", default=self.bdisplay, help="keyboard image to use")
+		self.argparser.add_argument(
+			"--cancel-with", type=str, metavar="button", default="B", help="button used to close display (default: B)"
+		)
 
 	def compute_position(self):
 		"""Unlike other OSD windows, this one is scaled to 80% of screen size and centered in on active screen."""
@@ -89,28 +84,24 @@ class BindingDisplay(OSDWindow):
 			y = geometry.y + ((geometry.height - height) / 2)
 		return x, y
 
-
 	def parse_argumets(self, argv):
 		if not OSDWindow.parse_argumets(self, argv):
 			return False
 		self._cancel_with = self.args.cancel_with
 		return True
 
-
 	def _cononect_handlers(self):
 		self._eh_ids += [
-			( self.daemon, self.daemon.connect('dead', self.on_daemon_died) ),
-			( self.daemon, self.daemon.connect('error', self.on_daemon_died) ),
-			( self.daemon, self.daemon.connect('profile-changed', self.on_profile_changed) ),
-			( self.daemon, self.daemon.connect('alive', self.on_daemon_connected) ),
+			(self.daemon, self.daemon.connect("dead", self.on_daemon_died)),
+			(self.daemon, self.daemon.connect("error", self.on_daemon_died)),
+			(self.daemon, self.daemon.connect("profile-changed", self.on_profile_changed)),
+			(self.daemon, self.daemon.connect("alive", self.on_daemon_connected)),
 		]
-
 
 	def run(self):
 		self.daemon = DaemonManager()
 		self._cononect_handlers()
 		OSDWindow.run(self)
-
 
 	def on_daemon_connected(self, *a):
 		def success(*a):
@@ -124,14 +115,13 @@ class BindingDisplay(OSDWindow):
 			return
 
 		self._eh_ids += [
-			(c, c.connect('event', self.on_event)),
-			(c, c.connect('lost', self.on_controller_lost)),
+			(c, c.connect("event", self.on_event)),
+			(c, c.connect("lost", self.on_controller_lost)),
 		]
 
 		# Lock everything
-		locks = [ "RB", "LB", self.args.cancel_with ]
+		locks = ["RB", "LB", self.args.cancel_with]
 		c.lock(success, self.on_failed_to_lock, *locks)
-
 
 	def quit(self, code=-1):
 		if self.get_controller():
@@ -140,7 +130,6 @@ class BindingDisplay(OSDWindow):
 			source.disconnect(eid)
 		self._eh_ids = []
 		OSDWindow.quit(self, code)
-
 
 	def show(self, *a):
 		if self.background is None:
@@ -152,22 +141,21 @@ class BindingDisplay(OSDWindow):
 		OSDWindow.show(self, *a)
 		self.move(*self.compute_position())
 
-
 	def on_event(self, daemon, what, data):
 		"""
 		Called when button press, button release or stick / pad update is
 		send by daemon.
 		"""
 		if what == self._cancel_with:
-			if data[0] == 0:	# Button released
+			if data[0] == 0:  # Button released
 				self.quit(-1)
 
 
 class Align(IntEnum):
-	TOP  =    1 << 0
-	BOTTOM =  1 << 1
-	LEFT =    1 << 2
-	RIGHT =   1 << 3
+	TOP = 1 << 0
+	BOTTOM = 1 << 1
+	LEFT = 1 << 2
+	RIGHT = 1 << 3
 
 
 def find_image(name):
@@ -179,32 +167,27 @@ def find_image(name):
 
 
 class Line:
-
 	def __init__(self, icon, text):
-		self.icons = [ icon ]
+		self.icons = [icon]
 		self.text = text
-
 
 	def get_size(self, gen):
 		# TODO: This
 		return gen.char_width * len(self.text), gen.line_height
 
-
 	def add_icon(self, icon):
 		self.icons.append(icon)
 		return self
 
-
 	def to_string(self):
-		return "%-10s: %s" % (",".join([ x for x in self.icons if x ]), self.text)
+		return "%-10s: %s" % (",".join([x for x in self.icons if x]), self.text)
 
 
 class LineCollection:
-	""" Allows calling add_icon on multiple lines at once """
+	"""Allows calling add_icon on multiple lines at once"""
 
 	def __init__(self, *lines):
 		self.lines = lines
-
 
 	def add_icon(self, icon):
 		for line in self.lines:
@@ -218,8 +201,7 @@ class Box:
 	MIN_WIDTH = 100
 	MIN_HEIGHT = 50
 
-	def __init__(self, anchor_x, anchor_y, align, name,
-			min_width = MIN_WIDTH, min_height = MIN_HEIGHT, max_width = 999999):
+	def __init__(self, anchor_x, anchor_y, align, name, min_width=MIN_WIDTH, min_height=MIN_HEIGHT, max_width=999999):
 		self.name = name
 		self.lines = []
 		self.anchor = anchor_x, anchor_y
@@ -230,38 +212,28 @@ class Box:
 		self.max_width = max_width
 		self.min_height = min_height
 
-
 	def to_string(self):
-		return "--- %s ---\n%s\n" % (
-			self.name,
-			"\n".join([ x.to_string() for x in self.lines ])
-		)
-
+		return "--- %s ---\n%s\n" % (self.name, "\n".join([x.to_string() for x in self.lines]))
 
 	def add(self, icon, context, action):
-		if not action: return LineCollection()
+		if not action:
+			return LineCollection()
 		if isinstance(action, MultiAction):
 			if not action.is_key_combination():
-				return LineCollection([
-					self.add(icon, context, child)
-					for child in action.actions
-				])
+				return LineCollection([self.add(icon, context, child) for child in action.actions])
 		elif isinstance(action, ModeModifier):
-			lines = [ self.add(icon, context, action.default) ]
+			lines = [self.add(icon, context, action.default)]
 			for x in action.mods:
-				lines.append( self.add(nameof(x), context, action.mods[x])
-						.add_icon(icon) )
+				lines.append(self.add(nameof(x), context, action.mods[x]).add_icon(icon))
 			return LineCollection(*lines)
 		elif isinstance(action, DoubleclickModifier):
 			lines = []
 			if action.normalaction:
-				lines.append( self.add(icon, context, action.normalaction) )
+				lines.append(self.add(icon, context, action.normalaction))
 			if action.action:
-				lines.append( self.add("DOUBLECLICK", context, action.action)
-						.add_icon(icon) )
+				lines.append(self.add("DOUBLECLICK", context, action.action).add_icon(icon))
 			if action.holdaction:
-				lines.append( self.add("HOLD", context, action.holdaction)
-						.add_icon(icon) )
+				lines.append(self.add("HOLD", context, action.holdaction).add_icon(icon))
 			return LineCollection(*lines)
 
 		action = action.strip()
@@ -272,10 +244,10 @@ class Box:
 				return LineCollection()
 		elif isinstance(action, DPadAction):
 			return LineCollection(
-				self.add("DPAD_UP",    Action.AC_BUTTON, action.actions[0]),
-				self.add("DPAD_DOWN",  Action.AC_BUTTON, action.actions[1]),
-				self.add("DPAD_LEFT",  Action.AC_BUTTON, action.actions[2]),
-				self.add("DPAD_RIGHT", Action.AC_BUTTON, action.actions[3])
+				self.add("DPAD_UP", Action.AC_BUTTON, action.actions[0]),
+				self.add("DPAD_DOWN", Action.AC_BUTTON, action.actions[1]),
+				self.add("DPAD_LEFT", Action.AC_BUTTON, action.actions[2]),
+				self.add("DPAD_RIGHT", Action.AC_BUTTON, action.actions[3]),
 			)
 		elif isinstance(action, XYAction):
 			if isinstance(action.x, MouseAction) and isinstance(action.y, MouseAction):
@@ -290,13 +262,11 @@ class Box:
 					self.lines.append(line)
 					return line
 			return LineCollection(
-				self.add("AXISX",  Action.AC_BUTTON, action.x),
-				self.add("AXISY",  Action.AC_BUTTON, action.y)
+				self.add("AXISX", Action.AC_BUTTON, action.x), self.add("AXISY", Action.AC_BUTTON, action.y)
 			)
 		line = Line(icon, action.describe(context))
 		self.lines.append(line)
 		return line
-
 
 	def calculate(self, gen):
 		self.width, self.height = self.min_width, 2 * self.PADDING
@@ -324,15 +294,18 @@ class Box:
 		else:
 			self.x = (gen.full_width - self.width) / 2
 
-
 	def place(self, gen, root):
-		e = SVGEditor.add_element(root, "rect",
-			style = "opacity:1;fill-opacity:0.1;stroke-width:2.0;",
+		e = SVGEditor.add_element(
+			root,
+			"rect",
+			style="opacity:1;fill-opacity:0.1;stroke-width:2.0;",
 			fill="#00FF00",
 			stroke="#06a400",
-			id = "box_%s" % (self.name,),
-			width = self.width, height = self.height,
-			x = self.x, y = self.y,
+			id="box_%s" % (self.name,),
+			width=self.width,
+			height=self.height,
+			x=self.x,
+			y=self.y,
 		)
 
 		y = self.y + self.PADDING
@@ -345,48 +318,43 @@ class Box:
 					# Fix: here stuff goes from weird to awfull, as rsvg
 					# (library that gnome uses to render SVGs) can't render
 					# linked images. Embeding is used instead.
-					image = 'data:image/svg+xml;base64,%s' % (
-						base64.b64encode(open(image, "rb").read())
-					)
+					image = "data:image/svg+xml;base64,%s" % (base64.b64encode(open(image, "rb").read()))
 					# Another problem: rsvg will NOT draw image unless href
 					# tag uses namespace. No idea why is that, but I spent
 					# 3 hours finding this, so I'm willing to murder.
-					SVGEditor.add_element(root, "image", x = x, y = y,
-						style = "filter:url(#filterInvert)",
-						width = h, height = h, **{"href" : image} )
+					SVGEditor.add_element(
+						root, "image", x=x, y=y, style="filter:url(#filterInvert)", width=h, height=h, **{"href": image}
+					)
 				x += h + self.SPACING
 			x = self.x + self.PADDING + self.icount * (h + self.SPACING)
 			y += h
-			txt = SVGEditor.add_element(root, "text", x = x, y = y,
-				style = gen.label_template.attrib['style']
-			)
+			txt = SVGEditor.add_element(root, "text", x=x, y=y, style=gen.label_template.attrib["style"])
 			max_line_width = self.max_width - gen.line_height - self.PADDING
 			while line.text and line.get_size(gen)[0] > max_line_width:
 				line.text = line.text[:-1]
 			SVGEditor.set_text(txt, line.text)
 			y += self.SPACING
 
-
 	def place_marker(self, gen, root):
 		x1, y1 = self.x, self.y
 		x2, y2 = x1 + self.width, y1 + self.height
 		if self.align & (Align.LEFT | Align.RIGHT) == 0:
-			edges = [ [ x2, y2 ], [ x1, y2 ] ]
+			edges = [[x2, y2], [x1, y2]]
 		elif self.align & Align.BOTTOM == Align.BOTTOM:
 			if self.align & Align.LEFT != 0:
-				edges = [ [ x2, y2 ], [ x1, y1 ] ]
+				edges = [[x2, y2], [x1, y1]]
 			elif self.align & Align.RIGHT != 0:
-				edges = [ [ x2, y1 ], [ x1, y2 ] ]
+				edges = [[x2, y1], [x1, y2]]
 		elif self.align & Align.TOP == Align.TOP:
 			if self.align & Align.LEFT != 0:
-				edges = [ [ x2, y1 ], [ x2, y2 ] ]
+				edges = [[x2, y1], [x2, y2]]
 			elif self.align & Align.RIGHT != 0:
-				edges = [ [ x1, y1 ], [ x1, y2 ] ]
+				edges = [[x1, y1], [x1, y2]]
 		else:
 			if self.align & Align.LEFT != 0:
-				edges = [ [ x2, y1 ], [ x2, y2 ] ]
+				edges = [[x2, y1], [x2, y2]]
 			elif self.align & Align.RIGHT != 0:
-				edges = [ [ x1, y1 ], [ x2, y2 ] ]
+				edges = [[x1, y1], [x2, y2]]
 
 		targets = SVGEditor.get_element(root, "markers_%s" % (self.name,))
 		if targets is None:
@@ -395,17 +363,22 @@ class Box:
 		for target in targets:
 			tx, ty = float(target.attrib["cx"]), float(target.attrib["cy"])
 			try:
-				edges[i] += [ tx, ty ]
+				edges[i] += [tx, ty]
 				i += 1
 			except IndexError:
 				break
-		edges = [ i for i in edges if len(i) == 4]
+		edges = [i for i in edges if len(i) == 4]
 
 		for x1, y1, x2, y2 in edges:
-			e = SVGEditor.add_element(root, "line",
-				style = "opacity:1;stroke:#06a400;stroke-width:0.5;",
+			e = SVGEditor.add_element(
+				root,
+				"line",
+				style="opacity:1;stroke:#06a400;stroke-width:0.5;",
 				# id = "box_%s_line0" % (self.name,),
-				x1 = x1, y1 = y1, x2 = x2, y2 = y2
+				x1=x1,
+				y1=y1,
+				x2=x2,
+				y2=y2,
 			)
 
 
@@ -427,47 +400,50 @@ class Generator:
 		box_bcs.add("START", Action.AC_BUTTON, profile.buttons.get(SCButtons.START))
 		boxes.append(box_bcs)
 
-
-		box_left = Box(self.PADDING, self.PADDING, Align.LEFT | Align.TOP, "left",
-			min_height = self.full_height * 0.5,
-			min_width = self.full_width * 0.2,
-			max_width = self.full_width * 0.275
-			)
+		box_left = Box(
+			self.PADDING,
+			self.PADDING,
+			Align.LEFT | Align.TOP,
+			"left",
+			min_height=self.full_height * 0.5,
+			min_width=self.full_width * 0.2,
+			max_width=self.full_width * 0.275,
+		)
 		box_left.add("LEFT", Action.AC_TRIGGER, profile.triggers.get(profile.LEFT))
 		box_left.add("LB", Action.AC_BUTTON, profile.buttons.get(SCButtons.LB))
 		box_left.add("LGRIP", Action.AC_BUTTON, profile.buttons.get(SCButtons.LGRIP))
 		box_left.add("LPAD", Action.AC_PAD, profile.pads.get(profile.LEFT))
 		boxes.append(box_left)
 
-
-		box_right = Box(self.PADDING, self.PADDING, Align.RIGHT | Align.TOP, "right",
-			min_height = self.full_height * 0.5,
-			min_width = self.full_width * 0.2,
-			max_width = self.full_width * 0.275
-			)
+		box_right = Box(
+			self.PADDING,
+			self.PADDING,
+			Align.RIGHT | Align.TOP,
+			"right",
+			min_height=self.full_height * 0.5,
+			min_width=self.full_width * 0.2,
+			max_width=self.full_width * 0.275,
+		)
 		box_right.add("RIGHT", Action.AC_TRIGGER, profile.triggers.get(profile.RIGHT))
 		box_right.add("RB", Action.AC_BUTTON, profile.buttons.get(SCButtons.RB))
 		box_right.add("RGRIP", Action.AC_BUTTON, profile.buttons.get(SCButtons.RGRIP))
 		box_right.add("RPAD", Action.AC_PAD, profile.pads.get(profile.RIGHT))
 		boxes.append(box_right)
 
-
-		box_abxy = Box(4 * self.PADDING, self.PADDING, Align.RIGHT | Align.BOTTOM, "abxy",
-			max_width = self.full_width * 0.45
-			)
+		box_abxy = Box(
+			4 * self.PADDING, self.PADDING, Align.RIGHT | Align.BOTTOM, "abxy", max_width=self.full_width * 0.45
+		)
 		box_abxy.add("A", Action.AC_BUTTON, profile.buttons.get(SCButtons.A))
 		box_abxy.add("B", Action.AC_BUTTON, profile.buttons.get(SCButtons.B))
 		box_abxy.add("X", Action.AC_BUTTON, profile.buttons.get(SCButtons.X))
 		box_abxy.add("Y", Action.AC_BUTTON, profile.buttons.get(SCButtons.Y))
 		boxes.append(box_abxy)
 
-
-		box_stick = Box(4 * self.PADDING, self.PADDING, Align.LEFT | Align.BOTTOM, "stick",
-			max_width = self.full_width * 0.45
-			)
+		box_stick = Box(
+			4 * self.PADDING, self.PADDING, Align.LEFT | Align.BOTTOM, "stick", max_width=self.full_width * 0.45
+		)
 		box_stick.add("STICK", Action.AC_STICK, profile.stick)
 		boxes.append(box_stick)
-
 
 		w = int(float(background.attrib.get("width") or 800))
 		h = int(float(background.attrib.get("height") or 800))
@@ -493,24 +469,23 @@ class Generator:
 
 		editor.commit()
 
-
 	def equal_width(self, *boxes):
-		""" Sets width of all passed boxes to width of widest box """
+		"""Sets width of all passed boxes to width of widest box"""
 		width = 0
-		for b in boxes: width = max(width, b.width)
+		for b in boxes:
+			width = max(width, b.width)
 		for b in boxes:
 			b.width = width
 			if b.align & Align.RIGHT:
 				b.x = self.full_width - b.width - self.PADDING
 
-
 	def equal_height(self, *boxes):
-		""" Sets height of all passed boxes to height of tallest box """
+		"""Sets height of all passed boxes to height of tallest box"""
 		height = 0
-		for b in boxes: height = max(height, b.height)
+		for b in boxes:
+			height = max(height, b.height)
 		for b in boxes:
 			b.height = height
-
 
 
 def main():
@@ -523,5 +498,6 @@ def main():
 
 if __name__ == "__main__":
 	from scc.tools import init_logging
+
 	init_logging()
 	main()

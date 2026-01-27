@@ -4,11 +4,14 @@ Imports VDFFZ profile and converts it to Profile object.
 VDFFZ is just VDF encapsulated in json, so this just gets one value and calls
 VDFProfile to decode rest.
 """
+
 from .vdf import VDFProfile
 from scc.lib.vdf import parse_vdf
 
 import json, logging
+
 log = logging.getLogger("import.vdffz")
+
 
 class VDFFZProfile(VDFProfile):
 	def load(self, filename):
@@ -16,6 +19,6 @@ class VDFFZProfile(VDFProfile):
 			data = json.loads(open(filename, "r").read())
 		except Exception as e:
 			raise ValueError("Failed to parse JSON")
-		if 'ConfigData' not in data:
+		if "ConfigData" not in data:
 			raise ValueError("ConfigData missing in JSON")
-		self.load_data(parse_vdf(data['ConfigData'].encode('utf-8')))
+		self.load_data(parse_vdf(data["ConfigData"].encode("utf-8")))

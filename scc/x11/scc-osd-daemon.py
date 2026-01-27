@@ -4,6 +4,7 @@
 
 Controls stuff displayed as OSD.
 """
+
 import logging
 import os
 import sys
@@ -14,9 +15,9 @@ import gi
 
 from scc.tools import set_logging_level
 
-gi.require_version('Gtk', '3.0')
-gi.require_version('Rsvg', '2.0')
-gi.require_version('GdkX11', '3.0')
+gi.require_version("Gtk", "3.0")
+gi.require_version("Rsvg", "2.0")
+gi.require_version("GdkX11", "3.0")
 from gi.repository import Gtk, Gdk, GdkX11, GLib
 
 from scc.gui.daemon_manager import DaemonManager
@@ -38,6 +39,7 @@ from scc.config import Config
 
 log = logging.getLogger("osd.daemon")
 
+
 class OSDDaemon:
 	def __init__(self):
 		self.exit_code = -1
@@ -52,28 +54,24 @@ class OSDDaemon:
 		self._last_profile_change = 0
 		self._recent_profiles_undo = None
 
-
 	def quit(self, code=-1):
 		self.exit_code = code
 		self.mainloop.quit()
 
-
 	def get_exit_code(self):
 		return self.exit_code
-
 
 	def on_daemon_reconfigured(self, *a):
 		log.debug("Reloading config...")
 		self.config.reload()
 		self._check_colorconfig_change()
 
-
 	def on_profile_changed(self, daemon, profile):
 		name = os.path.split(profile)[-1]
 		if name.endswith(".sccprofile") and not name.startswith("."):
 			# Ignore .mod and hidden files
 			name = name[0:-11]
-			recents = self.config['recent_profiles']
+			recents = self.config["recent_profiles"]
 			if len(recents) and recents[0] == name:
 				# Already first in recent list
 				return
@@ -89,64 +87,59 @@ class OSDDaemon:
 			while name in recents:
 				recents.remove(name)
 			recents.insert(0, name)
-			if len(recents) > self.config['recent_max']:
-				recents = recents[0:self.config['recent_max']]
-			self.config['recent_profiles'] = recents
+			if len(recents) > self.config["recent_max"]:
+				recents = recents[0 : self.config["recent_max"]]
+			self.config["recent_profiles"] = recents
 			self.config.save()
 			log.debug("Updated recent profile list")
 			self.clear_messages()
-
 
 	def on_daemon_died(self, *a):
 		log.error("Connection to daemon lost")
 		self.quit(2)
 
-
 	def on_daemon_connected(self, *a):
 		def success(*a):
 			log.info("Sucessfully registered as scc-osd-daemon")
 			self._registered = True
+
 		def failure(why):
 			log.error("Failed to registered as scc-osd-daemon: %s", why)
 			self.quit(1)
 
 		if not self._registered:
-			self.daemon.request('Register: osd', success, failure)
-
+			self.daemon.request("Register: osd", success, failure)
 
 	def on_menu_closed(self, m):
-		""" Called after OSD menu is hidden from screen """
+		"""Called after OSD menu is hidden from screen"""
 		self._window = None
 		if m.get_exit_code() == 0:
 			# 0 means that user selected item and confirmed selection
 			self.daemon.request(
-				'Selected: {} {}'.format(m.get_menuid(), m.get_selected_item_id()),
+				"Selected: {} {}".format(m.get_menuid(), m.get_selected_item_id()),
 				#'Selected: %s' % ( shjoin([
-				#	m.get_menuid(), m.get_selected_item_id()
-				#])),
-				lambda *a : False, lambda *a : False)
-
+				# m.get_menuid(), m.get_selected_item_id()
+				# ])),
+				lambda *a: False,
+				lambda *a: False,
+			)
 
 	def on_message_closed(self, m):
 		hsh = m.hash()
 		if hsh in self._visible_messages:
 			del self._visible_messages[hsh]
 
-
 	def on_keyboard_closed(self, *a):
-		""" Called after on-screen keyboard is hidden from the screen """
+		"""Called after on-screen keyboard is hidden from the screen"""
 		self._window = None
-
 
 	def on_gesture_recognized(self, gd):
-		""" Called after on-screen keyboard is hidden from the screen """
+		"""Called after on-screen keyboard is hidden from the screen"""
 		self._window = None
 		if gd.get_exit_code() == 0:
-			self.daemon.request('Gestured: %s' % ( gd.get_gesture(), ),
-				lambda *a : False, lambda *a : False)
+			self.daemon.request("Gestured: %s" % (gd.get_gesture(),), lambda *a: False, lambda *a: False)
 		else:
-			self.daemon.request('Gestured: x', lambda *a : False, lambda *a : False)
-
+			self.daemon.request("Gestured: x", lambda *a: False, lambda *a: False)
 
 	@staticmethod
 	def _is_menu_message(m):
@@ -162,7 +155,6 @@ class OSDDaemon:
 			or m.startswith("OSD: dialog")
 			or m.startswith("OSD: hmenu")
 		)
-
 
 	def on_unknown_message(self, daemon, message):
 		if not message.startswith("OSD:"):
@@ -182,7 +174,7 @@ class OSDDaemon:
 					tmp = list(self._visible_messages.values())
 					height = tmp[0].get_size().height
 					x, y = m.position
-					while y in [ i.position[1] for i in tmp ]:
+					while y in [i.position[1] for i in tmp]:
 						y -= height + 5
 					m.position = x, y
 				m.show()
@@ -194,7 +186,7 @@ class OSDDaemon:
 			else:
 				args = shsplit(message)[1:]
 				self._window = Keyboard(self.config)
-				self._window.connect('destroy', self.on_keyboard_closed)
+				self._window.connect("destroy", self.on_keyboard_closed)
 				self._window.parse_argumets(args)
 				self._window.show()
 				self._window.use_daemon(self.daemon)
@@ -207,7 +199,7 @@ class OSDDaemon:
 				self._window.parse_argumets(args)
 				self._window.use_daemon(self.daemon)
 				self._window.show()
-				self._window.connect('destroy', self.on_gesture_recognized)
+				self._window.connect("destroy", self.on_gesture_recognized)
 		elif self._is_menu_message(message):
 			args = shsplit(message)[1:]
 			if self._window:
@@ -225,7 +217,7 @@ class OSDDaemon:
 					self._window = Dialog()
 				else:
 					self._window = Menu()
-				self._window.connect('destroy', self.on_menu_closed)
+				self._window.connect("destroy", self.on_menu_closed)
 				self._window.use_config(self.config)
 				try:
 					if self._window.parse_argumets(args):
@@ -245,7 +237,7 @@ class OSDDaemon:
 			else:
 				args = shsplit(message)[1:]
 				self._window = Area()
-				self._window.connect('destroy', self.on_keyboard_closed)
+				self._window.connect("destroy", self.on_keyboard_closed)
 				if self._window.parse_argumets(args):
 					self._window.show()
 				else:
@@ -257,13 +249,11 @@ class OSDDaemon:
 		else:
 			log.warning("Unknown command from daemon: '%s'", message)
 
-
 	def clear_windows(self):
 		if self._window:
 			self._window.quit()
 			self._window = None
 		self.clear_messages(only_long_lasting=False)
-
 
 	def clear_messages(self, only_long_lasting=True):
 		"""
@@ -276,15 +266,14 @@ class OSDDaemon:
 			if not only_long_lasting or m.timeout <= 0 or m.timeout > OSDAction.DEFAULT_TIMEOUT * 2:
 				m.destroy()
 
-
 	def _check_colorconfig_change(self):
 		"""
 		Checks if OSD color configuration is changed and re-applies CSS
 		if needed.
 		"""
-		h = sum([ hash(self.config['osd_colors'][x]) for x in self.config['osd_colors'] ])
-		h += sum([ hash(self.config['osk_colors'][x]) for x in self.config['osk_colors'] ])
-		h += hash(self.config['osd_style'])
+		h = sum([hash(self.config["osd_colors"][x]) for x in self.config["osd_colors"]])
+		h += sum([hash(self.config["osk_colors"][x]) for x in self.config["osk_colors"]])
+		h += hash(self.config["osd_style"])
 		if self._hash_of_colors != h:
 			self._hash_of_colors = h
 			OSDWindow._apply_css(self.config)
@@ -293,24 +282,24 @@ class OSDDaemon:
 				self._window.update_labels()
 				self._window.redraw_background()
 
-
 	def run(self):
 		self.daemon = DaemonManager()
 		self.config = Config()
 		self._check_colorconfig_change()
-		self.daemon.connect('alive', self.on_daemon_connected)
-		self.daemon.connect('dead', self.on_daemon_died)
-		self.daemon.connect('profile-changed', self.on_profile_changed)
-		self.daemon.connect('reconfigured', self.on_daemon_reconfigured)
-		self.daemon.connect('unknown-msg', self.on_unknown_message)
+		self.daemon.connect("alive", self.on_daemon_connected)
+		self.daemon.connect("dead", self.on_daemon_died)
+		self.daemon.connect("profile-changed", self.on_profile_changed)
+		self.daemon.connect("reconfigured", self.on_daemon_reconfigured)
+		self.daemon.connect("unknown-msg", self.on_unknown_message)
 		self.mainloop.run()
 
 
 if __name__ == "__main__":
 	from scc.tools import init_logging
 	from scc.paths import get_share_path
+
 	init_logging(suffix=" OSD")
-	set_logging_level('debug' in sys.argv, 'debug' in sys.argv)
+	set_logging_level("debug" in sys.argv, "debug" in sys.argv)
 
 	d = OSDDaemon()
 	d.run()

@@ -17,5 +17,5 @@ MOD_INIT_ORDER = (
 	# Modules mentioned here are initialized before everything else, in this exact order.
 	"scc.drivers.usb",
 	"scc.drivers.evdevdrv",
-	"scc.drivers.hiddrv"
+	"scc.drivers.hiddrv",
 )

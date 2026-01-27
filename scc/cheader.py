@@ -30,33 +30,33 @@ from collections import OrderedDict
 import operator as op
 
 OPERATORS = {
-	ast.Add	: op.add,
-	ast.Sub	: op.sub,
-	ast.Mult   : op.mul,
-	ast.Div	: op.floordiv,
-	ast.Mod	: op.mod,
-	ast.LShift : op.lshift,
-	ast.RShift : op.rshift,
-	ast.BitOr  : op.or_,
-	ast.BitXor : op.xor,
-	ast.BitAnd : op.and_,
-	ast.Invert : op.invert,
-	ast.Not	: op.not_,
-	ast.UAdd   : op.pos,
-	ast.USub   : op.neg,
-	ast.And	: op.and_,
-	ast.Or	 : op.or_,
-	ast.Eq	 : op.eq,
-	ast.NotEq  : op.ne,
-	ast.Lt	 : op.lt,
-	ast.LtE	: op.le,
-	ast.Gt	 : op.gt,
-	ast.GtE	: op.ge,
+	ast.Add: op.add,
+	ast.Sub: op.sub,
+	ast.Mult: op.mul,
+	ast.Div: op.floordiv,
+	ast.Mod: op.mod,
+	ast.LShift: op.lshift,
+	ast.RShift: op.rshift,
+	ast.BitOr: op.or_,
+	ast.BitXor: op.xor,
+	ast.BitAnd: op.and_,
+	ast.Invert: op.invert,
+	ast.Not: op.not_,
+	ast.UAdd: op.pos,
+	ast.USub: op.neg,
+	ast.And: op.and_,
+	ast.Or: op.or_,
+	ast.Eq: op.eq,
+	ast.NotEq: op.ne,
+	ast.Lt: op.lt,
+	ast.LtE: op.le,
+	ast.Gt: op.gt,
+	ast.GtE: op.ge,
 }
 
-def eval_expr(expr):
 
-	""" Eval and expression inside a #define using a suppart of python grammar """
+def eval_expr(expr):
+	"""Eval and expression inside a #define using a suppart of python grammar"""
 
 	def _eval(node):
 		if isinstance(node, ast.Constant):
@@ -71,12 +71,11 @@ def eval_expr(expr):
 		else:
 			raise TypeError(node)
 
-	return _eval(ast.parse(expr, mode='eval').body)
+	return _eval(ast.parse(expr, mode="eval").body)
 
 
 def defines(base, include):
-
-	""" Extract #define from base/include following #includes """
+	"""Extract #define from base/include following #includes"""
 
 	parsed = set()
 	fname = os.path.normpath(os.path.abspath(os.path.join(base, include)))
@@ -85,21 +84,21 @@ def defines(base, include):
 	with open(fname) as file:
 		lexer = shlex.shlex(file, posix=True)
 
-		lexer.whitespace = ' \t\r'
-		lexer.commenters = ''
+		lexer.whitespace = " \t\r"
+		lexer.commenters = ""
 		lexer.quotes = '"'
 
 		out = OrderedDict()
 
 		def parse_c_comments(lexer, tok, ntok):
-			if tok != '/' or ntok != '*':
+			if tok != "/" or ntok != "*":
 				return False
 			quotes = lexer.quotes
-			lexer.quotes = ''
+			lexer.quotes = ""
 			while True:
 				tok = lexer.get_token()
 				ntok = lexer.get_token()
-				if tok == '*' and ntok == '/':
+				if tok == "*" and ntok == "/":
 					lexer.quotes = quotes
 					break
 				else:
@@ -107,13 +106,13 @@ def defines(base, include):
 			return True
 
 		def parse_cpp_comments(lexer, tok, ntok):
-			if tok != '/' or ntok != '/':
+			if tok != "/" or ntok != "/":
 				return False
 			quotes = lexer.quotes
-			lexer.quotes = ''
+			lexer.quotes = ""
 			while True:
 				tok = lexer.get_token()
-				if tok == '\n':
+				if tok == "\n":
 					lexer.quotes = quotes
 					lexer.push_token(tok)
 					break
@@ -121,7 +120,7 @@ def defines(base, include):
 
 		while True:
 			tok = lexer.get_token()
-			if not tok or tok == '':
+			if not tok or tok == "":
 				break
 			ntok = lexer.get_token()
 
@@ -130,16 +129,15 @@ def defines(base, include):
 			if parse_cpp_comments(lexer, tok, ntok):
 				continue
 
-			if tok != '\n' or ntok != '#':
+			if tok != "\n" or ntok != "#":
 				lexer.push_token(ntok)
 				continue
 
 			tok = lexer.get_token()
-			if tok == 'define':
+			if tok == "define":
 				name = lexer.get_token()
-				expr = ''
+				expr = ""
 				while True:
-
 					tok = lexer.get_token()
 					ntok = lexer.get_token()
 
@@ -149,9 +147,9 @@ def defines(base, include):
 						continue
 					lexer.push_token(ntok)
 
-					if not tok or tok == '':
+					if not tok or tok == "":
 						break
-					if tok == '\n':
+					if tok == "\n":
 						lexer.push_token(tok)
 						break
 
@@ -164,14 +162,13 @@ def defines(base, include):
 					out[name] = val
 				except (SyntaxError, TypeError):
 					pass
-			elif tok == 'include':
-
+			elif tok == "include":
 				tok = lexer.get_token()
-				if tok == '<':
-					name = ''
+				if tok == "<":
+					name = ""
 					while True:
 						tok = lexer.get_token()
-						if tok == '>':
+						if tok == ">":
 							break
 						name = name + tok
 				else:
@@ -183,12 +180,12 @@ def defines(base, include):
 			else:
 				lexer.push_token(tok)
 
-
 		return out
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	import sys
+
 	definesDict = defines(sys.argv[1], sys.argv[2])
 	for k, v in definesDict.items():
 		print("{}:\t{}".format(k, v))

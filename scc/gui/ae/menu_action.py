@@ -3,6 +3,7 @@
 SC-Controller - Action Editor - common part of "DPAD or menu" and "Special Action",
 two components with MenuAction selectable.
 """
+
 from scc.tools import _
 
 from gi.repository import Gtk
@@ -18,9 +19,10 @@ from scc.gui.menu_editor import MenuEditor
 from scc.gui.parser import GuiActionParser
 
 import os, logging
+
 log = logging.getLogger("AE.Menu")
 
-__all__ = [ 'MenuActionCofC' ]
+__all__ = ["MenuActionCofC"]
 
 
 class MenuActionCofC(UserDataManager):
@@ -31,7 +33,6 @@ class MenuActionCofC(UserDataManager):
 		self.parser = GuiActionParser()
 		self.allow_globals = True
 		self.allow_in_profile = True
-
 
 	def allow_menus(self, allow_globals, allow_in_profile):
 		"""
@@ -44,7 +45,6 @@ class MenuActionCofC(UserDataManager):
 		self.allow_in_profile = allow_in_profile
 		return self
 
-
 	def set_selected_menu(self, menu):
 		"""
 		Sets menu selected in combobox.
@@ -52,7 +52,6 @@ class MenuActionCofC(UserDataManager):
 		"""
 		self._current_menu = menu
 		# TODO: This currently works only if menu list is not yet loaded
-
 
 	@staticmethod
 	def menu_class_to_key(action):
@@ -69,7 +68,6 @@ class MenuActionCofC(UserDataManager):
 			return "radialmenu"
 		else:
 			return "menu"
-
 
 	def load_menu_data(self, action):
 		if isinstance(action, PositionModifier):
@@ -128,14 +126,12 @@ class MenuActionCofC(UserDataManager):
 
 		self.on_cbMenus_changed()
 
-
 	def get_default_confirm(self):
 		"""
 		Returns DEFAULT, but may be overriden when default
 		confirm button is different - specifically when used with pads.
 		"""
 		return DEFAULT
-
 
 	def get_default_cancel(self):
 		"""
@@ -144,12 +140,10 @@ class MenuActionCofC(UserDataManager):
 		"""
 		return DEFAULT
 
-
 	def on_menu_changed(self, new_id):
 		self._current_menu = new_id
 		self.editor.set_action(MenuAction(new_id))
 		self.load_menu_list()
-
 
 	def on_btEditMenu_clicked(self, *a):
 		name = self.get_selected_menu()
@@ -162,25 +156,19 @@ class MenuActionCofC(UserDataManager):
 			me.allow_menus(self.allow_globals, self.allow_in_profile)
 			me.show(self.editor.window)
 
-
 	def on_cbMenus_button_press_event(self, trash, event):
 		if event.button == 3:
 			mnuMenu = self.builder.get_object("mnuMenu")
-			mnuMenu.popup(None, None, None, None,
-				3, Gtk.get_current_event_time())
-
+			mnuMenu.popup(None, None, None, None, 3, Gtk.get_current_event_time())
 
 	def on_mnuMenuNew_activate(self, *a):
 		self.on_new_menu_selected()
 
-
 	def on_mnuMenuCopy_activate(self, *a):
 		self.on_new_menu_selected(make_copy=True)
 
-
 	def on_mnuMenuRename_activate(self, *a):
 		self.on_btEditMenu_clicked()
-
 
 	def on_mnuMenuDelete_activate(self, *a):
 		id = self.get_selected_menu()
@@ -189,17 +177,18 @@ class MenuActionCofC(UserDataManager):
 		else:
 			text = _("Really delete selected menu?")
 
-		d = Gtk.MessageDialog(parent=self.editor.window,
-			flags = Gtk.DialogFlags.MODAL,
-			type = Gtk.MessageType.WARNING,
-			buttons = Gtk.ButtonsType.OK_CANCEL,
-			message_format = text,
+		d = Gtk.MessageDialog(
+			parent=self.editor.window,
+			flags=Gtk.DialogFlags.MODAL,
+			type=Gtk.MessageType.WARNING,
+			buttons=Gtk.ButtonsType.OK_CANCEL,
+			message_format=text,
 		)
 
 		if MenuEditor.menu_is_global(id):
 			d.format_secondary_text(_("This action is not undoable!"))
 
-		if d.run() == -5: # OK button, no idea where is this defined...
+		if d.run() == -5:  # OK button, no idea where is this defined...
 			if MenuEditor.menu_is_global(id):
 				fname = os.path.join(get_menus_path(), id)
 				try:
@@ -212,10 +201,9 @@ class MenuActionCofC(UserDataManager):
 			self.load_menu_list()
 		d.destroy()
 
-
 	def on_menus_loaded(self, menus):
 		cb = self.builder.get_object("cbMenus")
-		cb.set_row_separator_func( lambda model, iter : model.get_value(iter, 1) is None )
+		cb.set_row_separator_func(lambda model, iter: model.get_value(iter, 1) is None)
 		model = cb.get_model()
 		model.clear()
 		i, current_index = 0, 0
@@ -227,13 +215,14 @@ class MenuActionCofC(UserDataManager):
 					current_index = i
 				i += 1
 			if i > 0:
-				model.append((None, None))	# Separator
+				model.append((None, None))  # Separator
 				i += 1
 		if self.allow_globals:
 			for f in menus:
 				key = f.get_basename()
 				name = key
-				if name.startswith("."): continue
+				if name.startswith("."):
+					continue
 				if "." in name:
 					name = _("%s (global)" % (name.split(".")[0]))
 				model.append((name, key))
@@ -241,8 +230,8 @@ class MenuActionCofC(UserDataManager):
 					current_index = i
 				i += 1
 		if i > 0:
-			model.append((None, None))	# Separator
-		model.append(( _("New Menu..."), "" ))
+			model.append((None, None))  # Separator
+		model.append((_("New Menu..."), ""))
 
 		self._recursing = True
 		cb.set_active(current_index)
@@ -251,12 +240,10 @@ class MenuActionCofC(UserDataManager):
 		if name:
 			self.builder.get_object("btEditMenu").set_sensitive(name not in MenuEditor.OPEN)
 
-
 	def handles(self, mode, action):
 		if isinstance(action, PositionModifier):
 			return isinstance(action.action, MenuAction)
 		return isinstance(action, MenuAction)
-
 
 	def get_selected_menu(self):
 		cb = self.builder.get_object("cbMenus")
@@ -266,7 +253,6 @@ class MenuActionCofC(UserDataManager):
 			# Empty list
 			return None
 		return model.get_value(iter, 1)
-
 
 	def prevent_confirm_cancel_nonsense(self, widget, *a):
 		"""
@@ -290,10 +276,10 @@ class MenuActionCofC(UserDataManager):
 				if cbMenuAutoConfirm:
 					cbMenuAutoConfirm.set_active(False)
 
-
 	def on_cbMenus_changed(self, *a):
-		""" Called when user changes any menu settings """
-		if self._recursing : return
+		"""Called when user changes any menu settings"""
+		if self._recursing:
+			return
 		cbMenuConfirmWithClick = self.builder.get_object("cbMenuConfirmWithClick")
 		cbMenuAutoConfirm = self.builder.get_object("cbMenuAutoConfirm")
 		cbMenuAutoCancel = self.builder.get_object("cbMenuAutoCancel")
@@ -346,7 +332,7 @@ class MenuActionCofC(UserDataManager):
 		if name:
 			# There is some menu choosen
 			self.builder.get_object("btEditMenu").set_sensitive(name not in MenuEditor.OPEN)
-			params = [ name ]
+			params = [name]
 
 			cow = SAME
 			if cbMenuAutoConfirm and cbMenuAutoConfirm.get_active():
@@ -366,8 +352,7 @@ class MenuActionCofC(UserDataManager):
 				if caw != DEFAULT:
 					caw = getattr(SCButtons, caw)
 
-			params += [ self.get_control_with(), cow, caw ]
-
+			params += [self.get_control_with(), cow, caw]
 
 			# Hide / apply and display 'Items per row' selector if it exists in UI
 			if self.builder.get_object("rvMenuSize"):
@@ -378,21 +363,21 @@ class MenuActionCofC(UserDataManager):
 					size = int(spMenuSize.get_adjustment().get_value())
 					if size > 0:
 						# size is 2nd parameter
-						params += [ False, size ]
+						params += [False, size]
 				elif menu_type == "radialmenu":
 					self.update_size_display(RadialMenuAction("dummy"))
 					size = int(spMenuSize.get_adjustment().get_value())
 					if size > 0 and size < 100:
 						# Both 0 and 100 means default here
 						# size is 2nd parameter
-						params += [ False, size ]
+						params += [False, size]
 				elif menu_type == "hmenu":
 					self.update_size_display(HorizontalMenuAction("dummy"))
 					size = int(spMenuSize.get_adjustment().get_value())
 					if size > 1:
 						# Size 0 and 1 means default here
 						# size is 2nd parameter
-						params += [ False, size ]
+						params += [False, size]
 				else:
 					# , "radialmenu"):
 					self.update_size_display(None)
@@ -428,7 +413,6 @@ class MenuActionCofC(UserDataManager):
 
 			self.editor.set_action(action)
 
-
 	def on_new_menu_selected(self, make_copy=False):
 		# 'New menu' selected
 		self.load_menu_list()
@@ -442,7 +426,6 @@ class MenuActionCofC(UserDataManager):
 		me.set_new_menu()
 		me.allow_menus(self.allow_globals, self.allow_in_profile)
 		me.show(self.editor.window)
-
 
 	def update_size_display(self, action):
 		"""
@@ -469,14 +452,12 @@ class MenuActionCofC(UserDataManager):
 			rvMenuSize.set_reveal_child(False)
 			return False
 
-
 	def get_control_with(self):
-		""" Returns value of "Control With" combo or STICK if there is none """
+		"""Returns value of "Control With" combo or STICK if there is none"""
 		cbControlWith = self.builder.get_object("cbControlWith")
 		if cbControlWith:
 			return cbControlWith.get_model().get_value(cbControlWith.get_active_iter(), 1)
 		return STICK
-
 
 	def on_spMenuSize_format_value(self, spinner):
 		val = int(spinner.get_adjustment().get_value())
@@ -486,15 +467,14 @@ class MenuActionCofC(UserDataManager):
 			spinner.get_buffer().set_text(str(val), -1)
 		return True
 
-
 	def on_sclMenuSize_format_value(self, scale, val):
 		cbm = self.builder.get_object("cbMenuType")
 		menu_type = cbm.get_model().get_value(cbm.get_active_iter(), 1)
 		if menu_type == "radialmenu":
 			if val < 1:
 				return _("default")
-			return  "%s%%" % (int(val),)
-		else: # if menu_type == "hmenu"
+			return "%s%%" % (int(val),)
+		else:  # if menu_type == "hmenu"
 			val = int(val)
 			if val < 2:
 				return _("default")

@@ -4,6 +4,7 @@ SC-Controller - OSD Menu
 
 Display menu that user can navigate through
 """
+
 from scc.tools import _, set_logging_level
 
 from gi.repository import Gtk, Gdk, GLib, GdkX11
@@ -19,38 +20,39 @@ from scc.config import Config
 from math import pi as PI, atan2, sin, cos
 
 import os, sys, json, logging
+
 log = logging.getLogger("osd.menu")
 
 
 class RadialMenu(Menu):
-	RECOLOR_BACKGROUNDS = ( "background", "menuitem_hilight_border", "text" )
-	RECOLOR_STROKES = ( "border", "menuitem_border" )
-	MIN_DISTANCE = 3000		# Minimal cursor distance from center (in px^2)
+	RECOLOR_BACKGROUNDS = ("background", "menuitem_hilight_border", "text")
+	RECOLOR_STROKES = ("border", "menuitem_border")
+	MIN_DISTANCE = 3000  # Minimal cursor distance from center (in px^2)
 	ICON_SIZE = 96
 
-	def __init__(self,):
+	def __init__(
+		self,
+	):
 		Menu.__init__(self, "osd-radial-menu")
 		self.angle = 0
 		self.rotation = 0
 		self.scale = 1.0
 		self.items_with_icon = []
 
-
 	def create_parent(self):
-		background = os.path.join(get_share_path(), "images", 'radial-menu.svg')
+		background = os.path.join(get_share_path(), "images", "radial-menu.svg")
 		self.b = SVGWidget(background)
-		self.b.connect('size-allocate', self.on_size_allocate)
+		self.b.connect("size-allocate", self.on_size_allocate)
 		self.recolor()
 		return self.b
-
 
 	def recolor(self):
 		config = Config()
 		source_colors = {}
 		try:
 			# Try to read json file and bail out if it fails
-			desc = os.path.join(get_share_path(), "images", 'radial-menu.svg.json')
-			source_colors = json.loads(open(desc, "r").read())['colors']
+			desc = os.path.join(get_share_path(), "images", "radial-menu.svg.json")
+			source_colors = json.loads(open(desc, "r").read())["colors"]
 		except Exception as e:
 			log.warning("Failed to load keyboard description")
 			log.warning(e)
@@ -58,20 +60,19 @@ class RadialMenu(Menu):
 		editor = self.b.edit()
 
 		for k in RadialMenu.RECOLOR_BACKGROUNDS:
-			if k in config['osd_colors'] and k in source_colors:
-				editor.recolor_background(source_colors[k], config['osd_colors'][k])
-		editor.recolor_background(source_colors["background"], config['osd_colors']["background"])
+			if k in config["osd_colors"] and k in source_colors:
+				editor.recolor_background(source_colors[k], config["osd_colors"][k])
+		editor.recolor_background(source_colors["background"], config["osd_colors"]["background"])
 
 		for k in RadialMenu.RECOLOR_STROKES:
-			if k in config['osd_colors'] and k in source_colors:
-				print( "REC", source_colors[k], config['osd_colors'][k])
-				editor.recolor_strokes(source_colors[k], config['osd_colors'][k])
+			if k in config["osd_colors"] and k in source_colors:
+				print("REC", source_colors[k], config["osd_colors"][k])
+				editor.recolor_strokes(source_colors[k], config["osd_colors"][k])
 
 		editor.commit()
 
-
 	def on_size_allocate(self, trash, allocation):
-		""" (Re)centers all icons when menu is displayed or size is changed """
+		"""(Re)centers all icons when menu is displayed or size is changed"""
 		cx = allocation.width * self.scale * 0.5
 		cy = allocation.height * self.scale * 0.5
 		radius = min(cx, cy) * 2 / 3
@@ -82,7 +83,6 @@ class RadialMenu(Menu):
 			y = y - (self.ICON_SIZE * self.scale * 0.5)
 			i.icon_widget.get_parent().move(i.icon_widget, x, y)
 
-
 	def get_window_size(self):
 		w, h = Menu.get_window_size(self)
 		if self.scale != 1.0:
@@ -90,12 +90,9 @@ class RadialMenu(Menu):
 			h = int(h * self.scale)
 		return w, h
 
-
 	def _add_arguments(self):
 		Menu._add_arguments(self)
-		self.argparser.add_argument('--rotation', type=float, default=0,
-			help="rotates input by angle (default: 0)")
-
+		self.argparser.add_argument("--rotation", type=float, default=0, help="rotates input by angle (default: 0)")
 
 	def parse_argumets(self, argv):
 		self.editor = self.b.edit()
@@ -105,16 +102,14 @@ class RadialMenu(Menu):
 			self.enable_cursor()
 		return rv
 
-
 	def generate_widget(self, item):
 		if isinstance(item, (Separator, Submenu)) or item.id is None:
 			# Labels and separators, radial menu can't show these
 			return None
 		e = self.editor.clone_element("menuitem_template")
 		SVGEditor.set_text(e, item.label)
-		e.attrib['id'] = "menuitem_" + item.id
+		e.attrib["id"] = "menuitem_" + item.id
 		return e
-
 
 	def pack_items(self, trash, items):
 		if self._size > 0 and self._size < 100:
@@ -137,7 +132,7 @@ class RadialMenu(Menu):
 			# Set size of each arc
 			if SVGEditor.get_element(i.widget, "arc") is not None:
 				l = SVGEditor.get_element(i.widget, "arc")
-				radius = float(l.attrib["radius"])	# TODO: Find how to get value of 'sodipodi:rx'
+				radius = float(l.attrib["radius"])  # TODO: Find how to get value of 'sodipodi:rx'
 				l.attrib["d"] = l.attrib["d-template"] % (
 					radius * cos(a1) + image_width / 2,
 					radius * sin(a1) + image_width / 2,
@@ -163,8 +158,8 @@ class RadialMenu(Menu):
 				# No icon - rotate text in arc to other direction to keep it horisontal
 				if SVGEditor.get_element(i.widget, "menuitem_text") is not None:
 					l = SVGEditor.get_element(i.widget, "menuitem_text")
-					l.attrib['id'] = "text_" + i.id
-					l.attrib['transform'] = "%s rotate(%s)" % (l.attrib['transform'], -i.a)
+					l.attrib["id"] = "text_" + i.id
+					l.attrib["transform"] = "%s rotate(%s)" % (l.attrib["transform"], -i.a)
 				# Place up to 3 lines of item label
 				label = i.label.split("\n")
 				first_line = 0
@@ -189,7 +184,6 @@ class RadialMenu(Menu):
 		self.editor.commit()
 		del self.editor
 
-
 	def show(self):
 		OSDWindow.show(self)
 
@@ -212,8 +206,7 @@ class RadialMenu(Menu):
 		r = int(width * 0.985)
 		x = int((width - r) / 2)
 
-		X.fill_arc(self.xdisplay, pixmap, gc,
-			x, x, r, r, 0, 360*64)
+		X.fill_arc(self.xdisplay, pixmap, gc, x, x, r, r, 0, 360 * 64)
 
 		X.flush_gc(self.xdisplay, gc)
 		X.flush(self.xdisplay)
@@ -221,7 +214,6 @@ class RadialMenu(Menu):
 		X.shape_combine_mask(self.xdisplay, win, X.SHAPE_BOUNDING, 0, 0, pixmap, X.SHAPE_SET)
 
 		X.flush(self.xdisplay)
-
 
 	def select(self, i):
 		if type(i) == int:
@@ -232,11 +224,12 @@ class RadialMenu(Menu):
 		self._selected = i
 		if hasattr(self._selected, "icon_widget") and self._selected.icon_widget:
 			self._selected.icon_widget.set_name("osd-radial-menu-icon-selected")
-		self.b.hilight({
-			"menuitem_" + i.id : "#" + self.config["osd_colors"]["menuitem_hilight"],
-			"text_" + i.id :  "#" + self.config["osd_colors"]["menuitem_hilight_text"],
-		})
-
+		self.b.hilight(
+			{
+				"menuitem_" + i.id: "#" + self.config["osd_colors"]["menuitem_hilight"],
+				"text_" + i.id: "#" + self.config["osd_colors"]["menuitem_hilight_text"],
+			}
+		)
 
 	def on_event(self, daemon, what, data):
 		if self._submenu:
@@ -258,8 +251,8 @@ class RadialMenu(Menu):
 			cx = ((x * 0.75 / (STICK_PAD_MAX * 2.0)) + 0.5) * max_w
 			cy = (0.5 - (y * 0.75 / (STICK_PAD_MAX * 2.0))) * max_h
 
-			cx -= self.cursor.get_allocation().width *  0.5
-			cy -= self.cursor.get_allocation().height *  0.5
+			cx -= self.cursor.get_allocation().width * 0.5
+			cy -= self.cursor.get_allocation().height * 0.5
 			self.f.move(self.cursor, int(cx), int(cy))
 
 			if abs(x) + abs(y) > RadialMenu.MIN_DISTANCE:
@@ -277,11 +270,13 @@ class RadialMenu(Menu):
 
 if __name__ == "__main__":
 	import gi
-	gi.require_version('Gtk', '3.0')
-	gi.require_version('Rsvg', '2.0')
-	gi.require_version('GdkX11', '3.0')
+
+	gi.require_version("Gtk", "3.0")
+	gi.require_version("Rsvg", "2.0")
+	gi.require_version("GdkX11", "3.0")
 
 	from scc.tools import init_logging
+
 	init_logging()
 
 	m = RadialMenu()

@@ -4,6 +4,7 @@ SC-Controller - RIBar
 
 Infobar wrapped in Revealer, looks better than sounds.
 """
+
 from gi.repository import Gtk, GLib, GObject, Pango
 import os
 
@@ -19,14 +20,14 @@ class RIBar(Gtk.Revealer):
 		response(response_id)
 			Emitted when an action widget (button) is clicked
 	"""
+
 	__gsignals__ = {
-			"response"	: (GObject.SignalFlags.RUN_FIRST, None, (int,)),
-			"close"	: (GObject.SignalFlags.RUN_FIRST, None, ()),
-		}
+		"response": (GObject.SignalFlags.RUN_FIRST, None, (int,)),
+		"close": (GObject.SignalFlags.RUN_FIRST, None, ()),
+	}
 
 	### Initialization
-	def __init__(self, label, message_type=Gtk.MessageType.INFO,
-														infobar=None, *buttons):
+	def __init__(self, label, message_type=Gtk.MessageType.INFO, infobar=None, *buttons):
 		"""
 		... where label can be Gtk.Widget or str and buttons are tuples
 		of (Gtk.Button, response_id)
@@ -94,7 +95,7 @@ class RIBar(Gtk.Revealer):
 		self._infobar.show_all()
 
 	def get_label(self):
-		""" Returns label widget """
+		"""Returns label widget"""
 		return self._label
 
 	def close_on_close(self):
@@ -114,32 +115,31 @@ class RIBar(Gtk.Revealer):
 		GLib.timeout_add(self.get_transition_duration() + 50, self._cb_destroy)
 
 	def _cb_destroy(self, *a):
-		""" Callback used by _cb_close method """
+		"""Callback used by _cb_close method"""
 		if not self.get_parent() is None:
 			self.get_parent().remove(self)
 		self.destroy()
 
 	def set_value(self, key, value):
-		""" Stores some metadata """
+		"""Stores some metadata"""
 		self._values[key] = value
 
 	def get_value(self, key):
-		""" Retrieves some metadata """
+		"""Retrieves some metadata"""
 		return self._values[key]
 
 	def __getitem__(self, key):
-		""" Shortcut to get_value """
+		"""Shortcut to get_value"""
 		return self._values[key]
 
 	def __setitem__(self, key, value):
-		""" Shortcut to set_value """
+		"""Shortcut to set_value"""
 		self.set_value(key, value)
 
 	@staticmethod
 	def build_button(label, icon_name=None, icon_widget=None, use_stock=False):
-		""" Builds button situable for action area """
-		b = Gtk.Button.new_from_stock(label) if use_stock \
-			else Gtk.Button.new_with_label(label)
+		"""Builds button situable for action area"""
+		b = Gtk.Button.new_from_stock(label) if use_stock else Gtk.Button.new_with_label(label)
 		b.set_use_underline(True)
 		if not icon_name is None:
 			icon_widget = Gtk.Image()

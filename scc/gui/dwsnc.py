@@ -4,6 +4,7 @@ DWSNC - Doing Weird Things in Name of Compatibility
 This module, when imported, applies various fixes and monkey-patching to allow
 application to run with older versions of GLib and/or GTK.
 """
+
 from gi.repository import Gtk, GObject
 import os
 
@@ -15,7 +16,8 @@ def fix_label_missing_set_XYalign_methods():
 
 	Prevents crashing, but alings are ignored.
 	"""
-	Gtk.Label.set_xalign = Gtk.Label.set_yalign = lambda *a : None
+	Gtk.Label.set_xalign = Gtk.Label.set_yalign = lambda *a: None
+
 
 def child_get_property(parent, child, propname):
 	"""
@@ -36,7 +38,8 @@ def headerbar(bar):
 	Removes 'icon' button otherwise
 	"""
 	bar.set_decoration_layout(":minimize,close")
-	pass	# Not outside of Unity
+	pass  # Not outside of Unity
+
 
 IS_UNITY = False
 IS_GNOME = False
@@ -58,20 +61,23 @@ if "XDG_CURRENT_DESKTOP" in os.environ:
 			pack_start = []
 			pack_end = []
 			for c in children:
-				if child_get_property(bar, c, 'pack-type') == Gtk.PackType.END:
+				if child_get_property(bar, c, "pack-type") == Gtk.PackType.END:
 					bar.remove(c)
 					pack_start.append(c)
 				else:
 					bar.remove(c)
 					pack_end.append(c)
 			if len(pack_end) > 1:
-				c,  pack_end = pack_end[0], pack_end[1:]
+				c, pack_end = pack_end[0], pack_end[1:]
 				pack_end.append(c)
 			if (Gtk.get_major_version(), Gtk.get_minor_version()) > (3, 10):
 				# Old ubuntu has this in order, new Ubuntu has it reversed
 				pack_end = reversed(pack_end)
-			for c in pack_start: bar.pack_start(c)
-			for c in pack_end: bar.pack_end(c)
+			for c in pack_start:
+				bar.pack_start(c)
+			for c in pack_end:
+				bar.pack_end(c)
+
 		headerbar = _headerbar
 
 if not hasattr(Gtk.Label, "set_xalign"):

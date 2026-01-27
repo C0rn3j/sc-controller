@@ -21,12 +21,12 @@ class TestDocs:
 
 		# Do stupid fulltext search, because currently it's simply fast enough
 		for command in Action.ALL:
-			if command in (None, 'None', 'exit'):
+			if command in (None, "None", "exit"):
 				# Woo for special cases
 				continue
 			anchor = '<a name="%s">' % (command,)
 			assert anchor in actions_md, "Action '%s' is not documented in actions.md" % (command,)
 
 		for key in Action.PKEYS:
-			anchor = '#### `%s`' % (key,)
+			anchor = "#### `%s`" % (key,)
 			assert key in profile_md, "Key '%s' is not documented in profile-file.md" % (key,)

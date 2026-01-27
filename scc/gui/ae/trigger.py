@@ -2,6 +2,7 @@
 
 Assigns one or two emulated buttons to trigger
 """
+
 import logging
 
 from scc.actions import (
@@ -30,7 +31,7 @@ from scc.tools import _
 
 log = logging.getLogger("AE.TriggerAB")
 
-__all__ = [ "TriggerComponent" ]
+__all__ = ["TriggerComponent"]
 
 
 class TriggerComponent(AEComponent, BindingEditor):
@@ -46,13 +47,11 @@ class TriggerComponent(AEComponent, BindingEditor):
 		self.full = NoAction()
 		self.analog = NoAction()
 
-
 	def handles(self, mode, action):
 		if isinstance(action, NoAction):
 			return True
 		sucess, half, full, analog = TriggerComponent._split(action)
 		return sucess
-
 
 	@staticmethod
 	def _split(action):
@@ -66,7 +65,7 @@ class TriggerComponent(AEComponent, BindingEditor):
 		'sucess' element of tuple is set to False
 		"""
 		half, full, analog = NoAction(), NoAction(), NoAction()
-		actions = action.actions if isinstance(action, MultiAction) else [ action ]
+		actions = action.actions if isinstance(action, MultiAction) else [action]
 		for a in actions:
 			effective = TriggerComponent._strip_trigger(a).strip()
 			if isinstance(effective, AxisAction):
@@ -104,7 +103,7 @@ class TriggerComponent(AEComponent, BindingEditor):
 					half = a
 			elif isinstance(a, HipfireAction):
 				hipfire_actions = TriggerComponent._strip_hipfire(a)
-				half, full = (x.strip() for x in hipfire_actions )
+				half, full = (x.strip() for x in hipfire_actions)
 
 			elif isinstance(a, NoAction):
 				# Ignore theese
@@ -115,7 +114,6 @@ class TriggerComponent(AEComponent, BindingEditor):
 		if full and not half:
 			full, half = NoAction(), full
 		return True, half, full, analog
-
 
 	@staticmethod
 	def _strip_trigger(action):
@@ -139,7 +137,6 @@ class TriggerComponent(AEComponent, BindingEditor):
 
 	def get_button_title(self):
 		return _("Key or Button")
-
 
 	def set_action(self, mode, action):
 		self.half, self.full, self.analog = NoAction(), NoAction(), NoAction()
@@ -172,12 +169,10 @@ class TriggerComponent(AEComponent, BindingEditor):
 			self._recursing = False
 		self.update()
 
-
 	def update(self):
 		self.builder.get_object("lblPartPressed").set_label(describe_action(Action.AC_BUTTON, ButtonAction, self.half))
 		self.builder.get_object("lblFullPressed").set_label(describe_action(Action.AC_BUTTON, ButtonAction, self.full))
 		self.builder.get_object("lblAnalog").set_label(describe_action(Action.AC_TRIGGER, AxisAction, self.analog))
-
 
 	def send(self):
 		actions = []
@@ -188,11 +183,11 @@ class TriggerComponent(AEComponent, BindingEditor):
 		timeout = self.builder.get_object("sclTimeOut").get_value()
 
 		if (trigger_style == "HIPFIRE_NORMAL") and self.half and self.full:
-				actions.append(HipfireAction(half_level, full_level, self.half, self.full, HIPFIRE_NORMAL,timeout))
+			actions.append(HipfireAction(half_level, full_level, self.half, self.full, HIPFIRE_NORMAL, timeout))
 		elif (trigger_style == "HIPFIRE_EXCLUSIVE") and self.half and self.full:
-				actions.append(HipfireAction(half_level, full_level, self.half, self.full, HIPFIRE_EXCLUSIVE,timeout))
+			actions.append(HipfireAction(half_level, full_level, self.half, self.full, HIPFIRE_EXCLUSIVE, timeout))
 		elif (trigger_style == "HIPFIRE_SENSIBLE") and self.half and self.full:
-				actions.append(HipfireAction(half_level, full_level, self.half, self.full, HIPFIRE_SENSIBLE,timeout))
+			actions.append(HipfireAction(half_level, full_level, self.half, self.full, HIPFIRE_SENSIBLE, timeout))
 		else:
 			if self.half:
 				if self.full and trigger_style == "NORMAL_EXCLUSIVE":
@@ -204,7 +199,7 @@ class TriggerComponent(AEComponent, BindingEditor):
 
 			if self.analog:
 				analog_start = int(self.builder.get_object("sclARangeStart").get_value())
-				analog_end   = int(self.builder.get_object("sclARangeEnd").get_value())
+				analog_end = int(self.builder.get_object("sclARangeEnd").get_value())
 				if analog_start == TRIGGER_MIN and analog_end == TRIGGER_MAX:
 					actions.append(AxisAction(self.analog.id))
 				else:
@@ -212,18 +207,15 @@ class TriggerComponent(AEComponent, BindingEditor):
 
 		self.editor.set_action(MultiAction.make(*actions))
 
-
 	def on_btFullPressedClear_clicked(self, *a):
 		self.full = NoAction()
 		self.update()
 		self.send()
 
-
 	def on_btAnalogClear_clicked(self, *a):
 		self.analog = NoAction()
 		self.update()
 		self.send()
-
 
 	def on_ui_value_changed(self, *a):
 		if not self._recursing:
@@ -233,32 +225,28 @@ class TriggerComponent(AEComponent, BindingEditor):
 		if not self._recursing:
 			self.send()
 
-
 	def on_btPartPressed_clicked(self, *a):
-		""" 'Partialy Pressed Action' handler """
+		"""'Partialy Pressed Action' handler"""
 		ae = self.choose_editor(self.half, "")
 		ae.set_title(_("Select Partialy Pressed Action"))
 		ae.hide_name()
-		ae.set_input("half", self.half, mode = Action.AC_BUTTON)
+		ae.set_input("half", self.half, mode=Action.AC_BUTTON)
 		ae.show(self.editor.window)
 
-
 	def on_btFullPress_clicked(self, *a):
-		""" 'Fully Pressed Action' handler """
+		"""'Fully Pressed Action' handler"""
 		ae = self.choose_editor(self.full, "")
 		ae.set_title(_("Select Fully Pressed Action"))
 		ae.hide_name()
-		ae.set_input("full", self.full, mode = Action.AC_BUTTON)
+		ae.set_input("full", self.full, mode=Action.AC_BUTTON)
 		ae.show(self.editor.window)
-
 
 	def on_btAnalog_clicked(self, *a):
 		"""'Analog Output' handler."""
-		b = SimpleChooser(self.app, "axis", lambda action: self.on_action_chosen("analog", action) )
+		b = SimpleChooser(self.app, "axis", lambda action: self.on_action_chosen("analog", action))
 		b.set_title(_("Select Analog Axis"))
 		b.display_action(Action.AC_STICK, AxisAction(self.analog))
 		b.show(self.editor.window)
-
 
 	def on_action_chosen(self, i, action, mark_changed=True):
 		if i == "full":
@@ -270,18 +258,14 @@ class TriggerComponent(AEComponent, BindingEditor):
 		self.update()
 		self.send()
 
-
 	def on_btFullyPresedClear_clicked(self, *a):
 		self.builder.get_object("sclFullLevel").set_value(TRIGGER_CLICK)
-
 
 	def on_btPartPresedClear_clicked(self, *a):
 		self.builder.get_object("sclPartialLevel").set_value(TRIGGER_HALF)
 
-
 	def on_btARangeStartClear_clicked(self, *a):
 		self.builder.get_object("sclARangeStart").set_value(TRIGGER_MIN)
-
 
 	def on_btARangeEndClear_clicked(self, *a):
 		self.builder.get_object("sclARangeEnd").set_value(TRIGGER_MAX)

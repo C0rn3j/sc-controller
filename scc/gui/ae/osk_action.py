@@ -4,6 +4,7 @@ SC-Controller - Action Editor - On Screen Keyboard Action Component
 
 Assigns actions from scc.osd.osk_actions
 """
+
 from scc.tools import _
 
 from gi.repository import Gtk, Gdk, GLib
@@ -16,9 +17,10 @@ from scc.osd.osk_actions import OSKAction, CloseOSKAction, OSKCursorAction
 from scc.osd.osk_actions import MoveOSKAction, OSKPressAction
 
 import os, logging
+
 log = logging.getLogger("AE.SA")
 
-__all__ = [ 'OSKActionComponent' ]
+__all__ = ["OSKActionComponent"]
 
 
 class OSKActionComponent(AEComponent):
@@ -31,18 +33,17 @@ class OSKActionComponent(AEComponent):
 		AEComponent.__init__(self, app, editor)
 		self._recursing = False
 
-
 	def set_action(self, mode, action):
 		cb = self.builder.get_object("cbActionType")
 		if isinstance(action, CloseOSKAction):
 			self.set_cb(cb, "OSK.close()")
 		elif isinstance(action, OSKCursorAction) and action.side == LEFT:
 			self.set_cb(cb, "OSK.cursor(LEFT)")
-		elif isinstance(action, OSKCursorAction): # and action.side == RIGHT:
+		elif isinstance(action, OSKCursorAction):  # and action.side == RIGHT:
 			self.set_cb(cb, "OSK.cursor(RIGHT)")
 		elif isinstance(action, OSKPressAction) and action.side == LEFT:
 			self.set_cb(cb, "OSK.press(LEFT)")
-		elif isinstance(action, OSKPressAction): # and action.side == RIGHT:
+		elif isinstance(action, OSKPressAction):  # and action.side == RIGHT:
 			self.set_cb(cb, "OSK.press(RIGHT)")
 		elif isinstance(action, MoveOSKAction):
 			self.set_cb(cb, "OSK.move()")
@@ -54,16 +55,13 @@ class OSKActionComponent(AEComponent):
 		else:
 			self.set_cb(cb, "None")
 
-
 	def get_button_title(self):
 		return _("On-Screen Keyboard")
 
-
 	def handles(self, mode, action):
 		if isinstance(action, ButtonAction):
-			return action.button in ( Keys.BTN_LEFT, Keys.BTN_RIGHT )
+			return action.button in (Keys.BTN_LEFT, Keys.BTN_RIGHT)
 		return isinstance(action, (NoAction, OSKAction, OSKCursorAction))
-
 
 	def on_cbActionType_changed(self, *a):
 		cbActionType = self.builder.get_object("cbActionType")

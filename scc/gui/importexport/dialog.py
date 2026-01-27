@@ -1,6 +1,7 @@
 """
 SC-Controller - Import / Export Dialog
 """
+
 from scc.tools import _
 
 from scc.gui.editor import Editor, ComboSetter
@@ -10,7 +11,9 @@ from .import_vdf import ImportVdf
 from .import_sccprofile import ImportSccprofile
 
 import sys, os, tarfile, logging, json, traceback
+
 log = logging.getLogger("IE.Dialog")
+
 
 class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 	GLADE = "import_export.glade"
@@ -25,7 +28,6 @@ class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 		ImportVdf.__init__(self)
 		ImportSccprofile.__init__(self)
 
-
 	@staticmethod
 	def determine_type(filename):
 		"""
@@ -34,7 +36,7 @@ class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 		or None if type is not supported.
 		"""
 		try:
-			with open(filename, 'rb') as file:
+			with open(filename, "rb") as file:
 				f = file.read(1024)
 		except Exception as e:
 			# File not readable
@@ -45,9 +47,9 @@ class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 				# Looks like json
 				data = json.loads(open(filename, "r").read())
 				if "buttons" in data and "gyro" in data:
-					return 'sccprofile'
+					return "sccprofile"
 				if "GameName" in data and "FileName" in data:
-					return 'vdffz'
+					return "vdffz"
 		except:
 			# Definitelly not json
 			pass
@@ -56,8 +58,8 @@ class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 			# gzip, hopefully tar.gz
 			try:
 				with tarfile.open(filename, "r:gz") as tar:
-					names = [ x.name for x in tar ]
-				any_profile = any([ x.endswith(".sccprofile") for x in names ])
+					names = [x.name for x in tar]
+				any_profile = any([x.endswith(".sccprofile") for x in names])
 				if any_profile and "profile-name" in names:
 					return "sccprofile.tar.gz"
 			except:
@@ -76,11 +78,12 @@ class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 			return "vdffz"
 		return None
 
-
 	@staticmethod
 	def check_name(name):
-		if len(name.strip()) <= 0: return False
-		if "/" in name: return False
+		if len(name.strip()) <= 0:
+			return False
+		if "/" in name:
+			return False
 		if find_profile(name):
 			# Profile already exists
 			if profile_is_default(name) and not profile_is_override(name):
@@ -89,8 +92,7 @@ class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 			return False
 		return True
 
-
-	def import_file(self, filename, filetype = None):
+	def import_file(self, filename, filetype=None):
 		"""
 		Attempts to import passed file.
 
@@ -105,7 +107,6 @@ class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 		elif filetype in ("vdf", "vdffz"):
 			self.import_vdf(filename=filename)
 
-
 	def next_page(self, page):
 		stDialog = self.builder.get_object("stDialog")
 		btBack = self.builder.get_object("btBack")
@@ -114,15 +115,13 @@ class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 		btBack.set_visible(True)
 		self._page_selected(page)
 
-
 	def _page_selected(self, page):
-		stDialog	= self.builder.get_object("stDialog")
-		hbDialog	= self.builder.get_object("hbDialog")
+		stDialog = self.builder.get_object("stDialog")
+		hbDialog = self.builder.get_object("hbDialog")
 		hbDialog.set_title(stDialog.child_get_property(page, "title"))
 		hname = "on_%s_activated" % (page.get_name(),)
 		if hasattr(self, hname):
 			getattr(self, hname)()
-
 
 	def enable_next(self, enabled=True, callback=None):
 		"""
@@ -141,18 +140,16 @@ class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 		self._next_callback = callback
 		return btNext
 
-
 	def on_btNext_clicked(self, *a):
 		cb = self._next_callback
 		self.enable_next(enabled=False)
 		cb()
 
-
 	def on_btBack_clicked(self, *a):
-		btBack			= self.builder.get_object("btBack")
-		stDialog		= self.builder.get_object("stDialog")
-		btSaveAs		= self.builder.get_object("btSaveAs")
-		btNext			= self.builder.get_object("btNext")
+		btBack = self.builder.get_object("btBack")
+		stDialog = self.builder.get_object("stDialog")
+		btSaveAs = self.builder.get_object("btSaveAs")
+		btNext = self.builder.get_object("btNext")
 		page, self._back = self._back[-1], self._back[:-1]
 		stDialog.set_visible_child(page)
 		btNext.set_visible(False)
@@ -160,12 +157,10 @@ class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 		btBack.set_visible(len(self._back) > 0)
 		self._page_selected(page)
 
-
 	def on_btExport_clicked(self, *a):
-		grSelectProfile	= self.builder.get_object("grSelectProfile")
+		grSelectProfile = self.builder.get_object("grSelectProfile")
 		self.next_page(grSelectProfile)
 
-
 	def on_btImportVdf_clicked(self, *a):
-		grVdfImport	= self.builder.get_object("grVdfImport")
+		grVdfImport = self.builder.get_object("grVdfImport")
 		self.next_page(grVdfImport)

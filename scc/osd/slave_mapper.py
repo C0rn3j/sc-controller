@@ -7,13 +7,16 @@ using libusb directly. Relies to Observe or Lock message being sent by client.
 
 Used by on-screen keyboard.
 """
+
 from collections import deque
 from scc.constants import SCButtons, LEFT, RIGHT, CPAD, DPAD, TRIGGER_MAX
 from scc.constants import STICK, RSTICK
 from scc.mapper import Mapper
 
 import logging, time
+
 log = logging.getLogger("SlaveMapper")
+
 
 class SlaveMapper(Mapper):
 	def __init__(self, profile, scheduler, keyboard=b"SCController Keyboard", mouse=None):
@@ -21,14 +24,12 @@ class SlaveMapper(Mapper):
 		self._feedback_cb = None
 
 	def set_controller(self, c):
-		""" Sets controller device, used by some (one so far) actions """
+		"""Sets controller device, used by some (one so far) actions"""
 		raise TypeError("SlaveMapper doesn't connect to controller device")
-
 
 	def get_controller(self):
-		""" Returns assigned controller device or None if no controller is set """
+		"""Returns assigned controller device or None if no controller is set"""
 		raise TypeError("SlaveMapper doesn't connect to controller device")
-
 
 	def set_feedback_callback(self, cb):
 		"""
@@ -42,14 +43,12 @@ class SlaveMapper(Mapper):
 		"""
 		self._feedback_cb = cb
 
-
 	def send_feedback(self, hapticdata):
 		"""
 		Simply calls self._feedback_cb, if set. See docstring above.
 		"""
 		if self._feedback_cb:
 			self._feedback_cb(hapticdata)
-
 
 	def handle_event(self, daemon, what, data):
 		"""

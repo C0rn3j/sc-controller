@@ -4,10 +4,12 @@ SC-Controller - Controller Registration - Tester
 
 Class that interacts with `scc hid_test` and `scc evdev_test` commands.
 """
+
 from gi.repository import GObject, Gio
 from scc.tools import find_binary
 
 import logging
+
 log = logging.getLogger("CReg.Tester")
 
 
@@ -27,11 +29,11 @@ class Tester(GObject.GObject):
 	"""
 
 	__gsignals__ = {
-		"error"		: (GObject.SignalFlags.RUN_FIRST, None, (int, )),
-		"ready"		: (GObject.SignalFlags.RUN_FIRST, None, ()),
-		"finished"		: (GObject.SignalFlags.RUN_FIRST, None, ()),
-		"axis"			: (GObject.SignalFlags.RUN_FIRST, None, (int, int)),
-		"button"		: (GObject.SignalFlags.RUN_FIRST, None, (int, bool)),
+		"error": (GObject.SignalFlags.RUN_FIRST, None, (int,)),
+		"ready": (GObject.SignalFlags.RUN_FIRST, None, ()),
+		"finished": (GObject.SignalFlags.RUN_FIRST, None, ()),
+		"axis": (GObject.SignalFlags.RUN_FIRST, None, (int, int)),
+		"button": (GObject.SignalFlags.RUN_FIRST, None, (int, bool)),
 	}
 
 	def __init__(self, driver, device_id):
@@ -42,38 +44,32 @@ class Tester(GObject.GObject):
 		self.subprocess = None
 		self.driver = driver
 		self.device_id = device_id
-		self.errorred = False	# To prevent sending 'error' signal multiple times
-
+		self.errorred = False  # To prevent sending 'error' signal multiple times
 
 	def __del__(self):
 		if self.subprocess:
 			self.subprocess.send_signal(9)
 
-
 	def start(self):
-		""" Starts driver test subprocess """
+		"""Starts driver test subprocess"""
 		cmd = [find_binary("scc")] + ["test_" + self.driver, self.device_id]
 		self.subprocess = Gio.Subprocess.new(cmd, Gio.SubprocessFlags.STDOUT_PIPE)
 		self.subprocess.wait_async(None, self._on_finished)
-		self.subprocess.get_stdout_pipe().read_bytes_async(
-			32, 0, None, self._on_read)
-
+		self.subprocess.get_stdout_pipe().read_bytes_async(32, 0, None, self._on_read)
 
 	def stop(self):
 		if self.subprocess:
-			self.subprocess.send_signal(2)	# Sigint
-
+			self.subprocess.send_signal(2)  # Sigint
 
 	def _on_finished(self, subprocess, result):
 		subprocess.wait_finish(result)
 		if self.errorred:
 			return
 		if subprocess.get_exit_status() == 0:
-			self.emit('finished')
+			self.emit("finished")
 		else:
 			self.errorred = True
-			self.emit('error', subprocess.get_exit_status())
-
+			self.emit("error", subprocess.get_exit_status())
 
 	def _on_read(self, stream, result):
 		try:
@@ -83,7 +79,7 @@ class Tester(GObject.GObject):
 			self.subprocess.send_signal(2)
 			if not self.errorred:
 				self.errorred = True
-				self.emit('error', 1)
+				self.emit("error", 1)
 			return
 		if len(data) > 0:
 			self.buffer += data
@@ -93,23 +89,21 @@ class Tester(GObject.GObject):
 					self._on_line(line)
 				except Exception as e:
 					log.exception(e)
-			self.subprocess.get_stdout_pipe().read_bytes_async(
-				32, 0, None, self._on_read)
-
+			self.subprocess.get_stdout_pipe().read_bytes_async(32, 0, None, self._on_read)
 
 	def _on_line(self, line):
 		if line.startswith(b"Axis"):
 			trash, number, value = line.split(b" ")
 			number, value = int(number), int(value)
-			self.emit('axis', number, value)
+			self.emit("axis", number, value)
 		elif line.startswith(b"ButtonPress"):
 			trash, code = line.split(b" ")
-			self.emit('button', int(code), True)
+			self.emit("button", int(code), True)
 		elif line.startswith(b"ButtonRelease"):
 			trash, code = line.split(b" ")
-			self.emit('button', int(code), False)
+			self.emit("button", int(code), False)
 		elif line.startswith(b"Ready"):
-			self.emit('ready')
+			self.emit("ready")
 		elif line.startswith(b"Axes:"):
 			self.axes = [int(x) for x in line.split(b" ")[1:] if len(x.strip())]
 		elif line.startswith(b"Buttons:"):

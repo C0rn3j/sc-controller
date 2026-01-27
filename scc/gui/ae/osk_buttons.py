@@ -6,6 +6,7 @@ Binds controller buttons on on on on on... screen keyboard.
 Retuses ButtonsComponent, but hides image, so user can't select mouse or gamepad
 button.
 """
+
 from scc.tools import _
 
 from gi.repository import Gtk, Gdk, GLib
@@ -18,20 +19,19 @@ from scc.gui.chooser import Chooser
 from scc.gui.ae import AEComponent
 
 import os, logging
+
 log = logging.getLogger("AE.Buttons")
 
-__all__ = [ 'OSKButtonsComponent' ]
+__all__ = ["OSKButtonsComponent"]
 
 
 class OSKButtonsComponent(ButtonsComponent):
 	CTXS = Action.AC_OSK
 	PRIORITY = 1
-	IMAGES = { }
-
+	IMAGES = {}
 
 	def get_button_title(self):
 		return _("Key")
-
 
 	def load(self):
 		if not self.loaded:

@@ -32,6 +32,7 @@ if ENV_VAR in os.environ:
 		for x in range(num):
 			daemon.add_controller(FakeController(x))
 
+
 class FakeController(Controller):
 	def __init__(self, number: int) -> None:
 		Controller.__init__(self)
@@ -41,7 +42,7 @@ class FakeController(Controller):
 	def get_type(self) -> str:
 		return "fake"
 
-	def set_led_level(self, level:int) -> None:
+	def set_led_level(self, level: int) -> None:
 		log.debug("FakeController %s led level set to %s", self.get_id(), level)
 
 	def __repr__(self) -> str:

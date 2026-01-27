@@ -2,6 +2,7 @@
 
 Currently setups only one thing...
 """
+
 from __future__ import annotations
 import collections
 import logging
@@ -18,6 +19,7 @@ from scc.tools import _, get_profiles_path
 
 log = logging.getLogger("IE.ImportVdf")
 
+
 class ImportVdf:
 	PROFILE_LIST = "config/localconfig.vdf"
 	STEAMPATH = "~/.steam/steam/"
@@ -25,9 +27,9 @@ class ImportVdf:
 	def __init__(self) -> None:
 		self._profile = None
 		self._lstVdfProfiles = self.builder.get_object("tvVdfProfiles").get_model()
-		self._q_games    = collections.deque()
+		self._q_games = collections.deque()
 		self._q_profiles = collections.deque()
-		self._s_games    = threading.Semaphore(0)
+		self._s_games = threading.Semaphore(0)
 		self._s_profiles = threading.Semaphore(0)
 		self._lock = threading.Lock()
 		self.__profile_load_started = False
@@ -40,7 +42,6 @@ class ImportVdf:
 			threading.Thread(target=self._load_game_names).start()
 			threading.Thread(target=self._load_profile_names).start()
 		self.on_tvVdfProfiles_cursor_changed()
-
 
 	def _load_profiles(self) -> None:
 		"""Search for file containing list of profiles and read it.
@@ -68,7 +69,7 @@ class ImportVdf:
 		Calls GLib.idle_add to send loaded data into UI.
 		"""
 		# VDF file is a ISO-8859-1 encoded file. Not UTF-8
-		data = parse_vdf(open(filename, "r", encoding = "ISO-8859-1"))
+		data = parse_vdf(open(filename, "r", encoding="ISO-8859-1"))
 		# Sanity check
 		if "UserLocalConfigStore" not in data:
 			return
@@ -76,20 +77,22 @@ class ImportVdf:
 			return
 
 		# Grab config - currently only grabs SC configs!
-		cc = data["UserLocalConfigStore"]["controller_config"][userid]["controller_steamcontroller_gordon"]["DEFAULT_FOR_TYPE"]
+		cc = data["UserLocalConfigStore"]["controller_config"][userid]["controller_steamcontroller_gordon"][
+			"DEFAULT_FOR_TYPE"
+		]
 		# Go through all games
 		listitems = []
 		i = 0
 		for gameid in cc:
 			# skip templates
-			if 'selected' not in cc[gameid]:
+			if "selected" not in cc[gameid]:
 				continue
 
 			if not self._check_for_app_manifest(gameid):
 				continue
 
 			profile_id = cc[gameid]["selected"]
-			listitems.append(( i, gameid, profile_id, None ))
+			listitems.append((i, gameid, profile_id, None))
 			i += 1
 			if len(listitems) > 10:
 				GLib.idle_add(self.fill_list, listitems)
@@ -109,7 +112,6 @@ class ImportVdf:
 		filename = os.path.join(sa_path, "appmanifest_%s.acf" % (gameid))
 		return os.path.exists(filename)
 
-
 	def _load_game_names(self) -> None:
 		"""Load names for game ids in q_games.
 
@@ -123,7 +125,7 @@ class ImportVdf:
 		if sa_path is None:
 			return
 		while True:
-			self._s_games.acquire(True) # Wait until something is added to the queue
+			self._s_games.acquire(True)  # Wait until something is added to the queue
 			try:
 				index, gameid = self._q_games.popleft()
 			except IndexError:
@@ -135,7 +137,7 @@ class ImportVdf:
 				if os.path.exists(filename):
 					try:
 						data = parse_vdf(open(filename, "r"))
-						name = data['AppState']['name']
+						name = data["AppState"]["name"]
 					except Exception as e:
 						log.error("Failed to load app manifest for '%s'", gameid)
 						log.exception(e)
@@ -145,7 +147,6 @@ class ImportVdf:
 			else:
 				name = gameid
 			GLib.idle_add(self._set_game_name, index, name)
-
 
 	@staticmethod
 	def _find_legacy_bin(path) -> str | None:
@@ -161,7 +162,6 @@ class ImportVdf:
 					return os.path.join(path, f)
 		return None
 
-
 	def _load_profile_names(self) -> None:
 		"""Load names for profiles ids in q_profiles.
 
@@ -175,7 +175,7 @@ class ImportVdf:
 			log.warning("Cannot find '%s'; Cannot import anything without it", content_path)
 			return
 		while True:
-			self._s_profiles.acquire(True)	# Wait until something is added to the queue
+			self._s_profiles.acquire(True)  # Wait until something is added to the queue
 			try:
 				index, gameid, profile_id = self._q_profiles.popleft()
 			except IndexError:
@@ -192,7 +192,7 @@ class ImportVdf:
 				log.info("Reading '%s'", filename)
 				try:
 					data = parse_vdf(open(filename, "r"))
-					name = data['controller_mappings']['title']
+					name = data["controller_mappings"]["title"]
 					GLib.idle_add(self._set_profile_name, index, name, filename)
 					break
 				except Exception as e:
@@ -228,25 +228,21 @@ class ImportVdf:
 		log.warning("Cannot find SteamApps directory")
 		return None
 
-
 	def _set_game_name(self, index, name: str) -> None:
 		self._lstVdfProfiles[index][1] = name
-
 
 	def _set_profile_name(self, index, name: str, filename: str) -> None:
 		self._lstVdfProfiles[index][2] = name
 		self._lstVdfProfiles[index][3] = filename
 
-
 	def fill_list(self, items) -> None:
 		"""Add items to profile list. Has to run in main thread, otherwise, GTK will crash."""
 		for i in items:
 			self._lstVdfProfiles.append(i)
-			self._q_games.append(( i[0], i[1] ))
+			self._q_games.append((i[0], i[1]))
 			self._s_games.release()
-			self._q_profiles.append(( i[0], i[1], i[2] ))
+			self._q_profiles.append((i[0], i[1], i[2]))
 			self._s_profiles.release()
-
 
 	def on_tvVdfProfiles_cursor_changed(self, *a) -> None:
 		"""Called when user selects profile.
@@ -261,7 +257,6 @@ class ImportVdf:
 
 		self.enable_next(filename is not None, self.import_vdf)
 
-
 	@staticmethod
 	def gen_aset_name(base_name: str, set_name: str) -> str:
 		"""Generate name for profile converted from action set."""
@@ -269,47 +264,47 @@ class ImportVdf:
 			return base_name
 		return "." + base_name + ":" + set_name.lower()
 
-
 	def on_txName_changed(self, *a) -> None:
 		"""Called when text in profile name field is changed.
 
 		Basically enables 'Save' button if name is not empty string.
 		"""
-		txName         = self.builder.get_object("txName")
+		txName = self.builder.get_object("txName")
 		lblASetsNotice = self.builder.get_object("lblASetsNotice")
-		lblASetList    = self.builder.get_object("lblASetList")
+		lblASetList = self.builder.get_object("lblASetList")
 
 		btNext = self.enable_next(True, self.vdf_import_confirmed)
-		btNext.set_label('Apply')
+		btNext.set_label("Apply")
 		btNext.set_use_stock(True)
 		if len(self._profile.action_sets) > 1:
 			lblASetsNotice.set_visible(True)
 			lblASetList.set_visible(True)
 			log.info("Imported profile contains action sets")
-			lblASetList.set_text("\n".join([
-				self.gen_aset_name(txName.get_text().strip(), x)
-				for x in self._profile.action_sets
-				if x != 'default'
-			]))
+			lblASetList.set_text(
+				"\n".join(
+					[
+						self.gen_aset_name(txName.get_text().strip(), x)
+						for x in self._profile.action_sets
+						if x != "default"
+					]
+				)
+			)
 		else:
 			lblASetsNotice.set_visible(False)
 			lblASetList.set_visible(False)
 		btNext.set_sensitive(self.check_name(txName.get_text()))
 
-
 	def on_preload_finished(self, callback, *data) -> None:
 		"""Schedules callback to be called after initial profile list is loaded."""
 		self._on_preload_finished = (callback, data)
 
-
 	def set_vdf_file(self, filename: str) -> None:
 		# TODO: Jump directly to page
 		tvVdfProfiles = self.builder.get_object("tvVdfProfiles")
-		iter = self._lstVdfProfiles.append(( -1, _("No game"), _("Dropped profile"), filename ))
+		iter = self._lstVdfProfiles.append((-1, _("No game"), _("Dropped profile"), filename))
 		tvVdfProfiles.get_selection().select_iter(iter)
 		self.window.set_page_complete(self.window.get_nth_page(0), True)
 		self.window.set_current_page(1)
-
 
 	def on_btDump_clicked(self, *a) -> None:
 		tvError = self.builder.get_object("tvError")
@@ -329,7 +324,6 @@ class ImportVdf:
 		tvError.get_buffer().set_text(dump.getvalue())
 		swError.set_visible(True)
 		btDump.set_sensitive(False)
-
 
 	def import_vdf(self, filename: str | None = None) -> None:
 		grVdfImportFinished = self.builder.get_object("grVdfImportFinished")
@@ -407,7 +401,6 @@ class ImportVdf:
 				txName.set_text(self._profile.name)
 			self.on_txName_changed()
 
-
 	def vdf_import_confirmed(self, *a) -> None:
 		name = self.builder.get_object("txName").get_text().strip()
 
@@ -420,7 +413,7 @@ class ImportVdf:
 
 			# Save action set profiles
 			for k in self._profile.action_sets:
-				if k != 'default':
+				if k != "default":
 					filename = self.gen_aset_name(name, k) + ".sccprofile"
 					path = os.path.join(get_profiles_path(), filename)
 					self._profile.action_sets[k].save(path)

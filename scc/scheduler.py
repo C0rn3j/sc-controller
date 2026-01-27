@@ -6,18 +6,19 @@ also called on main thread.
 
 Use schedule(delay, callback, *data) to register one-time task.
 """
+
 import time, queue, logging
+
 log = logging.getLogger("Scheduler")
 
 # TODO: Maybe create actual thread for this? Use poler? Scrap everything and rewrite it in GO?
 
-class Scheduler:
 
+class Scheduler:
 	def __init__(self):
 		self._scheduled = queue.PriorityQueue()
 		self._next = None
 		self._now = time.time()
-
 
 	def schedule(self, delay, callback, *data):
 		"""
@@ -35,7 +36,6 @@ class Scheduler:
 		else:
 			self._scheduled.put(task)
 		return task
-
 
 	def cancel_task(self, task):
 		"""
@@ -61,7 +61,6 @@ class Scheduler:
 			self._scheduled.put(t)
 		return found
 
-
 	def run(self):
 		self._now = time.time()
 		while self._next and self._now >= self._next.time:
@@ -71,15 +70,13 @@ class Scheduler:
 
 
 class Task:
-
 	def __init__(self, time, callback, data):
 		self.time = time
 		self.callback = callback
 		self.data = data
 
-
 	def cancel(self):
-		""" Marks task as canceled, without actually removing it from scheduler """
+		"""Marks task as canceled, without actually removing it from scheduler"""
 		self.callback = lambda *a, **b: False
 		self.data = ()
 

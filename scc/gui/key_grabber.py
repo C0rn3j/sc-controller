@@ -2,6 +2,7 @@
 
 Allows to edit button or trigger action.
 """
+
 from scc.tools import _
 
 from scc.gui.controller_widget import ControllerButton
@@ -16,16 +17,23 @@ from scc.uinput import Keys
 
 from gi.repository import Gtk, Gdk, GLib
 import os, logging
+
 log = logging.getLogger("KeyGrabber")
 
-MODIFIERS = [ Keys.KEY_LEFTCTRL, Keys.KEY_LEFTMETA, Keys.KEY_LEFTALT,
-	Keys.KEY_RIGHTALT, Keys.KEY_RIGHTMETA, Keys.KEY_RIGHTCTRL,
-	Keys.KEY_LEFTSHIFT, Keys.KEY_RIGHTSHIFT
+MODIFIERS = [
+	Keys.KEY_LEFTCTRL,
+	Keys.KEY_LEFTMETA,
+	Keys.KEY_LEFTALT,
+	Keys.KEY_RIGHTALT,
+	Keys.KEY_RIGHTMETA,
+	Keys.KEY_RIGHTCTRL,
+	Keys.KEY_LEFTSHIFT,
+	Keys.KEY_RIGHTSHIFT,
 ]
 
 
 def merge_modifiers(mods):
-	return "+".join([ key.name.split("_")[-1] for key in mods ])
+	return "+".join([key.name.split("_")[-1] for key in mods])
 
 
 # Just to speed shit up, KeyGrabber is singleton
@@ -38,12 +46,10 @@ class KeyGrabber:
 			cls._singleton = object.__new__(cls)
 		return cls._singleton
 
-
 	def __init__(self, app):
 		self.app = app
 		self.builder = None
 		self.active_mods = []
-
 
 	def grab(self, modal_for, action, callback):
 		if self.builder is None:
@@ -59,18 +65,15 @@ class KeyGrabber:
 		self.window.show()
 		self.window.set_focus()
 
-
 	def setup_widgets(self):
 		self.builder = Gtk.Builder()
 		self.builder.add_from_file(os.path.join(self.app.gladepath, self.GLADE))
 		self.window = self.builder.get_object("KeyGrab")
 		self.builder.connect_signals(self)
 
-
 	def on_KeyGrab_destroy(self, *a):
 		# Don't allow destroying
 		return True
-
 
 	def on_keyGrab_key_press_event(self, trash, event):
 		"""Handle keypress on "Grab Key" dialog.
@@ -96,7 +99,6 @@ class KeyGrabber:
 			label = key.name
 		self.builder.get_object("lblKey").set_label(label)
 
-
 	def on_keyGrab_key_release_event(self, trash, event):
 		"""
 		Handles keyrelease on "Grab Key" dialog.
@@ -118,12 +120,13 @@ class KeyGrabber:
 						return
 					self.active_mods.remove(key)
 					self.builder.get_object("tg" + key.name).set_active(False)
-				self.builder.get_object("lblKey").set_label("+".join([key.name.split("_")[-1] for key in self.active_mods]))
+				self.builder.get_object("lblKey").set_label(
+					"+".join([key.name.split("_")[-1] for key in self.active_mods])
+				)
 				return
 
 			self.callback(self.active_mods + [key])
 			self.window.hide()
-
 
 	def on_tgkey_toggled(self, obj, *a):
 		"""

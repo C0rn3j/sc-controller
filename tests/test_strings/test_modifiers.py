@@ -9,7 +9,6 @@ from . import _parses_as, parser
 
 
 class TestModifiers:
-
 	# TODO: Much more tests
 	# TODO: test_tests
 
@@ -18,5 +17,5 @@ class TestModifiers:
 		# All options
 		assert _parses_as(
 			"ball(15, 40, 15, 0.1, 3265, 4, axis(ABS_X))",
-			BallModifier(15, 40, 15, 0.1, 3265, 4, AxisAction(Axes.ABS_X))
+			BallModifier(15, 40, 15, 0.1, 3265, 4, AxisAction(Axes.ABS_X)),
 		)

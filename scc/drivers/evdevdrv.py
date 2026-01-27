@@ -17,11 +17,14 @@ try:
 	# Driver disables itself if evdev is not available
 	import evdev
 	from evdev import ecodes
+
 	HAVE_EVDEV = True
 except ImportError:
+
 	class FakeECodes:
 		def __getattr__(self, key):
 			return key
+
 	ecodes = FakeECodes()
 
 import binascii
@@ -36,16 +39,16 @@ log = logging.getLogger("evdev")
 TRIGGERS = "ltrig", "rtrig"
 FIRST_BUTTON = 288
 
-EvdevControllerInput = namedtuple('EvdevControllerInput',
-	'buttons ltrig rtrig stick_x stick_y lpad_x lpad_y rpad_x rpad_y '
-	'accel_x accel_y accel_z '
-	'gpitch groll gyaw q1 q2 q3 q4 '
-	'cpad_x cpad_y'
+EvdevControllerInput = namedtuple(
+	"EvdevControllerInput",
+	"buttons ltrig rtrig stick_x stick_y lpad_x lpad_y rpad_x rpad_y "
+	"accel_x accel_y accel_z "
+	"gpitch groll gyaw q1 q2 q3 q4 "
+	"cpad_x cpad_y",
 )
 
-AxisCalibrationData = namedtuple('AxisCalibrationData',
-	'scale offset center clamp_min clamp_max deadzone'
-)
+AxisCalibrationData = namedtuple("AxisCalibrationData", "scale offset center clamp_min clamp_max deadzone")
+
 
 class EvdevController(Controller):
 	"""Wrapper around evdev device.
@@ -56,10 +59,12 @@ class EvdevController(Controller):
 
 	PADPRESS_EMULATION_TIMEOUT = 0.2
 	ECODES = ecodes
-	flags = ( ControllerFlags.HAS_RSTICK
-			| ControllerFlags.SEPARATE_STICK
-			| ControllerFlags.HAS_DPAD
-			| ControllerFlags.NO_GRIPS )
+	flags = (
+		ControllerFlags.HAS_RSTICK
+		| ControllerFlags.SEPARATE_STICK
+		| ControllerFlags.HAS_DPAD
+		| ControllerFlags.NO_GRIPS
+	)
 
 	def __init__(self, daemon: SCCDaemon, device: InputDevice, config_file: str, config: dict):
 		try:
@@ -78,9 +83,8 @@ class EvdevController(Controller):
 			self.poller.register(self.device.fd, self.poller.POLLIN, self.input)
 			self.device.grab()
 			self._id = self._generate_id()
-		self._state = EvdevControllerInput( *[0] * len(EvdevControllerInput._fields) )
+		self._state = EvdevControllerInput(*[0] * len(EvdevControllerInput._fields))
 		self._padpressemu_task = None
-
 
 	def _parse_config(self, config: dict):
 		self._button_map = {}
@@ -110,7 +114,6 @@ class EvdevController(Controller):
 				self._dpad_map[code] = value.get("positive", False)
 				self._axis_map[code] = axis
 
-
 	def close(self):
 		self.poller.unregister(self.device.fd)
 		try:
@@ -119,22 +122,17 @@ class EvdevController(Controller):
 			pass
 		self.device.close()
 
-
 	def get_type(self):
 		return "evdev"
-
 
 	def get_id(self):
 		return self._id
 
-
 	def get_device_filename(self):
 		return self.device.path
 
-
 	def get_device_name(self):
 		return self.device.name
-
 
 	def _generate_id(self):
 		"""
@@ -145,19 +143,16 @@ class EvdevController(Controller):
 		magic_number = 0
 		id = None
 		while id is None or id in self.daemon.get_active_ids():
-			crc32 = binascii.crc32(b"%s%d" % (bytes(self.device.name, 'utf-8'), magic_number))
+			crc32 = binascii.crc32(b"%s%d" % (bytes(self.device.name, "utf-8"), magic_number))
 			id = "ev%s" % (hex(crc32).upper().strip("-0X"),)
 			magic_number += 1
 		return id
 
-
 	def get_gui_config_file(self):
 		return self.config_file
 
-
 	def __repr__(self):
 		return f"<Evdev {self.device.name}>"
-
 
 	def input(self, *a):
 		new_state = self._state
@@ -180,13 +175,13 @@ class EvdevController(Controller):
 					if not new_state.buttons & SCButtons.LPADTOUCH and axis in ("lpad_x", "lpad_y"):
 						b = new_state.buttons | SCButtons.LPAD | SCButtons.LPADTOUCH
 						need_cancel_padpressemu = True
-						new_state = new_state._replace(buttons=b, **{ axis : value })
+						new_state = new_state._replace(buttons=b, **{axis: value})
 					elif not new_state.buttons & SCButtons.RPADTOUCH and axis in ("rpad_x", "rpad_y"):
 						b = new_state.buttons | SCButtons.RPADTOUCH
 						need_cancel_padpressemu = True
-						new_state = new_state._replace(buttons=b, **{ axis : value })
+						new_state = new_state._replace(buttons=b, **{axis: value})
 					else:
-						new_state = new_state._replace(**{ axis : value })
+						new_state = new_state._replace(**{axis: value})
 				elif event.type == ecodes.EV_KEY and event.code in self._button_map:
 					if event.value:
 						b = new_state.buttons | self._button_map[event.code]
@@ -197,28 +192,27 @@ class EvdevController(Controller):
 				elif event.type == ecodes.EV_KEY and event.code in self._axis_map:
 					axis = self._axis_map[event.code]
 					if event.value:
-						new_state = new_state._replace(**{ axis : TRIGGER_MAX })
+						new_state = new_state._replace(**{axis: TRIGGER_MAX})
 					else:
-						new_state = new_state._replace(**{ axis : TRIGGER_MIN })
+						new_state = new_state._replace(**{axis: TRIGGER_MIN})
 				elif event.type == ecodes.EV_ABS and event.code in self._axis_map:
 					cal = self._calibrations[event.code]
 					value = (float(event.value) * cal.scale) + cal.offset
 					if value >= -cal.deadzone and value <= cal.deadzone:
 						value = 0
 					else:
-						value = clamp(cal.clamp_min,
-								int(value * cal.clamp_max), cal.clamp_max)
+						value = clamp(cal.clamp_min, int(value * cal.clamp_max), cal.clamp_max)
 					axis = self._axis_map[event.code]
 					if not new_state.buttons & SCButtons.LPADTOUCH and axis in ("lpad_x", "lpad_y"):
 						b = new_state.buttons | SCButtons.LPAD | SCButtons.LPADTOUCH
 						need_cancel_padpressemu = True
-						new_state = new_state._replace(buttons=b, **{ axis : value })
+						new_state = new_state._replace(buttons=b, **{axis: value})
 					elif not new_state.buttons & SCButtons.RPADTOUCH and axis in ("rpad_x", "rpad_y"):
 						b = new_state.buttons | SCButtons.RPADTOUCH
 						need_cancel_padpressemu = True
-						new_state = new_state._replace(buttons=b, **{ axis : value })
+						new_state = new_state._replace(buttons=b, **{axis: value})
 					else:
-						new_state = new_state._replace(**{ axis : value })
+						new_state = new_state._replace(**{axis: value})
 		except OSError as e:
 			# TODO: Maybe check e.errno to determine exact error
 			# all of them are fatal for now
@@ -233,11 +227,9 @@ class EvdevController(Controller):
 					if self._padpressemu_task:
 						self.mapper.cancel_task(self._padpressemu_task)
 					self._padpressemu_task = self.mapper.schedule(
-						self.PADPRESS_EMULATION_TIMEOUT,
-						self.cancel_padpress_emulation
+						self.PADPRESS_EMULATION_TIMEOUT, self.cancel_padpress_emulation
 					)
 				self.mapper.input(self, old_state, new_state)
-
 
 	def test_input(self, event):
 		if event.type == ecodes.EV_KEY:
@@ -250,7 +242,6 @@ class EvdevController(Controller):
 		elif event.type == ecodes.EV_ABS:
 			print("Axis", event.code, event.value)
 			sys.stdout.flush()
-
 
 	def cancel_padpress_emulation(self, mapper):
 		"""
@@ -286,34 +277,27 @@ class EvdevController(Controller):
 				self.mapper.input(self, old_state, new_state)
 
 		if need_reschedule:
-			self._padpressemu_task = mapper.schedule(
-				self.PADPRESS_EMULATION_TIMEOUT, self.cancel_padpress_emulation)
+			self._padpressemu_task = mapper.schedule(self.PADPRESS_EMULATION_TIMEOUT, self.cancel_padpress_emulation)
 		else:
 			self._padpressemu_task = None
-
 
 	def apply_config(self, config):
 		# TODO: This?
 		pass
 
-
 	def disconnected(self):
 		# TODO: This!
 		pass
 
-
 	# def configure(self, idle_timeout=None, enable_gyros=None, led_level=None):
-
 
 	def set_led_level(self, level):
 		# TODO: This?
 		pass
 
-
 	def set_gyro_enabled(self, enabled):
 		# TODO: This, maybe.
 		pass
-
 
 	def turnoff(self):
 		"""
@@ -322,33 +306,31 @@ class EvdevController(Controller):
 		"""
 		pass
 
-
 	def get_gyro_enabled(self):
-		""" Returns True if gyroscope input is currently enabled """
+		"""Returns True if gyroscope input is currently enabled"""
 		return False
 
-
 	def feedback(self, data):
-		""" TODO: It would be nice to have feedback... """
+		"""TODO: It would be nice to have feedback..."""
 		pass
 
 
 def parse_axis(axis):
-	min       = axis.get("min", -127)
-	max       = axis.get("max",  128)
-	center    = axis.get("center", 0)
+	min = axis.get("min", -127)
+	max = axis.get("max", 128)
+	center = axis.get("center", 0)
 	clamp_min = STICK_PAD_MIN
 	clamp_max = STICK_PAD_MAX
-	deadzone  = axis.get("deadzone", 0)
+	deadzone = axis.get("deadzone", 0)
 	offset = 0
-	if (max >= 0 and min >= 0):
+	if max >= 0 and min >= 0:
 		offset = 1
 	if max > min:
-		scale = (-2.0 / (min-max)) if min != max else 1.0
+		scale = (-2.0 / (min - max)) if min != max else 1.0
 		deadzone = abs(float(deadzone) * scale)
 		offset *= -1.0
 	else:
-		scale = (-2.0 / (min-max)) if min != max else 1.0
+		scale = (-2.0 / (min - max)) if min != max else 1.0
 		deadzone = abs(float(deadzone) * scale)
 	if axis in TRIGGERS:
 		clamp_min = TRIGGER_MIN
@@ -368,14 +350,13 @@ class EvdevDriver:
 		self._scan_thread = None
 		self._next_scan = None
 
-
 	def start(self):
-		self.daemon.get_device_monitor().add_callback("input", None, None, self.handle_new_device, self.handle_removed_device)
-
+		self.daemon.get_device_monitor().add_callback(
+			"input", None, None, self.handle_new_device, self.handle_removed_device
+		)
 
 	def set_daemon(self, daemon: SCCDaemon):
 		self.daemon = daemon
-
 
 	@staticmethod
 	def get_event_node(syspath: str):
@@ -384,15 +365,14 @@ class EvdevDriver:
 			return None
 		return f"/dev/input/{filename}"
 
-
 	def handle_new_device(self, syspath: str, *bunchofnones) -> bool:
 		# There is no way to get anything usefull from /sys/.../input node,
 		# but I'm interested about event devices here anyway
 		eventnode = EvdevDriver.get_event_node(syspath)
 		if eventnode is None:
-			return False # Not evdev
+			return False  # Not evdev
 		if eventnode in self._devices:
-			return False # Already handled
+			return False  # Already handled
 
 		try:
 			dev = evdev.InputDevice(eventnode)
@@ -428,11 +408,9 @@ class EvdevDriver:
 			return True
 		return False
 
-
 	def handle_removed_device(self, syspath, *bunchofnones):
 		eventnode = EvdevDriver.get_event_node(syspath)
 		self.device_removed(eventnode)
-
 
 	def device_removed(self, eventnode):
 		if eventnode in self._devices:
@@ -440,7 +418,6 @@ class EvdevDriver:
 			del self._devices[eventnode]
 			self.daemon.remove_controller(controller)
 			controller.close()
-
 
 	def handle_callback(self, callback, devices):
 		try:
@@ -453,7 +430,6 @@ class EvdevDriver:
 			self._devices[controller.get_device_filename()] = controller
 			self.daemon.add_controller(controller)
 			log.debug("Evdev device added: %s", controller.get_device_name())
-
 
 	def make_new_device(self, factory, evdevdevice: InputDevice, *userdata):
 		"""Similar to handle_new_device, but meant for use by other drivers.
@@ -475,7 +451,6 @@ class EvdevDriver:
 if HAVE_EVDEV:
 	# Just like USB driver, EvdevDriver is process-wide singleton
 	_evdevdrv = EvdevDriver()
-
 
 	def start(daemon):
 		_evdevdrv.start()
@@ -531,7 +506,7 @@ def get_axes(dev):
 	"""Get list of available axes."""
 	assert HAVE_EVDEV, "evdev driver is not available"
 	caps = dev.capabilities(verbose=False)
-	return [ axis for (axis, trash) in caps.get(ecodes.EV_ABS, []) ]
+	return [axis for (axis, trash) in caps.get(ecodes.EV_ABS, [])]
 
 
 def evdevdrv_test(args):
@@ -552,10 +527,8 @@ def evdevdrv_test(args):
 
 	c = EvdevController(None, dev, None, {})
 	caps = dev.capabilities(verbose=False)
-	print("Buttons:", " ".join([ str(x)
-			for x in caps.get(ecodes.EV_KEY, [])]))
-	print("Axes:", " ".join([ str(axis)
-			for (axis, trash) in caps.get(ecodes.EV_ABS, []) ]))
+	print("Buttons:", " ".join([str(x) for x in caps.get(ecodes.EV_KEY, [])]))
+	print("Axes:", " ".join([str(axis) for (axis, trash) in caps.get(ecodes.EV_ABS, [])]))
 	print("Ready")
 	sys.stdout.flush()
 	for event in dev.read_loop():
@@ -566,6 +539,7 @@ def evdevdrv_test(args):
 if __name__ == "__main__":
 	""" Called when executed as script """
 	from scc.tools import init_logging, set_logging_level
+
 	init_logging()
 	set_logging_level(True, True)
 	sys.exit(evdevdrv_test(sys.argv[1:]))

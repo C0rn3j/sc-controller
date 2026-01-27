@@ -2,6 +2,7 @@
 """
 SC-Controller - Input Display
 """
+
 from scc.tools import _, set_logging_level
 
 from gi.repository import Gtk, GLib
@@ -11,23 +12,23 @@ from scc.gui.svg_widget import SVGWidget
 from scc.osd import OSDWindow
 
 import os, sys, logging, signal, argparse
+
 log = logging.getLogger("osd.InputDisplay")
 
 
 class InputDisplay(OSDWindow):
 	IMAGE = "inputdisplay.svg"
-	HILIGHT_COLOR = "#FF00FF00"		# ARGB
-	OBSERVE_COLOR = "#00007FFF"		# ARGB
+	HILIGHT_COLOR = "#FF00FF00"  # ARGB
+	OBSERVE_COLOR = "#00007FFF"  # ARGB
 
 	def __init__(self, imagepath="/usr/share/scc/images"):
 		OSDWindow.__init__(self, "osd-menu")
 		self.daemon = None
 		self.config = None
-		self.hilights = { self.HILIGHT_COLOR : set(), self.OBSERVE_COLOR : set() }
+		self.hilights = {self.HILIGHT_COLOR: set(), self.OBSERVE_COLOR: set()}
 		self.imagepath = imagepath
 
 		self._eh_ids = []
-
 
 	def show(self):
 		self.main_area = Gtk.Fixed()
@@ -53,12 +54,10 @@ class InputDisplay(OSDWindow):
 		self.rpadTest.hide()
 		self.stickTest.hide()
 
-
 	def run(self):
 		self.daemon = DaemonManager()
 		self._connect_handlers()
 		OSDWindow.run(self)
-
 
 	def use_daemon(self, d):
 		"""
@@ -69,25 +68,41 @@ class InputDisplay(OSDWindow):
 		self._connect_handlers()
 		self.on_daemon_connected(self.daemon)
 
-
 	def _connect_handlers(self):
 		self._eh_ids += [
-			(self.daemon, self.daemon.connect('dead', self.on_daemon_died)),
-			(self.daemon, self.daemon.connect('error', self.on_daemon_died)),
-			(self.daemon, self.daemon.connect('alive', self.on_daemon_connected)),
+			(self.daemon, self.daemon.connect("dead", self.on_daemon_died)),
+			(self.daemon, self.daemon.connect("error", self.on_daemon_died)),
+			(self.daemon, self.daemon.connect("alive", self.on_daemon_connected)),
 		]
-
 
 	def on_daemon_connected(self, *a):
 		c = self.daemon.get_controllers()[0]
 		c.unlock_all()
-		c.observe(DaemonManager.nocallback, self.on_observe_failed,
-			'A', 'B', 'C', 'X', 'Y', 'START', 'BACK', 'LB', 'RB',
-			'LPAD', 'RPAD', 'LGRIP', 'RGRIP', 'LT', 'RT', 'LEFT',
-			'RIGHT', 'STICK', 'STICKPRESS')
-		c.connect('event', self.on_daemon_event_observer)
-		c.connect('lost', self.on_controller_lost)
-
+		c.observe(
+			DaemonManager.nocallback,
+			self.on_observe_failed,
+			"A",
+			"B",
+			"C",
+			"X",
+			"Y",
+			"START",
+			"BACK",
+			"LB",
+			"RB",
+			"LPAD",
+			"RPAD",
+			"LGRIP",
+			"RGRIP",
+			"LT",
+			"RT",
+			"LEFT",
+			"RIGHT",
+			"STICK",
+			"STICKPRESS",
+		)
+		c.connect("event", self.on_daemon_event_observer)
+		c.connect("lost", self.on_controller_lost)
 
 	def on_observe_failed(self, error):
 		log.error("Failed to enable test mode: %s", error)
@@ -98,13 +113,12 @@ class InputDisplay(OSDWindow):
 			log.error("=================================================================================")
 		self.quit(3)
 
-
 	def on_daemon_event_observer(self, daemon, what, data):
 		if what in (LEFT, RIGHT, STICK):
 			widget, area = {
-				LEFT  : (self.lpadTest,  "LPADTEST"),
-				RIGHT : (self.rpadTest,  "RPADTEST"),
-				STICK : (self.stickTest, "STICKTEST"),
+				LEFT: (self.lpadTest, "LPADTEST"),
+				RIGHT: (self.rpadTest, "RPADTEST"),
+				STICK: (self.stickTest, "STICKTEST"),
 			}[what]
 			# Check if stick or pad is released
 			if data[0] == data[1] == 0:
@@ -123,11 +137,7 @@ class InputDisplay(OSDWindow):
 			# Move circle
 			self.main_area.move(widget, x, y)
 		elif what in ("LT", "RT", "STICKPRESS"):
-			what = {
-				"LT" : "LEFT",
-				"RT" : "RIGHT",
-				"STICKPRESS" : "STICK"
-			}[what]
+			what = {"LT": "LEFT", "RT": "RIGHT", "STICKPRESS": "STICK"}[what]
 			if data[0]:
 				self.hilights[self.OBSERVE_COLOR].add(what)
 			else:
@@ -146,14 +156,12 @@ class InputDisplay(OSDWindow):
 		else:
 			print("event", what)
 
-
 	def _update_background(self):
 		h = {}
 		for color in self.hilights:
 			for i in self.hilights[color]:
 				h[i] = color
 		self.background.hilight(h)
-
 
 
 def sigint(*a):
@@ -165,12 +173,14 @@ if __name__ == "__main__":
 	signal.signal(signal.SIGINT, sigint)
 
 	import gi
-	gi.require_version('Gtk', '3.0')
-	gi.require_version('Rsvg', '2.0')
-	gi.require_version('GdkX11', '3.0')
+
+	gi.require_version("Gtk", "3.0")
+	gi.require_version("Rsvg", "2.0")
+	gi.require_version("GdkX11", "3.0")
 
 	from scc.tools import init_logging
 	from scc.paths import get_share_path
+
 	init_logging()
 
 	m = InputDisplay()

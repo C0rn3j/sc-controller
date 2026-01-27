@@ -6,6 +6,7 @@ register callbacks to be called when data is available in them.
 
 Callback is called as callback(fd, event) where event is one of select.POLL*
 """
+
 import logging
 import select
 
@@ -13,6 +14,7 @@ log = logging.getLogger("Poller")
 
 
 DO_NOTHING = lambda *a: False
+
 
 class Poller:
 	POLLIN = select.POLLIN
@@ -26,7 +28,6 @@ class Poller:
 		self._pool_out = ()
 		self._pool_pri = ()
 
-
 	def register(self, fd, events, callback) -> None:
 		if fd < 0:
 			raise ValueError("Invalid file descriptor")
@@ -34,21 +35,20 @@ class Poller:
 		self._callbacks[fd] = callback
 		self._generate_lists()
 
-
 	def unregister(self, fd) -> None:
-		if fd in self._events: del self._events[fd]
-		if fd in self._callbacks: del self._callbacks[fd]
+		if fd in self._events:
+			del self._events[fd]
+		if fd in self._callbacks:
+			del self._callbacks[fd]
 		self._generate_lists()
 
-
 	def _generate_lists(self) -> None:
-		self._pool_in = [ fd for fd, events in self._events.items() if events & Poller.POLLIN ]
-		self._pool_out = [ fd for fd, events in self._events.items() if events & Poller.POLLOUT ]
-		self._pool_pri = [ fd for fd, events in self._events.items() if events & Poller.POLLPRI ]
-
+		self._pool_in = [fd for fd, events in self._events.items() if events & Poller.POLLIN]
+		self._pool_out = [fd for fd, events in self._events.items() if events & Poller.POLLOUT]
+		self._pool_pri = [fd for fd, events in self._events.items() if events & Poller.POLLPRI]
 
 	def poll(self, timeout=0.01) -> None:
-		inn, out, pri = select.select( self._pool_in, self._pool_out, self._pool_pri, timeout )
+		inn, out, pri = select.select(self._pool_in, self._pool_out, self._pool_pri, timeout)
 
 		for fd in inn:
 			self._callbacks.get(fd, DO_NOTHING)(fd, Poller.POLLIN)

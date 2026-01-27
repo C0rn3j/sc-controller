@@ -1028,23 +1028,23 @@ class UsagePage(IntEnum):
 
 
 page_to_enum = {
-	UsagePage.GenericDesktopPage : GenericDesktopPage,
-	UsagePage.SimulationControlsPage : SimulationControlsPage,
-	UsagePage.VRControlsPage : VRControlsPage,
-	UsagePage.SportControlsPage : SportControlsPage,
-	UsagePage.GameControlsPage : GameControlsPage,
-	UsagePage.GenericDeviceControlsPage : GenericDeviceControlsPage,
-	UsagePage.KeyboardKeypadPage : KeyboardKeypadPage,
-	UsagePage.LedPage : LedPage,
-	UsagePage.ButtonPage : ButtonPage,
-	UsagePage.OrdinalPage : OrdinalPage,
-	UsagePage.TelephonyDevicePage : TelephonyDevicePage,
-	UsagePage.ConsumerPage : ConsumerPage,
-	UsagePage.DigitizersPage : DigitizersPage,
-	UsagePage.AlphanumericDisplayPage : AlphanumericDisplayPage,
-	UsagePage.SensorPage : SensorPage,
-	UsagePage.MedicalInstrumentPage : MedicalInstrumentPage,
-	UsagePage.VendorPage : VendorPage,
+	UsagePage.GenericDesktopPage: GenericDesktopPage,
+	UsagePage.SimulationControlsPage: SimulationControlsPage,
+	UsagePage.VRControlsPage: VRControlsPage,
+	UsagePage.SportControlsPage: SportControlsPage,
+	UsagePage.GameControlsPage: GameControlsPage,
+	UsagePage.GenericDeviceControlsPage: GenericDeviceControlsPage,
+	UsagePage.KeyboardKeypadPage: KeyboardKeypadPage,
+	UsagePage.LedPage: LedPage,
+	UsagePage.ButtonPage: ButtonPage,
+	UsagePage.OrdinalPage: OrdinalPage,
+	UsagePage.TelephonyDevicePage: TelephonyDevicePage,
+	UsagePage.ConsumerPage: ConsumerPage,
+	UsagePage.DigitizersPage: DigitizersPage,
+	UsagePage.AlphanumericDisplayPage: AlphanumericDisplayPage,
+	UsagePage.SensorPage: SensorPage,
+	UsagePage.MedicalInstrumentPage: MedicalInstrumentPage,
+	UsagePage.VendorPage: VendorPage,
 }
 
 
@@ -1183,12 +1183,12 @@ class SensorSelector(IntEnum):
 	EventMinReached = 0x17
 	EventHighThesholdCrossAbove = 0x18
 	EventHighThresholdCrossBelow = 0x19
-	EventLowThresholdCrossAbove = 0x1a
-	EventLowThresholdCrossBelow = 0x1b
-	EventZeroThresholdCrossAbove = 0x1c
-	EventZeroThresholdCrossBelow = 0x1d
-	EventPeriodExceeded = 0x1e
-	EventFrequencyExceeded = 0x1f
+	EventLowThresholdCrossAbove = 0x1A
+	EventLowThresholdCrossBelow = 0x1B
+	EventZeroThresholdCrossAbove = 0x1C
+	EventZeroThresholdCrossBelow = 0x1D
+	EventPeriodExceeded = 0x1E
+	EventFrequencyExceeded = 0x1F
 	EventComplexTrigger = 0x20
 	ConnectionTypePCIntegrated = 0x30
 	ConnectionTypePCAttached = 0x31
@@ -1219,23 +1219,23 @@ class SensorSelector(IntEnum):
 	DataFixTypeSimulatorMode = 0x88
 	DataGpsOpModeManual = 0x90
 	DataGpsOpModeAutomatic = 0x91
-	DataGpsSelModeAutonomous = 0xa0
-	DataGpsSelModeDgps = 0xa1
-	DataGpsSelModeEstimatedDeadReckoning = 0xa2
-	DataGpsSelModeManualInput = 0xa3
-	DataGpsSelModeSimulator = 0xa4
-	DataGpsSelModeDataNotValid = 0xa5
-	DataGpsStatusDataValid = 0xb0
-	DataGpsStatusDataNotValid = 0xb1
+	DataGpsSelModeAutonomous = 0xA0
+	DataGpsSelModeDgps = 0xA1
+	DataGpsSelModeEstimatedDeadReckoning = 0xA2
+	DataGpsSelModeManualInput = 0xA3
+	DataGpsSelModeSimulator = 0xA4
+	DataGpsSelModeDataNotValid = 0xA5
+	DataGpsStatusDataValid = 0xB0
+	DataGpsStatusDataNotValid = 0xB1
 	DesiredAccuracyDefault = 0x60
 	DesiredAccuracyHigh = 0x61
 	DesiredAccuracyMedium = 0x62
 	DesiredAccuracyLow = 0x63
-	GorpkKindCategory = 0xd0
-	GorpkKindType = 0xd1
-	GorpkKindEvent = 0xd2
-	GorpkKindProperty = 0xd3
-	GorpkKindDatafield = 0xd4
+	GorpkKindCategory = 0xD0
+	GorpkKindType = 0xD1
+	GorpkKindEvent = 0xD2
+	GorpkKindProperty = 0xD3
+	GorpkKindDatafield = 0xD4
 
 
 class UnitType(IntEnum):

@@ -6,6 +6,7 @@ keyboard. This mapper emulates input events on it using GTK methods.
 
 Mouse movement (but not buttons) are passed to uinput as usuall.
 """
+
 from gi.repository import Gtk, Gdk, GLib
 
 from scc.gui.gdk_to_key import KEY_TO_GDK, KEY_TO_KEYCODE
@@ -15,6 +16,7 @@ from scc.constants import SCButtons
 from scc.uinput import Keys, Scans
 
 import os, logging
+
 log = logging.getLogger("OSDModMapper")
 
 
@@ -26,32 +28,28 @@ class OSDModeMapper(SlaveMapper):
 		self.target_window = None
 
 	def on_sa_restart(self, *a):
-		""" restart / exit handler """
+		"""restart / exit handler"""
 		self.app.quit()
-
 
 	def set_target_window(self, w):
 		self.target_window = w
 
-
 	def create_keyboard(self, name):
 		return OSDModeKeyboard(self)
-
 
 	def create_mouse(self, name):
 		return OSDModeMouse(self)
 
 
 class OSDModeKeyboard:
-	""" Emulates uinput keyboard emulator """
+	"""Emulates uinput keyboard emulator"""
 
 	def __init__(self, mapper):
 		self.mapper = mapper
 		self.display = Gdk.Display.get_default()
 		self.manager = self.display.get_device_manager()
-		self.device = [ x for x in
-			self.manager.list_devices(Gdk.DeviceType.MASTER)
-			if x.get_source() == Gdk.InputSource.KEYBOARD
+		self.device = [
+			x for x in self.manager.list_devices(Gdk.DeviceType.MASTER) if x.get_source() == Gdk.InputSource.KEYBOARD
 		][0]
 
 	def pressEvent(self, keys):
@@ -63,7 +61,6 @@ class OSDModeKeyboard:
 			event.window = self.mapper.target_window
 			event.set_device(self.device)
 			Gtk.main_do_event(event)
-
 
 	def releaseEvent(self, keys=[]):
 		for k in keys:
@@ -77,21 +74,18 @@ class OSDModeKeyboard:
 
 
 class OSDModeMouse:
-	""" Emulates uinput keyboard emulator too """
+	"""Emulates uinput keyboard emulator too"""
 
 	def __init__(self, mapper):
 		self.mapper = mapper
 		self.display = Gdk.Display.get_default()
 		self.manager = self.display.get_device_manager()
-		self.device = [ x for x in
-			self.manager.list_devices(Gdk.DeviceType.MASTER)
-			if x.get_source() == Gdk.InputSource.MOUSE
+		self.device = [
+			x for x in self.manager.list_devices(Gdk.DeviceType.MASTER) if x.get_source() == Gdk.InputSource.MOUSE
 		][0]
-
 
 	def synEvent(self, *a):
 		pass
-
 
 	def keyEvent(self, key, val):
 		tp = Gdk.EventType.BUTTON_PRESS if val else Gdk.EventType.BUTTON_RELEASE
@@ -125,17 +119,16 @@ class OSDModeMouse:
 
 
 class OSDModeMappings:
-
 	ICONS = {
-		'imgOsdmodeAct'    : SCButtons.A,
-		'imgOsdmodeClose'  : SCButtons.B,
-		'imgOsdmodeExit'   : SCButtons.C,
-		'imgOsdmodeSave'   : SCButtons.Y,
-		'imgOsdmodeOK'     : SCButtons.Y,
+		"imgOsdmodeAct": SCButtons.A,
+		"imgOsdmodeClose": SCButtons.B,
+		"imgOsdmodeExit": SCButtons.C,
+		"imgOsdmodeSave": SCButtons.Y,
+		"imgOsdmodeOK": SCButtons.Y,
 	}
 
-	MAIN_WINDOW_BUTTONS = { "vbOsdmodeExit", "vbOsdmodeSave" }
-	OTHER_WINDOW_BUTTONS = { "vbOsdmodeExit", "vbOsdmodeAct", "vbOsdmodeClose", "vbOsdmodeOK" }
+	MAIN_WINDOW_BUTTONS = {"vbOsdmodeExit", "vbOsdmodeSave"}
+	OTHER_WINDOW_BUTTONS = {"vbOsdmodeExit", "vbOsdmodeAct", "vbOsdmodeClose", "vbOsdmodeOK"}
 
 	def __init__(self, app, mapper, window):
 		self.app = app
@@ -148,7 +141,6 @@ class OSDModeMappings:
 		self.app.window.connect("focus-out-event", self.on_main_window_focus_out_event)
 		self.on_main_window_focus_in_event()
 
-
 	def set_controller(self, c):
 		config = c.load_gui_config(self.app.imagepath or {})
 		for name in OSDModeMappings.ICONS:
@@ -156,13 +148,11 @@ class OSDModeMappings:
 			icon, trash = c.get_button_icon(config, OSDModeMappings.ICONS[name])
 			w.set_from_file(icon)
 
-
 	def on_main_window_focus_in_event(self, *a):
 		for x in self.OTHER_WINDOW_BUTTONS:
 			self.app.builder.get_object(x).set_visible(False)
 		for x in self.MAIN_WINDOW_BUTTONS:
 			self.app.builder.get_object(x).set_visible(True)
-
 
 	def on_main_window_focus_out_event(self, *a):
 		for x in self.MAIN_WINDOW_BUTTONS:
@@ -170,20 +160,17 @@ class OSDModeMappings:
 		for x in self.OTHER_WINDOW_BUTTONS:
 			self.app.builder.get_object(x).set_visible(True)
 
-
 	def get_target_position(self):
 		pos = self.first_window.get_position()
 		size = self.first_window.get_geometry()
 		my_size = self.window.get_window().get_geometry()
-		tx = (pos.x + 0.5 * (size.width - my_size.width))
+		tx = pos.x + 0.5 * (size.width - my_size.width)
 		ty = pos.y + size.height + 100
 		return tx, ty
-
 
 	def show(self):
 		self.window.show()
 		self.window.get_window().set_override_redirect(True)
-
 
 	def move_around(self, *a):
 		if self.first_window is None:

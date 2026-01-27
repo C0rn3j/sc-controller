@@ -2,6 +2,7 @@
 
 Various stuff that I don't care to fit anywhere else.
 """
+
 from __future__ import annotations
 
 import ctypes
@@ -28,14 +29,16 @@ from scc.paths import (
 HAVE_POSIX1E = False
 try:
 	import posix1e
+
 	HAVE_POSIX1E = True
 except ImportError:
 	pass
 
 log = logging.getLogger("tools.py")
-_ = lambda x : x
+_ = lambda x: x
 
 LOG_FORMAT = "%(levelname)s %(name)-13s %(message)s"
+
 
 def init_logging(prefix: str = "", suffix: str = ""):
 	"""Initialize logging, set custom logging format and add one logging level with name and method to call.
@@ -45,36 +48,37 @@ def init_logging(prefix: str = "", suffix: str = ""):
 	logging.basicConfig(format=LOG_FORMAT)
 	logger = logging.getLogger()
 	# Rename levels
-	logging.addLevelName(10, prefix + "D" + suffix)	# Debug
-	logging.addLevelName(20, prefix + "I" + suffix)	# Info
-	logging.addLevelName(30, prefix + "W" + suffix)	# Warning
-	logging.addLevelName(40, prefix + "E" + suffix)	# Error
+	logging.addLevelName(10, prefix + "D" + suffix)  # Debug
+	logging.addLevelName(20, prefix + "I" + suffix)  # Info
+	logging.addLevelName(30, prefix + "W" + suffix)  # Warning
+	logging.addLevelName(40, prefix + "E" + suffix)  # Error
 	# Create additional, "verbose" level
-	logging.addLevelName(15, prefix + "V" + suffix)	# Verbose
+	logging.addLevelName(15, prefix + "V" + suffix)  # Verbose
+
 	# Add 'logging.verbose' method
 	def verbose(self, msg, *args, **kwargs):
 		return self.log(15, msg, *args, **kwargs)
+
 	logging.Logger.verbose = verbose
 	# Wrap Logger._log in something that can handle utf-8 exceptions
 	old_log = logging.Logger._log
+
 	def _log(self, level, msg, args, exc_info=None, extra=None):
-		args = tuple([
-			(c.decode("utf-8") if type(c) is bytes else c)
-			for c in args
-		])
-		#msg = msg if type(msg) is str else msg.decode("utf-8")
+		args = tuple([(c.decode("utf-8") if type(c) is bytes else c) for c in args])
+		# msg = msg if type(msg) is str else msg.decode("utf-8")
 		old_log(self, level, msg, args, exc_info, extra)
+
 	logging.Logger._log = _log
 
 
 def set_logging_level(verbose, debug):
 	"""Set logging level"""
 	logger = logging.getLogger()
-	if debug: # everything
+	if debug:  # everything
 		logger.setLevel(0)
-	elif verbose: # everything but debug
+	elif verbose:  # everything but debug
 		logger.setLevel(11)
-	else: # INFO and worse
+	else:  # INFO and worse
 		logger.setLevel(20)
 
 
@@ -85,7 +89,8 @@ def ensure_size(n, lst, fill_with=None):
 	If lst is longer, it is cat.
 	"""
 	l = list(lst)
-	while len(l) < n : l.append(fill_with)
+	while len(l) < n:
+		l.append(fill_with)
 	return l[0:n]
 
 
@@ -101,20 +106,19 @@ def quat2euler(q0, q1, q2, q3):
 	yn = 2 * (q1 * q2 + q0 * q3)
 	zn = qq3 + qq2 - qq0 - qq1
 
-	pitch = atan2(xb , xa)
-	yaw   = atan2(xn , sqrt(1 - xn**2))
-	roll  = atan2(yn , zn)
+	pitch = atan2(xb, xa)
+	yaw = atan2(xn, sqrt(1 - xn**2))
+	roll = atan2(yn, zn)
 	return pitch, yaw, roll
 
 
 def point_in_gtkrect(rect, x, y):
-	return (x > rect.x and y > rect.y and
-		x < rect.x + rect.width and y < rect.y + rect.height)
+	return x > rect.x and y > rect.y and x < rect.x + rect.width and y < rect.y + rect.height
 
 
 def anglediff(a1, a2):
 	"""Expects values in radians"""
-	return (a2 - a1 + PI) % (2.0*PI) - PI
+	return (a2 - a1 + PI) % (2.0 * PI) - PI
 
 
 def degdiff(a1, a2):
@@ -131,21 +135,21 @@ def nameof(e):
 
 
 def shjoin(lst):
-	""" Joins list into shell-escaped, utf-8 encoded string """
-	s = [ x.encode("utf-8") for x in lst ]
+	"""Joins list into shell-escaped, utf-8 encoded string"""
+	s = [x.encode("utf-8") for x in lst]
 	#   - escape quotes
-	s = [ x.encode('unicode_escape') if (b'"' in x or b"'" in x) else x for x in s ]
+	s = [x.encode("unicode_escape") if (b'"' in x or b"'" in x) else x for x in s]
 	#   - quote strings with spaces
-	s = [ b"'%s'" % (x,) if b" " in x else x for x in s ]
+	s = [b"'%s'" % (x,) if b" " in x else x for x in s]
 	return b" ".join(s)
 
 
 def shsplit(s):
-	""" Returs original list from what shjoin returned """
+	"""Returs original list from what shjoin returned"""
 	lex = shlex.shlex(s, posix=True)
-	lex.escapedquotes = '"\''
+	lex.escapedquotes = "\"'"
 	lex.whitespace_split = True
-	return [ x for x in list(lex) ]
+	return [x for x in list(lex)]
 
 
 def static_vars(**kwargs):
@@ -156,6 +160,7 @@ def static_vars(**kwargs):
 		for k in kwargs:
 			setattr(func, k, kwargs[k])
 		return func
+
 	return decorate
 
 
@@ -186,8 +191,10 @@ def get_profile_name(path):
 	.sccprofile and .mod extension.
 	"""
 	parts = os.path.split(path)[-1].split(".")
-	if parts[-1] == "mod": parts = parts[0:-1]
-	if parts[-1] == "sccprofile": parts = parts[0:-1]
+	if parts[-1] == "mod":
+		parts = parts[0:-1]
+	if parts[-1] == "sccprofile":
+		parts = parts[0:-1]
 	return ".".join(parts)
 
 
@@ -256,9 +263,8 @@ def find_icon(name, prefer_bw=False, paths=None, extensions=("png", "svg")):
 
 
 def find_button_image(name, prefer_bw=False):
-	""" Similar to find_icon, but searches for button image """
-	return find_icon(nameof(name), prefer_bw,
-			paths=[get_button_images_path()], extensions=("svg",))
+	"""Similar to find_icon, but searches for button image"""
+	return find_icon(nameof(name), prefer_bw, paths=[get_button_images_path()], extensions=("svg",))
 
 
 def menu_is_default(name):
@@ -311,7 +317,7 @@ def find_binary(name):
 	if name.startswith("scc-autoswitch-daemon"):
 		# As above
 		return os.path.join(os.path.split(__file__)[0], "x11", "scc-autoswitch-daemon.py")
-	user_path = os.environ['PATH'].split(":")
+	user_path = os.environ["PATH"].split(":")
 	# Try to add the standard binary paths if not present in PATH
 	for d in ["/sbin", "/bin", "/usr/sbin", "/usr/bin"]:
 		if d not in user_path:
@@ -338,13 +344,10 @@ def find_library(libname: str) -> ctypes.CDLL:
 	# Try looking in site-packages of the current environment, pwd and ../pwd
 	for extension in so_extensions:
 		search_paths += [
-			os.path.abspath(os.path.normpath(
-				os.path.join( base_path, "..", libname + extension ))),
-			os.path.abspath(os.path.normpath(
-				os.path.join( base_path, "../..", libname + extension ))),
-			os.path.abspath(os.path.normpath(
-				os.path.join( site_packages_path, libname + extension ))),
-			]
+			os.path.abspath(os.path.normpath(os.path.join(base_path, "..", libname + extension))),
+			os.path.abspath(os.path.normpath(os.path.join(base_path, "../..", libname + extension))),
+			os.path.abspath(os.path.normpath(os.path.join(site_packages_path, libname + extension))),
+		]
 
 	for path in search_paths:
 		if os.path.exists(path):
@@ -400,15 +403,17 @@ def strip_gesture(gstr):
 		if x != last:
 			uniq.append(x)
 		last = x
-	if uniq[0] != 'i':
-		uniq = [ 'i' ] + uniq
+	if uniq[0] != "i":
+		uniq = ["i"] + uniq
 	return "".join(uniq)
 
 
-clamp = lambda low, value, high : min(high, max(low, value))
+clamp = lambda low, value, high: min(high, max(low, value))
 
 
 PId4 = PI / 4.0
+
+
 def circle_to_square(x, y):
 	"""
 	Projects coordinate in circle (of radius 1.0) to coordinate in square.

@@ -11,7 +11,9 @@ from scc.menu_data import MenuData, Submenu
 from scc.profile import Profile
 
 import sys, os, json, tarfile, tempfile, logging
+
 log = logging.getLogger("IE.Export")
+
 
 class Export(UserDataManager):
 	TP_MENU = 0
@@ -21,7 +23,6 @@ class Export(UserDataManager):
 	def __init__(self):
 		self.__profile_load_started = False
 
-
 	def on_grSelectProfile_activated(self, *a):
 		# Not an event handler, called from page_selected
 		if not self.__profile_load_started:
@@ -29,13 +30,11 @@ class Export(UserDataManager):
 			self.load_profile_list()
 		self.on_tvProfiles_cursor_changed()
 
-
 	def on_profile_selected(self, *a):
-		grMakePackage	= self.builder.get_object("grMakePackage")
-		btSaveAs		= self.builder.get_object("btSaveAs")
+		grMakePackage = self.builder.get_object("grMakePackage")
+		btSaveAs = self.builder.get_object("btSaveAs")
 		btSaveAs.set_visible(True)
 		self.next_page(grMakePackage)
-
 
 	def on_profiles_loaded(self, lst):
 		tvProfiles = self.builder.get_object("tvProfiles")
@@ -56,7 +55,6 @@ class Export(UserDataManager):
 			i += 1
 		if current_index >= 0:
 			tvProfiles.set_cursor((current_index,))
-
 
 	def _add_refereced_profile(self, model, giofile, used):
 		"""
@@ -85,7 +83,6 @@ class Export(UserDataManager):
 					self._parse_action(model, item.action, used)
 		return True
 
-
 	def _add_refereced_menu(self, model, menu_id, used):
 		"""
 		As _add_refereced_profile, but reads and parses menu file.
@@ -99,8 +96,7 @@ class Export(UserDataManager):
 				# Default and hidden, don't bother user with it
 				return
 			if filename:
-				model.append((not menu_is_default(menu_id), _("Menu"), name,
-						filename, True, self.TP_MENU))
+				model.append((not menu_is_default(menu_id), _("Menu"), name, filename, True, self.TP_MENU))
 				try:
 					menu = MenuData.from_file(filename, ActionParser())
 				except Exception as e:
@@ -113,9 +109,7 @@ class Export(UserDataManager):
 					if hasattr(item, "action"):
 						self._parse_action(model, item.action, used)
 			else:
-				model.append((False, _("Menu"), _("%s (not found)") % (name,),
-						"", False, self.TP_MENU))
-
+				model.append((False, _("Menu"), _("%s (not found)") % (name,), "", False, self.TP_MENU))
 
 	def _parse_action(self, model, action, used):
 		"""
@@ -126,26 +120,32 @@ class Export(UserDataManager):
 				filename = find_profile(action.profile)
 				used.add(action.profile)
 				if filename:
-					model.append((not profile_is_default(action.profile),
-						_("Profile"), action.profile, filename, True, self.TP_PROFILE))
-					self._add_refereced_profile(model,
-						Gio.File.new_for_path(filename), used)
+					model.append(
+						(
+							not profile_is_default(action.profile),
+							_("Profile"),
+							action.profile,
+							filename,
+							True,
+							self.TP_PROFILE,
+						)
+					)
+					self._add_refereced_profile(model, Gio.File.new_for_path(filename), used)
 				else:
-					model.append((False, _("Profile"),
-						_("%s (not found)") % (action.profile,), "",
-						False, self.TP_PROFILE))
+					model.append(
+						(False, _("Profile"), _("%s (not found)") % (action.profile,), "", False, self.TP_PROFILE)
+					)
 		elif isinstance(action, MenuAction):
 			self._add_refereced_menu(model, action.menu_id, used)
-
 
 	def on_tvProfiles_cursor_changed(self, *a):
 		"""
 		Called when user selects profile.
 		"""
-		tvProfiles	= self.builder.get_object("tvProfiles")
-		tvPackage	= self.builder.get_object("tvPackage")
-		btSaveAs	= self.builder.get_object("btSaveAs")
-		btClose		= self.builder.get_object("btClose")
+		tvProfiles = self.builder.get_object("tvProfiles")
+		tvPackage = self.builder.get_object("tvPackage")
+		btSaveAs = self.builder.get_object("btSaveAs")
+		btClose = self.builder.get_object("btClose")
 
 		package = tvPackage.get_model()
 		package.clear()
@@ -165,9 +165,8 @@ class Export(UserDataManager):
 				btSaveAs.set_visible(True)
 		else:
 			# Nothing selected
-				self.enable_next(enabled=False)
-				btSaveAs.set_visible(False)
-
+			self.enable_next(enabled=False)
+			btSaveAs.set_visible(False)
 
 	def _needs_package(self):
 		"""
@@ -176,26 +175,23 @@ class Export(UserDataManager):
 		"""
 		tvPackage = self.builder.get_object("tvPackage")
 		package = tvPackage.get_model()
-		return any([ row[0] for row in package ])
-
+		return any([row[0] for row in package])
 
 	def on_btSelectAll_clicked(self, *a):
 		tvPackage = self.builder.get_object("tvPackage")
 		package = tvPackage.get_model()
 		for row in package:
-			if row[4]:	# if enabled
-				row[0] = True	# then selected
-
+			if row[4]:  # if enabled
+				row[0] = True  # then selected
 
 	def on_crPackageCheckbox_toggled(self, cr, path):
 		tvPackage = self.builder.get_object("tvPackage")
 		package = tvPackage.get_model()
 		package[path][0] = not package[path][0]
 
-
 	def on_btSaveAs_clicked(self, *a):
 		# Grab stuff
-		tvProfiles	= self.builder.get_object("tvProfiles")
+		tvProfiles = self.builder.get_object("tvProfiles")
 		model, iter = tvProfiles.get_selection().get_selected()
 
 		# Determine format
@@ -209,8 +205,7 @@ class Export(UserDataManager):
 		f.add_pattern("*.%s" % (fmt,))
 
 		# Create dialog
-		d = Gtk.FileChooserNative.new(_("Export to File..."),
-				self.window, Gtk.FileChooserAction.SAVE)
+		d = Gtk.FileChooserNative.new(_("Export to File..."), self.window, Gtk.FileChooserAction.SAVE)
 		d.add_filter(f)
 		d.set_do_overwrite_confirmation(True)
 		# Set default filename
@@ -228,7 +223,6 @@ class Export(UserDataManager):
 				if self._export(model[iter][1], fn):
 					self.window.destroy()
 
-
 	def _export(self, giofile, target_filename):
 		"""
 		Performs actual exporting.
@@ -245,7 +239,6 @@ class Export(UserDataManager):
 
 		profile.save(target_filename)
 		return True
-
 
 	def _export_package(self, giofile, target_filename):
 		"""
@@ -284,7 +277,6 @@ class Export(UserDataManager):
 				log.error(e)
 				return False
 			return True
-
 
 		if not export_profile(tar, giofile.get_path()):
 			return False
