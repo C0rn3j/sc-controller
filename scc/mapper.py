@@ -101,7 +101,7 @@ class Mapper:
 			if abs(max - min) > STICK_PAD_MAX:
 				fuzz, flat = 16, 128
 			try:
-				axes.append(( int(ALL_AXES[i]), int(min), int(max), int(fuzz), int(flat) ))
+				axes.append(( int(ALL_AXES[i]), int(min), int(max), fuzz, flat ))
 			except IndexError:
 				# Out of axes
 				break
