@@ -1,9 +1,9 @@
 from __future__ import annotations
+
 import logging
 import os
 import time
 import traceback
-from typing import Any
 
 from scc.actions import ButtonAction, GyroAbsAction
 from scc.aliases import ALL_AXES, ALL_BUTTONS

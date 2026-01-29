@@ -4,7 +4,11 @@ This module generates Keys.BTN_x and Axes.AXIS_x aliases when imported
 """
 
 from __future__ import annotations
-from collections.abc import Sequence
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+	from collections.abc import Sequence
 from scc.uinput import Axes, Keys
 
 # TODO: look at this closer

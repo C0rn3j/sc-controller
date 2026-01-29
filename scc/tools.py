@@ -8,8 +8,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-	from collections.abc import Sequence
-	from typing import Any, Callable
+	from collections.abc import Callable, Sequence
+	from typing import Any
 
 import ctypes
 import importlib.machinery
@@ -144,17 +144,17 @@ def nameof(e: Any) -> str:
 	return e.name if hasattr(e, "name") else str(e)
 
 
-def shjoin(lst: Sequence[str]) -> str:
+def shjoin(lst: Sequence[str]) -> bytes:
 	"""Joins list into shell-escaped, utf-8 encoded string"""
 	s = [x.encode("utf-8") for x in lst]
 	#   - escape quotes
 	s = [x.encode("unicode_escape") if (b'"' in x or b"'" in x) else x for x in s]
 	#   - quote strings with spaces
 	s = [b"'%s'" % (x,) if b" " in x else x for x in s]
-	return str(b" ".join(s))
+	return b" ".join(s)
 
 
-def shsplit(s: str) -> list[str]:
+def shsplit(s: bytes) -> list[str]:
 	"""Returs original list from what shjoin returned"""
 	lex = shlex.shlex(s, posix=True)
 	lex.escapedquotes = "\"'"
