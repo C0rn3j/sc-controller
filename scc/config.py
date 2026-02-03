@@ -111,7 +111,7 @@ class Config:
 		"ignore_serials": True,
 	}
 
-	CONTROLLER_DEFAULTS = {
+	CONTROLLER_DEFAULTS: dict[str, None | int | str] = {
 		# Defaults for controller config
 		"name": None,  # Filled with controller ID on runtime
 		"icon": None,  # Determined by magic by UI
@@ -126,7 +126,7 @@ class Config:
 	}
 
 	def __init__(self):
-		self.filename = os.path.join(get_config_path(), "config.json")
+		self.filename: str = os.path.join(get_config_path(), "config.json")
 		self.reload()
 
 	def reload(self):
@@ -142,7 +142,7 @@ class Config:
 
 	def _check_dict(self, values, defaults):
 		"""
-		Recursivelly checks if 'config' contains all keys in 'defaults'.
+		Recursively checks if 'config' contains all keys in 'defaults'.
 		Creates keys with default values where missing.
 
 		Returns True if anything was changed.

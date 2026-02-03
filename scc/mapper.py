@@ -92,7 +92,7 @@ class Mapper:
 		version = int(cfg["output"]["version"], 16)
 		name = cfg["output"]["name"]
 		rumble = cfg["output"]["rumble"] and poller != None
-		axes = []
+		axes: list[tuple[int, int, int, int, int]] = []
 		i = 0
 		for min, max in cfg["output"]["axes"]:
 			fuzz, flat = 0, 0

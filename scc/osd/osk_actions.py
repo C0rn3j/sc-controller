@@ -34,7 +34,8 @@ class OSKAction(Action, SpecialAction):
 
 
 class CloseOSKAction(OSKAction):
-	SA = COMMAND = "close"
+	SA: str = "close"
+	COMMAND: str = SA
 
 	def describe(self, context):
 		if context == Action.AC_OSK:
@@ -52,7 +53,8 @@ class CloseOSKAction(OSKAction):
 
 
 class OSKCursorAction(Action, SpecialAction):
-	SA = COMMAND = "cursor"
+	SA: str = "cursor"
+	COMMAND: str = SA
 
 	def __init__(self, side):
 		Action.__init__(self, side)
@@ -81,7 +83,8 @@ class OSKCursorAction(Action, SpecialAction):
 
 
 class MoveOSKAction(OSKAction):
-	SA = COMMAND = "move"
+	SA: str = "move"
+	COMMAND: str = SA
 
 	def whole(self, mapper, x, y, what):
 		self.execute(mapper, x, y)
@@ -94,7 +97,8 @@ class MoveOSKAction(OSKAction):
 
 
 class OSKPressAction(OSKAction):
-	SA = COMMAND = "press"
+	SA: str = "press"
+	COMMAND: str = SA
 
 	def __init__(self, side):
 		OSKAction.__init__(self, side)

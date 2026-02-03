@@ -13,6 +13,11 @@ import shlex
 import sysconfig
 from math import atan2, cos, sin, sqrt
 from math import pi as PI
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
+	from typing import Any
 
 from scc.paths import (
 	get_button_images_path,
@@ -56,7 +61,7 @@ def init_logging(prefix: str = "", suffix: str = ""):
 	logging.addLevelName(15, prefix + "V" + suffix)  # Verbose
 
 	# Add 'logging.verbose' method
-	def verbose(self, msg, *args, **kwargs):
+	def verbose(self: logging.Logger, msg: str, *args, **kwargs):
 		return self.log(15, msg, *args, **kwargs)
 
 	logging.Logger.verbose = verbose
@@ -82,11 +87,11 @@ def set_logging_level(verbose, debug):
 		logger.setLevel(20)
 
 
-def ensure_size(n, lst, fill_with=None):
+def ensure_size(n: int, lst: list[Any], fill_with: Any = None) -> list[Any]:
 	"""Return copy of lst with size 'n'.
 
 	If lst is shorter, None's are appended.
-	If lst is longer, it is cat.
+	If lst is longer, it is cut.
 	"""
 	l = list(lst)
 	while len(l) < n:
@@ -94,7 +99,7 @@ def ensure_size(n, lst, fill_with=None):
 	return l[0:n]
 
 
-def quat2euler(q0, q1, q2, q3):
+def quat2euler(q0: float, q1: float, q2: float, q3: float) -> tuple[float, float, float]:
 	"""Convert quaterion to (pitch, yaw, roll).
 
 	Values are in -PI to PI range.
@@ -112,21 +117,21 @@ def quat2euler(q0, q1, q2, q3):
 	return pitch, yaw, roll
 
 
-def point_in_gtkrect(rect, x, y):
+def point_in_gtkrect(rect, x: float, y: float) -> bool:
 	return x > rect.x and y > rect.y and x < rect.x + rect.width and y < rect.y + rect.height
 
 
-def anglediff(a1, a2):
+def anglediff(a1: float, a2: float) -> float:
 	"""Expects values in radians"""
 	return (a2 - a1 + PI) % (2.0 * PI) - PI
 
 
-def degdiff(a1, a2):
+def degdiff(a1: float, a2: float) -> float:
 	"""Expects values in degrees"""
 	return (a2 - a1 + 180.0) % 360.0 - 180.0
 
 
-def nameof(e):
+def nameof(e: Any) -> str:
 	"""If 'e' is enum value, return e.name.
 
 	Otherwise, return str(e).
@@ -134,7 +139,7 @@ def nameof(e):
 	return e.name if hasattr(e, "name") else str(e)
 
 
-def shjoin(lst):
+def shjoin(lst: list) -> bytes:
 	"""Joins list into shell-escaped, utf-8 encoded string"""
 	s = [x.encode("utf-8") for x in lst]
 	#   - escape quotes
@@ -144,8 +149,8 @@ def shjoin(lst):
 	return b" ".join(s)
 
 
-def shsplit(s):
-	"""Returs original list from what shjoin returned"""
+def shsplit(s: bytes) -> list[str]:
+	"""Returns original list from what shjoin returned"""
 	lex = shlex.shlex(s, posix=True)
 	lex.escapedquotes = "\"'"
 	lex.whitespace_split = True
@@ -164,7 +169,7 @@ def static_vars(**kwargs):
 	return decorate
 
 
-def profile_is_override(name):
+def profile_is_override(name: str) -> bool:
 	"""
 	Returns True if named profile exists both in user config directory and
 	default_profiles directory.
@@ -176,7 +181,7 @@ def profile_is_override(name):
 	return False
 
 
-def profile_is_default(name):
+def profile_is_default(name: str) -> bool:
 	"""
 	Returns True if named profile exists in default_profiles directory, even
 	if it is overrided by profile in user config directory.
@@ -185,7 +190,7 @@ def profile_is_default(name):
 	return os.path.exists(os.path.join(get_default_profiles_path(), filename))
 
 
-def get_profile_name(path):
+def get_profile_name(path: str) -> str:
 	"""
 	Returns profile name for specified path. Basically removes path and
 	.sccprofile and .mod extension.
@@ -198,7 +203,7 @@ def get_profile_name(path):
 	return ".".join(parts)
 
 
-def find_profile(name):
+def find_profile(name: str) -> str | None:
 	"""
 	Returns filename for specified profile name.
 	This is done by searching for name + '.sccprofile' in ~/.config/scc/profiles
@@ -215,7 +220,12 @@ def find_profile(name):
 	return None
 
 
-def find_icon(name, prefer_bw=False, paths=None, extensions=("png", "svg")):
+def find_icon(
+	name: str | None,
+	prefer_bw: bool = False,
+	paths: tuple[str, ...] | None = None,
+	extensions: tuple[str, ...] = ("png", "svg"),
+) -> tuple[None, bool] | tuple[str, bool] | tuple[str, bool]:
 	"""
 	Returns (filename, has_colors) for specified icon name.
 	This is done by searching for name + '.png' and name + ".bw.png"
@@ -262,12 +272,14 @@ def find_icon(name, prefer_bw=False, paths=None, extensions=("png", "svg")):
 	return None, False
 
 
-def find_button_image(name, prefer_bw=False):
+def find_button_image(
+	name: str | None, prefer_bw: bool = False
+) -> tuple[None, bool] | tuple[str, bool]:
 	"""Similar to find_icon, but searches for button image"""
 	return find_icon(nameof(name), prefer_bw, paths=[get_button_images_path()], extensions=("svg",))
 
 
-def menu_is_default(name):
+def menu_is_default(name: str) -> bool:
 	"""
 	Returns True if named menu exists in default_menus directory, even
 	if it is overrided by menu in user config directory.
@@ -275,7 +287,7 @@ def menu_is_default(name):
 	return os.path.exists(os.path.join(get_default_menus_path(), name))
 
 
-def find_menu(name):
+def find_menu(name: str) -> str | None:
 	"""
 	Returns filename for specified menu name.
 	This is done by searching for name in ~/.config/scc/menus
@@ -290,7 +302,7 @@ def find_menu(name):
 	return None
 
 
-def find_controller_icon(name):
+def find_controller_icon(name: str) -> str | None:
 	"""
 	Returns filename for specified controller icon name.
 	This is done by searching for name in ~/.config/controller-icons
@@ -305,7 +317,7 @@ def find_controller_icon(name):
 	return None
 
 
-def find_binary(name):
+def find_binary(name: str) -> str:
 	"""
 	Returns full path to script or binary.
 
@@ -373,7 +385,7 @@ def find_gksudo() -> list[str] | None:
 	return None
 
 
-def check_access(filename, write_required=True) -> bool:
+def check_access(filename: str, write_required: bool = True) -> bool:
 	"""Check if user has read and optionally write access to the specified file.
 
 	Use acl first and posix file permisions if acl cannot be used.
@@ -392,13 +404,14 @@ def check_access(filename, write_required=True) -> bool:
 	return os.access(filename, os.R_OK)
 
 
-def strip_gesture(gstr):
+def strip_gesture(gstr: str):
 	"""
 	Converts gesture string to version where stroke lenght is ignored.
 
 	That means removing repeating characters and adding 'i' to front.
 	"""
-	last, uniq = None, []
+	last: None | str = None
+	uniq: list[str] = []
 	for x in gstr:
 		if x != last:
 			uniq.append(x)
@@ -408,13 +421,12 @@ def strip_gesture(gstr):
 	return "".join(uniq)
 
 
-clamp = lambda low, value, high: min(high, max(low, value))
-
+clamp: Callable[[float, float, float], float] = lambda low, value, high: min(high, max(low, value))
 
 PId4 = PI / 4.0
 
 
-def circle_to_square(x, y):
+def circle_to_square(x: float, y: float) -> tuple[float, float]:
 	"""
 	Projects coordinate in circle (of radius 1.0) to coordinate in square.
 	"""

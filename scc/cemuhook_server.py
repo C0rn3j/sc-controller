@@ -12,8 +12,13 @@ from datetime import datetime, timedelta
 from enum import IntEnum
 from threading import Thread
 from time import sleep
+from typing import TYPE_CHECKING
 
 from scc.tools import find_library
+
+if TYPE_CHECKING:
+	from _ctypes import Array
+	from ctypes import CDLL, c_char
 
 log = logging.getLogger("CemuHook")
 
@@ -36,19 +41,19 @@ class CemuhookServer:
 	timeout = timedelta(seconds=1)
 
 	def __init__(self, daemon):
-		self._lib = find_library("libcemuhook")
+		self._lib: CDLL = find_library("libcemuhook")
 		self._lib.cemuhook_data_received.argtypes = [c_int, c_char_p, c_int, c_char_p, c_size_t]
 		self._lib.cemuhook_data_received.restype = None
 		self._lib.cemuhook_feed.argtypes = [c_int, c_int, CemuhookServer.C_DATA_T]
 		self._lib.cemuhook_feed.restype = None
 		self._lib.cemuhook_socket_enable.argtypes = []
 		self._lib.cemuhook_socket_enable.restype = c_bool
-		self.last_signal = datetime.now()
+		self.last_signal: datetime = datetime.now()
 
 		if not self._lib.cemuhook_socket_enable():
 			raise OSError("cemuhook_socket_enable failed")
 
-		self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		self.socket: socket.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 		poller = daemon.get_poller()
@@ -68,7 +73,7 @@ class CemuhookServer:
 				self.feed((0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
 			sleep(1)
 
-	def on_data_received(self, fd, event_type):
+	def on_data_received(self, fd: int, event_type):
 		if fd != self.socket.fileno():
 			return
 		message, (ip, port) = self.socket.recvfrom(BUFFER_SIZE)

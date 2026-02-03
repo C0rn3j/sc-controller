@@ -26,11 +26,15 @@ import os
 from ctypes import POINTER, byref, c_bool, c_int16, c_int32, c_uint16
 from enum import IntEnum
 from math import copysign, fmod, sqrt
+from typing import TYPE_CHECKING
 
 from usb1.libusb1 import timeval
 
 from scc.cheader import defines
 from scc.tools import find_library
+
+if TYPE_CHECKING:
+	from ctypes import CDLL, Array, _Pointer
 
 UNPUT_MODULE_VERSION = 9
 
@@ -190,11 +194,11 @@ Scans = {
 
 
 class InputEvent(ctypes.Structure):
-	_fields_ = [("time", timeval), ("type", c_uint16), ("code", c_uint16), ("value", c_int32)]
+	_fields_: list[tuple[str, type]] = [("time", timeval), ("type", c_uint16), ("code", c_uint16), ("value", c_int32)]
 
 
 class FeedbackEvent(ctypes.Structure):
-	_fields_ = [
+	_fields_: list[tuple[str, type]] = [
 		("in_use", c_bool),
 		("continuous_rumble", c_bool),
 		("duration", c_int32),
@@ -205,7 +209,7 @@ class FeedbackEvent(ctypes.Structure):
 	]
 
 	def __init__(self):
-		self.in_use = False
+		self.in_use: bool = False
 
 
 class UInput:
@@ -214,10 +218,20 @@ class UInput:
 	See Gamepad, Mouse, Keyboard for examples
 	"""
 
-	def __init__(self, vendor, product, version, name, keys, axes, rels, keyboard: bool = False, rumble: bool = False):
-		self._lib = None
+	def __init__(
+		self,
+		vendor: int,
+		product: int,
+		version: int,
+		name: str,
+		keys, # : Sequence[int],
+		axes, # : Sequence[tuple[int]],
+		rels, # : Sequence[int],
+		keyboard: bool = False,
+		rumble: bool = False,
+	):
 		self._k = keys
-		self.name = name
+		self.name: str = name
 		if not axes or len(axes) == 0:
 			self._a, self._amin, self._amax, self._afuzz, self._aflat = [[]] * 5
 		else:
@@ -225,8 +239,8 @@ class UInput:
 
 		self._r = rels
 
-		self._lib = find_library("libuinput")
-		self._ff_events = None
+		self._lib: CDLL = find_library("libuinput")
+		self._ff_events: Array[_Pointer[FeedbackEvent]] | None = None
 		if rumble:
 			self._ff_events = (POINTER(FeedbackEvent) * MAX_FEEDBACK_EFFECTS)()
 			for i in range(MAX_FEEDBACK_EFFECTS):
@@ -235,7 +249,7 @@ class UInput:
 		try:
 			if self._lib.uinput_module_version() != UNPUT_MODULE_VERSION:
 				raise Exception()
-		except:
+		except Exception:
 			import sys
 
 			print("Invalid native module version. Please, recompile 'libuinput.so'", file=sys.stderr)
@@ -243,7 +257,7 @@ class UInput:
 				"If you are running sc-controller from source, you can do this by removing 'build' directory",
 				file=sys.stderr,
 			)
-			print("and runinng 'python setup.py build' or 'run.sh' script", file=sys.stderr)
+			print("and running 'python setup.py build' or 'run.sh' script", file=sys.stderr)
 			raise Exception("Invalid native module version")
 
 		c_k = (ctypes.c_uint16 * len(self._k))(*self._k)
