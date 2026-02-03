@@ -1,10 +1,28 @@
 import inspect
 
 from scc.constants import STICK, SCButtons
-from scc.special_actions import *
-from scc.uinput import Axes, Keys, Rels
+from scc.modifiers import NameModifier
+from scc.special_actions import (
+	Action,
+	ChangeProfileAction,
+	ClearOSDAction,
+	DialogAction,
+	GesturesAction,
+	GridMenuAction,
+	HorizontalMenuAction,
+	KeyboardAction,
+	LedAction,
+	MenuAction,
+	OSDAction,
+	PositionModifier,
+	QuickMenuAction,
+	RadialMenuAction,
+	RestartDaemonAction,
+	ShellCommandAction,
+	TurnOffAction,
+)
 
-from . import _parses_as_itself, parser
+from . import _parses_as_itself
 
 MENU_CLASSES = (MenuAction, HorizontalMenuAction, GridMenuAction, RadialMenuAction, QuickMenuAction)
 
