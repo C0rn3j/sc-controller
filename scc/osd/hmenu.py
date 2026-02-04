@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Horisontal OSD Menu
+"""SC-Controller - Horisontal OSD Menu
 
 Works as OSD menu, but displays all items in one row.
 
@@ -8,15 +7,15 @@ Designed mainly as RPG numeric pad display and looks
 awfull with larger number of items.
 """
 
-from scc.tools import _, set_logging_level
-
-from gi.repository import Gtk
-from scc.menu_data import Separator, Submenu
-from scc.constants import STICK_PAD_MIN
-from scc.osd.grid_menu import GridMenu
-from scc.osd.menu import MenuIcon
 
 import logging
+
+from gi.repository import Gtk
+
+from scc.constants import STICK_PAD_MIN
+from scc.menu_data import Separator, Submenu
+from scc.osd.grid_menu import GridMenu
+from scc.osd.menu import MenuIcon
 
 log = logging.getLogger("osd.hmenu")
 
@@ -31,18 +30,16 @@ class HorizontalMenu(GridMenu):
 		return g
 
 	def generate_widget(self, item):
-		"""
-		Generates gtk widget for specified menutitem
+		"""Generates gtk widget for specified menutitem
 		Ignores Submenus and Separators but applies icon size
 		"""
 		if isinstance(item, (Separator, Submenu)) or item.id is None:
 			return None
-		else:
-			widget = GridMenu.generate_widget(self, item)
-			icon = widget.get_children()[-1]
-			if self._size > 1 and isinstance(icon, MenuIcon):
-				widget.set_size_request(-1, 32 + self._size * 3)
-			return widget
+		widget = GridMenu.generate_widget(self, item)
+		icon = widget.get_children()[-1]
+		if self._size > 1 and isinstance(icon, MenuIcon):
+			widget.set_size_request(-1, 32 + self._size * 3)
+		return widget
 
 	def pack_items(self, parent, items):
 		x = 0

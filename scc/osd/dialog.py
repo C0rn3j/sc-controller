@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - OSD Dialog
+"""SC-Controller - OSD Dialog
 
 Display dialog with text and set of items that user can navigate through and
 prints chosen item id to stdout
 """
 
-from gi.repository import Gtk, GdkX11
-from scc.gui.daemon_manager import DaemonManager
-from scc.osd import OSDWindow, StickController
-from scc.lib import xwrappers as X
-from scc.constants import DEFAULT, STICK
-from scc.menu_data import MenuData
-from scc.config import Config
+import logging
+import sys
 
-import sys, logging
+from gi.repository import GdkX11, Gtk
+
+from scc.config import Config
+from scc.constants import DEFAULT
+from scc.gui.daemon_manager import DaemonManager
+from scc.lib import xwrappers as X
+from scc.menu_data import MenuData
+from scc.osd import OSDWindow, StickController
 
 log = logging.getLogger("osd.dialog")
 
@@ -68,8 +69,7 @@ class Dialog(OSDWindow):
 			self._buttons.pack_end(item.widget, True, True, 0)
 
 	def use_daemon(self, d):
-		"""
-		Allows (re)using already existing DaemonManager instance in same process.
+		"""Allows (re)using already existing DaemonManager instance in same process.
 		use_config() should be be called before parse_argumets() if this is used.
 		"""
 		self.daemon = d
@@ -77,8 +77,7 @@ class Dialog(OSDWindow):
 		self.on_daemon_connected(self.daemon)
 
 	def use_config(self, c):
-		"""
-		Allows reusing already existin Config instance in same process.
+		"""Allows reusing already existin Config instance in same process.
 		Has to be called before parse_argumets()
 		"""
 		self.config = c
@@ -88,8 +87,7 @@ class Dialog(OSDWindow):
 		return None
 
 	def get_selected_item_id(self):
-		"""
-		Returns ID of selected item or None if nothing is selected.
+		"""Returns ID of selected item or None if nothing is selected.
 		"""
 		if self._selected:
 			return self._selected.id
@@ -98,10 +96,10 @@ class Dialog(OSDWindow):
 	def _add_arguments(self):
 		OSDWindow._add_arguments(self)
 		self.argparser.add_argument(
-			"--confirm-with", type=str, metavar="button", default=DEFAULT, help="button used to confirm choice"
+			"--confirm-with", type=str, metavar="button", default=DEFAULT, help="button used to confirm choice",
 		)
 		self.argparser.add_argument(
-			"--cancel-with", type=str, metavar="button", default=DEFAULT, help="button used to cancel dialog"
+			"--cancel-with", type=str, metavar="button", default=DEFAULT, help="button used to cancel dialog",
 		)
 		self.argparser.add_argument(
 			"--feedback-amplitude",
@@ -244,8 +242,7 @@ class Dialog(OSDWindow):
 			if self.select(i):
 				break
 			i += direction
-			if start < 0:
-				start = 0
+			start = max(start, 0)
 
 	def on_stick_direction(self, trash, x, y):
 		if x != 0:

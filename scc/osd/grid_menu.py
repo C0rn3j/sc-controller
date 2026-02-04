@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Grid OSD Menu
+"""SC-Controller - Grid OSD Menu
 
 Works as OSD menu, but displays item in (as rectangluar as possible - and
 that's usually not very much) grid.
 """
 
-from scc.tools import _, set_logging_level
+
+import logging
+import math
 
 from gi.repository import Gtk
+
 from scc.menu_data import Separator, Submenu
 from scc.osd.menu import Menu, MenuIcon
-from scc.osd import OSDWindow
 from scc.tools import find_icon
-
-import math, logging
 
 log = logging.getLogger("osd.gridmenu")
 
@@ -52,27 +51,25 @@ class GridMenu(Menu):
 		if x != 0:
 			self.next_item(-x)
 		elif y != 0:
-			for i in range(0, self.ipr):
+			for i in range(self.ipr):
 				self.next_item(y)
 
 	def generate_widget(self, item):
 		if isinstance(item, Separator):
 			# Ignored here
 			return None
-		elif item.id is None:
+		if item.id is None:
 			# Dummies are ignored as well
 			return None
-		else:
-			icon_file, has_colors = find_icon(item.icon, False)
-			if icon_file:
-				# Gridmenu hides label when icon is displayed
-				widget = Gtk.Button()
-				widget.set_relief(Gtk.ReliefStyle.NONE)
-				widget.set_name("osd-menu-item-big-icon")
-				if isinstance(item, Submenu):
-					item.callback = self.show_submenu
-				icon = MenuIcon(icon_file, has_colors)
-				widget.add(icon)
-				return widget
-			else:
-				return Menu.generate_widget(self, item)
+		icon_file, has_colors = find_icon(item.icon, False)
+		if icon_file:
+			# Gridmenu hides label when icon is displayed
+			widget = Gtk.Button()
+			widget.set_relief(Gtk.ReliefStyle.NONE)
+			widget.set_name("osd-menu-item-big-icon")
+			if isinstance(item, Submenu):
+				item.callback = self.show_submenu
+			icon = MenuIcon(icon_file, has_colors)
+			widget.add(icon)
+			return widget
+		return Menu.generate_widget(self, item)

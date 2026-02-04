@@ -36,8 +36,7 @@ from ctypes import (
 
 
 def _load_lib(*names):
-	"""
-	Tries multiple alternative names to load .so library.
+	"""Tries multiple alternative names to load .so library.
 	"""
 	for l in names:
 		try:
@@ -322,9 +321,8 @@ def get_window_geometry(dpy, win):
 	trash = XID()
 	if translate_coordinates(dpy, win, get_default_root_window(dpy), 0, 0, byref(x), byref(y), byref(trash)):
 		return x.value, y.value, attrs.width, attrs.height
-	else:
-		# translate_coordinates failed
-		return attrs.x, attrs.y, attrs.width, attrs.height
+	# translate_coordinates failed
+	return attrs.x, attrs.y, attrs.width, attrs.height
 
 
 def get_screen_size(dpy):
@@ -332,8 +330,7 @@ def get_screen_size(dpy):
 
 
 def get_mouse_pos(dpy, relative_to=None):
-	"""
-	Returns mouse position relative to specified window or to screen, if no
+	"""Returns mouse position relative to specified window or to screen, if no
 	window is specified.
 	"""
 	if relative_to is None:
@@ -358,8 +355,7 @@ def get_mouse_pos(dpy, relative_to=None):
 
 
 def set_mouse_pos(dpy, x, y, relative_to=None):
-	"""
-	Sets mouse position relative to specified window or to screen, if no
+	"""Sets mouse position relative to specified window or to screen, if no
 	window is specified.
 	"""
 	if relative_to is None:
@@ -369,8 +365,7 @@ def set_mouse_pos(dpy, x, y, relative_to=None):
 
 
 def get_window_prop(dpy, window, prop_name, max_size=2):
-	"""
-	Returns (nitems, property) of specified window or (-1, None) if anything fails.
+	"""Returns (nitems, property) of specified window or (-1, None) if anything fails.
 	Returned 'property' is POINTER(c_void_p) and has to be freed using X.free().
 	"""
 	if type(prop_name) is str:
@@ -381,7 +376,7 @@ def get_window_prop(dpy, window, prop_name, max_size=2):
 	nitems, bytes_after = c_ulong(), c_ulong()
 	prop = c_void_p()
 
-	if SUCCESS == get_window_property(
+	if get_window_property(
 		dpy,
 		window,
 		prop_atom,
@@ -394,14 +389,13 @@ def get_window_prop(dpy, window, prop_name, max_size=2):
 		byref(nitems),
 		byref(bytes_after),
 		byref(prop),
-	):
+	) == SUCCESS:
 		return nitems.value, prop
 	return -1, None
 
 
 def get_current_window(dpy):
-	"""
-	Returns active window or root window if there is no active.
+	"""Returns active window or root window if there is no active.
 	"""
 	# Try using WM-provided info first
 	trash, prop = get_window_prop(dpy, get_default_root_window(dpy), "_NET_ACTIVE_WINDOW")
@@ -419,8 +413,7 @@ def get_current_window(dpy):
 
 
 def get_window_type(dpy, window):
-	"""
-	Returns _NET_WM_WINDOW_TYPE value for window specified or None if anything
+	"""Returns _NET_WM_WINDOW_TYPE value for window specified or None if anything
 	fails while receiving it.
 	"""
 	trash, prop = get_window_prop(dpy, window, "_NET_WM_WINDOW_TYPE")
@@ -432,8 +425,7 @@ def get_window_type(dpy, window):
 
 
 def get_window_title(dpy, window):
-	"""
-	Returns window title or None if title cannot be obtained.
+	"""Returns window title or None if title cannot be obtained.
 	"""
 	for prop_name in ("_NET_WM_NAME", "WM_NAME"):
 		trash, prop = get_window_prop(dpy, window, prop_name, max_size=2048)
@@ -449,8 +441,7 @@ def get_window_title(dpy, window):
 
 
 def get_window_class(dpy, window):
-	"""
-	Returns window class or None, None if class cannot be obtained.
+	"""Returns window class or None, None if class cannot be obtained.
 	"""
 	s = alloc_class_hint()
 	if s:
@@ -464,8 +455,7 @@ def get_window_class(dpy, window):
 
 
 def get_wm_state(dpy, window):
-	"""
-	Returns list of _NET_WM_STATE atoms assotiated with window or empty list
+	"""Returns list of _NET_WM_STATE atoms assotiated with window or empty list
 	if list be obtained.
 	"""
 	count, state = get_window_prop(dpy, window, "_NET_WM_STATE", 1024)

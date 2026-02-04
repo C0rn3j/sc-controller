@@ -3,28 +3,25 @@
 Display menu that user can navigate through and prints chosen item id to stdout
 """
 
-from scc.tools import _
-
-from gi.repository import Gtk, GLib, Gio, Gdk, GdkX11, GdkPixbuf
-from scc.tools import point_in_gtkrect, find_menu, find_icon
-from scc.tools import circle_to_square, clamp
-from scc.constants import LEFT, RIGHT, SAME, STICK, ControllerFlags
-from scc.constants import DEFAULT, STICK_PAD_MAX, SCButtons
-from scc.menu_data import MenuData, Separator, Submenu
-from scc.gui.daemon_manager import DaemonManager
-from scc.osd import OSDWindow, StickController
-from scc.paths import get_share_path
-from scc.lib import xwrappers as X
-from scc.config import Config
+import logging
+import os
+import sys
 from math import sqrt
 
-import os, sys, logging
+from gi.repository import Gdk, GdkPixbuf, GdkX11, Gio, GLib, Gtk
+
+from scc.config import Config
+from scc.constants import DEFAULT, LEFT, RIGHT, SAME, STICK, STICK_PAD_MAX, ControllerFlags, SCButtons
+from scc.gui.daemon_manager import DaemonManager
+from scc.lib import xwrappers as X
+from scc.menu_data import MenuData, Separator, Submenu
+from scc.osd import OSDWindow, StickController
+from scc.paths import get_share_path
+from scc.tools import _, circle_to_square, clamp, find_icon, find_menu
 
 log = logging.getLogger("osd.menu")
 
 # Fill MENU_GENERATORS dict
-import scc.osd.menu_generators
-import scc.x11.autoswitcher
 
 
 class Menu(OSDWindow):
@@ -70,8 +67,7 @@ class Menu(OSDWindow):
 		self._cancel_with = "B"
 
 	def set_is_submenu(self):
-		"""
-		Marks menu as submenu. This changes behaviour of some methods,
+		"""Marks menu as submenu. This changes behaviour of some methods,
 		especially disables (un)locking of input stick and buttons.
 		"""
 		self._is_submenu = True
@@ -86,8 +82,7 @@ class Menu(OSDWindow):
 			parent.pack_start(item.widget, True, True, 0)
 
 	def use_daemon(self, d):
-		"""
-		Allows (re)using already existing DaemonManager instance in same process.
+		"""Allows (re)using already existing DaemonManager instance in same process.
 		use_config() should be be called before parse_argumets() if this is used.
 		"""
 		self.daemon = d
@@ -96,21 +91,18 @@ class Menu(OSDWindow):
 			self.on_daemon_connected(self.daemon)
 
 	def use_config(self, c):
-		"""
-		Allows reusing already existin Config instance in same process.
+		"""Allows reusing already existin Config instance in same process.
 		Has to be called before parse_argumets()
 		"""
 		self.config = c
 
 	def get_menuid(self):
-		"""
-		Returns ID of used menu.
+		"""Returns ID of used menu.
 		"""
 		return self._menuid
 
 	def get_selected_item_id(self):
-		"""
-		Returns ID of selected item or None if nothing is selected.
+		"""Returns ID of selected item or None if nothing is selected.
 		"""
 		if self._selected:
 			return self._selected.id
@@ -128,10 +120,10 @@ class Menu(OSDWindow):
 			help="which pad or stick should be used to navigate menu",
 		)
 		self.argparser.add_argument(
-			"--confirm-with", type=str, metavar="button", default=DEFAULT, help="button used to confirm choice"
+			"--confirm-with", type=str, metavar="button", default=DEFAULT, help="button used to confirm choice",
 		)
 		self.argparser.add_argument(
-			"--cancel-with", type=str, metavar="button", default=DEFAULT, help="button used to cancel menu"
+			"--cancel-with", type=str, metavar="button", default=DEFAULT, help="button used to cancel menu",
 		)
 		self.argparser.add_argument(
 			"--confirm-with-release",
@@ -139,7 +131,7 @@ class Menu(OSDWindow):
 			help="confirm choice with button release instead of button press",
 		)
 		self.argparser.add_argument(
-			"--cancel-with-release", action="store_true", help="cancel menu with button release instead of button press"
+			"--cancel-with-release", action="store_true", help="cancel menu with button release instead of button press",
 		)
 		self.argparser.add_argument("--use-cursor", "-u", action="store_true", help="display and use cursor")
 		self.argparser.add_argument("--size", type=int, help="sets prefered width or height")
@@ -149,10 +141,10 @@ class Menu(OSDWindow):
 			help="enables and sets power of feedback effect generated when active menu option is changed",
 		)
 		self.argparser.add_argument(
-			"--from-profile", "-p", type=str, metavar="profile_file menu_name", help="load menu items from profile file"
+			"--from-profile", "-p", type=str, metavar="profile_file menu_name", help="load menu items from profile file",
 		)
 		self.argparser.add_argument(
-			"--from-file", "-f", type=str, metavar="filename", help="load menu items from json file"
+			"--from-file", "-f", type=str, metavar="filename", help="load menu items from json file",
 		)
 		self.argparser.add_argument("--print-items", action="store_true", help="prints menu items to stdout")
 		self.argparser.add_argument("items", type=str, nargs="*", metavar="id title", help="Menu items")
@@ -167,8 +159,7 @@ class Menu(OSDWindow):
 			else:
 				x, y = Menu._get_on_screen_position(parent)
 			return a.x + x, a.y + y
-		else:
-			return a.x, a.y
+		return a.x, a.y
 
 	def parse_menu(self):
 		if self.args.from_profile:
@@ -240,54 +231,53 @@ class Menu(OSDWindow):
 			widget.set_relief(Gtk.ReliefStyle.NONE)
 			widget.set_name("osd-menu-separator")
 			return widget
-		elif isinstance(item, Separator):
+		if isinstance(item, Separator):
 			widget = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
 			widget.set_name("osd-menu-separator")
 			return widget
+		widget = Gtk.Button.new_with_label(item.label)
+		widget.set_relief(Gtk.ReliefStyle.NONE)
+		if hasattr(widget.get_children()[0], "set_xalign"):
+			widget.get_children()[0].set_xalign(0)
 		else:
-			widget = Gtk.Button.new_with_label(item.label)
-			widget.set_relief(Gtk.ReliefStyle.NONE)
-			if hasattr(widget.get_children()[0], "set_xalign"):
-				widget.get_children()[0].set_xalign(0)
-			else:
-				widget.get_children()[0].set_halign(Gtk.Align.START)
-			if isinstance(item, Submenu):
-				item.callback = self.show_submenu
-				label1 = widget.get_children()[0]
-				label2 = Gtk.Label(_(">>"))
-				label2.set_property("margin-left", 30)
-				box = Gtk.Box(Gtk.Orientation.HORIZONTAL)
-				widget.remove(label1)
-				box.pack_start(label1, True, True, 1)
-				box.pack_start(label2, False, True, 1)
-				widget.add(box)
-				widget.set_name("osd-menu-item")
-			elif item.id is None:
-				widget.set_name("osd-menu-dummy")
-			else:
-				widget.set_name("osd-menu-item")
+			widget.get_children()[0].set_halign(Gtk.Align.START)
+		if isinstance(item, Submenu):
+			item.callback = self.show_submenu
+			label1 = widget.get_children()[0]
+			label2 = Gtk.Label(_(">>"))
+			label2.set_property("margin-left", 30)
+			box = Gtk.Box(Gtk.Orientation.HORIZONTAL)
+			widget.remove(label1)
+			box.pack_start(label1, True, True, 1)
+			box.pack_start(label2, False, True, 1)
+			widget.add(box)
+			widget.set_name("osd-menu-item")
+		elif item.id is None:
+			widget.set_name("osd-menu-dummy")
+		else:
+			widget.set_name("osd-menu-item")
 
-			if isinstance(item.icon, Gio.FileIcon):
-				icon_file = item.icon.get_file().get_path()
-				has_colors = True
-			elif isinstance(item.icon, Gio.ThemedIcon):
-				icon = Gtk.IconTheme.get_default().choose_icon(item.icon.get_names(), 64, 0)
-				icon_file = icon.get_filename() if icon else None
-				has_colors = True
-			else:
-				icon_file, has_colors = find_icon(item.icon, self.PREFER_BW_ICONS)
+		if isinstance(item.icon, Gio.FileIcon):
+			icon_file = item.icon.get_file().get_path()
+			has_colors = True
+		elif isinstance(item.icon, Gio.ThemedIcon):
+			icon = Gtk.IconTheme.get_default().choose_icon(item.icon.get_names(), 64, 0)
+			icon_file = icon.get_filename() if icon else None
+			has_colors = True
+		else:
+			icon_file, has_colors = find_icon(item.icon, self.PREFER_BW_ICONS)
 
-			if icon_file:
-				icon = MenuIcon(icon_file, has_colors)
-				label = widget.get_children()[0]
-				for c in [] + widget.get_children():
-					widget.remove(c)
-				box = Gtk.Box()
-				box.pack_start(icon, False, True, 0)
-				box.pack_start(label, True, True, 10)
-				widget.add(box)
+		if icon_file:
+			icon = MenuIcon(icon_file, has_colors)
+			label = widget.get_children()[0]
+			for c in [] + widget.get_children():
+				widget.remove(c)
+			box = Gtk.Box()
+			box.pack_start(icon, False, True, 0)
+			box.pack_start(label, True, True, 10)
+			widget.add(box)
 
-			return widget
+		return widget
 
 	def select(self, index):
 		if self._selected:
@@ -443,8 +433,7 @@ class Menu(OSDWindow):
 				# Not a separator
 				break
 			i += direction
-			if start < 0:
-				start = 0
+			start = max(start, 0)
 
 	def on_submenu_closed(self, *a):
 		self.set_name("osd-menu")
@@ -486,7 +475,7 @@ class Menu(OSDWindow):
 					self._confirm_with,
 					"--cancel-with",
 					self._cancel_with,
-				]
+				],
 			)
 			self._submenu.set_is_submenu()
 			self._submenu.use_daemon(self.daemon)
@@ -497,8 +486,7 @@ class Menu(OSDWindow):
 			self.set_name("osd-menu-inactive")
 
 	def _control_equals_cancel(self, daemon, x, y):
-		"""
-		Called by on_event in that very special case when both confirm_with
+		"""Called by on_event in that very special case when both confirm_with
 		and cancel_with are set to STICK.
 
 		Separated because RadialMenu overrides on_event and still
@@ -519,14 +507,14 @@ class Menu(OSDWindow):
 	def on_event(self, daemon, what, data):
 		if self._submenu:
 			return self._submenu.on_event(daemon, what, data)
-		if what == self._control_with or what == "LEFT" and self._control_with_dpad:
+		if what == self._control_with or (what == "LEFT" and self._control_with_dpad):
 			x, y = data
 			if self._use_cursor:
 				# Special case, both confirm_with and cancel_with
 				# can be set to STICK
 				if self._cancel_with == STICK and self._control_with == STICK:
 					if self._control_equals_cancel(daemon, x, y):
-						return
+						return None
 
 				pad_w = self.cursor.get_allocation().width * 0.5
 				pad_h = self.cursor.get_allocation().height * 0.5

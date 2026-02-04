@@ -3,13 +3,12 @@
 Display menu that user can navigate through and print chosen item id to stdout
 """
 
-import json
 import logging
 import os
 import sys
 from xml.etree import ElementTree as ET
 
-from gi.repository import Gdk, GdkPixbuf, GdkX11, GLib, GObject, Gtk, cairo
+from gi.repository import Gdk, GdkPixbuf, GdkX11, Gtk
 
 import scc.osd.osk_actions
 from scc.actions import Action
@@ -20,18 +19,13 @@ from scc.constants import (
 	RIGHT,
 	STICK,
 	STICK_PAD_MAX,
-	STICK_PAD_MAX_HALF,
-	STICK_PAD_MIN,
-	STICK_PAD_MIN_HALF,
 	ControllerFlags,
 	SCButtons,
 )
-from scc.gui.daemon_manager import ControllerManager, DaemonManager
-from scc.gui.gdk_to_key import KEY_TO_GDK
+from scc.gui.daemon_manager import DaemonManager
 from scc.gui.keycode_to_key import KEY_TO_KEYCODE
 from scc.gui.svg_widget import SVGEditor, SVGWidget
 from scc.lib import xwrappers as X
-from scc.menu_data import MenuData
 from scc.modifiers import ModeModifier
 from scc.osd import OSDWindow
 from scc.osd.slave_mapper import SlaveMapper
@@ -39,7 +33,7 @@ from scc.osd.timermanager import TimerManager
 from scc.parser import TalkingActionParser
 from scc.paths import get_config_path, get_share_path
 from scc.profile import Profile
-from scc.tools import _, circle_to_square, clamp, find_button_image, find_profile, point_in_gtkrect
+from scc.tools import circle_to_square, clamp, find_button_image, find_profile
 from scc.uinput import Keys
 
 log = logging.getLogger("osd.keyboard")
@@ -136,8 +130,7 @@ class KeyboardImage(Gtk.DrawingArea):
 
 	@staticmethod
 	def increase_contrast(buf):
-		"""
-		Takes input image, which is assumed to be grayscale RGBA and turns it
+		"""Takes input image, which is assumed to be grayscale RGBA and turns it
 		into "symbolic" image by inverting colors of pixels where opacity is
 		greater than threshold.
 		"""
@@ -153,14 +146,13 @@ class KeyboardImage(Gtk.DrawingArea):
 
 		pixels = b"".join([chr(x).encode("latin-1") for x in pixels])
 		rv = GdkPixbuf.Pixbuf.new_from_data(
-			pixels, buf.get_colorspace(), buf.get_has_alpha(), buf.get_bits_per_sample(), w, h, stride, None
+			pixels, buf.get_colorspace(), buf.get_has_alpha(), buf.get_bits_per_sample(), w, h, stride, None,
 		)
 		rv.pixels = pixels  # Has to be kept in memory
 		return rv
 
 	def get_button_image(self, x, size):
-		"""
-		Loads and returns button image as pixbuf.
+		"""Loads and returns button image as pixbuf.
 		Pixbufs are cached.
 		"""
 		if x not in self._button_images:
@@ -366,8 +358,7 @@ class Keyboard(OSDWindow, TimerManager):
 		self.background.color_text = _get("text")
 
 	def use_daemon(self, d):
-		"""
-		Allows (re)using already existing DaemonManager instance in same process
+		"""Allows (re)using already existing DaemonManager instance in same process
 		"""
 		self.daemon = d
 		self._cononect_handlers()
@@ -378,8 +369,7 @@ class Keyboard(OSDWindow, TimerManager):
 			self.timer("labels", 0.1, self.update_labels)
 
 	def set_help(self):
-		"""
-		Updates help shown on keyboard image.
+		"""Updates help shown on keyboard image.
 		Keyboard bindings don't change on the fly, so this is done only
 		right after start or when daemon is reconfigured.
 		"""
@@ -436,7 +426,6 @@ class Keyboard(OSDWindow, TimerManager):
 
 	def update_labels(self):
 		"""Updates keyboard labels based on active X keymap"""
-
 		labels = {}
 		# Get current layout group
 		self.group = X.get_xkb_state(self.dpy).group
@@ -489,7 +478,6 @@ class Keyboard(OSDWindow, TimerManager):
 	def on_daemon_connected(self, *a):
 		def success(*a):
 			log.info("Sucessfully locked input")
-			pass
 
 		c = self.choose_controller(self.daemon)
 		if c is None or not c.is_connected():
@@ -553,8 +541,7 @@ class Keyboard(OSDWindow, TimerManager):
 		self.timer("labels", 0.1, self.update_labels)
 
 	def on_event(self, daemon, what, data):
-		"""
-		Called when button press, button release or stick / pad update is
+		"""Called when button press, button release or stick / pad update is
 		send by daemon.
 		"""
 		group = X.get_xkb_state(self.dpy).group
@@ -569,7 +556,7 @@ class Keyboard(OSDWindow, TimerManager):
 
 	def on_sa_cursor(self, mapper, action, x, y):
 		self.set_cursor_position(
-			x * action.speed[0], y * action.speed[1], self.cursors[action.side], self.limits[action.side]
+			x * action.speed[0], y * action.speed[1], self.cursors[action.side], self.limits[action.side],
 		)
 
 	def on_sa_move(self, mapper, action, x, y):
@@ -581,8 +568,7 @@ class Keyboard(OSDWindow, TimerManager):
 		self.key_from_cursor(self.cursors[action.side], pressed)
 
 	def set_cursor_position(self, x, y, cursor, limit):
-		"""
-		Moves cursor image.
+		"""Moves cursor image.
 		"""
 		if cursor not in self._hovers:
 			return
@@ -619,16 +605,14 @@ class Keyboard(OSDWindow, TimerManager):
 					break
 
 	def update_background(self, *whatever):
-		"""
-		Updates hilighted keys on bacgkround image.
+		"""Updates hilighted keys on bacgkround image.
 		"""
 		self.background.hilight(
-			set([a for a in self._hovers.values() if a]), set([a for a in self._pressed_areas.values() if a])
+			set([a for a in self._hovers.values() if a]), set([a for a in self._pressed_areas.values() if a]),
 		)
 
 	def _move_window(self, *a):
-		"""
-		Called by timer while stick is tilted to move window around the screen.
+		"""Called by timer while stick is tilted to move window around the screen.
 		"""
 		x, y = self._stick
 		x = x * 50.0 / STICK_PAD_MAX
@@ -639,8 +623,7 @@ class Keyboard(OSDWindow, TimerManager):
 			self.timer("stick", 0.05, self._move_window)
 
 	def key_from_cursor(self, cursor, pressed):
-		"""
-		Sends keypress/keyrelease event to emulated keyboard, based on
+		"""Sends keypress/keyrelease event to emulated keyboard, based on
 		position of cursor on OSD keyboard.
 		"""
 		x, y = cursor.position

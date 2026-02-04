@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - OSD Menu Generators
+"""SC-Controller - OSD Menu Generators
 
 Auto-generated menus with stuff like list of all available profiles...
 """
 
-from scc.tools import _, set_logging_level
-
-from gi.repository import Gdk, Gio, GdkX11
-from scc.menu_data import MenuGenerator, MenuItem, MENU_GENERATORS
-from scc.paths import get_profiles_path, get_default_profiles_path
-from scc.tools import find_profile
-from scc.lib import xwrappers as X
-
+import logging
+import os
+import traceback
 from ctypes import POINTER, cast
-import os, sys, json, traceback, logging
+
+from gi.repository import Gdk, GdkX11, Gio
+
+from scc.lib import xwrappers as X
+from scc.menu_data import MENU_GENERATORS, MenuGenerator, MenuItem
+from scc.paths import get_default_profiles_path, get_profiles_path
+from scc.tools import _, find_profile
 
 log = logging.getLogger("osd.menu_gen")
 
@@ -110,7 +110,7 @@ class WindowListMenuGenerator(MenuGenerator):
 			display = Gdk.Display.get_default()
 			window = GdkX11.X11Window.foreign_new_for_display(display, xid)
 			window.focus(0)
-		except Exception as e:
+		except Exception:
 			log.error("Failed to activate window")
 			log.error(traceback.format_exc())
 		menu.quit(-2)
@@ -124,7 +124,7 @@ class WindowListMenuGenerator(MenuGenerator):
 		skip_taskbar = X.intern_atom(dpy, b"_NET_WM_STATE_SKIP_TASKBAR", True)
 		wlist = cast(wlist, POINTER(X.XID))[0:count]
 		for win in wlist:
-			if not skip_taskbar in X.get_wm_state(dpy, win):
+			if skip_taskbar not in X.get_wm_state(dpy, win):
 				title = X.get_window_title(dpy, win)[0 : self.MAX_LENGHT]
 				menuitem = MenuItem(str(win), title)
 				menuitem.callback = WindowListMenuGenerator.callback
@@ -133,8 +133,7 @@ class WindowListMenuGenerator(MenuGenerator):
 
 
 class GameListMenuGenerator(MenuGenerator):
-	"""
-	Generates list of applications known to XDG menu
+	"""Generates list of applications known to XDG menu
 	and belonging to 'Game' category
 	"""
 

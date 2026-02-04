@@ -3,19 +3,21 @@
 Observes active window and commands scc-daemon to change profiles as needed.
 """
 
-from scc.tools import _
+import logging
+import os
+import re
+import socket
+import threading
+import time
 
-from scc.menu_data import MenuGenerator, MenuItem, Separator, MENU_GENERATORS
-from scc.special_actions import ChangeProfileAction
+from scc.config import Config
+from scc.lib import xwrappers as X
+from scc.mapper import Mapper
+from scc.menu_data import MENU_GENERATORS, MenuGenerator, MenuItem, Separator
 from scc.parser import TalkingActionParser
 from scc.paths import get_daemon_socket
-from scc.lib import xwrappers as X
-from scc.tools import find_profile
-from scc.actions import Action
-from scc.mapper import Mapper
-from scc.config import Config
-
-import os, sys, re, time, socket, traceback, threading, logging
+from scc.special_actions import ChangeProfileAction
+from scc.tools import _, find_profile
 
 log = logging.getLogger("AutoSwitcher")
 
@@ -65,8 +67,7 @@ class AutoSwitcher:
 
 	@staticmethod
 	def unassign(conds, title, wm_class, action):
-		"""
-		Removes any condition that matches given title/class/action combination.
+		"""Removes any condition that matches given title/class/action combination.
 		'action' can be None, in which case, removes removes any condition
 		that matches title or wm class.
 		"""
@@ -190,8 +191,7 @@ class AutoSwitcher:
 
 
 class Condition:
-	"""
-	Represents AutoSwitcher condition loaded from configuration file.
+	"""Represents AutoSwitcher condition loaded from configuration file.
 
 	Currently, there are 4 ways to match window:
 	By exact title, by part of title, by regexp aplied on title and by matching
@@ -201,8 +201,7 @@ class Condition:
 	"""
 
 	def __init__(self, exact_title=None, title=None, regexp=None, wm_class=None):
-		"""
-		At least one parameter has to be specified; regexp has to be
+		"""At least one parameter has to be specified; regexp has to be
 		compiled regular expression.
 		"""
 		self.exact_title = exact_title
@@ -222,8 +221,7 @@ class Condition:
 		)
 
 	def describe(self):
-		"""
-		Returns string that describes condition in human-readable form.
+		"""Returns string that describes condition in human-readable form.
 		Used in GUI.
 		"""
 		rv = []
@@ -247,8 +245,7 @@ class Condition:
 		return Condition(**data)
 
 	def encode(self):
-		"""
-		Returns Condition in dict that can be stored in json configuration
+		"""Returns Condition in dict that can be stored in json configuration
 		"""
 		rv = {}
 		if self.title:
@@ -262,8 +259,7 @@ class Condition:
 		return rv
 
 	def matches(self, window_title, wm_class):
-		"""
-		Returns True if condition matches provided window properties.
+		"""Returns True if condition matches provided window properties.
 
 		wm_class is what xwrappers.get_window_class returns, tuple of two strings.
 		"""
@@ -303,15 +299,14 @@ class AutoswitchOptsMenuGenerator(MenuGenerator):
 		if menuitem.id in ("as::unassign", "as::assign"):
 			if menuitem.id == "as::unassign":
 				AutoSwitcher.unassign(self.conds, self.title, self.wm_class, self.assigned_prof)
-			else:
-				if controller.get_profile():
-					profile = os.path.split(controller.get_profile())[-1]
-					if profile.endswith(".mod"):
-						profile = profile[0:-4]
-					if profile.endswith(".sccprofile"):
-						profile = profile[0:-11]
-					AutoSwitcher.unassign(self.conds, self.title, self.wm_class, None)
-					AutoSwitcher.assign(self.conds, self.title, self.wm_class, profile)
+			elif controller.get_profile():
+				profile = os.path.split(controller.get_profile())[-1]
+				if profile.endswith(".mod"):
+					profile = profile[0:-4]
+				if profile.endswith(".sccprofile"):
+					profile = profile[0:-11]
+				AutoSwitcher.unassign(self.conds, self.title, self.wm_class, None)
+				AutoSwitcher.assign(self.conds, self.title, self.wm_class, profile)
 			cfg = Config()
 			cfg["autoswitch"] = [{"condition": c.encode(), "action": self.conds[c].to_string()} for c in self.conds]
 			cfg.save()

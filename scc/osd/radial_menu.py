@@ -1,25 +1,26 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - OSD Menu
+"""SC-Controller - OSD Menu
 
 Display menu that user can navigate through
 """
 
-from scc.tools import _, set_logging_level
 
-from gi.repository import Gtk, Gdk, GLib, GdkX11
-from scc.constants import LEFT, RIGHT, STICK, STICK_PAD_MIN, STICK_PAD_MAX
-from scc.menu_data import MenuData, Separator, Submenu
-from scc.gui.svg_widget import SVGWidget, SVGEditor
-from scc.osd.menu import Menu, MenuIcon
-from scc.osd import OSDWindow
-from scc.tools import degdiff, find_icon
-from scc.paths import get_share_path
-from scc.lib import xwrappers as X
+import json
+import logging
+import os
+import sys
+from math import atan2, cos, sin
+from math import pi as PI
+
 from scc.config import Config
-from math import pi as PI, atan2, sin, cos
-
-import os, sys, json, logging
+from scc.constants import STICK, STICK_PAD_MAX
+from scc.gui.svg_widget import SVGEditor, SVGWidget
+from scc.lib import xwrappers as X
+from scc.menu_data import Separator, Submenu
+from scc.osd import OSDWindow
+from scc.osd.menu import Menu, MenuIcon
+from scc.paths import get_share_path
+from scc.tools import degdiff, find_icon
 
 log = logging.getLogger("osd.menu")
 
@@ -52,7 +53,7 @@ class RadialMenu(Menu):
 		try:
 			# Try to read json file and bail out if it fails
 			desc = os.path.join(get_share_path(), "images", "radial-menu.svg.json")
-			source_colors = json.loads(open(desc, "r").read())["colors"]
+			source_colors = json.loads(open(desc).read())["colors"]
 		except Exception as e:
 			log.warning("Failed to load keyboard description")
 			log.warning(e)
@@ -170,7 +171,7 @@ class RadialMenu(Menu):
 				elif len(label) == 2:
 					self.editor.remove_element(SVGEditor.get_element(i.widget, "line0"))
 					first_line = 1
-				for line in range(0, len(label)):
+				for line in range(len(label)):
 					l = SVGEditor.get_element(i.widget, "line%s" % (first_line + line,))
 					if l is None:
 						break
@@ -187,7 +188,6 @@ class RadialMenu(Menu):
 	def show(self):
 		OSDWindow.show(self)
 
-		from ctypes import byref
 
 		pb = self.b.get_pixbuf()
 		win = X.XID(self.get_window().get_xid())
@@ -228,7 +228,7 @@ class RadialMenu(Menu):
 			{
 				"menuitem_" + i.id: "#" + self.config["osd_colors"]["menuitem_hilight"],
 				"text_" + i.id: "#" + self.config["osd_colors"]["menuitem_hilight_text"],
-			}
+			},
 		)
 
 	def on_event(self, daemon, what, data):
@@ -239,7 +239,7 @@ class RadialMenu(Menu):
 			# Special case, both confirm_with and cancel_with can be set to STICK
 			if self._cancel_with == STICK and self._control_with == STICK:
 				if self._control_equals_cancel(daemon, x, y):
-					return
+					return None
 
 			if self.rotation:
 				rx = x * cos(self.rotation) - y * sin(self.rotation)

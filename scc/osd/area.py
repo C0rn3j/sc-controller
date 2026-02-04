@@ -7,14 +7,11 @@ from __future__ import annotations
 
 import logging
 
-from gi.repository import Gtk, GLib, GdkX11
+from gi.repository import GdkX11, Gtk
 
-from scc.constants import LEFT, RIGHT, STICK, STICK_PAD_MAX, STICK_PAD_MIN
-from scc.gui.daemon_manager import DaemonManager
 from scc.lib import xwrappers as X
 from scc.osd import OSDWindow
 from scc.osd.timermanager import TimerManager
-from scc.tools import _
 
 log = logging.getLogger("osd.area")
 
@@ -32,7 +29,7 @@ class Area(OSDWindow, TimerManager):
 		OSDWindow._add_arguments(self)
 		self.argparser.add_argument("--width", type=int, metavar="pixels", default=20, help="""area width in pixels""")
 		self.argparser.add_argument(
-			"--height", type=int, metavar="pixels", default=-20, help="""area height in pixels"""
+			"--height", type=int, metavar="pixels", default=-20, help="""area height in pixels""",
 		)
 
 	def parse_argumets(self, argv) -> bool:

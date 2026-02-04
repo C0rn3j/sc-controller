@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - OSD Message
+"""SC-Controller - OSD Message
 
 Display message that just sits there
 """
 
-from scc.tools import _, set_logging_level
 
-from gi.repository import Gtk, GLib
-from scc.special_actions import OSDAction
+import logging
+
+from gi.repository import GLib, Gtk
+
 from scc.osd import OSDWindow
-
-import os, sys, logging
+from scc.special_actions import OSDAction
 
 log = logging.getLogger("osd.message")
 
@@ -63,7 +62,7 @@ class Message(OSDWindow):
 			help="time before message is hidden (default: 5; 0 means forever)",
 		)
 		self.argparser.add_argument(
-			"-s", type=int, metavar="size", default=3, help="font size, in range 1 to 3 (default: 3)"
+			"-s", type=int, metavar="size", default=3, help="font size, in range 1 to 3 (default: 3)",
 		)
 		self.argparser.add_argument("text", type=str, help="text to display")
 

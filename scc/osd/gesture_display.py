@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Grid OSD Menu
+"""SC-Controller - Grid OSD Menu
 
 Works as OSD menu, but displays item in (as rectangluar as possible - and
 that's usually not very much) grid.
 """
 
-from scc.tools import _, set_logging_level
 
-from gi.repository import Gtk, GObject
+from gi.repository import GObject, Gtk
+
+from scc.config import Config
+from scc.constants import CPAD, LEFT, RIGHT
+from scc.gestures import GestureDetector
 from scc.gui.daemon_manager import DaemonManager
 from scc.gui.gestures import GestureDraw
-from scc.constants import LEFT, RIGHT, CPAD
-from scc.config import Config
 from scc.osd import OSDWindow
-from scc.gestures import GestureDetector
 
 BOTH = "BOTH"
 
@@ -24,8 +23,7 @@ log = logging.getLogger("osd.gesture")
 
 
 class GestureDisplay(OSDWindow):
-	"""
-	OSD Window that displays gesture as it is being generated.
+	"""OSD Window that displays gesture as it is being generated.
 
 	Signals:
 	  gesture-updated(gesture)		Emited repeadedly while gesture is being drawn.
@@ -73,16 +71,14 @@ class GestureDisplay(OSDWindow):
 		self.add(self.parent)
 
 	def use_daemon(self, d):
-		"""
-		Allows (re)using already existing DaemonManager instance in same process.
+		"""Allows (re)using already existing DaemonManager instance in same process.
 		If this is used, parse_argumets() should be called before.
 		"""
 		self.daemon = d
 		self.on_daemon_connected()
 
 	def use_config(self, c):
-		"""
-		Allows reusing already existin Config instance in same process.
+		"""Allows reusing already existin Config instance in same process.
 		Has to be called before parse_argumets()
 		"""
 		self.config = c
@@ -186,7 +182,6 @@ def main():
 	gi.require_version("GdkX11", "3.0")
 
 	from scc.tools import init_logging
-	from scc.paths import get_share_path
 
 	init_logging()
 
@@ -201,7 +196,8 @@ def main():
 
 
 if __name__ == "__main__":
-	import os, sys, signal
+	import signal
+	import sys
 
 	def sigint(*a):
 		print("\n*break*")

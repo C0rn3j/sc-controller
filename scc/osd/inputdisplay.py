@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Input Display
+"""SC-Controller - Input Display
 """
 
-from scc.tools import _, set_logging_level
 
-from gi.repository import Gtk, GLib
-from scc.constants import SCButtons, STICK, LEFT, RIGHT, STICK_PAD_MAX
+import logging
+import os
+import signal
+import sys
+
+from gi.repository import Gtk
+
+from scc.constants import LEFT, RIGHT, STICK, STICK_PAD_MAX, SCButtons
 from scc.gui.daemon_manager import DaemonManager
 from scc.gui.svg_widget import SVGWidget
 from scc.osd import OSDWindow
-
-import os, sys, logging, signal, argparse
 
 log = logging.getLogger("osd.InputDisplay")
 
@@ -60,8 +62,7 @@ class InputDisplay(OSDWindow):
 		OSDWindow.run(self)
 
 	def use_daemon(self, d):
-		"""
-		Allows (re)using already existing DaemonManager instance in same process.
+		"""Allows (re)using already existing DaemonManager instance in same process.
 		use_config() should be be called before parse_argumets() if this is used.
 		"""
 		self.daemon = d
@@ -150,7 +151,7 @@ class InputDisplay(OSDWindow):
 				else:
 					self.hilights[self.OBSERVE_COLOR].remove(what)
 				self._update_background()
-			except KeyError as e:
+			except KeyError:
 				# Non fatal
 				pass
 		else:
@@ -179,7 +180,6 @@ if __name__ == "__main__":
 	gi.require_version("GdkX11", "3.0")
 
 	from scc.tools import init_logging
-	from scc.paths import get_share_path
 
 	init_logging()
 

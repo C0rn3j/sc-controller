@@ -32,4 +32,4 @@ def ensure_list(value):
 
 
 if __name__ == "__main__":
-	print(parse_vdf(open("test.vdf", "r")))
+	print(parse_vdf(open("test.vdf")))

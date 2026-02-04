@@ -65,7 +65,7 @@ class BindingDisplay(OSDWindow):
 		OSDWindow._add_arguments(self)
 		self.argparser.add_argument("image", type=str, nargs="?", default=self.bdisplay, help="keyboard image to use")
 		self.argparser.add_argument(
-			"--cancel-with", type=str, metavar="button", default="B", help="button used to close display (default: B)"
+			"--cancel-with", type=str, metavar="button", default="B", help="button used to close display (default: B)",
 		)
 
 	def compute_position(self):
@@ -106,7 +106,6 @@ class BindingDisplay(OSDWindow):
 	def on_daemon_connected(self, *a):
 		def success(*a):
 			log.info("Sucessfully locked input")
-			pass
 
 		c = self.choose_controller(self.daemon)
 		if c is None or not c.is_connected():
@@ -142,8 +141,7 @@ class BindingDisplay(OSDWindow):
 		self.move(*self.compute_position())
 
 	def on_event(self, daemon, what, data):
-		"""
-		Called when button press, button release or stick / pad update is
+		"""Called when button press, button release or stick / pad update is
 		send by daemon.
 		"""
 		if what == self._cancel_with:
@@ -262,7 +260,7 @@ class Box:
 					self.lines.append(line)
 					return line
 			return LineCollection(
-				self.add("AXISX", Action.AC_BUTTON, action.x), self.add("AXISY", Action.AC_BUTTON, action.y)
+				self.add("AXISX", Action.AC_BUTTON, action.x), self.add("AXISY", Action.AC_BUTTON, action.y),
 			)
 		line = Line(icon, action.describe(context))
 		self.lines.append(line)
@@ -323,7 +321,7 @@ class Box:
 					# tag uses namespace. No idea why is that, but I spent
 					# 3 hours finding this, so I'm willing to murder.
 					SVGEditor.add_element(
-						root, "image", x=x, y=y, style="filter:url(#filterInvert)", width=h, height=h, **{"href": image}
+						root, "image", x=x, y=y, style="filter:url(#filterInvert)", width=h, height=h, href=image,
 					)
 				x += h + self.SPACING
 			x = self.x + self.PADDING + self.icount * (h + self.SPACING)
@@ -350,11 +348,10 @@ class Box:
 				edges = [[x2, y1], [x2, y2]]
 			elif self.align & Align.RIGHT != 0:
 				edges = [[x1, y1], [x1, y2]]
-		else:
-			if self.align & Align.LEFT != 0:
-				edges = [[x2, y1], [x2, y2]]
-			elif self.align & Align.RIGHT != 0:
-				edges = [[x1, y1], [x2, y2]]
+		elif self.align & Align.LEFT != 0:
+			edges = [[x2, y1], [x2, y2]]
+		elif self.align & Align.RIGHT != 0:
+			edges = [[x1, y1], [x2, y2]]
 
 		targets = SVGEditor.get_element(root, "markers_%s" % (self.name,))
 		if targets is None:
@@ -431,7 +428,7 @@ class Generator:
 		boxes.append(box_right)
 
 		box_abxy = Box(
-			4 * self.PADDING, self.PADDING, Align.RIGHT | Align.BOTTOM, "abxy", max_width=self.full_width * 0.45
+			4 * self.PADDING, self.PADDING, Align.RIGHT | Align.BOTTOM, "abxy", max_width=self.full_width * 0.45,
 		)
 		box_abxy.add("A", Action.AC_BUTTON, profile.buttons.get(SCButtons.A))
 		box_abxy.add("B", Action.AC_BUTTON, profile.buttons.get(SCButtons.B))
@@ -440,7 +437,7 @@ class Generator:
 		boxes.append(box_abxy)
 
 		box_stick = Box(
-			4 * self.PADDING, self.PADDING, Align.LEFT | Align.BOTTOM, "stick", max_width=self.full_width * 0.45
+			4 * self.PADDING, self.PADDING, Align.LEFT | Align.BOTTOM, "stick", max_width=self.full_width * 0.45,
 		)
 		box_stick.add("STICK", Action.AC_STICK, profile.stick)
 		boxes.append(box_stick)

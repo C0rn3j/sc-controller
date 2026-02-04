@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Quick OSD Menu
+"""SC-Controller - Quick OSD Menu
 
 Controled by buttons instead of stick. Fast to use, but can display only
 limited number of items
 """
 
-from scc.tools import _, set_logging_level
+import logging
+import os
+import sys
 
-from gi.repository import Gtk, GLib
-from scc.menu_data import MenuItem, Submenu
-from scc.tools import find_icon, find_menu
-from scc.paths import get_share_path
+from gi.repository import GLib, Gtk
+
 from scc.config import Config
-from scc.osd.menu import Menu, MenuIcon
+from scc.menu_data import MenuItem, Submenu
 from scc.osd import OSDWindow
-
-import os, sys, logging
+from scc.osd.menu import Menu, MenuIcon
+from scc.paths import get_share_path
+from scc.tools import _, find_icon, find_menu
 
 log = logging.getLogger("osd.quickmenu")
 
@@ -34,8 +34,7 @@ class QuickMenu(Menu):
 		self._timer = None
 
 	def generate_widget(self, item):
-		"""
-		In QuickMenu, everything but submenus and simple
+		"""In QuickMenu, everything but submenus and simple
 		menuitems is ignored.
 		"""
 		if self._button_index >= len(self.BUTTONS):
@@ -90,16 +89,16 @@ class QuickMenu(Menu):
 			help="button used to cancel menu (default: START)",
 		)
 		self.argparser.add_argument(
-			"--timeout", type=int, default=5, help="how many seconds before menu is automatically canceled"
+			"--timeout", type=int, default=5, help="how many seconds before menu is automatically canceled",
 		)
 		self.argparser.add_argument(
-			"--cancel-with-release", action="store_true", help="cancel menu with button release instead of button press"
+			"--cancel-with-release", action="store_true", help="cancel menu with button release instead of button press",
 		)
 		self.argparser.add_argument(
-			"--from-profile", "-p", type=str, metavar="profile_file menu_name", help="load menu items from profile file"
+			"--from-profile", "-p", type=str, metavar="profile_file menu_name", help="load menu items from profile file",
 		)
 		self.argparser.add_argument(
-			"--from-file", "-f", type=str, metavar="filename", help="load menu items from json file"
+			"--from-file", "-f", type=str, metavar="filename", help="load menu items from json file",
 		)
 		self.argparser.add_argument("--print-items", action="store_true", help="prints menu items to stdout")
 		self.argparser.add_argument("items", type=str, nargs="*", metavar="id title", help="Menu items")
@@ -181,7 +180,7 @@ class QuickMenu(Menu):
 					str(self._timeout),
 					"--from-file",
 					filename,
-				]
+				],
 			)
 			self._submenu.set_is_submenu()
 			self._submenu.use_daemon(self.daemon)
@@ -199,8 +198,7 @@ class QuickMenu(Menu):
 		self.quit(self._submenu.get_exit_code())
 
 	def pressed(self, what):
-		"""
-		Called when button is pressed. If menu with that button assigned
+		"""Called when button is pressed. If menu with that button assigned
 		exists, it is hilighted.
 		"""
 		for item in self.items:
@@ -209,8 +207,7 @@ class QuickMenu(Menu):
 				item.widget.set_name("osd-menu-item-selected")
 
 	def released(self, what):
-		"""
-		Called when button is pressed. If menu with that button assigned
+		"""Called when button is pressed. If menu with that button assigned
 		exists, it is hilighted.
 		"""
 		last = None
@@ -247,7 +244,7 @@ class QuickMenu(Menu):
 	def on_event(self, daemon, what, data):
 		if self._submenu:
 			return self._submenu.on_event(daemon, what, data)
-		elif what == self._cancel_with:
+		if what == self._cancel_with:
 			if data[0] == 0:  # Button released
 				self.quit(-1)
 		elif what in self.BUTTONS:
@@ -265,8 +262,8 @@ if __name__ == "__main__":
 	gi.require_version("Rsvg", "2.0")
 	gi.require_version("GdkX11", "3.0")
 
-	from scc.tools import init_logging
 	from scc.paths import get_share_path
+	from scc.tools import init_logging
 
 	init_logging()
 

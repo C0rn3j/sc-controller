@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - OSD Launcher
+"""SC-Controller - OSD Launcher
 
 Display launcher with phone-like keyboard that user can use to select
 application (list is generated using xdg) and start it.
@@ -8,18 +7,18 @@ application (list is generated using xdg) and start it.
 Reuses styles from OSD Menu and OSD Dialog
 """
 
-from scc.tools import _
+import logging
+import os
 
-from gi.repository import Gtk, Gio, GdkX11, Pango
-from scc.constants import STICK_PAD_MAX, DEFAULT, LEFT, RIGHT, STICK
-from scc.tools import point_in_gtkrect, circle_to_square, clamp
+from gi.repository import GdkX11, Gio, Gtk, Pango
+
+from scc.config import Config
+from scc.constants import DEFAULT, LEFT, RIGHT, STICK, STICK_PAD_MAX
 from scc.gui.daemon_manager import DaemonManager
+from scc.lib import xwrappers as X
 from scc.osd import OSDWindow, StickController
 from scc.paths import get_share_path
-from scc.lib import xwrappers as X
-from scc.config import Config
-
-import os, logging
+from scc.tools import _, circle_to_square, clamp, point_in_gtkrect
 
 log = logging.getLogger("osd.menu")
 
@@ -89,7 +88,7 @@ class Launcher(OSDWindow):
 	@staticmethod
 	def name_to_keys(appinfo):
 		name = "".join(
-			[Launcher.CHAR_TO_NUMBER[x] for x in appinfo.get_display_name().upper() if x in Launcher.VALID_CHARS]
+			[Launcher.CHAR_TO_NUMBER[x] for x in appinfo.get_display_name().upper() if x in Launcher.VALID_CHARS],
 		)
 		return name
 
@@ -144,8 +143,7 @@ class Launcher(OSDWindow):
 			self._buttons.pack_end(item.widget, True, True, 0)
 
 	def use_daemon(self, d):
-		"""
-		Allows (re)using already existing DaemonManager instance in same process.
+		"""Allows (re)using already existing DaemonManager instance in same process.
 		use_config() should be be called before parse_argumets() if this is used.
 		"""
 		self.daemon = d
@@ -153,23 +151,20 @@ class Launcher(OSDWindow):
 		self.on_daemon_connected(self.daemon)
 
 	def use_config(self, c):
-		"""
-		Allows reusing already existin Config instance in same process.
+		"""Allows reusing already existin Config instance in same process.
 		Has to be called before parse_argumets()
 		"""
 		self.config = c
 
 	def get_menuid(self):
+		"""Returns ID of used menu.
 		"""
-		Returns ID of used menu.
-		"""
-		return None
+		return
 
 	def get_selected_item_id(self):
+		"""Returns ID of selected item or None if nothing is selected.
 		"""
-		Returns ID of selected item or None if nothing is selected.
-		"""
-		return None
+		return
 
 	def _launch(self):
 		self._selected.launcher.launch()
@@ -177,10 +172,10 @@ class Launcher(OSDWindow):
 	def _add_arguments(self):
 		OSDWindow._add_arguments(self)
 		self.argparser.add_argument(
-			"--confirm-with", type=str, metavar="button", default=DEFAULT, help="button used to confirm choice"
+			"--confirm-with", type=str, metavar="button", default=DEFAULT, help="button used to confirm choice",
 		)
 		self.argparser.add_argument(
-			"--cancel-with", type=str, metavar="button", default=DEFAULT, help="button used to cancel dialog"
+			"--cancel-with", type=str, metavar="button", default=DEFAULT, help="button used to cancel dialog",
 		)
 		self.argparser.add_argument(
 			"--feedback-amplitude",
@@ -207,7 +202,7 @@ class Launcher(OSDWindow):
 			x.set_label("")
 			x.set_name("osd-hidden-item")
 			x.launcher = None
-		for i in range(0, len(launchers)):
+		for i in range(len(launchers)):
 			self.items[i].set_name("osd-launcher-item")
 			self.items[i].launcher = launchers[i]
 			label = self.items[i].get_children()[0]
@@ -237,7 +232,7 @@ class Launcher(OSDWindow):
 
 		keys = Launcher.string_to_keys_and_spaces(label)
 		index1, index2 = -1, -1
-		for i in range(0, len(keys)):
+		for i in range(len(keys)):
 			if keys[i] == self._string[0]:
 				index2 = _check(keys[i:])
 				if index2 > 0:
@@ -362,8 +357,7 @@ class Launcher(OSDWindow):
 			if self.select(i):
 				break
 			i += direction
-			if start < 0:
-				start = 0
+			start = max(start, 0)
 
 	def on_stick_direction(self, trash, x, y):
 		if y != 0:

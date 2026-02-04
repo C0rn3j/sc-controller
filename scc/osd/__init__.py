@@ -7,8 +7,8 @@ import argparse
 import logging
 import os
 import traceback
-import cairo
 
+import cairo
 import gi
 
 gi.require_version("Gtk", "3.0")
@@ -51,7 +51,7 @@ class OSDWindow(Gtk.Window):
 		OSDWindow._apply_css(Config())
 
 		self.argparser = argparse.ArgumentParser(
-			description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter, epilog=self.EPILOG
+			description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter, epilog=self.EPILOG,
 		)
 		self._add_arguments()
 		self.exit_code = -1
@@ -99,14 +99,14 @@ class OSDWindow(Gtk.Window):
 		colors = OSDCssMagic(colors)
 		try:
 			css_file = os.path.join(get_share_path(), "osd-styles", config["osd_style"])
-			with open(css_file, "r") as file:
+			with open(css_file) as file:
 				css = file.read()
 			if (Gtk.get_major_version(), Gtk.get_minor_version()) > (3, 20):
 				css += OSDWindow.CSS_3_20
 			OSDWindow.css_provider = Gtk.CssProvider()
 			OSDWindow.css_provider.load_from_data((css % colors).encode("utf-8"))
 			Gtk.StyleContext.add_provider_for_screen(
-				Gdk.Screen.get_default(), OSDWindow.css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
+				Gdk.Screen.get_default(), OSDWindow.css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER,
 			)
 		except GLib.Error as e:
 			log.error("Failed to apply css with user settings:")
@@ -115,13 +115,13 @@ class OSDWindow(Gtk.Window):
 
 			OSDWindow.css_provider = Gtk.CssProvider()
 			css_file = os.path.join(get_share_path(), "osd-styles", "Classic.gtkstyle.css")
-			with open(css_file, "r") as file:
+			with open(css_file) as file:
 				css = file.read()
 			if (Gtk.get_major_version(), Gtk.get_minor_version()) > (3, 20):
 				css += OSDWindow.CSS_3_20
 			OSDWindow.css_provider.load_from_data((css % colors).encode("utf-8"))
 			Gtk.StyleContext.add_provider_for_screen(
-				Gdk.Screen.get_default(), OSDWindow.css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
+				Gdk.Screen.get_default(), OSDWindow.css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER,
 			)
 
 	def _add_arguments(self) -> None:
@@ -163,7 +163,7 @@ class OSDWindow(Gtk.Window):
 			self.args = self.argparser.parse_args(argv[1:])
 		except SystemExit:
 			return False
-		except BaseException as e:  # Includes SystemExit
+		except BaseException:  # Includes SystemExit
 			log.error(traceback.format_exc())
 			return False
 		del self.argparser
@@ -297,7 +297,7 @@ class OSDCssMagic(dict):
 				hex(int(rgba.green * 255)).split("x")[-1].zfill(2),
 				hex(int(rgba.blue * 255)).split("x")[-1].zfill(2),
 			)
-		elif "-" in a:
+		if "-" in a:
 			key, number = a.rsplit("-", 1)
 			rgba = parse_rgba(self[key])
 			number = float(number) / 255.0
