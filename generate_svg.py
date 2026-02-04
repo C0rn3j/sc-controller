@@ -84,7 +84,7 @@ class Box:
 			for x in action.mods:
 				lines.append(self.add(nameof(x), context, action.mods[x]).add_icon(icon))
 			return LineCollection(*lines)
-		elif isinstance(action, DoubleclickModifier):
+		if isinstance(action, DoubleclickModifier):
 			lines = []
 			if action.normalaction:
 				lines.append(self.add(icon, context, action.normalaction))
@@ -115,7 +115,7 @@ class Box:
 					self.lines.append(line)
 					return line
 			return LineCollection(
-				self.add("AXISX", Action.AC_BUTTON, action.x), self.add("AXISY", Action.AC_BUTTON, action.y)
+				self.add("AXISX", Action.AC_BUTTON, action.x), self.add("AXISY", Action.AC_BUTTON, action.y),
 			)
 		line = Line(icon, action.describe(context))
 		self.lines.append(line)
@@ -168,7 +168,7 @@ class Box:
 				image = find_image(icon)
 				if image:
 					SVGEditor.add_element(
-						root, "image", x=x, y=y, style="filter:url(#filterInvert)", width=h, height=h, href=image
+						root, "image", x=x, y=y, style="filter:url(#filterInvert)", width=h, height=h, href=image,
 					)
 				x += h + self.SPACING
 			x = self.x + self.PADDING + self.icount * (h + self.SPACING)
@@ -192,11 +192,10 @@ class Box:
 				edges = [[x2, y1], [x2, y2]]
 			elif self.align & Align.RIGHT != 0:
 				edges = [[x1, y1], [x1, y2]]
-		else:
-			if self.align & Align.LEFT != 0:
-				edges = [[x2, y1], [x2, y2]]
-			elif self.align & Align.RIGHT != 0:
-				edges = [[x1, y1], [x2, y2]]
+		elif self.align & Align.LEFT != 0:
+			edges = [[x2, y1], [x2, y2]]
+		elif self.align & Align.RIGHT != 0:
+			edges = [[x1, y1], [x2, y2]]
 
 		targets = SVGEditor.get_element(root, "markers_%s" % (self.name,))
 		if targets is None:

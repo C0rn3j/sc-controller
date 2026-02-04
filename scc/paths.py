@@ -119,7 +119,7 @@ def get_share_path() -> str:
 	paths = (
 		"/usr/local/share/scc/",
 		os.path.expanduser("~/.local/share/scc"),
-		os.path.join(sys.prefix, "share/scc")
+		os.path.join(sys.prefix, "share/scc"),
 	)
 	for path in paths:
 		if os.path.exists(path):

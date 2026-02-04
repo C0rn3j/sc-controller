@@ -7,7 +7,7 @@ import json
 import os
 
 from scc.actions import Action
-from scc.tools import _, set_logging_level
+from scc.tools import _
 
 
 class MenuData:
@@ -17,8 +17,7 @@ class MenuData:
 		self.__items = list(items)
 
 	def generate(self, menuhandler):
-		"""
-		Converts all generators into MenuItems (by calling .generate() on them)
+		"""Converts all generators into MenuItems (by calling .generate() on them)
 		and returns generated MenuData.
 
 		Returns new MenuData instance.
@@ -46,8 +45,7 @@ class MenuData:
 		return iter(self.__items)
 
 	def get_all_actions(self):
-		"""
-		Returns generator with every action defined in this menu, including
+		"""Returns generator with every action defined in this menu, including
 		child actions.
 		"""
 		for item in self:
@@ -56,8 +54,7 @@ class MenuData:
 					yield i
 
 	def get_by_id(self, id):
-		"""
-		Returns item with specified ID.
+		"""Returns item with specified ID.
 		Throws KeyError if there is no such item.
 		"""
 		for a in self:
@@ -77,8 +74,7 @@ class MenuData:
 
 	@staticmethod
 	def from_args(data):
-		"""
-		Parses list of arguments in [id1, label1, id2, label2 ...] format.
+		"""Parses list of arguments in [id1, label1, id2, label2 ...] format.
 		Throws ValueError if number of items in 'data' is odd.
 		"""
 		if len(data) % 2 != 0:
@@ -87,7 +83,7 @@ class MenuData:
 			raise ValueError("Not items")
 
 		# Rearange data into list of pair tuples
-		data = [(data[i * 2], data[(i * 2) + 1]) for i in range(0, len(data) / 2)]
+		data = [(data[i * 2], data[(i * 2) + 1]) for i in range(len(data) / 2)]
 
 		# Parse data
 		m = MenuData()
@@ -97,8 +93,7 @@ class MenuData:
 
 	@staticmethod
 	def from_json_data(data, action_parser=None):
-		"""
-		Loads menu from parsed JSON dict.
+		"""Loads menu from parsed JSON dict.
 		Actions are parsed only if action_parser is set to ActionParser instance.
 		"""
 		m = MenuData()
@@ -141,8 +136,7 @@ class MenuData:
 
 	@staticmethod
 	def from_fileobj(fileobj, action_parser=None):
-		"""
-		Loads menu from file-like object.
+		"""Loads menu from file-like object.
 		Actions are parsed only if action_parser is set to ActionParser instance.
 		"""
 		data = json.loads(fileobj.read())
@@ -150,23 +144,21 @@ class MenuData:
 
 	@staticmethod
 	def from_file(filename, action_parser=None):
-		"""
-		Loads menu from file.
+		"""Loads menu from file.
 		Actions are parsed only if action_parser is set to ActionParser instance.
 		"""
-		return MenuData.from_fileobj(open(filename, "r"), action_parser)
+		return MenuData.from_fileobj(open(filename), action_parser)
 
 	@staticmethod
 	def from_profile(filename, menuname, action_parser=None):
-		"""
-		Loads menu from JSON profile file.
+		"""Loads menu from JSON profile file.
 		Actions are parsed only if action_parser is set to ActionParser instance.
 
 		Menus are stored as list under <root>/menus/<menuname>.
 		Throws ValueError if specified file cannot be parsed or
 		specified menu cannot be found.
 		"""
-		data = json.loads(open(filename, "r").read())
+		data = json.loads(open(filename).read())
 		if "menus" not in data:
 			raise ValueError("Menu not found")
 		if menuname not in data["menus"]:
@@ -187,8 +179,7 @@ class MenuItem:
 		self.widget = None  # May be set by UI code
 
 	def describe(self):
-		"""
-		Returns user-friendly description of MenuItem or MenuGenerator.
+		"""Returns user-friendly description of MenuItem or MenuGenerator.
 		"""
 		return self.label
 
@@ -216,8 +207,7 @@ class Separator(MenuItem):
 	def describe(self):
 		if self.label:
 			return _("----[ %s ]----") % (self.label,)
-		else:
-			return _("---- Separator ----")
+		return _("---- Separator ----")
 
 	def encode(self):
 		if self.label:
@@ -251,16 +241,14 @@ class MenuGenerator:
 	""" Generates list of MenuItems """
 
 	def __init__(self, **b):
-		"""
-		Passed are all keys loaded from json dict that defined this generator.
+		"""Passed are all keys loaded from json dict that defined this generator.
 		__init__ of generator should ignore all unknown keys.
 		"""
 		self.id = None  # Used only in editor
 		self.icon = None  # same
 
 	def describe(self):
-		"""
-		Returns user-friendly description of MenuItem or MenuGenerator.
+		"""Returns user-friendly description of MenuItem or MenuGenerator.
 		"""
 		return "[ %s ] " % (self.__class__.__name__,)
 

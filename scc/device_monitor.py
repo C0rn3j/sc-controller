@@ -124,7 +124,7 @@ class DeviceMonitor(Monitor):
 
 		For example "a0:5a:5d:87:82:17" or "vial:f64c2b3c"
 		"""
-		name = sys_bus_path.split("/")[-1]
+		name = sys_bus_path.rsplit("/", maxsplit=1)[-1]
 		if ":" not in name:
 			return None
 		addr = self.bt_addresses.get(name)
@@ -209,7 +209,7 @@ class DeviceMonitor(Monitor):
 			# Sleep for 1 second to make sure info is available on system
 			time.sleep(1)
 			logging.debug(
-				"TODO: Hardcoded 1s sleep!"
+				"TODO: Hardcoded 1s sleep!",
 			)  # https://github.com/C0rn3j/sc-controller/commit/43d148327a1b92042d67dd6cfdf1128aa6f9b25d
 			node = self._dev_for_hci(syspath)
 			if node:
@@ -238,7 +238,7 @@ class DeviceMonitor(Monitor):
 		"""Recursivelly searchs for "input*" subdirectories until "uniq" file is found. Then, returns address from that file."""
 		uniq = os.path.join(syspath, "uniq")
 		if os.path.exists(uniq):
-			with open(uniq, "r") as file:
+			with open(uniq) as file:
 				return file.read().strip()
 		for name in os.listdir(syspath):
 			if name.startswith("input"):

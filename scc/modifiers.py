@@ -5,24 +5,46 @@ way how resulting action works.
 For example, click() modifier executes action only if pad is pressed.
 """
 
-from scc.actions import Action, MouseAction, XYAction, AxisAction, RangeOP
-from scc.actions import NoAction, WholeHapticAction, HapticEnabledAction
-from scc.actions import GyroAbsAction
-from scc.constants import STICK_PAD_MIN, STICK_PAD_MAX, STICK_PAD_MAX_HALF
-from scc.constants import CUT, ROUND, LINEAR, MINIMUM, FE_STICK, FE_TRIGGER
-from scc.constants import TRIGGER_MAX, LEFT, CPAD, RIGHT, STICK
-from scc.constants import FE_PAD, SCButtons, STICKTILT
-from scc.constants import HapticPos, ControllerFlags
-from scc.tools import nameof, clamp, quat2euler
-from scc.controller import HapticData
-from scc.uinput import Axes, Rels
-from math import pi as PI, sqrt, copysign, atan2, sin, cos
-from collections import OrderedDict, deque
-
-import time
-import logging
 import inspect
 import itertools
+import logging
+import time
+from collections import OrderedDict, deque
+from math import atan2, copysign, cos, sin, sqrt
+from math import pi as PI
+
+from scc.actions import (
+	Action,
+	AxisAction,
+	GyroAbsAction,
+	HapticEnabledAction,
+	MouseAction,
+	NoAction,
+	RangeOP,
+	WholeHapticAction,
+	XYAction,
+)
+from scc.constants import (
+	CPAD,
+	CUT,
+	FE_PAD,
+	FE_STICK,
+	LEFT,
+	MINIMUM,
+	RIGHT,
+	STICK,
+	STICK_PAD_MAX,
+	STICK_PAD_MAX_HALF,
+	STICK_PAD_MIN,
+	STICKTILT,
+	TRIGGER_MAX,
+	ControllerFlags,
+	HapticPos,
+	SCButtons,
+)
+from scc.controller import HapticData
+from scc.tools import clamp, nameof
+from scc.uinput import Axes, Rels
 
 log = logging.getLogger("Modifiers")
 _ = lambda x: x
@@ -51,11 +73,10 @@ class Modifier(Action):
 		return (self.action,)
 
 	def _mod_init(self):
-		"""
-		Initializes modifier with rest of parameters, after action parameter
+		"""Initializes modifier with rest of parameters, after action parameter
 		was taken from it and stored in self.action
 		"""
-		pass  # not needed by default
+		# not needed by default
 
 	def _mod_to_string(self, params, multiline, pad):
 		"""Add action at end of params list and generate a string."""
@@ -77,8 +98,7 @@ class Modifier(Action):
 		return "%s%s(%s)" % (" " * pad, self.COMMAND, childstr)
 
 	def strip_defaults(self):
-		"""
-		Overrides Action.strip_defaults; Uses defaults from _mod_init instead
+		"""Overrides Action.strip_defaults; Uses defaults from _mod_init instead
 		of __init__, but does NOT include last of original parameters - action.
 		"""
 		argspec = inspect.getfullargspec(self.__class__._mod_init)
@@ -104,8 +124,7 @@ class Modifier(Action):
 
 
 class NameModifier(Modifier):
-	"""
-	Simple modifier that sets name for child action.
+	"""Simple modifier that sets name for child action.
 	Used internally.
 	"""
 
@@ -156,8 +175,7 @@ class ClickModifier(Modifier):
 	def describe(self, context):
 		if context in (Action.AC_STICK, Action.AC_PAD):
 			return _("(if pressed)") + "\n" + self.action.describe(context)
-		else:
-			return _("(if pressed)") + " " + self.action.describe(context)
+		return _("(if pressed)") + " " + self.action.describe(context)
 
 	def to_string(self, multiline=False, pad=0):
 		if multiline:
@@ -188,18 +206,18 @@ class ClickModifier(Modifier):
 			if what == STICK:
 				mapper.force_event.add(FE_STICK)
 			return self.action.axis(mapper, position, what)
-		elif what in (STICK, LEFT) and mapper.was_pressed(SCButtons.LPAD):
+		if what in (STICK, LEFT) and mapper.was_pressed(SCButtons.LPAD):
 			# Just released
 			return self.action.axis(mapper, 0, what)
-		elif what == CPAD and mapper.is_pressed(SCButtons.CPAD):
+		if what == CPAD and mapper.is_pressed(SCButtons.CPAD):
 			return self.action.axis(mapper, position, what)
-		elif what == CPAD and mapper.was_pressed(SCButtons.CPAD):
+		if what == CPAD and mapper.was_pressed(SCButtons.CPAD):
 			# Just released
 			return self.action.axis(mapper, 0, what)
-		elif mapper.is_pressed(SCButtons.RPAD):
+		if mapper.is_pressed(SCButtons.RPAD):
 			# what == RIGHT, last option
 			return self.action.axis(mapper, position, what)
-		elif mapper.was_pressed(SCButtons.RPAD):
+		if mapper.was_pressed(SCButtons.RPAD):
 			# what == RIGHT, last option, Just released
 			return self.action.axis(mapper, 0, what)
 
@@ -208,18 +226,18 @@ class ClickModifier(Modifier):
 			if what == STICK:
 				mapper.force_event.add(FE_STICK)
 			return self.action.pad(mapper, position, what)
-		elif what == LEFT and mapper.was_pressed(SCButtons.LPAD):
+		if what == LEFT and mapper.was_pressed(SCButtons.LPAD):
 			# Just released
 			return self.action.pad(mapper, 0, what)
-		elif what == CPAD and mapper.is_pressed(SCButtons.CPAD):
+		if what == CPAD and mapper.is_pressed(SCButtons.CPAD):
 			return self.action.pad(mapper, position, what)
-		elif what == CPAD and mapper.was_pressed(SCButtons.CPAD):
+		if what == CPAD and mapper.was_pressed(SCButtons.CPAD):
 			# Just released
 			return self.action.pad(mapper, 0, what)
-		elif mapper.is_pressed(SCButtons.RPAD):
+		if mapper.is_pressed(SCButtons.RPAD):
 			# what == RIGHT, there are only two options
 			return self.action.pad(mapper, position, what)
-		elif mapper.was_pressed(SCButtons.RPAD):
+		if mapper.was_pressed(SCButtons.RPAD):
 			# what == RIGHT, there are only two options, Just released
 			return self.action.pad(mapper, 0, what)
 
@@ -228,22 +246,21 @@ class ClickModifier(Modifier):
 			if what == STICK:
 				mapper.force_event.add(FE_STICK)
 			return self.action.whole(mapper, x, y, what)
-		elif what in (STICK, LEFT) and (mapper.was_pressed(SCButtons.LPAD) or mapper.was_pressed(STICKTILT)):
+		if what in (STICK, LEFT) and (mapper.was_pressed(SCButtons.LPAD) or mapper.was_pressed(STICKTILT)):
 			# Just released
 			return self.action.whole(mapper, 0, 0, what)
-		elif what == RIGHT and mapper.is_pressed(SCButtons.RPAD):
+		if what == RIGHT and mapper.is_pressed(SCButtons.RPAD):
 			return self.action.whole(mapper, x, y, what)
-		elif what == RIGHT and mapper.was_pressed(SCButtons.RPAD):
+		if what == RIGHT and mapper.was_pressed(SCButtons.RPAD):
 			# Just released
 			return self.action.whole(mapper, 0, 0, what)
-		elif what == CPAD and mapper.is_pressed(SCButtons.CPAD):
+		if what == CPAD and mapper.is_pressed(SCButtons.CPAD):
 			return self.action.whole(mapper, x, y, what)
-		elif what == CPAD and mapper.was_pressed(SCButtons.CPAD):
+		if what == CPAD and mapper.was_pressed(SCButtons.CPAD):
 			# Just released
 			return self.action.whole(mapper, 0, 0, what)
-		else:
-			# Nothing is pressed, but finger moves over pad
-			self.action.whole_blocked(mapper, x, y, what)
+		# Nothing is pressed, but finger moves over pad
+		self.action.whole_blocked(mapper, x, y, what)
 
 
 class TouchedModifier(Modifier):
@@ -252,8 +269,7 @@ class TouchedModifier(Modifier):
 	def describe(self, context):
 		if context in (Action.AC_STICK, Action.AC_PAD):
 			return _("(when %s)" % (self.COMMAND,)) + "\n" + self.action.describe(context)
-		else:
-			return _("(when %s)" % (self.COMMAND,)) + " " + self.action.describe(context)
+		return _("(when %s)" % (self.COMMAND,)) + " " + self.action.describe(context)
 
 	def strip(self):
 		return self.action.strip()
@@ -286,8 +302,7 @@ class PressedModifier(Modifier):
 	def describe(self, context):
 		if context in (Action.AC_STICK, Action.AC_PAD):
 			return _("(when pressed)") + "\n" + self.action.describe(context)
-		else:
-			return _("(when pressed)") + " " + self.action.describe(context)
+		return _("(when pressed)") + " " + self.action.describe(context)
 
 	def strip(self):
 		return self.action.strip()
@@ -313,8 +328,7 @@ class ReleasedModifier(PressedModifier):
 	def describe(self, context):
 		if context in (Action.AC_STICK, Action.AC_PAD):
 			return _("(when released)") + "\n" + self.action.describe(context)
-		else:
-			return _("(when released)") + " " + self.action.describe(context)
+		return _("(when released)") + " " + self.action.describe(context)
 
 	def button_press(self, mapper):
 		pass
@@ -325,8 +339,7 @@ class ReleasedModifier(PressedModifier):
 
 
 class BallModifier(Modifier, WholeHapticAction):
-	"""
-	Emulates ball-like movement with inertia and friction.
+	"""Emulates ball-like movement with inertia and friction.
 
 	Reacts only to "whole" or "axis" inputs and sends generated movements as
 	"add" input to child action.
@@ -348,7 +361,7 @@ class BallModifier(Modifier, WholeHapticAction):
 		WholeHapticAction.__init__(self)
 
 	def _mod_init(
-		self, friction=DEFAULT_FRICTION, mass=80.0, mean_len=DEFAULT_MEAN_LEN, r=0.02, ampli=65536, degree=40.0
+		self, friction=DEFAULT_FRICTION, mass=80.0, mean_len=DEFAULT_MEAN_LEN, r=0.02, ampli=65536, degree=40.0,
 	):
 		self.speed = (1.0, 1.0)
 		self.friction = friction
@@ -451,10 +464,9 @@ class BallModifier(Modifier, WholeHapticAction):
 		if data[BallModifier.COMMAND] is True:
 			# backwards compatibility
 			return BallModifier(a)
-		else:
-			args = list(data[BallModifier.COMMAND])
-			args.append(a)
-			return BallModifier(*args)
+		args = list(data[BallModifier.COMMAND])
+		args.append(a)
+		return BallModifier(*args)
 
 	def describe(self, context):
 		if self.name:
@@ -467,8 +479,7 @@ class BallModifier(Modifier, WholeHapticAction):
 				x, y = self.action.x.parameters[0], self.action.y.parameters[0]
 				if x == Axes.ABS_X and y == Axes.ABS_Y:
 					return _("Mouse-like LStick")
-				else:
-					return _("Mouse-like RStick")
+				return _("Mouse-like RStick")
 			if isinstance(self.action.x, MouseAction) and isinstance(self.action.y, MouseAction):
 				x, y = self.action.x.parameters[0], self.action.y.parameters[0]
 				if x in (Rels.REL_HWHEEL, Rels.REL_WHEEL) and y in (Rels.REL_HWHEEL, Rels.REL_WHEEL):
@@ -494,7 +505,7 @@ class BallModifier(Modifier, WholeHapticAction):
 				t = time.time()
 				dt = t - self._lastTime
 				if dt < 0.0075:
-					return
+					return None
 				self._lastTime = t
 				self._add(dx / dt, dy / dt)
 				self.action.add(mapper, dx, dy)
@@ -520,7 +531,7 @@ class BallModifier(Modifier, WholeHapticAction):
 				t = time.time()
 				dt = t - self._lastTime
 				if dt < 0.0075:
-					return
+					return None
 				self._lastTime = t
 				dx, dy = x - self._old_pos[0], self._old_pos[1] - y
 				self._add(dx / dt, dy / dt)
@@ -545,8 +556,7 @@ class BallModifier(Modifier, WholeHapticAction):
 	def get_haptic(self):
 		if self.action and hasattr(self.action, "get_haptic"):
 			return self.action.get_haptic()
-		else:
-			return WholeHapticAction.get_haptic(self)
+		return WholeHapticAction.get_haptic(self)
 
 	def compress(self):
 		# ball(circular(...) has to be turned around
@@ -583,8 +593,7 @@ class DeadzoneModifier(Modifier):
 		self.upper = int(params[1]) if len(params) == 2 else STICK_PAD_MAX
 
 	def mode_CUT(self, x, y, range):
-		"""
-		If input value is out of deadzone range, output value is zero
+		"""If input value is out of deadzone range, output value is zero
 		"""
 		if y == 0:
 			# Small optimalization for 1D input, for example trigger
@@ -595,8 +604,7 @@ class DeadzoneModifier(Modifier):
 		return x, y
 
 	def mode_ROUND(self, x, y, range):
-		"""
-		If input value bellow deadzone range, output value is zero
+		"""If input value bellow deadzone range, output value is zero
 		If input value is above deadzone range,
 		output value is 1 (or maximum allowed)
 		"""
@@ -614,8 +622,7 @@ class DeadzoneModifier(Modifier):
 		return x, y
 
 	def mode_LINEAR(self, x, y, range):
-		"""
-		Input value is scaled, so entire output range is covered by
+		"""Input value is scaled, so entire output range is covered by
 		reduced input range of deadzone.
 		"""
 		if y == 0:
@@ -628,8 +635,7 @@ class DeadzoneModifier(Modifier):
 		return distance * sin(angle), distance * cos(angle)
 
 	def mode_MINIMUM(self, x, y, range):
-		"""
-		https://github.com/kozec/sc-controller/issues/356
+		"""https://github.com/kozec/sc-controller/issues/356
 		Inversion of LINEAR; input value is scaled so entire input range is
 		mapped to range of deadzone.
 		"""
@@ -673,7 +679,7 @@ class DeadzoneModifier(Modifier):
 			ballmod = self.action
 			self.action, ballmod.action = ballmod.action, self
 			return ballmod
-		elif isinstance(self.action, GyroAbsAction):
+		if isinstance(self.action, GyroAbsAction):
 			# Another special case, GyroAbs has to handle deadzone
 			# only after math is finished
 			self.action._deadzone_fn = self._convert
@@ -692,8 +698,7 @@ class DeadzoneModifier(Modifier):
 		dsc = self.action.describe(context)
 		if "\n" in dsc:
 			return "%s\n(with deadzone)" % (dsc,)
-		else:
-			return "%s (with deadzone)" % (dsc,)
+		return "%s (with deadzone)" % (dsc,)
 
 	def to_string(self, multiline=False, pad=0):
 		params = []
@@ -880,13 +885,12 @@ class ModeModifier(Modifier):
 				rv[-1] = rv[-1][0:-1]
 			rv += [(" " * pad) + ")"]
 			return "\n".join(rv)
-		else:
-			rv = []
-			for check in self.mods:
-				rv += [nameof(check), NameModifier.unstrip(self.mods[check]).to_string(False)]
-			if self.default is not None:
-				rv += [NameModifier.unstrip(self.default).to_string(False)]
-			return "mode(" + ", ".join(rv) + ")"
+		rv = []
+		for check in self.mods:
+			rv += [nameof(check), NameModifier.unstrip(self.mods[check]).to_string(False)]
+		if self.default is not None:
+			rv += [NameModifier.unstrip(self.default).to_string(False)]
+		return "mode(" + ", ".join(rv) + ")"
 
 	def cancel(self, mapper):
 		for action in self.mods.values():
@@ -894,8 +898,7 @@ class ModeModifier(Modifier):
 		self.default.cancel(mapper)
 
 	def select(self, mapper):
-		"""
-		Selects action by pressed button.
+		"""Selects action by pressed button.
 		"""
 		for check, action in self.checks:
 			if check(mapper):
@@ -903,8 +906,7 @@ class ModeModifier(Modifier):
 		return self.default
 
 	def select_w_check(self, mapper):
-		"""
-		As select, but returns matched check as well.
+		"""As select, but returns matched check as well.
 		"""
 		for check, action in self.checks:
 			if check(mapper):
@@ -942,7 +944,7 @@ class ModeModifier(Modifier):
 				c.__proc = c.button_press(mapper)
 			self.shell_timeout = 0.5
 			mapper.schedule(0, self.check_shell_commands)
-			return
+			return None
 
 		sel = self.select(mapper)
 		self.held_buttons.add(sel)
@@ -987,10 +989,9 @@ class ModeModifier(Modifier):
 				b.trigger(mapper, 0, self.held_triggers[b])
 			self.held_triggers = {}
 			return False
-		else:
-			sel = self.select(mapper)
-			self.held_triggers[sel] = position
-			return sel.trigger(mapper, position, old_position)
+		sel = self.select(mapper)
+		self.held_triggers[sel] = position
+		return sel.trigger(mapper, position, old_position)
 
 	def axis(self, mapper, position, what):
 		return self.select(mapper).axis(mapper, position, what)
@@ -1032,8 +1033,7 @@ class ModeModifier(Modifier):
 				rv = sel.whole(mapper, x, y, what)
 				mapper.set_button(what, True)
 				return rv
-			else:
-				return sel.whole(mapper, x, y, what)
+			return sel.whole(mapper, x, y, what)
 
 
 class DoubleclickModifier(Modifier, HapticEnabledAction):
@@ -1110,7 +1110,7 @@ class DoubleclickModifier(Modifier, HapticEnabledAction):
 
 	def to_string(self, multiline=False, pad=0):
 		timeout = ""
-		if DoubleclickModifier.DEFAULT_TIMEOUT != self.timeout:
+		if self.timeout != DoubleclickModifier.DEFAULT_TIMEOUT:
 			timeout = ", %s" % (self.timeout)
 		if self.action and self.normalaction and self.holdaction:
 			return "doubleclick(%s, hold(%s, %s)%s)" % (
@@ -1119,21 +1119,21 @@ class DoubleclickModifier(Modifier, HapticEnabledAction):
 				NameModifier.unstrip(self.normalaction).to_string(multiline, pad),
 				timeout,
 			)
-		elif self.action and self.normalaction and not self.holdaction:
+		if self.action and self.normalaction and not self.holdaction:
 			return "doubleclick(%s, %s%s)" % (
 				NameModifier.unstrip(self.action).to_string(multiline, pad),
 				NameModifier.unstrip(self.normalaction).to_string(multiline, pad),
 				timeout,
 			)
-		elif not self.action and self.normalaction and self.holdaction:
+		if not self.action and self.normalaction and self.holdaction:
 			return "hold(%s, %s%s)" % (
 				NameModifier.unstrip(self.holdaction).to_string(multiline, pad),
 				NameModifier.unstrip(self.normalaction).to_string(multiline, pad),
 				timeout,
 			)
-		elif not self.action and not self.normalaction and self.holdaction:
+		if not self.action and not self.normalaction and self.holdaction:
 			return "hold(None, %s%s)" % (NameModifier.unstrip(self.holdaction).to_string(multiline, pad), timeout)
-		elif self.action and not self.normalaction and not self.holdaction:
+		if self.action and not self.normalaction and not self.holdaction:
 			return "doubleclick(None, %s%s)" % (NameModifier.unstrip(self.action).to_string(multiline, pad), timeout)
 		return NameModifier.unstrip(self.action or self.normalaction or self.holdaction).to_string(multiline, pad)
 
@@ -1168,7 +1168,7 @@ class DoubleclickModifier(Modifier, HapticEnabledAction):
 			self.waiting_task = None
 			if self.pressed:
 				# Timeouted while button is still pressed
-				self.active = self.holdaction if self.holdaction else self.normalaction
+				self.active = self.holdaction or self.normalaction
 				if self.haptic:
 					mapper.send_feedback(self.haptic)
 				self.active.button_press(mapper)
@@ -1226,8 +1226,7 @@ class HoldModifier(DoubleclickModifier):
 
 
 class SensitivityModifier(Modifier):
-	"""
-	Sets action sensitivity, if action supports it.
+	"""Sets action sensitivity, if action supports it.
 	Action that supports such setting has set_speed(x, y, z)
 	and get_speed() methods defined.
 
@@ -1287,8 +1286,7 @@ class SensitivityModifier(Modifier):
 
 
 class FeedbackModifier(Modifier):
-	"""
-	Enables feedback for action, action supports it.
+	"""Enables feedback for action, action supports it.
 	Action that supports feedback has to have set_haptic(hapticdata)
 	method defined.
 
@@ -1376,8 +1374,7 @@ class RotateInputModifier(Modifier):
 
 
 class SmoothModifier(Modifier):
-	"""
-	Smooths pad movements
+	"""Smooths pad movements
 	"""
 
 	COMMAND = "smooth"
@@ -1410,8 +1407,8 @@ class SmoothModifier(Modifier):
 
 	def _get_pos(self):
 		"""Computes average x,y from all accumulated positions"""
-		x = sum((self._deq_x[i] * self._weights[i] for i in self._range))
-		y = sum((self._deq_y[i] * self._weights[i] for i in self._range))
+		x = sum(self._deq_x[i] * self._weights[i] for i in self._range)
+		y = sum(self._deq_y[i] * self._weights[i] for i in self._range)
 		return int(x / self._w_sum), int(y / self._w_sum)
 
 	def whole(self, mapper, x, y, what):
@@ -1443,8 +1440,7 @@ class SmoothModifier(Modifier):
 
 
 class CircularModifier(Modifier, HapticEnabledAction):
-	"""
-	Designed to translate rotating finger over pad to mouse wheel movement.
+	"""Designed to translate rotating finger over pad to mouse wheel movement.
 	Can also be used to translate same thing into movement of Axis.
 	"""
 
@@ -1472,8 +1468,7 @@ class CircularModifier(Modifier, HapticEnabledAction):
 	def get_haptic(self):
 		if isinstance(self.action, HapticEnabledAction):
 			return self.action.get_haptic()
-		else:
-			return HapticEnabledAction.get_haptic(self)
+		return HapticEnabledAction.get_haptic(self)
 
 	@staticmethod
 	def decode(data, a, *b):
@@ -1537,8 +1532,7 @@ class CircularModifier(Modifier, HapticEnabledAction):
 
 
 class CircularAbsModifier(Modifier, WholeHapticAction):
-	"""
-	Works similary to CircularModifier, but instead of counting with finger
+	"""Works similary to CircularModifier, but instead of counting with finger
 	movements movements, translates exact position on dpad to axis value.
 	"""
 

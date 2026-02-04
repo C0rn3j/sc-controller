@@ -168,7 +168,7 @@ class ActionParser:
 						% (
 							parameter,
 							t.value,
-						)
+						),
 					)
 				parameter = getattr(parameter, t.value)
 

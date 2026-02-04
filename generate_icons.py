@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # Used to generate some icons
 # Requires inkscape and imagemagick packages
-import subprocess
 import colorsys
-import oxipng
+import subprocess
 from xml.etree import ElementTree as ET
+
+import oxipng
 
 ICODIR = "./images/"  # Directory with icons
 CICONS = "./images/controller-icons/"  # Directory controller-icons
@@ -32,7 +33,7 @@ for size in (24, 256):
 				f"--export-filename={ICODIR}{size}x{size}/status/scc-{state}.png",
 				f"--export-width={size}",
 				f"--export-height={size}",
-			]
+			],
 		)
 		oxipng.optimize(f"{ICODIR}{size}x{size}/status/scc-{state}.png", level=6, deflate=oxipng.Deflaters.zopfli(100))
 
@@ -46,12 +47,12 @@ def html_to_rgb(html: str) -> tuple[int, int, int, int]:
 		return 0, 0, 0, 0
 	elif len(html) != 8:
 		raise ValueError("Needs RRGGBB(AA) format, got '%s'" % (html,))
-	return tuple((float(int(html[i : i + 2], 16)) / 255.0 for i in range(0, len(html), 2)))
+	return tuple(float(int(html[i : i + 2], 16)) / 255.0 for i in range(0, len(html), 2))
 
 
 def rgb_to_html(r, g, b) -> str:
 	"""Convets rgb back to html color code"""
-	return "#" + "".join(("%02x" % int(x * 255) for x in (r, g, b)))
+	return "#" + "".join("%02x" % int(x * 255) for x in (r, g, b))
 
 
 def recolor(tree, add) -> None:
@@ -59,11 +60,11 @@ def recolor(tree, add) -> None:
 	if "id" in tree.attrib and "overlay" in tree.attrib["id"]:
 		return
 	for child in tree:
-		if 'style' in child.attrib:
+		if "style" in child.attrib:
 			styles = { a : b
 				for (a, b) in (
 					x.split(":", 1)
-					for x in child.attrib['style'].split(';')
+					for x in child.attrib["style"].split(";")
 					if ":" in x
 				)}
 			if "fill" in styles or "stroke" in styles:
@@ -80,7 +81,7 @@ def recolor(tree, add) -> None:
 						r, g, b = colorsys.hsv_to_rgb(h, s, v)
 						# Store
 						styles[key] = rgb_to_html(r, g, b)
-				child.attrib["style"] = ";".join((":".join((x, styles[x])) for x in styles))
+				child.attrib["style"] = ";".join(":".join((x, styles[x])) for x in styles)
 		recolor(child, add)
 
 
@@ -88,7 +89,7 @@ def recolor(tree, add) -> None:
 ET.register_namespace("", "http://www.w3.org/2000/svg")
 for tp in ("sc", "scbt", "fake", "ds4", "hid", "rpad"):
 	# Read svg and parse it
-	with open(f"{CICONS}{tp}-0.svg", "r") as file:
+	with open(f"{CICONS}{tp}-0.svg") as file:
 		data = file.read()
 	# Create recolored images
 	for key in RECOLORS:

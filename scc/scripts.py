@@ -51,8 +51,7 @@ def help_gui() -> int:
 
 
 def cmd_test_evdev(argv0: str, argv: list[str]) -> int:
-	"""
-	Evdev driver test. Displays gamepad inputs using evdev driver.
+	"""Evdev driver test. Displays gamepad inputs using evdev driver.
 
 	Usage: scc test-evdev /dev/input/node
 	Return codes:
@@ -66,8 +65,7 @@ def cmd_test_evdev(argv0: str, argv: list[str]) -> int:
 
 
 def cmd_test_hid(argv0: str, argv: list[str]) -> int:
-	"""
-	HID driver test. Displays gamepad inputs using hid driver.
+	"""HID driver test. Displays gamepad inputs using hid driver.
 
 	Usage: scc test-hid vendor_id device_id
 	Return codes:
@@ -77,7 +75,7 @@ def cmd_test_hid(argv0: str, argv: list[str]) -> int:
 	  3 - device is not HID-compatibile
 	  4 - failed to parse HID descriptor
 	"""
-	from scc.drivers.hiddrv import hiddrv_test, HIDController
+	from scc.drivers.hiddrv import HIDController, hiddrv_test
 
 	return hiddrv_test(HIDController, argv)
 
@@ -104,8 +102,9 @@ def cmd_list_profiles(argv0: str, argv: list[str]) -> int:
 
 	Arguments:
 		-a   Include names begining with dot
+
 	"""
-	from scc.paths import get_profiles_path, get_default_profiles_path
+	from scc.paths import get_default_profiles_path, get_profiles_path
 
 	paths = [get_default_profiles_path(), get_profiles_path()]
 	include_hidden = "-a" in argv
@@ -252,7 +251,7 @@ def cmd_lock_inputs(argv0: str, argv: list[str], lock: str = "Lock: ") -> int:
 			line = s.readline()
 			if line == "":
 				return -3
-			elif line.startswith("Ready."):
+			if line.startswith("Ready."):
 				print(lock + " ".join([x.upper() for x in argv]), file=s)
 				s.flush()
 			elif line.startswith("Error:"):
@@ -312,8 +311,7 @@ def connect_to_daemon() -> TextIOWrapper | None:
 
 
 def check_error(s) -> bool:
-	"""
-	Reads line(s) from socket until "OK." or "Fail:" is read.
+	"""Reads line(s) from socket until "OK." or "Fail:" is read.
 	Then return True if message is "OK." or prints message to stderr
 	and return False if message is "Fail:"
 	"""
@@ -347,12 +345,11 @@ def import_osd() -> None:
 
 
 def run_osd_tool(tool, argv0: str, argv: list[str]) -> None:
-	import signal, argparse
+	import signal
 
 	signal.signal(signal.SIGINT, sigint)
 
 	from scc.tools import init_logging
-	from scc.paths import get_share_path
 
 	init_logging()
 
@@ -375,12 +372,11 @@ def show_help(command=None, out=sys.stdout) -> int:
 			if len(lines) > 0:
 				for line in lines:
 					line = line.replace("Usage: scc", "Usage: %s" % (sys.argv[0],))
-					if line.startswith("\t"):
-						line = line[1:]
+					line = line.removeprefix("\t")
 					print(line, file=out)
 				return 0
 	print("Usage: %s <command> [ arguments ]" % (sys.argv[0],), file=out)
-	print("", file=out)
+	print(file=out)
 	print("List of commands:", file=out)
 	for name in sorted(names):
 		hlp = (globals()["cmd_" + name].__doc__ or "").strip("\t \r\n").split("\n")[0]
@@ -416,6 +412,6 @@ def main() -> None:
 		sys.exit(0)
 	except InvalidArguments:
 		print("Invalid arguments", file=sys.stderr)
-		print("", file=sys.stderr)
+		print(file=sys.stderr)
 		show_help(sys.argv[1], out=sys.stderr)
 		sys.exit(1)

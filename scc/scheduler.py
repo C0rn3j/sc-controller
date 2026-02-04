@@ -7,7 +7,9 @@ also called on main thread.
 Use schedule(delay, callback, *data) to register one-time task.
 """
 
-import time, queue, logging
+import logging
+import queue
+import time
 
 log = logging.getLogger("Scheduler")
 
@@ -21,8 +23,7 @@ class Scheduler:
 		self._now = time.time()
 
 	def schedule(self, delay, callback, *data):
-		"""
-		Schedules one-time task to be executed no sooner than after 'delay' of
+		"""Schedules one-time task to be executed no sooner than after 'delay' of
 		seconds. Delay may be float number.
 		'callback' is called as callback(*data).
 
@@ -38,8 +39,7 @@ class Scheduler:
 		return task
 
 	def cancel_task(self, task):
-		"""
-		Returns True if task was sucessfully removed or False if task was
+		"""Returns True if task was sucessfully removed or False if task was
 		already executed or not known at all.
 
 		Note that this is slow as hell and completly thread-unsafe,

@@ -24,10 +24,10 @@
 
 
 import ast
+import operator as op
 import os
 import shlex
 from collections import OrderedDict
-import operator as op
 
 OPERATORS = {
 	ast.Add: op.add,
@@ -61,22 +61,20 @@ def eval_expr(expr):
 	def _eval(node):
 		if isinstance(node, ast.Constant):
 			return node.value
-		elif isinstance(node, ast.BinOp):
+		if isinstance(node, ast.BinOp):
 			return OPERATORS[type(node.op)](_eval(node.left), _eval(node.right))
-		elif isinstance(node, ast.UnaryOp):
+		if isinstance(node, ast.UnaryOp):
 			return OPERATORS[type(node.op)](_eval(node.operand))
-		elif isinstance(node, ast.BoolOp):
+		if isinstance(node, ast.BoolOp):
 			values = [_eval(x) for x in node.values]
 			return OPERATORS[type(node.op)](**values)
-		else:
-			raise TypeError(node)
+		raise TypeError(node)
 
 	return _eval(ast.parse(expr, mode="eval").body)
 
 
 def defines(base, include):
 	"""Extract #define from base/include following #includes"""
-
 	parsed = set()
 	fname = os.path.normpath(os.path.abspath(os.path.join(base, include)))
 	parsed.add(fname)
@@ -101,8 +99,7 @@ def defines(base, include):
 				if tok == "*" and ntok == "/":
 					lexer.quotes = quotes
 					break
-				else:
-					lexer.push_token(ntok)
+				lexer.push_token(ntok)
 			return True
 
 		def parse_cpp_comments(lexer, tok, ntok):
@@ -174,7 +171,7 @@ def defines(base, include):
 				else:
 					name = tok
 				fname = os.path.normpath(os.path.abspath(os.path.join(base, name)))
-				if os.path.isfile(fname) and not fname in parsed:
+				if os.path.isfile(fname) and fname not in parsed:
 					parsed.add(fname)
 					lexer.push_source(open(fname))
 			else:
@@ -188,4 +185,4 @@ if __name__ == "__main__":
 
 	definesDict = defines(sys.argv[1], sys.argv[2])
 	for k, v in definesDict.items():
-		print("{}:\t{}".format(k, v))
+		print(f"{k}:\t{v}")

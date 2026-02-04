@@ -1,25 +1,20 @@
 #!/usr/bin/env python3
-"""
-SC Controller - Macros
+"""SC Controller - Macros
 
 Frontier is my favorite.
 """
 
-from scc.actions import Action, NoAction, ButtonAction, MOUSE_BUTTONS
-from scc.constants import FE_STICK, FE_TRIGGER, FE_PAD
-from scc.constants import LEFT, RIGHT, STICK, SCButtons
+import logging
+
+from scc.actions import Action, ButtonAction
 from scc.uinput import Keys
-
-
-import time, logging
 
 log = logging.getLogger("Macros")
 _ = lambda x: x
 
 
 class Macro(Action):
-	"""
-	Two or more actions executed in sequence.
+	"""Two or more actions executed in sequence.
 	Generated when parsing ';'
 	"""
 
@@ -130,8 +125,7 @@ class Macro(Action):
 
 
 class Type(Macro):
-	"""
-	Special type of Macro where keys to press are specified as string.
+	"""Special type of Macro where keys to press are specified as string.
 	Basically, writing type("iddqd") is same thing as
 	button(KEY_I) ; button(KEY_D) ; button(KEY_D); button(KEY_Q); button(KEY_D)
 
@@ -172,8 +166,7 @@ class Type(Macro):
 
 
 class Cycle(Macro):
-	"""
-	Multiple actions cycling on same button.
+	"""Multiple actions cycling on same button.
 	When button is pressed 1st time, 1st action is executed. 2nd action is
 	executed for 2nd press et cetera et cetera.
 	"""
@@ -212,8 +205,7 @@ class Cycle(Macro):
 
 
 class Repeat(Macro):
-	"""
-	Repeats specified action as long as physical button is pressed.
+	"""Repeats specified action as long as physical button is pressed.
 	This is actually just Macro with 'repeat' set to True
 	"""
 
@@ -227,8 +219,7 @@ class Repeat(Macro):
 
 
 class SleepAction(Action):
-	"""
-	Does nothing.
+	"""Does nothing.
 	If used in macro, overrides delay after itself.
 	"""
 
@@ -244,9 +235,8 @@ class SleepAction(Action):
 			return self.name
 		if self.delay < 1.0:
 			return _("Wait %sms") % (int(self.delay * 1000),)
-		else:
-			s = ("%0.2f" % (self.delay,)).strip(".0")
-			return _("Wait %ss") % (s,)
+		s = ("%0.2f" % (self.delay,)).strip(".0")
+		return _("Wait %ss") % (s,)
 
 	def to_string(self, multiline=False, pad=0):
 		return (" " * pad) + "%s(%0.3f)" % (self.COMMAND, self.delay)
@@ -259,8 +249,7 @@ class SleepAction(Action):
 
 
 class PressAction(Action):
-	"""
-	Presses button and leaves it pressed.
+	"""Presses button and leaves it pressed.
 	Can be used anywhere, but makes sense only with macro.
 	"""
 
@@ -293,8 +282,7 @@ class PressAction(Action):
 
 
 class ReleaseAction(PressAction):
-	"""
-	Releases button.
+	"""Releases button.
 	Can be used anywhere, but makes sense only with macro.
 	"""
 
@@ -306,8 +294,7 @@ class ReleaseAction(PressAction):
 
 
 class TapAction(PressAction):
-	"""
-	Presses button for short time.
+	"""Presses button for short time.
 	If button is already pressed, generates release-press-release-press
 	events in quick sequence.
 	"""
@@ -361,15 +348,14 @@ class TapAction(PressAction):
 
 	def _bailout(self):
 		self._lst, self._keep_pressed = [], None
-		return None
 
 	def _rel_tap_press(self, mapper):
-		if not self.button in mapper.pressed or mapper.pressed[self.button] < self.COUNTER_VAL:
+		if self.button not in mapper.pressed or mapper.pressed[self.button] < self.COUNTER_VAL:
 			# Something else tried to _release_ button in meanwhile, bail out
 			mapper.pressed[self.button] = 1
 			ButtonAction._button_release(mapper, self.button)
 			return self._bailout()
-		elif mapper.pressed[self.button] > self.COUNTER_VAL:
+		if mapper.pressed[self.button] > self.COUNTER_VAL:
 			# Something else pressed button in meanwhile, bail out
 			mapper.pressed[self.button] = 1
 			return self._bailout()

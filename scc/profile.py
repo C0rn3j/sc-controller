@@ -9,11 +9,10 @@ import json
 import logging
 
 from scc.actions import NoAction
-from scc.constants import CPAD, DPAD, GYRO, LEFT, RIGHT, RSTICK, STICK, WHOLE, HapticPos, SCButtons
+from scc.constants import CPAD, DPAD, GYRO, LEFT, RIGHT, RSTICK, STICK, WHOLE, SCButtons
 from scc.lib.jsonencoder import JSONEncoder
 from scc.menu_data import MenuData
 from scc.modifiers import HoldModifier
-from scc.parser import TalkingActionParser
 from scc.special_actions import MenuAction
 
 log = logging.getLogger("profile")
@@ -241,14 +240,13 @@ class Profile:
 	def _convert(self, from_version):
 		"""Performs conversion from older profile version"""
 		if from_version < 1:
-			from scc.modifiers import ModeModifier
 
 			# Add 'display Default.menu if center button is held' for old profiles
 			c = self.buttons[SCButtons.C]
 			if not c:
 				# Nothing set to C button
 				self.buttons[SCButtons.C] = HoldModifier(
-					MenuAction("Default.menu"), normalaction=MenuAction("Default.menu")
+					MenuAction("Default.menu"), normalaction=MenuAction("Default.menu"),
 				)
 			elif hasattr(c, "holdaction") and c.holdaction:
 				# Already set to something, don't overwrite it
@@ -258,12 +256,12 @@ class Profile:
 				pass
 			else:
 				self.buttons[SCButtons.C] = HoldModifier(
-					MenuAction("Default.menu"), normalaction=self.buttons[SCButtons.C]
+					MenuAction("Default.menu"), normalaction=self.buttons[SCButtons.C],
 				)
 		if from_version < 1.1:
 			# Convert old scrolling wheel to new representation
-			from scc.modifiers import FeedbackModifier, BallModifier
 			from scc.actions import MouseAction, XYAction
+			from scc.modifiers import BallModifier, FeedbackModifier
 			from scc.uinput import Rels
 
 			iswheelaction = lambda x: isinstance(x, MouseAction) and x.parameters[0] in (
@@ -285,8 +283,8 @@ class Profile:
 		if from_version < 1.2:
 			# Convert old trigger settings that were done with ButtonAction
 			# to new TriggerAction
-			from scc.constants import TRIGGER_HALF, TRIGGER_MAX, TRIGGER_CLICK
-			from scc.actions import ButtonAction, TriggerAction, MultiAction
+			from scc.actions import ButtonAction, MultiAction, TriggerAction
+			from scc.constants import TRIGGER_CLICK, TRIGGER_HALF, TRIGGER_MAX
 			from scc.uinput import Keys
 
 			for p in (Profile.LEFT, Profile.RIGHT):

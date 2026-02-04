@@ -59,7 +59,7 @@ class Controller:
 		Returns None if there is no configuration file (GUI will use
 		defaults in such case)
 		"""
-		return None
+		return
 
 	def set_mapper(self, mapper: Mapper):
 		"""Sets mapper for controller"""
@@ -74,18 +74,15 @@ class Controller:
 
 		Does nothing by default.
 		"""
-		pass
 
 	def set_led_level(self, level) -> None:
 		"""Configures LED intensity, if supported.
 
 		'level' goes from 0.0 to 100.0
 		"""
-		pass
 
 	def set_gyro_enabled(self, enabled) -> None:
 		"""Enables or disables gyroscope, if supported"""
-		pass
 
 	def get_gyro_enabled(self) -> bool:
 		"""Returns True if gyroscope is enabled"""
@@ -96,15 +93,12 @@ class Controller:
 
 		'data' is HapticData instance.
 		"""
-		pass
 
 	def turnoff(self) -> None:
 		"""Turns off controller, if supported"""
-		pass
 
 	def disconnected(self) -> None:
 		"""Called from daemon after controller is disconnected"""
-		pass
 
 
 class HapticData:

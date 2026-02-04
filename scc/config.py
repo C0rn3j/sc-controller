@@ -3,11 +3,13 @@
 Handles loading, storing and querying config file
 """
 
+import json
+import logging
+import os
+
 from scc.paths import get_config_path
 from scc.profile import Encoder
 from scc.special_actions import ChangeProfileAction
-
-import os, json, logging
 
 log = logging.getLogger("Config")
 
@@ -141,8 +143,7 @@ class Config:
 			self.save()
 
 	def _check_dict(self, values, defaults):
-		"""
-		Recursively checks if 'config' contains all keys in 'defaults'.
+		"""Recursively checks if 'config' contains all keys in 'defaults'.
 		Creates keys with default values where missing.
 
 		Returns True if anything was changed.
@@ -157,8 +158,7 @@ class Config:
 		return rv
 
 	def check_values(self):
-		"""
-		Check if all required values are in place and fill by default
+		"""Check if all required values are in place and fill by default
 		whatever is missing.
 
 		Returns True if anything gets changed.
@@ -174,8 +174,7 @@ class Config:
 		return rv
 
 	def get_controller_config(self, controller_id):
-		"""
-		Returns self['controllers'][controller_id], creating new node populated
+		"""Returns self['controllers'][controller_id], creating new node populated
 		with defaults if there is none.
 		"""
 		if controller_id in self.values["controllers"]:
@@ -197,7 +196,7 @@ class Config:
 		return rv
 
 	def load(self):
-		self.values = json.loads(open(self.filename, "r").read())
+		self.values = json.loads(open(self.filename).read())
 
 	def create(self):
 		"""Creates new, empty configuration"""

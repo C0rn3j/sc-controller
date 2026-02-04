@@ -17,8 +17,7 @@ from typing import TYPE_CHECKING
 from scc.tools import find_library
 
 if TYPE_CHECKING:
-	from _ctypes import Array
-	from ctypes import CDLL, c_char
+	from ctypes import CDLL
 
 log = logging.getLogger("CemuHook")
 
