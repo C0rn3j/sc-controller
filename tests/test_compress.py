@@ -1,10 +1,9 @@
 from scc.actions import Action, AxisAction
-from scc.constants import HapticPos, SCButtons
 from scc.macros import Macro
 from scc.modifiers import DoubleclickModifier
 from scc.parser import ActionParser
 from scc.special_actions import MenuAction
-from scc.uinput import Axes, Keys, Rels
+from scc.uinput import Axes
 
 parser = ActionParser()
 
@@ -115,8 +114,7 @@ CASES = {
 
 
 class TestCompress:
-	"""
-	Tests Aciton.compress method.
+	"""Tests Aciton.compress method.
 	Basically, tests how various combinations of modifiers interacts together.
 	"""
 
@@ -147,11 +145,10 @@ class TestCompress:
 				)
 
 	def test_hold_doubleclick(self):
-		"""
-		Tests parsing of hold & doubleclick combination.
+		"""Tests parsing of hold & doubleclick combination.
 		"""
 		a = parser.from_json_data(
-			{"action": "axis(ABS_RX)", "hold": {"action": "axis(ABS_X)"}, "doubleclick": {"action": "axis(ABS_Z)"}}
+			{"action": "axis(ABS_RX)", "hold": {"action": "axis(ABS_X)"}, "doubleclick": {"action": "axis(ABS_Z)"}},
 		).compress()
 
 		assert isinstance(a, DoubleclickModifier)
@@ -163,8 +160,7 @@ class TestCompress:
 		assert a.holdaction.id == Axes.ABS_X
 
 	def test_sensitivity(self):
-		"""
-		Tests if all sensitivity setting are parsed and applied
+		"""Tests if all sensitivity setting are parsed and applied
 		after .compress() is called.
 		"""
 		for case in CASES:
@@ -176,8 +172,7 @@ class TestCompress:
 				)
 
 	def test_feedback(self):
-		"""
-		Tests if all feedback setting are parsed and applied
+		"""Tests if all feedback setting are parsed and applied
 		after .compress() is called.
 		"""
 		for case in CASES:
@@ -187,8 +182,7 @@ class TestCompress:
 				assert a.get_haptic().get_position().name == CASES[case]["feedback"][0]
 
 	def test_multi(self):
-		"""
-		Tests if feedback and sensitivity setting are parsed and applied
+		"""Tests if feedback and sensitivity setting are parsed and applied
 		to actions in multiaciton.
 		"""
 		a = parser.from_json_data(
@@ -196,15 +190,14 @@ class TestCompress:
 				"action": "circular(REL_HWHEEL) and gyroabs(None, ABS_Y, ABS_Z)",
 				"sensitivity": (2.0, 3.0, 4.0),
 				"feedback": ("BOTH",),
-			}
+			},
 		).compress()
 		assert a.actions[0].get_haptic().get_position().name == "BOTH"
 		for action in a.actions:
 			assert action.get_speed()[0] == 2.0
 
 	def test_macro(self):
-		"""
-		Tests if feedback and sensitivity setting are parsed and applied
+		"""Tests if feedback and sensitivity setting are parsed and applied
 		to actions in basic macro.
 		"""
 		a = parser.from_json_data(
@@ -212,7 +205,7 @@ class TestCompress:
 				"action": "circular(REL_HWHEEL) ; gyroabs(None, ABS_Y, ABS_Z)",
 				"sensitivity": (2.0, 3.0, 4.0),
 				"feedback": ("BOTH",),
-			}
+			},
 		).compress()
 		for action in a.actions:
 			assert action.get_haptic().get_position().name == "BOTH"

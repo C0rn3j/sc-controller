@@ -18,24 +18,23 @@ from scc.tools import set_logging_level
 gi.require_version("Gtk", "3.0")
 gi.require_version("Rsvg", "2.0")
 gi.require_version("GdkX11", "3.0")
-from gi.repository import Gtk, Gdk, GdkX11, GLib
+from gi.repository import GLib
 
+from scc.config import Config
 from scc.gui.daemon_manager import DaemonManager
-from scc.osd.gesture_display import GestureDisplay
-from scc.osd.radial_menu import RadialMenu
-from scc.osd.hmenu import HorizontalMenu
-from scc.osd.quick_menu import QuickMenu
-from scc.osd.grid_menu import GridMenu
-from scc.osd.keyboard import Keyboard
-from scc.osd.message import Message
-from scc.osd.dialog import Dialog
 from scc.osd import OSDWindow
-from scc.osd.menu import Menu
 from scc.osd.area import Area
+from scc.osd.dialog import Dialog
+from scc.osd.gesture_display import GestureDisplay
+from scc.osd.grid_menu import GridMenu
+from scc.osd.hmenu import HorizontalMenu
+from scc.osd.keyboard import Keyboard
+from scc.osd.menu import Menu
+from scc.osd.message import Message
+from scc.osd.quick_menu import QuickMenu
+from scc.osd.radial_menu import RadialMenu
 from scc.special_actions import OSDAction
 from scc.tools import shsplit
-from scc.config import Config
-
 
 log = logging.getLogger("osd.daemon")
 
@@ -116,7 +115,7 @@ class OSDDaemon:
 		if m.get_exit_code() == 0:
 			# 0 means that user selected item and confirmed selection
 			self.daemon.request(
-				"Selected: {} {}".format(m.get_menuid(), m.get_selected_item_id()),
+				f"Selected: {m.get_menuid()} {m.get_selected_item_id()}",
 				#'Selected: %s' % ( shjoin([
 				# m.get_menuid(), m.get_selected_item_id()
 				# ])),
@@ -143,8 +142,7 @@ class OSDDaemon:
 
 	@staticmethod
 	def _is_menu_message(m):
-		"""
-		Returns True if m starts with 'OSD: [grid|radial]menu'
+		"""Returns True if m starts with 'OSD: [grid|radial]menu'
 		or "OSD: dialog"
 		"""
 		return (
@@ -256,8 +254,7 @@ class OSDDaemon:
 		self.clear_messages(only_long_lasting=False)
 
 	def clear_messages(self, only_long_lasting=True):
-		"""
-		Clears all OSD messages from screen.
+		"""Clears all OSD messages from screen.
 		If only_long_lasting is True, which is default behaviour on profile
 		change, only messages set to last more than 10s are hidden.
 		"""
@@ -267,8 +264,7 @@ class OSDDaemon:
 				m.destroy()
 
 	def _check_colorconfig_change(self):
-		"""
-		Checks if OSD color configuration is changed and re-applies CSS
+		"""Checks if OSD color configuration is changed and re-applies CSS
 		if needed.
 		"""
 		h = sum([hash(self.config["osd_colors"][x]) for x in self.config["osd_colors"]])
@@ -296,7 +292,6 @@ class OSDDaemon:
 
 if __name__ == "__main__":
 	from scc.tools import init_logging
-	from scc.paths import get_share_path
 
 	init_logging(suffix=" OSD")
 	set_logging_level("debug" in sys.argv, "debug" in sys.argv)

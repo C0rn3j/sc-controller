@@ -1,11 +1,9 @@
-import inspect
 
-from scc.actions import Action, AxisAction, ButtonAction, MouseAction
-from scc.constants import STICK, HapticPos, SCButtons
+from scc.actions import AxisAction
 from scc.modifiers import *
-from scc.uinput import Axes, Keys, Rels
+from scc.uinput import Axes
 
-from . import _parses_as, parser
+from . import _parses_as
 
 
 class TestModifiers:

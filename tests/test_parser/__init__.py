@@ -4,8 +4,7 @@ parser = ActionParser()
 
 
 def _parses_as_itself(action):
-	"""
-	Tests if provided action can be converted to string and
+	"""Tests if provided action can be converted to string and
 	parsed back to same action.
 	"""
 	# Simple

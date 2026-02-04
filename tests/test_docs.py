@@ -2,16 +2,14 @@ from scc.actions import Action
 
 
 class TestDocs:
-	"""
-	Tests every glade file in glade/ directory (and subdirectories) for known
+	"""Tests every glade file in glade/ directory (and subdirectories) for known
 	problems that may cause GUI to crash in some environments.
 
 	(one case on one environment so far)
 	"""
 
 	def test_every_action_has_docs(self):
-		"""
-		Tests if every known Action is documentated in docs/actions.md
+		"""Tests if every known Action is documentated in docs/actions.md
 		"""
 		# Read docs first
 		with open("docs/actions.md") as f:

@@ -1,9 +1,7 @@
-import inspect
 
 from scc.actions import ButtonAction
 from scc.constants import HapticPos, SCButtons
 from scc.special_actions import *
-from scc.uinput import Axes, Keys, Rels
 
 from . import parser
 
@@ -17,46 +15,40 @@ class TestSpecialActions:
 	# don't have to support what's tested.
 
 	def test_profile(self):
-		"""
-		Tests if ChangeProfileAction is parsed correctly from json.
+		"""Tests if ChangeProfileAction is parsed correctly from json.
 		"""
 		a = parser.from_json_data({"action": "profile('xyz')"})
 		assert isinstance(a, ChangeProfileAction)
 		assert a.profile == "xyz"
 
 	def test_shell(self):
-		"""
-		Tests if ShellCommandAction is parsed correctly from json.
+		"""Tests if ShellCommandAction is parsed correctly from json.
 		"""
 		a = parser.from_json_data({"action": "shell('ls -la')"})
 		assert isinstance(a, ShellCommandAction)
 		assert a.command == "ls -la"
 
 	def test_turnoff(self):
-		"""
-		Tests if TurnOffAction is parsed correctly from json.
+		"""Tests if TurnOffAction is parsed correctly from json.
 		"""
 		a = parser.from_json_data({"action": "turnoff"})
 		assert isinstance(a, TurnOffAction)
 
 	def test_restart(self):
-		"""
-		Tests if RestartDaemonAction is parsed correctly from json.
+		"""Tests if RestartDaemonAction is parsed correctly from json.
 		"""
 		a = parser.from_json_data({"action": "restart"})
 		assert isinstance(a, RestartDaemonAction)
 
 	def test_led(self):
-		"""
-		Tests if LockedAction is parsed correctly from json.
+		"""Tests if LockedAction is parsed correctly from json.
 		"""
 		a = parser.from_json_data({"action": "led(66)"})
 		assert isinstance(a, LedAction)
 		assert a.brightness == 66
 
 	def test_osd(self):
-		"""
-		Tests if OSDAction is parsed correctly from json.
+		"""Tests if OSDAction is parsed correctly from json.
 		"""
 		# With text
 		a = parser.from_json_data({"action": "osd('something')"})
@@ -68,8 +60,7 @@ class TestSpecialActions:
 		assert isinstance(a.action, ButtonAction)
 
 	def test_dialog(self):
-		"""
-		Tests if all Menu*Actions are parsed correctly from json.
+		"""Tests if all Menu*Actions are parsed correctly from json.
 		"""
 		# Simple
 		a = parser.from_json_data({"action": "dialog('title', osd('something'))"})
@@ -81,7 +72,7 @@ class TestSpecialActions:
 
 		# Complete
 		a = parser.from_json_data(
-			{"action": "dialog(X, Y, 'title', name('button', osd('something')), name('item', osd('something else')))"}
+			{"action": "dialog(X, Y, 'title', name('button', osd('something')), name('item', osd('something else')))"},
 		)
 		assert a.confirm_with == SCButtons.X
 		assert a.cancel_with == SCButtons.Y
@@ -92,8 +83,7 @@ class TestSpecialActions:
 		assert a.options[0].strip().text == "something"
 
 	def test_menus(self):
-		"""
-		Tests if all Menu*Actions are parsed correctly from json.
+		"""Tests if all Menu*Actions are parsed correctly from json.
 		"""
 		for cls in MENU_CLASSES:
 			a_str = "%s('some.menu', LEFT, X, Y, True)" % (cls.COMMAND,)
@@ -105,8 +95,7 @@ class TestSpecialActions:
 			assert a.show_with_release == True
 
 	def test_position(self):
-		"""
-		Tests if PositionModifier is parsed correctly from json.
+		"""Tests if PositionModifier is parsed correctly from json.
 		"""
 		a = parser.from_json_data({"action": "menu('some.menu', LEFT, X, Y, True)", "position": [-10, 10]}).compress()
 
@@ -115,16 +104,14 @@ class TestSpecialActions:
 		assert a.y == 10
 
 	def test_keyboard(self):
-		"""
-		Tests if KeyboardAction is parsed correctly from json.
+		"""Tests if KeyboardAction is parsed correctly from json.
 		"""
 		# With text
 		a = parser.from_json_data({"action": "keyboard"})
 		assert isinstance(a, KeyboardAction)
 
 	def test_gestures(self):
-		"""
-		Tests if GesturesAction is parsed correctly from json.
+		"""Tests if GesturesAction is parsed correctly from json.
 		"""
 		# Simple
 		a = parser.from_json_data({"gestures": {"UD": {"action": "turnoff"}, "LR": {"action": "keyboard"}}})
@@ -138,14 +125,12 @@ class TestSpecialActions:
 					"UD": {"action": "turnoff"},
 				},
 				"osd": True,
-			}
+			},
 		)
 		assert isinstance(a, OSDAction)
 		assert isinstance(a.action, GesturesAction)
 		assert isinstance(a.action.gestures["UD"], TurnOffAction)
 
 	def test_cemuhook(self):
+		"""Nothing to test here
 		"""
-		Nothing to test here
-		"""
-		pass

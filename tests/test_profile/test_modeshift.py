@@ -24,11 +24,11 @@ class TestModeshift:
 						"dpad": [
 							{
 								"action": "button(Keys.KEY_UP)",
-							}
+							},
 						],
 					},
 				},
-			}
+			},
 		)
 
 		assert a.to_string() == test_string
@@ -58,7 +58,7 @@ class TestModeshift:
 						"ball": [],
 					},
 				},
-			}
+			},
 		)
 
 		assert isinstance(a, ModeModifier)

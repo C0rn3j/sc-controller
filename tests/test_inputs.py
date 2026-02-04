@@ -160,7 +160,7 @@ class TestInputs:
 		mapper.profile.pads[Profile.LEFT] = (parser.restart(
 			"dpad("
 			"	button(Keys.KEY_W), button(Keys.KEY_S),"
-			"	button(Keys.KEY_A), button(Keys.KEY_D))"
+			"	button(Keys.KEY_A), button(Keys.KEY_D))",
 		)).parse()
 
 		# Create movements over left pad

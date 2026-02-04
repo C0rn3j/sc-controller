@@ -1,16 +1,15 @@
 import inspect
 
-from scc.actions import AxisAction, ButtonAction
+from scc.actions import ButtonAction
 from scc.macros import *
 from scc.uinput import Keys
 
-from . import _parses_as_itself, parser
+from . import _parses_as_itself
 
 
 class TestMacros:
 	def test_tests(self):
-		"""
-		Tests if this class has test for each known macro-related action defined.
+		"""Tests if this class has test for each known macro-related action defined.
 		"""
 		for cls in Action.ALL.values():
 			if "/macros.py" in inspect.getfile(cls):
@@ -18,64 +17,56 @@ class TestMacros:
 				assert hasattr(self, method_name), "There is no test for %s" % (cls.COMMAND)
 
 	def test_macro(self):
-		"""
-		Tests if Macro can be converted to string and parsed back to
+		"""Tests if Macro can be converted to string and parsed back to
 		same action.
 		"""
 		assert _parses_as_itself(
-			Macro(ButtonAction(Keys.BTN_LEFT), ButtonAction(Keys.BTN_RIGHT), ButtonAction(Keys.BTN_MIDDLE))
+			Macro(ButtonAction(Keys.BTN_LEFT), ButtonAction(Keys.BTN_RIGHT), ButtonAction(Keys.BTN_MIDDLE)),
 		)
 
 	def test_type(self):
-		"""
-		Tests if Type macro can be converted to string and parsed back to
+		"""Tests if Type macro can be converted to string and parsed back to
 		same action.
 		"""
 		assert _parses_as_itself(Type("ilovecandy"))
 
 	def test_cycle(self):
-		"""
-		Tests if Cycle can be converted to string and parsed back to
+		"""Tests if Cycle can be converted to string and parsed back to
 		same action.
 		"""
 		assert _parses_as_itself(
-			Cycle(ButtonAction(Keys.BTN_LEFT), ButtonAction(Keys.BTN_RIGHT), ButtonAction(Keys.BTN_MIDDLE))
+			Cycle(ButtonAction(Keys.BTN_LEFT), ButtonAction(Keys.BTN_RIGHT), ButtonAction(Keys.BTN_MIDDLE)),
 		)
 
 	def test_repeat(self):
-		"""
-		Tests if Repeat can be converted to string and parsed back to
+		"""Tests if Repeat can be converted to string and parsed back to
 		same action.
 		"""
 		assert _parses_as_itself(Repeat(ButtonAction(Keys.BTN_LEFT)))
 		assert _parses_as_itself(
-			Repeat(Macro(ButtonAction(Keys.BTN_LEFT), ButtonAction(Keys.BTN_RIGHT), ButtonAction(Keys.BTN_MIDDLE)))
+			Repeat(Macro(ButtonAction(Keys.BTN_LEFT), ButtonAction(Keys.BTN_RIGHT), ButtonAction(Keys.BTN_MIDDLE))),
 		)
 
 	def test_sleep(self):
-		"""
-		Tests if SleepAction can be converted to string and parsed back to
+		"""Tests if SleepAction can be converted to string and parsed back to
 		same action.
 		"""
 		assert _parses_as_itself(SleepAction(1.5))
 
 	def test_press(self):
-		"""
-		Tests if PressAction can be converted to string and
+		"""Tests if PressAction can be converted to string and
 		parsed back to same action.
 		"""
 		assert _parses_as_itself(PressAction(Keys.BTN_LEFT))
 
 	def test_release(self):
-		"""
-		Tests if ReleaseAction can be converted to string
+		"""Tests if ReleaseAction can be converted to string
 		and parsed back to same action.
 		"""
 		assert _parses_as_itself(ReleaseAction(Keys.BTN_LEFT))
 
 	def test_tap(self):
-		"""
-		Tests if TapAction can be converted to string
+		"""Tests if TapAction can be converted to string
 		and parsed back to same action.
 		"""
 		assert _parses_as_itself(TapAction(Keys.BTN_LEFT))

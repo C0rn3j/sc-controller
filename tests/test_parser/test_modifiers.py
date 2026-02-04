@@ -1,17 +1,16 @@
 import inspect
 
-from scc.actions import Action, AxisAction, ButtonAction, GyroAction, MouseAction
-from scc.constants import STICK, HapticPos, SCButtons
+from scc.actions import Action, AxisAction, ButtonAction, MouseAction
+from scc.constants import HapticPos, SCButtons
 from scc.modifiers import *
-from scc.uinput import Axes, Keys, Rels
+from scc.uinput import Axes, Keys
 
-from . import _parse_compressed, _parses_as_itself, parser
+from . import _parse_compressed, _parses_as_itself
 
 
 class TestModifiers:
 	def test_tests(self):
-		"""
-		Tests if this class has test for each known modifier defined.
+		"""Tests if this class has test for each known modifier defined.
 		"""
 		for cls in Action.ALL.values():
 			if "/modifiers.py" in inspect.getfile(cls):
@@ -19,65 +18,56 @@ class TestModifiers:
 				assert hasattr(self, method_name), "There is no test for %s modifier" % (cls.COMMAND)
 
 	def test_name(self):
-		"""
-		Tests if NameModifier is parsed
+		"""Tests if NameModifier is parsed
 		"""
 		a = _parse_compressed("name('Not A Button', button(KEY_A))").compress()
 		assert isinstance(a, ButtonAction)
 		assert a.name == "Not A Button"
 
 	def test_click(self):
-		"""
-		Tests if ClickModifier is parsed
+		"""Tests if ClickModifier is parsed
 		"""
 		a = _parse_compressed("click(button(KEY_A))")
 		assert isinstance(a, ClickModifier)
 
 	def test_pressed(self):
-		"""
-		Tests if ReleasedModifier is parsed
+		"""Tests if ReleasedModifier is parsed
 		"""
 		a = _parse_compressed("released(button(KEY_A))")
 		assert isinstance(a, ReleasedModifier)
 
 	def test_released(self):
-		"""
-		Tests if PressedModifier is parsed
+		"""Tests if PressedModifier is parsed
 		"""
 		a = _parse_compressed("pressed(axis(KEY_A))")
 		assert isinstance(a, PressedModifier)
 
 	def test_touched(self):
-		"""
-		Tests if TouchedModifier is parsed
+		"""Tests if TouchedModifier is parsed
 		"""
 		a = _parse_compressed("touched(button(KEY_A))")
 		assert isinstance(a, TouchedModifier)
 
 	def test_untouched(self):
-		"""
-		Tests if UntouchedModifier is parsed
+		"""Tests if UntouchedModifier is parsed
 		"""
 		a = _parse_compressed("untouched(button(KEY_A))")
 		assert isinstance(a, UntouchedModifier)
 
 	def test_circular(self):
-		"""
-		Tests if CircularModifier is parsed
+		"""Tests if CircularModifier is parsed
 		"""
 		assert isinstance(_parse_compressed("circular(axis(ABS_X))"), CircularModifier)
 		assert isinstance(_parse_compressed("circular(axis(REL_WHEEL))"), CircularModifier)
 
 	def test_circularabs(self):
-		"""
-		Tests if CircularAbsModifier is parsed
+		"""Tests if CircularAbsModifier is parsed
 		"""
 		assert isinstance(_parse_compressed("circularabs(axis(ABS_X))"), CircularAbsModifier)
 		assert isinstance(_parse_compressed("circularabs(axis(REL_WHEEL))"), CircularAbsModifier)
 
 	def test_ball(self):
-		"""
-		Tests if BallModifier is parsed
+		"""Tests if BallModifier is parsed
 		"""
 		a = _parse_compressed("ball(axis(ABS_X))")
 		assert isinstance(a, BallModifier)
@@ -88,8 +78,7 @@ class TestModifiers:
 		assert isinstance(a.action, MouseAction)
 
 	def test_smooth(self):
-		"""
-		Tests if SmoothModifier is parsed
+		"""Tests if SmoothModifier is parsed
 		"""
 		a = _parse_compressed("smooth(5, 0.3, axis(ABS_X))")
 		assert isinstance(a, SmoothModifier)
@@ -99,8 +88,7 @@ class TestModifiers:
 		assert a.multiplier == 0.3
 
 	def test_deadzone(self):
-		"""
-		Tests if DeadzoneModifier is parsed
+		"""Tests if DeadzoneModifier is parsed
 		"""
 		# Lower only
 		a = _parse_compressed("deadzone(100, axis(ABS_X))")
@@ -116,8 +104,7 @@ class TestModifiers:
 		assert a.action.id == Axes.ABS_X
 
 	def test_mode(self):
-		"""
-		Tests if ModeModifier is parsed
+		"""Tests if ModeModifier is parsed
 		"""
 		# Without default
 		a = _parse_compressed("""mode(
@@ -140,8 +127,7 @@ class TestModifiers:
 		assert a.default.button == Keys.KEY_A
 
 	def test_doubleclick(self):
-		"""
-		Tests if DoubleclickModifier is parsed
+		"""Tests if DoubleclickModifier is parsed
 		"""
 		# With doubleclick action only
 		a = _parse_compressed("doubleclick(axis(ABS_X))")
@@ -160,8 +146,7 @@ class TestModifiers:
 		assert a.timeout == 1.5
 
 	def test_hold(self):
-		"""
-		Tests if HoldModifier is parsed
+		"""Tests if HoldModifier is parsed
 		"""
 		# With hold action only
 		a = _parse_compressed("hold(axis(ABS_X))")
@@ -180,8 +165,7 @@ class TestModifiers:
 		assert a.timeout == 1.5
 
 	def test_hold_doubleclick_combinations(self):
-		"""
-		Tests if combinations of DoubleclickModifier and HoldModifier
+		"""Tests if combinations of DoubleclickModifier and HoldModifier
 		are parsed as expected
 		"""
 		a = _parse_compressed("doubleclick(axis(ABS_X), hold(axis(ABS_Y), axis(ABS_Z)))")
@@ -202,8 +186,7 @@ class TestModifiers:
 		assert isinstance(a.normalaction, AxisAction) and a.normalaction.id == Axes.ABS_X
 
 	def test_sens(self):
-		"""
-		Tests if SensitivityModifier can be converted to string and parsed
+		"""Tests if SensitivityModifier can be converted to string and parsed
 		back to same.
 		"""
 		# Simple stuff
@@ -223,8 +206,7 @@ class TestModifiers:
 		assert isinstance(a, BallModifier) and a.get_speed() == (2.0, 3.0)
 
 	def test_feedback(self):
-		"""
-		Tests if FeedbackModifier can be converted to string and parsed
+		"""Tests if FeedbackModifier can be converted to string and parsed
 		back to same.
 		"""
 		# TODO: Here, with actual tests
@@ -237,8 +219,7 @@ class TestModifiers:
 		assert _parses_as_itself(FeedbackModifier(HapticPos.RIGHT, MouseAction()))
 
 	def test_rotate(self):
-		"""
-		Tests if RotateInputModifier can be converted to string and parsed
+		"""Tests if RotateInputModifier can be converted to string and parsed
 		back to same.
 		"""
 		a = _parse_compressed("rotate(61, mouse())")

@@ -1,13 +1,13 @@
-from scc.parser import ActionParser
-from scc.actions import Action
 import sys
+
+from scc.actions import Action
+from scc.parser import ActionParser
 
 parser = ActionParser()
 
 
 def _parses_as(a_str, action):
-	"""
-	Tests if action parsed from string equals specified action.
+	"""Tests if action parsed from string equals specified action.
 
 	Done by parsing string to Action and comparing it using _same_action()
 	"""
@@ -17,12 +17,11 @@ def _parses_as(a_str, action):
 
 
 def _same_action(a1, a2):
-	"""
-	Tests if two actions are the same.
+	"""Tests if two actions are the same.
 	Done by comparing .parameters list and .to_string() output.
 	"""
 	assert len(a1.parameters) == len(a2.parameters)
-	for i in range(0, len(a1.parameters)):
+	for i in range(len(a1.parameters)):
 		if isinstance(a1.parameters[i], Action):
 			assert isinstance(a2.parameters[i], Action), "Parameter missmatch"
 			assert _same_action(a1.parameters[i], a2.parameters[i])

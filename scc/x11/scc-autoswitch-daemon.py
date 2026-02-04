@@ -1,24 +1,21 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Autoswitch Daemon
+"""SC-Controller - Autoswitch Daemon
 
 Observes active window and commands scc-daemon to change profiles as needed.
 """
 
-from scc.x11.autoswitcher import AutoSwitcher
-from scc.lib import xwrappers as X
-from scc.tools import find_profile
-from scc.paths import get_daemon_socket
-from scc.config import Config
+import logging
+import os
+import signal
+import sys
 
-import os, sys, time, socket, threading, signal, logging
+from scc.x11.autoswitcher import AutoSwitcher
 
 log = logging.getLogger("AS-Daemon")
 
 
 if __name__ == "__main__":
 	from scc.tools import init_logging, set_logging_level
-	from scc.paths import get_share_path
 
 	init_logging(suffix=" AS ")
 	set_logging_level("debug" in sys.argv, "debug" in sys.argv)
