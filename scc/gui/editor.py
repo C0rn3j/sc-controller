@@ -3,18 +3,10 @@
 Allows to edit button or trigger action.
 """
 
-import os, logging
+import logging
+import os
 
-from scc.tools import _
-
-from gi.repository import Gtk, Gdk, GLib
-from scc.uinput import Keys
-from scc.actions import MultiAction, HatLeftAction, HatRightAction
-from scc.actions import ButtonAction, AxisAction, MouseAction
-from scc.actions import HatUpAction, HatDownAction
-from scc.gui.svg_widget import SVGWidget
-from scc.gui.gdk_to_key import keyevent_to_key
-from scc.gui.area_to_action import AREA_TO_ACTION
+from gi.repository import Gdk, Gtk
 
 log = logging.getLogger("Editor")
 
@@ -63,7 +55,7 @@ class Editor(ComboSetter):
 			Editor._error_css_provider = Gtk.CssProvider()
 			Editor._error_css_provider.load_from_data(Editor.ERROR_CSS.encode("utf-8"))
 			Gtk.StyleContext.add_provider_for_screen(
-				Gdk.Screen.get_default(), Editor._error_css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
+				Gdk.Screen.get_default(), Editor._error_css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER,
 			)
 
 	def hide_dont_destroy(self, w, *a):

@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Gesture-related GUI stuff.
+"""SC-Controller - Gesture-related GUI stuff.
 """
 
-from scc.tools import _, set_logging_level
 
-from gi.repository import Gtk, Gdk, GLib, GObject
-from scc.constants import STICK_PAD_MIN, STICK_PAD_MAX
-from scc.osd import parse_rgba
+import logging
 from collections import deque
 
-import math, logging
+from gi.repository import Gdk, Gtk
+
+from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN
+from scc.osd import parse_rgba
 
 log = logging.getLogger("Gestures")
 
@@ -24,7 +23,7 @@ class GestureDraw(Gtk.DrawingArea):
 		Gtk.DrawingArea.__init__(self)
 		self._size = size
 		self._detector = detector
-		self._points = deque([], 256)
+		self._points = deque(maxlen=256)
 		self.connect("draw", self.draw)
 		self.set_size_request(size, size)
 		self.set_colors()

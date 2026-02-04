@@ -1,24 +1,40 @@
 #!/usr/bin/env python3
+"""Imports VDF profile and converts it to Profile object.
 """
-Imports VDF profile and converts it to Profile object.
-"""
-
-from scc.uinput import Keys, Axes, Rels
-from scc.actions import Action, NoAction, ButtonAction, DPadAction, XYAction
-from scc.actions import HatRightAction, TriggerAction, MouseAction
-from scc.actions import HatUpAction, HatDownAction, HatLeftAction
-from scc.actions import AxisAction, RelAreaAction, MultiAction
-from scc.special_actions import ChangeProfileAction, GridMenuAction, RadialMenuAction, MenuAction
-from scc.modifiers import SensitivityModifier, ClickModifier, FeedbackModifier
-from scc.constants import SCButtons, HapticPos, TRIGGER_CLICK, YAW, ROLL
-from scc.modifiers import BallModifier, DoubleclickModifier
-from scc.modifiers import HoldModifier, ModeModifier
-from scc.parser import ActionParser, ParseError
-from scc.menu_data import MenuData, MenuItem
-from scc.profile import Profile
-from scc.lib.vdf import parse_vdf, ensure_list
 
 import logging
+
+from scc.actions import (
+	Action,
+	AxisAction,
+	ButtonAction,
+	DPadAction,
+	HatDownAction,
+	HatLeftAction,
+	HatRightAction,
+	HatUpAction,
+	MouseAction,
+	MultiAction,
+	NoAction,
+	RelAreaAction,
+	TriggerAction,
+	XYAction,
+)
+from scc.constants import ROLL, TRIGGER_CLICK, YAW, HapticPos, SCButtons
+from scc.lib.vdf import ensure_list, parse_vdf
+from scc.menu_data import MenuData, MenuItem
+from scc.modifiers import (
+	BallModifier,
+	DoubleclickModifier,
+	FeedbackModifier,
+	HoldModifier,
+	ModeModifier,
+	SensitivityModifier,
+)
+from scc.parser import ActionParser, ParseError
+from scc.profile import Profile
+from scc.special_actions import ChangeProfileAction, GridMenuAction, MenuAction, RadialMenuAction
+from scc.uinput import Axes, Keys, Rels
 
 log = logging.getLogger("import.vdf")
 
@@ -87,8 +103,7 @@ class VDFProfile(Profile):
 		self.action_set_switches = set()
 
 	def parse_action(self, lst_or_str, button=None):
-		"""
-		Parses action from vdf file. a_string can be either string or list of
+		"""Parses action from vdf file. a_string can be either string or list of
 		strings, in which case MultiAction is returned.
 
 		Returns Action instance or ParseError if action is not recognized.
@@ -158,8 +173,7 @@ class VDFProfile(Profile):
 
 	@staticmethod
 	def parse_modifiers(group, action, side):
-		"""
-		If passed group or activator has 'settings' key, converts known
+		"""If passed group or activator has 'settings' key, converts known
 		settings to one or more Modifier.
 
 		Returns resulting Action
@@ -221,17 +235,16 @@ class VDFProfile(Profile):
 		raise ParseError("Unknown button: '%s'" % (name,))
 
 	def parse_button(self, bdef, button=None):
-		"""
-		Parses button definition from vdf file.
+		"""Parses button definition from vdf file.
 		Parameter can be either string, as used in v2, or dict used in v3.
 		"""
 		if type(bdef) == str:
 			# V2
 			return self.parse_action(bdef, button)
-		elif type(bdef) == list:
+		if type(bdef) == list:
 			# V2
 			return MultiAction.make(*[self.parse_action(x, button) for x in bdef])
-		elif "activators" in bdef:
+		if "activators" in bdef:
 			# V3
 			act_actions = []
 			for k in ("Full_Press", "Double_Press", "Long_Press"):
@@ -246,19 +259,16 @@ class VDFProfile(Profile):
 			normal, double, hold = act_actions
 			if not double and not hold:
 				return normal
-			elif hold and not double:
+			if hold and not double:
 				return HoldModifier(hold, normal)
-			else:
-				action = DoubleclickModifier(double, normal)
-				action.holdaction = hold
-				return action
-		else:
-			log.warning("Failed to parse button definition: %s" % (bdef,))
+			action = DoubleclickModifier(double, normal)
+			action.holdaction = hold
+			return action
+		log.warning("Failed to parse button definition: %s" % (bdef,))
 
 	@staticmethod
 	def get_inputs(group):
-		"""
-		Returns 'inputs' or 'bindings', whichever exists in passed group.
+		"""Returns 'inputs' or 'bindings', whichever exists in passed group.
 		If neither exists, return None.
 		"""
 		if "inputs" in group:
@@ -276,11 +286,10 @@ class VDFProfile(Profile):
 		return None
 
 	def parse_group(self, group, side):
-		"""
-		Parses output (group) from vdf profile.
+		"""Parses output (group) from vdf profile.
 		Returns Action.
 		"""
-		if not "mode" in group:
+		if "mode" not in group:
 			raise ParseError("Group without mode")
 		mode = group["mode"]
 		inputs = VDFProfile.get_inputs(group)
@@ -342,7 +351,7 @@ class VDFProfile(Profile):
 						"item_%s" % (next_item_id,),
 						action.describe(Action.AC_BUTTON),
 						action,
-					)
+					),
 				)
 				next_item_id += 1
 			# Menu is stored in profile, with generated ID
@@ -446,9 +455,7 @@ class VDFProfile(Profile):
 	def parse_input_binding(self, data, group_id, binding):
 		group = VDFProfile.find_group(data, group_id)
 		if group and "mode" in group:
-			if binding.startswith("switch"):
-				self.parse_switches(group)
-			elif binding.startswith("button_diamond"):
+			if binding.startswith("switch") or binding.startswith("button_diamond"):
 				self.parse_switches(group)
 			else:
 				if binding.startswith("right_"):
@@ -498,17 +505,17 @@ class VDFProfile(Profile):
 		"""
 		if binding in SCButtons.__members__.values():
 			return self.buttons[binding]
-		elif binding.startswith("left_trackpad"):
+		if binding.startswith("left_trackpad"):
 			return self.pads[Profile.LEFT]
-		elif binding.startswith("right_trackpad"):
+		if binding.startswith("right_trackpad"):
 			return self.pads[Profile.RIGHT]
-		elif binding.startswith("left_trigger"):
+		if binding.startswith("left_trigger"):
 			return self.triggers[Profile.LEFT]
-		elif binding.startswith("right_trigger"):
+		if binding.startswith("right_trigger"):
 			return self.triggers[Profile.RIGHT]
-		elif binding.startswith("joystick"):
+		if binding.startswith("joystick"):
 			return self.stick
-		elif binding.startswith("gyro"):
+		if binding.startswith("gyro"):
 			return self.gyro
 		raise ParseError("Unknown group source binding: '%s'" % (binding,))
 
@@ -516,7 +523,7 @@ class VDFProfile(Profile):
 	def _load_preset(data, profile, preset):
 		profile.modeshifts = {}
 		profile.modeshift_buttons = {}
-		if not "group_source_bindings" in preset:
+		if "group_source_bindings" not in preset:
 			# Empty preset
 			return
 
@@ -567,7 +574,7 @@ class VDFProfile(Profile):
 
 		May raise ValueError.
 		"""
-		with open(filename, "r") as file:
+		with open(filename) as file:
 			data = parse_vdf(file)
 		self.load_data(data)
 

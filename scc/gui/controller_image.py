@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Controller Image
+"""SC-Controller - Controller Image
 
 Big, SVGWidget based widget with interchangeable controller and button images.
 """
 
-from scc.gui.svg_widget import SVGWidget, SVGEditor
-from scc.constants import SCButtons
-from scc.tools import nameof
-
-import os
 import copy
 import json
 import logging
+import os
+
+from scc.constants import SCButtons
+from scc.gui.svg_widget import SVGEditor, SVGWidget
+from scc.tools import nameof
 
 log = logging.getLogger("ContImage")
 
@@ -68,8 +67,7 @@ class ControllerImage(SVGWidget):
 		return os.path.join(self.app.imagepath, f"controller-images/{img}.svg")
 
 	def get_config(self):
-		"""
-		Returns last used config
+		"""Returns last used config
 		"""
 		return self.current
 
@@ -86,8 +84,7 @@ class ControllerImage(SVGWidget):
 
 	@staticmethod
 	def get_names(dict_or_tuple):
-		"""
-		There are three different ways how button and axis names are stored
+		"""There are three different ways how button and axis names are stored
 		in config. This wrapper provides unified way to get list of them.
 		"""
 		if type(dict_or_tuple) in (list, tuple):
@@ -95,8 +92,7 @@ class ControllerImage(SVGWidget):
 		return [(x["axis"] if type(x) is dict else x) for x in dict_or_tuple.values()]
 
 	def use_config(self, config, backup=None, controller=None):
-		"""
-		Loads controller settings from provided config, adding default values
+		"""Loads controller settings from provided config, adding default values
 		when needed. Returns same config.
 		"""
 		self.backup = backup
@@ -108,24 +104,22 @@ class ControllerImage(SVGWidget):
 		return self.current
 
 	def override_background(self, filename):
-		"""
-		Overrides background image setting. This changes config in place,
+		"""Overrides background image setting. This changes config in place,
 		so next time get_config is called, changed background is part of it.
 		"""
 		if self.backup is None:
 			self.backup = copy.deepcopy(self.current)
-		data = json.loads(open(os.path.join(self.app.imagepath, f"{filename}.json"), "r").read())
+		data = json.loads(open(os.path.join(self.app.imagepath, f"{filename}.json")).read())
 		self.current["gui"]["background"] = data["gui"]["background"]
 		self.use_config(self.current, self.backup)
 
 	def override_buttons(self, filename):
-		"""
-		Overrides button settings. This changes config in place,
+		"""Overrides button settings. This changes config in place,
 		so next time get_config is called, changed background is part of it.
 		"""
 		if self.backup is None:
 			self.backup = copy.deepcopy(self.current)
-		data = json.loads(open(os.path.join(self.app.imagepath, "{filename}.json"), "r").read())
+		data = json.loads(open(os.path.join(self.app.imagepath, "{filename}.json")).read())
 		self.current["gui"]["buttons"] = data["gui"]["buttons"]
 		self.current["buttons"] = data["buttons"]
 		self.use_config(self.current, self.backup)
@@ -136,7 +130,7 @@ class ControllerImage(SVGWidget):
 			self.use_config(self.backup, None)
 
 	def get_button_groups(self):
-		groups = json.loads(open(os.path.join(self.app.imagepath, "button-images", "groups.json"), "r").read())
+		groups = json.loads(open(os.path.join(self.app.imagepath, "button-images", "groups.json")).read())
 		return {x["key"]: x["buttons"] for x in groups if x["type"] == "buttons"}
 
 	def _get_default_images(self):

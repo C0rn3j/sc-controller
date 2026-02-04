@@ -1,5 +1,4 @@
-"""
-SC-Controller - DaemonManager
+"""SC-Controller - DaemonManager
 
 Starts, kills and controls sccdaemon instance.
 
@@ -8,20 +7,22 @@ full name of "Steam Controller Controller Daemon Controller" sounds
 probably too crazy even for me.
 """
 
-from scc.tools import find_binary, find_button_image, nameof
-from scc.paths import get_daemon_socket
+import json
+import logging
+import os
+
+from gi.repository import Gio, GLib, GObject
+
 from scc.constants import SCButtons
 from scc.gui import BUTTON_ORDER
-from gi.repository import GObject, Gio, GLib
-
-import os, json, logging
+from scc.paths import get_daemon_socket
+from scc.tools import find_binary, find_button_image, nameof
 
 log = logging.getLogger("DaemonCtrl")
 
 
 class DaemonManager(GObject.GObject):
-	"""
-	Communicates with daemon socket and provides wrappers around everything
+	"""Communicates with daemon socket and provides wrappers around everything
 	it can do.
 
 	List of signals:
@@ -85,15 +86,13 @@ class DaemonManager(GObject.GObject):
 		self._controller_by_id = {}  # Source of memory leak
 
 	def get_controllers(self):
-		"""
-		Returns list of all controllers connected to daemon.
+		"""Returns list of all controllers connected to daemon.
 		Value is cached locally.
 		"""
 		return [] + self._controllers
 
 	def get_controller(self, controller_id, type=None):
-		"""
-		Returns ControllerManager instance bound to provided controller_id.
+		"""Returns ControllerManager instance bound to provided controller_id.
 		Note that this method will return instance for any controller_id,
 		even if controller with such ID is not connected to daemon.
 
@@ -107,8 +106,7 @@ class DaemonManager(GObject.GObject):
 		return c
 
 	def has_controller(self):
-		"""
-		Returns True if there is at lease one controller connected to daemon.
+		"""Returns True if there is at lease one controller connected to daemon.
 		"""
 		return len(self._controllers) > 0
 
@@ -144,7 +142,7 @@ class DaemonManager(GObject.GObject):
 			self.connection = sc.connect_finish(results)
 			if self.connection == None:
 				raise Exception("Unknown error")
-		except Exception as e:
+		except Exception:
 			self._on_daemon_died()
 			return
 		self.buffer = b""
@@ -156,7 +154,7 @@ class DaemonManager(GObject.GObject):
 			response = sc.read_bytes_finish(results)
 			if response == None:
 				raise Exception("No data received")
-		except Exception as e:
+		except Exception:
 			# Broken sonnection, daemon was probbaly terminated
 			self._on_daemon_died()
 			return
@@ -242,8 +240,7 @@ class DaemonManager(GObject.GObject):
 		return self.alive
 
 	def request(self, message, success_cb, error_cb):
-		"""
-		Creates request and remembers callback for next 'Ok' or 'Fail' message.
+		"""Creates request and remembers callback for next 'Ok' or 'Fail' message.
 		"""
 		if self.alive and self.connection is not None:
 			tmp = message if type(message) == bytes else bytes(message, "utf-8")
@@ -256,7 +253,6 @@ class DaemonManager(GObject.GObject):
 	@classmethod
 	def nocallback(*a):
 		"""Used when request doesn't needs callback"""
-		pass
 
 	def set_profile(self, filename):
 		"""Asks daemon to change 1st controller profile"""
@@ -276,8 +272,7 @@ class DaemonManager(GObject.GObject):
 		self.connecting = False
 
 	def start(self, mode="start"):
-		"""
-		Starts the daemon and forces connection to be created immediately.
+		"""Starts the daemon and forces connection to be created immediately.
 		"""
 		if self.alive:
 			# Just to clean up living connection
@@ -288,8 +283,7 @@ class DaemonManager(GObject.GObject):
 		GLib.timeout_add_seconds(10, self._check_connected)
 
 	def restart(self):
-		"""
-		Restarts the daemon and forces connection to be created immediately.
+		"""Restarts the daemon and forces connection to be created immediately.
 		"""
 		self.start(mode="restart")
 
@@ -301,8 +295,7 @@ class DaemonManager(GObject.GObject):
 
 
 class ControllerManager(GObject.GObject):
-	"""
-	Represents controller connected to daemon.
+	"""Represents controller connected to daemon.
 	Returned by DaemonManager.get_controller or DaemonManager.get_controllers.
 
 	List of signals:
@@ -360,37 +353,32 @@ class ControllerManager(GObject.GObject):
 		return "<ControllerManager for ID '%s'>" % (self._controller_id,)
 
 	def _send_id(self):
-		"""
-		Sends Controller: message to daemon, so next message goes to correct
+		"""Sends Controller: message to daemon, so next message goes to correct
 		controller.
 		"""
 		self._dm.request("Controller: %s" % (self._controller_id,), DaemonManager.nocallback, DaemonManager.nocallback)
 
 	def is_connected(self):
-		"""
-		Returns True, if controller is still connected to daemon.
+		"""Returns True, if controller is still connected to daemon.
 		Value is cached locally.
 		"""
 		return self._connected
 
 	def get_type(self):
-		"""
-		Returns string identifier of controller driver.
+		"""Returns string identifier of controller driver.
 
 		Value is cached locally, but may be None before controller is connected.
 		"""
 		return self._type
 
 	def set_type(self, type):
-		"""
-		Sets type, if none is yet set.
+		"""Sets type, if none is yet set.
 		"""
 		if self._type is None:
 			self._type = type
 
 	def get_flags(self):
-		"""
-		Returns flags for this controller. See ControllerFlags enum for more info.
+		"""Returns flags for this controller. See ControllerFlags enum for more info.
 
 		Value is cached locally and returns 0 until controller is connected.
 		"""
@@ -401,8 +389,7 @@ class ControllerManager(GObject.GObject):
 		return self._controller_id
 
 	def get_gui_config_file(self):
-		"""
-		Returns file name of json file that GUI can use to load more data about
+		"""Returns file name of json file that GUI can use to load more data about
 		controller (background image, button images, available buttons and
 		axes, etc...) File name may be absolute path or just name of file in
 		/usr/share/scc
@@ -413,8 +400,7 @@ class ControllerManager(GObject.GObject):
 		return self._config_file
 
 	def load_gui_config(self, default_path):
-		"""
-		As get_gui_config_file, but returns loaded and parsed config.
+		"""As get_gui_config_file, but returns loaded and parsed config.
 		Returns None if config cannot be loaded.
 		"""
 		filename = self.get_gui_config_file()
@@ -422,7 +408,7 @@ class ControllerManager(GObject.GObject):
 			if "/" not in filename:
 				filename = os.path.join(default_path, filename)
 			try:
-				data = json.loads(open(filename, "r").read()) or None
+				data = json.loads(open(filename).read()) or None
 				return data
 			except Exception as e:
 				log.exception(e)
@@ -430,8 +416,7 @@ class ControllerManager(GObject.GObject):
 
 	@staticmethod
 	def get_button_icon(config, button, prefer_bw=False):
-		"""
-		For config returned by load_gui_config() and SCButton constant,
+		"""For config returned by load_gui_config() and SCButton constant,
 		returns icon filename assigned to that button in controller config or
 		default if config is invalid or button unassigned.
 		"""
@@ -439,8 +424,7 @@ class ControllerManager(GObject.GObject):
 
 	@staticmethod
 	def get_button_name(config, button):
-		"""
-		As get_button_icon, but returns icon name instead of filename.
+		"""As get_button_icon, but returns icon name instead of filename.
 		"""
 		name = nameof(button)
 		index = -1
@@ -461,8 +445,7 @@ class ControllerManager(GObject.GObject):
 		return self._profile
 
 	def lock(self, success_cb, error_cb, *what_to_lock):
-		"""
-		Locks physical button, axis or pad. Events from locked sources are
+		"""Locks physical button, axis or pad. Events from locked sources are
 		sent to this client and processed using 'event' singal, until
 		unlock_all() is called.
 
@@ -473,8 +456,7 @@ class ControllerManager(GObject.GObject):
 		self._dm.request("Lock: %s" % (what,), success_cb, error_cb)
 
 	def set_led_level(self, value):
-		"""
-		Sets brightness of controller led.
+		"""Sets brightness of controller led.
 		"""
 		self._send_id()
 		self._dm.request("Led: %s" % (int(value),), DaemonManager.nocallback, DaemonManager.nocallback)
@@ -495,8 +477,7 @@ class ControllerManager(GObject.GObject):
 		self._dm.request("Feedback: %s %s" % (position, amplitude), DaemonManager.nocallback, DaemonManager.nocallback)
 
 	def observe(self, success_cb, error_cb, *what_to_lock):
-		"""
-		Enables observing on physical button, axis or pad.
+		"""Enables observing on physical button, axis or pad.
 		Events from observed sources are sent to this client and processed
 		using 'event' singal, until unlock_all() is called.
 
@@ -507,8 +488,7 @@ class ControllerManager(GObject.GObject):
 		self._dm.request("Observe: %s" % (what,), success_cb, error_cb)
 
 	def replace(self, success_cb, error_cb, what, action):
-		"""
-		Temporally replaces action on physical button, axis or pad,
+		"""Temporally replaces action on physical button, axis or pad,
 		until unlock_all() is called.
 
 		Calls success_cb() on success or error_cb(error) on failure.

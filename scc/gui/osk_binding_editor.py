@@ -1,25 +1,22 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - On Screen Keyboard Binding Editor
+"""SC-Controller - On Screen Keyboard Binding Editor
 
 Edits '.scc-osd.keyboard.sccprofile', profile used by on screen keyboard
 """
 
-from scc.tools import _
+import logging
+import os
 
-from gi.repository import Gdk
-from scc.constants import SCButtons, STICK
-from scc.paths import get_profiles_path
-from scc.tools import find_profile
-from scc.profile import Profile
 from scc.actions import Action
+from scc.constants import STICK, SCButtons
 from scc.gui.binding_editor import BindingEditor
-from scc.gui.controller_widget import TRIGGERS, STICKS
-from scc.gui.parser import GuiActionParser
+from scc.gui.controller_widget import STICKS, TRIGGERS
 from scc.gui.editor import Editor
+from scc.gui.parser import GuiActionParser
 from scc.osd.keyboard import Keyboard as OSDKeyboard
-
-import os, logging
+from scc.paths import get_profiles_path
+from scc.profile import Profile
+from scc.tools import _, find_profile
 
 log = logging.getLogger("OSKEdit")
 
@@ -60,8 +57,7 @@ class OSKBindingEditor(Editor, BindingEditor):
 		self.save_profile()
 
 	def save_profile(self, *a):
-		"""
-		Saves osk profile from 'profile' object into 'giofile'.
+		"""Saves osk profile from 'profile' object into 'giofile'.
 		Calls on_profile_saved when done
 		"""
 		self.current.save(os.path.join(get_profiles_path(), OSDKeyboard.OSK_PROF_NAME + ".sccprofile"))

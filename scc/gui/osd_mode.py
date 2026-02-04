@@ -7,15 +7,14 @@ keyboard. This mapper emulates input events on it using GTK methods.
 Mouse movement (but not buttons) are passed to uinput as usuall.
 """
 
-from gi.repository import Gtk, Gdk, GLib
+import logging
 
-from scc.gui.gdk_to_key import KEY_TO_GDK, KEY_TO_KEYCODE
-from scc.gui.daemon_manager import ControllerManager
-from scc.osd.slave_mapper import SlaveMapper
+from gi.repository import Gdk, GLib, Gtk
+
 from scc.constants import SCButtons
-from scc.uinput import Keys, Scans
-
-import os, logging
+from scc.gui.gdk_to_key import KEY_TO_GDK, KEY_TO_KEYCODE
+from scc.osd.slave_mapper import SlaveMapper
+from scc.uinput import Keys
 
 log = logging.getLogger("OSDModMapper")
 
@@ -28,7 +27,7 @@ class OSDModeMapper(SlaveMapper):
 		self.target_window = None
 
 	def on_sa_restart(self, *a):
-		"""restart / exit handler"""
+		"""Restart / exit handler"""
 		self.app.quit()
 
 	def set_target_window(self, w):
@@ -176,9 +175,8 @@ class OSDModeMappings:
 		if self.first_window is None:
 			active = self.window.get_window().get_screen().get_active_window()
 			if active is None:
-				return
-			else:
-				self.first_window = active
+				return None
+			self.first_window = active
 
 		tx, ty = self.get_target_position()
 		self.window.get_window().move(tx, ty)
@@ -188,6 +186,6 @@ class OSDModeMappings:
 def direction(x):
 	if x >= 1:
 		return 1
-	elif x <= -1:
+	if x <= -1:
 		return -1
 	return 0

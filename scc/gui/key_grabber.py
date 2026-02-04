@@ -3,20 +3,14 @@
 Allows to edit button or trigger action.
 """
 
-from scc.tools import _
 
-from scc.gui.controller_widget import ControllerButton
+import logging
+import os
+
+from gi.repository import Gtk
+
 from scc.gui.gdk_to_key import keyevent_to_key
-from scc.gui.editor import Editor
-from scc.actions import Action, ButtonAction, NoAction
-from scc.macros import Macro, Repeat, SleepAction, PressAction, ReleaseAction
-from scc.modifiers import ModeModifier
-from scc.constants import SCButtons
-from scc.profile import Profile
 from scc.uinput import Keys
-
-from gi.repository import Gtk, Gdk, GLib
-import os, logging
 
 log = logging.getLogger("KeyGrabber")
 
@@ -100,8 +94,7 @@ class KeyGrabber:
 		self.builder.get_object("lblKey").set_label(label)
 
 	def on_keyGrab_key_release_event(self, trash, event):
-		"""
-		Handles keyrelease on "Grab Key" dialog.
+		"""Handles keyrelease on "Grab Key" dialog.
 
 		Key is accepted if either:
 		- released key is not modifier
@@ -121,7 +114,7 @@ class KeyGrabber:
 					self.active_mods.remove(key)
 					self.builder.get_object("tg" + key.name).set_active(False)
 				self.builder.get_object("lblKey").set_label(
-					"+".join([key.name.split("_")[-1] for key in self.active_mods])
+					"+".join([key.name.split("_")[-1] for key in self.active_mods]),
 				)
 				return
 
@@ -129,12 +122,11 @@ class KeyGrabber:
 			self.window.hide()
 
 	def on_tgkey_toggled(self, obj, *a):
-		"""
-		Handles when user clicks on modifier buttons in "Grab Key" dialog
+		"""Handles when user clicks on modifier buttons in "Grab Key" dialog
 		"""
 		for key in MODIFIERS:
 			if self.builder.get_object("tg" + key.name) == obj:
-				if obj.get_active() and not key in self.active_mods:
+				if obj.get_active() and key not in self.active_mods:
 					self.active_mods.append(key)
 					self.builder.get_object("lblKey").set_label(merge_modifiers(self.active_mods))
 				elif not obj.get_active() and key in self.active_mods:

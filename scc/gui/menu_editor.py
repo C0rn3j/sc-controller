@@ -1,28 +1,27 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Menu Editor
+"""SC-Controller - Menu Editor
 
 Edits .menu files and menus stored in profile.
 """
 
-from scc.tools import _
+import logging
+import os
+import traceback
 
-from gi.repository import Gtk, Gdk, GLib, GObject
+from gi.repository import GObject, Gtk
+
+from scc.actions import Action, NoAction
 from scc.gui.action_editor import ActionEditor
-from scc.gui.icon_chooser import IconChooser
 from scc.gui.dwsnc import headerbar
 from scc.gui.editor import Editor
-from scc.osd.menu_generators import ProfileListMenuGenerator
-from scc.osd.menu_generators import RecentListMenuGenerator
-from scc.osd.menu_generators import GameListMenuGenerator
+from scc.gui.icon_chooser import IconChooser
+from scc.menu_data import MenuData, MenuItem, Separator, Submenu
 from scc.osd.menu import MenuIcon
-from scc.menu_data import MenuData, MenuItem, Submenu, Separator, MenuGenerator
-from scc.paths import get_menus_path, get_default_menus_path
+from scc.osd.menu_generators import GameListMenuGenerator, ProfileListMenuGenerator, RecentListMenuGenerator
 from scc.parser import TalkingActionParser
-from scc.actions import Action, NoAction
-from scc.tools import find_icon
+from scc.paths import get_default_menus_path, get_menus_path
 from scc.profile import Encoder
-import os, traceback, logging, json
+from scc.tools import _, find_icon
 
 log = logging.getLogger("MenuEditor")
 
@@ -58,8 +57,7 @@ class MenuEditor(Editor):
 		headerbar(self.builder.get_object("header"))
 
 	def allow_menus(self, allow_globals, allow_in_profile):
-		"""
-		Sets which type of menu should be selectable.
+		"""Sets which type of menu should be selectable.
 		By default, both are enabled.
 		"""
 		if not allow_globals:
@@ -105,8 +103,7 @@ class MenuEditor(Editor):
 		self.close()
 
 	def on_tvItems_cursor_changed(self, *a):
-		"""
-		Handles moving cursor in Item List.
+		"""Handles moving cursor in Item List.
 		Basically just sets Edit Item and Remove Item buttons sensitivity.
 		"""
 		tvItems = self.builder.get_object("tvItems")
@@ -230,13 +227,12 @@ class MenuEditor(Editor):
 			if id != self.original_id and id in self.app.current.menus:
 				self._bad_id_duplicate()
 				return
-		else:
-			# Menu stored as file
-			if id != self.original_id:
-				path = os.path.join(get_menus_path(), "%s.menu" % (id,))
-				if os.path.exists(path):
-					self._bad_id_duplicate()
-					return
+		# Menu stored as file
+		elif id != self.original_id:
+			path = os.path.join(get_menus_path(), "%s.menu" % (id,))
+			if os.path.exists(path):
+				self._bad_id_duplicate()
+				return
 		self._good_id()
 		return
 
@@ -258,8 +254,7 @@ class MenuEditor(Editor):
 		self.builder.get_object("btSave").set_sensitive(False)
 
 	def set_new_menu(self):
-		"""
-		Setups editor for creating new menu.
+		"""Setups editor for creating new menu.
 		"""
 		self.set_title(_("New Menu"))
 		rbInProfile = self.builder.get_object("rbInProfile")
@@ -275,8 +270,7 @@ class MenuEditor(Editor):
 		return "." in id
 
 	def set_menu(self, id):
-		"""
-		Setups editor for menu with specified ID.
+		"""Setups editor for menu with specified ID.
 		ID may be id of menu in profile or, if it contains ".", filename.
 		"""
 		self.set_title(_("Menu Editor"))
@@ -352,8 +346,7 @@ class MenuEditor(Editor):
 				pass
 
 	def _generate_menudata(self):
-		"""
-		Generates MenuData instance from items in list
+		"""Generates MenuData instance from items in list
 		"""
 		model = self.builder.get_object("tvItems").get_model()
 		data = MenuData(*[i[0].item for i in model])
@@ -364,8 +357,7 @@ class MenuEditor(Editor):
 		return data
 
 	def _save_to_profile(self, id):
-		"""
-		Stores menu in loaded profile. Doesn't actually save anything, that's
+		"""Stores menu in loaded profile. Doesn't actually save anything, that's
 		for main app window thing.
 		"""
 		self.app.current.menus[id] = self._generate_menudata()
@@ -375,8 +367,7 @@ class MenuEditor(Editor):
 			self.callback(id)
 
 	def _save_to_file(self, id):
-		"""
-		Stores menu in json file
+		"""Stores menu in json file
 		"""
 		id = "%s.menu" % (id,)
 		path = os.path.join(get_menus_path(), id)

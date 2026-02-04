@@ -3,20 +3,16 @@
 Allows to edit button or trigger action.
 """
 
-from scc.tools import _
-
-from scc.gui.controller_widget import ControllerButton
-from scc.gui.editor import Editor
-from scc.macros import SleepAction, PressAction, ReleaseAction
-from scc.actions import Action, ButtonAction, NoAction
-from scc.macros import Macro, Repeat, Cycle
-from scc.modifiers import ModeModifier
-from scc.constants import SCButtons
-from scc.profile import Profile
-
-from gi.repository import Gtk, Gdk, GLib
+import logging
 from collections import namedtuple
-import os, logging
+
+from gi.repository import Gtk
+
+from scc.actions import Action, ButtonAction, NoAction
+from scc.constants import SCButtons
+from scc.gui.editor import Editor
+from scc.macros import Cycle, Macro, PressAction, ReleaseAction, SleepAction
+from scc.tools import _
 
 log = logging.getLogger("MacroEditor")
 
@@ -138,7 +134,7 @@ class MacroEditor(Editor):
 			s.set_draw_value(False)
 			s.set_value(action.delay * 1000)
 			action_data = ActionData(
-				action=action, button_up=button_up, button_down=button_down, button_clear=button_clear, label=l, scale=s
+				action=action, button_up=button_up, button_down=button_down, button_clear=button_clear, label=l, scale=s,
 			)
 
 			s.connect("change_value", self.on_change_delay, action_data)
@@ -319,8 +315,7 @@ class MacroEditor(Editor):
 		self.close()
 
 	def add_widget(self, label, widget):
-		"""
-		See ActionEditor.add_widget
+		"""See ActionEditor.add_widget
 		"""
 		lblAddedWidget = self.builder.get_object("lblAddedWidget")
 		vbAddedWidget = self.builder.get_object("vbAddedWidget")
@@ -339,7 +334,6 @@ class MacroEditor(Editor):
 
 	def allow_first_page(self):
 		"""For compatibility with action editor. Does nothing"""
-		pass
 
 	def set_input(self, id, action, mode=Action.AC_BUTTON):
 		"""Common part of editor setup"""
@@ -361,8 +355,7 @@ class MacroEditor(Editor):
 			entName.set_text(action.name)
 
 	def hide_name(self):
-		"""
-		Hides (and clears) name field.
+		"""Hides (and clears) name field.
 		"""
 		self.builder.get_object("lblName").set_visible(False)
 		self.builder.get_object("entName").set_visible(False)

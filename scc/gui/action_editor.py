@@ -4,19 +4,17 @@ Also doubles as Menu Item Editor in some cases
 """
 
 from __future__ import annotations
+
 import importlib
 import logging
 import math
-import os
-import types
 
-from gi.repository import Gtk, Gdk, GLib
+from gi.repository import GLib, Gtk
 
-from scc.actions import Action, NoAction, RingAction, TriggerAction, XYAction
+from scc.actions import Action, NoAction, RingAction, TriggerAction
 from scc.constants import CUT, LINEAR, MINIMUM, ROUND, HapticPos, SCButtons
-from scc.controller import HapticData
 from scc.gui.ae import AEComponent
-from scc.gui.controller_widget import BUTTONS, GYROS, PADS, PRESSABLE, STICKS, TRIGGERS
+from scc.gui.controller_widget import GYROS, PADS, PRESSABLE, STICKS, TRIGGERS
 from scc.gui.dwsnc import headerbar
 from scc.gui.editor import Editor
 from scc.gui.macro_editor import MacroEditor
@@ -31,14 +29,13 @@ from scc.modifiers import (
 	DeadzoneModifier,
 	FeedbackModifier,
 	ModeModifier,
-	Modifier,
 	NameModifier,
 	RotateInputModifier,
 	SensitivityModifier,
 	SmoothModifier,
 )
 from scc.profile import Profile
-from scc.special_actions import GesturesAction, MenuAction, OSDAction
+from scc.special_actions import OSDAction
 from scc.tools import _, nameof
 
 log = logging.getLogger("ActionEditor")
@@ -151,7 +148,7 @@ class ActionEditor(Editor):
 					self.builder.get_object("lblSens%s" % (XYZ[i],)),
 					self.builder.get_object("btClearSens%s" % (XYZ[i],)),
 					self.builder.get_object("cbSensInvert%s" % (XYZ[i],)),
-				)
+				),
 			)
 		for key in AFP:
 			i = AFP.index(key)
@@ -162,7 +159,7 @@ class ActionEditor(Editor):
 					self.builder.get_object("lblF%s" % (key,)),
 					self.builder.get_object("btClearF%s" % (key,)),
 					self.feedback[i],  # default value
-				)
+				),
 			)
 		for key in SMT:
 			i = SMT.index(key)
@@ -172,7 +169,7 @@ class ActionEditor(Editor):
 					self.builder.get_object("sclSmooth%s" % (key,)),
 					self.builder.get_object("btClearSmooth%s" % (key,)),
 					self.builder.get_object("sclSmooth%s" % (key,)).get_value(),
-				)
+				),
 			)
 		for key in DZN:
 			i = DZN.index(key)
@@ -183,7 +180,7 @@ class ActionEditor(Editor):
 					self.builder.get_object("sclDZ%s" % (key,)),
 					self.builder.get_object("btClearDZ%s" % (key,)),
 					self.deadzone[i],  # default value
-				)
+				),
 			)
 
 		if self.app.osd_mode:
@@ -386,29 +383,25 @@ class ActionEditor(Editor):
 		self.builder.get_object("exMore").set_visible(False)
 
 	def hide_advanced_settings(self):
-		"""
-		Hides entire 'Advanced Settings' expander.
+		"""Hides entire 'Advanced Settings' expander.
 		"""
 		self.builder.get_object("exMore").set_visible(False)
 		self.builder.get_object("rvMore").set_visible(False)
 
 	def hide_modeshift(self):
-		"""
-		Hides Mode Shift button.
+		"""Hides Mode Shift button.
 		Used when displaying ActionEditor from ModeshiftEditor
 		"""
 		self.builder.get_object("btModeshift").set_visible(False)
 
 	def hide_macro(self):
-		"""
-		Hides Macro button.
+		"""Hides Macro button.
 		Used when editing macro of pad/stick bindings.
 		"""
 		self.builder.get_object("btMacro").set_visible(False)
 
 	def hide_ring(self):
-		"""
-		Hides Ring Bindings button.
+		"""Hides Ring Bindings button.
 		Used when editing anything but pad.
 		"""
 		self.builder.get_object("btInnerRing").set_visible(False)
@@ -918,8 +911,7 @@ class ActionEditor(Editor):
 			self._replaced_action = None
 
 	def enable_preview(self, action):
-		"""
-		Enables or disables and hides 'preview immediately' option, based on
+		"""Enables or disables and hides 'preview immediately' option, based on
 		if currently selected action supports it.
 		"""
 		cbPreview = self.builder.get_object("cbPreview")
@@ -928,8 +920,7 @@ class ActionEditor(Editor):
 		cbPreview.set_sensitive(enabled)
 
 	def enable_modifiers(self, action):
-		"""
-		Enables or disables and hides modifier settings according to what
+		"""Enables or disables and hides modifier settings according to what
 		is applicable for specified action AND what's allowed for current
 		editor mode.
 
@@ -1048,10 +1039,9 @@ class ActionEditor(Editor):
 	def on_sclFriction_format_value(self, scale, value):
 		if value <= 0:
 			return "%0.3f" % (0,)
-		elif value >= 6:
+		if value >= 6:
 			return "%0.3f" % (1000.00,)
-		else:
-			return "%0.3f" % ((10.0**value) / 1000.0)
+		return "%0.3f" % ((10.0**value) / 1000.0)
 
 	def on_btClearFriction_clicked(self, *a):
 		sclFriction = self.builder.get_object("sclFriction")

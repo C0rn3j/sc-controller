@@ -1,26 +1,21 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Action Editor
+"""SC-Controller - Action Editor
 
 Allows to edit button or trigger action.
 """
 
-from scc.tools import _
+import logging
 
-from scc.gui.controller_widget import ControllerButton
-from scc.gui.controller_widget import STICKS, PADS
+from gi.repository import Gtk
+
+from scc.actions import Action, NoAction, RangeOP
+from scc.constants import HapticPos, SCButtons
+from scc.gui.controller_widget import PADS, STICKS
 from scc.gui.dwsnc import headerbar
 from scc.gui.editor import Editor
-from scc.actions import Action, NoAction, RangeOP, RingAction
-from scc.constants import SCButtons, HapticPos, TRIGGER_MAX
-from scc.modifiers import ModeModifier, DoubleclickModifier
-from scc.modifiers import FeedbackModifier, HoldModifier
-from scc.profile import Profile
 from scc.macros import Macro
-from scc.tools import nameof
-
-from gi.repository import Gtk, Gdk, GLib
-import os, logging
+from scc.modifiers import DoubleclickModifier, FeedbackModifier, HoldModifier, ModeModifier
+from scc.tools import _, nameof
 
 log = logging.getLogger("ModeshiftEditor")
 
@@ -171,7 +166,7 @@ class ModeshiftEditor(Editor):
 		cbButtonChooser = self.builder.get_object("cbButtonChooser")
 		model = cbButtonChooser.get_model()
 		# Remove requested action from the list
-		for i in range(0, len(self.actions[index])):
+		for i in range(len(self.actions[index])):
 			if self.actions[index][i][0] == button:
 				button, action, l, b, clearb = self.actions[index][i]
 				for w in (l, b, clearb):
@@ -365,7 +360,6 @@ class ModeshiftEditor(Editor):
 
 	def allow_first_page(self):
 		"""For compatibility with action editor. Does nothing"""
-		pass
 
 	def set_input(self, id, action, mode=None):
 		btDefault = self.builder.get_object("btDefault")

@@ -1,21 +1,17 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Action Editor
+"""SC-Controller - Action Editor
 
 Allows to edit button or trigger action.
 """
 
-from scc.tools import _
 
-from gi.repository import Gtk, Gdk, GLib
-from scc.actions import ButtonAction, AxisAction, MouseAction, MultiAction
-from scc.actions import HatLeftAction, HatRightAction
-from scc.actions import HatUpAction, HatDownAction
+import logging
+import os
+
+from scc.actions import AxisAction, HatDownAction, HatLeftAction, HatRightAction, HatUpAction, MouseAction
 from scc.gui.area_to_action import AREA_TO_ACTION
-from scc.gui.svg_widget import SVGWidget
-from scc.gui.dwsnc import headerbar
 from scc.gui.editor import Editor
-import os, logging
+from scc.gui.svg_widget import SVGWidget
 
 log = logging.getLogger("Chooser")
 
@@ -53,8 +49,7 @@ class Chooser(Editor):
 				parent.show_all()
 
 	def set_active_area(self, a):
-		"""
-		Sets area that is permanently hilighted on image.
+		"""Sets area that is permanently hilighted on image.
 		"""
 		self.active_area = a
 		for i in self.images:
@@ -70,8 +65,7 @@ class Chooser(Editor):
 		background.hilight({self.active_area: Chooser.ACTIVE_COLOR, area: Chooser.HILIGHT_COLOR})
 
 	def on_background_area_click(self, trash, area):
-		"""
-		Called when user clicks on defined area on gamepad image.
+		"""Called when user clicks on defined area on gamepad image.
 		"""
 		if area in AREA_TO_ACTION:
 			cls, params = AREA_TO_ACTION[area][0], AREA_TO_ACTION[area][1:]

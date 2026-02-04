@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Icon Chooser
+"""SC-Controller - Icon Chooser
 """
 
-from scc.tools import _
+import logging
+import os
+import re
+import traceback
 
-from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, GObject
-from scc.gui.userdata_manager import UserDataManager
+from gi.repository import Gdk, GdkPixbuf, Gio, GObject, Gtk
+
 from scc.gui.dwsnc import headerbar
 from scc.gui.editor import Editor
+from scc.gui.userdata_manager import UserDataManager
 from scc.paths import get_menuicons_path
-from scc.tools import find_icon
-import os
-import traceback
-import logging
-import re
+from scc.tools import _, find_icon
 
 log = logging.getLogger("IconChooser")
 RE_URL = re.compile(r"(.*)(https?://[^ ]+)(.*)")
@@ -62,8 +61,7 @@ class IconChooser(Editor, UserDataManager):
 			self.callback(icon)
 
 	def get_selected(self):
-		"""
-		Returns 'category/name' of currently selected icon.
+		"""Returns 'category/name' of currently selected icon.
 		Returns None if nothing is selected.
 		"""
 		tsCategories = self.builder.get_object("tsCategories")
@@ -172,8 +170,8 @@ class IconChooser(Editor, UserDataManager):
 		licensefile = os.path.join(path, "LICENSES")
 		if not os.path.exists(licensefile):
 			return None
-		with open(licensefile, "r") as file:
-			for line in file.readlines():
+		with open(licensefile) as file:
+			for line in file:
 				if line.startswith(name):
 					if "-" in line:
 						return line.split("-")[-1].strip("\t\r\n ")
@@ -194,7 +192,7 @@ class CellRendererMenuIcon(Gtk.CellRenderer):
 	def do_render(self, cr, treeview, background_area, cell_area, flags):
 		context = Gtk.Widget.get_style_context(treeview)
 		Gtk.render_background(
-			context, cr, cell_area.x, cell_area.y, cell_area.x + cell_area.width, cell_area.y + cell_area.height
+			context, cr, cell_area.x, cell_area.y, cell_area.x + cell_area.width, cell_area.y + cell_area.height,
 		)
 
 		scaled = self.icon.scale_simple(self.size, self.size, GdkPixbuf.InterpType.BILINEAR)

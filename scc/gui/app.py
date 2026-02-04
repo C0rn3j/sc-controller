@@ -3,38 +3,44 @@
 Main application window
 """
 
-from scc.tools import _, set_logging_level
-
-from gi.repository import Gtk, Gdk, Gio, GLib
-from scc.gui.controller_widget import TRIGGERS, PADS, STICKS, BUTTONS, GYROS
-from scc.gui.daemon_manager import DaemonManager, ControllerManager
-from scc.gui.parser import GuiActionParser, InvalidAction
-from scc.gui.controller_image import ControllerImage
-from scc.gui.profile_switcher import ProfileSwitcher
-from scc.gui.userdata_manager import UserDataManager
-from scc.gui.binding_editor import BindingEditor
-from scc.gui.statusicon import get_status_icon
-from scc.gui.dwsnc import headerbar, IS_UNITY
-from scc.gui.ribar import RIBar
-from scc.tools import check_access, find_gksudo, profile_is_override, nameof
-from scc.tools import get_profile_name, profile_is_default, find_profile
-from scc.constants import SCButtons, STICK, STICK_PAD_MAX
-from scc.constants import DAEMON_VERSION, LEFT, RIGHT
-from scc.paths import get_config_path, get_profiles_path
-from scc.custom import load_custom_module
-from scc.modifiers import NameModifier
-from scc.actions import NoAction
-from scc.profile import Profile
-from scc.config import Config
-
-import scc.osd.menu_generators
+import json
+import logging
 import os
-import sys
 import platform
 import re
-import json
+import sys
 import urllib
-import logging
+
+from gi.repository import Gdk, Gio, GLib, Gtk
+
+from scc.actions import NoAction
+from scc.config import Config
+from scc.constants import DAEMON_VERSION, LEFT, RIGHT, STICK, STICK_PAD_MAX, SCButtons
+from scc.custom import load_custom_module
+from scc.gui.binding_editor import BindingEditor
+from scc.gui.controller_image import ControllerImage
+from scc.gui.controller_widget import BUTTONS, GYROS, PADS, STICKS, TRIGGERS
+from scc.gui.daemon_manager import ControllerManager, DaemonManager
+from scc.gui.dwsnc import IS_UNITY, headerbar
+from scc.gui.parser import GuiActionParser, InvalidAction
+from scc.gui.profile_switcher import ProfileSwitcher
+from scc.gui.ribar import RIBar
+from scc.gui.statusicon import get_status_icon
+from scc.gui.userdata_manager import UserDataManager
+from scc.modifiers import NameModifier
+from scc.paths import get_config_path, get_profiles_path
+from scc.profile import Profile
+from scc.tools import (
+	_,
+	check_access,
+	find_gksudo,
+	find_profile,
+	get_profile_name,
+	nameof,
+	profile_is_default,
+	profile_is_override,
+	set_logging_level,
+)
 
 log = logging.getLogger("App")
 
@@ -155,8 +161,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		headerbar(self.builder.get_object("hbWindow"))
 
 	def load_gui_config_for_controller(self, controller, first):
-		"""
-		Loads controller config, changes image and hides, shows or disables
+		"""Loads controller config, changes image and hides, shows or disables
 		buttons around it.
 
 		To make this look less jumpy, Gtk.Stack is used to make transition
@@ -249,8 +254,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		GLib.idle_add(self.on_c_size_allocate)
 
 	def apply_ui_layout(self, layout):
-		"""
-		Changes layout of ui elements to fit additional buttons needed for Deck
+		"""Changes layout of ui elements to fit additional buttons needed for Deck
 		"""
 		if layout == "deck":
 			# Move 'C' button bellow LGRIP
@@ -295,12 +299,12 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		# TODO: Maybe not best place to do this
 		try:
 			# Dynamic modules
-			with open("/proc/modules", "r") as file:
+			with open("/proc/modules") as file:
 				rawlist = file.read().split("\n")
 			kernel_mods = [line.split(" ")[0] for line in rawlist]
 			# Built-in modules
 			release = platform.uname()[2]
-			with open("/lib/modules/%s/modules.builtin" % release, "r") as file:
+			with open("/lib/modules/%s/modules.builtin" % release) as file:
 				rawlist = file.read().split("\n")
 			kernel_mods += [os.path.split(x)[-1].split(".")[0] for x in rawlist]
 		except Exception:
@@ -325,7 +329,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				)
 				ribar.add_button(button, -1)
 			return True
-		elif not os.path.exists("/dev/uinput"):
+		if not os.path.exists("/dev/uinput"):
 			# /dev/uinput missing
 			msg = _("/dev/uinput doesn't exists")
 			msg += "\n" + _("uinput kernel module is loaded, but /dev/uinput is missing.")
@@ -333,7 +337,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			msg += "\n\n" + _("Please, consult your distribution manual on how to enable uinput")
 			self.show_error(msg)
 			return True
-		elif not check_access("/dev/uinput"):
+		if not check_access("/dev/uinput"):
 			# Cannot acces uinput
 			msg = _("You don't have required access to /dev/uinput.")
 			msg += "\n" + _("This will most likely prevent emulation from working.")
@@ -349,7 +353,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 					self.apply_temporary_fix,
 					gksudo + ["chmod", "666", "/dev/uinput"],
 					_(
-						"This will enable input emulation for <i>every application</i> and <i>all users</i> on this machine."
+						"This will enable input emulation for <i>every application</i> and <i>all users</i> on this machine.",
 					),
 				)
 				ribar.add_button(button, -1)
@@ -472,15 +476,13 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		return True
 
 	def on_mnuClear_activate(self, *a):
-		"""
-		Handler for 'Clear' context menu item.
+		"""Handler for 'Clear' context menu item.
 		Simply sets NoAction to input.
 		"""
 		self.on_action_chosen(self.context_menu_for, NoAction())
 
 	def on_mnuCopy_activate(self, *a):
-		"""
-		Handler for 'Copy' context menu item.
+		"""Handler for 'Copy' context menu item.
 		Converts action to string and sends that string to clipboard.
 		"""
 		a = self.get_action(self.current, self.context_menu_for)
@@ -492,8 +494,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			clp.store()
 
 	def on_mnuPaste_activate(self, *a):
-		"""
-		Handler for 'Paste' context menu item.
+		"""Handler for 'Paste' context menu item.
 		Reads string from clipboard, parses it as action and sets that action
 		on selected input.
 		"""
@@ -505,8 +506,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				self.on_action_chosen(self.context_menu_for, a)
 
 	def on_mnuEditPress_activate(self, *a):
-		"""
-		Handler for 'Edit Pressed Action' context menu item.
+		"""Handler for 'Edit Pressed Action' context menu item.
 		"""
 		id = self.context_menu_for
 		if id == STICK:
@@ -520,8 +520,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		gs.show(self.window)
 
 	def on_mnuImport_activate(self, *a):
-		"""
-		Handler for 'Import Steam Profile' context menu item.
+		"""Handler for 'Import Steam Profile' context menu item.
 		Displays apropriate dialog.
 		"""
 		from scc.gui.importexport.dialog import Dialog
@@ -676,8 +675,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.enable_test_mode()
 
 	def on_profile_saved(self, giofile: Gio.File, send: bool = True):
-		"""
-		Called when selected profile is saved to disk
+		"""Called when selected profile is saved to disk
 		"""
 		if self.osd_mode:
 			# Special case, profile shouldn't be changed while in osd_mode
@@ -710,8 +708,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.current_file = giofile
 
 	def generate_new_name(self):
-		"""
-		Generates name for new profile.
+		"""Generates name for new profile.
 		That is 'New Profile X', where X is number that makes name unique.
 		"""
 		i = 1
@@ -724,8 +721,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		return new_name
 
 	def generate_copy_name(self, name):
-		"""
-		Generates name for profile copy.
+		"""Generates name for profile copy.
 		That is 'New Profile X', where X is number that makes name unique.
 		"""
 		new_name = _("%s (copy)") % (name,)
@@ -795,8 +791,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			self.show_editor(area)
 
 	def on_c_size_allocate(self, *a):
-		"""
-		Called when size of 'Button C' or CPAD is changed.
+		"""Called when size of 'Button C' or CPAD is changed.
 		Centers buttons on background image
 		"""
 		main_area = self.builder.get_object("mainArea")
@@ -881,7 +876,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				self.remove_switcher(s)
 
 		# Assign controllers to widgets
-		for i in range(0, count):
+		for i in range(count):
 			c = self.dm.get_controllers()[i]
 			self.profile_switchers[i].set_controller(c)
 
@@ -905,8 +900,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.profile_switchers[0].set_profile(name, create=True)
 
 	def add_switcher(self, margin_left=24, margin_right=24):
-		"""
-		Adds new profile switcher widgets on top of window. Called
+		"""Adds new profile switcher widgets on top of window. Called
 		when new controller is connected to daemon.
 
 		Returns generated ProfileSwitcher instance.
@@ -943,8 +937,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		return ps
 
 	def remove_switcher(self, s):
-		"""
-		Removes given profile switcher from UI.
+		"""Removes given profile switcher from UI.
 		"""
 		vbSwitchers = self.builder.get_object("vbSwitchers")
 		sepSwitchers = self.builder.get_object("sepSwitchers")
@@ -954,8 +947,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			sepSwitchers.set_visible(False)
 
 	def enable_test_mode(self):
-		"""
-		Disables and re-enables Input Test mode. If sniffing is disabled in
+		"""Disables and re-enables Input Test mode. If sniffing is disabled in
 		daemon configuration, 2nd call fails and logs error.
 		"""
 		if self.dm.is_alive() and not self.osd_mode:
@@ -1053,24 +1045,22 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		log.debug("Failed to enable test mode: %s", error)
 
 	def on_daemon_version(self, daemon, version):
-		"""
-		Checks if reported version matches expected one.
+		"""Checks if reported version matches expected one.
 		If not, daemon is restarted.
 		"""
 		if version != DAEMON_VERSION and self.outdated_version != version:
 			log.warning(
-				"Running daemon instance is too old (version %s, expected %s). Restarting...", version, DAEMON_VERSION
+				"Running daemon instance is too old (version %s, expected %s). Restarting...", version, DAEMON_VERSION,
 			)
 			self.outdated_version = version
 			self.set_daemon_status("unknown", False)
 			self.dm.restart()
-		else:
-			# At this point, correct daemon version of daemon is running
-			# and we can check if there is anything new to inform user about
-			if self.app.config["gui"]["news"]["last_version"] != App.get_release():
-				if self.app.config["gui"]["news"]["enabled"]:
-					if not self.osd_mode:
-						self.check_release_notes()
+		# At this point, correct daemon version of daemon is running
+		# and we can check if there is anything new to inform user about
+		elif self.app.config["gui"]["news"]["last_version"] != App.get_release():
+			if self.app.config["gui"]["news"]["enabled"]:
+				if not self.osd_mode:
+					self.check_release_notes()
 
 	def on_daemon_error(self, daemon, error):
 		log.debug("Daemon reported error '%s'", error)
@@ -1082,7 +1072,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			msg += "\n" + _("You don't have access to controller device.")
 			msg += "\n\n" + (
 				_(
-					"Consult your distribution manual, try installing Steam package or <a href='%s'>install required udev rules manually</a>."
+					"Consult your distribution manual, try installing Steam package or <a href='%s'>install required udev rules manually</a>.",
 				)
 				% "https://wiki.archlinux.org/index.php/Gamepad#Steam_Controller_not_pairing"
 			)
@@ -1092,7 +1082,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		elif "CANT_SUMMON_THE_DAEMON" in error:
 			msg += "\n" + _(
 				'Background process responsible for emulation is not starting.\n\nTry executing "scc-daemon debug" in terminal window to check for any errors'
-				"\nor <a href='https://github.com/C0rn3j/sc-controller/issues'>open issue on GitHub</a> and copy output there."
+				"\nor <a href='https://github.com/C0rn3j/sc-controller/issues'>open issue on GitHub</a> and copy output there.",
 			)
 		elif "LIBUSB_ERROR_PIPE" in error:
 			msg += "\n" + _("USB dongle was removed.")
@@ -1147,7 +1137,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				else:
 					self.hilights[App.OBSERVE_COLOR].remove(what)
 				self._update_background()
-			except KeyError as e:
+			except KeyError:
 				# Non fatal
 				pass
 		else:
@@ -1393,8 +1383,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			self.builder.get_object("window").show()
 
 	def remove_dot_profile(self):
-		"""
-		Checks if first profile in list begins with dot and if yes, removes it.
+		"""Checks if first profile in list begins with dot and if yes, removes it.
 		This is done to undo automatic addition that is done when daemon reports
 		selecting such profile.
 		"""
@@ -1498,8 +1487,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 	@staticmethod
 	def get_release(n: int = 4) -> str:
-		"""
-		Returns current version rounded to max. 'n' numbers.
+		"""Returns current version rounded to max. 'n' numbers.
 		( v0.14.1.3 ; n=3 -> v0.14.1   )
 		( v0.14.0.0 ; n=3 -> v0.14.0.0 )
 		"""
@@ -1517,8 +1505,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		return self.ribar._infobar == riNewRelease
 
 	def check_release_notes(self):
-		"""
-		Silently downloads release notes from github and displays infobar
+		"""Silently downloads release notes from github and displays infobar
 		informing user that they are ready to be displayed.
 		"""
 		url = App.RELEASE_URL % (App.get_release(),)
@@ -1544,7 +1531,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				stream = f.read_finish(task)
 				assert stream
 				stream.read_bytes_async(102400, 0, None, stream_ready, buffer)
-			except Exception as e:
+			except Exception:
 				log.warning(f"Failed to read release notes at {url}, maybe your internet connection is down?")
 				# log.exception(f"Following Traceback error is not fatal and can be ignored: {e}")
 				return
@@ -1617,7 +1604,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				if uri.startswith("https://github.com/"):
 					# Convert link to repository display to link to raw file
 					uri = uri.replace("https://github.com/", "https://raw.githubusercontent.com/").replace(
-						"/blob/", "/"
+						"/blob/", "/",
 					)
 				name = urllib.unquote(".".join(uri.split("/")[-1].split(".")[0:-1]))
 				remote = Gio.File.new_for_uri(uri)
@@ -1644,8 +1631,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 					log.error("Unknown file type: '%s'..." % (path,))
 
 	def convert_old_profiles(self):
-		"""
-		Checks all available profiles and automatically converts anything with
+		"""Checks all available profiles and automatically converts anything with
 		version 1.3 or lower.
 		"""
 		from scc.parser import ActionParser
@@ -1667,7 +1653,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		if to_convert:
 			log.warning("Auto-converting old profile files to version 1.4. This should take only moment.")
 			log.warning(
-				"All files are modified in-place, but backup files are created. Feel free to remove them later."
+				"All files are modified in-place, but backup files are created. Feel free to remove them later.",
 			)
 			for name in to_convert:
 				try:

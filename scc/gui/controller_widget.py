@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Controller Widget
+"""SC-Controller - Controller Widget
 
 Button that user can click to choose emulated action for physical button, axis
 or pad.
@@ -8,17 +7,18 @@ or pad.
 Wraps around actual button defined in glade file.
 """
 
-from scc.tools import _
+import itertools
+import logging
+import os
 
-from gi.repository import Gtk, Gdk, Pango
-from scc.constants import SCButtons, STICK, RSTICK, GYRO, LEFT, RIGHT
-from scc.actions import Action, XYAction, MultiAction
+from gi.repository import Gdk, Gtk, Pango
+
+from scc.actions import Action, MultiAction
+from scc.constants import GYRO, LEFT, RIGHT, STICK, SCButtons
 from scc.gui.ae.gyro_action import is_gyro_enable
 from scc.modifiers import DoubleclickModifier
 from scc.profile import Profile
-from scc.tools import nameof
-import os, sys, logging
-import itertools
+from scc.tools import _, nameof
 
 log = logging.getLogger("ControllerWidget")
 
@@ -269,7 +269,7 @@ class ControllerGyro(ControllerWidget):
 			rv = []
 			for a in action.actions:
 				d = a.describe(self.ACTION_CONTEXT)
-				if not d in rv:
+				if d not in rv:
 					rv.append(d)
 			self.label.set_label("\n".join(rv))
 			return

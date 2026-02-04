@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Global Settings
+"""SC-Controller - Global Settings
 
 Currently setups only one thing...
 """
 
-from scc.tools import _
+import logging
+import os
 
-from gi.repository import GLib, GdkPixbuf
-from scc.paths import get_controller_icons_path, get_default_controller_icons_path
+from gi.repository import GdkPixbuf, GLib
+
+from scc.gui.editor import ComboSetter, Editor
 from scc.gui.userdata_manager import UserDataManager
-from scc.gui.editor import Editor, ComboSetter
-
-import os, logging
+from scc.paths import get_controller_icons_path, get_default_controller_icons_path
+from scc.tools import _
 
 log = logging.getLogger("GS")
 
@@ -161,8 +161,7 @@ class ControllerSettings(Editor, UserDataManager, ComboSetter):
 		self.schedule_save_config()
 
 	def schedule_save_config(self, *a):
-		"""
-		Schedules config saving in 1s.
+		"""Schedules config saving in 1s.
 		Done to prevent literal madness when user moves slider.
 		"""
 

@@ -1,17 +1,16 @@
-"""
-DWSNC - Doing Weird Things in Name of Compatibility
+"""DWSNC - Doing Weird Things in Name of Compatibility
 
 This module, when imported, applies various fixes and monkey-patching to allow
 application to run with older versions of GLib and/or GTK.
 """
 
-from gi.repository import Gtk, GObject
 import os
+
+from gi.repository import GObject, Gtk
 
 
 def fix_label_missing_set_XYalign_methods():
-	"""
-	Fix Gtk.Label missing set_xalign and set_yalign methods with older
+	"""Fix Gtk.Label missing set_xalign and set_yalign methods with older
 	versions of Gtk.
 
 	Prevents crashing, but alings are ignored.
@@ -20,8 +19,7 @@ def fix_label_missing_set_XYalign_methods():
 
 
 def child_get_property(parent, child, propname):
-	"""
-	Wrapper for child_get_property, which pygobject doesn't properly
+	"""Wrapper for child_get_property, which pygobject doesn't properly
 	introspect
 	"""
 	value = GObject.Value()
@@ -31,14 +29,13 @@ def child_get_property(parent, child, propname):
 
 
 def headerbar(bar):
-	"""
-	Moves all buttons from left to right (and vice versa) if user's desktop
+	"""Moves all buttons from left to right (and vice versa) if user's desktop
 	environment is identified as Unity.
 
 	Removes 'icon' button otherwise
 	"""
 	bar.set_decoration_layout(":minimize,close")
-	pass  # Not outside of Unity
+	# Not outside of Unity
 
 
 IS_UNITY = False

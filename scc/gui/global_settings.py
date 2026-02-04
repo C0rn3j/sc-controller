@@ -3,37 +3,32 @@
 Currently setups only one thing...
 """
 
-from scc.tools import _
-
-from gi.repository import Gtk, Gdk, GObject, GLib, GdkPixbuf
-from scc.menu_data import MenuData, MenuItem, Submenu, Separator, MenuGenerator
-from scc.paths import get_profiles_path, get_menus_path, get_config_path
-from scc.special_actions import TurnOffAction, RestartDaemonAction
-from scc.special_actions import ChangeProfileAction
-from scc.tools import find_profile, find_menu, find_binary
-from scc.modifiers import SensitivityModifier
-from scc.profile import Profile, Encoder
-from scc.actions import Action, NoAction
-from scc.constants import LEFT, RIGHT
-from scc.paths import get_share_path
-from scc.gui.osk_binding_editor import OSKBindingEditor
-from scc.gui.userdata_manager import UserDataManager
-from scc.gui.editor import Editor, ComboSetter
-from scc.gui.parser import GuiActionParser
-from scc.gui.dwsnc import IS_UNITY
-from scc.x11.autoswitcher import AutoSwitcher, Condition
-from scc.osd.menu_generators import RecentListMenuGenerator
-from scc.osd.menu_generators import WindowListMenuGenerator
-from scc.osd.keyboard import Keyboard as OSDKeyboard
-from scc.osd.osk_actions import OSKCursorAction
-import scc.osd.osk_actions
-
-import re
-import sys
-import os
 import json
 import logging
+import os
+import re
+import sys
 import traceback
+
+from gi.repository import Gdk, GdkPixbuf, GLib, GObject, Gtk
+
+from scc.actions import Action, NoAction
+from scc.constants import LEFT, RIGHT
+from scc.gui.dwsnc import IS_UNITY
+from scc.gui.editor import ComboSetter, Editor
+from scc.gui.osk_binding_editor import OSKBindingEditor
+from scc.gui.parser import GuiActionParser
+from scc.gui.userdata_manager import UserDataManager
+from scc.menu_data import MenuData, MenuGenerator, MenuItem, Separator, Submenu
+from scc.modifiers import SensitivityModifier
+from scc.osd.keyboard import Keyboard as OSDKeyboard
+from scc.osd.menu_generators import RecentListMenuGenerator
+from scc.osd.osk_actions import OSKCursorAction
+from scc.paths import get_config_path, get_menus_path, get_profiles_path, get_share_path
+from scc.profile import Encoder, Profile
+from scc.special_actions import ChangeProfileAction, RestartDaemonAction, TurnOffAction
+from scc.tools import _, find_binary, find_menu, find_profile
+from scc.x11.autoswitcher import AutoSwitcher, Condition
 
 log = logging.getLogger("GS")
 
@@ -72,8 +67,8 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		self._recursing = False
 		self._gamepad_icons = {
 			"unknown": GdkPixbuf.Pixbuf.new_from_file(
-				os.path.join(self.app.imagepath, "controller-icons", "unknown.svg")
-			)
+				os.path.join(self.app.imagepath, "controller-icons", "unknown.svg"),
+			),
 		}
 		self.app.config.reload()
 		Action.register_all(sys.modules["scc.osd.osk_actions"], prefix="OSK")
@@ -120,22 +115,22 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		(self.builder.get_object("cbEnableStatusIcon").set_active(bool(self.app.config["gui"]["enable_status_icon"])))
 		(
 			self.builder.get_object("cbMinimizeToStatusIcon").set_active(
-				not IS_UNITY and bool(self.app.config["gui"]["minimize_to_status_icon"])
+				not IS_UNITY and bool(self.app.config["gui"]["minimize_to_status_icon"]),
 			)
 		)
 		(
 			self.builder.get_object("cbMinimizeToStatusIcon").set_sensitive(
-				not IS_UNITY and self.app.config["gui"]["enable_status_icon"]
+				not IS_UNITY and self.app.config["gui"]["enable_status_icon"],
 			)
 		)
 		(
 			self.builder.get_object("cbMinimizeOnStart").set_active(
-				not IS_UNITY and bool(self.app.config["gui"]["minimize_on_start"])
+				not IS_UNITY and bool(self.app.config["gui"]["minimize_on_start"]),
 			)
 		)
 		(
 			self.builder.get_object("cbMinimizeOnStart").set_sensitive(
-				not IS_UNITY and self.app.config["gui"]["enable_status_icon"]
+				not IS_UNITY and self.app.config["gui"]["enable_status_icon"],
 			)
 		)
 		(self.builder.get_object("cbAutokillDaemon").set_active(self.app.config["gui"]["autokill_daemon"]))
@@ -228,8 +223,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		self.set_cb(cb, key, keyindex=1)
 
 	def _load_osk_profile(self):
-		"""
-		Loads and returns on-screen keyboard profile.
+		"""Loads and returns on-screen keyboard profile.
 		Used by methods that are changing it.
 		"""
 		profile = Profile(GuiActionParser())
@@ -237,8 +231,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		return profile
 
 	def _save_osk_profile(self, profile):
-		"""
-		Saves on-screen keyboard profile and calls daemon.reconfigure()
+		"""Saves on-screen keyboard profile and calls daemon.reconfigure()
 		Used by methods that are changing it.
 		"""
 		profile.save(os.path.join(get_profiles_path(), OSDKeyboard.OSK_PROF_NAME + ".sccprofile"))
@@ -263,8 +256,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		self._save_osk_profile(profile)
 
 	def on_osd_color_set(self, *a):
-		"""
-		Called when user selects color.
+		"""Called when user selects color.
 		"""
 		# Following lambdas converts Gdk.Color into #rrggbb notation.
 		# Gdk.Color can do similar, except it uses #rrrrggggbbbb notation that
@@ -285,8 +277,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		self.app.save_config()
 
 	def schedule_save_config(self):
-		"""
-		Schedules config saving in 3s.
+		"""Schedules config saving in 3s.
 		Done to prevent literal madness when user moves slider.
 		"""
 
@@ -324,7 +315,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		self.app.config["output"]["rumble"] = self.builder.get_object("cbEnableRumble").get_active()
 		self.app.config["gui"]["enable_status_icon"] = self.builder.get_object("cbEnableStatusIcon").get_active()
 		self.app.config["gui"]["minimize_to_status_icon"] = self.builder.get_object(
-			"cbMinimizeToStatusIcon"
+			"cbMinimizeToStatusIcon",
 		).get_active()
 		self.app.config["gui"]["minimize_on_start"] = self.builder.get_object("cbMinimizeOnStart").get_active()
 		self.app.config["gui"]["autokill_daemon"] = self.builder.get_object("cbAutokillDaemon").get_active()
@@ -525,8 +516,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		self.on_tvItems_cursor_changed()
 
 	def on_tvItems_cursor_changed(self, *a):
-		"""
-		Handles moving cursor in Item List.
+		"""Handles moving cursor in Item List.
 		Basically just sets Edit Item and Remove Item buttons sensitivity.
 		"""
 		tvItems = self.builder.get_object("tvItems")
@@ -622,7 +612,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		if theme in (None, "None"):
 			return
 		filename = os.path.join(get_share_path(), "osd-styles", theme)
-		data = json.loads(open(filename, "r").read())
+		data = json.loads(open(filename).read())
 
 		# Transfer values from json to config
 		for grp in ("osd_colors", "osk_colors"):
@@ -639,7 +629,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		color_keys = self.app.config["osk_colors"].keys() + self.app.config["osd_colors"].keys()
 		osd_style = cb.get_model().get_value(cb.get_active_iter(), 0)
 		css_file = os.path.join(get_share_path(), "osd-styles", osd_style)
-		with open(css_file, "r") as file:
+		with open(css_file) as file:
 			first_line = file.read().split("\n")[0]
 		used_colors = None  # None means "all"
 		if "Used colors:" in first_line:
@@ -673,8 +663,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		return instance
 
 	def on_cbMI_toggled(self, widget):
-		"""
-		Called when one of 'Default Menu Items' checkboxes is toggled.
+		"""Called when one of 'Default Menu Items' checkboxes is toggled.
 		This actually does kind of magic:
 		- 1st, default menu file is loaded
 		- 2nd, based on widget name, option from DEFAULT_MENU_OPTIONS is
@@ -687,10 +676,10 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		if self._recursing:
 			return
 		try:
-			data = MenuData.from_fileobj(open(find_menu("Default.menu"), "r"), GuiActionParser())
+			data = MenuData.from_fileobj(open(find_menu("Default.menu")), GuiActionParser())
 			index = int(widget.get_name().split("_")[-1])
 			instance = GlobalSettings._make_mi_instance(index)
-		except Exception as e:
+		except Exception:
 			log.error(traceback.format_exc())
 			self._recursing = True
 			widget.set_active(not widget.get_active())
@@ -732,19 +721,18 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		log.debug("Wrote menu file %s", path)
 
 	def load_cbMIs(self):
-		"""
-		See above. This method just parses Default menu and checks
+		"""See above. This method just parses Default menu and checks
 		boxes for present menu items.
 		"""
 		try:
-			data = MenuData.from_fileobj(open(find_menu("Default.menu"), "r"))
-		except Exception as e:
+			data = MenuData.from_fileobj(open(find_menu("Default.menu")))
+		except Exception:
 			# Shouldn't really happen
 			log.error(traceback.format_exc())
 			return
 		self._recursing = True
 
-		for index in range(0, len(GlobalSettings.DEFAULT_MENU_OPTIONS)):
+		for index in range(len(GlobalSettings.DEFAULT_MENU_OPTIONS)):
 			id = "cbMI_%s" % (index,)
 			instance = GlobalSettings._make_mi_instance(index)
 			present = instance.describe().strip(" >") in [x.describe().strip(" >") for x in data]

@@ -1,8 +1,8 @@
-from scc.parser import ActionParser, ParseError
-from scc.actions import Action
-from scc.tools import _
-
 import logging
+
+from scc.actions import Action
+from scc.parser import ActionParser, ParseError
+from scc.tools import _
 
 log = logging.getLogger("gui.parse")
 
@@ -26,8 +26,7 @@ class InvalidAction(Action):
 
 
 class GuiActionParser(ActionParser):
-	"""
-	ActionParser that stores original string and
+	"""ActionParser that stores original string and
 	returns InvalidAction instance when parsing fails
 	"""
 
@@ -36,8 +35,7 @@ class GuiActionParser(ActionParser):
 		return ActionParser.restart(self, string)
 
 	def parse(self):
-		"""
-		Returns parsed action or None if action cannot be parsed.
+		"""Returns parsed action or None if action cannot be parsed.
 		"""
 		try:
 			a = ActionParser.parse(self)

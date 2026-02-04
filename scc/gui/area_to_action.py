@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - AREA_TO_ACTION
+"""SC-Controller - AREA_TO_ACTION
 
 Maps areas on SVG images into actions.
 Used by ActionEditor.
 """
 
-from scc.actions import AxisAction, RAxisAction, MouseAction, ButtonAction
-from scc.actions import HatLeftAction, HatRightAction
-from scc.actions import HatUpAction, HatDownAction
-from scc.uinput import Keys, Axes, Rels
+from scc.actions import (
+	AxisAction,
+	ButtonAction,
+	HatDownAction,
+	HatLeftAction,
+	HatRightAction,
+	HatUpAction,
+	MouseAction,
+	RAxisAction,
+)
+from scc.uinput import Axes, Keys, Rels
 
 AREA_TO_ACTION = {
 	# Values in tuples: ActionClass, param1, param2...
@@ -91,26 +97,25 @@ AREA_TO_ACTION = {
 _CLS_TO_AREA = {}
 for x in AREA_TO_ACTION:
 	cls, params = AREA_TO_ACTION[x][0], AREA_TO_ACTION[x][1:]
-	if not cls in _CLS_TO_AREA:
+	if cls not in _CLS_TO_AREA:
 		_CLS_TO_AREA[cls] = []
 	_CLS_TO_AREA[cls].append((x, params))
 
 
 def action_to_area(action):
-	"""
-	Returns area that matches provided action (both class and parameters)
+	"""Returns area that matches provided action (both class and parameters)
 	or None if there is no such area.
 	"""
 	cls = action.__class__
 	if cls == RAxisAction:
 		cls = AxisAction
-	if not cls in _CLS_TO_AREA:
+	if cls not in _CLS_TO_AREA:
 		return None
 	for area, pars in _CLS_TO_AREA[cls]:
 		if len(pars) > len(action.parameters):
 			continue
 		differs = False
-		for i in range(0, len(pars)):
+		for i in range(len(pars)):
 			if pars[i] != action.parameters[i]:
 				differs = True
 				break
