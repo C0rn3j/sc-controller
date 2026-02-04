@@ -1,21 +1,16 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Action Editor - Axis Component
+"""SC-Controller - Action Editor - Axis Component
 
 Handles specific XYActions
 """
 
-from scc.tools import _
+import logging
 
-from gi.repository import Gtk, Gdk, GLib
-from scc.actions import ButtonAction, MultiAction, NoAction
-from scc.actions import Action, AxisAction, MouseAction
+from scc.actions import Action, AxisAction, ButtonAction, MouseAction, MultiAction
 from scc.gui.ae import AEComponent, describe_action
 from scc.gui.area_to_action import action_to_area
-from scc.gui.simple_chooser import SimpleChooser
 from scc.gui.chooser import Chooser
-
-import os, logging
+from scc.tools import _
 
 log = logging.getLogger("AE.Axis")
 
@@ -51,7 +46,7 @@ class AxisComponent(AEComponent, Chooser):
 				# axis + button on fully pressed trigger
 				self.full = action.actions[0].button2
 				self.builder.get_object("lblFullPressed").set_label(
-					describe_action(Action.AC_BUTTON, ButtonAction, self.full)
+					describe_action(Action.AC_BUTTON, ButtonAction, self.full),
 				)
 				action = action.actions[1]
 			area = action_to_area(action)

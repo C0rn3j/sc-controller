@@ -1,19 +1,16 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Action Editor - Menu Only Component
+"""SC-Controller - Action Editor - Menu Only Component
 
 Displays page that can edito only MenuAction
 """
 
-from scc.tools import _
+import logging
 
-from scc.special_actions import MenuAction, PositionModifier
 from scc.actions import Action
-from scc.gui.userdata_manager import UserDataManager
-from scc.gui.ae.menu_action import MenuActionCofC
 from scc.gui.ae import AEComponent
-
-import os, logging
+from scc.gui.ae.menu_action import MenuActionCofC
+from scc.special_actions import MenuAction, PositionModifier
+from scc.tools import _
 
 log = logging.getLogger("AE.SA")
 

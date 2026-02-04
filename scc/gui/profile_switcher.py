@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - ProfileSwitcher
+"""SC-Controller - ProfileSwitcher
 
 Set of widgets designed to allow user to select profile, placed in one Gtk.Box:
  [ Icon | Combo box with profile selection       (ch) | (S) ]
@@ -9,35 +8,35 @@ Set of widgets designed to allow user to select profile, placed in one Gtk.Box:
 indicator drawn in combobox.
 """
 
-from scc.tools import _
+import logging
+import os
+import random
 
-from gi.repository import Gtk, Gio, GLib, GObject
+from gi.repository import Gio, GLib, GObject, Gtk
+
 from scc.gui.userdata_manager import UserDataManager
 from scc.paths import get_controller_icons_path, get_default_controller_icons_path
-from scc.tools import find_profile, find_controller_icon
-
-import os, random, logging
+from scc.tools import _, find_controller_icon, find_profile
 
 log = logging.getLogger("PS")
 
 
 class ProfileSwitcher(Gtk.EventBox, UserDataManager):
-	"""
-	List of signals:
-		changed (name, giofile)
-			Emited when value of selection combobox is changed
-		new-clicked (name)
-			Emited when user selects 'new profile' option.
-			'name' is of currently selected profile.
-		right-clicked ()
-			Emited whenm user right-clicks anything
-		save-clicked ()
-			Emited when user clicks on save button
-		switch-to-clicked ()
-			Emited when user clicks on "switch to this controller" button
-		unknown-profile (name)
-			Emited when daemon reports unknown profile for controller.
-			'name' is name of reported profile.
+	"""List of signals:
+	changed (name, giofile)
+		Emited when value of selection combobox is changed
+	new-clicked (name)
+		Emited when user selects 'new profile' option.
+		'name' is of currently selected profile.
+	right-clicked ()
+		Emited whenm user right-clicks anything
+	save-clicked ()
+		Emited when user clicks on save button
+	switch-to-clicked ()
+		Emited when user clicks on "switch to this controller" button
+	unknown-profile (name)
+		Emited when daemon reports unknown profile for controller.
+		'name' is name of reported profile.
 	"""
 
 	__gsignals__ = {
@@ -85,7 +84,7 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 		self._combo.add_attribute(rend1, "text", 0)
 		self._combo.add_attribute(rend2, "text", 2)
 		self._combo.set_row_separator_func(
-			lambda model, iter: model.get_value(iter, 1) is None and model.get_value(iter, 0) == "-"
+			lambda model, iter: model.get_value(iter, 1) is None and model.get_value(iter, 0) == "-",
 		)
 		self.update_icon()
 
@@ -99,14 +98,13 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 		self.add(self._box)
 
 	def set_profile(self, name, create=False):
-		"""
-		Selects specified profile in UI.
+		"""Selects specified profile in UI.
 		Returns True on success or False if profile is not in combobox.
 
 		If 'create' is set to True, creates new combobox item if needed.
 		"""
 		if name is None:
-			return
+			return None
 
 		if name.endswith(".mod"):
 			name = name[0:-4]
@@ -137,22 +135,19 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 		return giofile != None
 
 	def set_allow_new(self, allow):
-		"""
-		Enables or disables creating new profile from this ProfileSwitcher.
+		"""Enables or disables creating new profile from this ProfileSwitcher.
 		Should be called before set_profile_list.
 		"""
 		self._allow_new = allow
 
 	def set_allow_switch(self, allow):
-		"""
-		Enables or disables profile switching for this ProfileSwitcher.
+		"""Enables or disables profile switching for this ProfileSwitcher.
 		When disabled, only save button is be usable.
 		"""
 		self._combo.set_sensitive(allow)
 
 	def set_profile_list(self, lst):
-		"""
-		Fills combobox with given list of available profiles.
+		"""Fills combobox with given list of available profiles.
 		'lst' is expected to be iterable of GIO.File's.
 		"""
 		self._model.clear()
@@ -187,8 +182,7 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 		return self._model.get_value(self._combo.get_active_iter(), 0)
 
 	def refresh_profile_path(self, name):
-		"""
-		Called from main window after profile file is deleted.
+		"""Called from main window after profile file is deleted.
 		May either change path to profile in default_profiles directory,
 		or remove entry entirely.
 		"""
@@ -277,8 +271,7 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 		self._first_time = False
 
 	def set_profile_modified(self, has_changes, is_template=False):
-		"""
-		Called to signalize that profile has changes to save in UI
+		"""Called to signalize that profile has changes to save in UI
 		by displaying "changed" next to profile name and showing Save button.
 
 		Returns giofile for currently selected profile. If profile is set as
@@ -308,26 +301,24 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 				self._model.set_value(iter, 2, _("(template)"))
 
 	def set_switch_to_enabled(self, enabled):
-		"""
-		Shows or hides 'switch-to' button
+		"""Shows or hides 'switch-to' button
 		"""
 		if enabled:
 			if not self._switch_to_button:
 				# Save button has to be created
 				self._switch_to_button = ButtonInRevealer(
-					"gtk-edit", _("Edit mappings of this controller"), self.on_switch_to_clicked
+					"gtk-edit", _("Edit mappings of this controller"), self.on_switch_to_clicked,
 				)
 				self._box.pack_start(self._switch_to_button, False, True, 0)
 				self.show_all()
 			self._switch_to_button.set_reveal_child(True)
-		else:
-			if self._switch_to_button:
-				# Nothing to hide if there is no revealer
-				self._switch_to_button.set_reveal_child(False)
+		elif self._switch_to_button:
+			# Nothing to hide if there is no revealer
+			self._switch_to_button.set_reveal_child(False)
 
 	def get_file(self):
 		"""Returns set profile as GIO file or None if there is no any"""
-		return None
+		return
 
 	def set_controller(self, c):
 		if self._signal:
@@ -373,7 +364,7 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 					if "icon" in self.config["controllers"][x]
 				}
 				tp = "%s-" % (self._controller.get_type(),)
-				icons = sorted((os.path.split(x.get_path())[-1] for x in icons))
+				icons = sorted(os.path.split(x.get_path())[-1] for x in icons)
 				log.debug("Searching for icon type: %s", tp.strip("-"))
 				for i in icons:
 					if i not in used_icons and i.startswith(tp):

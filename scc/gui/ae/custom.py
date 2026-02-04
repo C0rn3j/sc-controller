@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Action Editor - Custom action
+"""SC-Controller - Action Editor - Custom action
 
 Custom Action page in Action Editor window
 """
 
-from scc.tools import _
+import logging
 
-from gi.repository import Gtk, Gdk, GLib
-from scc.gui.parser import GuiActionParser, InvalidAction
-from scc.gui.ae import AEComponent
 from scc.actions import Action
-
-import os, logging
+from scc.gui.ae import AEComponent
+from scc.gui.parser import GuiActionParser
+from scc.tools import _
 
 log = logging.getLogger("AE.Custom")
 
@@ -52,8 +49,7 @@ class CustomActionComponent(AEComponent):
 		tbCustomAction.set_text(action.to_string(True))
 
 	def on_tbCustomAction_changed(self, tbCustomAction, *a):
-		"""
-		Converts text from Custom Action text area into action instance and
+		"""Converts text from Custom Action text area into action instance and
 		sends that instance back to editor.
 		"""
 		txCustomAction = self.builder.get_object("txCustomAction")

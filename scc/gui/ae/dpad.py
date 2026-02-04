@@ -3,22 +3,25 @@
 Setups DPAD emulation or menu display
 """
 
-from scc.tools import _
+import logging
 
-from gi.repository import Gtk, Gdk, GLib
-from scc.actions import HatUpAction, HatDownAction, HatLeftAction, HatRightAction
-from scc.actions import Action, NoAction, DPadAction, DPad8Action, ButtonAction
-from scc.constants import LEFT, RIGHT, STICK, SAME, DEFAULT, SCButtons
-from scc.modifiers import NameModifier
-from scc.special_actions import MenuAction
-from scc.uinput import Keys, Axes
+from scc.actions import (
+	Action,
+	ButtonAction,
+	DPad8Action,
+	DPadAction,
+	HatDownAction,
+	HatLeftAction,
+	HatRightAction,
+	HatUpAction,
+	NoAction,
+)
+from scc.constants import DEFAULT, SAME, STICK, SCButtons
 from scc.gui.ae import AEComponent, describe_action
 from scc.gui.ae.menu_action import MenuActionCofC
 from scc.gui.binding_editor import BindingEditor
-from scc.gui.action_editor import ActionEditor
-
-
-import os, logging
+from scc.tools import _
+from scc.uinput import Axes, Keys
 
 log = logging.getLogger("AE.DPAD")
 
@@ -73,9 +76,9 @@ class DPADComponent(AEComponent, MenuActionCofC, BindingEditor):
 		self.on_cbActionType_changed()
 
 	def update_button_desc(self, action):
-		for i in range(0, len(action.actions)):
+		for i in range(len(action.actions)):
 			self.actions[i] = action.actions[i]
-		for i in range(0, 8):
+		for i in range(8):
 			self.set_button_desc(i)
 
 	def set_button_desc(self, i):
@@ -194,24 +197,21 @@ class DPADComponent(AEComponent, MenuActionCofC, BindingEditor):
 		ae.show(self.editor.window)
 
 	def get_default_confirm(self):
-		"""
-		Returns default confirm button for pads/stick - LPAD, RPAD or STICKPRESS
+		"""Returns default confirm button for pads/stick - LPAD, RPAD or STICKPRESS
 		"""
 		if self.editor.id == STICK:
 			return SCButtons.STICKPRESS
 		return getattr(SCButtons, self.editor.id)
 
 	def get_default_cancel(self):
-		"""
-		Returns default cancel button for stick/pad - SAME or B
+		"""Returns default cancel button for stick/pad - SAME or B
 		"""
 		if self.editor.id == STICK:
 			return SCButtons.B
 		return SAME
 
 	def get_control_with(self):
-		"""
-		'control_with' argument is ignored when menu is used with stick/pad.
+		"""'control_with' argument is ignored when menu is used with stick/pad.
 		"""
 		return DEFAULT
 

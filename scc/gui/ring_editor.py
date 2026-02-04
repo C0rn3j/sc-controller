@@ -1,23 +1,16 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Action Editor
+"""SC-Controller - Action Editor
 
 Allows to edit button or trigger action.
 """
 
-from scc.tools import _
+import logging
 
-from scc.gui.controller_widget import ControllerButton
-from scc.gui.controller_widget import STICKS, PADS
-from scc.gui.editor import Editor, ComboSetter
+from scc.actions import Action, MultiAction, NoAction, RingAction
 from scc.gui.dwsnc import headerbar
-from scc.modifiers import ModeModifier, DoubleclickModifier, HoldModifier
-from scc.actions import Action, RingAction, NoAction, MultiAction
-from scc.constants import SCButtons
-from scc.profile import Profile
-
-from gi.repository import Gtk, Gdk, GLib
-import os, logging
+from scc.gui.editor import ComboSetter, Editor
+from scc.modifiers import ModeModifier
+from scc.tools import _
 
 log = logging.getLogger("RingEditor")
 
@@ -47,8 +40,7 @@ class RingEditor(Editor, ComboSetter):
 
 	@staticmethod
 	def is_ring_action(obj):
-		"""
-		Returns True if object is instance of RingAction or object
+		"""Returns True if object is instance of RingAction or object
 		is MultiAction with RingAction as 2nd item
 		"""
 		if isinstance(obj, RingAction):
@@ -106,7 +98,7 @@ class RingEditor(Editor, ComboSetter):
 		return e
 
 	def on_actionb_clicked(self, clicked_button):
-		for i in range(0, len(self.action_widgets)):
+		for i in range(len(self.action_widgets)):
 			button, clearb = self.action_widgets[i]
 			if button == clicked_button:
 
@@ -120,7 +112,7 @@ class RingEditor(Editor, ComboSetter):
 				return
 
 	def on_clearb_clicked(self, clicked_button):
-		for i in range(0, len(self.action_widgets)):
+		for i in range(len(self.action_widgets)):
 			button, clearb = self.action_widgets[i]
 			if clearb == clicked_button:
 				self.actions[i] = NoAction()
@@ -160,20 +152,18 @@ class RingEditor(Editor, ComboSetter):
 		key = cbMode.get_model().get_value(cbMode.get_active_iter(), 0)
 		if key == "inner":
 			return MultiAction(self.actions[1], RingAction(self.radius, self.actions[0], NoAction()))
-		elif key == "outer":
+		if key == "outer":
 			return MultiAction(self.actions[0], RingAction(self.radius, NoAction(), self.actions[1]))
-		else:
-			return RingAction(self.radius, *self.actions)
+		return RingAction(self.radius, *self.actions)
 
 	def _update(self):
-		for i in range(0, len(self.action_widgets)):
+		for i in range(len(self.action_widgets)):
 			button, clearb = self.action_widgets[i]
 			button.set_label(self.actions[i].describe(Action.AC_BUTTON))
 		self.builder.get_object("sclRadius").set_value(self.radius)
 
 	def allow_first_page(self):
 		"""For compatibility with action editor. Does nothing"""
-		pass
 
 	def set_input(self, id, action, mode=None):
 		btDefault = self.builder.get_object("btDefault")

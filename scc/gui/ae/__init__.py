@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """ae - Action Editor components"""
 
-from scc.tools import _
+import logging
+import os
 
-from gi.repository import Gtk, Gdk, GLib
+from gi.repository import Gdk, GLib, Gtk
+
 from scc.actions import Action, NoAction, XYAction
 from scc.gui.editor import ComboSetter
-from scc.tools import ensure_size
-
-import os, logging
+from scc.tools import _, ensure_size
 
 log = logging.getLogger("AE")
 
@@ -32,22 +32,17 @@ class AEComponent(ComboSetter):
 	# TODO: Rename this to on_shown
 	def shown(self):
 		"""Called after user switches TO page"""
-		pass
 
 	# TODO: Rename this to on_shown
 	def hidden(self):
 		"""Called after user switches AWAY from page"""
-		pass
 
 	def on_ok(self, action):
+		"""Called when user presses OK, after action is send to main window
 		"""
-		Called when user presses OK, after action is send to main window
-		"""
-		pass
 
 	def load(self):
-		"""
-		Performs whatever component needs to get loaded.
+		"""Performs whatever component needs to get loaded.
 		Can be called multiple times without breaking anything, but returns
 		True when called first time and then False every to signalize repeated
 		call.
@@ -65,32 +60,26 @@ class AEComponent(ComboSetter):
 		return self.loaded
 
 	def handles(self, mode, action):
-		"""
-		Returns True if component can display and edit specified action.
+		"""Returns True if component can display and edit specified action.
 		If more than one component returns True from 'handles',
 		higher PRIORITY is used
 		"""
 		return False
 
 	def set_action(self, mode, action):
+		"""Setups component widgets to display currently set action.
 		"""
-		Setups component widgets to display currently set action.
-		"""
-		pass
 
 	def modifier_updated(self):
+		"""Called when values of any modifier is changed.
 		"""
-		Called when values of any modifier is changed.
-		"""
-		pass
 
 	def get_widget(self):
 		return self.widget
 
 
 def describe_action(mode, cls, v):
-	"""
-	Returns action description with 'v' as parameter, unless unless v is None.
+	"""Returns action description with 'v' as parameter, unless unless v is None.
 	Returns "not set" if v is None
 	"""
 	if v is None or type(v) in (
@@ -99,7 +88,7 @@ def describe_action(mode, cls, v):
 		str,
 	):
 		return _("(not set)")
-	elif isinstance(v, Action):
+	if isinstance(v, Action):
 		if not mode:
 			dsc = v.describe(Action.AC_STICK if cls == XYAction else Action.AC_BUTTON)
 		else:
@@ -108,5 +97,4 @@ def describe_action(mode, cls, v):
 		if "\n" in dsc:
 			dsc = "<small>" + "\n".join(dsc.split("\n")[0:2]) + "</small>"
 		return dsc
-	else:
-		return (cls(v)).describe(mode)
+	return (cls(v)).describe(mode)

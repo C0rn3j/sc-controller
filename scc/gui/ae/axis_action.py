@@ -3,26 +3,37 @@
 Assigns emulated axis to trigger
 """
 
-from scc.tools import _
+import logging
+import os
+from ctypes import POINTER, cast
 
 from gi.repository import Gdk, GdkX11, GLib
-from ctypes import cast, POINTER
-from scc.actions import Action, NoAction, AxisAction, MouseAction
-from scc.actions import XYAction, RelXYAction
-from scc.actions import MultiAction, RelWinAreaAction, ButtonAction
-from scc.actions import AreaAction, WinAreaAction, RelAreaAction
-from scc.modifiers import BallModifier, CircularModifier
-from scc.uinput import Keys, Axes, Rels
+
+from scc.actions import (
+	Action,
+	AreaAction,
+	AxisAction,
+	ButtonAction,
+	MouseAction,
+	MultiAction,
+	NoAction,
+	RelAreaAction,
+	RelWinAreaAction,
+	RelXYAction,
+	WinAreaAction,
+	XYAction,
+)
 from scc.constants import SCButtons
-from scc.lib import xwrappers as X
-from scc.osd.timermanager import TimerManager
-from scc.osd.area import Area
+from scc.gui.ae import AEComponent
+from scc.gui.controller_widget import STICKS
 from scc.gui.parser import GuiActionParser, InvalidAction
 from scc.gui.simple_chooser import SimpleChooser
-from scc.gui.controller_widget import STICKS
-from scc.gui.ae import AEComponent
-
-import os, logging, math
+from scc.lib import xwrappers as X
+from scc.modifiers import BallModifier, CircularModifier
+from scc.osd.area import Area
+from scc.osd.timermanager import TimerManager
+from scc.tools import _
+from scc.uinput import Axes, Keys, Rels
 
 log = logging.getLogger("AE.AxisAction")
 
@@ -54,11 +65,11 @@ class AxisActionComponent(AEComponent, TimerManager):
 		cbAreaType = self.builder.get_object("cbAreaType")
 		cbAreaType.set_row_separator_func(lambda model, iter: model.get_value(iter, 0) == "-")
 		self.on_wayland = "WAYLAND_DISPLAY" in os.environ or not isinstance(
-			Gdk.Display.get_default(), GdkX11.X11Display
+			Gdk.Display.get_default(), GdkX11.X11Display,
 		)
 		if self.on_wayland:
 			self.builder.get_object("lblArea").set_text(
-				_("Note: Mouse Region option is not available with Wayland-based display server")
+				_("Note: Mouse Region option is not available with Wayland-based display server"),
 			)
 			self.builder.get_object("grArea").set_sensitive(False)
 
@@ -195,8 +206,7 @@ class AxisActionComponent(AEComponent, TimerManager):
 		self._recursing = False
 
 	def load_area_action(self, action):
-		"""
-		Load AreaAction values into UI.
+		"""Load AreaAction values into UI.
 		"""
 		cbAreaType = self.builder.get_object("cbAreaType")
 
@@ -292,8 +302,7 @@ class AxisActionComponent(AEComponent, TimerManager):
 		self.editor.builder.get_object("cbOSD").set_active(self.builder.get_object("cbAreaOSDEnabled").get_active())
 
 	def pressing_pad_clicks(self):
-		"""
-		Returns True if currently edited pad is set to press left mouse
+		"""Returns True if currently edited pad is set to press left mouse
 		button when pressed.
 		(yes, this is used somewhere)
 		"""
@@ -315,10 +324,9 @@ class AxisActionComponent(AEComponent, TimerManager):
 				if not clicks:
 					# Turn pad press into mouse clicks
 					self.app.set_action(self.app.current, side, ButtonAction(Keys.BTN_LEFT))
-			else:
-				if clicks:
-					# Clear action created above if checkbox is uncheck
-					self.app.set_action(self.app.current, side, NoAction())
+			elif clicks:
+				# Clear action created above if checkbox is uncheck
+				self.app.set_action(self.app.current, side, NoAction())
 
 	def on_mouse_options_changed(self, *a):
 		if self._recursing:
@@ -327,27 +335,23 @@ class AxisActionComponent(AEComponent, TimerManager):
 		self.editor.set_action(action)
 
 	def make_mouse_action(self):
-		"""
-		Loads values from UI into trackball-related action
+		"""Loads values from UI into trackball-related action
 		"""
 		cbMouseOutput = self.builder.get_object("cbMouseOutput")
 		a_str = cbMouseOutput.get_model().get_value(cbMouseOutput.get_active_iter(), 2)
 		return self.parser.restart(a_str).parse()
 
 	def make_circular_action(self):
-		"""
-		Constructs Circular Modifier
+		"""Constructs Circular Modifier
 		"""
 		if self.circular_axis and any(self.circular_buttons):
 			return CircularModifier(MultiAction(self.circular_axis, ButtonAction(*self.circular_buttons)))
-		elif any(self.circular_buttons):
+		if any(self.circular_buttons):
 			return CircularModifier(ButtonAction(*self.circular_buttons))
-		else:
-			return CircularModifier(self.circular_axis)
+		return CircularModifier(self.circular_axis)
 
 	def make_area_action(self):
-		"""
-		Loads values from UI into new AreaAction or subclass.
+		"""Loads values from UI into new AreaAction or subclass.
 		"""
 		# Prepare
 		cbAreaType = self.builder.get_object("cbAreaType")
@@ -374,10 +378,10 @@ class AxisActionComponent(AEComponent, TimerManager):
 		if "window-" in key:
 			cls = WinAreaAction
 			self.relative_area = False
-		elif "screensize" == key:
+		elif key == "screensize":
 			cls = RelAreaAction
 			self.relative_area = True
-		elif "windowsize" == key:
+		elif key == "windowsize":
 			cls = RelWinAreaAction
 			self.relative_area = True
 		else:  # "screen" in key
@@ -397,7 +401,7 @@ class AxisActionComponent(AEComponent, TimerManager):
 		if isinstance(action, BallModifier):
 			if isinstance(action.action, XYAction):
 				return isinstance(action.action.x, (AxisAction, MouseAction)) and isinstance(
-					action.action.x, (AxisAction, MouseAction)
+					action.action.x, (AxisAction, MouseAction),
 				)
 			return isinstance(action.action, MouseAction)
 		if isinstance(action, XYAction):
@@ -406,13 +410,9 @@ class AxisActionComponent(AEComponent, TimerManager):
 				if len(action.actions[0].strip().parameters) >= x:
 					if len(action.actions[x].strip().parameters) > 0:
 						p[x] = action.actions[x].strip().parameters[0]
-			if p[0] == Axes.ABS_X and p[1] == Axes.ABS_Y:
+			if (p[0] == Axes.ABS_X and p[1] == Axes.ABS_Y) or (p[0] == Axes.ABS_RX and p[1] == Axes.ABS_RY):
 				return True
-			elif p[0] == Axes.ABS_RX and p[1] == Axes.ABS_RY:
-				return True
-			elif p[0] == Axes.ABS_HAT0X and p[1] == Axes.ABS_HAT0Y:
-				return True
-			elif p[0] == Rels.REL_HWHEEL and p[1] == Rels.REL_WHEEL:
+			if (p[0] == Axes.ABS_HAT0X and p[1] == Axes.ABS_HAT0Y) or (p[0] == Rels.REL_HWHEEL and p[1] == Rels.REL_WHEEL):
 				return True
 		return False
 
@@ -477,8 +477,7 @@ class AxisActionComponent(AEComponent, TimerManager):
 
 
 class FakeMapper:
-	"""
-	Class that pretends to be mapper used when calling update_osd_area.
+	"""Class that pretends to be mapper used when calling update_osd_area.
 	It has two purposes: To provide get_xdisplay() method that does what it says
 	and get_active_window() that returns any other window but window that
 	belongs to SC-Controller gui application.
@@ -492,8 +491,7 @@ class FakeMapper:
 		return self._xdisplay
 
 	def get_current_window(self):
-		"""
-		Gets last active window that was not part of SC-Controller.
+		"""Gets last active window that was not part of SC-Controller.
 		Uses _NET_CLIENT_LIST_STACKING property of root window, value provided
 		by window manager. If that fail (because of no or not ICCM compilant WM),
 		simply returns root window.
@@ -502,11 +500,11 @@ class FakeMapper:
 		NET_WM_WINDOW_TYPE_NORMAL = X.intern_atom(self._xdisplay, bytes("_NET_WM_WINDOW_TYPE_NORMAL", "utf-8"), False)
 		my_windows = [x.get_xid() for x in Gdk.Screen.get_default().get_toplevel_windows()]
 		nitems, prop = X.get_window_prop(
-			self._xdisplay, root, bytes("_NET_CLIENT_LIST_STACKING", "utf-8"), max_size=0x8000
+			self._xdisplay, root, bytes("_NET_CLIENT_LIST_STACKING", "utf-8"), max_size=0x8000,
 		)
 
 		if nitems > 0:
-			for i in reversed(range(0, nitems)):
+			for i in reversed(range(nitems)):
 				window = cast(prop, POINTER(X.XID))[i]
 				if window in my_windows:
 					# skip over my own windows

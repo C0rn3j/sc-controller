@@ -1,22 +1,18 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Action Editor - On Screen Keyboard Action Component
+"""SC-Controller - Action Editor - On Screen Keyboard Action Component
 
 Assigns actions from scc.osd.osk_actions
 """
 
-from scc.tools import _
+import logging
 
-from gi.repository import Gtk, Gdk, GLib
-from scc.actions import Action, NoAction, ButtonAction
-from scc.constants import LEFT, RIGHT
-from scc.uinput import Keys
+from scc.actions import Action, ButtonAction, NoAction
+from scc.constants import LEFT
 from scc.gui.ae import AEComponent
 from scc.gui.parser import GuiActionParser
-from scc.osd.osk_actions import OSKAction, CloseOSKAction, OSKCursorAction
-from scc.osd.osk_actions import MoveOSKAction, OSKPressAction
-
-import os, logging
+from scc.osd.osk_actions import CloseOSKAction, MoveOSKAction, OSKAction, OSKCursorAction, OSKPressAction
+from scc.tools import _
+from scc.uinput import Keys
 
 log = logging.getLogger("AE.SA")
 

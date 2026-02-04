@@ -3,21 +3,17 @@
 Handles gesture recognition settings.
 """
 
-from scc.tools import _
+import logging
 
-from gi.repository import Gtk, Gdk, GLib, GdkX11, GObject
-from scc.gui.ae import AEComponent, describe_action
-from scc.gui.area_to_action import action_to_area
-from scc.gui.simple_chooser import SimpleChooser
+from gi.repository import Gdk, GdkX11, GObject
+
+from scc.actions import Action, NoAction
 from scc.gui.action_editor import ActionEditor
-from scc.gui.parser import GuiActionParser
-from scc.special_actions import GesturesAction, OSDAction
-from scc.osd.gesture_display import GestureDisplay
-from scc.actions import Action, NoAction, XYAction
+from scc.gui.ae import AEComponent
 from scc.modifiers import NameModifier
-from scc.tools import strip_gesture
-
-import os, logging
+from scc.osd.gesture_display import GestureDisplay
+from scc.special_actions import GesturesAction, OSDAction
+from scc.tools import _, strip_gesture
 
 log = logging.getLogger("AE.PerAxis")
 
@@ -42,7 +38,7 @@ class GestureComponent(AEComponent):
 			self.on_wayland = not isinstance(Gdk.Display.get_default(), GdkX11.X11Display)
 			if self.on_wayland:
 				self.builder.get_object("lblGestureMessage").set_text(
-					_("Note: Gestures are not available with Wayland-based display server")
+					_("Note: Gestures are not available with Wayland-based display server"),
 				)
 				self.builder.get_object("lblGestureMessage").set_visible(True)
 				self.builder.get_object("gesture").set_sensitive(False)
@@ -78,8 +74,7 @@ class GestureComponent(AEComponent):
 
 	@staticmethod
 	def nice_gstr(gstr):
-		"""
-		Replaces characters UDLR in gesture string with unicode arrows.
+		"""Replaces characters UDLR in gesture string with unicode arrows.
 		← → ↑ ↓
 		"""
 		if "i" in gstr:
@@ -215,15 +210,13 @@ class GestureGrabber:
 		self.builder.get_object("btnConfirmGesutre").connect("clicked", self.use)
 
 	def fail(self, *a):
-		"""
-		Called when something goes bad, usually because there is
+		"""Called when something goes bad, usually because there is
 		no controller connected.
 		"""
 		log.error("Failed to grab gesture: %s", a)
 
 	def disconnect_signals(self):
-		"""
-		Disconnects redundant signal handlers.
+		"""Disconnects redundant signal handlers.
 		Currently only one created in lock_buttons.
 		"""
 		if self._signals:
@@ -242,7 +235,7 @@ class GestureGrabber:
 				"Y",
 			)
 			self._signals = [(c, c.connect("event", self.on_event))]
-		except IndexError as e:
+		except IndexError:
 			# No controllers
 			self.fail()
 

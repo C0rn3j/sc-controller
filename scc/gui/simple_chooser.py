@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Simple Chooser
+"""SC-Controller - Simple Chooser
 
 Used by Action Editor to display window with just one Component
 """
 
-from scc.tools import _
 
-from gi.repository import Gtk, Gdk, GLib
-from scc.gui.dwsnc import headerbar
+import importlib
+import logging
+
 from scc.gui.ae import AEComponent
+from scc.gui.dwsnc import headerbar
 from scc.gui.editor import Editor
-import logging, os, types, importlib
 
 log = logging.getLogger("SimpleChooser")
 
@@ -36,7 +35,7 @@ class SimpleChooser(Editor):
 		for x in dir(mod):
 			cls = getattr(mod, x)
 			if isinstance(cls, type) and issubclass(cls, AEComponent):
-				if cls.NAME == component_name:
+				if component_name == cls.NAME:
 					self.component = cls(self.app, self)
 					break
 		if self.component is None:

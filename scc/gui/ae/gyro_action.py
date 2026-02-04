@@ -160,11 +160,9 @@ class GyroActionComponent(AEComponent):
 		if isinstance(action, GyroAction):  # Takes GyroAbsAction as well
 			ap = action.parameters
 			if (len(ap) == 3 and not ap[1]) or len(ap) == 2:
-				if ap[0] == Axes.ABS_X and ap[-1] == Axes.ABS_Y:
+				if (ap[0] == Axes.ABS_X and ap[-1] == Axes.ABS_Y) or (ap[0] == Axes.ABS_RX and ap[-1] == Axes.ABS_RY):
 					return True
-				elif ap[0] == Axes.ABS_RX and ap[-1] == Axes.ABS_RY:
-					return True
-				elif ap[0] == Rels.REL_Y and ap[-1] == Rels.REL_X:
+				if ap[0] == Rels.REL_Y and ap[-1] == Rels.REL_X:
 					return True
 			return False
 		if isinstance(action, (MouseAction, MouseAbsAction, CemuHookAction)):

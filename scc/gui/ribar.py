@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - RIBar
+"""SC-Controller - RIBar
 
 Infobar wrapped in Revealer, looks better than sounds.
 """
 
-from gi.repository import Gtk, GLib, GObject, Pango
-import os
+from gi.repository import GLib, GObject, Gtk
 
 
 class RIBar(Gtk.Revealer):
-	"""
-	Infobar wrapped in Revealer
+	"""Infobar wrapped in Revealer
 
 	Signals:
 		Everything from Gtk.Revealer, plus:
@@ -28,8 +25,7 @@ class RIBar(Gtk.Revealer):
 
 	### Initialization
 	def __init__(self, label, message_type=Gtk.MessageType.INFO, infobar=None, *buttons):
-		"""
-		... where label can be Gtk.Widget or str and buttons are tuples
+		"""... where label can be Gtk.Widget or str and buttons are tuples
 		of (Gtk.Button, response_id)
 		"""
 		# Init
@@ -99,16 +95,14 @@ class RIBar(Gtk.Revealer):
 		return self._label
 
 	def close_on_close(self):
-		"""
-		Setups revealer so it will be automaticaly closed, removed and
+		"""Setups revealer so it will be automaticaly closed, removed and
 		destroyed when user clicks to any button, including 'X'
 		"""
 		self.connect("close", self.close)
 		self.connect("response", self.close)
 
 	def close(self, *a):
-		"""
-		Closes revealer (with animation), removes it from parent and
+		"""Closes revealer (with animation), removes it from parent and
 		calls destroy()
 		"""
 		self.set_reveal_child(False)
@@ -116,7 +110,7 @@ class RIBar(Gtk.Revealer):
 
 	def _cb_destroy(self, *a):
 		"""Callback used by _cb_close method"""
-		if not self.get_parent() is None:
+		if self.get_parent() is not None:
 			self.get_parent().remove(self)
 		self.destroy()
 
@@ -141,10 +135,10 @@ class RIBar(Gtk.Revealer):
 		"""Builds button situable for action area"""
 		b = Gtk.Button.new_from_stock(label) if use_stock else Gtk.Button.new_with_label(label)
 		b.set_use_underline(True)
-		if not icon_name is None:
+		if icon_name is not None:
 			icon_widget = Gtk.Image()
 			icon_widget.set_from_icon_name(icon_name, Gtk.IconSize.BUTTON)
-		if not icon_widget is None:
+		if icon_widget is not None:
 			b.set_image(icon_widget)
 			b.set_always_show_image(True)
 		return b

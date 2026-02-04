@@ -1,24 +1,28 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Action Editor - common part of "DPAD or menu" and "Special Action",
+"""SC-Controller - Action Editor - common part of "DPAD or menu" and "Special Action",
 two components with MenuAction selectable.
 """
 
-from scc.tools import _
+import logging
+import os
 
 from gi.repository import Gtk
-from scc.special_actions import MenuAction, HorizontalMenuAction
-from scc.special_actions import RadialMenuAction, GridMenuAction
-from scc.special_actions import QuickMenuAction, PositionModifier
-from scc.constants import SCButtons, SAME, STICK, DEFAULT
-from scc.paths import get_menus_path
+
 from scc.actions import NoAction
-from scc.tools import nameof
-from scc.gui.userdata_manager import UserDataManager
+from scc.constants import DEFAULT, SAME, STICK, SCButtons
 from scc.gui.menu_editor import MenuEditor
 from scc.gui.parser import GuiActionParser
-
-import os, logging
+from scc.gui.userdata_manager import UserDataManager
+from scc.paths import get_menus_path
+from scc.special_actions import (
+	GridMenuAction,
+	HorizontalMenuAction,
+	MenuAction,
+	PositionModifier,
+	QuickMenuAction,
+	RadialMenuAction,
+)
+from scc.tools import _, nameof
 
 log = logging.getLogger("AE.Menu")
 
@@ -35,8 +39,7 @@ class MenuActionCofC(UserDataManager):
 		self.allow_in_profile = True
 
 	def allow_menus(self, allow_globals, allow_in_profile):
-		"""
-		Sets which type of menu should be selectable.
+		"""Sets which type of menu should be selectable.
 		By default, both are enabled.
 
 		Returns self.
@@ -46,8 +49,7 @@ class MenuActionCofC(UserDataManager):
 		return self
 
 	def set_selected_menu(self, menu):
-		"""
-		Sets menu selected in combobox.
+		"""Sets menu selected in combobox.
 		Returns self.
 		"""
 		self._current_menu = menu
@@ -55,19 +57,17 @@ class MenuActionCofC(UserDataManager):
 
 	@staticmethod
 	def menu_class_to_key(action):
-		"""
-		For subclass of MenuAction, returns correct key to be used in ListStore.
+		"""For subclass of MenuAction, returns correct key to be used in ListStore.
 		"""
 		if isinstance(action, GridMenuAction):
 			return "gridmenu"
-		elif isinstance(action, QuickMenuAction):
+		if isinstance(action, QuickMenuAction):
 			return "quickmenu"
-		elif isinstance(action, HorizontalMenuAction):
+		if isinstance(action, HorizontalMenuAction):
 			return "hmenu"
-		elif isinstance(action, RadialMenuAction):
+		if isinstance(action, RadialMenuAction):
 			return "radialmenu"
-		else:
-			return "menu"
+		return "menu"
 
 	def load_menu_data(self, action):
 		if isinstance(action, PositionModifier):
@@ -127,15 +127,13 @@ class MenuActionCofC(UserDataManager):
 		self.on_cbMenus_changed()
 
 	def get_default_confirm(self):
-		"""
-		Returns DEFAULT, but may be overriden when default
+		"""Returns DEFAULT, but may be overriden when default
 		confirm button is different - specifically when used with pads.
 		"""
 		return DEFAULT
 
 	def get_default_cancel(self):
-		"""
-		Returns DEFAULT, but may be overriden when default
+		"""Returns DEFAULT, but may be overriden when default
 		confirm button is different - specifically when used with pads.
 		"""
 		return DEFAULT
@@ -255,8 +253,7 @@ class MenuActionCofC(UserDataManager):
 		return model.get_value(iter, 1)
 
 	def prevent_confirm_cancel_nonsense(self, widget, *a):
-		"""
-		If 'confirm with click', 'confirm with release' and
+		"""If 'confirm with click', 'confirm with release' and
 		'cbMenuAutoCancel' are all present, this method prevents them from
 		being checked in nonsensical way.
 		"""
@@ -279,7 +276,7 @@ class MenuActionCofC(UserDataManager):
 	def on_cbMenus_changed(self, *a):
 		"""Called when user changes any menu settings"""
 		if self._recursing:
-			return
+			return None
 		cbMenuConfirmWithClick = self.builder.get_object("cbMenuConfirmWithClick")
 		cbMenuAutoConfirm = self.builder.get_object("cbMenuAutoConfirm")
 		cbMenuAutoCancel = self.builder.get_object("cbMenuAutoCancel")
@@ -428,8 +425,7 @@ class MenuActionCofC(UserDataManager):
 		me.show(self.editor.window)
 
 	def update_size_display(self, action):
-		"""
-		Displays or hides menu size area and upadates text displayed in it.
+		"""Displays or hides menu size area and upadates text displayed in it.
 		Returns True if action is menuaction where changing size makes sense
 		"""
 		rvMenuSize = self.builder.get_object("rvMenuSize")
@@ -442,15 +438,14 @@ class MenuActionCofC(UserDataManager):
 			lblMenuSize.set_text(_("Items per row"))
 			rvMenuSize.set_reveal_child(True)
 			return True
-		elif isinstance(action, (RadialMenuAction, HorizontalMenuAction)):
+		if isinstance(action, (RadialMenuAction, HorizontalMenuAction)):
 			spMenuSize.set_visible(False)
 			sclMenuSize.set_visible(True)
 			lblMenuSize.set_text(_("Size"))
 			rvMenuSize.set_reveal_child(True)
 			return True
-		else:
-			rvMenuSize.set_reveal_child(False)
-			return False
+		rvMenuSize.set_reveal_child(False)
+		return False
 
 	def get_control_with(self):
 		"""Returns value of "Control With" combo or STICK if there is none"""
@@ -474,8 +469,8 @@ class MenuActionCofC(UserDataManager):
 			if val < 1:
 				return _("default")
 			return "%s%%" % (int(val),)
-		else:  # if menu_type == "hmenu"
-			val = int(val)
-			if val < 2:
-				return _("default")
-			return str(int(val))
+		# if menu_type == "hmenu"
+		val = int(val)
+		if val < 2:
+			return _("default")
+		return str(int(val))

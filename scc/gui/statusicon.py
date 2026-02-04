@@ -1,13 +1,11 @@
 """Syncthing-GTK - StatusIcon."""
 
-import os
 import logging
+import os
 
-from gi.repository import GObject
-from gi.repository import GLib
-from gi.repository import Gtk
+from gi.repository import GLib, GObject, Gtk
 
-from scc.gui.dwsnc import IS_UNITY, IS_GNOME
+from scc.gui.dwsnc import IS_GNOME, IS_UNITY
 from scc.tools import _  # gettext function
 
 log = logging.getLogger("StatusIcon")
@@ -43,7 +41,7 @@ class StatusIcon(GObject.GObject):
 			"does the icon back-end think that anything is might be shown to the user?",
 			True,
 			GObject.PARAM_READWRITE if hasattr(GObject, "PARAM_READWRITE") else GObject.ParamFlags.READWRITE,
-		)
+		),
 	}
 
 	def __init__(self, icon_path, popupmenu, force=False):
@@ -58,8 +56,7 @@ class StatusIcon(GObject.GObject):
 		self.__force = force
 
 	def get_active(self):
-		"""
-		Return whether there is at least a chance that the icon might be shown to the user
+		"""Return whether there is at least a chance that the icon might be shown to the user
 
 		If this returns `False` then the icon will definetely not be shown, but if it returns `True` it doesn't have to
 		be visible...
@@ -71,8 +68,7 @@ class StatusIcon(GObject.GObject):
 		return self.get_property("active")
 
 	def set(self, icon=None, text=None):
-		"""
-		Set the status icon image and descriptive text
+		"""Set the status icon image and descriptive text
 
 		If either of these are `None` their previous value will be used.
 
@@ -92,8 +88,7 @@ class StatusIcon(GObject.GObject):
 			self._set_visible(self.__visible)
 
 	def hide(self):
-		"""
-		Hide the icon
+		"""Hide the icon
 
 		This method tries its best to ensure the icon is hidden, but there are no guarantees as to how use well its
 		going to work.
@@ -102,8 +97,7 @@ class StatusIcon(GObject.GObject):
 		self._set_visible(False)
 
 	def show(self):
-		"""
-		Show a previously hidden icon
+		"""Show a previously hidden icon
 
 		This method tries its best to ensure the icon is hidden, but there are no guarantees as to how use well its
 		going to work.
@@ -122,8 +116,7 @@ class StatusIcon(GObject.GObject):
 		self.emit("clicked")
 
 	def _get_icon(self, icon=None):
-		"""
-		@internal
+		"""@internal
 
 		Use `set()` instead.
 		"""
@@ -132,8 +125,7 @@ class StatusIcon(GObject.GObject):
 		return self.__icon
 
 	def _get_text(self, text=None):
-		"""
-		@internal
+		"""@internal
 
 		Use `set()` instead.
 		"""
@@ -142,22 +134,18 @@ class StatusIcon(GObject.GObject):
 		return self.__text
 
 	def _get_popupmenu(self):
-		"""
-		@internal
+		"""@internal
 		"""
 		return self.__popupmenu
 
 	def _set_visible(self, visible):
+		"""@internal
 		"""
-		@internal
-		"""
-		pass
 
 	def do_get_property(self, property):
 		if property.name == "active":
 			return self.__active
-		else:
-			raise AttributeError("Unknown property %s" % property.name)
+		raise AttributeError("Unknown property %s" % property.name)
 
 	def do_set_property(self, property, value):
 		if property.name == "active":
@@ -167,8 +155,7 @@ class StatusIcon(GObject.GObject):
 
 
 class StatusIconDummy(StatusIcon):
-	"""
-	Dummy status icon implementation that does nothing
+	"""Dummy status icon implementation that does nothing
 	"""
 
 	def __init__(self, *args, **kwargs):
@@ -185,8 +172,7 @@ class StatusIconDummy(StatusIcon):
 
 
 class StatusIconGTK3(StatusIcon):
-	"""
-	Gtk.StatusIcon based status icon backend
+	"""Gtk.StatusIcon based status icon backend
 	"""
 
 	def __init__(self, *args, **kwargs):
@@ -249,8 +235,7 @@ class StatusIconDBus(StatusIcon):
 
 
 class StatusIconAppIndicator(StatusIconDBus):
-	"""
-	Unity's AppIndicator3.Indicator based status icon backend
+	"""Unity's AppIndicator3.Indicator based status icon backend
 	"""
 
 	def __init__(self, *args, **kwargs):
@@ -264,7 +249,7 @@ class StatusIconAppIndicator(StatusIconDBus):
 				from gi.repository import AyatanaAppIndicator3 as appindicator
 			except ImportError:
 				log.warning(
-					"Failed to import AyatanaAppIndicator3, trying fallback to an old implementation of AppIndicator3!"
+					"Failed to import AyatanaAppIndicator3, trying fallback to an old implementation of AppIndicator3!",
 				)
 				gi.require_version("AppIndicator3", "0.1")
 				from gi.repository import AppIndicator3 as appindicator

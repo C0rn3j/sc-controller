@@ -1,24 +1,22 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Action Editor - Button Component
+"""SC-Controller - Action Editor - Button Component
 
 Assigns emulated button to physical button
 """
 
-from scc.tools import _
+import logging
 
-from gi.repository import Gtk, Gdk, GLib
-from scc.actions import Action, ButtonAction, MouseAction
-from scc.actions import AxisAction, MultiAction, NoAction
-from scc.macros import Macro, Cycle, PressAction, ReleaseAction
-from scc.uinput import Rels, Keys
+from gi.repository import Gtk
+
+from scc.actions import Action, AxisAction, ButtonAction, MouseAction, MultiAction, NoAction
+from scc.gui.ae import AEComponent
 from scc.gui.area_to_action import action_to_area
+from scc.gui.chooser import Chooser
 from scc.gui.key_grabber import KeyGrabber
 from scc.gui.parser import InvalidAction
-from scc.gui.chooser import Chooser
-from scc.gui.ae import AEComponent
-
-import os, logging
+from scc.macros import Cycle, Macro, PressAction, ReleaseAction
+from scc.tools import _
+from scc.uinput import Keys, Rels
 
 log = logging.getLogger("AE.Buttons")
 
@@ -131,7 +129,7 @@ class ButtonsComponent(AEComponent, Chooser):
 		"""Common part of on_*key_grabbed"""
 		cbToggle = self.builder.get_object("cbToggle")
 		cbRepeat = self.builder.get_object("cbRepeat")
-		keys = list(sorted(self.keys, key=ButtonsComponent.modifiers_first))
+		keys = sorted(self.keys, key=ButtonsComponent.modifiers_first)
 		action = ButtonAction(keys[0])
 		if len(keys) > 1:
 			actions = [ButtonAction(k) for k in keys]
@@ -144,16 +142,14 @@ class ButtonsComponent(AEComponent, Chooser):
 		self.editor.set_action(action)
 
 	def on_btnGrabKey_clicked(self, *a):
-		"""
-		Called when user clicks on 'Grab a Key' button.
+		"""Called when user clicks on 'Grab a Key' button.
 		Displays additional dialog.
 		"""
 		kg = KeyGrabber(self.app)
 		kg.grab(self.editor.window, self.editor._action, self.on_key_grabbed)
 
 	def on_btnGrabAnother_clicked(self, *a):
-		"""
-		Same as above, but adds another key to action
+		"""Same as above, but adds another key to action
 		"""
 		kg = KeyGrabber(self.app)
 		kg.grab(self.editor.window, self.editor._action, self.on_additional_key_grabbed)
