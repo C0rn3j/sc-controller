@@ -85,7 +85,7 @@ class DS4Controller(HIDController):
 					button=SCButtons.LPAD | SCButtons.LPADTOUCH,
 					min=STICK_PAD_MIN,
 					max=STICK_PAD_MAX,
-				)
+				),
 			),
 		)
 		self._decoder.axes[AxisType.AXIS_STICK_X] = AxisData(
@@ -98,7 +98,7 @@ class DS4Controller(HIDController):
 					offset=-127.5,
 					clamp_max=257,
 					deadzone=10,
-				)
+				),
 			),
 		)
 		self._decoder.axes[AxisType.AXIS_STICK_Y] = AxisData(
@@ -111,7 +111,7 @@ class DS4Controller(HIDController):
 					offset=127.5,
 					clamp_max=257,
 					deadzone=10,
-				)
+				),
 			),
 		)
 		self._decoder.axes[AxisType.AXIS_RPAD_X] = AxisData(
@@ -125,7 +125,7 @@ class DS4Controller(HIDController):
 					offset=-127.5,
 					clamp_max=257,
 					deadzone=10,
-				)
+				),
 			),
 		)
 		self._decoder.axes[AxisType.AXIS_RPAD_Y] = AxisData(
@@ -139,7 +139,7 @@ class DS4Controller(HIDController):
 					offset=127.5,
 					clamp_max=257,
 					deadzone=10,
-				)
+				),
 			),
 		)
 		self._decoder.axes[AxisType.AXIS_LTRIG] = AxisData(
@@ -151,7 +151,7 @@ class DS4Controller(HIDController):
 					scale=1.0,
 					clamp_max=1,
 					deadzone=10,
-				)
+				),
 			),
 		)
 		self._decoder.axes[AxisType.AXIS_RTRIG] = AxisData(
@@ -163,7 +163,7 @@ class DS4Controller(HIDController):
 					scale=1.0,
 					clamp_max=1,
 					deadzone=10,
-				)
+				),
 			),
 		)
 		self._decoder.axes[AxisType.AXIS_GPITCH] = AxisData(mode=AxisMode.DS4ACCEL, byte_offset=13)
@@ -298,7 +298,7 @@ class DS4EvdevController(EvdevController):
 	)
 
 	def __init__(
-		self, daemon: "SCCDaemon", controllerdevice: "InputDevice", gyro: "InputDevice", touchpad: "InputDevice"
+		self, daemon: "SCCDaemon", controllerdevice: "InputDevice", gyro: "InputDevice", touchpad: "InputDevice",
 	):
 		config = {
 			"axes": DS4EvdevController.AXIS_MAP,
@@ -442,7 +442,6 @@ def init(daemon: "SCCDaemon", config: dict) -> bool:
 					else:
 						# gyro sensor
 						gyro = device
-					pass
 				elif count == 4:
 					# 4 axes - Touchpad
 					touchpad = device
@@ -456,7 +455,7 @@ def init(daemon: "SCCDaemon", config: dict) -> bool:
 			make_evdev_device(syspath)
 		else:
 			log.error(
-				"Failed to acquire USB device and evdev is not available. Everything is lost and DS4 support disabled."
+				"Failed to acquire USB device and evdev is not available. Everything is lost and DS4 support disabled.",
 			)
 			# TODO: Maybe add_error here, but error reporting needs a little rework, so it's not treated as fatal
 			# daemon.add_error("ds4", "No access to DS4 device")

@@ -165,8 +165,7 @@ class LedAction(Action, SpecialAction):
 
 
 class OSDAction(Action, SpecialAction):
-	"""
-	Displays text in OSD, or, if used as modifier, displays action description
+	"""Displays text in OSD, or, if used as modifier, displays action description
 	and executes that action.
 	"""
 
@@ -214,7 +213,7 @@ class OSDAction(Action, SpecialAction):
 			return self.name
 		if self.action:
 			return _("%s (with OSD)") % (self.action.describe(context),)
-		elif context == Action.AC_OSD:
+		if context == Action.AC_OSD:
 			return _("Display '%s'" % self.text)
 		return _("OSD Message")
 
@@ -269,8 +268,7 @@ class OSDAction(Action, SpecialAction):
 
 
 class ClearOSDAction(Action, SpecialAction):
-	"""
-	Clears all windows from OSD layer. Cancels all menus, clears all messages,
+	"""Clears all windows from OSD layer. Cancels all menus, clears all messages,
 	etc, etc.
 	"""
 
@@ -285,8 +283,7 @@ class ClearOSDAction(Action, SpecialAction):
 
 
 class MenuAction(Action, SpecialAction, HapticEnabledAction):
-	"""
-	Displays menu defined in profile or globally.
+	"""Displays menu defined in profile or globally.
 	"""
 
 	SA: str = "menu"
@@ -340,8 +337,7 @@ class MenuAction(Action, SpecialAction, HapticEnabledAction):
 				# Special case when menu is assigned to pad
 				if self.size == 0:
 					return "%s%s('%s')" % (" " * pad, self.COMMAND, self.menu_id)
-				else:
-					return "%s%s('%s', %s)" % (" " * pad, self.COMMAND, self.menu_id, self.size)
+				return "%s%s('%s', %s)" % (" " * pad, self.COMMAND, self.menu_id, self.size)
 
 		return "%s%s(%s)" % (" " * pad, self.COMMAND, ",".join(Action.encode_parameters(self.strip_defaults())))
 
@@ -449,24 +445,21 @@ class MenuAction(Action, SpecialAction, HapticEnabledAction):
 
 
 class HorizontalMenuAction(MenuAction):
-	"""
-	Same as menu, but packed as row
+	"""Same as menu, but packed as row
 	"""
 
 	COMMAND: str = "hmenu"
 	MENU_TYPE: str = "hmenu"
 
 class GridMenuAction(MenuAction):
-	"""
-	Same as menu, but displayed in grid
+	"""Same as menu, but displayed in grid
 	"""
 
 	COMMAND: str = "gridmenu"
 	MENU_TYPE: str = "gridmenu"
 
 class QuickMenuAction(MenuAction):
-	"""
-	Quickmenu. Max.6 items, controller by buttons
+	"""Quickmenu. Max.6 items, controller by buttons
 	"""
 
 	COMMAND: str = "quickmenu"
@@ -486,8 +479,7 @@ class QuickMenuAction(MenuAction):
 
 
 class RadialMenuAction(MenuAction):
-	"""
-	Same as grid menu, which is same as menu but displayed in grid,
+	"""Same as grid menu, which is same as menu but displayed in grid,
 	but displayed as circle.
 	"""
 
@@ -520,8 +512,7 @@ class RadialMenuAction(MenuAction):
 
 
 class DialogAction(Action, SpecialAction):
-	"""
-	Dialog is actually kind of menu, but options for it are different.
+	"""Dialog is actually kind of menu, but options for it are different.
 	"""
 
 	SA: str = "dialog"
@@ -598,8 +589,7 @@ class DialogAction(Action, SpecialAction):
 
 
 class KeyboardAction(Action, SpecialAction):
-	"""
-	Shows OSD keyboard.
+	"""Shows OSD keyboard.
 	"""
 
 	SA: str = "keyboard"
@@ -626,8 +616,7 @@ class KeyboardAction(Action, SpecialAction):
 
 
 class PositionModifier(Modifier):
-	"""
-	Sets position for OSD menu.
+	"""Sets position for OSD menu.
 	"""
 
 	COMMAND: str = "position"
@@ -650,8 +639,7 @@ class PositionModifier(Modifier):
 
 
 class GesturesAction(Action, OSDEnabledAction, SpecialAction):
-	"""
-	Stars gesture detection on pad. Recognition is handled by whatever
+	"""Stars gesture detection on pad. Recognition is handled by whatever
 	is special_actions_handler and results are then sent back to this action
 	as parameter of gesture() method.
 	"""
@@ -706,13 +694,12 @@ class GesturesAction(Action, OSDEnabledAction, SpecialAction):
 				rv[-1] = rv[-1][0:-1]
 			rv += [(" " * pad) + ")"]
 			return "\n".join(rv)
-		else:
-			rv = []
-			if self.precision != self.DEFAULT_PRECISION:
-				rv.append(str(self.precision))
-			for gstr in self.gestures:
-				rv += ["'%s'" % (gstr,), self.gestures[gstr].to_string(False)]
-			return self.COMMAND + "(" + ", ".join(rv) + ")"
+		rv = []
+		if self.precision != self.DEFAULT_PRECISION:
+			rv.append(str(self.precision))
+		for gstr in self.gestures:
+			rv += ["'%s'" % (gstr,), self.gestures[gstr].to_string(False)]
+		return self.COMMAND + "(" + ", ".join(rv) + ")"
 
 	def compress(self):
 		for gstr in self.gestures:
@@ -747,14 +734,13 @@ class GesturesAction(Action, OSDEnabledAction, SpecialAction):
 		NUM_MATCHES_TO_RETURN = 1
 
 		similar_gestures = get_close_matches(
-			gesture_string, self.gestures.keys(), NUM_MATCHES_TO_RETURN, self.precision
+			gesture_string, self.gestures.keys(), NUM_MATCHES_TO_RETURN, self.precision,
 		)
 		best_gesture = next(iter(similar_gestures), None)
 
 		if best_gesture is not None:
 			return self.gestures[best_gesture]
-		else:
-			return None
+		return None
 
 	def find_gesture_action(self, gesture_string: str):
 		action = None

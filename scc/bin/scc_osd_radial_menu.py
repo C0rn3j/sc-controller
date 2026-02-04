@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-import os, sys, signal, argparse
+import signal
+import sys
 
 
 def sigint(*a):
@@ -17,7 +18,6 @@ def main():
 	gi.require_version("GdkX11", "3.0")
 
 	from scc.tools import init_logging
-	from scc.paths import get_share_path
 
 	init_logging()
 

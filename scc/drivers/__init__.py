@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-SC-Controller goes through all modules in scc.drivers package and calls
+"""SC-Controller goes through all modules in scc.drivers package and calls
 init(daemon) methods from every module that defines it.
 
 Drivers then can use daemon.add_mainloop() method to add code that should

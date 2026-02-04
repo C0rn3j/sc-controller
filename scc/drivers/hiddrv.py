@@ -329,14 +329,14 @@ class HIDController(USBDevice, Controller):
 				axis_data = AxisData(
 					mode=AxisMode.AXIS,
 					data=AxisDataUnion(
-						axis=AxisModeData(button=button, **{field: getattr(cdata, field) for field in cdata._fields})
+						axis=AxisModeData(button=button, **{field: getattr(cdata, field) for field in cdata._fields}),
 					),
 				)
 			elif mode == AxisMode.HATSWITCH:
 				axis_data = AxisData(
 					mode=AxisMode.HATSWITCH,
 					data=AxisDataUnion(
-						hatswitch=HatswitchModeData(button=button, max=axis_config["max"], min=axis_config["min"])
+						hatswitch=HatswitchModeData(button=button, max=axis_config["max"], min=axis_config["min"]),
 					),
 				)
 			else:
@@ -430,8 +430,7 @@ class HIDController(USBDevice, Controller):
 		self._decoder.packet_size = total // 8
 		if total % 8 > 0:
 			self._decoder.packet_size += 1
-		if self._decoder.packet_size > max_size:
-			self._decoder.packet_size = max_size
+		self._decoder.packet_size = min(self._decoder.packet_size, max_size)
 		log.debug("Packet size: %s", self._decoder.packet_size)
 
 	@staticmethod
@@ -527,7 +526,7 @@ class HIDController(USBDevice, Controller):
 
 		pressed = self._decoder.state.buttons & ~self._decoder.old_state.buttons
 		released = self._decoder.old_state.buttons & ~self._decoder.state.buttons
-		for j in range(0, self._decoder.buttons.button_count):
+		for j in range(self._decoder.buttons.button_count):
 			mask = 1 << j
 			if pressed & mask:
 				print("ButtonPress", FIRST_BUTTON + j)
@@ -590,7 +589,7 @@ class HIDDrv:
 				pid = int(pid, 16)
 				config_file = os.path.join(path, name)
 				try:
-					config = json.loads(open(config_file, "r").read())
+					config = json.loads(open(config_file).read())
 				except Exception:
 					log.warning("Ignoring file that cannot be parsed: %s", name)
 					continue

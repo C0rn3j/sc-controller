@@ -13,9 +13,6 @@ import zlib
 from enum import IntEnum
 
 from scc.constants import (
-	OUTPUT_360_STICK_MAX,
-	OUTPUT_360_STICK_MIN,
-	OUTPUT_360_STICK_RES,
 	STICK_PAD_MAX,
 	STICK_PAD_MIN,
 	STICK_PAD_RES,
@@ -216,7 +213,7 @@ class DS5Controller(HIDController):
 			motor_right=0,
 		)
 		self._feedback_cancel_task = None
-		super(DS5Controller, self).__init__(device, daemon, handle, config_file, config, test_mode)
+		super().__init__(device, daemon, handle, config_file, config, test_mode)
 
 	def _load_hid_descriptor(self, config, max_size, vid, pid, test_mode):
 		# Overrided and hardcoded
@@ -229,8 +226,8 @@ class DS5Controller(HIDController):
 			size=8,
 			data=AxisDataUnion(
 				hatswitch=HatswitchModeData(
-					button=SCButtons.LPAD | SCButtons.LPADTOUCH, min=STICK_PAD_MIN, max=STICK_PAD_MAX
-				)
+					button=SCButtons.LPAD | SCButtons.LPADTOUCH, min=STICK_PAD_MIN, max=STICK_PAD_MAX,
+				),
 			),
 		)
 
@@ -252,7 +249,7 @@ class DS5Controller(HIDController):
 			byte_offset=3,
 			size=8,
 			data=AxisDataUnion(
-				axis=AxisModeData(button=SCButtons.RPADTOUCH, scale=1.0, offset=-127.5, clamp_max=257, deadzone=2)
+				axis=AxisModeData(button=SCButtons.RPADTOUCH, scale=1.0, offset=-127.5, clamp_max=257, deadzone=2),
 			),
 		)
 		self._decoder.axes[AxisType.AXIS_RPAD_Y] = AxisData(
@@ -260,7 +257,7 @@ class DS5Controller(HIDController):
 			byte_offset=4,
 			size=8,
 			data=AxisDataUnion(
-				axis=AxisModeData(button=SCButtons.RPADTOUCH, scale=-1.0, offset=127.5, clamp_max=257, deadzone=2)
+				axis=AxisModeData(button=SCButtons.RPADTOUCH, scale=-1.0, offset=127.5, clamp_max=257, deadzone=2),
 			),
 		)
 
@@ -290,7 +287,7 @@ class DS5Controller(HIDController):
 		# Touchpad
 		self._decoder.axes[AxisType.AXIS_CPAD_X] = AxisData(mode=AxisMode.DS4TOUCHPAD, byte_offset=34)  # DualSense X
 		self._decoder.axes[AxisType.AXIS_CPAD_Y] = AxisData(
-			mode=AxisMode.DS4TOUCHPAD, byte_offset=35, bit_offset=4
+			mode=AxisMode.DS4TOUCHPAD, byte_offset=35, bit_offset=4,
 		)  # DualSense Y
 
 		# Button maps seem to work for standard arrangement (matching Xbox360)
@@ -415,7 +412,7 @@ class DS5Controller(HIDController):
 		self._outputs[output_id] = output
 
 	def flush(self):
-		super(DS5Controller, self).flush()
+		super().flush()
 
 		while self._outputs:
 			output_id, output = self._outputs.popitem()
@@ -817,16 +814,16 @@ class DS5HidRawController(Controller):
 		# Obtain current quaternion
 		# qx (Roll), qy (Pitch), qz (Yaw), qw (Theta)
 		qx = math.sin(roll_rad / 2) * math.cos(pitch_rad / 2) * math.cos(yaw_rad / 2) - math.cos(
-			roll_rad / 2
+			roll_rad / 2,
 		) * math.sin(pitch_rad / 2) * math.sin(yaw_rad / 2)
 		qy = math.cos(roll_rad / 2) * math.sin(pitch_rad / 2) * math.cos(yaw_rad / 2) + math.sin(
-			roll_rad / 2
+			roll_rad / 2,
 		) * math.cos(pitch_rad / 2) * math.sin(yaw_rad / 2)
 		qz = math.cos(roll_rad / 2) * math.cos(pitch_rad / 2) * math.sin(yaw_rad / 2) - math.sin(
-			roll_rad / 2
+			roll_rad / 2,
 		) * math.sin(pitch_rad / 2) * math.cos(yaw_rad / 2)
 		qw = math.cos(roll_rad / 2) * math.cos(pitch_rad / 2) * math.cos(yaw_rad / 2) + math.sin(
-			roll_rad / 2
+			roll_rad / 2,
 		) * math.sin(pitch_rad / 2) * math.sin(yaw_rad / 2)
 
 		# Multiply previous calculated quaternion by new quaternion
@@ -951,8 +948,7 @@ class DS5HidRawController(Controller):
 		return "ds5-config.json"
 
 	def _generate_id(self):
-		"""
-		ID is generated as 'ds5' or 'ds5:X' where 'X' starts as 1 and increases
+		"""ID is generated as 'ds5' or 'ds5:X' where 'X' starts as 1 and increases
 		as controllers with same ids are connected.
 		"""
 		magic_number = 1
@@ -1180,7 +1176,6 @@ def init(daemon, config):
 					else:
 						# gyro sensor
 						gyro = device
-					pass
 				elif count == 4:
 					# 4 axes - Touchpad
 					touchpad = device
@@ -1194,7 +1189,7 @@ def init(daemon, config):
 			make_evdev_device(syspath)
 		else:
 			log.error(
-				"Failed to acquire USB device and evdev is not available. Everything is lost and DS5 support disabled."
+				"Failed to acquire USB device and evdev is not available. Everything is lost and DS5 support disabled.",
 			)
 		# TODO: Maybe add_error here, but error reporting needs little rework so it's not threated as fatal
 		# daemon.add_error("ds5", "No access to DS5 device")
@@ -1214,9 +1209,8 @@ def init(daemon, config):
 				None,
 			)
 		return True
-	else:
-		log.warning("Neither HID nor Evdev driver is enabled, DS5 support cannot be enabled.")
-		return False
+	log.warning("Neither HID nor Evdev driver is enabled, DS5 support cannot be enabled.")
+	return False
 
 
 if __name__ == "__main__":

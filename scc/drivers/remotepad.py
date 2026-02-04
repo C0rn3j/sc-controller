@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
-"""
-SC Controller - remotepad driver
+"""SC Controller - remotepad driver
 
 This is implementation or protocol used by Retroarch's Remote RetroPad core.
 Based on https://github.com/libretro/RetroArch/blob/master/cores/libretro-net-retropad.
 """
 
-from scc.tools import find_library
+import ctypes
+import logging
+import socket
+from ctypes import CFUNCTYPE, POINTER, byref, c_void_p, cast
+
 from scc.constants import ControllerFlags
 from scc.controller import Controller
-from ctypes import CFUNCTYPE, POINTER, byref, cast, c_void_p
-import logging, socket, ctypes
+from scc.tools import find_library
 
 log = logging.getLogger("remotepad")
 
@@ -145,6 +147,5 @@ class Driver:
 
 def init(daemon, config):
 	"""Registers hotplug callback for controller dongle"""
-
 	_drv = Driver(daemon, config)
 	return True

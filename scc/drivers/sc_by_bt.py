@@ -5,17 +5,18 @@ Driver for Steam Controller over bluetooth (evdev)
 Shares a lot of classes with sc_dongle.py
 """
 
-from scc.lib.hidraw import HIDRaw
-from scc.constants import ControllerFlags, STICK_PAD_MIN, STICK_PAD_MAX
-from scc.tools import find_library
-from .sc_dongle import SCPacketType, SCPacketLength, SCConfigType
-from .sc_dongle import SCController
-from math import sin, cos
-import os
-import sys
-import struct
 import ctypes
 import logging
+import os
+import struct
+import sys
+from math import cos, sin
+
+from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags
+from scc.lib.hidraw import HIDRaw
+from scc.tools import find_library
+
+from .sc_dongle import SCConfigType, SCController, SCPacketLength, SCPacketType
 
 VENDOR_ID = 0x28DE
 PRODUCT_ID = 0x1106
@@ -78,8 +79,7 @@ class Driver:
 		daemon.get_device_monitor().add_callback("bluetooth", VENDOR_ID, PRODUCT_ID, self.new_device_callback, None)
 
 	def retry(self, syspath):
-		"""
-		Schedules reconnecting controller after read operation fails.
+		"""Schedules reconnecting controller after read operation fails.
 		"""
 
 		def reconnect(*a):
@@ -93,8 +93,7 @@ class Driver:
 		self.daemon.get_scheduler().schedule(1.0, reconnect)
 
 	def _retry_cancel(self, syspath, vendor, product):
-		"""
-		Cancels reconnection scheduled by 'retry'. Called when device monitor
+		"""Cancels reconnection scheduled by 'retry'. Called when device monitor
 		reports controller (as in BT device) being disconencted.
 		"""
 		if syspath in self.reconnecting:
@@ -151,8 +150,7 @@ class SCByBt(SCController):
 		return "<SCByBt %s>" % (self.get_id(),)
 
 	def configure(self, idle_timeout=None, enable_gyros=None, led_level=None):
-		"""
-		Sets and, if possible, sends configuration to controller.
+		"""Sets and, if possible, sends configuration to controller.
 		See SCController.configure method in sc_dongle.py;
 
 		This method is almost the same, with different set of hardcoded constants.
@@ -214,8 +212,7 @@ class SCByBt(SCController):
 		self._cmsg.insert(0, b"\xc0" + data + zeros)
 
 	def overwrite_control(self, index, data):
-		"""
-		Similar to send_control, but this one checks and overwrites
+		"""Similar to send_control, but this one checks and overwrites
 		already scheduled controll for same device/index.
 		"""
 		# For BT controller, index is ignored
@@ -227,8 +224,7 @@ class SCByBt(SCController):
 		self.send_control(index, data)
 
 	def make_request(self, index, callback, data, size=PACKET_SIZE):
-		"""
-		There are no requests one can send to BT controller,
+		"""There are no requests one can send to BT controller,
 		so this just causes exception.
 		"""
 		raise RuntimeError("make_request over BT not implemented")
@@ -332,7 +328,6 @@ _drv = None
 
 def init(daemon, config):
 	"""Registers hotplug callback for controller dongle"""
-
 	# if not (HAVE_EVDEV and config["drivers"].get("evdevdrv")):
 	# 	log.warning("Evdev driver is not enabled, Steam Controller over Bluetooth support cannot be enabled.")
 	# 	return False

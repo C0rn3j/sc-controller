@@ -6,6 +6,7 @@ devices is read from config file.
 """
 
 from evdev import InputDevice
+
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, TRIGGER_MAX, TRIGGER_MIN, ControllerFlags, SCButtons
 from scc.controller import Controller
 from scc.paths import get_config_path
@@ -135,8 +136,7 @@ class EvdevController(Controller):
 		return self.device.name
 
 	def _generate_id(self):
-		"""
-		ID is generated as 'ev' + upper_case(hex(crc32(device name + X)))
+		"""ID is generated as 'ev' + upper_case(hex(crc32(device name + X)))
 		where 'X' starts as 0 and increases as controllers with same name are
 		connected.
 		"""
@@ -227,7 +227,7 @@ class EvdevController(Controller):
 					if self._padpressemu_task:
 						self.mapper.cancel_task(self._padpressemu_task)
 					self._padpressemu_task = self.mapper.schedule(
-						self.PADPRESS_EMULATION_TIMEOUT, self.cancel_padpress_emulation
+						self.PADPRESS_EMULATION_TIMEOUT, self.cancel_padpress_emulation,
 					)
 				self.mapper.input(self, old_state, new_state)
 
@@ -244,8 +244,7 @@ class EvdevController(Controller):
 			sys.stdout.flush()
 
 	def cancel_padpress_emulation(self, mapper):
-		"""
-		Since evdev gamepad typically can't generate LPADTOUCH nor RPADTOUCH
+		"""Since evdev gamepad typically can't generate LPADTOUCH nor RPADTOUCH
 		buttons/events, pushing those buttons is emulated when apropriate stick
 		is moved.
 
@@ -253,7 +252,6 @@ class EvdevController(Controller):
 		for small time set by PADPRESS_EMULATION_TIMEOUT.
 		Then, to release those purely virtual buttons, this method is called.
 		"""
-
 		need_reschedule = False
 		new_state = self._state
 		if new_state.buttons & SCButtons.LPADTOUCH:
@@ -300,11 +298,9 @@ class EvdevController(Controller):
 		pass
 
 	def turnoff(self):
-		"""
-		Exists to stay compatibile with SCController class as evdev controller
+		"""Exists to stay compatibile with SCController class as evdev controller
 		typically cannot be shut down like this.
 		"""
-		pass
 
 	def get_gyro_enabled(self):
 		"""Returns True if gyroscope input is currently enabled"""
@@ -312,7 +308,6 @@ class EvdevController(Controller):
 
 	def feedback(self, data):
 		"""TODO: It would be nice to have feedback..."""
-		pass
 
 
 def parse_axis(axis):
@@ -352,7 +347,7 @@ class EvdevDriver:
 
 	def start(self):
 		self.daemon.get_device_monitor().add_callback(
-			"input", None, None, self.handle_new_device, self.handle_removed_device
+			"input", None, None, self.handle_new_device, self.handle_removed_device,
 		)
 
 	def set_daemon(self, daemon: SCCDaemon):
@@ -360,7 +355,7 @@ class EvdevDriver:
 
 	@staticmethod
 	def get_event_node(syspath: str):
-		filename = syspath.split("/")[-1]
+		filename = syspath.rsplit("/", maxsplit=1)[-1]
 		if not filename.startswith("event"):
 			return None
 		return f"/dev/input/{filename}"
@@ -392,7 +387,7 @@ class EvdevDriver:
 		if os.path.exists(config_file):
 			config = None
 			try:
-				config = json.loads(open(config_file, "r").read())
+				config = json.loads(open(config_file).read())
 			except Exception as e:
 				log.exception(e)
 				return False
@@ -496,9 +491,8 @@ def get_evdev_devices_from_syspath(syspath: str) -> list:
 				except Exception as e:
 					log.exception(e)
 					continue
-		else:
-			if os.path.isdir(path) and not os.path.islink(path):
-				rv += get_evdev_devices_from_syspath(path)
+		elif os.path.isdir(path) and not os.path.islink(path):
+			rv += get_evdev_devices_from_syspath(path)
 	return rv
 
 

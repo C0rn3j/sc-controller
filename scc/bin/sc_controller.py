@@ -22,7 +22,7 @@ def main() -> None:
 
 	init_logging()
 
-	from gi.repository import Gtk, GObject
+	from gi.repository import Gtk
 
 	glades = os.path.join(get_share_path(), "glade")
 	images = os.path.join(get_share_path(), "images")

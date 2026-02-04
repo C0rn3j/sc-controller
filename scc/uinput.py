@@ -248,7 +248,7 @@ class UInput:
 
 		try:
 			if self._lib.uinput_module_version() != UNPUT_MODULE_VERSION:
-				raise Exception()
+				raise Exception
 		except Exception:
 			import sys
 
@@ -367,7 +367,7 @@ class Gamepad(UInput):
 	"""Gamepad uinput class, create a Xbox360 gamepad device."""
 
 	def __init__(self, name):
-		super(Gamepad, self).__init__(
+		super().__init__(
 			vendor=0x045E,
 			product=0x028E,
 			version=1,
@@ -413,7 +413,7 @@ class Mouse(UInput):
 	DEFAULT_SCR_YSCALE = 0.0005
 
 	def __init__(self, name):
-		super(Mouse, self).__init__(
+		super().__init__(
 			vendor=0x28DE,
 			product=0x1142,
 			version=1,
@@ -451,8 +451,7 @@ class Mouse(UInput):
 		self._yscale = yscale
 
 	def updateScrollParams(self, xscale: float = DEFAULT_SCR_XSCALE, yscale: float = DEFAULT_SCR_YSCALE):
-		"""
-		Update Scroll parameters
+		"""Update Scroll parameters
 
 		@param float mass	   mass in g of the ball
 		@param float r		  radius in m of the ball
@@ -651,8 +650,8 @@ class Keyboard(UInput):
 	"""
 
 	def __init__(self, name):
-		super(Keyboard, self).__init__(
-			vendor=0x28DE, product=0x1142, version=1, name=name, keys=Scans.keys(), axes=[], rels=[], keyboard=True
+		super().__init__(
+			vendor=0x28DE, product=0x1142, version=1, name=name, keys=Scans.keys(), axes=[], rels=[], keyboard=True,
 		)
 		self.setDelayPeriod(250, 33)
 		self._dx = 0.0
@@ -669,7 +668,7 @@ class Keyboard(UInput):
 		for i in new:
 			self.scanEvent(Scans[i])
 			self.keyEvent(i, 1)
-		if len(new):
+		if new:
 			self.synEvent()
 			self._pressed |= set(new)
 
@@ -688,7 +687,7 @@ class Keyboard(UInput):
 		for i in rem:
 			self.scanEvent(Scans[i])
 			self.keyEvent(i, 0)
-		if len(rem):
+		if rem:
 			self.synEvent()
 			self._pressed -= set(rem)
 

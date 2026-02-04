@@ -14,7 +14,7 @@ from math import cos, sin
 from math import pi as PI
 
 from scc.config import Config
-from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, STICKTILT, SCButtons
+from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, SCButtons
 from scc.controller import Controller
 from scc.drivers.usb import USBDevice, register_hotplug_device
 
@@ -73,7 +73,7 @@ class Dongle(USBDevice):
 		self.claim_by(klass=3, subclass=0, protocol=0)
 		self._controllers = {}
 		self._no_serial = []
-		for i in range(0, Dongle.MAX_ENDPOINTS):
+		for i in range(Dongle.MAX_ENDPOINTS):
 			# Steam dongle apparently can do only 4 controllers at once
 			self.set_input_interrupt(FIRST_ENDPOINT + i, 64, self._on_input)
 
@@ -85,8 +85,7 @@ class Dongle(USBDevice):
 		USBDevice.close(self)
 
 	def _add_controller(self, endpoint):
-		"""
-		Called when new controller is detected either by HOTPLUG message or
+		"""Called when new controller is detected either by HOTPLUG message or
 		by receiving first input event.
 		"""
 		ccidx = FIRST_CONTROLIDX + endpoint - FIRST_ENDPOINT
@@ -103,12 +102,11 @@ class Dongle(USBDevice):
 				# Controller connected
 				if endpoint not in self._controllers:
 					self._add_controller(endpoint)
-			else:
-				# Controller disconnected
-				if endpoint in self._controllers:
-					self.daemon.remove_controller(self._controllers[endpoint])
-					self._controllers[endpoint].disconnected()
-					del self._controllers[endpoint]
+			# Controller disconnected
+			elif endpoint in self._controllers:
+				self.daemon.remove_controller(self._controllers[endpoint])
+				self._controllers[endpoint].disconnected()
+				del self._controllers[endpoint]
 		elif tup.status == SCStatus.INPUT:
 			if endpoint not in self._controllers:
 				self._add_controller(endpoint)
@@ -238,8 +236,7 @@ class SCController(Controller):
 			self.mapper.input(self, old_state, idata)
 
 	def _generate_id(self):
-		"""
-		ID is generated as 'scX' where where 'X' starts as 0 and increases
+		"""ID is generated as 'scX' where where 'X' starts as 0 and increases
 		as more controllers are connected.
 
 		This is used only when reading serial numbers from device is disabled.
@@ -275,7 +272,7 @@ class SCController(Controller):
 				self._driver._no_serial.append(self)
 
 		self._driver.make_request(
-			self._ccidx, cb, struct.pack(">BBB61x", SCPacketType.GET_SERIAL, SCPacketLength.GET_SERIAL, 0x01)
+			self._ccidx, cb, struct.pack(">BBB61x", SCPacketType.GET_SERIAL, SCPacketLength.GET_SERIAL, 0x01),
 		)
 
 	def generate_serial(self):
@@ -311,10 +308,9 @@ class SCController(Controller):
 	FORMAT2 = b">BBBB59x"
 
 	def configure(
-		self, idle_timeout: int | None = None, enable_gyros: bool | None = None, led_level: int | None = None
+		self, idle_timeout: int | None = None, enable_gyros: bool | None = None, led_level: int | None = None,
 	):
-		"""
-		Sets and, if possible, sends configuration to controller.
+		"""Sets and, if possible, sends configuration to controller.
 		Only value that is provided is changed.
 		'idle_timeout' is in seconds.
 		'led_level' is precent (0-100)
@@ -372,7 +368,7 @@ class SCController(Controller):
 		self._driver.overwrite_control(
 			self._ccidx,
 			struct.pack(
-				self.FORMAT2, SCPacketType.CONFIGURE, SCPacketLength.LED, SCConfigType.LED, int(self._led_level)
+				self.FORMAT2, SCPacketType.CONFIGURE, SCPacketLength.LED, SCConfigType.LED, int(self._led_level),
 			),
 		)
 
@@ -381,7 +377,7 @@ class SCController(Controller):
 		if self._led_level != level:
 			self._led_level = level
 			self._driver.overwrite_control(
-				self._ccidx, struct.pack(">BBBB59x", SCPacketType.CONFIGURE, 0x03, SCConfigType.LED, self._led_level)
+				self._ccidx, struct.pack(">BBBB59x", SCPacketType.CONFIGURE, 0x03, SCConfigType.LED, self._led_level),
 			)
 
 	def set_gyro_enabled(self, enabled: bool):
@@ -410,7 +406,7 @@ class SCController(Controller):
 		"""
 		if amplitude >= 0:
 			self._driver.send_control(
-				self._ccidx, struct.pack("<BBBHHH", SCPacketType.FEEDBACK, 0x07, position, amplitude, period, count)
+				self._ccidx, struct.pack("<BBBHHH", SCPacketType.FEEDBACK, 0x07, position, amplitude, period, count),
 			)
 
 

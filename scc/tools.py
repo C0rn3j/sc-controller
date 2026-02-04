@@ -161,7 +161,7 @@ def static_vars(**kwargs):
 	"""Static variable func decorator"""
 
 	def decorate(func):
-		"""inner function used to add kwargs attribute to a func"""
+		"""Inner function used to add kwargs attribute to a func"""
 		for k in kwargs:
 			setattr(func, k, kwargs[k])
 		return func
@@ -170,8 +170,7 @@ def static_vars(**kwargs):
 
 
 def profile_is_override(name: str) -> bool:
-	"""
-	Returns True if named profile exists both in user config directory and
+	"""Returns True if named profile exists both in user config directory and
 	default_profiles directory.
 	"""
 	filename = "%s.sccprofile" % (name,)
@@ -182,8 +181,7 @@ def profile_is_override(name: str) -> bool:
 
 
 def profile_is_default(name: str) -> bool:
-	"""
-	Returns True if named profile exists in default_profiles directory, even
+	"""Returns True if named profile exists in default_profiles directory, even
 	if it is overrided by profile in user config directory.
 	"""
 	filename = "%s.sccprofile" % (name,)
@@ -191,8 +189,7 @@ def profile_is_default(name: str) -> bool:
 
 
 def get_profile_name(path: str) -> str:
-	"""
-	Returns profile name for specified path. Basically removes path and
+	"""Returns profile name for specified path. Basically removes path and
 	.sccprofile and .mod extension.
 	"""
 	parts = os.path.split(path)[-1].split(".")
@@ -204,8 +201,7 @@ def get_profile_name(path: str) -> str:
 
 
 def find_profile(name: str) -> str | None:
-	"""
-	Returns filename for specified profile name.
+	"""Returns filename for specified profile name.
 	This is done by searching for name + '.sccprofile' in ~/.config/scc/profiles
 	first and in /usr/share/scc/default_profiles if file is not found in first
 	location.
@@ -225,9 +221,8 @@ def find_icon(
 	prefer_bw: bool = False,
 	paths: tuple[str, ...] | None = None,
 	extensions: tuple[str, ...] = ("png", "svg"),
-) -> tuple[None, bool] | tuple[str, bool] | tuple[str, bool]:
-	"""
-	Returns (filename, has_colors) for specified icon name.
+) -> tuple[None, bool] | tuple[str, bool]:
+	"""Returns (filename, has_colors) for specified icon name.
 	This is done by searching for name + '.png' and name + ".bw.png"
 	in user and default menu-icons folders. ".svg" is also supported, but only
 	if no pngs are found.
@@ -273,23 +268,21 @@ def find_icon(
 
 
 def find_button_image(
-	name: str | None, prefer_bw: bool = False
+	name: str | None, prefer_bw: bool = False,
 ) -> tuple[None, bool] | tuple[str, bool]:
 	"""Similar to find_icon, but searches for button image"""
 	return find_icon(nameof(name), prefer_bw, paths=[get_button_images_path()], extensions=("svg",))
 
 
 def menu_is_default(name: str) -> bool:
-	"""
-	Returns True if named menu exists in default_menus directory, even
+	"""Returns True if named menu exists in default_menus directory, even
 	if it is overrided by menu in user config directory.
 	"""
 	return os.path.exists(os.path.join(get_default_menus_path(), name))
 
 
 def find_menu(name: str) -> str | None:
-	"""
-	Returns filename for specified menu name.
+	"""Returns filename for specified menu name.
 	This is done by searching for name in ~/.config/scc/menus
 	first and in /usr/share/scc/default_menus later.
 
@@ -303,8 +296,7 @@ def find_menu(name: str) -> str | None:
 
 
 def find_controller_icon(name: str) -> str | None:
-	"""
-	Returns filename for specified controller icon name.
+	"""Returns filename for specified controller icon name.
 	This is done by searching for name in ~/.config/controller-icons
 	first and in /usr/share/scc/images/controller-icons later.
 
@@ -318,8 +310,7 @@ def find_controller_icon(name: str) -> str | None:
 
 
 def find_binary(name: str) -> str:
-	"""
-	Returns full path to script or binary.
+	"""Returns full path to script or binary.
 
 	With some exceptions, this is done simply by searching PATH environment variable.
 	"""
@@ -405,8 +396,7 @@ def check_access(filename: str, write_required: bool = True) -> bool:
 
 
 def strip_gesture(gstr: str):
-	"""
-	Converts gesture string to version where stroke lenght is ignored.
+	"""Converts gesture string to version where stroke lenght is ignored.
 
 	That means removing repeating characters and adding 'i' to front.
 	"""
@@ -427,8 +417,7 @@ PId4 = PI / 4.0
 
 
 def circle_to_square(x: float, y: float) -> tuple[float, float]:
-	"""
-	Projects coordinate in circle (of radius 1.0) to coordinate in square.
+	"""Projects coordinate in circle (of radius 1.0) to coordinate in square.
 	"""
 	# Adapted from http://theinstructionlimit.com/squaring-the-thumbsticks
 

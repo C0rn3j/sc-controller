@@ -112,7 +112,7 @@ class USBDevice:
 				index,
 				size,
 				callback,
-			)
+			),
 		)
 
 	def flush(self):
@@ -236,7 +236,7 @@ class USBDriver:
 		tp = vendor, product
 		handle = None
 		if tp not in self._known_ids:
-			return
+			return None
 		bus, dev = self.daemon.get_device_monitor().get_usb_address(syspath)
 		for device in self._ctx.getDeviceIterator():
 			if (bus, dev) == (device.getBusNumber(), device.getDeviceAddress()):
@@ -247,15 +247,15 @@ class USBDriver:
 					log.error("Failed to open USB device %.4x:%.4x : %s", tp[0], tp[1], e)
 					if tp in self._fail_cbs:
 						self._fail_cbs[tp](syspath, *tp)
-						return
+						return None
 					if self.daemon:
 						self.daemon.add_error(
 							f"usb:{tp[0]}:{tp[1]}",
 							f"Failed to open USB device: {e}",
 						)
-					return
+					return None
 		else:
-			return
+			return None
 
 		callback = self._known_ids[tp]
 		handled_device = None
