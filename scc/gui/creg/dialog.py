@@ -5,25 +5,33 @@ Most "interesting" thing here may be that this works 100% independently from
 daemon.
 """
 
-from scc.tools import _
-
-from gi.repository import Gtk, GLib, GdkPixbuf
-from scc.gui.creg.constants import SDL_TO_SCC_NAMES, STICK_PAD_AREAS
-from scc.gui.creg.constants import AXIS_ORDER, SDL_AXES, SDL_DPAD
-from scc.gui.creg.constants import BUTTON_ORDER, TRIGGER_AREAS
-from scc.gui.creg.grabs import InputGrabber, TriggerGrabber, StickGrabber
-from scc.gui.creg.data import AxisData, DPadEmuData
-from scc.gui.creg.tester import Tester
-from scc.gui.controller_image import ControllerImage
-from scc.gui.editor import Editor
-from scc.gui.app import App
-from scc.constants import SCButtons, STICK_PAD_MAX, STICK_PAD_MIN
-from scc.paths import get_config_path, get_share_path
-from scc.tools import nameof, clamp
-from scc.config import Config
+import json
+import logging
+import os
+import re
 
 import evdev
-import os, logging, json, re
+from gi.repository import GdkPixbuf, GLib, Gtk
+
+from scc.config import Config
+from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, SCButtons
+from scc.gui.app import App
+from scc.gui.controller_image import ControllerImage
+from scc.gui.creg.constants import (
+	AXIS_ORDER,
+	BUTTON_ORDER,
+	SDL_AXES,
+	SDL_DPAD,
+	SDL_TO_SCC_NAMES,
+	STICK_PAD_AREAS,
+	TRIGGER_AREAS,
+)
+from scc.gui.creg.data import AxisData, DPadEmuData
+from scc.gui.creg.grabs import InputGrabber, StickGrabber, TriggerGrabber
+from scc.gui.creg.tester import Tester
+from scc.gui.editor import Editor
+from scc.paths import get_config_path, get_share_path
+from scc.tools import _, clamp, nameof
 
 log = logging.getLogger("CRegistration")
 
@@ -44,10 +52,10 @@ class ControllerRegistration(Editor):
 		Editor.__init__(self)
 		self.app = app
 		self._gamepad_icon = GdkPixbuf.Pixbuf.new_from_file(
-			os.path.join(self.app.imagepath, "controller-icons", "evdev-0.svg")
+			os.path.join(self.app.imagepath, "controller-icons", "evdev-0.svg"),
 		)
 		self._other_icon = GdkPixbuf.Pixbuf.new_from_file(
-			os.path.join(self.app.imagepath, "controller-icons", "unknown.svg")
+			os.path.join(self.app.imagepath, "controller-icons", "unknown.svg"),
 		)
 		self._axis_data = [AxisData(name, xy) for (name, xy) in AXIS_ORDER]
 		self.setup_widgets()
@@ -69,7 +77,7 @@ class ControllerRegistration(Editor):
 			if "trig" in axis.name:
 				continue
 			axis.cursor = cursors[axis.area] = cursors.get(axis.area) or Gtk.Image.new_from_file(
-				os.path.join(self.app.imagepath, "test-cursor.svg")
+				os.path.join(self.app.imagepath, "test-cursor.svg"),
 			)
 			axis.cursor.position = [0, 0]
 		self.builder.get_object("cbInvert_1").set_active(True)
@@ -78,12 +86,10 @@ class ControllerRegistration(Editor):
 
 	@staticmethod
 	def does_he_looks_like_a_gamepad(dev):
-		"""
-		Examines device capabilities and decides if it passes for gamepad.
+		"""Examines device capabilities and decides if it passes for gamepad.
 		Device is considered gamepad-like if has at least one button with
 		keycode in gamepad range and at least two axes.
 		"""
-
 		# Strip special symbols
 		name = re.sub(r"[^a-zA-Z0-9.]+", " ", dev.name.lower())
 
@@ -105,8 +111,7 @@ class ControllerRegistration(Editor):
 		return False
 
 	def load_sdl_mappings(self):
-		"""
-		Attempts to load mappings from gamecontrollerdb.txt.
+		"""Attempts to load mappings from gamecontrollerdb.txt.
 
 		Return True on success.
 		"""
@@ -126,14 +131,14 @@ class ControllerRegistration(Editor):
 
 		# Search in database
 		try:
-			db = open(os.path.join(get_share_path(), "gamecontrollerdb.txt"), "r")
+			db = open(os.path.join(get_share_path(), "gamecontrollerdb.txt"))
 		except Exception as e:
 			log.error("Failed to load gamecontrollerdb")
 			log.exception(e)
 			return False
 
 		with db:
-			for line in db.readlines():
+			for line in db:
 				if line.startswith(weird_id):
 					log.info("Loading mappings for '%s' from gamecontrollerdb", weird_id)
 					log.debug("Buttons: %s", buttons)
@@ -187,14 +192,12 @@ class ControllerRegistration(Editor):
 							else:
 								log.warning("Skipping unknown gamecontrollerdb mapping %s:%s", k, v)
 					return True
-			else:
-				log.debug("Mappings for '%s' not found in gamecontrollerdb", weird_id)
+			log.debug("Mappings for '%s' not found in gamecontrollerdb", weird_id)
 
 		return False
 
 	def generate_mappings(self):
-		"""
-		Generates initial mappings, just to have some preset to show.
+		"""Generates initial mappings, just to have some preset to show.
 		"""
 		buttons = list(BUTTON_ORDER)
 		axes = list(self._axis_data)
@@ -293,7 +296,7 @@ class ControllerRegistration(Editor):
 		cbControllerButtons = self.builder.get_object("cbControllerButtons")
 		self._groups = {}
 		model = cbControllerButtons.get_model()
-		groups = json.loads(open(os.path.join(self.app.imagepath, "button-images", "groups.json"), "r").read())
+		groups = json.loads(open(os.path.join(self.app.imagepath, "button-images", "groups.json")).read())
 		for group in groups:
 			images = [
 				GdkPixbuf.Pixbuf.new_from_file(os.path.join(self.app.imagepath, "button-images", "%s.svg" % (b,)))
@@ -339,7 +342,7 @@ class ControllerRegistration(Editor):
 		try:
 			json.loads(jsondata)
 			btNext.set_sensitive(True)
-		except Exception as e:
+		except Exception:
 			# User can modify generated json code before hitting save,
 			# but if he writes something unparsable, save button is disabled
 			btNext.set_sensitive(False)
@@ -444,7 +447,7 @@ class ControllerRegistration(Editor):
 			self._tester.start()
 
 		# Check VID+PID info and whether HID driver support is enabled
-		if dev.info.vendor == 0 and dev.info.product == 0 or not self.app.config["drivers"].get("hiddrv"):
+		if (dev.info.vendor == 0 and dev.info.product == 0) or not self.app.config["drivers"].get("hiddrv"):
 			# Not an USB device, skip HID test altogether
 			retry_with_evdev(None, 0)
 		else:
@@ -489,8 +492,7 @@ class ControllerRegistration(Editor):
 		btNext.set_sensitive(True)
 
 	def on_device_open_failed(self, *a):
-		"""
-		Called when all (or user-selected) driver fails
+		"""Called when all (or user-selected) driver fails
 		to communicate with controller.
 
 		Shoudln't be really possible, but something
@@ -536,7 +538,7 @@ class ControllerRegistration(Editor):
 				btNext.set_sensitive(False)
 				if target == "hid":
 					self._tester = Tester(
-						"hid", "%.4x:%.4x" % (self._evdevice.info.vendor, self._evdevice.info.product)
+						"hid", "%.4x:%.4x" % (self._evdevice.info.vendor, self._evdevice.info.product),
 					)
 				else:
 					self._tester = Tester("evdev", self._evdevice.path)

@@ -135,9 +135,9 @@ def _it2u(it):
 	if len(it) == 2:  # unsigned char
 		n = it[1]
 	elif len(it) == 3:  # unsigned short
-		n = int("{:02x}{:02x}".format(it[2], it[1]), 16)
+		n = int(f"{it[2]:02x}{it[1]:02x}", 16)
 	elif len(it) == 5:  # unsigned int
-		n = int("{:02x}{:02x}{:02x}{:02x}".format(it[4], it[3], it[2], it[1]), 16)
+		n = int(f"{it[4]:02x}{it[3]:02x}{it[2]:02x}{it[1]:02x}", 16)
 	else:
 		n = 0
 	return n
@@ -150,11 +150,11 @@ def _it2s(it):
 		if n & 0x80:
 			n -= 0x100
 	elif len(it) == 3:  # signed short
-		n = int("{:02x}{:02x}".format(it[2], it[1]), 16)
+		n = int(f"{it[2]:02x}{it[1]:02x}", 16)
 		if n & 0x8000:
 			n -= 0x10000
 	elif len(it) == 5:  # signed int
-		n = int("{:02x}{:02x}{:02x}{:02x}".format(it[4], it[3], it[2], it[1]), 16)
+		n = int(f"{it[4]:02x}{it[3]:02x}{it[2]:02x}{it[1]:02x}", 16)
 		if n & 0x80000000:
 			n -= 0x100000000
 	else:
@@ -177,26 +177,25 @@ def parse_item(it, page):
 		if item == MainItem.Collection:
 			col_type = enum_or_reserved(Collection, it[1])
 			return item, col_type
-		elif item in (MainItem.Input, MainItem.Output, MainItem.Feature):
+		if item in (MainItem.Input, MainItem.Output, MainItem.Feature):
 			return (
 				item,
 				ItemType.Constant if it[1] & 0x1 else ItemType.Data,
 				ItemLength.Variable if it[1] & 0x2 else ItemLength.Array,
 				ItemBase.Relative if it[1] & 0x4 else ItemBase.Absolute,
 			)
-		else:
-			# EndCollection or reserved
-			return (item,)
-	elif itype == 0x04:  # global items
+		# EndCollection or reserved
+		return (item,)
+	if itype == 0x04:  # global items
 		item = enum_or_reserved(GlobalItem, itag)
 		if item == GlobalItem.UsagePage:
 			page = enum_or_reserved(UsagePage, _it2u(it))
 			return item, page
-		elif item == GlobalItem.UnitExponent:
+		if item == GlobalItem.UnitExponent:
 			# exponent
 			value = it[1] if it[1] < 8 else it[1] - 0x10
 			return item, value
-		elif item == GlobalItem.Unit:
+		if item == GlobalItem.Unit:
 			if it[1] == 0:
 				return item, UnitType.NoUnit, None
 			nibble = it[1] & 0x0F
@@ -217,31 +216,30 @@ def parse_item(it, page):
 				if it[4] & 0x0F:
 					return item, unit_type, Unit.LuminousIntensity
 			return item, unit_type, ReservedItem(it[1])
-		elif item in (GlobalItem.LogicalMaximum, GlobalItem.PhysicalMaximum):
+		if item in (GlobalItem.LogicalMaximum, GlobalItem.PhysicalMaximum):
 			# unsigned values
 			return item, _it2u(it)
-		elif item in (GlobalItem.LogicalMinimum, GlobalItem.PhysicalMinimum, GlobalItem.ReportSize):
+		if item in (GlobalItem.LogicalMinimum, GlobalItem.PhysicalMinimum, GlobalItem.ReportSize):
 			# signed values
 			return item, _it2s(it)
-		elif item in (GlobalItem.ReportID, GlobalItem.ReportCount):
+		if item in (GlobalItem.ReportID, GlobalItem.ReportCount):
 			return item, it[1]
-		else:
-			return item
-	elif itype == 0x08:  # local items
+		return item
+	if itype == 0x08:  # local items
 		item = enum_or_reserved(LocalItem, itag)
 		if item == LocalItem.Usage:
 			if page is SensorPage and isize == 2:  # sensor page & usage size is 2
 				mdf = (it[2] & 0xF0) >> 4
 				if it[2] & 0xF == 0x02:
 					return (item, enum_or_reserved(ModifierI2a, mdf), enum_or_reserved(SensorEvent, it[1]))
-				elif it[2] & 0xF == 0x03:
+				if it[2] & 0xF == 0x03:
 					return (item, enum_or_reserved(ModifierI2a, mdf), enum_or_reserved(HidSensorProperty, it[1]))
-				elif it[2] & 0xF == 0x04:
+				if it[2] & 0xF == 0x04:
 					if it[1] & 0xF0 == 0x50:
 						return (item, enum_or_reserved(ModifierI2a, mdf), enum_or_reserved(MotionSensor, it[1]))
-					elif it[1] & 0xF0 == 0x70 or it[1] & 0xF0 == 0x80:
+					if it[1] & 0xF0 == 0x70 or it[1] & 0xF0 == 0x80:
 						return (item, enum_or_reserved(ModifierI2a, mdf), enum_or_reserved(OrientationSensor, it[1]))
-					elif it[1] & 0xF0 == 0xD0:
+					if it[1] & 0xF0 == 0xD0:
 						return (item, enum_or_reserved(ModifierI2a, mdf), enum_or_reserved(LightSensor, it[1]))
 				elif it[2] & 0xF == 0x05:
 					return (item, enum_or_reserved(ModifierI2a, mdf), enum_or_reserved(SensorDataField, it[1]))
@@ -291,8 +289,7 @@ def _split_hid_items(data):
 
 
 def parse_report_descriptor(data, flat_list=False):
-	"""
-	Parses HID report descriptor to list of elements.
+	"""Parses HID report descriptor to list of elements.
 
 	If flat_list is set to True, only one list is returned.
 	Otherwise, each collection is stored in its own nested list.
@@ -323,8 +320,7 @@ def parse_report_descriptor(data, flat_list=False):
 
 
 def get_report_descriptor(devfile, flat_list=False):
-	"""
-	Returns parsed HID report descriptor as list of elements.
+	"""Returns parsed HID report descriptor as list of elements.
 
 	If flat_list is set to True, only one list is returned.
 	Otherwise, each collection is stored in its own nested list.
@@ -344,7 +340,7 @@ class Parser:
 		self.len = count * size
 		if self.len > 64:
 			raise ValueError("Too many bytes in value: %i" % (self.len,))
-		elif self.len > 32:
+		if self.len > 32:
 			self.byte_len = 8
 			self.fmt = "<Q"
 		elif self.len > 16:

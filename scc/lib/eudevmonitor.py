@@ -309,7 +309,7 @@ class Monitor:
 	def enable_receiving(self):
 		"""Returns self for chaining"""
 		if self._monitor_started:
-			return  # Error, but unimportant
+			return None  # Error, but unimportant
 		err = self._eudev._lib.udev_monitor_enable_receiving(self._monitor)
 		if err < 0:
 			raise OSError("udev_monitor_enable_receiving: error %s" % (errno.errorcode.get(err, err)))

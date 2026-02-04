@@ -60,7 +60,7 @@ class HIDRaw:
 	"""Provide methods to access hidraw device's ioctls."""
 
 	def __init__(self, device):
-		"""device (file, fileno).
+		"""Device (file, fileno).
 
 		A file object or a fileno of an open hidraw device node.
 		"""

@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Action Editor - Recent List Component
+"""SC-Controller - Action Editor - Recent List Component
 
 Displays page that can edit settings for RecentListMenuGenerator
 """
 
-from scc.tools import _
+import logging
 
 from scc.gui.ae import AEComponent
-
-import os, logging
+from scc.tools import _
 
 log = logging.getLogger("AE.SA")
 

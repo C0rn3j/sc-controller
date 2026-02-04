@@ -1,15 +1,16 @@
-from scc.tools import _
+import logging
+import os
+import tarfile
 
-from gi.repository import Gtk, Gio, GLib, GObject
-from scc.tools import get_profiles_path, get_menus_path, find_profile, find_menu
-from scc.special_actions import ChangeProfileAction, MenuAction
-from scc.special_actions import ShellCommandAction
-from scc.profile import Profile, Encoder
-from scc.menu_data import MenuData
+from gi.repository import GLib, GObject, Gtk
+
 from scc.gui.parser import GuiActionParser
-from .export import Export
+from scc.menu_data import MenuData
+from scc.profile import Encoder, Profile
+from scc.special_actions import ChangeProfileAction, MenuAction, ShellCommandAction
+from scc.tools import _, get_menus_path, get_profiles_path
 
-import sys, os, json, tarfile, tempfile, logging
+from .export import Export
 
 log = logging.getLogger("IE.ImportSSCC")
 
@@ -32,8 +33,7 @@ class ImportSccprofile:
 				self.import_scc(d.get_filename())
 
 	def error(self, text):
-		"""
-		Displays error page (reused from VDF import).
+		"""Displays error page (reused from VDF import).
 		"""
 		tbError = self.builder.get_object("tbError")
 		grImportFailed = self.builder.get_object("grImportFailed")
@@ -42,8 +42,7 @@ class ImportSccprofile:
 		self.next_page(grImportFailed)
 
 	def import_scc(self, filename):
-		"""
-		Imports simple, single-file scc-profile.
+		"""Imports simple, single-file scc-profile.
 		Just loads it, checks for shell() actions and asks user to enter name.
 		"""
 		files = self.builder.get_object("lstImportPackage")
@@ -68,8 +67,7 @@ class ImportSccprofile:
 		self.check_shell_commands()
 
 	def import_scc_tar(self, filename):
-		"""
-		Imports packaged profiles.
+		"""Imports packaged profiles.
 		Checks for shell() actions everywhere and ask user to
 		enter main name, check generated ones and optionaly change
 		them as he wish.
@@ -106,8 +104,7 @@ class ImportSccprofile:
 		self.check_shell_commands()
 
 	def check_shell_commands(self):
-		"""
-		Check for shell commands in profiles being imported.
+		"""Check for shell commands in profiles being imported.
 		If there are any shell commands found, displays warning page
 		and lets user to confirm import of them.
 
@@ -179,7 +176,7 @@ class ImportSccprofile:
 		cbImportHidden.set_label(_('Import as hidden menus and profiles named ".%s:name"') % (main_name,))
 		cbImportVisible.set_label(_('Import normaly, with names formated as "%s:name"') % (main_name,))
 
-		for i in range(0, len(files)):
+		for i in range(len(files)):
 			enabled, name, importas, type, obj = files[i]
 			if enabled == 2:
 				importas = main_name

@@ -4,14 +4,12 @@ Helper classes for grabbing buttons and axes from physical gamepads.
 
 """
 
-from scc.tools import _
+import logging
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN
-from scc.gui.creg.data import AxisData, DPadEmuData
 from scc.gui.creg.constants import X, Y
-from scc.tools import nameof
-
-import logging
+from scc.gui.creg.data import AxisData, DPadEmuData
+from scc.tools import _, nameof
 
 log = logging.getLogger("CReg.grabs")
 
@@ -61,8 +59,7 @@ class InputGrabber:
 
 
 class TriggerGrabber(InputGrabber):
-	"""
-	InputGrabber modified to grab trigger bindings.
+	"""InputGrabber modified to grab trigger bindings.
 	That may be button or axis with at least 0-250 range is accepted.
 	"""
 
@@ -105,8 +102,7 @@ class TriggerGrabber(InputGrabber):
 
 
 class StickGrabber(TriggerGrabber):
-	"""
-	InputGrabber modified to grab stick or pad bindings, in two phases for
+	"""InputGrabber modified to grab stick or pad bindings, in two phases for
 	both X and Y axis.
 	"""
 
@@ -155,12 +151,11 @@ class StickGrabber(TriggerGrabber):
 			self.grabbed[X] = number
 			self.xy = Y
 			self.set_message(_("Move stick up and down..."))
-		else:
-			if number != self.grabbed[X]:
-				self.grabbed[Y] = number
-				for i in range(len(self.grabbed)):
-					self.what[i].reset()
-					self.set_mapping(self.grabbed[i], self.what[i])
-				self.parent.generate_unassigned()
-				self.parent.generate_raw_data()
-				self.cancel()
+		elif number != self.grabbed[X]:
+			self.grabbed[Y] = number
+			for i in range(len(self.grabbed)):
+				self.what[i].reset()
+				self.set_mapping(self.grabbed[i], self.what[i])
+			self.parent.generate_unassigned()
+			self.parent.generate_raw_data()
+			self.cancel()

@@ -28,7 +28,7 @@ class Daemon:
 				# exit first parent
 				sys.exit(0)
 		except OSError as err:
-			sys.stderr.write("fork #1 failed: {0}\n".format(err))
+			sys.stderr.write(f"fork #1 failed: {err}\n")
 			sys.exit(1)
 
 		# decouple from parent environment
@@ -43,13 +43,13 @@ class Daemon:
 				# exit from second parent
 				sys.exit(0)
 		except OSError as err:
-			sys.stderr.write("fork #2 failed: {0}\n".format(err))
+			sys.stderr.write(f"fork #2 failed: {err}\n")
 			sys.exit(1)
 
 		# redirect standard file descriptors
 		sys.stdout.flush()
 		sys.stderr.flush()
-		stdi = open(os.devnull, "r")
+		stdi = open(os.devnull)
 		stdo = open(os.devnull, "a+")
 		stde = open(os.devnull, "a+")
 
@@ -74,10 +74,9 @@ class Daemon:
 
 	def start(self, foreground=False):
 		"""Start the daemon."""
-
 		# Check for a pidfile to see if the daemon already runs
 		try:
-			with open(self.pidfile, "r") as pidf:
+			with open(self.pidfile) as pidf:
 				pid = int(pidf.read().strip())
 		except Exception:
 			pid = None
@@ -86,7 +85,7 @@ class Daemon:
 			# Check if PID coresponds to running daemon process and fail if yes
 			try:
 				assert os.path.exists("/proc")  # Just in case of BSD...
-				with open("/proc/%s/cmdline" % (pid,), "r") as file:
+				with open("/proc/%s/cmdline" % (pid,)) as file:
 					cmdline = file.read().replace("\x00", " ").strip()
 				if sys.argv[0] in cmdline:
 					raise Exception("already running")
@@ -105,13 +104,13 @@ class Daemon:
 			self.daemonize()
 		else:
 			self.write_pid()
-		syslog.syslog(syslog.LOG_INFO, "{}: started".format(os.path.basename(sys.argv[0])))
+		syslog.syslog(syslog.LOG_INFO, f"{os.path.basename(sys.argv[0])}: started")
 		self.on_start()
 		while True:
 			try:
 				self.run()
 			except Exception as e:  # pylint: disable=W0703
-				syslog.syslog(syslog.LOG_ERR, "{}: {!s}".format(os.path.basename(sys.argv[0]), e))
+				syslog.syslog(syslog.LOG_ERR, f"{os.path.basename(sys.argv[0])}: {e!s}")
 			time.sleep(2)
 
 	def on_start(self):
@@ -119,10 +118,9 @@ class Daemon:
 
 	def stop(self, once=False):
 		"""Stop the daemon."""
-
 		# Get the pid from the pidfile
 		try:
-			with open(self.pidfile, "r") as pidf:
+			with open(self.pidfile) as pidf:
 				pid = int(pidf.read().strip())
 		except Exception:
 			pid = None
@@ -134,7 +132,7 @@ class Daemon:
 
 		# Try killing the daemon process
 		try:
-			for x in range(0, 10):  # Waits max 1s
+			for x in range(10):  # Waits max 1s
 				os.kill(pid, signal.SIGTERM)
 				if once:
 					break
@@ -151,7 +149,7 @@ class Daemon:
 			else:
 				print(str(err.args))
 				sys.exit(1)
-		syslog.syslog(syslog.LOG_INFO, "{}: stopped".format(os.path.basename(sys.argv[0])))
+		syslog.syslog(syslog.LOG_INFO, f"{os.path.basename(sys.argv[0])}: stopped")
 
 	def restart(self):
 		"""Restart the daemon."""

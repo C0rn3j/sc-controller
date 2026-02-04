@@ -1,31 +1,30 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Controller Registration - Tester
+"""SC-Controller - Controller Registration - Tester
 
 Class that interacts with `scc hid_test` and `scc evdev_test` commands.
 """
 
-from gi.repository import GObject, Gio
-from scc.tools import find_binary
-
 import logging
+
+from gi.repository import Gio, GObject
+
+from scc.tools import find_binary
 
 log = logging.getLogger("CReg.Tester")
 
 
 class Tester(GObject.GObject):
-	"""
-	List of signals:
-		ready ()
-			Emited when subprocess signalizes it's ready to send data
-		error (code)
-			Emited when driver test subprocess exits with non-zero return code
-		finished ()
-			Emited when driver test subprocess exits with zero return code
-		axis (number, value)
-			Emited when position on axis is changed
-		button (keycode, pressed)
-			Emited when button on tested gamepad is pressed or released
+	"""List of signals:
+	ready ()
+		Emited when subprocess signalizes it's ready to send data
+	error (code)
+		Emited when driver test subprocess exits with non-zero return code
+	finished ()
+		Emited when driver test subprocess exits with zero return code
+	axis (number, value)
+		Emited when position on axis is changed
+	button (keycode, pressed)
+		Emited when button on tested gamepad is pressed or released
 	"""
 
 	__gsignals__ = {

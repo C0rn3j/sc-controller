@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
-from scc.tools import _
+import json
+import logging
+import os
+import tarfile
+import tempfile
 
-from gi.repository import Gtk, Gio
+from gi.repository import Gio, Gtk
+
 from scc.gui.userdata_manager import UserDataManager
-from scc.tools import get_profiles_path, find_profile, find_menu
-from scc.special_actions import ChangeProfileAction, MenuAction
-from scc.tools import profile_is_default, menu_is_default
-from scc.parser import ActionParser, TalkingActionParser
 from scc.menu_data import MenuData, Submenu
+from scc.parser import ActionParser, TalkingActionParser
 from scc.profile import Profile
-
-import sys, os, json, tarfile, tempfile, logging
+from scc.special_actions import ChangeProfileAction, MenuAction
+from scc.tools import _, find_menu, find_profile, menu_is_default, profile_is_default
 
 log = logging.getLogger("IE.Export")
 
@@ -57,8 +59,7 @@ class Export(UserDataManager):
 			tvProfiles.set_cursor((current_index,))
 
 	def _add_refereced_profile(self, model, giofile, used):
-		"""
-		Loads profile file and recursively adds all profiles and menus
+		"""Loads profile file and recursively adds all profiles and menus
 		referenced by it into 'package' list.
 
 		Returns True on success or False if something cannot be parsed.
@@ -84,8 +85,7 @@ class Export(UserDataManager):
 		return True
 
 	def _add_refereced_menu(self, model, menu_id, used):
-		"""
-		As _add_refereced_profile, but reads and parses menu file.
+		"""As _add_refereced_profile, but reads and parses menu file.
 		"""
 		if "." in menu_id and menu_id not in used:
 			# Dot in id means filename
@@ -112,8 +112,7 @@ class Export(UserDataManager):
 				model.append((False, _("Menu"), _("%s (not found)") % (name,), "", False, self.TP_MENU))
 
 	def _parse_action(self, model, action, used):
-		"""
-		Common part of _add_refereced_profile and _add_refereced_menu
+		"""Common part of _add_refereced_profile and _add_refereced_menu
 		"""
 		if isinstance(action, ChangeProfileAction):
 			if action.profile not in used:
@@ -128,19 +127,18 @@ class Export(UserDataManager):
 							filename,
 							True,
 							self.TP_PROFILE,
-						)
+						),
 					)
 					self._add_refereced_profile(model, Gio.File.new_for_path(filename), used)
 				else:
 					model.append(
-						(False, _("Profile"), _("%s (not found)") % (action.profile,), "", False, self.TP_PROFILE)
+						(False, _("Profile"), _("%s (not found)") % (action.profile,), "", False, self.TP_PROFILE),
 					)
 		elif isinstance(action, MenuAction):
 			self._add_refereced_menu(model, action.menu_id, used)
 
 	def on_tvProfiles_cursor_changed(self, *a):
-		"""
-		Called when user selects profile.
+		"""Called when user selects profile.
 		"""
 		tvProfiles = self.builder.get_object("tvProfiles")
 		tvPackage = self.builder.get_object("tvPackage")
@@ -169,8 +167,7 @@ class Export(UserDataManager):
 			btSaveAs.set_visible(False)
 
 	def _needs_package(self):
-		"""
-		Returns True if there is any file checked on 2nd page,
+		"""Returns True if there is any file checked on 2nd page,
 		meaning that profile has to be exported as archive.
 		"""
 		tvPackage = self.builder.get_object("tvPackage")
@@ -219,13 +216,11 @@ class Export(UserDataManager):
 			if self._needs_package():
 				if self._export_package(model[iter][1], fn):
 					self.window.destroy()
-			else:
-				if self._export(model[iter][1], fn):
-					self.window.destroy()
+			elif self._export(model[iter][1], fn):
+				self.window.destroy()
 
 	def _export(self, giofile, target_filename):
-		"""
-		Performs actual exporting.
+		"""Performs actual exporting.
 		This method is used when only profile with no referenced files
 		is to be exported and works pretty simple - load, parse, save in new file.
 		"""
@@ -241,8 +236,7 @@ class Export(UserDataManager):
 		return True
 
 	def _export_package(self, giofile, target_filename):
-		"""
-		Performs actual exporting.
+		"""Performs actual exporting.
 		This method is used when profile is to be exported _with_ some
 		referenced files. It reads not only passed giofile, but all files
 		marked on 2nd page of export dialog.
@@ -270,7 +264,7 @@ class Export(UserDataManager):
 
 		def export_menu(tar, filename):
 			try:
-				menu = MenuData.from_json_data(json.loads(open(filename, "r").read()), ActionParser())
+				menu = MenuData.from_json_data(json.loads(open(filename).read()), ActionParser())
 				tar.add(filename, arcname=os.path.split(filename)[-1], recursive=False)
 			except Exception as e:
 				# Menu that cannot be parsed shouldn't be exported

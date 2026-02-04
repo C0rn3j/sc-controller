@@ -1,16 +1,17 @@
-"""
-SC-Controller - Import / Export Dialog
+"""SC-Controller - Import / Export Dialog
 """
 
-from scc.tools import _
+import json
+import logging
+import tarfile
+import traceback
 
-from scc.gui.editor import Editor, ComboSetter
-from scc.tools import find_profile, profile_is_default, profile_is_override
+from scc.gui.editor import ComboSetter, Editor
+from scc.tools import _, find_profile, profile_is_default, profile_is_override
+
 from .export import Export
-from .import_vdf import ImportVdf
 from .import_sccprofile import ImportSccprofile
-
-import sys, os, tarfile, logging, json, traceback
+from .import_vdf import ImportVdf
 
 log = logging.getLogger("IE.Dialog")
 
@@ -30,22 +31,21 @@ class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 
 	@staticmethod
 	def determine_type(filename):
-		"""
-		Detects and returns type of passed file, if it can be imported.
+		"""Detects and returns type of passed file, if it can be imported.
 		Returns one of 'sccprofile', 'sccprofile.tar.gz', 'vdf', 'vdffz'
 		or None if type is not supported.
 		"""
 		try:
 			with open(filename, "rb") as file:
 				f = file.read(1024)
-		except Exception as e:
+		except Exception:
 			# File not readable
 			log.error(traceback.format_exc())
 			return None
 		try:
 			if f.decode("utf-8").strip(" \t\r\n").startswith("{"):
 				# Looks like json
-				data = json.loads(open(filename, "r").read())
+				data = json.loads(open(filename).read())
 				if "buttons" in data and "gyro" in data:
 					return "sccprofile"
 				if "GameName" in data and "FileName" in data:
@@ -93,8 +93,7 @@ class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 		return True
 
 	def import_file(self, filename, filetype=None):
-		"""
-		Attempts to import passed file.
+		"""Attempts to import passed file.
 
 		Switches to apropriate page automatically, or, if file cannot be
 		imported, does nothing.
@@ -124,8 +123,7 @@ class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 			getattr(self, hname)()
 
 	def enable_next(self, enabled=True, callback=None):
-		"""
-		Makes 'Next' button visible and assigns callback that will be
+		"""Makes 'Next' button visible and assigns callback that will be
 		called when button is clicked. 'Next' button is automatically hidden
 		before callback is called.
 

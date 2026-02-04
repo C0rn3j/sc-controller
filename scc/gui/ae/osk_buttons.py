@@ -1,24 +1,17 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Action Editor - OSK Button Component
+"""SC-Controller - Action Editor - OSK Button Component
 
 Binds controller buttons on on on on on... screen keyboard.
 Retuses ButtonsComponent, but hides image, so user can't select mouse or gamepad
 button.
 """
 
-from scc.tools import _
+import logging
 
-from gi.repository import Gtk, Gdk, GLib
-from scc.actions import Action, ButtonAction, MultiAction, NoAction
-from scc.gui.area_to_action import action_to_area
-from scc.gui.ae.buttons import ButtonsComponent
-from scc.gui.key_grabber import KeyGrabber
-from scc.gui.parser import InvalidAction
-from scc.gui.chooser import Chooser
+from scc.actions import Action
 from scc.gui.ae import AEComponent
-
-import os, logging
+from scc.gui.ae.buttons import ButtonsComponent
+from scc.tools import _
 
 log = logging.getLogger("AE.Buttons")
 

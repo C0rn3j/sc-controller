@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Controller Registration Constants
+"""SC-Controller - Controller Registration Constants
 
 Just huge chunk of constants put aside to make impotant code more readable
 """
 
-from scc.constants import SCButtons, STICK, LEFT, RIGHT
-from scc.gui import BUTTON_ORDER
+from scc.constants import LEFT, RIGHT, STICK, SCButtons
 
 X = 0
 Y = 1

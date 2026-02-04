@@ -1,24 +1,15 @@
 #!/usr/bin/env python3
-"""
-SC-Controller - Action Editor - Tilt
+"""SC-Controller - Action Editor - Tilt
 
 Setups DPAD emulation or menu display
 """
 
-from scc.tools import _
+import logging
 
-from gi.repository import Gtk, Gdk, GLib
-from scc.actions import Action, NoAction, TiltAction, ButtonAction
-from scc.special_actions import MenuAction
-from scc.modifiers import NameModifier
-from scc.uinput import Keys
+from scc.actions import Action, NoAction, TiltAction
 from scc.gui.ae import AEComponent, describe_action
-from scc.gui.ae.menu_action import MenuActionCofC
 from scc.gui.binding_editor import BindingEditor
-from scc.gui.action_editor import ActionEditor
-
-
-import os, logging
+from scc.tools import _
 
 log = logging.getLogger("AE.Tilt")
 
@@ -45,9 +36,9 @@ class TiltComponent(AEComponent, BindingEditor):
 			self.update_button_desc(action)
 
 	def update_button_desc(self, action):
-		for i in range(0, len(action.actions)):
+		for i in range(len(action.actions)):
 			self.actions[i] = action.actions[i]
-		for i in range(0, 6):
+		for i in range(6):
 			self.set_button_desc(i)
 
 	def set_button_desc(self, i):

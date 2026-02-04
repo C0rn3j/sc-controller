@@ -4,13 +4,14 @@ Currently setups only one thing...
 """
 
 from __future__ import annotations
+
 import collections
 import logging
 import os
 import threading
 from io import StringIO
 
-from gi.repository import Gdk, GObject, GLib
+from gi.repository import GLib
 
 from scc.foreign.vdf import VDFProfile
 from scc.foreign.vdffz import VDFFZProfile
@@ -69,12 +70,12 @@ class ImportVdf:
 		Calls GLib.idle_add to send loaded data into UI.
 		"""
 		# VDF file is a ISO-8859-1 encoded file. Not UTF-8
-		data = parse_vdf(open(filename, "r", encoding="ISO-8859-1"))
+		data = parse_vdf(open(filename, encoding="ISO-8859-1"))
 		# Sanity check
 		if "UserLocalConfigStore" not in data:
-			return
+			return None
 		if "controller_config" not in data["UserLocalConfigStore"]:
-			return
+			return None
 
 		# Grab config - currently only grabs SC configs!
 		cc = data["UserLocalConfigStore"]["controller_config"][userid]["controller_steamcontroller_gordon"][
@@ -136,7 +137,7 @@ class ImportVdf:
 				self._lock.acquire()
 				if os.path.exists(filename):
 					try:
-						data = parse_vdf(open(filename, "r"))
+						data = parse_vdf(open(filename))
 						name = data["AppState"]["name"]
 					except Exception as e:
 						log.error("Failed to load app manifest for '%s'", gameid)
@@ -191,7 +192,7 @@ class ImportVdf:
 					continue
 				log.info("Reading '%s'", filename)
 				try:
-					data = parse_vdf(open(filename, "r"))
+					data = parse_vdf(open(filename))
 					name = data["controller_mappings"]["title"]
 					GLib.idle_add(self._set_profile_name, index, name, filename)
 					break
@@ -286,8 +287,8 @@ class ImportVdf:
 						self.gen_aset_name(txName.get_text().strip(), x)
 						for x in self._profile.action_sets
 						if x != "default"
-					]
-				)
+					],
+				),
 			)
 		else:
 			lblASetsNotice.set_visible(False)
@@ -318,7 +319,7 @@ class ImportVdf:
 		dump.write("\nProfile filename: %s\n" % (filename,))
 		dump.write("\nProfile dump:\n")
 		try:
-			dump.write(open(filename, "r").read())
+			dump.write(open(filename).read())
 		except Exception as e:
 			dump.write("(failed to write: %s)" % (e,))
 		tvError.get_buffer().set_text(dump.getvalue())
@@ -381,7 +382,7 @@ class ImportVdf:
 			error_log.write("\nProfile filename: %s\n" % (filename,))
 			error_log.write("\nProfile dump:\n")
 			try:
-				error_log.write(open(filename, "r").read())
+				error_log.write(open(filename).read())
 			except Exception as e:
 				error_log.write("(failed to write: %s)" % (e,))
 

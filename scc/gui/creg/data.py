@@ -3,10 +3,10 @@
 Dummy container classes
 """
 
+import logging
+
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN
 from scc.gui.creg.constants import AXIS_TO_BUTTON
-
-import logging
 
 log = logging.getLogger("CReg.data")
 
@@ -56,8 +56,7 @@ class AxisData:
 			v = (self.pos - self.min) * r
 			if self.invert:
 				return changed, STICK_PAD_MAX - v
-			else:
-				return changed, v + STICK_PAD_MIN
+			return changed, v + STICK_PAD_MIN
 		except ZeroDivisionError:
 			return changed, 0
 

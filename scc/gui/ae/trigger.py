@@ -68,12 +68,7 @@ class TriggerComponent(AEComponent, BindingEditor):
 		actions = action.actions if isinstance(action, MultiAction) else [action]
 		for a in actions:
 			effective = TriggerComponent._strip_trigger(a).strip()
-			if isinstance(effective, AxisAction):
-				if analog:
-					# UI can do only one analog action per trigger
-					return False, half, full, analog
-				analog = a
-			elif isinstance(effective, MouseAction):
+			if isinstance(effective, AxisAction) or isinstance(effective, MouseAction):
 				if analog:
 					# UI can do only one analog action per trigger
 					return False, half, full, analog
