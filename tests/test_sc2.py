@@ -88,6 +88,18 @@ def test_dpad():
     assert parse_input(_frame({3: 0x10})).dpad_x == STICK_PAD_MIN   # left
 
 
+def test_imu():
+    # IMU lands at offsets 34..53 (only nonzero when the gyro is enabled).
+    assert parse_input(_frame(i16={48: 5000})).gpitch == 5000
+    assert parse_input(_frame(i16={50: -6000})).groll == -6000
+    assert parse_input(_frame(i16={52: 7000})).gyaw == 7000
+    assert parse_input(_frame(i16={38: 16000})).accel_z == 16000
+    assert parse_input(_frame(i16={46: 32000})).q4 == 32000
+    # zero (gyro disabled) -> neutral IMU
+    z = parse_input(_frame())
+    assert (z.gpitch, z.groll, z.gyaw, z.accel_z, z.q4) == (0, 0, 0, 0, 0)
+
+
 def test_rest_frame_is_neutral():
     inp = parse_input(_frame())
     assert inp.buttons == 0

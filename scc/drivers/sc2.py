@@ -3,9 +3,9 @@
 Implements the reverse-engineered protocol from
 docs/steam-controller-v2-protocol.md. Validated end-to-end on real hardware
 via the wireless Puck (0x1304): lizard-mode disable plus button / stick / pad
-/ trigger input flow through scc-daemon to uinput (digital and analog).
-Still TODO: gyro enable, haptics, the wired (0x1302) and Bluetooth (0x1303)
-transports, real serial read-back, and GUI assets (see notes inline).
+/ trigger / gyro input flow through scc-daemon to uinput.
+Still TODO: haptics, the wired (0x1302) and Bluetooth (0x1303) transports,
+real serial read-back, IMU axis-polarity tuning, and GUI assets (see inline).
 
 Architecture mirrors the existing drivers:
   - the wireless "Controller Puck" (0x1304) is a multi-slot dongle, like
@@ -68,8 +68,11 @@ UNLIZARD_INTERVAL = 100
 # 10..17  left stick X/Y, right stick X/Y (i16 each)
 # 18..23  left pad  X(i16) Y(i16) pressure(u16)
 # 24..29  right pad X(i16) Y(i16) pressure(u16)
-# 30..53  IMU block - constant (gyro disabled by default), parsed as TODO
-_INPUT_FORMAT = "<BBBBBBHHhhhhhhHhhH24x"
+# 30..33  IMU timestamp/counter (skipped)
+# 34..39  accel X/Y/Z (i16)         } only populated when the gyro is enabled
+# 40..47  quaternion x/y/z/w (i16)  } via configure(); zero/constant otherwise
+# 48..53  gyro pitch/roll/yaw (i16) }
+_INPUT_FORMAT = "<BBBBBBHHhhhhhhHhhH4xhhhhhhhhhh"
 assert struct.calcsize(_INPUT_FORMAT) == INPUT_SIZE
 
 
@@ -163,7 +166,8 @@ def parse_input(data) -> SC2Input | None:
     if not data or data[0] != INPUT_REPORT_ID or len(data) < INPUT_SIZE:
         return None
     (_rid, seq, b2, b3, b4, b5, ltrig, rtrig,
-     lsx, lsy, rsx, rsy, lpx, lpy, lpz, rpx, rpy, rpz) = struct.unpack(
+     lsx, lsy, rsx, rsy, lpx, lpy, lpz, rpx, rpy, rpz,
+     ax, ay, az, q1, q2, q3, q4, gpitch, groll, gyaw) = struct.unpack(
         _INPUT_FORMAT, bytes(data[:INPUT_SIZE]))
     raw = b2 | (b3 << 8) | (b4 << 16) | (b5 << 24)
 
@@ -183,9 +187,10 @@ def parse_input(data) -> SC2Input | None:
         rstick_x=_deadzone(rsx), rstick_y=_deadzone(rsy),
         lpad_x=lpx, lpad_y=lpy, rpad_x=rpx, rpad_y=rpy,
         lpad_pressure=lpz, rpad_pressure=rpz,
-        # IMU disabled by default; TODO once the gyro-enable register is known
-        accel_x=0, accel_y=0, accel_z=0, gpitch=0, groll=0, gyaw=0,
-        q1=0, q2=0, q3=0, q4=0,
+        # IMU: nonzero only when the gyro is enabled (configure() sends that).
+        # gyro axes verified by motion: gpitch @48, groll @50, gyaw @52.
+        accel_x=ax, accel_y=ay, accel_z=az, gpitch=gpitch, groll=groll, gyaw=gyaw,
+        q1=q1, q2=q2, q3=q3, q4=q4,
         dpad_x=dpad_x, dpad_y=dpad_y, seq=seq,
     )
     # TODO: verify pad/stick Y polarity (may need inversion) once tested live.
