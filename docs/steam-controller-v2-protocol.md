@@ -65,7 +65,14 @@ All multi-byte values are **little-endian**. Offsets are into the hidraw read
 | 24–25 | i16 | Right pad X |
 | 26–27 | i16 | Right pad Y |
 | 28–29 | u16 | Right pad pressure |
-| 31–53 | ~23 B | **IMU** (accel/gyro/quaternion) — populated **only when the gyro is enabled** (constant otherwise). Sub-layout/scale TBD. |
+| 30–33 | u32 | IMU timestamp/counter |
+| 34–39 | i16×3 | **accelerometer** X/Y/Z (Z ≈ +16271 ≈ 1 g at rest) |
+| 40–47 | i16×4 | **orientation quaternion** x/y/z/w (w ≈ +32767 at rest) |
+| 48–53 | i16×3 | **gyro** pitch / roll / yaw (angular rate, ≈0 at rest) |
+
+Offsets 30–53 are populated **only when the gyro is enabled** (constant
+otherwise). Gyro axes verified by isolated rotations (pitch→`@48`, roll→`@50`,
+yaw→`@52`); accel X/Y labels and IMU signs are provisional (see open questions).
 
 ### Button bits (offsets 2–5)
 
@@ -146,10 +153,10 @@ index, not v1's bulk endpoint) and the **CONFIGURE register layout**.
 
 ## Open questions / TODO
 
-1. **IMU sub-layout**: enable (`87 0f 30 18`) and location (report `0x42`
-   offsets ~31–53) are confirmed live; still need to decode the accel / gyro /
-   quaternion ordering, scale and axis polarity within that block, then parse
-   it in the driver (`parse_input` currently zeroes the gyro fields).
+1. **IMU axis polarity / convention**: accel (34–39), quaternion (40–47) and
+   gyro pitch/roll/yaw (48–53) are decoded and parsed, but the accel X/Y labels
+   and the gyro signs are provisional — verify with a gyro-mouse test and
+   flip/relabel as needed (cf. the Deck's `groll = -groll`).
 2. **Trackpad pressure** scaling and the exact meaning of the pressure word.
 3. The remaining unknown button bits.
 4. The **CDC ACM** interface's purpose.
