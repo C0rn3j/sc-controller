@@ -1,0 +1,21 @@
+{
+	"_comment": "GUI config for the new Steam Controller (2025, v2). Its buttons/axes match the Steam Deck, so this mirrors deck.config.json and reuses the 'deck' background image for now; a dedicated controller-images/sc2.svg is TODO.",
+	"gui": {
+		"background": "deck",
+		"buttons": [
+			"A", "B", "X", "Y", "VIEW", "ELIPSE", "MENU", "LB", "RB", "LT", "RT",
+			"STICK", "TOUCHPAD", "TOUCHPAD", "RGRIP", "LGRIP", "DOTS"
+		]
+	},
+	"buttons": [
+		"DOTS", "RSTICKTOUCH", "LSTICKTOUCH", "RGRIP2", "LGRIP2", "RSTICKPRESS",
+		"LSTICKPRESS", "RPADTOUCH", "LPADTOUCH", "RPADPRESS", "LPADPRESS", "C",
+		"RGRIP", "LGRIP", "START", "BACK", "A", "X", "B", "Y", "LB", "RB"
+	],
+	"axes": [
+		"stick_x", "stick_y", "rstick_x", "rstick_y",
+		"lpad_x", "lpad_x", "rpad_y", "rpad_y",
+		"dpad_x", "dpad_y", "ltrig", "rtrig"
+	],
+	"gyros": true
+}
