@@ -891,11 +891,10 @@ class MouseAction(WholeHapticAction, Action):
 		# if what == STICK:
 		# mapper.mouse_move(x * self.speed[0] * 0.01, y * self.speed[1] * 0.01)
 		# mapper.force_event.add(FE_STICK)
-		if (
-			(what == STICK)
-			or (what == RSTICK)
-			or (what == RIGHT and mapper.controller_flags() & ControllerFlags.HAS_RSTICK)
-		):
+		# Only actual sticks drive velocity-style mouse; the right *pad* (what ==
+		# RIGHT) is a relative trackball even on controllers that have a right
+		# stick (HAS_RSTICK) -- the right stick arrives separately as RSTICK.
+		if (what == STICK) or (what == RSTICK):
 			ratio_x = x / (STICK_PAD_MAX if x > 0 else STICK_PAD_MIN) * copysign(1, x)
 			ratio_y = y / (STICK_PAD_MAX if y > 0 else STICK_PAD_MIN) * copysign(1, y)
 			mouse_dx = ratio_x * (mapper.time_elapsed * BASE_STICK_MOUSE_SPEED) * self.speed[0]
