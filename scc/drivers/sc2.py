@@ -189,8 +189,11 @@ def parse_input(data) -> SC2Input | None:
         lpad_x=lpx, lpad_y=lpy, rpad_x=rpx, rpad_y=rpy,
         lpad_pressure=lpz, rpad_pressure=rpz,
         # IMU: nonzero only when the gyro is enabled (configure() sends that).
-        # gyro axes verified by motion: gpitch @48, groll @50, gyaw @52.
-        accel_x=ax, accel_y=ay, accel_z=az, gpitch=gpitch, groll=groll, gyaw=gyaw,
+        # Axes @48/50/52 = pitch/roll/yaw. Polarity verified live via gyro->mouse:
+        # yaw is natural (right->right); pitch needed inverting (up->up); roll
+        # is untested by that mapping, so its sign is provisional.
+        accel_x=ax, accel_y=ay, accel_z=az,
+        gpitch=-gpitch, groll=groll, gyaw=gyaw,
         q1=q1, q2=q2, q3=q3, q4=q4,
         dpad_x=dpad_x, dpad_y=dpad_y, seq=seq,
     )
