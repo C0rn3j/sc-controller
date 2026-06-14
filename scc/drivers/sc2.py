@@ -4,8 +4,9 @@ Implements the reverse-engineered protocol from
 docs/steam-controller-v2-protocol.md. Validated end-to-end on real hardware
 via the wireless Puck (0x1304): lizard-mode disable plus button / stick / pad
 / trigger / gyro input through scc-daemon to uinput, and click haptics.
-Still TODO: continuous variable rumble, the wired (0x1302) and Bluetooth
-(0x1303) transports, real serial read-back, and GUI assets (see inline).
+Wired (0x1302) is supported too (single HID interface 0). Still TODO:
+continuous variable rumble, the Bluetooth (0x1303) transport, real serial
+read-back, and GUI assets (see inline).
 
 Architecture mirrors the existing drivers:
   - the wireless "Controller Puck" (0x1304) is a multi-slot dongle, like
@@ -42,6 +43,12 @@ PID_BT = 0x1303     # controller over Bluetooth LE          - TODO
 FIRST_INTERFACE = 2
 FIRST_IN_ENDPOINT = 3
 MAX_SLOTS = 4
+
+# wired controller (0x1302): a single HID interface 0, interrupt IN ep 0x81 /
+# OUT ep 0x01. Same 0x42 report as the puck, so all parsing/commands reuse.
+WIRED_INTERFACE = 0
+WIRED_IN_ENDPOINT = 1
+WIRED_OUT_ENDPOINT = 1
 
 # report 0x42 is 54 bytes including the report-ID byte; the endpoint also
 # carries shorter reports (0x43/0x44/0x7b/...), so we request the full max
@@ -207,8 +214,9 @@ class SC2Controller(SCController):
         | ControllerFlags.HAS_DPAD
     )
 
-    def __init__(self, driver, ccidx: int, endpoint: int):
-        super().__init__(driver, ccidx, endpoint)
+    def __init__(self, driver, ccidx: int, in_endpoint: int, out_endpoint: int):
+        super().__init__(driver, ccidx, in_endpoint)
+        self._out_ep = out_endpoint   # interrupt-OUT endpoint for haptics
         self._old_state = SC2_NULL
 
     def get_type(self) -> str:
@@ -257,8 +265,7 @@ class SC2Controller(SCController):
         return self._enable_gyros
 
     def feedback(self, data) -> None:
-        # v2 haptic = output report 0x82 on the interrupt-OUT endpoint (the OUT
-        # endpoint number equals the interface == self._ccidx):
+        # v2 haptic = output report 0x82 on the interrupt-OUT endpoint (self._out_ep):
         #   82 <side> <effect> <amplitude>
         #   side 0=left 1=right 2=both; effect 0x01 = single click; amp 0..255.
         # NOTE: this is a per-call "click", not continuous variable rumble, so
@@ -270,25 +277,24 @@ class SC2Controller(SCController):
             return
         side = {HapticPos.LEFT: 0, HapticPos.RIGHT: 1, HapticPos.BOTH: 2}.get(pos, 1)
         report = bytes([0x82, side, 0x01, min(255, amp >> 7)])
-        self._driver.send_haptic(self._ccidx, report)
+        self._driver.send_haptic(self._out_ep, report)
 
 
-class SC2Puck(USBDevice):
-    """The wireless Controller Puck: up to MAX_SLOTS controllers."""
+class SC2Device(USBDevice):
+    """Shared base for both v2 USB transports (puck and wired): the lenient
+    interrupt-IN reader, SET_REPORT-to-feature-0x01 commands, interrupt-OUT
+    haptics, and controller bookkeeping. Subclasses claim their interface(s),
+    start their input endpoint(s), and implement _add_controller()."""
 
     def __init__(self, device, handle, daemon):
         self.daemon = daemon
         USBDevice.__init__(self, device, handle)
-        self.claim_by(klass=3, subclass=0, protocol=0)   # the HID interfaces
-        self._controllers: dict[int, SC2Controller] = {}
+        self._controllers: dict[int, SC2Controller] = {}   # keyed by IN endpoint
         self._out_transfers = set()   # in-flight interrupt-OUT (haptic) transfers
-        for i in range(MAX_SLOTS):
-            self._listen(FIRST_IN_ENDPOINT + i)
 
     def send_haptic(self, endpoint: int, report: bytes) -> None:
         """Fire-and-forget interrupt-OUT transfer (haptics). The device stalls
-        these over SET_REPORT control, so they must go to the OUT endpoint
-        (== the interface number)."""
+        these over SET_REPORT control, so they must go to the OUT endpoint."""
         def _done(transfer):
             self._out_transfers.discard(transfer)
         t = self.handle.getTransfer()
@@ -327,9 +333,9 @@ class SC2Puck(USBDevice):
         transfer.submit()
         self._transfer_list.append(transfer)
 
-    # --- v2 transport: SET_REPORT to feature report 0x01 of the interface ---
-    # The base class targets feature report 0x00 (wValue 0x0300); v2 numbered
-    # reports require 0x0301 and a leading 0x01 byte in the payload.
+    # --- v2 command transport: SET_REPORT to feature report 0x01 -------------
+    # The base USBDevice targets feature report 0x00 (wValue 0x0300); v2's
+    # numbered reports need 0x0301 and a leading 0x01 byte in the payload.
 
     def send_control(self, index: int, data) -> None:
         # prefix the report-ID byte and pad/clamp to exactly 64 bytes (the
@@ -347,26 +353,23 @@ class SC2Puck(USBDevice):
                 break
         self.send_control(index, data)
 
-    def _slot_index(self, endpoint: int) -> int:
-        return endpoint - FIRST_IN_ENDPOINT  # 0..MAX_SLOTS-1
-
-    def _add_controller(self, endpoint: int) -> SC2Controller:
-        interface = FIRST_INTERFACE + self._slot_index(endpoint)
-        log.debug("New SC2 controller on slot %d (interface %d, endpoint %d)",
-                  self._slot_index(endpoint), interface, endpoint)
-        # ccidx == interface number so send_control() addresses the right slot
-        c = SC2Controller(self, ccidx=interface, endpoint=endpoint)
+    def _make_controller(self, in_ep: int, ccidx: int, out_ep: int) -> SC2Controller:
+        # ccidx == interface number (SET_REPORT wIndex); out_ep == interrupt-OUT ep
+        c = SC2Controller(self, ccidx=ccidx, in_endpoint=in_ep, out_endpoint=out_ep)
         c.clear_mappings()
         c.configure()
         c.generate_serial()        # TODO: real GET_SERIAL read-back over 0x01
-        self._controllers[endpoint] = c
+        self._controllers[in_ep] = c
         c.on_serial_got()          # registers the controller with the daemon
         return c
+
+    def _add_controller(self, endpoint: int) -> SC2Controller:
+        raise NotImplementedError
 
     def _on_input(self, endpoint: int, data) -> None:
         idata = parse_input(data)
         if idata is None:
-            return                  # ignore non-0x42 reports for now
+            return                  # ignore non-0x42 reports
         c = self._controllers.get(endpoint) or self._add_controller(endpoint)
         if idata.seq % UNLIZARD_INTERVAL == 0:
             c.clear_mappings()      # keep lizard mode from creeping back
@@ -381,13 +384,42 @@ class SC2Puck(USBDevice):
         USBDevice.close(self)
 
 
+class SC2Puck(SC2Device):
+    """The wireless Controller Puck (0x1304): up to MAX_SLOTS controllers, one
+    per HID interface 2..5 (interrupt IN 0x83..0x86, OUT 0x02..0x05)."""
+
+    def __init__(self, device, handle, daemon):
+        super().__init__(device, handle, daemon)
+        self.claim_by(klass=3, subclass=0, protocol=0)   # the 4 HID interfaces
+        for i in range(MAX_SLOTS):
+            self._listen(FIRST_IN_ENDPOINT + i)
+
+    def _add_controller(self, endpoint: int) -> SC2Controller:
+        slot = endpoint - FIRST_IN_ENDPOINT
+        interface = FIRST_INTERFACE + slot   # OUT endpoint number == interface
+        log.debug("New SC2 puck controller: slot %d (interface %d, in-ep %d)",
+                  slot, interface, endpoint)
+        return self._make_controller(endpoint, ccidx=interface, out_ep=interface)
+
+
+class SC2Wired(SC2Device):
+    """The controller wired over USB-C (0x1302): one HID interface 0."""
+
+    def __init__(self, device, handle, daemon):
+        super().__init__(device, handle, daemon)
+        self.claim_by(klass=3, subclass=0, protocol=0)   # the single HID interface
+        self._listen(WIRED_IN_ENDPOINT)
+
+    def _add_controller(self, endpoint: int) -> SC2Controller:
+        log.debug("New SC2 wired controller (interface %d, in-ep %d)", WIRED_INTERFACE, endpoint)
+        return self._make_controller(endpoint, ccidx=WIRED_INTERFACE, out_ep=WIRED_OUT_ENDPOINT)
+
+
 def init(daemon, config: dict) -> bool:
     """Register hotplug callbacks for the new Steam Controller."""
-
-    def cb_puck(device, handle):
-        return SC2Puck(device, handle, daemon)
-
-    register_hotplug_device(cb_puck, VENDOR_ID, PID_PUCK)
-    # TODO: wired (PID_WIRED) and Bluetooth (PID_BT) are single-interface
-    # variants (cf. sc_by_cable / sc_by_bt) - register once implemented.
+    register_hotplug_device(
+        lambda device, handle: SC2Puck(device, handle, daemon), VENDOR_ID, PID_PUCK)
+    register_hotplug_device(
+        lambda device, handle: SC2Wired(device, handle, daemon), VENDOR_ID, PID_WIRED)
+    # TODO: Bluetooth (PID_BT) is a separate transport (cf. sc_by_bt).
     return True

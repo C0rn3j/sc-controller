@@ -26,6 +26,12 @@ The puck enumerates as a composite device with **6 interfaces**:
   v1 dongle's multi-slot design), each a `/dev/hidrawN`. With one controller
   paired, slot 1 (the first HID interface) carries its data.
 
+When the controller is instead **wired over USB-C** (`0x1302`) it enumerates as
+a **single HID interface 0** (interrupt IN `0x81`, OUT `0x01`, no CDC) with the
+**same report descriptor and `0x42` report**, so all parsing and commands are
+identical — only the interface index (0) and the endpoint numbers differ.
+(Verified end-to-end: input, gyro, and haptics all work over the cable.)
+
 Each HID interface's report descriptor declares (vendor usage page `0xFF00`):
 
 - Input reports: `0x40` (mouse), `0x41` (keyboard) — **lizard mode** (the
