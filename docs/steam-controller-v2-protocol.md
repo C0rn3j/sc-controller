@@ -147,8 +147,15 @@ same shape as the v1/Deck command packets. The `packetType` opcodes match
   `0x1C`). Once enabled, IMU data streams in report `0x42` at offsets ~31–53.
 - `87 06 34 ffff 35 ffff`, `87 03 22 64`, `87 03 23 50` — `(register, u16)` writes.
 
-Haptics: an **Output report `0x80`** on interrupt EP2, e.g.
-`80 01 40 1f 00 00 fb …`.
+Haptics: **Output report `0x82`** on the **interrupt-OUT** endpoint (its number
+equals the interface, e.g. EP `0x02` for slot 1) — the device **stalls it over
+SET_REPORT control**, so it must go to the interrupt endpoint. Layout
+`82 <side> <effect> <amplitude>`: `side` 0=left / 1=right / 2=both; `effect`
+`0x01`=click (`0x02`=longer click); `amplitude` `0x00`(medium)…`0xff`(strong).
+This is a single *click* per report (verified live). Continuous variable rumble,
+if the controller supports it, likely uses a different report (not yet captured;
+the connect-time `0x80` report is **not** felt). The `0x81` output reports seen
+at connect are unrelated (not haptic).
 
 **Implication:** the existing `sc_dongle.py` command builders port over; the
 differences are the **transport** (SET_REPORT/feature to a per-slot interface
