@@ -3,9 +3,9 @@
 Implements the reverse-engineered protocol from
 docs/steam-controller-v2-protocol.md. Validated end-to-end on real hardware
 via the wireless Puck (0x1304): lizard-mode disable plus button / stick / pad
-/ trigger / gyro input flow through scc-daemon to uinput.
-Still TODO: haptics, the wired (0x1302) and Bluetooth (0x1303) transports,
-real serial read-back, IMU axis-polarity tuning, and GUI assets (see inline).
+/ trigger / gyro input through scc-daemon to uinput, and click haptics.
+Still TODO: continuous variable rumble, the wired (0x1302) and Bluetooth
+(0x1303) transports, real serial read-back, and GUI assets (see inline).
 
 Architecture mirrors the existing drivers:
   - the wireless "Controller Puck" (0x1304) is a multi-slot dongle, like
@@ -26,7 +26,7 @@ from enum import IntEnum
 
 import usb1
 
-from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons
+from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, HapticPos, SCButtons
 from scc.drivers.sc_dongle import SCController, SCPacketType
 from scc.drivers.usb import USBDevice, register_hotplug_device
 
@@ -257,9 +257,20 @@ class SC2Controller(SCController):
         return self._enable_gyros
 
     def feedback(self, data) -> None:
-        # TODO: haptics use Output report 0x80 on the interrupt-OUT endpoint,
-        # e.g. "80 01 40 1f 00 00 fb ..." - format not yet decoded.
-        pass
+        # v2 haptic = output report 0x82 on the interrupt-OUT endpoint (the OUT
+        # endpoint number equals the interface == self._ccidx):
+        #   82 <side> <effect> <amplitude>
+        #   side 0=left 1=right 2=both; effect 0x01 = single click; amp 0..255.
+        # NOTE: this is a per-call "click", not continuous variable rumble, so
+        # it suits pad/scroll detents; sustained game rumble may need another
+        # report (not yet found). data.data = (position, amplitude, period, count).
+        pos = data.data[0]
+        amp = data.data[1] if len(data.data) > 1 else 0x4000
+        if amp <= 0:
+            return
+        side = {HapticPos.LEFT: 0, HapticPos.RIGHT: 1, HapticPos.BOTH: 2}.get(pos, 1)
+        report = bytes([0x82, side, 0x01, min(255, amp >> 7)])
+        self._driver.send_haptic(self._ccidx, report)
 
 
 class SC2Puck(USBDevice):
@@ -270,8 +281,23 @@ class SC2Puck(USBDevice):
         USBDevice.__init__(self, device, handle)
         self.claim_by(klass=3, subclass=0, protocol=0)   # the HID interfaces
         self._controllers: dict[int, SC2Controller] = {}
+        self._out_transfers = set()   # in-flight interrupt-OUT (haptic) transfers
         for i in range(MAX_SLOTS):
             self._listen(FIRST_IN_ENDPOINT + i)
+
+    def send_haptic(self, endpoint: int, report: bytes) -> None:
+        """Fire-and-forget interrupt-OUT transfer (haptics). The device stalls
+        these over SET_REPORT control, so they must go to the OUT endpoint
+        (== the interface number)."""
+        def _done(transfer):
+            self._out_transfers.discard(transfer)
+        t = self.handle.getTransfer()
+        t.setInterrupt(endpoint, report, callback=_done)
+        try:
+            t.submit()
+            self._out_transfers.add(t)
+        except usb1.USBError:
+            pass
 
     def _listen(self, endpoint: int) -> None:
         """Submit a lenient interrupt-IN transfer.
