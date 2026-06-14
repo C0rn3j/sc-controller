@@ -79,7 +79,7 @@ yaw→`@52`); accel X/Y labels and IMU signs are provisional (see open questions
 | Byte | bit `0x01` | `0x02` | `0x04` | `0x08` | `0x10` | `0x20` | `0x40` | `0x80` |
 |---|---|---|---|---|---|---|---|---|
 | **2** | A | B | X | Y | QuickAccess (…) | R3 (rstick click) | Menu (☰) | R4 |
-| **3** | R5 | R1 (bumper) | Dpad Down | Dpad Right | Dpad Left | Dpad Up | *?* | L3 (lstick click) |
+| **3** | R5 | R1 (bumper) | Dpad Down | Dpad Right | Dpad Left | Dpad Up | View (⧉) | L3 (lstick click) |
 | **4** | Steam | L4 | L5 | L1 (bumper) | RStick touch | RPad touch | RPad click | RT full-pull (digital) |
 | **5** | LStick touch | LPad touch | LPad click | LT full-pull (digital) | **R** grip touch | **L** grip touch | *?* | *?* |
 
@@ -90,10 +90,13 @@ Notes:
   controller adds over a bare Steam Deck. They read **on whenever the handles
   are touched — including resting on a table** (byte 5 rests at `0x30`). With
   hands fully off the handles, byte 5 reads `0x00`.
+- Four **system buttons**: Steam (off4 `0x01`), Menu ☰ (off2 `0x40`), View ⧉
+  (off3 `0x40`), QuickAccess … (off2 `0x10`). The driver maps them to
+  `C` / `START` / `BACK` / `DOTS` respectively.
 - Triggers report both a 16-bit analog value (off 6–9) **and** a digital
   full-pull bit (off4 `0x80` / off5 `0x08`).
-- Unknown bits remaining: off3 `0x40`, off5 `0x40`, off5 `0x80` (may be unused
-  or rare buttons not present/triggered on the test unit).
+- Unknown bits remaining: off5 `0x40`, off5 `0x80` (may be unused or rare
+  inputs not present/triggered on the test unit).
 
 ## Comparison to the Steam Deck (`scc/drivers/steamdeck.py`)
 

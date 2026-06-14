@@ -96,7 +96,7 @@ class SC2Button(IntEnum):
     DPAD_RIGHT  = 1 << 11
     DPAD_LEFT   = 1 << 12
     DPAD_UP     = 1 << 13
-    UNKNOWN_3_6 = 1 << 14         # TODO: unmapped
+    VIEW        = 1 << 14         # View button (overlapping rectangles, top-left)
     LSTICKPRESS = 1 << 15         # L3
     # off4
     STEAM       = 1 << 16
@@ -140,9 +140,10 @@ _BUTTON_MAP = (
     (SC2Button.R4,          SCButtons.RGRIP),
     (SC2Button.L5,          SCButtons.LGRIP2),
     (SC2Button.R5,          SCButtons.RGRIP2),
-    (SC2Button.STEAM,       SCButtons.C),      # Steam/home button
-    (SC2Button.MENU,        SCButtons.START),  # hamburger
-    (SC2Button.QUICKACCESS, SCButtons.BACK),   # "..." (default; remappable)
+    (SC2Button.STEAM,       SCButtons.C),      # Steam / home button
+    (SC2Button.MENU,        SCButtons.START),  # hamburger (☰), top-right
+    (SC2Button.VIEW,        SCButtons.BACK),   # view / select (⧉), top-left
+    (SC2Button.QUICKACCESS, SCButtons.DOTS),   # "..." quick access, bottom-center
 )
 
 # field set mirrors steamdeck.DeckInput so the mapper sees familiar attributes

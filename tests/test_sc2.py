@@ -50,8 +50,9 @@ def test_grips_and_paddles():
 
 def test_system_buttons():
     assert parse_input(_frame({4: 0x01})).buttons & SCButtons.C        # Steam
-    assert parse_input(_frame({2: 0x40})).buttons & SCButtons.START    # menu
-    assert parse_input(_frame({2: 0x10})).buttons & SCButtons.BACK     # quick access
+    assert parse_input(_frame({2: 0x40})).buttons & SCButtons.START    # Menu (☰)
+    assert parse_input(_frame({3: 0x40})).buttons & SCButtons.BACK     # View (⧉)
+    assert parse_input(_frame({2: 0x10})).buttons & SCButtons.DOTS     # QuickAccess (…)
 
 
 def test_stick_clicks():
