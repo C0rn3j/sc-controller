@@ -724,13 +724,13 @@ class SCCDaemon(Daemon):
 		elif message.startswith(b"Feedback:"):
 			try:
 				position, amplitude = message[9:].strip().split(b" ", 2)
-				data = HapticData(getattr(HapticPos, position.strip(" \t\r")), int(amplitude))
+				data = HapticData(getattr(HapticPos, position.decode("ascii").strip()), int(amplitude))
 				if client.mapper.get_controller():
 					client.mapper.get_controller().feedback(data)
 				client.wfile.write(b"OK.\n")
 			except Exception as e:
 				log.exception(e)
-				client.wfile.write(b"Fail: %s\n" % (e,))
+				client.wfile.write(b"Fail: " + str(e).encode("utf-8") + b"\n")
 		elif message.startswith(b"Controller."):
 			with self.lock:
 				client.mapper = self.default_mapper
@@ -759,7 +759,7 @@ class SCCDaemon(Daemon):
 				number = int(message[4:])
 				number = clamp(0, number, 100)
 			except Exception as e:
-				client.wfile.write(b"Fail: %s\n" % (e,))
+				client.wfile.write(b"Fail: " + str(e).encode("utf-8") + b"\n")
 				return
 			if client.mapper.get_controller():
 				client.mapper.get_controller().set_led_level(number)
