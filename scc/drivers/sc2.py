@@ -4,9 +4,10 @@ Implements the reverse-engineered protocol from
 docs/steam-controller-v2-protocol.md. Validated end-to-end on real hardware
 via the wireless Puck (0x1304): lizard-mode disable plus button / stick / pad
 / trigger / gyro input through scc-daemon to uinput, and click haptics.
-Wired (0x1302) is supported too (single HID interface 0). Still TODO:
-continuous variable rumble, the Bluetooth (0x1303) transport, real serial
-read-back, and GUI assets (see inline).
+Wired (0x1302) is supported too (single HID interface 0), and the GUI gets
+images/sc2.config.json. Still TODO: continuous variable rumble, the Bluetooth
+(0x1303) transport, real serial read-back, and a dedicated v2 GUI background
+image (currently reuses the Deck's).
 
 Architecture mirrors the existing drivers:
   - the wireless "Controller Puck" (0x1304) is a multi-slot dongle, like
@@ -225,8 +226,10 @@ class SC2Controller(SCController):
     def __repr__(self) -> str:
         return f"<SC2 {self.get_id()}>"
 
-    def get_gui_config_file(self) -> str | None:
-        return None  # TODO: ship sc2.config.json + button images for the GUI
+    def get_gui_config_file(self) -> str:
+        # images/sc2.config.json (mirrors the Deck; reuses the deck background
+        # for now — a dedicated controller-images/sc2.svg is TODO)
+        return "sc2.config.json"
 
     def generate_serial(self) -> None:
         # real GET_SERIAL read-back over feature 0x01 is TODO; derive from topology
