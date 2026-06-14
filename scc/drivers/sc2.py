@@ -23,6 +23,8 @@ import struct
 from collections import namedtuple
 from enum import IntEnum
 
+import usb1
+
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons
 from scc.drivers.sc_dongle import SCController, SCPacketType
 from scc.drivers.usb import USBDevice, register_hotplug_device
@@ -40,9 +42,12 @@ FIRST_INTERFACE = 2
 FIRST_IN_ENDPOINT = 3
 MAX_SLOTS = 4
 
-# report 0x42 is 54 bytes including the report-ID byte
+# report 0x42 is 54 bytes including the report-ID byte; the endpoint also
+# carries shorter reports (0x43/0x44/0x7b/...), so we request the full max
+# packet (64) and accept any length, filtering by report ID in parse_input.
 INPUT_REPORT_ID = 0x42
 INPUT_SIZE = 54
+INPUT_BUFFER = 64
 
 # sticks sit off-center and jitter at rest (same reason the Deck uses a
 # deadzone); value is a placeholder pending in-headset/desktop tuning.  TODO
@@ -252,7 +257,35 @@ class SC2Puck(USBDevice):
         self.claim_by(klass=3, subclass=0, protocol=0)   # the HID interfaces
         self._controllers: dict[int, SC2Controller] = {}
         for i in range(MAX_SLOTS):
-            self.set_input_interrupt(FIRST_IN_ENDPOINT + i, INPUT_SIZE, self._on_input)
+            self._listen(FIRST_IN_ENDPOINT + i)
+
+    def _listen(self, endpoint: int) -> None:
+        """Submit a lenient interrupt-IN transfer.
+
+        Unlike USBDevice.set_input_interrupt, this resubmits regardless of the
+        received length, because this endpoint multiplexes reports of several
+        sizes (0x42=54B plus shorter 0x43/0x44/0x7b/... ). A strict length
+        check would stop resubmitting on the first short report and freeze input.
+        """
+        def cb(transfer: usb1.USBTransfer) -> None:
+            status = transfer.getStatus()
+            if status == usb1.TRANSFER_COMPLETED:
+                data = transfer.getBuffer()[:transfer.getActualLength()]
+                try:
+                    self._on_input(endpoint, data)
+                except Exception:
+                    log.exception("SC2 input handler failed")
+            elif status in (usb1.TRANSFER_NO_DEVICE, usb1.TRANSFER_CANCELLED):
+                return  # device gone / shutting down: do not resubmit
+            try:
+                transfer.submit()
+            except Exception:
+                pass
+
+        transfer = self.handle.getTransfer()
+        transfer.setInterrupt(usb1.ENDPOINT_IN | endpoint, INPUT_BUFFER, callback=cb)
+        transfer.submit()
+        self._transfer_list.append(transfer)
 
     # --- v2 transport: SET_REPORT to feature report 0x01 of the interface ---
     # The base class targets feature report 0x00 (wValue 0x0300); v2 numbered
