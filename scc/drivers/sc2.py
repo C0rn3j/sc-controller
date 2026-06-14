@@ -1,10 +1,11 @@
 """SC Controller - Steam Controller (2025, "v2") Driver.
 
-SCAFFOLD / WORK IN PROGRESS. Encodes the reverse-engineered protocol from
-docs/steam-controller-v2-protocol.md. Input report (0x42) parsing and the
-lizard-disable / LED / config commands are implemented from captured data;
-gyro enable, haptics, the wired (0x1302) and Bluetooth (0x1303) transports,
-serial read-back and GUI assets are still TODO (see notes inline).
+Implements the reverse-engineered protocol from
+docs/steam-controller-v2-protocol.md. Validated end-to-end on real hardware
+via the wireless Puck (0x1304): lizard-mode disable plus button / stick / pad
+/ trigger input flow through scc-daemon to uinput (digital and analog).
+Still TODO: gyro enable, haptics, the wired (0x1302) and Bluetooth (0x1303)
+transports, real serial read-back, and GUI assets (see notes inline).
 
 Architecture mirrors the existing drivers:
   - the wireless "Controller Puck" (0x1304) is a multi-slot dongle, like
@@ -214,13 +215,17 @@ class SC2Controller(SCController):
         # real GET_SERIAL read-back over feature 0x01 is TODO; derive from topology
         self._serial = "%s:%s" % (self._driver.device.getBusNumber(), self._driver.device.getPortNumber())
 
+    def disconnected(self) -> None:
+        # override SCController.disconnected: the puck keeps no serial pool
+        pass
+
     # --- v2 command channel -------------------------------------------------
     # All commands are CLEAR_MAPPINGS / CONFIGURE etc. (SCPacketType), but sent
     # to feature report 0x01 (handled by the puck's send_control override).
 
     def clear_mappings(self) -> None:
         # observed from Steam as "81 00" (after the 0x01 report-id prefix)
-        self._driver.overwrite_control(self._ccidx, struct.pack(">BB62x", SCPacketType.CLEAR_MAPPINGS, 0x00))
+        self._driver.overwrite_control(self._ccidx, struct.pack(">BB", SCPacketType.CLEAR_MAPPINGS, 0x00))
 
     def configure(self, idle_timeout=None, enable_gyros=None, led_level=None) -> None:
         # Replay the config blocks captured from Steam. These put the controller
@@ -233,7 +238,7 @@ class SC2Controller(SCController):
              0x08, 0x07, 0x00, 0x31, 0x02, 0x00, 0x52, 0x03)))
         # LED level: 87 03 2d <level>
         self._driver.overwrite_control(self._ccidx, struct.pack(
-            ">BBBB59x", SCPacketType.CONFIGURE, 0x03, 0x2D, int(self._led_level)))
+            ">BBBB", SCPacketType.CONFIGURE, 0x03, 0x2D, int(self._led_level)))
 
     def set_gyro_enabled(self, enabled: bool) -> None:
         self._enable_gyros = enabled
@@ -292,7 +297,9 @@ class SC2Puck(USBDevice):
     # reports require 0x0301 and a leading 0x01 byte in the payload.
 
     def send_control(self, index: int, data) -> None:
-        payload = bytes([0x01]) + bytes(data)
+        # prefix the report-ID byte and pad/clamp to exactly 64 bytes (the
+        # device stalls SET_REPORTs of any other length)
+        payload = (bytes([0x01]) + bytes(data))[:64]
         payload = payload + b"\x00" * (64 - len(payload))
         self._cmsg.insert(0, (0x21, 0x09, 0x0301, index, payload, 0))
 
