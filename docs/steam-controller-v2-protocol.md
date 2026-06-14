@@ -156,10 +156,10 @@ index, not v1's bulk endpoint) and the **CONFIGURE register layout**.
 
 ## Open questions / TODO
 
-1. **IMU axis polarity / convention**: accel (34–39), quaternion (40–47) and
-   gyro pitch/roll/yaw (48–53) are decoded and parsed, but the accel X/Y labels
-   and the gyro signs are provisional — verify with a gyro-mouse test and
-   flip/relabel as needed (cf. the Deck's `groll = -groll`).
+1. **IMU polarity (partly verified)**: gyro **yaw** and **pitch** signs checked
+   live via a gyro→mouse test — pitch is inverted in the driver so up→up; yaw is
+   natural. Still provisional: gyro **roll** sign (not exercised by that test),
+   and the accel X/Y labels / signs and quaternion handedness.
 2. **Trackpad pressure** scaling and the exact meaning of the pressure word.
 3. The remaining unknown button bits.
 4. The **CDC ACM** interface's purpose.

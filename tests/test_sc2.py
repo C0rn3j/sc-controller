@@ -91,7 +91,7 @@ def test_dpad():
 
 def test_imu():
     # IMU lands at offsets 34..53 (only nonzero when the gyro is enabled).
-    assert parse_input(_frame(i16={48: 5000})).gpitch == 5000
+    assert parse_input(_frame(i16={48: 5000})).gpitch == -5000   # pitch inverted (up->up)
     assert parse_input(_frame(i16={50: -6000})).groll == -6000
     assert parse_input(_frame(i16={52: 7000})).gyaw == 7000
     assert parse_input(_frame(i16={38: 16000})).accel_z == 16000
