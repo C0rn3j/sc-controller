@@ -65,7 +65,7 @@ All multi-byte values are **little-endian**. Offsets are into the hidraw read
 | 24–25 | i16 | Right pad X |
 | 26–27 | i16 | Right pad Y |
 | 28–29 | u16 | Right pad pressure |
-| 30–53 | 24 B | **Constant** in all captures → IMU is **disabled by default** (see below) |
+| 31–53 | ~23 B | **IMU** (accel/gyro/quaternion) — populated **only when the gyro is enabled** (constant otherwise). Sub-layout/scale TBD. |
 
 ### Button bits (offsets 2–5)
 
@@ -131,9 +131,10 @@ same shape as the v1/Deck command packets. The `packetType` opcodes match
 
 `CONFIGURE` (`0x87`) = `87 <len> <configType> <value…>`:
 - `87 03 2d <level>` — **LED brightness** (`configType 0x2D`; `0x64` = 100%).
-- `87 0f 30 18 00 07 07 00 08 07 00 31 02 00 52 03` — main config block
-  (`configType 0x30`, len `0x0f`); on v1 this region holds idle-timeout + the
-  gyro-enable byte. Exact v2 gyro register still TBD.
+- `87 0f 30 <gyro> 00 07 07 00 08 07 00 31 02 00 52 03` — main config block
+  (`configType 0x30`, len `0x0f`). The byte after `30` is the **gyro/accel
+  enable**: `0x18` turns the IMU on, `0x00` off (confirmed live; cf. the Deck's
+  `0x1C`). Once enabled, IMU data streams in report `0x42` at offsets ~31–53.
 - `87 06 34 ffff 35 ffff`, `87 03 22 64`, `87 03 23 50` — `(register, u16)` writes.
 
 Haptics: an **Output report `0x80`** on interrupt EP2, e.g.
@@ -145,10 +146,10 @@ index, not v1's bulk endpoint) and the **CONFIGURE register layout**.
 
 ## Open questions / TODO
 
-1. **Gyro/accel**: which `0x87` CONFIGURE register enables the IMU (determine
-   empirically — set candidate registers and watch report `0x42`'s tail and
-   report `0x43`); then whether the data fills offsets 30–53 of `0x42` or
-   arrives via another report, and its scale and axis order.
+1. **IMU sub-layout**: enable (`87 0f 30 18`) and location (report `0x42`
+   offsets ~31–53) are confirmed live; still need to decode the accel / gyro /
+   quaternion ordering, scale and axis polarity within that block, then parse
+   it in the driver (`parse_input` currently zeroes the gyro fields).
 2. **Trackpad pressure** scaling and the exact meaning of the pressure word.
 3. The remaining unknown button bits.
 4. The **CDC ACM** interface's purpose.
