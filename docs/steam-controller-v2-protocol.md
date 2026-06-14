@@ -104,20 +104,54 @@ map to `SCButtons`, and **periodically re-disable lizard mode** (the Deck calls
 `clear_mappings()` every `UNLIZARD_INTERVAL` frames — see
 `steamdeck.py::_on_input`).
 
+## Command channel (host → device)
+
+Captured by sniffing Steam's USB traffic (`usbmon`) as it grabbed the
+controller. Commands are USB control transfers — **`SET_REPORT`**
+(`bmRequestType=0x21`, `bRequest=0x09`):
+
+- `wValue` = `0x03<reportID>` for a **Feature** report (e.g. `0x0301` = feature
+  report `0x01`, the command channel) or `0x02<reportID>` for an **Output** report;
+- `wIndex` = the **interface number (2–5)** — i.e. which of the four puck slots;
+- `wLength` = `0x0040` (64-byte payload).
+
+Payload layout: `[reportID, packetType, length, params… , 0-pad to 64]` — the
+same shape as the v1/Deck command packets. The `packetType` opcodes match
+`SCPacketType` in `scc/drivers/sc_dongle.py`:
+
+| Opcode | Name | Observed | Meaning |
+|---|---|---|---|
+| `0x81` | CLEAR_MAPPINGS | `01 81 00…` (resent ~periodically) | **disable lizard mode** / clear mappings (heartbeat) |
+| `0x8E` | LIZARD_MODE | `01 8e 00…` | lizard-mode control |
+| `0x87` | CONFIGURE / LED | see below | settings & LED |
+| `0xAE` | GET_SERIAL | `01 ae 15 01…` | request serial (read back via GET_REPORT) |
+| `0xC1` | SET_AUDIO_INDICES | `01 c1 10 …` | audio indices |
+| `0xB4` | *(v2, not in v1)* | `b4 00…` via feature report `0x00`, polled continuously | wireless poll / keepalive? |
+| `0xED`/`0xAD`/`0xDC`/`0xE2` | *(v2)* | `01 ed … "user/wireless_transport"`, `"esb/bond"` | v2 key/value pairing & transport config |
+
+`CONFIGURE` (`0x87`) = `87 <len> <configType> <value…>`:
+- `87 03 2d <level>` — **LED brightness** (`configType 0x2D`; `0x64` = 100%).
+- `87 0f 30 18 00 07 07 00 08 07 00 31 02 00 52 03` — main config block
+  (`configType 0x30`, len `0x0f`); on v1 this region holds idle-timeout + the
+  gyro-enable byte. Exact v2 gyro register still TBD.
+- `87 06 34 ffff 35 ffff`, `87 03 22 64`, `87 03 23 50` — `(register, u16)` writes.
+
+Haptics: an **Output report `0x80`** on interrupt EP2, e.g.
+`80 01 40 1f 00 00 fb …`.
+
+**Implication:** the existing `sc_dongle.py` command builders port over; the
+differences are the **transport** (SET_REPORT/feature to a per-slot interface
+index, not v1's bulk endpoint) and the **CONFIGURE register layout**.
+
 ## Open questions / TODO
 
-1. **Command channel** (Feature reports `0x01`–`0x04` / Output `0x80`–`0x89`):
-   - How to **disable lizard mode** (stop the mouse/keyboard emulation) —
-     required for usable gamepad behavior.
-   - How to **enable the gyro/accel** (cf. the Deck's
-     `configure(enable_gyros=…)`).
-   - Best obtained by **sniffing Steam's own USB traffic** (`usbmon`) while it
-     configures the controller, rather than guessing report payloads.
-2. **IMU stream**: once enabled, determine whether it fills offsets 30–53 of
-   `0x42` or arrives via another report (`0x43`/`0x45`), and its scale/order.
-3. **Trackpad pressure** scaling and the exact meaning of the pressure word.
-4. The remaining unknown button bits.
-5. The **CDC ACM** interface's purpose.
+1. **Gyro/accel**: which `0x87` CONFIGURE register enables the IMU (determine
+   empirically — set candidate registers and watch report `0x42`'s tail and
+   report `0x43`); then whether the data fills offsets 30–53 of `0x42` or
+   arrives via another report, and its scale and axis order.
+2. **Trackpad pressure** scaling and the exact meaning of the pressure word.
+3. The remaining unknown button bits.
+4. The **CDC ACM** interface's purpose.
 
 ## How this was captured
 
