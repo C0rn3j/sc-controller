@@ -213,8 +213,8 @@ class Deck(USBDevice, SCController):
 			0
 			| ((self._input.buttons & DIRECTLY_TRANSLATABLE_BUTTONS) << 8)
 			| map_button(self._input, DeckButton.DOTS, SCButtons.DOTS)
-			# | map_button(self._input, DeckButton.RSTICKTOUCH, ....)	// not mapped
-			# | map_button(self._input, DeckButton.LSTICKTOUCH, ....) // not mapped
+			| map_button(self._input, DeckButton.RSTICKTOUCH, SCButtons.RSTICKTOUCH)
+			| map_button(self._input, DeckButton.LSTICKTOUCH, SCButtons.LSTICKTOUCH)
 			| map_button(self._input, DeckButton.LSTICKPRESS, SCButtons.STICKPRESS)
 			| map_button(self._input, DeckButton.RSTICKPRESS, SCButtons.RSTICKPRESS)
 			| map_button(self._input, DeckButton.LGRIP2, SCButtons.LGRIP2)
