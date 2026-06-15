@@ -60,6 +60,11 @@ def test_stick_clicks():
     assert parse_input(_frame({2: 0x20})).buttons & SCButtons.RSTICKPRESS
 
 
+def test_stick_touch():
+    assert parse_input(_frame({5: 0x01})).buttons & SCButtons.LSTICKTOUCH
+    assert parse_input(_frame({4: 0x10})).buttons & SCButtons.RSTICKTOUCH
+
+
 def test_triggers():
     assert parse_input(_frame(u16={6: 0x7F80})).ltrig == 255          # analog -> 0..255
     assert parse_input(_frame(u16={8: 0x7000})).rtrig == (0x7000 >> 7)

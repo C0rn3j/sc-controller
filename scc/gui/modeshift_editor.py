@@ -44,12 +44,14 @@ class ModeshiftEditor(Editor):
 		("Soft LT", _("Left Trigger (soft)")),
 		("Soft RT", _("Right Trigger (soft)")),
 		(None, None),
-		(SCButtons.STICKPRESS, _("Stick Pressed")),
+		(SCButtons.STICKPRESS, _("Left Stick Pressed")),
 		(SCButtons.RSTICKPRESS, _("Right Stick Pressed")),
 		(SCButtons.LPAD, _("Left Pad Pressed")),
 		(SCButtons.RPAD, _("Right Pad Pressed")),
 		(SCButtons.LPADTOUCH, _("Left Pad Touched")),
 		(SCButtons.RPADTOUCH, _("Right Pad Touched")),
+		(SCButtons.LSTICKTOUCH, _("Left Stick Touched")),
+		(SCButtons.RSTICKTOUCH, _("Right Stick Touched")),
 	)
 
 	def __init__(self, app, callback):
