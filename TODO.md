@@ -2,6 +2,10 @@ List of (possibly) planned features in no particular order:
 
 - Multiple on-screen menus (and possibly keyboards) when using multiple controllers
 - Injecting emulated xbox controller into wine
+- Invertible capacitive grip sensing (Steam Controller): a way to act when the
+  grip is *released* rather than held, since grip sensing reads "on" most of the
+  time while holding the controller. Could be a general "inverted button"
+  condition usable for any always-on sensor.
 
 Hard stuff:
 - Injecting emulated xbox controller into PlayOnLinux
