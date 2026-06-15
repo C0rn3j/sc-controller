@@ -34,6 +34,8 @@ class ModeshiftEditor(Editor):
 		(None, None),
 		(SCButtons.LGRIP, _("Left Grip")),
 		(SCButtons.RGRIP, _("Right Grip")),
+		(SCButtons.LGRIP2, _("Left Grip 2")),
+		(SCButtons.RGRIP2, _("Right Grip 2")),
 		(SCButtons.LB, _("Left Bumper")),
 		(SCButtons.RB, _("Right Bumper")),
 		(None, None),
