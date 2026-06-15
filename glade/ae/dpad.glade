@@ -135,11 +135,11 @@
         <col id="1">RSTICKTOUCH</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Left Grip Sensing</col>
+        <col id="0" translatable="yes">Left Grip Touched</col>
         <col id="1">LGRIPTOUCH</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Right Grip Sensing</col>
+        <col id="0" translatable="yes">Right Grip Touched</col>
         <col id="1">RGRIPTOUCH</col>
       </row>
       <row>
