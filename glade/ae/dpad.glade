@@ -127,6 +127,14 @@
         <col id="1">RSTICKPRESS</col>
       </row>
       <row>
+        <col id="0" translatable="yes">Left Stick Touched</col>
+        <col id="1">LSTICKTOUCH</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Right Stick Touched</col>
+        <col id="1">RSTICKTOUCH</col>
+      </row>
+      <row>
         <col id="0" translatable="yes">Left Pad Press</col>
         <col id="1">LPADPRESS</col>
       </row>
