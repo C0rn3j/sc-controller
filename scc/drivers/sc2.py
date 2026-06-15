@@ -126,9 +126,10 @@ class SC2Button(IntEnum):
     UNKNOWN_5_7 = 1 << 31         # TODO: unmapped
 
 
-# raw SC2 bit -> SCButtons. Stick/handle capacitive-touch and the unknown bits
-# are intentionally left out (no SCButtons equivalent yet).  L4/R4/L5/R5 follow
-# the Deck convention: upper paddles -> (L/R)GRIP, lower -> (L/R)GRIP2.
+# raw SC2 bit -> SCButtons. The capacitive *handle* grip sensors and the unknown
+# bits are left out (no SCButtons equivalent); the capacitive *stick* touch maps
+# to LSTICKTOUCH/RSTICKTOUCH. L4/R4/L5/R5 follow the Deck convention: upper
+# paddles -> (L/R)GRIP, lower -> (L/R)GRIP2.
 _BUTTON_MAP = (
     (SC2Button.A,           SCButtons.A),
     (SC2Button.B,           SCButtons.B),
@@ -142,6 +143,8 @@ _BUTTON_MAP = (
     (SC2Button.RSTICKPRESS, SCButtons.RSTICKPRESS),
     (SC2Button.LPADTOUCH,   SCButtons.LPADTOUCH),
     (SC2Button.RPADTOUCH,   SCButtons.RPADTOUCH),
+    (SC2Button.LSTICKTOUCH, SCButtons.LSTICKTOUCH),
+    (SC2Button.RSTICKTOUCH, SCButtons.RSTICKTOUCH),
     (SC2Button.LPADPRESS,   SCButtons.LPAD),
     (SC2Button.RPADPRESS,   SCButtons.RPAD),
     (SC2Button.L4,          SCButtons.LGRIP),
