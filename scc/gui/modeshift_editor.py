@@ -50,6 +50,8 @@ class ModeshiftEditor(Editor):
 		(SCButtons.RPAD, _("Right Pad Pressed")),
 		(SCButtons.LPADTOUCH, _("Left Pad Touched")),
 		(SCButtons.RPADTOUCH, _("Right Pad Touched")),
+		(SCButtons.LSTICKTOUCH, _("Left Stick Touched")),
+		(SCButtons.RSTICKTOUCH, _("Right Stick Touched")),
 	)
 
 	def __init__(self, app, callback):
