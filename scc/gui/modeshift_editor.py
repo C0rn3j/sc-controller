@@ -34,6 +34,8 @@ class ModeshiftEditor(Editor):
 		(None, None),
 		(SCButtons.LGRIP, _("Left Grip")),
 		(SCButtons.RGRIP, _("Right Grip")),
+		(SCButtons.LGRIP2, _("Left Grip 2")),
+		(SCButtons.RGRIP2, _("Right Grip 2")),
 		(SCButtons.LB, _("Left Bumper")),
 		(SCButtons.RB, _("Right Bumper")),
 		(None, None),
@@ -48,6 +50,10 @@ class ModeshiftEditor(Editor):
 		(SCButtons.RPAD, _("Right Pad Pressed")),
 		(SCButtons.LPADTOUCH, _("Left Pad Touched")),
 		(SCButtons.RPADTOUCH, _("Right Pad Touched")),
+		(SCButtons.LSTICKTOUCH, _("Left Stick Touched")),
+		(SCButtons.RSTICKTOUCH, _("Right Stick Touched")),
+		(SCButtons.LGRIPTOUCH, _("Left Grip Touched")),
+		(SCButtons.RGRIPTOUCH, _("Right Grip Touched")),
 	)
 
 	def __init__(self, app, callback):
