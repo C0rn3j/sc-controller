@@ -128,6 +128,14 @@
         <col id="1">RGRIP</col>
       </row>
       <row>
+        <col id="0" translatable="yes">Left Grip 2</col>
+        <col id="1">LGRIP2</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Right Grip 2</col>
+        <col id="1">RGRIP2</col>
+      </row>
+      <row>
         <col id="0" translatable="yes">-</col>
         <col id="1">x</col>
       </row>
@@ -154,6 +162,10 @@
       <row>
         <col id="0" translatable="yes">Stick Press</col>
         <col id="1">STICKPRESS</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Right Stick Press</col>
+        <col id="1">RSTICKPRESS</col>
       </row>
       <row>
         <col id="0" translatable="yes">Left Pad Press</col>
