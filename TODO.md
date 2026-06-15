@@ -5,7 +5,13 @@ List of (possibly) planned features in no particular order:
 - Invertible capacitive grip sensing (Steam Controller): a way to act when the
   grip is *released* rather than held, since grip sensing reads "on" most of the
   time while holding the controller. Could be a general "inverted button"
-  condition usable for any always-on sensor.
+  condition usable for any always-on sensor. Grip touch stays exposed on the
+  main controller image (it has no parent control to nest under).
+- "Touch" tab in the stick/pad action editor (next to Press / Hold /
+  Double-click) to bind the capacitive stick-touch sensor, instead of exposing
+  it on the main controller image.
+- Dedicated v2 controller artwork (traced SVG) with AREA_* anchors for every
+  control + matching sc2.config.json, replacing the borrowed Steam Deck image.
 
 Hard stuff:
 - Injecting emulated xbox controller into PlayOnLinux
