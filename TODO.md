@@ -10,8 +10,13 @@ List of (possibly) planned features in no particular order:
 - "Touch" tab in the stick/pad action editor (next to Press / Hold /
   Double-click) to bind the capacitive stick-touch sensor, instead of exposing
   it on the main controller image.
-- Dedicated v2 controller artwork (traced SVG) with AREA_* anchors for every
-  control + matching sc2.config.json, replacing the borrowed Steam Deck image.
+- mnuImage right-click "change background" menu has no `sc2` entry (the v2
+  image is selected automatically via sc2.config.json `gui.background`, but
+  it can't be picked manually from that menu yet).
+- LT/RT/GYRO side-panel icons still use the shared defaults (look fine; not
+  flagged). The rear paddles now use dedicated v2 oval icons (L4/R4/L5/R5,
+  from tools/sc2-assets/) and grip-touch shows both on the controller face
+  (curved surface, green on hover) and in the side-panel grid.
 
 Hard stuff:
 - Injecting emulated xbox controller into PlayOnLinux
@@ -20,6 +25,14 @@ Very hard stuff:
 - Visual feedback in binding editor ( [what this guy says](https://www.reddit.com/r/linux_gaming/comments/5pcdmr/sc_controller_use_steam_controller_without_steam/dcqpvf4/) )
 
 **Done** stuff:
+- Dedicated v2 controller artwork: traced SVG (tools/sc2-source.svg) wired by
+  tools/gen_sc2_image.py into controller-images/sc2.svg + v2 face-overlay
+  glyphs (button-images/sc2_*.svg, lifted from the drawn symbols so the face
+  buttons are blank in the art -> no duplication, monochrome ABXY, round Steam,
+  single dots) + v2 side-panel icons (images/sc2/*.svg, per-controller override
+  added in app.apply_gui_config_buttons). Control-name ids on sticks/pads/dpad/
+  bumpers + grip-touch shapes so everything highlights on hover; darker body
+  (#b8b8b8). sc2.config.json points at it all. Replaces the borrowed Deck image.
 - Multicontroller support
 - Configurable gamepad type (e.g. 4 axes and 16 buttons)
 - Steam Profile import
