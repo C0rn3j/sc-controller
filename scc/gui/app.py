@@ -86,8 +86,9 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.status = "unknown"
 		self.context_menu_for = None
 		self.daemon_changed_profile = False
-		self.osd_mode = False  # In OSD mode, only active profile can be editted
+		self.osd_mode = False  # legacy controller-driven OSD edit mode (retired; never enabled)
 		self.osd_mode_mapper = None
+		self.osk_edit_mode = False  # --osd: open only the OSD-keyboard bindings editor
 		self.background = None
 		self.outdated_version = None
 		self.profile_switchers: list[ProfileSwitcher] = []
@@ -1368,13 +1369,17 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		Gtk.Application.do_startup(self, *a)
 		self.load_profile_list()
 		self.setup_widgets()
-		if self.app.config["gui"]["enable_status_icon"]:
+		# No tray icon for the transient OSD-keyboard bindings editor launch.
+		if self.app.config["gui"]["enable_status_icon"] and not self.osk_edit_mode:
 			self.setup_statusicon()
 		self.set_daemon_status("unknown", True)
 
 	def do_local_options(self, trash, lo):
 		set_logging_level(lo.contains("verbose"), lo.contains("debug"))
-		self.osd_mode = lo.contains("osd")
+		# --osd opens the standalone OSD-keyboard bindings editor (do_activate) -
+		# the same dialog as Settings > Menus & Keyboard > Advanced. Used on both
+		# X11 and Wayland for a consistent, reliable single-window experience.
+		self.osk_edit_mode = lo.contains("osd")
 		return -1
 
 	def do_command_line(self, cl):
@@ -1400,11 +1405,48 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		return 0
 
 	def do_activate(self, *a) -> None:
+		if self.osk_edit_mode:
+			# "Edit Bindings" (OSD menu): show only the OSD-keyboard bindings
+			# editor, never the main window, and quit when it is closed - so it
+			# can't pile up duplicate main windows.
+			if not getattr(self, "_osk_editor", None):
+				self.open_osk_editor()
+			return
 		self.builder.get_object("window").show()
 		if self.config["gui"]["minimize_on_start"] and self.statusicon and self.statusicon.get_property("active"):
 			self.builder.get_object("window").hide()
 		else:
 			self.builder.get_object("window").show()
+
+	def open_osk_editor(self):
+		"""Opens the standalone OSD-keyboard bindings editor (the same window
+		reachable from Settings > Menus & Keyboard > Advanced) as the only
+		window, quitting the app when it closes. Backs the OSD menu's
+		'Edit Bindings' item."""
+		import fcntl
+
+		import scc.osd.osk_actions
+		from scc.actions import Action
+		from scc.gui.osk_binding_editor import OSKBindingEditor
+		# Single-instance: each "Edit Bindings" is its own process (the app is
+		# NON_UNIQUE), so without this a repeated launch would stack a second
+		# editor window. Hold an exclusive lock for our lifetime; if another
+		# launch already holds it, just quit instead of opening a duplicate.
+		try:
+			self._osk_lock = open(os.path.join(get_config_path(), ".osk-editor.lock"), "w")
+			fcntl.flock(self._osk_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+		except OSError:
+			log.info("OSD-keyboard bindings editor already open; not opening another")
+			self.quit()
+			return
+		except Exception:
+			log.exception("OSK editor single-instance lock failed; opening anyway")
+		# The OSD-keyboard profile uses OSK.* actions; register them so the
+		# editor can parse it (GlobalSettings does the same before opening it).
+		Action.register_all(scc.osd.osk_actions, prefix="OSK")
+		self._osk_editor = OSKBindingEditor(self)
+		self._osk_editor.window.connect("destroy", lambda *a: self.quit())
+		self._osk_editor.show(None)
 
 	def remove_dot_profile(self) -> None:
 		"""Checks if first profile in list begins with dot and if yes, removes it.
@@ -1489,7 +1531,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 		aso("verbose", b"v", "Be verbose")
 		aso("debug", b"d", "Be more verbose (debug mode)")
-		aso("osd", b"o", "OSD mode (OSD-controllable editor for current profile)")
+		aso("osd", b"o", "Open the OSD-keyboard bindings editor")
 
 	def save_profile_selection(self, path) -> None:
 		"""Saves name of profile into config file"""
