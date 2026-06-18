@@ -386,6 +386,38 @@ class SC2Device(USBDevice):
             c.mapper.input(c, c._old_state, idata)
         c._old_state = idata
 
+    def flush(self) -> None:
+        """Like USBDevice.flush, but a control write to one slot that fails with
+        a pipe error (its controller was e.g. turned off) drops only that
+        controller instead of letting the error tear down the whole dongle - so
+        the dongle keeps listening and re-adds the controller when it is turned
+        back on. A genuinely unplugged dongle raises USBErrorNoDevice instead,
+        which still propagates and closes the device."""
+        while self._cmsg:
+            msg = self._cmsg.pop()
+            try:
+                self.handle.controlWrite(*msg)
+            except usb1.USBErrorPipe:
+                self._slot_gone(msg[3])   # msg[3] == wIndex == interface
+        while self._rmsg:
+            msg, index, size, callback = self._rmsg.pop()
+            try:
+                self.handle.controlWrite(*msg)
+                data = self.handle.controlRead(0xA1, 0x01, 0x0300, index, size)
+                callback(data)
+            except usb1.USBErrorPipe:
+                self._slot_gone(index)
+
+    def _slot_gone(self, interface: int) -> None:
+        """Remove the controller on the given interface (slot) but keep the
+        dongle open, so a controller turned off then on is picked up again."""
+        for ep, c in list(self._controllers.items()):
+            if c._ccidx == interface:
+                log.debug("SC2 slot (interface %d) gone; keeping dongle alive", interface)
+                self.daemon.remove_controller(c)
+                del self._controllers[ep]
+                return
+
     def close(self) -> None:
         for c in self._controllers.values():
             self.daemon.remove_controller(c)

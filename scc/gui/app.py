@@ -95,6 +95,10 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.current_ui_layout = "default"  # only "default" and "deck" are supported
 		self.current_file = None  # Currently edited file
 		self.controller_count = 0
+		# Becomes True once a real controller's image has been shown. Used to
+		# keep that image (just with no controller) when the last controller is
+		# turned off, instead of reverting to the default Steam Controller image.
+		self._controller_shown = False
 		self.current = Profile(GuiActionParser())
 		self.just_started = True
 		self.button_widgets = {}
@@ -171,6 +175,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		stckEditor = self.builder.get_object("stckEditor")
 		lblEmpty = self.builder.get_object("lblEmpty")
 		if controller:
+			self._controller_shown = True
 			config = controller.load_gui_config(self.imagepath or {})
 		else:
 			config = {}
@@ -899,7 +904,11 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			# Special case, no controllers are connected, but one widget
 			# has to stay on screen
 			self.profile_switchers[0].set_controller(None)
-			self.load_gui_config_for_controller(None, first=True)
+			if not self._controller_shown:
+				# Nothing has been connected yet (startup): show the default
+				# image. If a controller was connected and is now off, keep its
+				# image on screen instead of reverting to the default one.
+				self.load_gui_config_for_controller(None, first=True)
 
 		self.controller_count = count
 
