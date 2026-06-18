@@ -14,9 +14,9 @@ from scc.gui.app import App
 @pytest.fixture
 def app(monkeypatch):
 	app = SimpleNamespace(
-		_activated=False, _startup_tray_timeout=None, osd_mode=False,
+		_activated=False, _startup_tray_timeout=None, osk_edit_mode=False,
 		config={"gui": {"minimize_on_start": True}},
-		window=Mock(), statusicon=Mock(),
+		window=Mock(), statusicon=Mock(), open_osk_editor=Mock(),
 	)
 	app.statusicon.get_property.return_value = False
 	for name in ("do_activate", "_cancel_startup_tray_wait", "on_startup_tray_active",
@@ -52,17 +52,27 @@ def test_missing_tray_shows_fallback_window(app):
 	assert app._startup_tray_timeout is None
 
 
-@pytest.mark.parametrize("mode", ["disabled", "no_icon", "osd"])
+@pytest.mark.parametrize("mode", ["disabled", "no_icon"])
 def test_startup_without_minimizing(app, mode):
 	if mode == "disabled":
 		app.config["gui"]["minimize_on_start"] = False
 	elif mode == "no_icon":
 		app.statusicon = None
-	else:
-		app.osd_mode = True
 	app.do_activate()
 	app.window.present.assert_called_once()
 	assert app._startup_tray_timeout is None
+
+
+def test_osd_mode_opens_only_keyboard_editor(app):
+	app.osk_edit_mode = True
+	app.do_activate()
+	app.open_osk_editor.assert_called_once()
+	app.window.present.assert_not_called()
+	app.window.set_visible.assert_not_called()
+	assert app._startup_tray_timeout is None
+	app._osk_editor = object()
+	app.do_activate()
+	app.open_osk_editor.assert_called_once()
 
 
 def test_reactivation_cancels_pending_startup_minimize(app):
