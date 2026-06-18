@@ -40,6 +40,9 @@ class RadialMenu(Menu):
 		self.scale = 1.0
 		self.items_with_icon = []
 
+	def scroll_wrap(self, parent):
+		return parent  # radial menu draws items on an SVG; no scroll viewport
+
 	def create_parent(self):
 		background = os.path.join(get_share_path(), "images", "radial-menu.svg")
 		self.b = SVGWidget(background)

@@ -19,6 +19,14 @@ from scc.osd import OSDWindow, StickController
 from scc.paths import get_share_path
 from scc.tools import _, circle_to_square, clamp, find_icon, find_menu
 
+# Importing these modules registers their menu generators in MENU_GENERATORS.
+# The OSD menu process must do this itself; otherwise MENU_GENERATORS stays
+# empty here and every {"generator": ...} entry is silently skipped (see
+# MenuData.from_json_data), so "recent profiles" never appears and the
+# "All Profiles" / "Autoswitch Options" submenus show only their separator.
+from scc.osd import menu_generators  # noqa: E402,F401  (profiles, recent, windowlist, games)
+from scc.x11 import autoswitcher  # noqa: E402,F401  (autoswitch)
+
 log = logging.getLogger("osd.menu")
 
 # Fill MENU_GENERATORS dict
@@ -50,7 +58,7 @@ class Menu(OSDWindow):
 
 		self.parent = self.create_parent()
 		self.f = Gtk.Fixed()
-		self.f.add(self.parent)
+		self.f.add(self.scroll_wrap(self.parent))
 		self.add(self.f)
 
 		self._submenu = None
@@ -76,6 +84,63 @@ class Menu(OSDWindow):
 		v = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 		v.set_name("osd-menu")
 		return v
+
+	def scroll_wrap(self, parent):
+		"""Wrap the vertical item list in a scrolled viewport capped to the screen
+		height, so very long menus (e.g. hundreds of profiles) don't run off-screen.
+		Overridden to a no-op by grid/radial/horizontal menus."""
+		sw = Gtk.ScrolledWindow()
+		sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+		try:
+			sw.set_shadow_type(Gtk.ShadowType.NONE)
+		except Exception:
+			pass
+		sw.add(parent)
+		self._scrollwindow = sw
+		return sw
+
+	def _max_menu_height(self):
+		"""Largest the menu may grow before scrolling (monitor height minus margin)."""
+		try:
+			display = Gdk.Display.get_default()
+			monitor = display.get_primary_monitor() or display.get_monitor(0)
+			return max(240, monitor.get_geometry().height - 80)
+		except Exception:
+			return 720
+
+	def _fit_scroll(self):
+		"""Size the scrolled viewport to the packed items, capped to the screen.
+		The item box is empty when scroll_wrap() runs and a GtkFixed won't expand
+		the viewport afterwards, so the size is set here once items are present."""
+		sw = getattr(self, "_scrollwindow", None)
+		if sw is None:
+			return
+		self.parent.show_all()
+		nath = self.parent.get_preferred_height()[1]
+		natw = self.parent.get_preferred_width()[1]
+		cap = self._max_menu_height()
+		if nath > cap:
+			sw.set_size_request(natw + 24, cap)
+		else:
+			sw.set_size_request(natw, nath)
+
+	def _ensure_visible(self, widget):
+		"""Scroll the viewport (if any) so the selected item stays on screen."""
+		sw = getattr(self, "_scrollwindow", None)
+		if sw is None or widget is None:
+			return
+		adj = sw.get_vadjustment()
+		if adj is None:
+			return
+		alloc = widget.get_allocation()
+		page = adj.get_page_size()
+		if alloc.height <= 0 or page <= 0:
+			return
+		val = adj.get_value()
+		if alloc.y < val:
+			adj.set_value(alloc.y)
+		elif alloc.y + alloc.height > val + page:
+			adj.set_value(alloc.y + alloc.height - page)
 
 	def pack_items(self, parent, items):
 		for item in items:
@@ -288,6 +353,7 @@ class Menu(OSDWindow):
 					self.controller.feedback(*self.feedback)
 			self._selected = self.items[index]
 			self._selected.widget.set_name(self._selected.widget.get_name() + "-selected")
+			self._ensure_visible(self._selected.widget)
 			GLib.timeout_add(2, self._check_on_screen_position)
 			return True
 		return False
@@ -337,6 +403,7 @@ class Menu(OSDWindow):
 	def show(self, *a):
 		if not self.select(0):
 			self.next_item(1)
+		self._fit_scroll()
 		OSDWindow.show(self, *a)
 		GLib.timeout_add(1, self._check_on_screen_position, True)
 

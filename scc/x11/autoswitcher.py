@@ -267,6 +267,10 @@ class Condition:
 			# Empty condition matches nothing
 			return False
 
+		# A window may have no title (None), common under XWayland; treat it as ""
+		# so the title/regexp checks below do not raise (they just will not match).
+		window_title = window_title or ""
+
 		if self.wm_class:
 			if self.wm_class != wm_class[0] and self.wm_class != wm_class[1]:
 				# Window class matching is enabled and window doesn't match
@@ -319,6 +323,14 @@ class AutoswitchOptsMenuGenerator(MenuGenerator):
 
 	def generate(self, menuhandler):
 		rv = []
+		# Autoswitch finds the focused window via X. Under a Wayland session those
+		# queries are unreliable, cannot see native Wayland windows, and have been
+		# observed to hard-crash the OSD (an X-level abort uncatchable in Python),
+		# so do not attempt them there.
+		if os.environ.get("WAYLAND_DISPLAY"):
+			rv.append(self.mk_item(None, _("Autoswitch needs an X11 session")))
+			rv.append(self.mk_item("as::close", _("Close")))
+			return rv
 		win = X.get_current_window(menuhandler.xdisplay)
 		if not win:
 			# Bail out if active window cannot be determined
@@ -338,7 +350,7 @@ class AutoswitchOptsMenuGenerator(MenuGenerator):
 				break
 		if win:
 			display_title = self.title or _("No Title")
-			rv.append(self.mk_item(None, _("Current Window: %s") % (self.title[0:25],)))
+			rv.append(self.mk_item(None, _("Current Window: %s") % (display_title[0:25],)))
 			if self.assigned_prof:
 				rv.append(self.mk_item(None, _("Assigned Profile: %s") % (self.assigned_prof,)))
 			else:
