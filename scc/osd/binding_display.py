@@ -511,7 +511,7 @@ def _rstick(p):
 
 
 LAYOUTS = {
-	# Steam Controller v2 (2025) -- Steam Deck control set: two sticks, a D-pad,
+	# Steam Controller v2 (2026) -- Steam Deck control set: two sticks, a D-pad,
 	# two trackpads, four system buttons, back paddles + grip-squeeze sensors.
 	# Six boxes: four corners + top/bottom centre, controller art in the middle.
 	"sc2": [

@@ -33,7 +33,7 @@ class Config:
 			"sc_by_cable": True,
 			"sc_by_bt": True,
 			"steamdeck": True,
-			"sc2": True,  # new Steam Controller (2025)
+			"sc2": True,  # new Steam Controller (2026)
 			"fake": False,  # Used for developement
 			"hiddrv": True,
 			"evdevdrv": True,
