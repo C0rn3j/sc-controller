@@ -58,6 +58,27 @@
                 <property name="position">1</property>
               </packing>
             </child>
+            <child>
+              <object class="GtkCheckButton" id="cbActOnRelease">
+                <property name="label" translatable="yes">Act on release</property>
+                <property name="width-request">150</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="halign">start</property>
+                <property name="valign">end</property>
+                <property name="xalign">0</property>
+                <property name="draw-indicator">True</property>
+                <property name="tooltip-text" translatable="yes">Fire when the button or sensor is released instead of pressed. Useful for always-on sensors like the capacitive handle grips, which read "on" while the controller is held.</property>
+                <signal name="toggled" handler="on_cbActOnRelease_toggled" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="pack-type">end</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
