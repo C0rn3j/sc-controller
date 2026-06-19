@@ -339,6 +339,39 @@ class ReleasedModifier(PressedModifier):
 		mapper.schedule(0.02, self._release)
 
 
+class InvertedButtonModifier(Modifier):
+	"""Acts on button release instead of press ("Act on release").
+
+	Swaps press and release, so the wrapped action is held while the physical
+	button is NOT pressed. Meant for always-on sensors such as the Steam
+	Controller's capacitive handle grips, which read "on" the whole time the
+	controller is held - inverting them lets the action fire when you let go.
+	Unlike PressedModifier/ReleasedModifier (which emit a momentary tap), this
+	is a true held inversion of the button state.
+	"""
+	COMMAND = "inverted"
+
+	def describe(self, context):
+		if context in (Action.AC_STICK, Action.AC_PAD):
+			return _("(act on release)") + "\n" + self.action.describe(context)
+		return _("(act on release)") + " " + self.action.describe(context)
+
+	def strip(self):
+		return self.action.strip()
+
+	def compress(self):
+		self.action = self.action.compress()
+		return self
+
+	def button_press(self, mapper):
+		# Physical press -> the wrapped action is released
+		self.action.button_release(mapper)
+
+	def button_release(self, mapper):
+		# Physical release -> the wrapped action is pressed
+		self.action.button_press(mapper)
+
+
 class BallModifier(Modifier, WholeHapticAction):
 	"""Emulates ball-like movement with inertia and friction.
 
