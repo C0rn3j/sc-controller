@@ -126,6 +126,10 @@ class Config:
 		"menu_control": "STICK",
 		"menu_confirm": "A",
 		"menu_cancel": "B",
+		# Remembered profile name, restored when this controller (re)connects.
+		# None means "use the global default". See SCCDaemon.add_controller and
+		# SCCDaemon._remember_controller_profile.
+		"profile": None,
 	}
 
 	def __init__(self):
