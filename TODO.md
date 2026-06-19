@@ -1,12 +1,16 @@
 List of (possibly) planned features in no particular order:
 
 - Multiple on-screen menus (and possibly keyboards) when using multiple controllers
+- Remember each controller's profile across (re)connects. Today a controller
+  always loads the global default (recent_profiles[0]) on connect; the per-
+  controller config (config["controllers"][id]) stores name/icon/LED/etc. but no
+  profile. Add a "profile" key there, persist it from the daemon's "Profile:"
+  handler for *explicit* user selections only (exclude the autoswitch daemon and
+  .mod/.scc-osd temp profiles), and load it in add_controller - overriding the
+  reused pooled-mapper leftover and falling back to the global default. Keyed by
+  controller id, so it follows the physical device only with "Use Serial Numbers"
+  on (per-slot / connection-order otherwise).
 - Injecting emulated xbox controller into wine
-- Invertible capacitive grip sensing (Steam Controller): a way to act when the
-  grip is *released* rather than held, since grip sensing reads "on" most of the
-  time while holding the controller. Could be a general "inverted button"
-  condition usable for any always-on sensor. Grip touch stays exposed on the
-  main controller image (it has no parent control to nest under).
 - "Touch" tab in the stick/pad action editor (next to Press / Hold /
   Double-click) to bind the capacitive stick-touch sensor, instead of exposing
   it on the main controller image.
@@ -25,6 +29,10 @@ Very hard stuff:
 - Visual feedback in binding editor ( [what this guy says](https://www.reddit.com/r/linux_gaming/comments/5pcdmr/sc_controller_use_steam_controller_without_steam/dcqpvf4/) )
 
 **Done** stuff:
+- "Act on release" (inverted button): a general InvertedButtonModifier plus a
+  checkbox in the button action editor (next to Toggle/Repeat) that fires a
+  binding on *release* instead of press - for always-on sensors like the
+  capacitive grips. Round-trips with the Custom Action `inverted(...)` token.
 - Dedicated v2 controller artwork: traced SVG (tools/sc2-source.svg) wired by
   tools/gen_sc2_image.py into controller-images/sc2.svg + v2 face-overlay
   glyphs (button-images/sc2_*.svg, lifted from the drawn symbols so the face
