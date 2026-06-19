@@ -237,7 +237,8 @@ def main():
         for name in ("LGRIPTOUCH", "RGRIPTOUCH"):  # AREA == grip surface bbox (+nudge)
             x, y, w, h = grip[name][1]
             add_area(name, (x + GRIP_SHIFT_X) * SCALE, y * SCALE, w * SCALE, h * SCALE)
-        for name, k in (("LPADTEST", "LPAD"), ("RPADTEST", "RPAD"), ("STICKTEST", "STICK"), ("RSTICKTEST", "RSTICK")):
+        for name, k in (("LPADTEST", "LPAD"), ("RPADTEST", "RPAD"), ("STICKTEST", "STICK"),
+                        ("RSTICKTEST", "RSTICK"), ("DPADTEST", "DPAD")):
             x, y, w, h = REGION[k]
             add_area(name, x * SCALE, y * SCALE, w * SCALE, h * SCALE)
         return ET.ElementTree(svg)

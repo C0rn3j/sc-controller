@@ -15,7 +15,7 @@ from gi.repository import Gdk, Gio, GLib, Gtk
 
 from scc.actions import NoAction
 from scc.config import Config
-from scc.constants import DAEMON_VERSION, LEFT, RIGHT, STICK, STICK_PAD_MAX, SCButtons
+from scc.constants import DAEMON_VERSION, DPAD, LEFT, RIGHT, RSTICK, STICK, STICK_PAD_MAX, SCButtons
 from scc.custom import load_custom_module
 from scc.gui.binding_editor import BindingEditor
 from scc.gui.controller_image import ControllerImage
@@ -150,9 +150,13 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.lpad_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
 		self.rpad_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
 		self.stick_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
+		self.rstick_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
+		self.dpad_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
 		self.main_area.put(self.lpad_test, 40, 40)
 		self.main_area.put(self.rpad_test, 290, 90)
 		self.main_area.put(self.stick_test, 150, 40)
+		self.main_area.put(self.rstick_test, 290, 40)
+		self.main_area.put(self.dpad_test, 40, 90)
 
 		# Headerbar
 		headerbar(self.builder.get_object("hbWindow"))
@@ -994,6 +998,10 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 					"DOTS",
 					"LGRIPTOUCH",
 					"RGRIPTOUCH",
+					# ...and the right stick + d-pad positions (positional axis
+					# sources; never fire on controllers without them)
+					"RSTICK",
+					"DPAD",
 				)
 				self.test_mode_controller = c
 
@@ -1052,11 +1060,13 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.set_daemon_status("error", True)
 
 	def on_daemon_event_observer(self, daemon, c, what, data):
-		if what in (LEFT, RIGHT, STICK):
+		if what in (LEFT, RIGHT, STICK, RSTICK, DPAD):
 			widget, area = {
 				LEFT: (self.lpad_test, "LPADTEST"),
 				RIGHT: (self.rpad_test, "RPADTEST"),
 				STICK: (self.stick_test, "STICKTEST"),
+				RSTICK: (self.rstick_test, "RSTICKTEST"),
+				DPAD: (self.dpad_test, "DPADTEST"),
 			}[what]
 			# Check if stick or pad is released
 			if data[0] == data[1] == 0:
