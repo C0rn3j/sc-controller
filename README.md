@@ -12,7 +12,7 @@ User-mode driver, mapper and GTK3 based GUI for Steam Controller, DS4 and many o
 
 ## Features
 - Allows to setup, configure and use the Steam Controller without ever launching Steam
-- Connect multiple controllers at the same time
+- Connect multiple controllers at the same time, each with its own remembered profile
 - Supports profiles switchable in GUI or with controller button
 - Stick, Pads and Gyroscope input
 - Steam Controller 2 (2026) support, including its capacitive stick-touch and grip sensors — bind actions to them directly, or use them as conditions in mode-shift combinations
@@ -23,6 +23,41 @@ User-mode driver, mapper and GTK3 based GUI for Steam Controller, DS4 and many o
 - Emulates Xbox360 controller, mouse, trackball and keyboard.
 
 Based on [Standalone Steam Controller Driver](https://github.com/ynsta/steamcontroller) by [Ynsta](https://github.com/ynsta).
+
+## Using multiple controllers
+
+SC Controller can drive several controllers at once — Steam Controllers (v1 and
+v2), a DualShock 4 and others can all be connected together.
+
+- **One window, one bar per controller.** Just connect them: each controller
+  gets its own profile selector stacked in the main window, there is no separate
+  window per device. The controller that connected *first* is the primary one —
+  it is the one drawn on the big controller image and the default target when a
+  command (a menu, the OSD) does not name a specific controller.
+- **Each controller keeps its own profile.** Picking a profile from a
+  controller's own bar applies only to that controller. The choice is remembered
+  and restored automatically the next time that controller connects, so you do
+  not have to re-pick it every session.
+- **Disconnecting is safe.** Turning one controller off (or letting it go idle)
+  leaves the window and the other controllers untouched; when it comes back it
+  returns to its remembered profile.
+
+### Telling controllers apart
+
+How a controller is identified — and therefore which remembered profile and
+per-controller settings it gets — is governed by **Use Serial Numbers to
+Identify Controllers** in *Settings*:
+
+- **Off (default):** controllers are identified by connection order (first
+  connected, second connected, …). This is simplest for a fixed setup, but if
+  you change which controller powers on first they will swap profiles.
+- **On:** each controller is identified by its own hardware serial number, so
+  its profile and settings follow the physical device no matter what order
+  things connect in.
+
+Turn this **on** when you regularly use more than one controller — especially
+two of the same model, such as two Steam Controllers — and want each to reliably
+keep its own profile.
 
 ## Like what I'm doing?
 
