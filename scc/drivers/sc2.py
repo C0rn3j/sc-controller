@@ -1,4 +1,4 @@
-"""SC Controller - Steam Controller (2025, "v2") Driver.
+"""SC Controller - Steam Controller (2026, "v2") Driver.
 
 Implements the reverse-engineered protocol from
 docs/steam-controller-v2-protocol.md. Validated end-to-end on real hardware
@@ -140,6 +140,11 @@ _BUTTON_MAP = (
     (SC2Button.LB,          SCButtons.LB),
     (SC2Button.RT_FULL,     SCButtons.RT),
     (SC2Button.LT_FULL,     SCButtons.LT),
+    # Stick-press: the generic, cross-driver SCButtons set keeps the Steam
+    # Controller v1 name STICKPRESS for the LEFT stick (v1 had a single, left
+    # stick) and RSTICKPRESS for the right - so the left maps to STICKPRESS and
+    # the right to RSTICKPRESS, exactly like the Steam Deck driver. (SC2Button
+    # itself has only LSTICKPRESS/RSTICKPRESS; there is no SC2Button.STICKPRESS.)
     (SC2Button.LSTICKPRESS, SCButtons.STICKPRESS),
     (SC2Button.RSTICKPRESS, SCButtons.RSTICKPRESS),
     (SC2Button.LPADTOUCH,   SCButtons.LPADTOUCH),

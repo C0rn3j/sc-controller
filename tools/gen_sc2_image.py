@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the v2 (Steam Controller 2025) GUI assets from traced source SVGs.
+"""Generate the v2 (Steam Controller 2026) GUI assets from traced source SVGs.
 
 Sources (in tools/):
   sc2-source.svg          -- controller artwork (Inkscape layer g1)
