@@ -159,6 +159,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.main_area.put(self.lpad_test, 40, 40)
 		self.main_area.put(self.rpad_test, 290, 90)
 		self.main_area.put(self.stick_test, 150, 40)
+		self.main_area.put(self.rstick_test, 290, 40)
+		self.main_area.put(self.dpad_test, 40, 90)
 
 		# Headerbar
 		headerbar(self.builder.get_object("hbWindow"))
