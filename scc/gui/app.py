@@ -979,6 +979,12 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 					"RIGHT",
 					"STICK",
 					"STICKPRESS",
+					# v2 (Steam Controller 2025) additions: the "..." button and
+					# the capacitive handle-grip sensors (highlight by id; valid
+					# SCButtons, so harmless/never-fire on controllers without them)
+					"DOTS",
+					"LGRIPTOUCH",
+					"RGRIPTOUCH",
 				)
 				self.test_mode_controller = c
 
@@ -1050,13 +1056,17 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			if not widget.is_visible():
 				widget.show()
 			# Grab values
-			ax, ay, aw, trash = self.background.get_area_position(area)
+			ax, ay, aw, ah = self.background.get_area_position(area)
 			cw = widget.get_allocation().width
-			# Compute center
-			x, y = ax + aw * 0.5 - cw * 0.5, ay + 1.0 - cw * 0.5
-			# Add pad position
+			ch = widget.get_allocation().height
+			# Rest position = centre of the area on BOTH axes (the old code
+			# used 'ay + 1.0' for Y, pinning the cursor to the top of the area
+			# so it sat half a control too high until the stick/pad was pushed).
+			x = ax + aw * 0.5 - cw * 0.5
+			y = ay + ah * 0.5 - ch * 0.5
+			# Add pad/stick position
 			x += data[0] * aw / STICK_PAD_MAX * 0.5
-			y -= data[1] * aw / STICK_PAD_MAX * 0.5
+			y -= data[1] * ah / STICK_PAD_MAX * 0.5
 			# Move circle
 			self.main_area.move(widget, x, y)
 		elif what in ("LT", "RT", "STICKPRESS"):
