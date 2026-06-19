@@ -31,7 +31,7 @@ from scc.parser import TalkingActionParser
 from scc.poller import Poller
 from scc.profile import Profile
 from scc.scheduler import Scheduler
-from scc.tools import clamp, find_binary, find_menu, find_profile, nameof, set_logging_level, shjoin, shsplit
+from scc.tools import clamp, find_binary, find_menu, find_profile, get_profile_name, nameof, set_logging_level, shjoin, shsplit
 from scc.uinput import CannotCreateUInputException
 
 log = logging.getLogger("SCCDaemon")
@@ -198,6 +198,31 @@ class SCCDaemon(Daemon):
 			self.send_profile_info(mapper.get_controller(), self._send_to_all)
 		else:
 			self.send_profile_info(None, self._send_to_all, mapper=mapper)
+
+	def _remember_controller_profile(self, client, filename):
+		"""Persists a controller's profile so it is restored on (re)connect.
+
+		Only explicit, user-initiated selections are remembered: the autoswitch
+		daemon's contextual per-window switches and transient live-edit (.mod)
+		profiles are skipped. Stored by name under
+		config["controllers"][<id>]["profile"]; with "Use Serial Numbers" on
+		that id is the physical device, otherwise it is the connection slot.
+		"""
+		if client is self.autoswitch_daemon:
+			# Autoswitcher changes are contextual, not the controller's choice
+			return
+		if filename.endswith(".mod"):
+			# Transient profile produced while live-editing in the GUI
+			return
+		c = client.mapper.get_controller() if client.mapper else None
+		if c is None:
+			return
+		name = get_profile_name(filename)
+		config = Config()
+		cc = config.get_controller_config(c.get_id())
+		if cc.get("profile") != name:
+			cc["profile"] = name
+			config.save()
 
 	def _send_to_all(self, message_str):
 		"""Sends message to all connect clients.
@@ -486,9 +511,27 @@ class SCCDaemon(Daemon):
 		else:
 			# New controller, but no mapper created
 			mapper = self.init_mapper()
-			self.load_default_profile(mapper)
 		mapper.set_controller(c)
 		c.set_mapper(mapper)
+
+		# Load this controller's remembered profile if it has a valid one,
+		# otherwise fall back to the global default. Done explicitly (rather
+		# than relying on the mapper's existing profile) so a reused/pooled
+		# mapper never carries over the profile of a previously-bound
+		# controller. With a single controller and no remembered profile this
+		# is exactly the old behavior (the global default is loaded).
+		remembered = Config().get_controller_config(c.get_id()).get("profile")
+		path = find_profile(remembered) if remembered else None
+		if path:
+			try:
+				mapper.profile.load(path).compress()
+				log.debug("Loaded remembered profile '%s' for %s", remembered, c.get_id())
+			except Exception as e:
+				log.warning("Failed to load remembered profile '%s' for %s: %s", remembered, c.get_id(), e)
+				self.load_default_profile(mapper)
+		else:
+			self.load_default_profile(mapper)
+
 		if mapper == self.default_mapper:
 			log.debug("Assigned default_mapper to %s", c)
 		if mapper.profile.gyro:
@@ -702,6 +745,7 @@ class SCCDaemon(Daemon):
 				try:
 					filename = message[8:].decode("utf-8").strip("\t ")
 					self._set_profile(client.mapper, filename)
+					self._remember_controller_profile(client, filename)
 					log.info("Loaded profile '%s'", filename)
 					client.wfile.write(b"OK.\n")
 				except Exception as e:
