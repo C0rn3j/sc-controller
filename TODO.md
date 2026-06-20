@@ -33,6 +33,35 @@ List of (possibly) planned features in no particular order:
   reads - so multiple v1s with "Use Serial Numbers" on are detected reliably.
   Remaining nicety: investigate *why* GET_SERIAL stalls, so a v1 always ends up
   with its real serial (today a persistent stall yields a positional id instead).
+- Continuous "HD rumble" for the Steam Controller v2 (and v1/Deck). The SC pads
+  are LRA voice-coil actuators, not ERM spin-motors. We already drive single
+  pulses (v1: FEEDBACK report 0x8F; v2: interrupt-OUT report 0x82, effect 0x01 =
+  one click) which suit pad/scroll detents but NOT sustained, amplitude/
+  frequency-modulated game rumble. Gap: the v2's continuous-rumble report is
+  unknown (see sc2.py feedback(): "sustained game rumble may need another report,
+  not yet found"); the v2 uses its own report scheme (interrupt-OUT 0x82),
+  distinct from the Deck's feature-report commands, so it needs confirming for
+  the v2 specifically. Approach (do NOT brute-force the HID space by trial and
+  error - a wrong report just does nothing and gives no signal):
+    1. Read the canonical implementations: SDL's hidapi Steam driver
+       (SDL_hidapi_steam.c / SDL_hidapi_steamdeck.c - ID_TRIGGER_RUMBLE_CMD plus
+       the left/right gain "magic numbers") and the Linux kernel
+       drivers/hid/hid-steam.c (FF play_effect, derived from SDL's Deck code).
+    2. Check first whether SDL3 already rumbles the v2 by its VID/PID - if so,
+       its source *is* the v2 report format and no capture is needed.
+    3. Otherwise capture ground truth: run Steam Input on the v2, trigger rumble
+       (Steam's controller rumble test, or a rumbling game) and capture the USB
+       OUTPUT reports with usbmon + Wireshark; decode the continuous-rumble
+       report Steam actually sends.
+    4. Replicate it in sc2.py feedback() and diff the emitted bytes against the
+       capture to confirm.
+    5. Map the emulated gamepad's FF_RUMBLE strong/weak magnitudes to the LRA's
+       amplitude/frequency/gain and tune for feel (LRA != ERM, so a curve is
+       needed).
+  Plumbing already exists (emulated gamepad FF -> controller.feedback()); the
+  missing piece is the v2 continuous-rumble report itself. Refs: SDL hidapi steam
+  driver, kernel hid-steam.c, and Alice Mikhaylenko's "Steam Deck, HID, and
+  libmanette adventures" writeup.
 
 Hard stuff:
 - Injecting emulated xbox controller into PlayOnLinux
