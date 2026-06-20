@@ -21,6 +21,24 @@ List of (possibly) planned features in no particular order:
   flagged). The rear paddles now use dedicated v2 oval icons (L4/R4/L5/R5,
   from tools/sc2-assets/) and grip-touch shows both on the controller face
   (curved surface, green on hover) and in the side-panel grid.
+- Custom small (24px) controller icons per supported controller. Today only the
+  Steam Controller v1 (sc-*) and v2 (sc2-*) have bespoke top-down glyphs; every
+  other type (deck, ds4, ds5, evdev, hid, scbt, fake) reuses the same generic
+  silhouette, just recolored. Draw a distinct glyph per type so each controller
+  is recognisable at a glance. The v2 glyph could also be refined further (its
+  trackpads are necessarily small at 24px).
+- Steam Controller v1 serial read / "Use Serial Numbers" with multiple v1
+  dongles. With serials ON and two wireless v1 dongles (28de:1142), only one v1
+  shows. The serial read itself *succeeds* (a real serial like FC636217CB comes
+  back) - the problem is that one dongle throws a `USBErrorPipe` during flush and
+  the daemon closes the whole dongle (usb.py mainloop -> Dongle.close ->
+  remove_controller), dropping its v1. Serials ON triggers it consistently
+  because the async GET_SERIAL read opens a window where the not-yet-added
+  controller is lost on teardown; serials OFF adds controllers immediately so
+  nothing is pending. Likely fix: treat a (transient) pipe stall as recoverable
+  - clearHalt the endpoint and keep the device - instead of tearing the dongle
+  down, and/or make the pending-serial window survive a dongle hiccup. Workaround
+  for now: use serials OFF for multiple v1s (both appear, with positional ids).
 
 Hard stuff:
 - Injecting emulated xbox controller into PlayOnLinux
