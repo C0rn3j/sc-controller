@@ -97,8 +97,14 @@ class Dongle(USBDevice):
 	def _on_input(self, endpoint, data):
 		tup = ControllerInput._make(struct.unpack(TUP_FORMAT, data))
 		if tup.status == SCStatus.HOTPLUG:
-			# Most of INPUT_FORMAT doesn't apply here
-			if ord(str(data[4])) == 2:
+			# Most of INPUT_FORMAT doesn't apply here.
+			# data[4] is the connect flag (2 == connected). It is already an int
+			# in Python 3; the old `ord(str(data[4]))` computed ord("2") == 50,
+			# so this branch never fired -- idle controllers that announce via
+			# HOTPLUG (instead of streaming INPUT) were never added, and every
+			# HOTPLUG packet fell through to the 'disconnected' branch below,
+			# spuriously dropping already-connected controllers.
+			if data[4] == 2:
 				# Controller connected
 				if endpoint not in self._controllers:
 					self._add_controller(endpoint)
