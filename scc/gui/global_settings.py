@@ -331,9 +331,13 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 
 	def on_btRestartEmulation_clicked(self, *a):
 		rvRestartWarning = self.builder.get_object("rvRestartWarning")
-		self.app.dm.stop()
 		rvRestartWarning.set_reveal_child(False)
-		GLib.timeout_add_seconds(1, self.app.dm.start)
+		# Use the daemon's built-in restart (stop-and-wait, *then* start) rather
+		# than a manual stop + fixed 1s delay + start. The old approach raced the
+		# daemon's own shutdown: with several USB devices the new daemon could
+		# start before the old one had died and released them, so it hit a stale
+		# pidfile / still-claimed devices and the controllers stayed undetected.
+		self.app.dm.restart()
 
 	def on_restarting_checkbox_toggled(self, *a):
 		if self._recursing:
