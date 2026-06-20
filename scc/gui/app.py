@@ -11,7 +11,7 @@ import re
 import sys
 from urllib.parse import unquote
 
-from gi.repository import Gdk, Gio, GLib, Gtk
+from gi.repository import Gdk, GdkPixbuf, Gio, GLib, Gtk
 
 from scc.actions import NoAction
 from scc.config import Config
@@ -33,6 +33,7 @@ from scc.profile import Profile
 from scc.tools import (
 	_,
 	check_access,
+	find_controller_icon,
 	find_gksudo,
 	find_profile,
 	get_profile_name,
@@ -43,6 +44,25 @@ from scc.tools import (
 )
 
 log = logging.getLogger("App")
+
+# Human-friendly default names per controller type (controller.get_type()).
+# Used when the user has not given the controller a custom name. Wrapped in
+# _() at lookup time so they remain translatable.
+CONTROLLER_TYPE_NAMES = {
+	"sc": "Steam Controller v1",
+	"scbt": "Steam Controller v1 (Bluetooth)",
+	"sc2": "Steam Controller v2",
+	"deck": "Steam Deck",
+	"ds4": "DualShock 4",
+	"ds4evdev": "DualShock 4",
+	"ds5": "DualSense",
+	"ds5evdev": "DualSense",
+	"ds5bt_hidraw": "DualSense",
+	"hid": "HID Controller",
+	"evdev": "Controller",
+	"rpad": "Remote Pad",
+	"fake": "Fake Controller",
+}
 
 
 class App(Gtk.Application, UserDataManager, BindingEditor):
@@ -118,6 +138,15 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		ps.set_profile(self.load_profile_selection())
 		ps.connect("new-clicked", self.on_new_clicked)
 		ps.connect("save-clicked", self.on_save_clicked)
+
+		# Controller selector: shown above the profile switcher only when more
+		# than one controller is connected. Lets the user pick which controller
+		# the editor shows (replacing the old stack of one profile bar per
+		# controller + the per-bar "switch-to" pen button). Each row is the
+		# controller's icon + name, with its current profile as dim secondary
+		# text; selecting a row makes that controller the active/edited one.
+		self._selector_recursing = False
+		self.controller_selector = self._build_controller_selector()
 
 		# Drag&drop target
 		self.builder.get_object("content").drag_dest_set(
@@ -707,8 +736,9 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 		self.profile_switchers[0].set_profile_modified(False, self.current.is_template)
 		if send and self.dm.is_alive() and not self.daemon_changed_profile:
-			for ps in self.profile_switchers:
-				controller = ps.get_controller()
+			# Re-send to every controller currently running this profile (not
+			# just the active one), so a saved profile reloads on all of them.
+			for controller in self.dm.get_controllers():
 				if controller:
 					active = controller.get_profile()
 					if active.endswith(".mod"):
@@ -864,40 +894,29 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.enable_test_mode()
 
 	def on_daemon_ccunt_changed(self, daemon, count: int) -> None:
-		if self.controller_count == 0:
-			# First controller connected
-			#
-			# 'event' signal should be connected only on first controller,
-			# so this block is executed only when number of connected
-			# controllers changes from 0 to 1
-			if len(self.dm.get_controllers()) > 0:
-				c = self.dm.get_controllers()[0]
-				self.load_gui_config_for_controller(c, first=True)
-		if count > self.controller_count:
-			# Controller added
-			while len(self.profile_switchers) < count:
-				s = self.add_switcher()
-		elif count < self.controller_count:
-			# Controller removed
-			while len(self.profile_switchers) > max(1, count):
-				s = self.profile_switchers.pop()
-				s.set_controller(None)
-				self.remove_switcher(s)
+		# A single profile switcher always shows the *active* controller; any
+		# others are reachable through the controller selector above it (built
+		# in setup_widgets). So here we only keep the active controller in the
+		# switcher and rebuild the selector.
+		controllers = list(self.dm.get_controllers())
+		ps0 = self.profile_switchers[0]
+		first_connect = self.controller_count == 0 and count >= 1
 
-		# Assign controllers to widgets
-		for i in range(count):
-			c = self.dm.get_controllers()[i]
-			self.profile_switchers[i].set_controller(c)
-
-		if count == 0:
-			# Special case, no controllers are connected, but one widget has to stay on screen
-			self.profile_switchers[0].set_controller(None)
-			# First load, default controller decided by _ensure_config() in controller_image.py
-			if not self._controller_shown:
-				self.load_gui_config_for_controller(None, first=True)
+		if count >= 1:
+			active = ps0.get_controller()
+			if active not in controllers:
+				# No active controller yet (first connect) or the active one was
+				# disconnected: fall back to the first connected controller and
+				# switch the editor image to it.
+				active = controllers[0]
+				ps0.set_controller(active)
+				self.load_gui_config_for_controller(active, first=first_connect)
 		else:
-			self.enable_test_mode(self.profile_switchers[0].get_controller())
+			# No controllers connected, but one switcher has to stay on screen
+			ps0.set_controller(None)
+			self.load_gui_config_for_controller(None, first=True)
 
+		self.rebuild_controller_selector()
 		self.controller_count = count
 
 	def new_profile(self, profile: Profile, name: str) -> None:
@@ -952,6 +971,113 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		s.destroy()
 		if len(vbSwitchers.get_children()) == 2:
 			sepSwitchers.set_visible(False)
+
+	def _build_controller_selector(self):
+		"""Creates the 'which controller' combo and packs it above the profile
+		switcher. Hidden until 2+ controllers are connected."""
+		# model columns: controller object, icon pixbuf, name, current profile
+		model = Gtk.ListStore(object, GdkPixbuf.Pixbuf, str, str)
+		combo = Gtk.ComboBox.new_with_model(model)
+		rPix, rName, rProf = Gtk.CellRendererPixbuf(), Gtk.CellRendererText(), Gtk.CellRendererText()
+		rProf.set_property("foreground", "#888888")
+		combo.pack_start(rPix, False)
+		combo.pack_start(rName, True)
+		combo.pack_start(rProf, False)
+		combo.add_attribute(rPix, "pixbuf", 1)
+		combo.add_attribute(rName, "text", 2)
+		combo.add_attribute(rProf, "text", 3)
+		combo.set_margin_left(12)
+		combo.set_margin_right(12)
+		combo.set_margin_top(4)
+		combo.connect("changed", self.on_controller_selected)
+		combo.connect("notify::popup-shown", self._refresh_selector_profiles)
+		vbSwitchers = self.builder.get_object("vbSwitchers")
+		vbSwitchers.pack_start(combo, False, False, 0)
+		# Layout top-to-bottom: [ selector ][ separator ][ profile switcher ]
+		vbSwitchers.reorder_child(combo, 0)
+		vbSwitchers.reorder_child(self.builder.get_object("sepSwitchers"), 1)
+		combo.set_no_show_all(True)
+		combo.set_visible(False)
+		return combo
+
+	def _load_controller_pixbuf(self, c):
+		"""Loads the 24px icon for a controller, or None if unavailable."""
+		try:
+			iconname = self.config.get_controller_config(c.get_id()).get("icon")
+			if iconname:
+				path = find_controller_icon(iconname)
+				if path and os.path.exists(path):
+					return GdkPixbuf.Pixbuf.new_from_file_at_size(path, 24, 24)
+		except Exception as e:
+			log.debug("No selector icon for %s: %s", c.get_id(), e)
+		return None
+
+	def controller_display_name(self, c):
+		"""Human-friendly controller name: the user's custom name if one was set
+		in controller settings, otherwise a per-type label (e.g. 'Steam
+		Controller v2') rather than the raw internal id (e.g. 'sc1' / '3:4')."""
+		name = self.config.get_controller_config(c.get_id())["name"]
+		if name and name != c.get_id():
+			return name  # user-customised
+		return _(CONTROLLER_TYPE_NAMES.get(c.get_type(), "Controller"))
+
+	def rebuild_controller_selector(self):
+		"""Refills the controller selector from the connected controllers and
+		shows it only when more than one is connected."""
+		combo = self.controller_selector
+		controllers = list(self.dm.get_controllers())
+		active = self.profile_switchers[0].get_controller()
+		# Friendly names, disambiguating duplicates of the same type with #N
+		# (e.g. two 'Steam Controller v1' become '... #1' and '... #2').
+		names = [self.controller_display_name(c) for c in controllers]
+		dupes = {n for n in names if names.count(n) > 1}
+		seen = {}
+		labels = []
+		for n in names:
+			if n in dupes:
+				seen[n] = seen.get(n, 0) + 1
+				labels.append("%s #%d" % (n, seen[n]))
+			else:
+				labels.append(n)
+		self._selector_recursing = True
+		model = combo.get_model()
+		model.clear()
+		active_iter = None
+		for c, label in zip(controllers, labels):
+			prof = get_profile_name(c.get_profile() or "") or ""
+			it = model.append((c, self._load_controller_pixbuf(c), label, prof))
+			if c is active:
+				active_iter = it
+		if active_iter is not None:
+			combo.set_active_iter(active_iter)
+		self._selector_recursing = False
+		multi = len(controllers) >= 2
+		combo.set_visible(multi)
+		self.builder.get_object("sepSwitchers").set_visible(multi)
+
+	def _refresh_selector_profiles(self, combo, *a):
+		"""Refreshes each row's profile subtext when the dropdown is opened."""
+		if not combo.get_property("popup-shown"):
+			return
+		for row in combo.get_model():
+			row[3] = get_profile_name(row[0].get_profile() or "") or ""
+
+	def on_controller_selected(self, combo):
+		"""Makes the chosen controller the active (edited) one, with the same
+		image transition the old switch-to button used."""
+		if self._selector_recursing:
+			return
+		it = combo.get_active_iter()
+		if it is None:
+			return
+		c = combo.get_model().get_value(it, 0)
+		ps0 = self.profile_switchers[0]
+		if c is None or c is ps0.get_controller():
+			return
+		ps0.set_controller(c)
+		ps0.set_profile(c.get_profile())
+		self.load_gui_config_for_controller(c, False)
+		self.enable_test_mode()
 
 	def enable_test_mode(self, controller: ControllerManager | None = None) -> None:
 		"""Disables and re-enables Input Test mode.
@@ -1196,10 +1322,11 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		controllers = list(self.dm.get_controllers())
 		for c in controllers:
 			if get_profile_name(c.get_profile()) == old_name:
-				ps = self.profile_switchers[controllers.index(c)]
-				ps.set_profile(new_name, True)
 				c.set_profile(new_name)
+				if c is self.profile_switchers[0].get_controller():
+					self.profile_switchers[0].set_profile(new_name, True)
 		self.load_profile_list()
+		self.rebuild_controller_selector()
 		dlg.hide()
 
 	def on_mnuProfileDelete_activate(self, *a) -> None:
@@ -1271,6 +1398,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.config.reload()
 		for ps in self.profile_switchers:
 			ps.set_controller(ps.get_controller())
+		self.rebuild_controller_selector()
 
 	def on_daemon_dead(self, *a):
 		if self.just_started:
@@ -1282,6 +1410,11 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		for ps in self.profile_switchers:
 			ps.set_controller(None)
 			ps.on_daemon_dead()
+		self._selector_recursing = True
+		self.controller_selector.get_model().clear()
+		self._selector_recursing = False
+		self.controller_selector.set_visible(False)
+		self.builder.get_object("sepSwitchers").set_visible(False)
 		self.set_daemon_status("dead", False)
 
 	def on_mnuEmulationEnabled_toggled(self, cb):
