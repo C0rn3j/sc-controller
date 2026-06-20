@@ -279,7 +279,16 @@ class SCController(Controller):
 
 		self._driver.make_request(
 			self._ccidx, cb, struct.pack(">BBB61x", SCPacketType.GET_SERIAL, SCPacketLength.GET_SERIAL, 0x01),
+			on_giveup=self._on_serial_giveup,
 		)
+
+	def _on_serial_giveup(self):
+		"""Called when the GET_SERIAL request kept stalling. Add the controller
+		with a generated id anyway, so it still appears (it just won't have a
+		stable serial-based identity)."""
+		log.warning("GET_SERIAL kept stalling for SC on endpoint %s; using a generated id", self._endpoint)
+		self.generate_serial()
+		self.on_serial_got()
 
 	def generate_serial(self):
 		"""Called only if ignore_serials is enabled"""
@@ -295,7 +304,13 @@ class SCController(Controller):
 		except UnicodeDecodeError:
 			log.debug("Failed to decode wireless SC serial")
 			self._serial = self._driver._available_serials.pop()
-		self._id = str(self._serial)
+		serial = str(self._serial).strip()
+		if not serial or serial in self._driver.daemon.get_active_ids():
+			# A blank or already-used id would make two controllers collapse into
+			# one in the GUI (it keys controllers by id). Keep them distinct by
+			# falling back to a generated positional id.
+			serial = self._generate_id()
+		self._id = serial
 		self._driver.daemon.add_controller(self)
 
 	def apply_config(self, config: dict):

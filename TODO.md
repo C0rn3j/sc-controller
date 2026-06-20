@@ -27,18 +27,12 @@ List of (possibly) planned features in no particular order:
   silhouette, just recolored. Draw a distinct glyph per type so each controller
   is recognisable at a glance. The v2 glyph could also be refined further (its
   trackpads are necessarily small at 24px).
-- Steam Controller v1 serial read / "Use Serial Numbers" with multiple v1
-  dongles. With serials ON and two wireless v1 dongles (28de:1142), only one v1
-  shows. The serial read itself *succeeds* (a real serial like FC636217CB comes
-  back) - the problem is that one dongle throws a `USBErrorPipe` during flush and
-  the daemon closes the whole dongle (usb.py mainloop -> Dongle.close ->
-  remove_controller), dropping its v1. Serials ON triggers it consistently
-  because the async GET_SERIAL read opens a window where the not-yet-added
-  controller is lost on teardown; serials OFF adds controllers immediately so
-  nothing is pending. Likely fix: treat a (transient) pipe stall as recoverable
-  - clearHalt the endpoint and keep the device - instead of tearing the dongle
-  down, and/or make the pending-serial window survive a dongle hiccup. Workaround
-  for now: use serials OFF for multiple v1s (both appear, with positional ids).
+- Steam Controller v1 GET_SERIAL reliability (nicety). The flaky v1 serial read
+  is now handled gracefully - usb.py retries a stalled control request instead of
+  tearing the dongle down, and sc_dongle falls back to a generated id if it never
+  reads - so multiple v1s with "Use Serial Numbers" on are detected reliably.
+  Remaining nicety: investigate *why* GET_SERIAL stalls, so a v1 always ends up
+  with its real serial (today a persistent stall yields a positional id instead).
 
 Hard stuff:
 - Injecting emulated xbox controller into PlayOnLinux
