@@ -318,6 +318,17 @@ class Mapper:
 			button = SCButtons.LPADTOUCH
 		elif button == RIGHT:
 			button = SCButtons.RPADTOUCH
+		elif button == RSTICK:
+			button = SCButtons.RSTICKTOUCH
+		elif button == STICK:
+			button = SCButtons.LSTICKTOUCH
+		elif button == CPAD:
+			button = SCButtons.CPADTOUCH
+		elif isinstance(button, str):
+			# Sources like DPAD/GYRO have no button bit to toggle; skip rather
+			# than crash on ~button. A ModeModifier on the (v2) right stick used
+			# to pass the RSTICK string here -> "bad operand type for unary ~".
+			return
 
 		if state:
 			self.buttons |= button
@@ -334,6 +345,15 @@ class Mapper:
 			button = SCButtons.LPADTOUCH
 		elif button == RIGHT:
 			button = SCButtons.RPADTOUCH
+		elif button == RSTICK:
+			button = SCButtons.RSTICKTOUCH
+		elif button == STICK:
+			button = SCButtons.LSTICKTOUCH
+		elif button == CPAD:
+			button = SCButtons.CPADTOUCH
+		elif isinstance(button, str):
+			# See set_button: skip non-button sources instead of crashing.
+			return
 
 		if state:
 			self.old_buttons |= button
