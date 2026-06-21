@@ -29,18 +29,27 @@ Based on [Standalone Steam Controller Driver](https://github.com/ynsta/steamcont
 SC Controller can drive several controllers at once — Steam Controllers (v1 and
 v2), a DualShock 4 and others can all be connected together.
 
-- **One window, one bar per controller.** Just connect them: each controller
-  gets its own profile selector stacked in the main window, there is no separate
-  window per device. The controller that connected *first* is the primary one —
-  it is the one drawn on the big controller image and the default target when a
-  command (a menu, the OSD) does not name a specific controller.
-- **Each controller keeps its own profile.** Picking a profile from a
-  controller's own bar applies only to that controller. The choice is remembered
-  and restored automatically the next time that controller connects, so you do
-  not have to re-pick it every session.
+- **One window, two bars: pick the controller, then its profile.** Just connect
+  them: a controller-selector bar lists every connected controller (by type,
+  numbered when you have more than one of the same model) together with its
+  current profile; choosing one shows it on the big controller image, and a
+  second bar sets that controller's profile. There is no separate window per
+  device. The controller that connected *first* is the primary one — it is the
+  one drawn by default and the target when a command (a menu, the OSD) does not
+  name a specific controller.
+- **Each controller keeps its own profile.** Selecting a controller and setting
+  a profile applies only to that controller. The choice is remembered and
+  restored automatically the next time that controller connects, so you do not
+  have to re-pick it every session.
 - **Disconnecting is safe.** Turning one controller off (or letting it go idle)
   leaves the window and the other controllers untouched; when it comes back it
   returns to its remembered profile.
+
+![SC Controller with three controllers connected](docs/multiple-controllers.jpg?raw=true)
+
+*Two Steam Controller v1s and a Steam Controller v2 connected at once: the
+selector at the top lists each controller — numbered when there are duplicates —
+alongside its current profile.*
 
 ### Telling controllers apart
 
