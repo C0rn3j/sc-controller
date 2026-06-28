@@ -1145,6 +1145,10 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 					"LGRIP2",
 					"RGRIP2",
 					"RSTICKPRESS",
+					# Capacitive stick-touch sensors (Deck / SC 2025): highlight the
+					# touch dot centred over each stick.
+					"LSTICKTOUCH",
+					"RSTICKTOUCH",
 					# ...and the right stick + d-pad positions (positional axis
 					# sources; never fire on controllers without them)
 					"RSTICK",
