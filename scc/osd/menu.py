@@ -159,6 +159,14 @@ class Menu(OSDWindow):
 		if not self._is_submenu:
 			self._connect_handlers()
 			self.on_daemon_connected(self.daemon)
+		else:
+			# A submenu reuses the parent menu's input lock (the parent forwards
+			# events to it), so it never requests its own lock and
+			# _on_inputs_locked() is never called. Treat its inputs as already
+			# locked; otherwise the reveal-when-locked gate added for the
+			# dead-menu fix keeps the submenu window permanently hidden (it is
+			# navigable via forwarded input but never shown).
+			self._inputs_locked = True
 
 	def use_config(self, c):
 		"""Allows reusing already existin Config instance in same process.
