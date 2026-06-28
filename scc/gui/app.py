@@ -922,6 +922,12 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 		self.rebuild_controller_selector()
 		self.controller_count = count
+		if count >= 1:
+			# Re-arm Input Test on the (now) active controller. Without this, a
+			# controller connected *after* startup is never observed -- the
+			# enable at 'alive' ran while no controller was present -- so Input
+			# Test stays blank until the user toggles it off and on again.
+			self.enable_test_mode()
 
 	def new_profile(self, profile: Profile, name: str):
 		filename = os.path.join(get_profiles_path(), name + ".sccprofile")
@@ -1092,11 +1098,18 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		if self.dm.is_alive():
 			if self.test_mode_controller:
 				self.test_mode_controller.unlock_all()
-			try:
-				c = self.dm.get_controllers()[0]
-			except IndexError:
-				# Zero controllers
-				return
+			# Observe the controller currently selected in the GUI (the one drawn
+			# on the big image), not always the first one. With several
+			# controllers connected, the old get_controllers()[0] made Input Test
+			# read the first controller while the image showed the selected one,
+			# and it never worked at all for a non-first controller.
+			c = self.profile_switchers[0].get_controller()
+			if c is None:
+				try:
+					c = self.dm.get_controllers()[0]
+				except IndexError:
+					# Zero controllers
+					return
 			if c:
 				c.unlock_all()
 				c.observe(
@@ -1127,6 +1140,11 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 					"DOTS",
 					"LGRIPTOUCH",
 					"RGRIPTOUCH",
+					# Lower back paddles (L5/R5 -> LGRIP2/RGRIP2; the upper L4/R4
+					# are LGRIP/RGRIP, already above) and the right-stick click.
+					"LGRIP2",
+					"RGRIP2",
+					"RSTICKPRESS",
 					# ...and the right stick + d-pad positions (positional axis
 					# sources; never fire on controllers without them)
 					"RSTICK",
@@ -1189,6 +1207,11 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.set_daemon_status("error", True)
 
 	def on_daemon_event_observer(self, daemon, c, what, data):
+		# Only react to the controller Input Test is observing. Other connected
+		# controllers also emit events; without this, their input would show on
+		# the selected controller's image.
+		if c is not self.test_mode_controller:
+			return
 		if what in (LEFT, RIGHT, STICK, RSTICK, DPAD):
 			widget, area = {
 				LEFT: (self.lpad_test, "LPADTEST"),
@@ -1201,10 +1224,24 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			if data[0] == data[1] == 0:
 				widget.hide()
 				return
+			# Grab values. The controller image may not define a test area for
+			# this input (e.g. deck.svg has no STICKTEST); skip silently rather
+			# than crashing the GUI and spamming the log with ValueError.
+			try:
+				ax, ay, aw, ah = self.background.get_area_position(area)
+			except ValueError:
+				widget.hide()
+				return
+			# Area coords are in SVG document space, but the cursor is a GTK
+			# overlay placed in image pixels. Shift by the viewBox origin so a
+			# non-zero origin (e.g. sc2.svg's "0 -45 ..." trigger headroom)
+			# doesn't push every cursor up/left. Origin is (0,0) for the other
+			# controllers, so they are unaffected.
+			vbx, vby, _vbw, _vbh = self.background.get_viewbox()
+			ax -= vbx
+			ay -= vby
 			if not widget.is_visible():
 				widget.show()
-			# Grab values
-			ax, ay, aw, ah = self.background.get_area_position(area)
 			cw = widget.get_allocation().width
 			ch = widget.get_allocation().height
 			# Rest position = centre of the area on BOTH axes (the old code

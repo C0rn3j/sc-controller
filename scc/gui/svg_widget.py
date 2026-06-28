@@ -127,6 +127,25 @@ class SVGWidget(Gtk.EventBox):
 			return a.x, a.y, a.w, a.h
 		raise ValueError("Area '%s' not found" % (area_id,))
 
+	def get_viewbox(self):
+		"""Returns the SVG viewBox as (min_x, min_y, width, height).
+
+		Used to map area coordinates (SVG document space) onto the rendered
+		image when overlaying widgets such as the Input-Test cursor: a non-zero
+		origin (e.g. headroom added with viewBox="0 -45 ...") otherwise shifts
+		those overlays. Returns (0, 0, 0, 0) if no viewBox is present.
+		"""
+		svg = self.current_svg
+		if isinstance(svg, bytes):
+			svg = svg.decode("utf-8", "replace")
+		m = re.search(
+			r'viewBox\s*=\s*["\']\s*([-\d.eE]+)[\s,]+([-\d.eE]+)[\s,]+([-\d.eE]+)[\s,]+([-\d.eE]+)',
+			svg or "",
+		)
+		if m:
+			return tuple(float(g) for g in m.groups())
+		return (0.0, 0.0, 0.0, 0.0)
+
 	@staticmethod
 	def find_areas(xml, parent_transform, areas, get_colors=False, prefix="AREA_"):
 		"""Recursively searches throught XML for anything with ID of 'AREA_SOMETHING'
