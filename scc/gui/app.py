@@ -230,6 +230,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		btC = self.builder.get_object("btC")
 		btLGRIPTOUCH = self.builder.get_object("btLGRIPTOUCH")
 		btRGRIPTOUCH = self.builder.get_object("btRGRIPTOUCH")
+		btRSTICK = self.builder.get_object("btRSTICK")
 
 		buttons = ControllerImage.get_names(config.get("buttons", {}))
 		axes = ControllerImage.get_names(config.get("axes", {}))
@@ -275,13 +276,13 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				# TODO: Maybe actual detection
 				w.set_sensitive(gyros)
 
-		for w in (btC, btCPAD, btDPAD, btGYRO, btLGRIPTOUCH, btRGRIPTOUCH):
+		for w in (btC, btCPAD, btDPAD, btGYRO, btLGRIPTOUCH, btRGRIPTOUCH, btRSTICK):
 			if w:
 				w.set_visible(w.get_sensitive())
 
 		# Re-layout if needed
 		expected_layout = "default"
-		if len(axes) >= 8 and btC.get_sensitive():
+		if "rstick_x" in axes and btC.get_sensitive():
 			expected_layout = "deck"
 
 		if expected_layout != self.current_ui_layout:
