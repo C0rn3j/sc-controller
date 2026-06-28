@@ -432,9 +432,9 @@
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#00b400;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
          id="AREA_LPADTEST"
          width="115.90182"
-         height="1"
+         height="118"
          x="42"
-         y="105"
+         y="46.5"
          ry="0" />
     </g>
     <g
@@ -485,9 +485,9 @@
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#00b400;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
          id="AREA_RPADTEST"
          width="118.04467"
-         height="1"
+         height="118"
          x="40.724598"
-         y="105"
+         y="46.5"
          ry="0" />
     </g>
     <g
@@ -544,9 +544,9 @@
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#00b400;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
          id="AREA_STICKTEST"
          width="71.883987"
-         height="1"
+         height="73"
          x="135"
-         y="174"
+         y="138"
          ry="0" />
     </g>
   </g>
