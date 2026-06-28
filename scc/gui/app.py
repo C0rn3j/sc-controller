@@ -295,28 +295,24 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		"""Changes layout of ui elements to fit additional buttons needed for Deck
 		"""
 		if layout == "deck":
-			# Move 'C' button bellow LGRIP
-			btRGRIP = self.builder.get_object("btRGRIP")
+			btLGRIP = self.builder.get_object("btLGRIP")
+			# Put 'DPAD' at the top of the left column (above the back paddles),
+			# to mirror the Deck's physical layout: D-Pad, L4, L5, View, Steam.
+			btDPAD = self.builder.get_object("btDPAD")
+			btDPAD.get_parent().remove(btDPAD)
+			btLGRIP.get_parent().pack_start(btDPAD, False, True, 6)
+			btLGRIP.get_parent().reorder_child(btDPAD, 2)
+			# Move 'C' (Steam) to the bottom of the LEFT column (was the right)
 			btC = self.builder.get_object("btC")
 			btC.get_parent().remove(btC)
 			btC.set_margin_right(0)
-			btRGRIP.get_parent().pack_start(btC, False, True, 0)
-			btRGRIP.get_parent().reorder_child(btC, 5)
+			btLGRIP.get_parent().pack_start(btC, False, True, 0)
 			# Move 'GYRO' button to middle of image (where C was)
 			btGYRO = self.builder.get_object("btGYRO")
 			btGYRO.get_parent().remove(btGYRO)
 			vbC = self.builder.get_object("vbC")
 			vbC.pack_start(btGYRO, False, True, 0)
 			btGYRO.set_margin_top(30)
-			# Resize buttons at bottom
-			# for w in ['btSTICK', 'btRSTICK', 'btLPAD', 'btRPAD']:
-			# w.set_size_request(150, -1)
-			# Move 'DPAD' bellow 'LGRIP'
-			btLGRIP = self.builder.get_object("btLGRIP")
-			btDPAD = self.builder.get_object("btDPAD")
-			btDPAD.get_parent().remove(btDPAD)
-			btLGRIP.get_parent().pack_start(btDPAD, False, True, 6)
-			btLGRIP.get_parent().reorder_child(btDPAD, 5)
 
 	def setup_statusicon(self) -> None:
 		menu = self.builder.get_object("mnuTray")
