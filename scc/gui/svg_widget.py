@@ -88,9 +88,13 @@ class SVGWidget(Gtk.EventBox):
 	def on_mouse_moved(self, trash, event):
 		"""Not actual signal handler, just called from App.
 		"""
+		# Areas live in SVG document coords; shift mouse coords by the viewBox
+		# origin so a non-zero origin (sc2.svg's "0 -45 ..." headroom) doesn't
+		# offset the hover hit-test. Origin is (0,0) for other controllers.
+		vbx, vby, _vbw, _vbh = self.get_viewbox()
 		x_offset = (self.get_allocation().width - self.image_width) / 2
-		x = event.x - x_offset
-		y = event.y
+		x = event.x - x_offset + vbx
+		y = event.y + vby
 		for a in self.areas:
 			if a.contains(x, y):
 				self.emit("hover", a.name)
