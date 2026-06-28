@@ -1,87 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   width="49"
-   height="32"
-   viewBox="0 0 48.999999 32"
-   id="svg2"
-   version="1.1"
-   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
-   sodipodi:docname="l5.svg"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:dc="http://purl.org/dc/elements/1.1/">
-  <defs
-     id="defs4" />
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="7.919596"
-     inkscape:cx="3.661803"
-     inkscape:cy="20.834396"
-     inkscape:document-units="px"
-     inkscape:current-layer="g4169"
-     showgrid="false"
-     units="px"
-     inkscape:window-width="1500"
-     inkscape:window-height="923"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="0"
-     fit-margin-top="0"
-     fit-margin-left="0"
-     fit-margin-right="0"
-     fit-margin-bottom="0"
-     inkscape:showpageshadow="0"
-     inkscape:pagecheckerboard="0"
-     inkscape:deskcolor="#505050" />
-  <metadata
-     id="metadata7">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(-225.71241,-856.40319)"
-     style="display:inline">
-    <g
-       id="g4169"
-       transform="translate(3.9391908,0.87680929)">
-      <text
-         xml:space="preserve"
-         style="font-size:18.6667px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px"
-         x="234.52638"
-         y="878.3811"
-         id="text1"><tspan
-           sodipodi:role="line"
-           id="tspan1"
-           x="234.52638"
-           y="878.3811"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:18.6667px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold'">L5</tspan></text>
-    </g>
-    <ellipse
-       style="opacity:1;fill:none;stroke:#1a1a1a;stroke-width:3;stroke-dasharray:none;stroke-opacity:0.99999934"
-       id="path1"
-       cx="250.2086"
-       cy="872.24994"
-       rx="21.465742"
-       ry="13.573925" />
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="49" height="32" viewBox="0 0 49 32">
+<g transform="scale(0.60507,0.37823) translate(-53.8548,-336.9460)">
+<g xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" id="LGRIP2" transform="matrix(0.23391414,0,0,0.23391414,2.1424689,154.79522)" inkscape:label="#LGRIP2">
+    <path style="fill:#6c6c6c;fill-opacity:1;stroke:#1a1a1a;stroke-width:12;stroke-dasharray:none;stroke-opacity:1;opacity:1" d="m 418.15059,785.57531 c -20.64783,-2.73025 -45.44402,1.42194 -65.31695,8.06836 -39.23487,13.12192 -73.56553,39.61949 -95.83538,74.72244 -16.78282,26.45401 -26.91468,57.16201 -29.03647,88.10073 -0.31821,4.63988 -0.88765,6.96564 -0.88765,11.74677 0,5.05277 0.68927,7.60231 0.93728,12.72566 3.80259,78.55003 66.15116,143.15833 143.34494,152.42843 118.40021,14.2185 216.16419,-121.357 183.54972,-231.71909 -12.27014,-41.52011 -37.6113,-77.74753 -76.31294,-98.38973 -13.70895,-7.31187 -28.70077,-12.36699 -43.86959,-15.35419 -5.34024,-1.05163 -11.41866,-1.64788 -16.57296,-2.32938 m -40.94496,27.97257 c -7.31117,-6.63154 -15.76021,-1.5773 -24.37199,1.77278 -21.34007,8.30153 -40.46948,22.19727 -56.54303,38.36199 -48.48701,48.762 -62.67393,127.30077 -30.32962,188.92715 12.83991,24.4642 32.86785,45.9717 57.62625,58.4913 11.70249,5.9176 25.19837,11.311 38.02032,13.4923 6.16898,1.0496 6.15066,-0.7871 11.69856,-0.1488 2.8261,0.3252 6.89348,0.7894 9.74879,1.1671 4.69108,0.6201 10.05792,0.4153 14.6232,0.4153 2.92958,0 4.77693,0.032 7.79904,0 9.48033,-0.1131 22.72355,-2.6021 32.17103,-5.3091 7.9591,-2.2805 15.25053,-5.5281 22.42224,-9.1288 4.61212,-2.3155 8.3489,-4.2264 12.67344,-7.0978 18.00401,-11.9545 33.82073,-28.0132 45.81861,-46.0043 5.64393,-8.4634 11.01922,-17.3707 15.02338,-26.4303 1.48257,-3.3544 2.58291,-6.3878 3.93787,-9.7889 9.7723,-24.53077 13.9728,-51.5868 12.14838,-78.31177 -1.08447,-15.88613 -6.08638,-32.48871 -12.31238,-46.98706 -1.47567,-3.43632 -2.69617,-6.40081 -4.42605,-9.78897 -3.31413,-6.49106 -7.28934,-12.72086 -11.44656,-18.59904 -14.16574,-20.03019 -35.37248,-37.45388 -58.49205,-45.67132 -13.97251,-4.96624 -30.26388,-8.16704 -44.84447,-8.16802 -3.85627,-2e-4 -5.99733,0 -9.7488,0 -4.56427,0 -9.27582,0.53693 -13.64832,1.35959 -3.55964,0.66976 -8.69829,1.21393 -12.58168,3.05073 -3.28719,1.55488 -3.91708,3.20286 -4.96616,4.39975 m 2.92464,-3.91558 c -2.00128,-0.95257 -2.88429,-1.87518 -6.82415,0 m 2.92464,2.93669 c -19.65844,12.26861 -39.3706,19.54642 -56.50465,36.3068 -20.78516,20.32797 -35.10127,47.87942 -42.9331,75.28364 -2.42917,8.49977 -5.32881,20.60716 -5.81465,29.36691 -0.13822,2.49218 -0.26216,4.30098 -0.59579,6.85228 -0.36671,2.80454 -0.41372,4.78965 -0.41372,7.83118 0,3.36173 0.1553,5.71529 0.56117,8.81007 1.75572,13.38779 3.5309,26.70572 7.89079,40.13472 9.10617,28.0484 24.90245,53.475 48.09107,71.9981 8.23109,6.5749 17.58806,12.0344 27.29664,16.0913 3.0913,1.2918 9.29504,3.5774 11.67452,4.6754 2.95987,1.3659 3.715,2.2579 4.89844,3.1671" id="LGRIP2-9" sodipodi:nodetypes="csssssssssccsssssscscssssssssssssssscccccsssssssssc" />
+    <text xml:space="preserve" style="font-size:149.333px;line-height:1.25;font-family:'Bitstream Vera Sans Mono';-inkscape-font-specification:'Bitstream Vera Sans Mono';letter-spacing:0px;word-spacing:0px;fill:#1a1a1a;opacity:1" x="327.87787" y="998.57751" id="text2-3"><tspan sodipodi:role="line" id="tspan2-0" x="327.87787" y="998.57751" style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:149.333px;font-family:'Apolonia Nova OT';-inkscape-font-specification:'Apolonia Nova OT Bold';fill:#1a1a1a">L5</tspan></text>
   </g>
+  
+</g>
 </svg>
