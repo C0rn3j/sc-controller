@@ -419,20 +419,8 @@ class ControllerManager(GObject.GObject):
 		"""For config returned by load_gui_config() and SCButton constant,
 		returns icon filename assigned to that button in controller config or
 		default if config is invalid or button unassigned.
-
-		A controller whose gui.background names a button-images/<name>/ subdir
-		(e.g. "deck") gets its own icons from there, falling back to the shared
-		set. This is how the Deck overrides the Steam Controller back-button and
-		trackpad art.
 		"""
-		controller_set = None
-		try:
-			controller_set = config["gui"]["background"]
-		except (KeyError, TypeError):
-			pass
-		return find_button_image(
-			ControllerManager.get_button_name(config, button),
-			prefer_bw=prefer_bw, controller_set=controller_set)
+		return find_button_image(ControllerManager.get_button_name(config, button), prefer_bw=prefer_bw)
 
 	@staticmethod
 	def get_button_name(config, button):
