@@ -1072,6 +1072,12 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 		self.rebuild_controller_selector()
 		self.controller_count = count
+		if count >= 1:
+			# Re-arm Input Test on the (now) active controller. Without this, a
+			# controller connected *after* startup is never observed -- the
+			# enable at 'alive' ran while no controller was present -- so Input
+			# Test stays blank until the user toggles it off and on again.
+			self.enable_test_mode()
 
 	def new_profile(self, profile: Profile, name: str) -> None:
 		filename = os.path.join(get_profiles_path(), name + ".sccprofile")
@@ -1343,6 +1349,11 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.set_daemon_status("error", True)
 
 	def on_daemon_event_observer(self, daemon, c, what: str, data: list[int]) -> None:
+		# Only react to the controller Input Test is observing. Other connected
+		# controllers also emit events; without this, their input would show on
+		# the selected controller's image.
+		if c is not self.test_mode_controller:
+			return
 		if what in (*SCPads, *SCSticks):
 			widget, area = {
 				SCPads.CPAD: (self.cpad_test, "CPADTEST"),
@@ -1364,8 +1375,6 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				return
 			if not widget.is_visible():
 				widget.set_visible(True)
-			# Grab values
-			ax, ay, aw, ah = self.background.get_area_position(area)
 			cw = widget.get_allocation().width
 			ch = widget.get_allocation().height
 			# Compute center
