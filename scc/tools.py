@@ -268,10 +268,17 @@ def find_icon(
 
 
 def find_button_image(
-	name: str | None, prefer_bw: bool = False,
+	name: str | None, prefer_bw: bool = False, controller_set: str | None = None,
 ) -> tuple[None, bool] | tuple[str, bool]:
-	"""Similar to find_icon, but searches for button image"""
-	return find_icon(nameof(name), prefer_bw, paths=[get_button_images_path()], extensions=("svg",))
+	"""Similar to find_icon, but searches for a button image.
+
+	controller_set (e.g. "deck") lets a controller override the shared images
+	with its own button-images/<controller_set>/<name>.svg, falling back to the
+	shared set when no override exists.
+	"""
+	base = get_button_images_path()
+	paths = (os.path.join(base, controller_set), base) if controller_set else (base,)
+	return find_icon(nameof(name), prefer_bw, paths=paths, extensions=("svg",))
 
 
 def menu_is_default(name: str) -> bool:
