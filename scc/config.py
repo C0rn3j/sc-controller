@@ -14,6 +14,25 @@ from scc.special_actions import ChangeProfileAction
 log = logging.getLogger("Config")
 
 
+def _is_steam_deck():
+	"""Return True when running on Steam Deck hardware (LCD reports DMI product
+	name 'Jupiter', OLED 'Galileo').
+
+	Used to flip the 'autokill_daemon' default on: the Deck has no built-in
+	keyboard, so a daemon left running after the GUI closes keeps emulating and
+	locks the user out of the device's own controls (only the touchscreen still
+	works). Desktop machines are unaffected.
+	"""
+	for path in ("/sys/class/dmi/id/product_name", "/sys/class/dmi/id/board_name"):
+		try:
+			with open(path) as f:
+				if f.read().strip() in ("Jupiter", "Galileo"):
+					return True
+		except OSError:
+			pass
+	return False
+
+
 class Config:
 	DEFAULTS = {
 		"autoswitch_osd": True,  # True to show OSD message when profile is autoswitched
@@ -47,7 +66,7 @@ class Config:
 			"enable_status_icon": False,
 			"minimize_to_status_icon": True,
 			"minimize_on_start": False,
-			"autokill_daemon": False,
+			"autokill_daemon": _is_steam_deck(),  # default ON on the Steam Deck (no built-in keyboard)
 			"news": {
 				# Controls "new in this version" message
 				"enabled": True,  # if disabled, no querying is done
