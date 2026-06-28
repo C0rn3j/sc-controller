@@ -33,6 +33,13 @@ data_files = [
 ] + [  # menu icons subfolders
 	("share/scc/images/menu-icons/" + x.split("/")[-1], [x + "/LICENSES"] + glob.glob(x + "/*.png"))
 	for x in glob.glob("images/menu-icons/*")
+] + [  # per-controller icon override dirs: images/<background>/*.svg (e.g. sc2, deck)
+	("share/scc/images/" + d.split("/")[-1], glob.glob(d + "/*.svg"))
+	for d in (p.rstrip("/") for p in glob.glob("images/*/"))
+	if d.split("/")[-1] not in (
+		"button-images", "controller-icons", "controller-images",
+		"24x24", "256x256", "menu-icons")
+	and glob.glob(d + "/*.svg")
 ] + [
 	(f"share/locale/{path.parent.parent.name}/LC_MESSAGES", [str(path)])
 	for path in Path("scc/locale").glob("*/LC_MESSAGES/*.mo")
