@@ -10,6 +10,8 @@ import importlib.machinery
 import logging
 import os
 import shlex
+import shutil
+import sys
 import sysconfig
 from math import atan2, cos, sin, sqrt
 from math import pi as PI
@@ -331,6 +333,26 @@ def find_binary(name: str) -> str:
 			return path
 	# Not found, return name back and hope for miracle
 	return name
+
+
+def find_python() -> str:
+	"""Return a usable path to the Python interpreter for spawning helpers.
+
+	sys.executable is correct for normal installs, but inside an AppImage the
+	relative `#! usr/bin/python` shebang makes Python resolve sys.executable to
+	a bogus <cwd>/usr/bin/python that does not exist, so spawning a helper with
+	it (e.g. scc-osd-daemon) fails and the helper never registers. Fall back to
+	$APPDIR's bundled interpreter, then to PATH.
+	"""
+	if sys.executable and os.path.isfile(sys.executable):
+		return sys.executable
+	appdir = os.environ.get("APPDIR")
+	if appdir:
+		for cand in ("usr/bin/python3", "usr/bin/python"):
+			candidate = os.path.join(appdir, cand)
+			if os.path.isfile(candidate):
+				return candidate
+	return shutil.which("python3") or shutil.which("python") or sys.executable
 
 
 def find_library(libname: str) -> ctypes.CDLL:

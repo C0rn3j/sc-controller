@@ -31,7 +31,7 @@ from scc.parser import TalkingActionParser
 from scc.poller import Poller
 from scc.profile import Profile
 from scc.scheduler import Scheduler
-from scc.tools import clamp, find_binary, find_menu, find_profile, get_profile_name, nameof, set_logging_level, shjoin, shsplit
+from scc.tools import clamp, find_binary, find_menu, find_profile, find_python, get_profile_name, nameof, set_logging_level, shjoin, shsplit
 from scc.uinput import CannotCreateUInputException
 
 log = logging.getLogger("SCCDaemon")
@@ -1357,7 +1357,7 @@ class Subprocess:
 	def __init__(self, binary_name, debug, restart_after=5):
 		self.binary_name = binary_name
 		self.restart_after = restart_after
-		self.args = [sys.executable, find_binary(binary_name)]
+		self.args = [find_python(), find_binary(binary_name)]
 		if debug:
 			self.args.append("debug")
 		self._killed = False
