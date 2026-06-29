@@ -62,16 +62,19 @@ List of (possibly) planned features in no particular order:
   missing piece is the v2 continuous-rumble report itself. Refs: SDL hidapi steam
   driver, kernel hid-steam.c, and Alice Mikhaylenko's "Steam Deck, HID, and
   libmanette adventures" writeup.
-- Deck OSD menu fixes. On the Steam Deck the default OSD menu is missing
-  "Display Current Bindings...", "Run Program..." and "Edit Bindings" - their
-  shell() actions (scc-osd-show-bindings, scc-osd-launcher, "sc-controller
-  --osd") can't be resolved/run in that environment, so the entries are dropped.
-  Make at least "Display Current Bindings" and "Run Program" work on the Deck.
-  Then reuse the same per-controller gating to REMOVE "Turn Controller OFF" from
-  the Deck's OSD menu, since the Deck's built-in controller can't be powered off
-  (today it still shows and does nothing useful). Entries are defined in
-  scc/gui/global_settings.py (~L45-58, e.g. "Turn Controller OFF" ->
-  osd(turnoff())); menu data in default_menus/Default.menu.
+- Deck OSD menu fixes. (a) "Display Current Bindings..." and "Run Program..."
+  ship disabled in the menu settings; once enabled they appear in the OSD, but
+  selecting them does nothing - their shell() actions (scc-osd-show-bindings,
+  scc-osd-launcher) don't actually run/work on the Deck. Make them functional.
+  (b) Remove "Turn Controller OFF" from the Deck's OSD menu - the Deck's
+  built-in controller can't be powered off (today it shows and does nothing).
+  Entries defined in scc/gui/global_settings.py (~L45-58, e.g.
+  "Turn Controller OFF" -> osd(turnoff())); menu data in
+  default_menus/Default.menu.
+- Deck tray/status icon not visible. On the Steam Deck the status (tray) icon
+  doesn't appear even with the option enabled - works on desktop now that
+  libdbusmenu is bundled, so this is a Deck/gamescope SNI-tray-host issue to
+  investigate.
 
 Hard stuff:
 - Injecting emulated xbox controller into PlayOnLinux
