@@ -62,6 +62,16 @@ List of (possibly) planned features in no particular order:
   missing piece is the v2 continuous-rumble report itself. Refs: SDL hidapi steam
   driver, kernel hid-steam.c, and Alice Mikhaylenko's "Steam Deck, HID, and
   libmanette adventures" writeup.
+- Deck OSD menu fixes. On the Steam Deck the default OSD menu is missing
+  "Display Current Bindings...", "Run Program..." and "Edit Bindings" - their
+  shell() actions (scc-osd-show-bindings, scc-osd-launcher, "sc-controller
+  --osd") can't be resolved/run in that environment, so the entries are dropped.
+  Make at least "Display Current Bindings" and "Run Program" work on the Deck.
+  Then reuse the same per-controller gating to REMOVE "Turn Controller OFF" from
+  the Deck's OSD menu, since the Deck's built-in controller can't be powered off
+  (today it still shows and does nothing useful). Entries are defined in
+  scc/gui/global_settings.py (~L45-58, e.g. "Turn Controller OFF" ->
+  osd(turnoff())); menu data in default_menus/Default.menu.
 
 Hard stuff:
 - Injecting emulated xbox controller into PlayOnLinux
