@@ -146,7 +146,7 @@ AppDir:
       - "*-icon-theme"  # gui
       - "*crypt*"       # security
       - "*dconf*"       # gui configuration
-      - "*dbus*"        # process communication
+      - "libdbus-1*"    # process communication (keep libdbusmenu for the tray icon)
       - "*gcc*"         # development
       - "*systemd*"     # linux core
       - libblk*         # filesystem
