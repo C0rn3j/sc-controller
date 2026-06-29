@@ -204,6 +204,11 @@ class SCController(Controller):
 	def get_type(self) -> str:
 		return "sc"
 
+	def get_gui_config_file(self) -> str:
+		# Steam Controller (v1): GUI-only config that puts the Steam logo on the
+		# C button (image + side icon). Inherited by SCByCable / SCByBt.
+		return "sc-config.json"
+
 	def __repr__(self) -> str:
 		return f"<SCWireless {self.get_id()}>"
 
