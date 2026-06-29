@@ -107,6 +107,7 @@ AppDir:
       - libgtk-3-0
       - libgtk-layer-shell-dev
       - gir1.2-gtklayershell-0.1
+      - gir1.2-ayatanaappindicator3-0.1
       - librsvg2-common
       - libwayland-client0
       - libwayland-cursor0
