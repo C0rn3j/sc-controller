@@ -102,6 +102,12 @@ class SVGWidget(Gtk.EventBox):
 		x = event.x - x_offset + vbx
 		y = event.y + vby
 		for a in self.areas:
+			# *TEST areas exist only to bound the Input Test cursor (looked up
+			# by id via get_area_position), not as hover targets. Skip them so
+			# they can't shadow a real control area — on the Deck the stick/dpad
+			# TEST areas otherwise swallowed the hover and nothing highlighted.
+			if a.name.endswith("TEST"):
+				continue
 			if a.contains(x, y):
 				self.emit("hover", a.name)
 				return a.name
