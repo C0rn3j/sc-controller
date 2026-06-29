@@ -7,7 +7,7 @@
 		"background": "sc",
 		"buttons": [
 			"A", "B", "X", "Y", "BACK",
-			"sc2_C", "START", "LB", "RB", "LT", "RT",
+			"sc_C", "START", "LB", "RB", "LT", "RT",
 			"STICK", "LPAD", "RPAD", "LG", "RG"
 		]
 	}
