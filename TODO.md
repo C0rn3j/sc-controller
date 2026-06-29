@@ -75,6 +75,11 @@ List of (possibly) planned features in no particular order:
   doesn't appear even with the option enabled - works on desktop now that
   libdbusmenu is bundled, so this is a Deck/gamescope SNI-tray-host issue to
   investigate.
+- Rebrand the AppImage desktop app-id. app_info.id in AppImageBuilder.yml /
+  AppImageBuilder.debian.yml is still org.c0rn3j.sc-controller (upstream), so the
+  installed .desktop carries the upstream id, and the after_bundle step symlinks
+  it as org.c0rn3j.sc-controller.desktop. Switch both to org.patola.sc-controller-cc
+  once the fork is stable and we have committed/PR'd to upstream.
 
 Hard stuff:
 - Injecting emulated xbox controller into PlayOnLinux
