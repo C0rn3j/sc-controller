@@ -100,7 +100,7 @@ The AppImage is self-contained but **cannot install the udev rules** it needs (t
    ```
 4. Unplug and replug the controller (or its wireless dongle) — or reboot.
 
-Only the AppImage needs this; the Arch and other distro packages already ship these rules.
+Only the AppImage needs this; the Arch and other distro packages already ship these rules. **The Steam Deck doesn't need it either** — SteamOS already ships udev rules for Steam devices, so the AppImage works out of the box there.
 
 Windows:
   - It should be possible to get it running as per the [wiki](https://github.com/C0rn3j/sc-controller/wiki/Running-SC-Controller-on-Windows), but this is untested and might be broken, report a bug if so
