@@ -85,6 +85,23 @@ Linux:
   - **Void Linux:** Packaged as [sc-controller](https://github.com/void-linux/void-packages/blob/master/srcpkgs/sc-controller/template) - Run `xbps-install -S sc-controller` in a terminal, points to archived Ryochan7's fork at the time of writing
   - **Others:** You can attempt to use one of the AppImages (try all, AppImages built on older distributions tend to work better), or a package meant for your parent distribution if applicable. Flatpak is planned.
 
+### AppImage: install the udev rules
+
+The AppImage is self-contained but **cannot install the udev rules** it needs (those live in a system directory). Without them your user can't access the controller and SC Controller can't create the virtual gamepad (`/dev/uinput`), so a detected controller appears to "do nothing". Distro packages install these rules for you; **AppImage users must do it once, by hand:**
+
+1. Download `69-sc-controller.rules` from the [latest release](https://github.com/Patola/sc-controller-cc/releases/latest).
+2. Copy it into place — this needs `sudo`:
+   ```sh
+   sudo cp 69-sc-controller.rules /etc/udev/rules.d/69-sc-controller.rules
+   ```
+3. Reload and re-apply the rules:
+   ```sh
+   sudo udevadm control --reload-rules && sudo udevadm trigger
+   ```
+4. Unplug and replug the controller (or its wireless dongle) — or reboot.
+
+Only the AppImage needs this; the Arch and other distro packages already ship these rules.
+
 Windows:
   - It should be possible to get it running as per the [wiki](https://github.com/C0rn3j/sc-controller/wiki/Running-SC-Controller-on-Windows), but this is untested and might be broken, report a bug if so
 
