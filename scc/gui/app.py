@@ -1427,6 +1427,12 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 	def on_daemon_reconfigured(self, *a) -> None:
 		log.debug("Reloading config...")
 		self.config.reload()
+		# If Input Test was just turned off, drop any highlights left over from
+		# the last observed press (e.g. a held grip sensor): with sniffing off no
+		# release event arrives to clear them, so they'd stay stuck on the image.
+		if not self.config["enable_sniffing"] and self.hilights[App.OBSERVE_COLOR]:
+			self.hilights[App.OBSERVE_COLOR].clear()
+			self._update_background()
 		for ps in self.profile_switchers:
 			ps.set_controller(ps.get_controller())
 		self.rebuild_controller_selector()
