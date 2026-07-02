@@ -288,6 +288,23 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		if expected_layout != self.current_ui_layout:
 			self.apply_ui_layout(expected_layout)
 
+		# The Steam Deck maps its lower back paddles to LGRIP/RGRIP (labelled
+		# L5/R5) and the upper ones to LGRIP2/RGRIP2 (L4/R4) - the reverse of the
+		# SC2. Left alone the side panel reads L5/R5 above L4/R4; reorder the
+		# paddle buttons so they match the device (L4/R4 above L5/R5). Every other
+		# controller (incl. the SC2, whose LGRIP=L4) keeps the .glade order.
+		if bg == "deck":
+			grip_pairs = (("btLGRIP2", "btLGRIP"), ("btRGRIP2", "btRGRIP"))
+		else:
+			grip_pairs = (("btLGRIP", "btLGRIP2"), ("btRGRIP", "btRGRIP2"))
+		for above, below in grip_pairs:
+			wa = self.builder.get_object(above)
+			wb = self.builder.get_object(below)
+			if wa and wb and wa.get_parent() is wb.get_parent():
+				kids = wa.get_parent().get_children()
+				if kids.index(wa) > kids.index(wb):
+					wa.get_parent().reorder_child(wa, kids.index(wb))
+
 		stckEditor.set_visible_child(grEditor)
 		GLib.idle_add(self.on_c_size_allocate)
 
