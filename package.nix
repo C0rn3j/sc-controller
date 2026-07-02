@@ -60,9 +60,19 @@
 , linuxHeaders
 }:
 
+let
+  # Libraries scc dlopens by soname at runtime via ctypes (the Nix Python loader
+  # does not search /usr/lib). Shared by the runtime wrapper and the test phase.
+  runtimeLibraries = [
+    xorg.libX11
+    xorg.libXfixes
+    xorg.libXext
+    libudev-zero
+    bluez # libbluetooth.so.3, for Bluetooth controller detection
+  ];
+in
 python3.pkgs.buildPythonApplication rec {
   pname = "sc-controller-cc";
-  # HEAD is one commit past tag v0.6.0.1 (rev 461c34d8); matches the local clone.
   version = "0.6.0.1";
   pyproject = true;
 
@@ -90,6 +100,9 @@ python3.pkgs.buildPythonApplication rec {
   nativeBuildInputs = [
     gobject-introspection
     wrapGAppsHook3
+    # Test runner for the post-install pytest gate (see postFixup).
+    python3.pkgs.pytest
+    python3.pkgs.toml
   ];
 
   buildInputs = [
@@ -101,6 +114,11 @@ python3.pkgs.buildPythonApplication rec {
   ];
 
   # Python runtime dependencies — mirrors the PKGBUILD's python-* depends.
+  # Note: libusb1 (the Python binding) already loads the C libusb by an absolute
+  # /nix/store path baked into its loader by nixpkgs (usb1/_libusb1.py), so —
+  # unlike the old official sc-controller package — the C libusb does NOT need to
+  # go on LD_LIBRARY_PATH; it is a pinned closure dependency and cannot silently
+  # go missing.
   dependencies = with python3.pkgs; [
     evdev
     pygobject3
@@ -111,7 +129,10 @@ python3.pkgs.buildPythonApplication rec {
     setuptools # scc imports pkg_resources at runtime
   ];
 
-  # No test runner is configured upstream and the GUI import needs a display.
+  # Tests run in postFixup (see below), not checkPhase: buildPythonApplication's
+  # checkPhase runs before install, but the CC fork's scc/constants.py needs the
+  # package's installed dist metadata at import time
+  # (packages_distributions()["scc"]), which only exists once the wheel is in $out.
   doCheck = false;
 
   # scc/device_monitor.py resolves libbluetooth via ctypes.util.find_library,
@@ -147,6 +168,25 @@ python3.pkgs.buildPythonApplication rec {
       patchPythonScript scc-osd-daemon.py
       patchPythonScript scc-autoswitch-daemon.py
     )
+
+    # Post-install test gate. Runs here (not checkPhase) because scc only imports
+    # once its dist metadata exists in $out. Import the installed scc from $out
+    # (has metadata + the bundled input-event-codes.h) rather than the source
+    # tree: `python -P` drops the build cwd (which still holds ./scc) from
+    # sys.path so `import scc` resolves via PYTHONPATH to $out. The X11/udev/
+    # bluetooth libs scc dlopens at import must be reachable, hence LD_LIBRARY_PATH.
+    echo "Running post-install test suite..."
+    PYTHONPATH="$out/${python3.sitePackages}''${PYTHONPATH:+:$PYTHONPATH}" \
+    SCC_SHARED="$out/share/scc" \
+    LD_LIBRARY_PATH="${lib.makeLibraryPath runtimeLibraries}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
+    python -P -m pytest -q --import-mode=importlib tests/ \
+      `# GUI test needs a display / GTK; skip it in the sandbox` \
+      --ignore=tests/test_setup.py \
+      `# three pre-existing upstream test-suite gaps (a missing "inverted"` \
+      `# modifier test + an action-doc coverage gap), unrelated to packaging:` \
+      --deselect 'tests/test_docs.py::TestDocs::test_every_action_has_docs' \
+      --deselect 'tests/test_parser/test_modifiers.py::TestModifiers::test_tests' \
+      --deselect 'tests/test_profile/test_modifiers.py::TestModifiers::test_tests'
   '';
 
   # buildPythonApplication does its own console-script wrapping, so disable the
@@ -167,13 +207,7 @@ python3.pkgs.buildPythonApplication rec {
       "''${gappsWrapperArgs[@]}"
       --set SCC_SHARED "$out/share/scc"
       --prefix PATH : ${lib.makeBinPath [ xorg.xinput ]}
-      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [
-        xorg.libX11
-        xorg.libXfixes
-        xorg.libXext
-        libudev-zero
-        bluez # libbluetooth.so.3, for Bluetooth controller detection
-      ]}
+      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath runtimeLibraries}
     )
   '';
 
