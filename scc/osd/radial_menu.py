@@ -12,6 +12,8 @@ import sys
 from math import atan2, cos, sin
 from math import pi as PI
 
+import cairo
+
 from scc.config import Config
 from scc.constants import STICK, STICK_PAD_MAX
 from scc.gui.svg_widget import SVGEditor, SVGWidget
@@ -39,6 +41,18 @@ class RadialMenu(Menu):
 		self.rotation = 0
 		self.scale = 1.0
 		self.items_with_icon = []
+		if self.xdisplay is None:
+			# Wayland: the X SHAPE extension used on X11 to clip the window into a
+			# circle is unavailable. Instead give the window an RGBA (alpha)
+			# visual and clip its drawing to a centered circle in the draw
+			# handler, so the rectangular corners become transparent and the menu
+			# appears round. Needs a compositor providing an RGBA visual (always
+			# true under Wayland); falls back to a plain rectangle otherwise.
+			visual = self.get_screen().get_rgba_visual()
+			if visual is not None:
+				self.set_visual(visual)
+				self.set_app_paintable(True)
+				self.connect("draw", self._on_draw_clip_circle)
 
 	def scroll_wrap(self, parent):
 		return parent  # radial menu draws items on an SVG; no scroll viewport
@@ -188,17 +202,38 @@ class RadialMenu(Menu):
 		self.editor.commit()
 		del self.editor
 
+	def _on_draw_clip_circle(self, widget, cr):
+		"""Wayland circular shaping: clear the surface to transparent and clip all
+		drawing (background, arcs, icons) to a centered circle inscribed in the
+		window. The transparent corners give the same round appearance the X SHAPE
+		extension produces on X11. Returns False so the default handler then draws
+		the children within this clip."""
+		cr.set_source_rgba(0, 0, 0, 0)
+		cr.set_operator(cairo.OPERATOR_SOURCE)
+		cr.paint()
+		cr.set_operator(cairo.OPERATOR_OVER)
+		w = widget.get_allocated_width()
+		h = widget.get_allocated_height()
+		cr.arc(w / 2.0, h / 2.0, min(w, h) / 2.0, 0, 2 * PI)
+		cr.clip()
+		return False
+
 	def show(self):
 		OSDWindow.show(self)
 
-
 		pb = self.b.get_pixbuf()
-		win = X.XID(self.get_window().get_xid())
-
 		width = int(pb.get_width() * self.scale * self.get_scale_factor())
 		height = int(pb.get_height() * self.scale * self.get_scale_factor())
-		pixmap = X.create_pixmap(self.xdisplay, win, width, height, 1)
 		self.f.move(self.cursor, int(width / 2), int(height / 2))
+
+		if self.xdisplay is None:
+			# Wayland: window is shaped into a circle via the RGBA visual + cairo
+			# clip set up in __init__ (_on_draw_clip_circle), not the X SHAPE
+			# extension. Nothing more to do here; skip the X-only shaping below.
+			return
+
+		win = X.XID(self.get_window().get_xid())
+		pixmap = X.create_pixmap(self.xdisplay, win, width, height, 1)
 
 		gc = X.create_gc(self.xdisplay, pixmap, 0, None)
 		X.set_foreground(self.xdisplay, gc, 0)
