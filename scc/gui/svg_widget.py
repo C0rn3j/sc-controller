@@ -281,13 +281,32 @@ class SVGEditor:
 	@staticmethod
 	def _deep_copy(element):
 		"""Creates deep copy of XML element"""
-		e = element.copy()
+		# Element.copy() was deprecated since Python 3.4 and removed in 3.13.
+		# Rebuild the element instead of using copy.copy(): copy.copy() shares
+		# the original's attrib dict, so writing the clone's id (as the radial
+		# menu does) would clobber the template. makeelement() with a fresh
+		# attrib dict gives an independent copy; text/tail and deep-copied
+		# children are carried over explicitly.
+		e = element.makeelement(element.tag, dict(element.attrib))
+		e.text = element.text
+		e.tail = element.tail
 		for ch in element:
-			copy = SVGEditor._deep_copy(ch)
-			e.remove(ch)
-			e.append(copy)
-			copy.parent = e
+			e.append(SVGEditor._deep_copy(ch))
 		return e
+
+	@staticmethod
+	def _find_parent(tree, target):
+		"""Returns the parent element of `target` within `tree`, or None.
+
+		ElementTree does not track parents, and Elements cannot hold a `.parent`
+		attribute on Python 3.13+ (no __dict__), so the parent is found by
+		walking the tree.
+		"""
+		for parent in tree.iter():
+			for child in parent:
+				if child is target:
+					return parent
+		return None
 
 	def clone_element(self, id):
 		"""Grabs element with specified ID, duplicates it and returns created
@@ -299,11 +318,12 @@ class SVGEditor:
 		e = SVGEditor.get_element(self, id)
 		if e is not None:
 			copy = SVGEditor._deep_copy(e)
-			parent = e.find("..")
-			if parent:
+			# Attach the clone next to the original so it renders. ElementTree's
+			# find("..") has no parent axis (returns None), so locate the parent
+			# by walking the tree.
+			parent = SVGEditor._find_parent(self._tree, e)
+			if parent is not None:
 				parent.append(copy)
-			# e.parent.append(copy)
-			# copy.parent = e.parent
 			return copy
 		return None
 
@@ -316,7 +336,9 @@ class SVGEditor:
 		if type(e) == str:
 			e = SVGEditor.get_element(self, e)
 		if e is not None:
-			e.parent.remove(e)
+			parent = SVGEditor._find_parent(self._tree, e)
+			if parent is not None:
+				parent.remove(e)
 		return self
 
 	def keep(self, *ids):
