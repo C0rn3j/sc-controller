@@ -13,6 +13,7 @@ from math import atan2, cos, sin
 from math import pi as PI
 
 import cairo
+from gi.repository import Gtk
 
 from scc.config import Config
 from scc.constants import STICK, STICK_PAD_MAX
@@ -54,7 +55,7 @@ class RadialMenu(Menu):
 				self.set_app_paintable(True)
 				self.connect("draw", self._on_draw_clip_circle)
 
-	def scroll_wrap(self, parent):
+	def scroll_wrap(self, parent: Gtk.Widget) -> Gtk.Widget:
 		return parent  # radial menu draws items on an SVG; no scroll viewport
 
 	def create_parent(self):
@@ -202,7 +203,7 @@ class RadialMenu(Menu):
 		self.editor.commit()
 		del self.editor
 
-	def _on_draw_clip_circle(self, widget, cr):
+	def _on_draw_clip_circle(self, widget: Gtk.Widget, cr: cairo.Context) -> bool:
 		"""Wayland circular shaping: clear the surface to transparent and clip all
 		drawing (background, arcs, icons) to a centered circle inscribed in the
 		window. The transparent corners give the same round appearance the X SHAPE

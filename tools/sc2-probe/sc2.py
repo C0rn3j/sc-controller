@@ -14,7 +14,7 @@ import os, select, sys, time, glob
 REPORT_ID = 0x42
 FRAME_LEN = 54           # 1 id + 53 payload
 
-def find_slots():
+def find_slots() -> list[tuple[int, str]]:
     slots = []
     for p in sorted(glob.glob("/dev/hidraw*")):
         try:
@@ -24,7 +24,7 @@ def find_slots():
         slots.append((fd, p))
     return slots
 
-def rec(label, dur, quiet=False):
+def rec(label: str, dur: float, quiet: bool = False) -> None:
     slots = find_slots()
     fds = [fd for fd, _ in slots]
     name = {fd: p for fd, p in slots}
@@ -70,19 +70,19 @@ def rec(label, dur, quiet=False):
             if rng > 0:
                 print(f"  {i:2d}    0x{frames[0][i]:02x}   {mins[i]:3d}  {maxs[i]:3d}   {rng:4d}")
 
-def load(label):
+def load(label: str) -> list[bytes]:
     path = f"/tmp/sc2_{label}.bin"
     raw = open(path, "rb").read()
     return [raw[i:i+FRAME_LEN] for i in range(0, len(raw), FRAME_LEN)]
 
-def noisy(frames, L, thresh):
+def noisy(frames: list[bytes], L: int, thresh: int) -> set[int]:
     s = set()
     for i in range(L):
         if (max(f[i] for f in frames) - min(f[i] for f in frames)) > thresh:
             s.add(i)
     return s
 
-def diff(base_label, label, margin=4):
+def diff(base_label: str, label: str, margin: int = 4) -> None:
     base = load(base_label)
     ctrl = load(label)
     L = min(min(len(f) for f in base), min(len(f) for f in ctrl))
@@ -151,7 +151,7 @@ PHASE2 = [  # held in your hands
     ("grip_r", "SQUEEZE the RIGHT handle (capacitive grip), release, repeat"),
 ]
 
-def _walk(items, manifest):
+def _walk(items: list[tuple[str, str]], manifest: list[str]) -> None:
     for name, how in items:
         print(f"\n>>> NEXT: {name.upper()}  —  {how}")
         for s in (5, 4, 3, 2, 1):
@@ -178,7 +178,7 @@ GRIPWALK = [
     ("g_grip_r",     "Firmly SQUEEZE the RIGHT handle, release, repeat"),
 ]
 
-def grips():
+def grips() -> None:
     print("\n=== GRIP / PADDLE RE-TEST (held in the air, no table contact) ===")
     print("No motion noise to worry about (IMU isn't in this report). The point is to")
     print("capture clean reference holds, then isolate each rear button / grip touch.\n")
@@ -187,7 +187,7 @@ def grips():
     _walk(GRIPWALK, manifest)
     print("\ndone:", manifest, " (bins at /tmp/sc2_<name>.bin)")
 
-def guided():
+def guided() -> None:
     if not os.path.exists("/tmp/sc2_rest.bin"):
         print("No baseline yet. Set the controller STILL and FLAT, then:")
         input("  press Enter to capture a 6s baseline...")
@@ -206,7 +206,7 @@ def guided():
     print("\ndone. captured controls:", manifest)
     print("bins: /tmp/sc2_<name>.bin   manifest: /tmp/sc2_manifest.txt")
 
-def _stats(frames, L):
+def _stats(frames: list[bytes], L: int) -> tuple[list[int], list[int], list[int]]:
     mn = [255] * L; mx = [0] * L; mode = [0] * L
     for i in range(L):
         cnt = {}
@@ -218,7 +218,7 @@ def _stats(frames, L):
         mode[i] = max(cnt, key=cnt.get)
     return mn, mx, mode
 
-def report():
+def report() -> None:
     rest = load("rest")
     L = min(len(f) for f in rest)
     rmn, rmx, rmode = _stats(rest, L)

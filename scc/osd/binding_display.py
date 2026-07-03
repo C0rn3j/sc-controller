@@ -11,14 +11,16 @@ import logging
 import os
 import re
 import sys
+from collections.abc import Callable
 from enum import IntEnum
+from xml.etree import ElementTree as ET
 
 from gi.repository import Gtk
 
 from scc.actions import Action, AxisAction, DPadAction, MouseAction, MultiAction, XYAction
 from scc.config import Config
 from scc.constants import DPAD, LEFT, RIGHT, SCButtons
-from scc.gui.daemon_manager import DaemonManager
+from scc.gui.daemon_manager import ControllerManager, DaemonManager
 from scc.gui.svg_widget import SVGEditor, SVGWidget
 from scc.modifiers import DoubleclickModifier, ModeModifier
 from scc.osd import OSDWindow
@@ -56,7 +58,7 @@ class BindingDisplay(OSDWindow):
 	def on_profile_changed(self, daemon: DaemonManager, filename: str):
 		self._draw_profile(filename)
 
-	def _draw_profile(self, filename):
+	def _draw_profile(self, filename: str) -> None:
 		"""(Re)draws the binding boxes for the given profile onto the current
 		background. No-op until the background image has been built, which
 		happens in on_daemon_connected() once the connected controller (and
@@ -148,7 +150,7 @@ class BindingDisplay(OSDWindow):
 		locks = ["RB", "LB", self.args.cancel_with]
 		c.lock(success, self.on_failed_to_lock, *locks)
 
-	def _resolve_image(self, controller):
+	def _resolve_image(self, controller: ControllerManager) -> str:
 		"""Picks the binding-display SVG for the connected controller.
 
 		Order of preference:
@@ -212,7 +214,7 @@ class BindingDisplay(OSDWindow):
 			OSDWindow.show(self, *a)
 			self.move(*self.compute_position())
 
-	def _build_and_show(self, image):
+	def _build_and_show(self, image: str) -> None:
 		"""Builds the window around the given background image and shows it."""
 		self.realize()
 		self.background = SVGWidget(image, init_hilighted=True)
@@ -281,8 +283,8 @@ class Box:
 	MIN_HEIGHT = 50
 	MIN_SCALE = 0.4   # smallest font shrink before lines may overflow anyway
 
-	def __init__(self, anchor_x, anchor_y, align, name, min_width=MIN_WIDTH, min_height=MIN_HEIGHT,
-	             max_width=999999, max_height=999999):
+	def __init__(self, anchor_x: int, anchor_y: int, align: Align, name: str, min_width: int = MIN_WIDTH,
+	             min_height: int = MIN_HEIGHT, max_width: int = 999999, max_height: int = 999999) -> None:
 		self.name = name
 		self.lines = []
 		self.anchor = anchor_x, anchor_y
@@ -489,23 +491,23 @@ class Box:
 _B, _T, _P, _S = Action.AC_BUTTON, Action.AC_TRIGGER, Action.AC_PAD, Action.AC_STICK
 
 
-def _btn(name):
+def _btn(name: str) -> Callable[[Profile], Action | None]:
 	return lambda p: p.buttons.get(SCButtons[name])
 
 
-def _pad(side):
+def _pad(side: str) -> Callable[[Profile], Action | None]:
 	return lambda p: p.pads.get(side)
 
 
-def _trig(side):
+def _trig(side: str) -> Callable[[Profile], Action | None]:
 	return lambda p: p.triggers.get(side)
 
 
-def _stick(p):
+def _stick(p: Profile) -> Action:
 	return p.stick
 
 
-def _rstick(p):
+def _rstick(p: Profile) -> Action | None:
 	return getattr(p, "rstick", None)
 
 
@@ -544,7 +546,7 @@ LAYOUTS = {
 class Generator:
 	PADDING = 10
 
-	def __init__(self, editor, profile, layout_key=None):
+	def __init__(self, editor: SVGEditor, profile: Profile, layout_key: str | None = None) -> None:
 		background = SVGEditor.get_element(editor, "background")
 		self.label_template = SVGEditor.get_element(editor, "label_template")
 		self.line_height = int(float(self.label_template.attrib.get("height") or 8))
@@ -564,7 +566,7 @@ class Generator:
 
 		editor.commit()
 
-	def _build_v1(self, profile, root):
+	def _build_v1(self, profile: Profile, root: ET.Element) -> None:
 		"""The original 5-box layout (Steam Controller v1: one stick, no D-pad,
 		three system buttons). Used for v1 and any controller without a dedicated
 		entry in LAYOUTS."""
@@ -638,7 +640,7 @@ class Generator:
 		for b in boxes:
 			b.place(self, root)
 
-	def _build_layout(self, profile, root, layout):
+	def _build_layout(self, profile: Profile, root: ET.Element, layout: list[dict]) -> None:
 		"""Builds boxes from a per-controller LAYOUTS spec. Box positions are
 		auto-placed from the Align flags; size caps come from canvas fractions.
 		Boxes whose controls are all unbound draw nothing and are dropped."""
@@ -668,7 +670,7 @@ class Generator:
 		for b in boxes:
 			b.place(self, root)
 
-	def label_style(self, scale):
+	def label_style(self, scale: float) -> str:
 		"""Label text style with font-size scaled by `scale` (used to shrink a
 		crowded box so its lines fit). Returns the template style unchanged at
 		scale 1.0."""

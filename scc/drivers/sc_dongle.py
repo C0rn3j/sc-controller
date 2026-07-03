@@ -287,7 +287,7 @@ class SCController(Controller):
 			on_giveup=self._on_serial_giveup,
 		)
 
-	def _on_serial_giveup(self):
+	def _on_serial_giveup(self) -> None:
 		"""Called when the GET_SERIAL request kept stalling. Add the controller
 		with a generated id anyway, so it still appears (it just won't have a
 		stable serial-based identity)."""

@@ -137,7 +137,7 @@ class SVGWidget(Gtk.EventBox):
 			return a.x, a.y, a.w, a.h
 		raise ValueError("Area '%s' not found" % (area_id,))
 
-	def get_viewbox(self):
+	def get_viewbox(self) -> tuple[float, float, float, float]:
 		"""Returns the SVG viewBox as (min_x, min_y, width, height).
 
 		Used to map area coordinates (SVG document space) onto the rendered
@@ -324,7 +324,7 @@ class SVGEditor:
 		return e
 
 	@staticmethod
-	def _find_parent(tree, target):
+	def _find_parent(tree: ET.Element, target: ET.Element) -> ET.Element | None:
 		"""Returns the parent element of `target` within `tree`, or None.
 
 		ElementTree does not track parents, and Elements cannot hold a `.parent`

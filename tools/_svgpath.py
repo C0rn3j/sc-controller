@@ -3,16 +3,16 @@ import re
 _TOK = re.compile(r'[MmLlHhVvCcSsQqTtAaZz]|-?\d*\.?\d+(?:[eE][-+]?\d+)?')
 _NPARAMS = {'M':2,'L':2,'H':1,'V':1,'C':6,'S':4,'Q':4,'T':2,'A':7,'Z':0}
 
-def _tokens(d):
+def _tokens(d: str) -> list[str | float]:
     out=[]
     for t in _TOK.findall(d):
         out.append(t if t.isalpha() else float(t))
     return out
 
-def to_absolute(d):
+def to_absolute(d: str) -> str:
     """Return path 'd' rewritten with absolute commands (M L C ... only as needed)."""
     toks=_tokens(d); i=0; out=[]; cx=cy=0.0; sx=sy=0.0; cmd=None
-    def emit(c,*vals): out.append(c+" "+" ".join("%.4f"%v for v in vals))
+    def emit(c: str, *vals: float) -> None: out.append(c+" "+" ".join("%.4f"%v for v in vals))
     while i<len(toks):
         t=toks[i]
         if isinstance(t,str): cmd=t; i+=1
@@ -56,12 +56,12 @@ def to_absolute(d):
             pass
     return " ".join(out)
 
-def split_subpaths(abs_d):
+def split_subpaths(abs_d: str) -> list[str]:
     """Split an absolute 'd' on each M into list of subpath 'd' strings."""
     parts=re.split(r'(?=M )', abs_d.strip())
     return [p.strip() for p in parts if p.strip()]
 
-def bbox(abs_d):
+def bbox(abs_d: str) -> tuple[float, float, float, float]:
     xs=[];ys=[]
     toks=_tokens(abs_d);i=0;cmd=None
     while i<len(toks):
