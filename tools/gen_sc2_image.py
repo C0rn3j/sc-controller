@@ -29,6 +29,7 @@ import xml.etree.ElementTree as ET
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _svgpath as S  # noqa: E402
+import _svgo  # noqa: E402
 
 SVG = "http://www.w3.org/2000/svg"
 INK = "http://www.inkscape.org/namespaces/inkscape"
@@ -63,7 +64,8 @@ PADDLE_ICON = {"LGRIP": "l4", "RGRIP": "r4", "LGRIP2": "l5", "RGRIP2": "r5"}
 ET.register_namespace("", SVG)
 
 
-def clean(e, keep=("id", "d", "style", "transform", "x", "y", "width", "height", "rx", "ry")):
+def clean(e: ET.Element,
+          keep: tuple[str, ...] = ("id", "d", "style", "transform", "x", "y", "width", "height", "rx", "ry")) -> ET.Element:
     """Deep-copy an element keeping only safe attributes (drop inkscape/sodipodi)."""
     tag = e.tag.split("}")[-1]
     new = ET.Element("{%s}%s" % (SVG, tag), {k: v for k, v in e.attrib.items() if k in keep})
@@ -72,13 +74,13 @@ def clean(e, keep=("id", "d", "style", "transform", "x", "y", "width", "height",
     return new
 
 
-def src_elements():
+def src_elements() -> tuple[ET.Element, dict[str, ET.Element]]:
     root = ET.parse(SRC).getroot()
     g1 = next(e for e in root.iter() if e.get("id") == "g1")
     return g1, {e.get("{%s}label" % INK): e for e in g1 if e.get("{%s}label" % INK)}
 
 
-def abxy_split(abxy):
+def abxy_split(abxy: ET.Element) -> dict[str, str]:
     absd = S.to_absolute(abxy.get("d"))
     subs = S.split_subpaths(absd)
     cc = [((b[0] + b[2]) / 2, (b[1] + b[3]) / 2) for b in (S.bbox(s) for s in subs)]
@@ -92,11 +94,11 @@ def abxy_split(abxy):
     return {k: " ".join(v) for k, v in groups.items()}
 
 
-def local_to_display_bbox(lb):
+def local_to_display_bbox(lb: tuple[float, float, float, float]) -> tuple[float, float, float, float]:
     return (lb[0] + G1TX) * SCALE, (lb[1] + G1TY) * SCALE, (lb[2] - lb[0]) * SCALE, (lb[3] - lb[1]) * SCALE
 
 
-def write_glyph(path, local_d):
+def write_glyph(path: str, local_d: str) -> tuple[float, float, float, float]:
     """Overlay glyph: symbol pre-scaled to display size on an INNER group, so the
     `button` group transform (overwritten by _fill_button_images) doesn't matter.
     Placed at its display AREA with scale 1, it reproduces the button exactly."""
@@ -114,7 +116,7 @@ def write_glyph(path, local_d):
     return local_to_display_bbox(lb)
 
 
-def write_panel_icon(path, d, style, factor):
+def write_panel_icon(path: str, d: str, style: str | None, factor: float) -> None:
     b = S.bbox(d)
     w, h = b[2] - b[0], b[3] - b[1]
     pad = 0.06 * max(w, h)
@@ -126,7 +128,7 @@ def write_panel_icon(path, d, style, factor):
     ET.ElementTree(svg).write(path, encoding="unicode", xml_declaration=True)
 
 
-def grips():
+def grips() -> dict[str, tuple[ET.Element, tuple[float, float, float, float]]]:
     """Return {'LGRIPTOUCH': (group_elem, src_bbox), 'RGRIPTOUCH': (...)}"""
     import subprocess
     root = ET.parse(GRIPS).getroot()
@@ -141,7 +143,8 @@ def grips():
     return res
 
 
-def write_grip_panel_icon(path, group_elem, src_bbox):
+def write_grip_panel_icon(path: str, group_elem: ET.Element,
+                          src_bbox: tuple[float, float, float, float]) -> None:
     x, y, w, h = src_bbox
     f = max(w, h) / 98.0   # height ~2x the other panel icons (tall thin shape)
     # width stretched 2x more (the silhouette is too narrow otherwise);
@@ -160,7 +163,7 @@ def write_grip_panel_icon(path, group_elem, src_bbox):
     ET.ElementTree(svg).write(path, encoding="unicode", xml_declaration=True)
 
 
-def main():
+def main() -> None:
     g1, lab = src_elements()
     os.makedirs(PANEL_DIR, exist_ok=True)
     grip = grips()
@@ -190,7 +193,7 @@ def main():
         write_grip_panel_icon(os.path.join(PANEL_DIR, "%s.svg" % name), *grip[name])
 
     # ---- controller image ----
-    def build(debug=False):
+    def build(debug: bool = False) -> ET.ElementTree:
         svg = ET.Element("{%s}svg" % SVG, {
             "width": "%g" % W, "height": "%g" % H, "viewBox": "0 0 %g %g" % (W, H), "version": "1.1"})
         ET.SubElement(svg, "{%s}defs" % SVG, {"id": "defs1"})
@@ -221,7 +224,7 @@ def main():
         areas = ET.SubElement(svg, "{%s}g" % SVG,
                               {"id": "layerAreas", "style": "display:inline" if debug else "display:none"})
 
-        def add_area(name, x, y, w, h):
+        def add_area(name: str, x: float, y: float, w: float, h: float) -> None:
             style = ("fill:none;stroke:#ff0000;stroke-width:1" if debug else "fill:none;stroke:none")
             ET.SubElement(areas, "{%s}rect" % SVG, {"id": "AREA_%s" % name, "x": "%g" % x, "y": "%g" % y,
                                                     "width": "%g" % w, "height": "%g" % h, "style": style})
@@ -245,6 +248,14 @@ def main():
 
     build(False).write(OUT_IMG, encoding="unicode", xml_declaration=True)
     build(True).write(OUT_DEBUG, encoding="unicode", xml_declaration=True)
+
+    # minify the committed outputs (the /tmp debug image is left readable)
+    panel_names = list(PANEL) + list(PADDLE_ICON) + ["LGRIPTOUCH", "RGRIPTOUCH"]
+    outputs = [OUT_IMG]
+    outputs += [os.path.join(GLYPH_DIR, "sc2_%s.svg" % n) for n in face_local]
+    outputs += [os.path.join(PANEL_DIR, "%s.svg" % n) for n in panel_names]
+    _svgo.optimize(*outputs)
+
     gui = ["sc2_A", "sc2_B", "sc2_X", "sc2_Y", "sc2_BACK", "sc2_C", "sc2_START",
            "LB", "RB", "LT", "RT", "STICK", "TOUCHPAD", "TOUCHPAD", "RGRIP", "LGRIP", "sc2_DOTS"]
     print("wrote", OUT_IMG, "+ 8 glyphs +", len(os.listdir(PANEL_DIR)), "panel icons")
