@@ -1244,6 +1244,16 @@ class LockedAction(ReportingAction):
 	def __init__(self, what, client, original_action):
 		ReportingAction.__init__(self, what, client)
 		self.original_action = original_action
+		# If the button being locked is currently held, the original action's
+		# press already ran (a key it bound may be DOWN). Its release will now be
+		# captured by this lock instead of the original action, leaving the key
+		# stuck down (it has locked people's keyboards). Release the original
+		# action here so the matching key-UP is sent.
+		if what in SCButtons.__members__.values() and self.mapper and (self.mapper.buttons & what):
+			try:
+				original_action.button_release(self.mapper)
+			except Exception as e:
+				log.warning("Failed to release held action while locking %s: %s", what, e)
 		original_action.cancel(self.mapper)
 		self._store_lock()
 		log.debug("%s locked by %s", nameof(self.what), self.client)
