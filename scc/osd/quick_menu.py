@@ -108,7 +108,6 @@ class QuickMenu(Menu):
 
 	def lock_inputs(self):
 		def success(*a):
-			log.error("Sucessfully locked input")
 			config = self.controller.load_gui_config(os.path.join(get_share_path(), "images"))
 			if config and config["gui"] and config["gui"]["buttons"]:
 				buttons = config["gui"]["buttons"]
@@ -246,6 +245,13 @@ class QuickMenu(Menu):
 		if self._timer:
 			GLib.source_remove(self._timer)
 			self._timer = None
+
+	def quit(self, code=-2):
+		# Cancel the auto-timeout before quitting; otherwise it lingers and fires
+		# after this menu is gone, calling quit() again -> unlock_all(), which is
+		# per-client and would clear the *next* menu's locks. See Menu.quit.
+		self.cancel_timer()
+		Menu.quit(self, code)
 
 	def on_event(self, daemon, what, data):
 		if self._submenu:
