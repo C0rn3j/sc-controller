@@ -25,7 +25,11 @@ register with that mapping; if you change ART_MAX_*_FRAC, re-place the art.
 Run from repo root:  python3 tools/gen_binding_display.py
 """
 import os
+import sys
 import xml.etree.ElementTree as ET
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _svgo  # noqa: E402
 
 SVG = "http://www.w3.org/2000/svg"
 SRC = "images/controller-images/sc2.svg"          # AREA anchors for markers
@@ -55,11 +59,11 @@ MARKERS = {
 ET.register_namespace("", SVG)
 
 
-def q(tag):
+def q(tag: str) -> str:
     return "{%s}%s" % (SVG, tag)
 
 
-def parse_viewbox(svg):
+def parse_viewbox(svg: ET.Element) -> tuple[float, float]:
     vb = svg.get("viewBox")
     if vb:
         p = [float(x) for x in vb.replace(",", " ").split()]
@@ -67,7 +71,7 @@ def parse_viewbox(svg):
     return float(svg.get("width")), float(svg.get("height"))
 
 
-def read_area_centers(root):
+def read_area_centers(root: ET.Element) -> dict[str, tuple[float, float]]:
     """AREA_<NAME> rects sit in an untransformed layer in display coords, so
     their centres are read directly."""
     centers = {}
@@ -80,7 +84,7 @@ def read_area_centers(root):
     return centers
 
 
-def main():
+def main() -> None:
     if not os.path.exists(SRC):
         raise SystemExit("run from repo root: %s not found" % SRC)
     src = ET.parse(SRC).getroot()
@@ -92,7 +96,7 @@ def main():
     ox = (CANVAS_W - cw * s) / 2.0
     oy = (CANVAS_H - ch * s) / 2.0
 
-    def to_canvas(pt):
+    def to_canvas(pt: tuple[float, float]) -> tuple[float, float]:
         return ox + s * pt[0], oy + s * pt[1]
 
     out = ET.Element(q("svg"), {
@@ -139,6 +143,7 @@ def main():
                 "style": "fill:#000000;fill-opacity:0;stroke:#06a400;stroke-width:1"})
 
     ET.ElementTree(out).write(OUT, encoding="unicode", xml_declaration=True)
+    _svgo.optimize(OUT)
     print("wrote", OUT)
     print("  art inlined from %s; marker mapping scale %.3f at (%.1f, %.1f)"
           % (ART, s, ox, oy))
