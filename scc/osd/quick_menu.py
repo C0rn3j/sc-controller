@@ -117,10 +117,16 @@ class QuickMenu(Menu):
 						icon = self._icons[i]
 						name = buttons[self.BUTTON_INDEXES[i]]
 						filename, trash = find_icon("buttons/%s" % name)
-						icon.set_filename(filename)
-						icon.queue_draw()
+						# Some controllers (e.g. the v2) name their face buttons
+						# sc2_A/B/X/Y, which have no icon under buttons/. Only
+						# override when a real icon is found, otherwise keep the
+						# generic A/B/X/Y/LB/RB icon already set in generate_widget.
+						if filename:
+							icon.set_filename(filename)
+							icon.queue_draw()
 				except IndexError:
 					pass
+			self._on_inputs_locked()
 
 		locks = [x for x in self.BUTTONS] + [self._cancel_with]
 		self.controller.lock(success, self.on_failed_to_lock, *locks)
