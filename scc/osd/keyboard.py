@@ -367,7 +367,7 @@ class Keyboard(OSDWindow, TimerManager):
 		self._cononect_handlers()
 		self.on_daemon_connected(self.daemon)
 
-	def redraw_background(self, *a) -> None:
+	def redraw_background(self, *a: object) -> None:
 		"""Forces a repaint of the keyboard background image.
 
 		Called by the OSD daemon after recolor()/update_labels() when the

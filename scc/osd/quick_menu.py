@@ -246,7 +246,7 @@ class QuickMenu(Menu):
 			GLib.source_remove(self._timer)
 			self._timer = None
 
-	def quit(self, code=-2):
+	def quit(self, code: int = -2) -> None:
 		# Cancel the auto-timeout before quitting; otherwise it lingers and fires
 		# after this menu is gone, calling quit() again -> unlock_all(), which is
 		# per-client and would clear the *next* menu's locks. See Menu.quit.
