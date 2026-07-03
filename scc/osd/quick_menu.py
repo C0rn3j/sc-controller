@@ -117,6 +117,7 @@ class QuickMenu(Menu):
 							icon.queue_draw()
 				except IndexError:
 					pass
+			self._on_inputs_locked()
 
 		locks = [x for x in self.BUTTONS] + [self._cancel_with]
 		self.controller.lock(success, self.on_failed_to_lock, *locks)
