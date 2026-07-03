@@ -11,8 +11,8 @@
     </rdf:RDF>
   </metadata>
   <g inkscape:label="Layer 1" inkscape:groupmode="layer" id="layer1">
-    <g id="button" style="fill:#000000;fill-opacity:0.60392159">
-      <rect style="color:#000000;overflow:visible;fill:#000000;fill-opacity:0.60392159;fill-rule:evenodd;stroke:#000000;stroke-width:0.98;stroke-miterlimit:4;stroke-dasharray:none;stop-color:#000000" id="rect931" width="30.545269" height="22.366652" x="0.72736549" y="0.81667423" ry="5.3404856" />
+    <g id="button" style="fill:#000000;fill-opacity:0.137255">
+      <rect style="color:#000000;overflow:visible;fill:#000000;fill-opacity:0.137255;fill-rule:evenodd;stroke:#000000;stroke-width:0.98;stroke-miterlimit:4;stroke-dasharray:none;stop-color:#000000" id="rect931" width="30.545269" height="22.366652" x="0.72736549" y="0.81667423" ry="5.3404856" />
     <text id="steam-label" x="16" y="14.15" text-anchor="middle" style="font-family:Arial;font-weight:bold;font-size:6px;fill:#000000;fill-opacity:1">STEAM</text></g>
   </g>
 </svg>
