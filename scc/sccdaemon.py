@@ -199,7 +199,7 @@ class SCCDaemon(Daemon):
 		else:
 			self.send_profile_info(None, self._send_to_all, mapper=mapper)
 
-	def _remember_controller_profile(self, client, filename):
+	def _remember_controller_profile(self, client: "Client", filename: str) -> None:
 		"""Persists a controller's profile so it is restored on (re)connect.
 
 		Only explicit, user-initiated selections are remembered: the autoswitch

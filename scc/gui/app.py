@@ -989,7 +989,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		if len(vbSwitchers.get_children()) == 2:
 			sepSwitchers.set_visible(False)
 
-	def _build_controller_selector(self):
+	def _build_controller_selector(self) -> Gtk.ComboBox:
 		"""Creates the 'which controller' combo and packs it above the profile
 		switcher. Hidden until 2+ controllers are connected."""
 		# model columns: controller object, icon pixbuf, name, current profile
@@ -1017,7 +1017,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		combo.set_visible(False)
 		return combo
 
-	def _load_controller_pixbuf(self, c):
+	def _load_controller_pixbuf(self, c: ControllerManager) -> GdkPixbuf.Pixbuf | None:
 		"""Loads the 24px icon for a controller, or None if unavailable."""
 		try:
 			iconname = self.config.get_controller_config(c.get_id()).get("icon")
@@ -1029,7 +1029,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			log.debug("No selector icon for %s: %s", c.get_id(), e)
 		return None
 
-	def controller_display_name(self, c):
+	def controller_display_name(self, c: ControllerManager) -> str:
 		"""Human-friendly controller name: the user's custom name if one was set
 		in controller settings, otherwise a per-type label (e.g. 'Steam
 		Controller v2') rather than the raw internal id (e.g. 'sc1' / '3:4')."""
@@ -1038,7 +1038,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			return name  # user-customised
 		return _(CONTROLLER_TYPE_NAMES.get(c.get_type(), "Controller"))
 
-	def rebuild_controller_selector(self):
+	def rebuild_controller_selector(self) -> None:
 		"""Refills the controller selector from the connected controllers and
 		shows it only when more than one is connected."""
 		combo = self.controller_selector
@@ -1072,14 +1072,14 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		combo.set_visible(multi)
 		self.builder.get_object("sepSwitchers").set_visible(multi)
 
-	def _refresh_selector_profiles(self, combo, *a):
+	def _refresh_selector_profiles(self, combo: Gtk.ComboBox, *a: object) -> None:
 		"""Refreshes each row's profile subtext when the dropdown is opened."""
 		if not combo.get_property("popup-shown"):
 			return
 		for row in combo.get_model():
 			row[3] = get_profile_name(row[0].get_profile() or "") or ""
 
-	def on_controller_selected(self, combo):
+	def on_controller_selected(self, combo: Gtk.ComboBox) -> None:
 		"""Makes the chosen controller the active (edited) one, with the same
 		image transition the old switch-to button used."""
 		if self._selector_recursing:
@@ -1540,7 +1540,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		else:
 			self.builder.get_object("window").show()
 
-	def open_osk_editor(self):
+	def open_osk_editor(self) -> None:
 		"""Opens the standalone OSD-keyboard bindings editor (the same window
 		reachable from Settings > Menus & Keyboard > Advanced) as the only
 		window, quitting the app when it closes. Backs the OSD menu's

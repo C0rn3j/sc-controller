@@ -19,6 +19,8 @@ from typing import TYPE_CHECKING
 import usb1
 
 if TYPE_CHECKING:
+	from collections.abc import Callable
+
 	from usb1 import USBDeviceHandle, USBTransfer
 
 	from scc.sccdaemon import SCCDaemon
@@ -100,7 +102,8 @@ class USBDevice:
 				break
 		self.send_control(index, data)
 
-	def make_request(self, index, callback, data, size=64, on_giveup=None):
+	def make_request(self, index: int, callback: Callable[[bytes], None], data: bytes,
+	                 size: int = 64, on_giveup: Callable[[], None] | None = None) -> None:
 		"""Schedule a synchronous request that requires response.
 
 		Request is done ASAP and provided callback is called with received data.

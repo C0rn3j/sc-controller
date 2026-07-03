@@ -25,12 +25,17 @@ import logging
 import struct
 from collections import namedtuple
 from enum import IntEnum
+from typing import TYPE_CHECKING
 
 import usb1
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, HapticPos, SCButtons
 from scc.drivers.sc_dongle import SCController, SCPacketType
 from scc.drivers.usb import USBDevice, register_hotplug_device
+
+if TYPE_CHECKING:
+    from scc.controller import HapticData
+    from scc.sccdaemon import SCCDaemon
 
 log = logging.getLogger("SC2")
 
@@ -181,7 +186,7 @@ def _deadzone(v: int) -> int:
     return 0 if -STICK_DEADZONE < v < STICK_DEADZONE else v
 
 
-def parse_input(data) -> SC2Input | None:
+def parse_input(data: bytes | bytearray) -> SC2Input | None:
     """Parse a raw report 0x42 into an SC2Input. Returns None for other reports."""
     if not data or data[0] != INPUT_REPORT_ID or len(data) < INPUT_SIZE:
         return None
@@ -226,7 +231,7 @@ class SC2Controller(SCController):
         | ControllerFlags.HAS_DPAD
     )
 
-    def __init__(self, driver, ccidx: int, in_endpoint: int, out_endpoint: int):
+    def __init__(self, driver: SC2Device, ccidx: int, in_endpoint: int, out_endpoint: int) -> None:
         super().__init__(driver, ccidx, in_endpoint)
         self._out_ep = out_endpoint   # interrupt-OUT endpoint for haptics
         self._old_state = SC2_NULL
@@ -258,7 +263,8 @@ class SC2Controller(SCController):
         # observed from Steam as "81 00" (after the 0x01 report-id prefix)
         self._driver.overwrite_control(self._ccidx, struct.pack(">BB", SCPacketType.CLEAR_MAPPINGS, 0x00))
 
-    def configure(self, idle_timeout=None, enable_gyros=None, led_level=None) -> None:
+    def configure(self, idle_timeout: int | None = None, enable_gyros: bool | None = None,
+                  led_level: int | None = None) -> None:
         # Replay the config blocks captured from Steam. These put the controller
         # into gamepad mode; the exact gyro-enable register is still TODO.
         if led_level is not None:
@@ -278,7 +284,7 @@ class SC2Controller(SCController):
     def get_gyro_enabled(self) -> bool:
         return self._enable_gyros
 
-    def feedback(self, data) -> None:
+    def feedback(self, data: HapticData) -> None:
         # v2 haptic = output report 0x82 on the interrupt-OUT endpoint (self._out_ep):
         #   82 <side> <effect> <amplitude>
         #   side 0=left 1=right 2=both; effect 0x01 = single click; amp 0..255.
@@ -300,7 +306,7 @@ class SC2Device(USBDevice):
     haptics, and controller bookkeeping. Subclasses claim their interface(s),
     start their input endpoint(s), and implement _add_controller()."""
 
-    def __init__(self, device, handle, daemon):
+    def __init__(self, device: usb1.USBDevice, handle: usb1.USBDeviceHandle, daemon: SCCDaemon) -> None:
         self.daemon = daemon
         USBDevice.__init__(self, device, handle)
         self._controllers: dict[int, SC2Controller] = {}   # keyed by IN endpoint
@@ -309,7 +315,7 @@ class SC2Device(USBDevice):
     def send_haptic(self, endpoint: int, report: bytes) -> None:
         """Fire-and-forget interrupt-OUT transfer (haptics). The device stalls
         these over SET_REPORT control, so they must go to the OUT endpoint."""
-        def _done(transfer):
+        def _done(transfer: usb1.USBTransfer) -> None:
             self._out_transfers.discard(transfer)
         t = self.handle.getTransfer()
         t.setInterrupt(endpoint, report, callback=_done)
@@ -351,14 +357,14 @@ class SC2Device(USBDevice):
     # The base USBDevice targets feature report 0x00 (wValue 0x0300); v2's
     # numbered reports need 0x0301 and a leading 0x01 byte in the payload.
 
-    def send_control(self, index: int, data) -> None:
+    def send_control(self, index: int, data: bytes) -> None:
         # prefix the report-ID byte and pad/clamp to exactly 64 bytes (the
         # device stalls SET_REPORTs of any other length)
         payload = (bytes([0x01]) + bytes(data))[:64]
         payload = payload + b"\x00" * (64 - len(payload))
         self._cmsg.insert(0, (0x21, 0x09, 0x0301, index, payload, 0))
 
-    def overwrite_control(self, index: int, data) -> None:
+    def overwrite_control(self, index: int, data: bytes) -> None:
         for x in self._cmsg:
             x_index, x_data = x[3], x[4]
             # x_data[0] is our 0x01 prefix; the real packet starts at [1]
@@ -380,7 +386,7 @@ class SC2Device(USBDevice):
     def _add_controller(self, endpoint: int) -> SC2Controller:
         raise NotImplementedError
 
-    def _on_input(self, endpoint: int, data) -> None:
+    def _on_input(self, endpoint: int, data: bytearray) -> None:
         idata = parse_input(data)
         if idata is None:
             return                  # ignore non-0x42 reports
@@ -434,7 +440,7 @@ class SC2Puck(SC2Device):
     """The wireless Controller Puck (0x1304): up to MAX_SLOTS controllers, one
     per HID interface 2..5 (interrupt IN 0x83..0x86, OUT 0x02..0x05)."""
 
-    def __init__(self, device, handle, daemon):
+    def __init__(self, device: usb1.USBDevice, handle: usb1.USBDeviceHandle, daemon: SCCDaemon) -> None:
         super().__init__(device, handle, daemon)
         self.claim_by(klass=3, subclass=0, protocol=0)   # the 4 HID interfaces
         for i in range(MAX_SLOTS):
@@ -451,7 +457,7 @@ class SC2Puck(SC2Device):
 class SC2Wired(SC2Device):
     """The controller wired over USB-C (0x1302): one HID interface 0."""
 
-    def __init__(self, device, handle, daemon):
+    def __init__(self, device: usb1.USBDevice, handle: usb1.USBDeviceHandle, daemon: SCCDaemon) -> None:
         super().__init__(device, handle, daemon)
         self.claim_by(klass=3, subclass=0, protocol=0)   # the single HID interface
         self._listen(WIRED_IN_ENDPOINT)
@@ -461,7 +467,7 @@ class SC2Wired(SC2Device):
         return self._make_controller(endpoint, ccidx=WIRED_INTERFACE, out_ep=WIRED_OUT_ENDPOINT)
 
 
-def init(daemon, config: dict) -> bool:
+def init(daemon: SCCDaemon, config: dict) -> bool:
     """Register hotplug callbacks for the new Steam Controller."""
     register_hotplug_device(
         lambda device, handle: SC2Puck(device, handle, daemon), VENDOR_ID, PID_PUCK)

@@ -143,7 +143,7 @@ class SVGWidget(Gtk.EventBox):
 			return a.x, a.y, a.w, a.h
 		raise ValueError("Area '%s' not found" % (area_id,))
 
-	def get_viewbox(self):
+	def get_viewbox(self) -> tuple[float, float, float, float]:
 		"""Returns the SVG viewBox as (min_x, min_y, width, height).
 
 		Used to map area coordinates (SVG document space) onto the rendered
