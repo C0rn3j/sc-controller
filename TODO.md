@@ -1,26 +1,10 @@
 List of (possibly) planned features in no particular order:
 
 - Multiple on-screen menus (and possibly keyboards) when using multiple controllers
-- Remember each controller's profile across (re)connects. Today a controller
-  always loads the global default (recent_profiles[0]) on connect; the per-
-  controller config (config["controllers"][id]) stores name/icon/LED/etc. but no
-  profile. Add a "profile" key there, persist it from the daemon's "Profile:"
-  handler for *explicit* user selections only (exclude the autoswitch daemon and
-  .mod/.scc-osd temp profiles), and load it in add_controller - overriding the
-  reused pooled-mapper leftover and falling back to the global default. Keyed by
-  controller id, so it follows the physical device only with "Use Serial Numbers"
-  on (per-slot / connection-order otherwise).
 - Injecting emulated xbox controller into wine
-- "Touch" tab in the stick/pad action editor (next to Press / Hold /
-  Double-click) to bind the capacitive stick-touch sensor, instead of exposing
-  it on the main controller image.
 - mnuImage right-click "change background" menu has no `sc2` entry (the v2
   image is selected automatically via sc2.config.json `gui.background`, but
   it can't be picked manually from that menu yet).
-- LT/RT/GYRO side-panel icons still use the shared defaults (look fine; not
-  flagged). The rear paddles now use dedicated v2 oval icons (L4/R4/L5/R5,
-  from tools/sc2-assets/) and grip-touch shows both on the controller face
-  (curved surface, green on hover) and in the side-panel grid.
 - Custom small (24px) controller icons per supported controller. Today only the
   Steam Controller v1 (sc-*) and v2 (sc2-*) have bespoke top-down glyphs; every
   other type (deck, ds4, ds5, evdev, hid, scbt, fake) reuses the same generic
@@ -110,6 +94,9 @@ Very hard stuff:
   bumpers + grip-touch shapes so everything highlights on hover; darker body
   (#b8b8b8). sc2.config.json points at it all. Replaces the borrowed Deck image.
 - Multicontroller support
+- Per-controller profile memory: each controller's profile is remembered by id
+  (config["controllers"][id]["profile"]) and restored on (re)connect - follows
+  the physical device with "Use Serial Numbers" on, per-slot otherwise.
 - Configurable gamepad type (e.g. 4 axes and 16 buttons)
 - Steam Profile import
 - Radial Menu for the Joystick/Trackpad
