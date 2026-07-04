@@ -1,30 +1,35 @@
 #!/usr/bin/env python3
-"""Generate the binding-display layout SVG for the v2 Steam Controller.
+"""Generate the per-controller binding-display templates from controller art.
 
 The OSD "Display Current Bindings" window (scc/osd/binding_display.py) draws each
 control's binding into boxes laid out around a controller picture, using a
-per-controller template SVG (binding-display-<gui background>.svg). This tool
-assembles that template for the v2 controller.
+per-controller template SVG. This tool builds those templates -- one per entry
+in CONTROLLERS -- straight from the existing controller drawings
+(images/controller-images/<key>.svg), so there is no hand-drawn per-controller
+art to maintain: change a controller image and rerun this.
 
-What it emits (images/binding-display-sc2.svg), all required by Generator:
-  - a 1280x720 canvas with `background` (sizes the layout), `label_template`
-    (label font/metrics) and `root` (boxes are drawn into it) elements;
-  - the restyled controller drawing, inlined verbatim from the source asset
-    tools/binding-display-sc2-art.svg (edit that in Inkscape to change the
-    look -- it carries its own placement transform);
+For each controller it emits images/binding-display/<key>.svg, containing all the
+elements Generator needs:
+  - a 1280x720 canvas with `background` (sizes the layout + dark backdrop),
+    `label_template` (label font/metrics) and `root` (boxes are drawn into it);
+  - the controller drawing, scaled + centred into the canvas and recoloured into
+    the "Matrix" binding-display palette (green outlines + two greys) so it reads
+    as a subdued filled silhouette behind the bright binding boxes/labels;
   - the six `markers_<box>` groups (system/lshoulder/rshoulder/lthumb/rthumb/
-    face -- the v2 box set in binding_display.py LAYOUTS["sc2"]), each with
-    circles placed at the matching AREA_* anchor centres of sc2.svg, mapped
-    into canvas coordinates. Each box draws a connector line to up to two.
+    face -- the box set in binding_display.py LAYOUTS[<key>]), each a ring at the
+    matching AREA_* anchor centre of the source drawing, mapped into canvas
+    coords. Each box draws a connector line to up to two of them.
 
-Markers come from the GUI image's (sc2.svg) AREA_* anchors -- they live in an
-untransformed layer in final display coords, so their centres map into the
-canvas via the ART_MAX_*_FRAC transform below. The art asset was placed to
-register with that mapping; if you change ART_MAX_*_FRAC, re-place the art.
+The AREA_* anchors live in an untransformed layer of the source drawing in its
+own coords; the same drawing->canvas transform places both the drawing and the
+markers, so they always register regardless of the source viewBox (sc2.svg has a
+non-zero origin). If you change ART_MAX_*_FRAC, both move together.
 
 Run from repo root:  python3 tools/gen_binding_display.py
 """
+import copy
 import os
+import re
 import sys
 import xml.etree.ElementTree as ET
 
@@ -32,72 +37,129 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _svgo  # noqa: E402
 
 SVG = "http://www.w3.org/2000/svg"
-SRC = "images/controller-images/sc2.svg"          # AREA anchors for markers
-ART = "tools/binding-display-sc2-art.svg"          # restyled controller drawing
-OUT = "images/binding-display-sc2.svg"
+ET.register_namespace("", SVG)
 
 CANVAS_W, CANVAS_H = 1280, 720
+OUT_DIR = "images/binding-display"
 
-# Defines the controller's footprint in the canvas, i.e. the sc2.svg-coords ->
-# canvas transform used to place the AREA-anchor markers. The art asset
-# (tools/binding-display-sc2-art.svg) was drawn/placed to register with this.
+# The controller drawing's footprint in the canvas (leaves the margins free for
+# the binding boxes). Both the drawing and its AREA-anchor markers are placed
+# through this, so they stay registered.
 ART_MAX_W_FRAC = 0.38
 ART_MAX_H_FRAC = 0.70
 
-# Generator box name -> AREA_* anchors its connector lines point at. A box draws
-# at most two lines; missing anchors are skipped (so a box may get 1 or 2). These
-# match the v2 (sc2) box set in scc/osd/binding_display.py LAYOUTS["sc2"].
-MARKERS = {
-    "system":    ["BACK", "START"],
-    "lshoulder": ["LB", "LGRIPTOUCH"],
-    "rshoulder": ["RB", "RGRIPTOUCH"],
-    "lthumb":    ["STICK", "LPAD"],
-    "rthumb":    ["RSTICK", "RPAD"],
-    "face":      ["Y", "A"],
+# "Matrix" binding-display palette: the GUI controller art is full-colour, but
+# here it is flattened to green outlines over two greys on a dark backdrop, so it
+# recedes behind the bright binding boxes and labels while staying readable.
+GREEN = "#047100"        # every outline/stroke -> this green
+GRAY_LIGHT = "#3d3d3d"   # lighter fills (luminance >= GRAY_SPLIT)
+GRAY_DARK = "#262626"    # darker fills, and the default for un-filled shapes
+GRAY_SPLIT = 80          # fill luminance split between GRAY_LIGHT and GRAY_DARK
+MARKER_GREEN = "#06a400"  # marker rings + connector lines (matches Generator)
+
+# Per-controller source drawing + the AREA_* anchors each binding box points at.
+# The box names match scc/osd/binding_display.py LAYOUTS[<key>]. A box draws at
+# most two connector lines; anchor names differ per controller image.
+CONTROLLERS = {
+    "sc2": {
+        "src": "images/controller-images/sc2.svg",
+        "markers": {
+            "system": ["BACK", "START"], "lshoulder": ["LB", "LGRIPTOUCH"],
+            "rshoulder": ["RB", "RGRIPTOUCH"], "lthumb": ["STICK", "LPAD"],
+            "rthumb": ["RSTICK", "RPAD"], "face": ["Y", "A"],
+        },
+    },
 }
 
-ET.register_namespace("", SVG)
+_FILL = re.compile(r"fill:\s*#([0-9a-fA-F]{3,6})")
+_STROKE = re.compile(r"stroke:\s*#([0-9a-fA-F]{3,6})")
 
 
 def q(tag: str) -> str:
     return "{%s}%s" % (SVG, tag)
 
 
-def parse_viewbox(svg: ET.Element) -> tuple[float, float]:
+def parse_viewbox(svg: ET.Element) -> tuple[float, float, float, float]:
+    """(x, y, w, h) of the source viewBox -- x/y may be non-zero (e.g. sc2.svg)."""
     vb = svg.get("viewBox")
     if vb:
         p = [float(x) for x in vb.replace(",", " ").split()]
-        return p[2], p[3]
-    return float(svg.get("width")), float(svg.get("height"))
+        return p[0], p[1], p[2], p[3]
+    return 0.0, 0.0, float(svg.get("width")), float(svg.get("height"))
 
 
 def read_area_centers(root: ET.Element) -> dict[str, tuple[float, float]]:
-    """AREA_<NAME> rects sit in an untransformed layer in display coords, so
-    their centres are read directly."""
+    """AREA_<NAME> rects sit in an untransformed layer in the drawing's coords,
+    so their centres are read directly (and later mapped into the canvas)."""
     centers = {}
     for rect in root.iter(q("rect")):
         rid = rect.get("id") or ""
         if rid.startswith("AREA_"):
-            x, y = float(rect.get("x")), float(rect.get("y"))
-            w, h = float(rect.get("width")), float(rect.get("height"))
+            try:
+                x, y, w, h = (float(rect.get(k)) for k in ("x", "y", "width", "height"))
+            except (TypeError, ValueError):
+                continue
             centers[rid[5:]] = (x + w / 2.0, y + h / 2.0)
     return centers
 
 
-def main() -> None:
-    if not os.path.exists(SRC):
-        raise SystemExit("run from repo root: %s not found" % SRC)
-    src = ET.parse(SRC).getroot()
-    cw, ch = parse_viewbox(src)               # controller art size (685x493)
+def _luminance(hexcolor: str) -> float:
+    h = hexcolor.lstrip("#")
+    if len(h) == 3:
+        h = "".join(c * 2 for c in h)
+    r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+    return 0.299 * r + 0.587 * g + 0.114 * b
+
+
+def _gray(hexcolor: str) -> str:
+    """Map a source fill to one of the two binding-display greys by luminance, so
+    light body panels stay lighter than dark detailing."""
+    return GRAY_LIGHT if _luminance(hexcolor) >= GRAY_SPLIT else GRAY_DARK
+
+
+def recolor(el: ET.Element) -> None:
+    """Recolour a drawing subtree into the Matrix palette in place: every stroke
+    becomes GREEN, every explicit fill becomes one of the two greys. Shapes with
+    no fill inherit the drawing group's GRAY_DARK default (so they read instead
+    of falling back to SVG black); stroke-only outlines keep their fill:none."""
+    style = el.get("style")
+    if style:
+        style = _FILL.sub(lambda m: "fill:" + _gray(m.group(1)), style)
+        style = _STROKE.sub(lambda _m: "stroke:" + GREEN, style)
+        el.set("style", style)
+    if (el.get("fill") or "").startswith("#"):
+        el.set("fill", _gray(el.get("fill")))
+    if (el.get("stroke") or "").startswith("#"):
+        el.set("stroke", GREEN)
+    for child in el:
+        recolor(child)
+
+
+def strip_areas(el: ET.Element) -> None:
+    """Remove AREA_* hotspot rects recursively -- they are invisible in the GUI
+    but recolour() would give them a grey fill and cover the drawing."""
+    for child in list(el):
+        if (child.get("id") or "").startswith("AREA_"):
+            el.remove(child)
+        else:
+            strip_areas(child)
+
+
+def build(key: str, spec: dict) -> None:
+    src_path = spec["src"]
+    if not os.path.exists(src_path):
+        raise SystemExit("run from repo root: %s not found" % src_path)
+    src = ET.parse(src_path).getroot()
+    vx, vy, cw, ch = parse_viewbox(src)
     centers = read_area_centers(src)
 
-    # Scale + centre the art in the free middle band.
+    # Scale + centre the drawing in the canvas.
     s = min(CANVAS_W * ART_MAX_W_FRAC / cw, CANVAS_H * ART_MAX_H_FRAC / ch)
     ox = (CANVAS_W - cw * s) / 2.0
     oy = (CANVAS_H - ch * s) / 2.0
 
     def to_canvas(pt: tuple[float, float]) -> tuple[float, float]:
-        return ox + s * pt[0], oy + s * pt[1]
+        return ox + s * (pt[0] - vx), oy + s * (pt[1] - vy)
 
     out = ET.Element(q("svg"), {
         "width": str(CANVAS_W), "height": str(CANVAS_H),
@@ -111,16 +173,18 @@ def main() -> None:
         "width": str(CANVAS_W), "height": str(CANVAS_H),
         "style": "fill:#000000;fill-opacity:0.85"})
 
-    # controller art: the hand-restyled drawing, inlined verbatim from the source
-    # asset (kept separate so this generator reproduces it and the look is edited
-    # in Inkscape). It carries its own placement transform, made to register with
-    # the AREA-anchor marker mapping above.
-    if not os.path.exists(ART):
-        raise SystemExit("%s not found" % ART)
-    for child in list(ET.parse(ART).getroot()):
-        if child.tag.split("}")[-1] == "defs":
+    # The controller drawing, scaled into the canvas so it registers with the
+    # markers, then recoloured. The group's GRAY_DARK default catches shapes with
+    # no explicit fill (which would otherwise render SVG-black on the dark bg).
+    g = ET.SubElement(out, q("g"), {
+        "fill": GRAY_DARK,
+        "transform": "translate(%g,%g) scale(%g) translate(%g,%g)" % (ox, oy, s, -vx, -vy)})
+    for child in list(src):
+        if child.get("id") == "layerAreas":
             continue
-        out.append(child)
+        g.append(copy.deepcopy(child))
+    strip_areas(g)
+    recolor(g)
 
     # foreground: label_template + root (boxes drawn here) + the marker groups.
     root = ET.SubElement(out, q("g"), {"id": "root", "style": "display:inline"})
@@ -131,24 +195,30 @@ def main() -> None:
     lt.text = "X"
 
     missing = []
-    for name, anchors in MARKERS.items():
-        g = ET.SubElement(root, q("g"), {"id": "markers_%s" % name})
+    for name, anchors in spec["markers"].items():
+        mg = ET.SubElement(root, q("g"), {"id": "markers_%s" % name})
         for a in anchors:
             if a not in centers:
                 missing.append(a)
                 continue
             cx, cy = to_canvas(centers[a])
-            ET.SubElement(g, q("circle"), {
+            ET.SubElement(mg, q("circle"), {
                 "cx": "%g" % cx, "cy": "%g" % cy, "r": "5",
-                "style": "fill:#000000;fill-opacity:0;stroke:#06a400;stroke-width:1"})
+                "style": "fill:none;stroke:%s;stroke-width:1" % MARKER_GREEN})
 
-    ET.ElementTree(out).write(OUT, encoding="unicode", xml_declaration=True)
-    _svgo.optimize(OUT)
-    print("wrote", OUT)
-    print("  art inlined from %s; marker mapping scale %.3f at (%.1f, %.1f)"
-          % (ART, s, ox, oy))
+    out_path = os.path.join(OUT_DIR, "%s.svg" % key)
+    ET.ElementTree(out).write(out_path, encoding="unicode", xml_declaration=True)
+    _svgo.optimize(out_path)
+    print("wrote %s  (from %s, scale %.3f at %.1f,%.1f)" % (out_path, src_path, s, ox, oy))
     if missing:
-        print("  WARNING: AREA anchors not found in %s: %s" % (SRC, ", ".join(missing)))
+        print("  WARNING: AREA anchors not found in %s: %s" % (src_path, ", ".join(missing)))
+
+
+def main() -> None:
+    """Build every controller's binding-display template into OUT_DIR."""
+    os.makedirs(OUT_DIR, exist_ok=True)
+    for key, spec in CONTROLLERS.items():
+        build(key, spec)
 
 
 if __name__ == "__main__":
