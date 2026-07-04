@@ -141,3 +141,32 @@ docker build -o build-output --build-arg BASE_CODENAME=noble .
   - Optionally checkout a branch or a tag, like `python3`(default) or `v0.4.9.8.8`
   - Execute `./run.sh`, this automatically builds the project into a venv called `.env`, activates it and runs sc-controller, which in turn runs scc-daemon if one does not run already
   - If you are debugging an issue, running `./run.sh daemon` first will launch the daemon in debug mode, allowing you to launch sc-controller in another terminal with `./run.sh`
+
+### Regenerating controller artwork (for contributors)
+
+Some SVG assets under `images/` are **generated** from source drawings by scripts
+in `tools/`, so edit the source and rerun the script rather than hand-editing the
+committed output. All scripts run from the repository root and optimise their
+output with [`svgo`](https://github.com/svg/svgo) when it is on `PATH` (optional;
+without it the SVGs are just left un-minified). The `svgo` config
+(`tools/svgo.config.js`) deliberately preserves the element ids, `<rect>`
+geometry, `viewBox` and `display:none` layers that the GUI relies on.
+
+- **`tools/gen_sc2_image.py`** — builds the Steam Controller v2 GUI artwork
+  (`images/controller-images/sc2.svg`, the face-button glyphs and side-panel
+  icons) from the traced sources in `tools/` (`sc2-source.svg`, `sc2-assets/`).
+
+- **`tools/gen_binding_display.py`** — builds the per-controller *Display Current
+  Bindings* templates in `images/binding-display/<gui-background>.svg`. Instead of
+  a hand-drawn asset per controller, it derives each template straight from that
+  controller's GUI drawing (`images/controller-images/<name>.svg`): it scales the
+  drawing into the OSD canvas, recolours it into the binding-display palette
+  (green outlines over two greys on a dark backdrop) and drops a marker ring at
+  each control's `AREA_*` anchor so the binding boxes can draw connector lines to
+  them. The OSD then picks the file up automatically via the controller's gui
+  `background` name (see `scc/osd/binding_display.py`, `_resolve_image`).
+
+  To add a controller: give it an entry in the script's `CONTROLLERS` table (its
+  source drawing + which `AREA_*` anchors each binding box points at) and a
+  matching box layout in `LAYOUTS` in `scc/osd/binding_display.py`, then rerun the
+  script. Controllers that share a physical control set can share a layout.
