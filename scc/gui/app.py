@@ -15,7 +15,7 @@ from gi.repository import Gdk, GdkPixbuf, Gio, GLib, Gtk
 
 from scc.actions import NoAction
 from scc.config import Config
-from scc.constants import DAEMON_VERSION, DPAD, LEFT, RIGHT, RSTICK, STICK, STICK_PAD_MAX, SCButtons
+from scc.constants import CPAD, DAEMON_VERSION, DPAD, LEFT, RIGHT, RSTICK, STICK, STICK_PAD_MAX, SCButtons
 from scc.custom import load_custom_module
 from scc.gui.binding_editor import BindingEditor
 from scc.gui.controller_image import ControllerImage
@@ -181,11 +181,13 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.stick_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
 		self.rstick_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
 		self.dpad_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
+		self.cpad_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
 		self.main_area.put(self.lpad_test, 40, 40)
 		self.main_area.put(self.rpad_test, 290, 90)
 		self.main_area.put(self.stick_test, 150, 40)
 		self.main_area.put(self.rstick_test, 290, 40)
 		self.main_area.put(self.dpad_test, 40, 90)
+		self.main_area.put(self.cpad_test, 150, 90)
 
 		# Headerbar
 		headerbar(self.builder.get_object("hbWindow"))
@@ -1140,6 +1142,12 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 					"RB",
 					"LPAD",
 					"RPAD",
+					# DS4/DS5 touchpad: the positional finger source (so the pad
+					# tracks the finger like the other pads, emitted only while
+					# touched) plus its click, which brightens the CPADPRESS element.
+					# Harmless on controllers without a touchpad.
+					"CPAD",
+					"CPADPRESS",
 					"LGRIP",
 					"RGRIP",
 					"LT",
@@ -1230,13 +1238,16 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		# the selected controller's image.
 		if c is not self.test_mode_controller:
 			return
-		if what in (LEFT, RIGHT, STICK, RSTICK, DPAD):
+		if what in (LEFT, RIGHT, STICK, RSTICK, DPAD, CPAD):
 			widget, area = {
 				LEFT: (self.lpad_test, "LPADTEST"),
 				RIGHT: (self.rpad_test, "RPADTEST"),
 				STICK: (self.stick_test, "STICKTEST"),
 				RSTICK: (self.rstick_test, "RSTICKTEST"),
 				DPAD: (self.dpad_test, "DPADTEST"),
+				# The touchpad has no *TEST rect; its full AREA_CPAD (a real
+				# rectangle, not a flat line) is the finger's range of motion.
+				CPAD: (self.cpad_test, "CPAD"),
 			}[what]
 			# Check if stick or pad is released
 			if data[0] == data[1] == 0:
