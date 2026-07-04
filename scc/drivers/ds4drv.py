@@ -234,6 +234,14 @@ class DS4Controller(HIDController):
 					self._decoder.state.buttons &= ~SCButtons.CPADTOUCH
 				else:
 					self._decoder.state.buttons |= SCButtons.CPADTOUCH
+					# The DS4TOUCHPAD decoder leaves the pad coordinates raw (0..1919
+					# x, 0..942 y over the DS4's 1920x943 touchpad), so a touchpad-
+					# bound mouse/pad action only jitters. Scale them into the
+					# STICK_PAD range (y flipped, so finger-up is positive), clamped.
+					st = self._decoder.state
+					rng = STICK_PAD_MAX - STICK_PAD_MIN
+					st.cpad_x = max(STICK_PAD_MIN, min(STICK_PAD_MAX, STICK_PAD_MIN + st.cpad_x * rng // 1919))
+					st.cpad_y = max(STICK_PAD_MIN, min(STICK_PAD_MAX, STICK_PAD_MAX - st.cpad_y * rng // 942))
 				self.mapper.input(self, self._decoder.old_state, self._decoder.state)
 
 	def get_gyro_enabled(self) -> bool:
