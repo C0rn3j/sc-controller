@@ -560,6 +560,35 @@ LAYOUTS = {
 # unbound and their boxes render nothing, so the shared list is safe.
 LAYOUTS["deck"] = LAYOUTS["sc2"]
 
+# Standard gamepads (DualShock 4, DualSense, Xbox 360). Their control model
+# differs from the Steam controllers: the right stick is the right pad
+# (pads[RIGHT], not rstick) and the d-pad is the left pad (pads[LEFT]); there are
+# no trackpads or grip-touch. Same six-box frame. ds4/ds5/x360 are physically
+# alike, so they share one layout.
+_GAMEPAD_LAYOUT = [
+	dict(name="system", align=Align.TOP, ax=0, max_width_f=0.4, max_height_f=0.22,
+	     controls=[("BACK", _B, _btn("BACK")), ("C", _B, _btn("C")),
+	               ("START", _B, _btn("START"))]),
+	dict(name="lshoulder", align=Align.LEFT | Align.TOP,
+	     min_width_f=0.18, max_width_f=0.27, max_height_f=0.42,
+	     controls=[("LT", _T, _trig(LEFT)), ("LB", _B, _btn("LB")),
+	               ("LGRIP", _B, _btn("LGRIP"))]),
+	dict(name="rshoulder", align=Align.RIGHT | Align.TOP,
+	     min_width_f=0.18, max_width_f=0.27, max_height_f=0.42,
+	     controls=[("RT", _T, _trig(RIGHT)), ("RB", _B, _btn("RB")),
+	               ("RGRIP", _B, _btn("RGRIP"))]),
+	dict(name="lthumb", align=Align.LEFT | Align.BOTTOM,
+	     min_width_f=0.18, max_width_f=0.27, max_height_f=0.42,
+	     controls=[("STICK", _S, _stick), ("DPAD", _P, _pad(LEFT))]),
+	dict(name="rthumb", align=Align.RIGHT | Align.BOTTOM,
+	     min_width_f=0.18, max_width_f=0.27, max_height_f=0.42,
+	     controls=[("RSTICK", _P, _pad(RIGHT))]),
+	dict(name="face", align=Align.BOTTOM, ax=0, max_width_f=0.4, max_height_f=0.22,
+	     controls=[("A", _B, _btn("A")), ("B", _B, _btn("B")),
+	               ("X", _B, _btn("X")), ("Y", _B, _btn("Y"))]),
+]
+LAYOUTS["ds4"] = LAYOUTS["ds5"] = LAYOUTS["x360"] = _GAMEPAD_LAYOUT
+
 
 class Generator:
 	PADDING = 10
