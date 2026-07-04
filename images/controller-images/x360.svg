@@ -427,9 +427,9 @@
        ry="0" />
     <rect
        ry="0"
-       y="179.68855"
+       y="142.603173"
        x="131.17001"
-       height="0.00010681152"
+       height="74.17086"
        width="74.17086"
        id="AREA_LPADTEST"
        style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#00b400;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
@@ -451,17 +451,17 @@
        ry="0" />
     <rect
        ry="0"
-       y="179.9545"
+       y="148.279074"
        x="248.02309"
-       height="0.0020000001"
+       height="63.352852"
        width="63.352852"
        id="AREA_RPADTEST"
        style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#00b400;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
     <rect
        ry="0"
-       y="111.11693"
+       y="80.649382"
        x="83.296661"
-       height="0.92262268"
+       height="61.857719"
        width="61.857719"
        id="AREA_STICKTEST"
        style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#00b400;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />

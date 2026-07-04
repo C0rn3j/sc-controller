@@ -295,9 +295,9 @@
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#00b400;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
          id="AREA_LPADTEST"
          width="90.008965"
-         height="1"
+         height="90.008965"
          x="46"
-         y="105"
+         y="60.495517"
          ry="0" />
     </g>
     <g
@@ -315,9 +315,9 @@
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#00b400;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
          id="AREA_RPADTEST"
          width="47.602852"
-         height="0.25254059"
+         height="47.602852"
          x="229.06993"
-         y="188.43214"
+         y="164.756984"
          ry="0" />
     </g>
     <g
@@ -336,9 +336,9 @@
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#00b400;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
          id="AREA_STICKTEST"
          width="45.298004"
-         height="0.67563069"
+         height="45.298004"
          x="139.03049"
-         y="188.23816"
+         y="165.926973"
          ry="0" />
     </g>
     <g
