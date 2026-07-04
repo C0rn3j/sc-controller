@@ -589,7 +589,7 @@ class Generator:
 		three system buttons). Used for v1 and any controller without a dedicated
 		entry in LAYOUTS."""
 		boxes = []
-		box_bcs = Box(0, self.PADDING, Align.TOP, "bcs")
+		box_bcs = Box(0, self.PADDING, Align.TOP, "bcs", max_height=self.full_height * 0.25)
 		box_bcs.add("BACK", Action.AC_BUTTON, profile.buttons.get(SCButtons.BACK))
 		box_bcs.add("C", Action.AC_BUTTON, profile.buttons.get(SCButtons.C))
 		box_bcs.add("START", Action.AC_BUTTON, profile.buttons.get(SCButtons.START))
@@ -603,6 +603,7 @@ class Generator:
 			min_height=self.full_height * 0.5,
 			min_width=self.full_width * 0.2,
 			max_width=self.full_width * 0.275,
+			max_height=self.full_height * 0.85,
 		)
 		box_left.add("LEFT", Action.AC_TRIGGER, profile.triggers.get(profile.LEFT))
 		box_left.add("LB", Action.AC_BUTTON, profile.buttons.get(SCButtons.LB))
@@ -618,6 +619,7 @@ class Generator:
 			min_height=self.full_height * 0.5,
 			min_width=self.full_width * 0.2,
 			max_width=self.full_width * 0.275,
+			max_height=self.full_height * 0.85,
 		)
 		box_right.add("RIGHT", Action.AC_TRIGGER, profile.triggers.get(profile.RIGHT))
 		box_right.add("RB", Action.AC_BUTTON, profile.buttons.get(SCButtons.RB))
@@ -626,7 +628,8 @@ class Generator:
 		boxes.append(box_right)
 
 		box_abxy = Box(
-			4 * self.PADDING, self.PADDING, Align.RIGHT | Align.BOTTOM, "abxy", max_width=self.full_width * 0.45,
+			4 * self.PADDING, self.PADDING, Align.RIGHT | Align.BOTTOM, "abxy",
+			max_width=self.full_width * 0.45, max_height=self.full_height * 0.25,
 		)
 		box_abxy.add("A", Action.AC_BUTTON, profile.buttons.get(SCButtons.A))
 		box_abxy.add("B", Action.AC_BUTTON, profile.buttons.get(SCButtons.B))
@@ -635,7 +638,8 @@ class Generator:
 		boxes.append(box_abxy)
 
 		box_stick = Box(
-			4 * self.PADDING, self.PADDING, Align.LEFT | Align.BOTTOM, "stick", max_width=self.full_width * 0.45,
+			4 * self.PADDING, self.PADDING, Align.LEFT | Align.BOTTOM, "stick",
+			max_width=self.full_width * 0.45, max_height=self.full_height * 0.25,
 		)
 		box_stick.add("STICK", Action.AC_STICK, profile.stick)
 		boxes.append(box_stick)
