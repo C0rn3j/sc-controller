@@ -1,5 +1,20 @@
 List of (possibly) planned features in no particular order:
 
+- DualShock 4 / DualSense (ds4/ds5) polish. The HID driver is now functional
+  (mapper rstick/dpad guards, touchpad coordinate scaling + click highlight), but
+  rough edges remain:
+    - the two analog sticks are asymmetric in Input Test -- the left and right
+      stick brighten / behave differently from each other;
+    - the input icons drawn around the controller are the generic ones, not the
+      DualShock face symbols (cross / circle / square / triangle);
+    - no rumble: DS4Controller has no feedback() method (the DS5 driver does), so
+      the pad never vibrates -- port the DS5/kernel output report;
+    - the lightbar LED is not driven (no DS4-specific set_led);
+    - DS5 is UNVERIFIED (no DualSense hardware here): its HID touchpad scaling was
+      added by analogy to the DS4 (DualSense pad assumed 1920x1080) and not tested;
+      the DS5HidRawController touchpad is still unscaled and stores cpad as unsigned
+      c_uint16, which can't hold the signed scaled range -- it needs a field type
+      change as well as scaling.
 - Multiple on-screen menus (and possibly keyboards) when using multiple controllers
 - Injecting emulated xbox controller into wine
 - mnuImage right-click "change background" menu has no `sc2` entry (the v2
