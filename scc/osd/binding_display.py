@@ -87,19 +87,30 @@ class BindingDisplay(OSDWindow):
 		)
 
 	def compute_position(self):
-		"""Unlike other OSD windows, this one is scaled to 80% of screen size and centered in on active screen."""
-		x, y = 10, 10
+		"""Fit the (per-controller) binding image to the active screen and centre
+		it. Unlike other OSD windows this one is nearly screen-sized, so it is
+		capped to 80% of the screen in BOTH dimensions and scaled down to fit."""
 		iw, ih = self.background.image_width, self.background.image_height
 		geometry = self.get_active_screen_geometry()
-		if geometry:
-			width, height = iw, ih
-			if width > geometry.width * 0.8:
-				width = geometry.width * 0.8
-				height = int(float(ih) / float(iw) * float(width))
-				self.background.resize(width, height)
-				self.background.hilight({})
-			x = geometry.x + ((geometry.width - width) / 2)
-			y = geometry.y + ((geometry.height - height) / 2)
+		if geometry is None:
+			# The Steam Deck (gamescope) reports no active window; fall back to the
+			# primary monitor so the image is still fitted instead of shown at full
+			# 1280x720, which overflows the Deck's 1280x800 screen.
+			screen = self.get_window().get_screen()
+			geometry = screen.get_monitor_geometry(screen.get_primary_monitor())
+		if geometry is None:
+			return 10, 10
+		# Cap to 80% of the screen in BOTH dimensions: width-only scaling left the
+		# window overflowing on screens barely larger than the image (the Deck's
+		# 1280x800 vs the 1280x720 image), and off-screen boxes made their
+		# connector lines appear to shoot outside the window.
+		scale = min(1.0, geometry.width * 0.8 / iw, geometry.height * 0.8 / ih)
+		width, height = int(iw * scale), int(ih * scale)
+		if scale < 1.0:
+			self.background.resize(width, height)
+			self.background.hilight({})
+		x = geometry.x + (geometry.width - width) // 2
+		y = geometry.y + (geometry.height - height) // 2
 		return x, y
 
 	def parse_argumets(self, argv):
