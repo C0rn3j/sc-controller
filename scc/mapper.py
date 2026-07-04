@@ -411,7 +411,14 @@ class Mapper:
 			elif not self.buttons & SCButtons.LPADTOUCH:
 				if FE_STICK in fe or self.old_state.lpad_x != state.lpad_x or self.old_state.lpad_y != state.lpad_y:
 					self.profile.stick.whole(self, state.lpad_x, state.lpad_y, STICK)
-			if self.controller.flags & ControllerFlags.HAS_RSTICK:
+			# HAS_RSTICK controllers store the right stick either as a real rstick
+			# (Steam Controller 2 / Deck) or, for gamepads on the generic HID decoder
+			# (DS4/DS5), as the right pad (pads[RIGHT]). The latter's state struct
+			# (HIDControllerInput) has no rstick_* fields, so guard the access:
+			# without it every event raised AttributeError here, which aborted the
+			# rest of input processing (right pad, triggers, touchpad) -- the reason
+			# those controls were dead on the DS4.
+			if self.controller.flags & ControllerFlags.HAS_RSTICK and hasattr(state, "rstick_x"):
 				if (
 					FE_STICK in fe
 					or self.old_state.rstick_x != state.rstick_x
@@ -441,7 +448,12 @@ class Mapper:
 			elif FE_PAD in fe or self.buttons & SCButtons.RPADTOUCH or SCButtons.RPADTOUCH & btn_rem:
 				self.profile.pads[RIGHT].whole(self, state.rpad_x, state.rpad_y, RIGHT)
 			# DPAD
-			if controller.flags & ControllerFlags.HAS_DPAD:
+			# Same guard as the right stick above: the DS4/DS5 set HAS_DPAD but their
+			# d-pad is a hatswitch stored as the left pad, so their HID state has no
+			# dpad_* fields. Without the hasattr guard this raised AttributeError and
+			# aborted the CPAD (touchpad) block right after it, so the touchpad worked
+			# as a click but not as a mouse.
+			if controller.flags & ControllerFlags.HAS_DPAD and hasattr(state, "dpad_x"):
 				if FE_PAD in fe or self.old_state.dpad_x != state.dpad_x or self.old_state.dpad_y != state.dpad_y:
 					self.profile.pads[DPAD].whole(self, state.dpad_x, state.dpad_y, DPAD)
 
