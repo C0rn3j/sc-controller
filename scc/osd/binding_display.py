@@ -548,6 +548,11 @@ LAYOUTS = {
 	],
 }
 
+# The Steam Deck's built-in controller shares the v2's physical control set (same
+# boxes, same controls), so it reuses the v2 layout. Controls the Deck lacks stay
+# unbound and their boxes render nothing, so the shared list is safe.
+LAYOUTS["deck"] = LAYOUTS["sc2"]
+
 
 class Generator:
 	PADDING = 10
