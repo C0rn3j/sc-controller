@@ -58,6 +58,15 @@ GRAY_DARK = "#262626"    # darker fills, and the default for un-filled shapes
 GRAY_SPLIT = 80          # fill luminance split between GRAY_LIGHT and GRAY_DARK
 MARKER_GREEN = "#06a400"  # marker rings + connector lines (matches Generator)
 
+# Standard gamepads (ds4, ds5, x360) share one anchor set: left stick + d-pad
+# (LPAD) on the left, right stick (RPAD) on the right, the ABXY face cluster, and
+# the top bumpers/triggers. Their drawings use the same AREA_* names.
+_GAMEPAD_MARKERS = {
+    "system": ["BACK", "START"], "lshoulder": ["LB_1", "LT_1"],
+    "rshoulder": ["RB_4", "RT_1"], "lthumb": ["STICK_1", "LPAD_1"],
+    "rthumb": ["RPAD_1"], "face": ["Y", "A"],
+}
+
 # Per-controller source drawing + the AREA_* anchors each binding box points at.
 # The box names match scc/osd/binding_display.py LAYOUTS[<key>]. A box draws at
 # most two connector lines; anchor names differ per controller image.
@@ -79,6 +88,9 @@ CONTROLLERS = {
             "rthumb": ["RSTICK", "RPAD_1"], "face": ["Y", "A"],
         },
     },
+    "ds4": {"src": "images/controller-images/ds4.svg", "markers": _GAMEPAD_MARKERS},
+    "ds5": {"src": "images/controller-images/ds5.svg", "markers": _GAMEPAD_MARKERS},
+    "x360": {"src": "images/controller-images/x360.svg", "markers": _GAMEPAD_MARKERS},
 }
 
 _FILL = re.compile(r"fill:\s*#([0-9a-fA-F]{3,6})")
