@@ -254,6 +254,15 @@ class SCCDaemon(Daemon):
 
 	def on_sa_shell(self, mapper, action):
 		"""Called when 'shell' action is used"""
+		cmd = shsplit(action.command)
+		# scc's own helpers (scc-osd-launcher, scc-osd-show-bindings, sc-controller
+		# ...) are Python entry points whose shebang and PATH can't be relied on in
+		# every environment - notably inside the AppImage, where a bare shell spawn
+		# silently fails (the same reason the daemon launches its other helpers via
+		# find_python() + find_binary()). Launch these the same way, bypassing the
+		# shebang; arbitrary user commands still go through the shell unchanged.
+		if cmd and (cmd[0].startswith("scc-") or cmd[0] == "sc-controller"):
+			return subprocess.Popen([find_python(), find_binary(cmd[0]), *cmd[1:]])
 		return subprocess.Popen(action.command, shell=True)
 
 	def on_sa_gestures(self, mapper, action, x, y, what):
@@ -336,8 +345,9 @@ class SCCDaemon(Daemon):
 	def on_sa_menu(self, mapper, action, *pars):
 		"""Called when 'menu' action is used"""
 		p = [action.MENU_TYPE]
-		if mapper.get_controller():
-			p += ["--controller", mapper.get_controller().get_id()]
+		c = mapper.get_controller()
+		if c:
+			p += ["--controller", c.get_id(), "--controller-type", c.get_type()]
 		if "." in action.menu_id:
 			path = find_menu(action.menu_id)
 			if not path:

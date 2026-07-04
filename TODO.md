@@ -55,6 +55,12 @@ List of (possibly) planned features in no particular order:
   Entries defined in scc/gui/global_settings.py (~L45-58, e.g.
   "Turn Controller OFF" -> osd(turnoff())); menu data in
   default_menus/Default.menu.
+- Generalize the OSD "Turn Controller OFF" hiding. It's currently hidden only
+  for the Deck's built-in controls (controller type == "deck", checked in
+  scc/osd/menu.py against the --controller-type the daemon passes). Replace that
+  hardcoded type check with a per-controller capability (a ControllerFlags bit or
+  a controller.can_turnoff()) so any controller that can't be powered off
+  remotely hides the entry, not just the Deck.
 - Deck tray/status icon not visible. On the Steam Deck the status (tray) icon
   doesn't appear even with the option enabled - works on desktop now that
   libdbusmenu is bundled, so this is a Deck/gamescope SNI-tray-host issue to
