@@ -443,7 +443,14 @@ class Mapper:
 			elif not self.buttons & SCButtons.LPADTOUCH:
 				if FE_STICK in fe or self.old_state.lpad_x != state.lpad_x or self.old_state.lpad_y != state.lpad_y:
 					self.profile.stick.whole(self, state.lpad_x, state.lpad_y, STICK)
-			if self.controller.flags & ControllerFlags.HAS_RSTICK:
+			# HAS_RSTICK controllers store the right stick either as a real rstick
+			# (Steam Controller 2 / Deck) or, for gamepads on the generic HID decoder
+			# (DS4/DS5), as the right pad (pads[RIGHT]). The latter's state struct
+			# (HIDControllerInput) has no rstick_* fields, so guard the access:
+			# without it every event raised AttributeError here, which aborted the
+			# rest of input processing (right pad, triggers, touchpad) -- the reason
+			# those controls were dead on the DS4.
+			if self.controller.flags & ControllerFlags.HAS_RSTICK and hasattr(state, "rstick_x"):
 				if (
 					FE_STICK in fe
 					or self.old_state.rstick_x != state.rstick_x
