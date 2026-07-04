@@ -69,6 +69,15 @@ CONTROLLERS = {
             "rthumb": ["RSTICK", "RPAD"], "face": ["Y", "A"],
         },
     },
+    "deck": {
+        "src": "images/controller-images/deck.svg",
+        # Deck AREA naming differs (segmented pads/bumpers, no grip-touch).
+        "markers": {
+            "system": ["BACK", "START"], "lshoulder": ["LB_2", "LT_2"],
+            "rshoulder": ["RB_2", "RT_2"], "lthumb": ["STICK", "LPAD_1"],
+            "rthumb": ["RSTICK", "RPAD_1"], "face": ["Y", "A"],
+        },
+    },
 }
 
 _FILL = re.compile(r"fill:\s*#([0-9a-fA-F]{3,6})")
