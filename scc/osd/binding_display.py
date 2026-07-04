@@ -160,7 +160,7 @@ class BindingDisplay(OSDWindow):
 		Order of preference:
 		  1. an explicit image given on the command line
 		  2. "binding_display" filename set in the controller's gui config
-		  3. convention: binding-display-<gui background>.svg
+		  3. convention: binding-display/<gui background>.svg
 		     (looked up in ~/.config/scc first, then the bundled images dir)
 		  4. the generic binding-display.svg (user override, then bundled)
 		The generic fallback keeps controllers without a dedicated layout
@@ -190,7 +190,9 @@ class BindingDisplay(OSDWindow):
 		background = gui.get("background")
 		self._layout_key = background   # selects the per-controller box layout
 		if background:
-			fname = "binding-display-%s.svg" % (background,)
+			# per-controller templates live in the binding-display/ subdir, with
+			# an optional user override under ~/.config/scc/binding-display/.
+			fname = os.path.join("binding-display", "%s.svg" % (background,))
 			candidates.append(os.path.join(config_path, fname))
 			candidates.append(os.path.join(images_path, fname))
 		# 4. generic fallback (already user-override-then-bundled)
