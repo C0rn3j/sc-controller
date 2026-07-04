@@ -28,6 +28,7 @@ non-zero origin). If you change ART_MAX_*_FRAC, both move together.
 Run from repo root:  python3 tools/gen_binding_display.py
 """
 import copy
+import math
 import os
 import re
 import sys
@@ -97,18 +98,73 @@ def parse_viewbox(svg: ET.Element) -> tuple[float, float, float, float]:
     return 0.0, 0.0, float(svg.get("width")), float(svg.get("height"))
 
 
+# --- affine transforms (a, b, c, d, e, f) mapping (x,y) -> (ax+cy+e, bx+dy+f) ---
+IDENTITY = (1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
+_TRANSFORM = re.compile(r"(matrix|translate|scale|rotate)\s*\(([^)]*)\)")
+
+
+def _compose(a: tuple, b: tuple) -> tuple:
+    """Return a after b (apply b first, then a) -- SVG's nested-transform order."""
+    a1, b1, c1, d1, e1, f1 = a
+    a2, b2, c2, d2, e2, f2 = b
+    return (a1 * a2 + c1 * b2, b1 * a2 + d1 * b2,
+            a1 * c2 + c1 * d2, b1 * c2 + d1 * d2,
+            a1 * e2 + c1 * f2 + e1, b1 * e2 + d1 * f2 + f1)
+
+
+def _parse_transform(s: str | None) -> tuple:
+    """Parse an SVG transform attribute into one composed affine matrix. Handles
+    space- OR comma-separated args and a list of transforms (leftmost outermost)."""
+    m = IDENTITY
+    if not s:
+        return m
+    for name, argstr in _TRANSFORM.findall(s):
+        v = [float(x) for x in re.split(r"[\s,]+", argstr.strip()) if x]
+        if name == "translate":
+            t = (1.0, 0.0, 0.0, 1.0, v[0], v[1] if len(v) > 1 else 0.0)
+        elif name == "scale":
+            t = (v[0], 0.0, 0.0, v[1] if len(v) > 1 else v[0], 0.0, 0.0)
+        elif name == "matrix":
+            t = tuple(v[:6])
+        elif name == "rotate":
+            rad = math.radians(v[0])
+            cos, sin = math.cos(rad), math.sin(rad)
+            t = (cos, sin, -sin, cos, 0.0, 0.0)
+            if len(v) >= 3:  # rotate about (cx, cy)
+                t = _compose(_compose((1.0, 0.0, 0.0, 1.0, v[1], v[2]), t),
+                             (1.0, 0.0, 0.0, 1.0, -v[1], -v[2]))
+        else:
+            t = IDENTITY
+        m = _compose(m, t)
+    return m
+
+
 def read_area_centers(root: ET.Element) -> dict[str, tuple[float, float]]:
-    """AREA_<NAME> rects sit in an untransformed layer in the drawing's coords,
-    so their centres are read directly (and later mapped into the canvas)."""
+    """Centre of each AREA_<NAME> rect in the drawing's user (viewBox) space.
+
+    The rects may sit inside groups with their own transforms (the Deck nests
+    them under translated groups in a separate layer), so the full ancestor
+    transform chain is accumulated -- reading raw x/y put the Deck's shoulder
+    anchors hundreds of units outside the viewBox. sc2's anchors are in an
+    identity layer, so its result is unchanged."""
     centers = {}
-    for rect in root.iter(q("rect")):
-        rid = rect.get("id") or ""
-        if rid.startswith("AREA_"):
-            try:
-                x, y, w, h = (float(rect.get(k)) for k in ("x", "y", "width", "height"))
-            except (TypeError, ValueError):
-                continue
-            centers[rid[5:]] = (x + w / 2.0, y + h / 2.0)
+
+    def walk(el: ET.Element, acc: tuple) -> None:
+        acc = _compose(acc, _parse_transform(el.get("transform")))
+        for child in el:
+            rid = child.get("id") or ""
+            if child.tag == q("rect") and rid.startswith("AREA_"):
+                try:
+                    x, y, w, h = (float(child.get(k)) for k in ("x", "y", "width", "height"))
+                except (TypeError, ValueError):
+                    continue
+                a, b, c, d, e, f = acc
+                cx, cy = x + w / 2.0, y + h / 2.0
+                centers[rid[5:]] = (a * cx + c * cy + e, b * cx + d * cy + f)
+            else:
+                walk(child, acc)
+
+    walk(root, IDENTITY)
     return centers
 
 
