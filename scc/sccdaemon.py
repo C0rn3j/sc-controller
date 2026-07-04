@@ -262,7 +262,17 @@ class SCCDaemon(Daemon):
 		# find_python() + find_binary()). Launch these the same way, bypassing the
 		# shebang; arbitrary user commands still go through the shell unchanged.
 		if cmd and (cmd[0].startswith("scc-") or cmd[0] == "sc-controller"):
-			return subprocess.Popen([find_python(), find_binary(cmd[0]), *cmd[1:]])
+			args = cmd[1:]
+			# scc-osd-show-bindings renders, and locks input on, one specific
+			# controller. Without --controller it falls back to the first
+			# connected controller (OSDWindow.choose_controller), so with several
+			# controllers it shows the wrong one's bindings AND its cancel button
+			# is locked on that other controller, so the window can't be
+			# dismissed. Target the controller that actually invoked the action.
+			c = mapper.get_controller()
+			if c and cmd[0] == "scc-osd-show-bindings" and "--controller" not in args:
+				args = ["--controller", c.get_id(), *args]
+			return subprocess.Popen([find_python(), find_binary(cmd[0]), *args])
 		return subprocess.Popen(action.command, shell=True)
 
 	def on_sa_gestures(self, mapper, action, x, y, what):
