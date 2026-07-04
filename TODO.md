@@ -80,6 +80,15 @@ List of (possibly) planned features in no particular order:
   installed .desktop carries the upstream id, and the after_bundle step symlinks
   it as org.c0rn3j.sc-controller.desktop. Switch both to org.patola.sc-controller-cc
   once the fork is stable and we have committed/PR'd to upstream.
+- Replace the last deprecated GTK stock-icon calls. macro_editor.py (the
+  up/down/delete buttons) and modeshift_editor.py (the clear button) still call
+  `Gtk.Image.new_from_stock("gtk-go-up" / "gtk-go-down" / "gtk-delete", ...)`.
+  They render today (GTK maps the stock id to an icon internally) but the stock
+  API is deprecated; move them to `Gtk.Image.new_from_icon_name` with freedesktop
+  names (go-up / go-down / edit-delete, or the -symbolic variants - all present in
+  Adwaita/Breeze). Same class as the profile_switcher.py save/edit buttons, which
+  were actively blank because `new_from_icon_name` was handed the stock ids
+  "gtk-save"/"gtk-edit" (now document-save / document-edit).
 
 Hard stuff:
 - Injecting emulated xbox controller into PlayOnLinux
