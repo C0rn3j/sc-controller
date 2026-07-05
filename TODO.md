@@ -7,8 +7,12 @@ List of (possibly) planned features in no particular order:
       stick brighten / behave differently from each other;
     - the input icons drawn around the controller are the generic ones, not the
       DualShock face symbols (cross / circle / square / triangle);
-    - no rumble: DS4Controller has no feedback() method (the DS5 driver does), so
-      the pad never vibrates -- port the DS5/kernel output report;
+    - the DS4 gyro/IMU is unverified -- untested on the DS4 over both USB and
+      Bluetooth; the decoders populate it but it has never been confirmed to work;
+    - no rumble: neither DS4Controller nor DS4HidRawController drives the pad (the
+      DS5 driver does) -- port the DS5/kernel output report; over Bluetooth the
+      DS4HidRawController is input-only, so rumble + lightbar there need output
+      reports with the BT CRC32 wrapper (mirror DS5HidRawController);
     - the lightbar LED is not driven (no DS4-specific set_led);
     - DS5 is UNVERIFIED (no DualSense hardware here): its HID touchpad scaling was
       added by analogy to the DS4 (DualSense pad assumed 1920x1080) and not tested;
