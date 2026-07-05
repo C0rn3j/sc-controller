@@ -1040,6 +1040,16 @@ class ModeModifier(Modifier):
 		sel = self.select(mapper)
 		if sel is not self.old_action:
 			if self.old_action:
+				# Neutralize the outgoing gyro action so its output axis doesn't stay
+				# stuck when the enable button is released. Relative GyroAction zeroes
+				# on (0,0,0), but GyroAbsAction ignores pitch/yaw/roll (it tracks
+				# q1-q4), so it would emit its last orientation and leave the axis
+				# deflected. Reset each GyroAbsAction's reference first (the only gyro
+				# action with reset()) so the neutralizing call below emits 0. Covers
+				# MultiAction (mixed relative+absolute) via its .actions children.
+				for a in getattr(self.old_action, "actions", None) or (self.old_action,):
+					if hasattr(a, "reset"):
+						a.reset()
 				self.old_action.gyro(mapper, 0, 0, 0, *q)
 			self.old_action = sel
 		return sel.gyro(mapper, pitch, yaw, roll, *q)
