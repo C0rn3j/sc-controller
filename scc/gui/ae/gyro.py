@@ -5,8 +5,9 @@
 import itertools
 import logging
 
-from scc.actions import Action, AxisAction, GyroAbsAction, GyroAction, MultiAction, NoAction, RangeOP
+from scc.actions import Action, AxisAction, GyroAbsAction, GyroAction, MouseAction, MultiAction, NoAction, RangeOP
 from scc.constants import STICK, SCButtons
+from scc.uinput import Rels
 from scc.gui.ae import AEComponent, describe_action
 from scc.gui.ae.gyro_action import TRIGGERS, fill_buttons, is_gyro_enable
 from scc.gui.simple_chooser import SimpleChooser
@@ -88,14 +89,24 @@ class GyroComponent(AEComponent):
 		i = self.buttons.index(source)
 
 		def cb(action):
-			self.axes[i] = action.parameters[0]
+			self.axes[i] = None if isinstance(action, NoAction) else action.parameters[0]
 			self.update()
 			self.send()
 
 		b = SimpleChooser(self.app, "axis", cb)
 		b.set_title(_("Select Axis"))
-		b.hide_mouse()
-		b.display_action(Action.AC_STICK, AxisAction(self.axes[i]))
+		b.show_clear()
+		# Mouse is a valid target here: an axis marked "Absolute" becomes a
+		# GyroAbsAction, which maps orientation to REL_X/REL_Y (mapper.mouse_move).
+		# (Relative GyroAction ignores mouse -- use the dedicated Mouse gyro editor
+		# for that.) hide_mouse() wrongly blocked it, greying out the mouse arrows.
+		#
+		# Show the current axis with the matching action class, or the chooser
+		# highlights the stick for a mouse axis (Axes/Rels value collision) and
+		# re-confirming would silently retarget the binding to the stick.
+		axis = self.axes[i]
+		current = MouseAction(axis) if isinstance(axis, Rels) else AxisAction(axis)
+		b.display_action(Action.AC_STICK, current)
 		b.show(self.editor.window)
 
 	def on_abs_changed(self, source, *a):
@@ -143,7 +154,13 @@ class GyroComponent(AEComponent):
 
 	def update(self, *a):
 		for i in range(3):
-			self.labels[i].set_label(describe_action(Action.AC_STICK, AxisAction, self.axes[i]))
+			# A mouse axis (REL_*) must be described as a MouseAction; forcing it
+			# through AxisAction mislabels "Mouse X/Y" as "LStick X/Y". Use an
+			# isinstance check, not "in Rels.values()" -- Axes and Rels are IntEnums
+			# with overlapping values, so ABS_X == REL_X and membership misfires.
+			axis = self.axes[i]
+			cls = MouseAction if isinstance(axis, Rels) else AxisAction
+			self.labels[i].set_label(describe_action(Action.AC_STICK, cls, axis))
 
 	def send(self, *a):
 		if self._recursing:
