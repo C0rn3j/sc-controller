@@ -5,12 +5,14 @@ Extends HID driver with DS4-specific options.
 
 import ctypes
 import logging
+import os
 import sys
 from typing import TYPE_CHECKING
 
 import usb1
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, HapticPos, SCButtons
+from scc.controller import Controller
 from scc.drivers.evdevdrv import (
 	HAVE_EVDEV,
 	EvdevController,
@@ -33,6 +35,7 @@ from scc.drivers.hiddrv import (
 	hiddrv_test,
 )
 from scc.drivers.usb import register_hotplug_device
+from scc.lib.hidraw import HIDRaw
 from scc.tools import init_logging, set_logging_level
 
 if TYPE_CHECKING:
@@ -484,6 +487,187 @@ class DS4EvdevController(EvdevController):
 		return id
 
 
+# --- Bluetooth hidraw driver ----------------------------------------------------
+# Mirrors scc/drivers/ds5drv.py's DS5HidRawController. Reads the DS4's full
+# Bluetooth report (0x11) from /dev/hidraw and decodes it with the SAME HID
+# decoder DS4Controller uses over USB, shifted by the 2-byte BT report header.
+# Less invasive than the libusb DS4Controller (it doesn't claim the USB interface)
+# and a proper replacement for the "far from optimal" DS4EvdevController BT path.
+#
+# Verified over Bluetooth: buttons, both sticks (+ clicks), triggers, d-pad and the
+# touchpad. Still TODO: the gyro/IMU is decoded but unverified (untested on the DS4
+# even over USB), and output reports (rumble / lightbar) are not implemented -- the
+# phase-2 payoff that needs the BT CRC32 wrapper.
+
+DS4_BT_REPORT_ID = 0x11    # full input report id over Bluetooth
+BT_REPORT_OFFSET = 2       # BT report prefixes the USB payload with 2 header bytes
+BT_REPORT_SIZE = 78        # bytes to read per report (id + payload + trailing CRC32)
+DS4_CPAD_RES_X = 1919      # DS4 touchpad native resolution (1920x943)
+DS4_CPAD_RES_Y = 942
+
+
+class DS4HidRawController(Controller):
+	flags = (
+		ControllerFlags.EUREL_GYROS
+		| ControllerFlags.HAS_RSTICK
+		| ControllerFlags.HAS_CPAD
+		| ControllerFlags.HAS_DPAD
+		| ControllerFlags.SEPARATE_STICK
+		| ControllerFlags.NO_GRIPS
+	)
+
+	def __init__(self, driver: "DS4HidRawDriver", syspath: str, hidrawdev: HIDRaw) -> None:
+		self.driver = driver
+		self.daemon = driver.daemon
+		self.syspath = syspath
+		Controller.__init__(self)
+		self._hidrawdev = hidrawdev
+		self._fileno = hidrawdev._device.fileno()
+		self._decoder = self._build_bt_decoder()
+		self._id = self._generate_id()
+		# Over Bluetooth the DS4 emits a cut-down report until the host reads a
+		# feature report; reading calibration report 0x02 flips it to the full 0x11
+		# report (verified: the controller then streams id=0x11, len=78).
+		try:
+			self._hidrawdev.getFeatureReport(0x02)
+		except Exception as e:
+			log.warning("DS4 hidraw: could not enable full report: %s", e)
+		self._poller = self.daemon.get_poller()
+		if self._poller:
+			self._poller.register(self._fileno, self._poller.POLLIN, self._input)
+		self.daemon.get_device_monitor().add_remove_callback(syspath, self.close)
+		self.daemon.add_controller(self)
+		log.debug("Connected DS4 over Bluetooth hidraw: %s", self._id)
+
+	def _build_bt_decoder(self) -> HIDDecoder:
+		"""DS4Controller._load_hid_descriptor with every byte_offset shifted by the
+		BT header. Duplicated for now -- factor a shared builder(base_offset) out of
+		DS4Controller and call it from both if this grows."""
+		o = BT_REPORT_OFFSET
+		d = HIDDecoder()
+		d.axes[AxisType.AXIS_LPAD_X] = AxisData(
+			mode=AxisMode.HATSWITCH, byte_offset=5 + o, size=8,
+			data=AxisDataUnion(hatswitch=HatswitchModeData(
+				button=SCButtons.LPAD | SCButtons.LPADTOUCH, min=STICK_PAD_MIN, max=STICK_PAD_MAX)))
+		d.axes[AxisType.AXIS_STICK_X] = AxisData(
+			mode=AxisMode.AXIS, byte_offset=1 + o, size=8,
+			data=AxisDataUnion(axis=AxisModeData(scale=1.0, offset=-127.5, clamp_max=257, deadzone=10)))
+		d.axes[AxisType.AXIS_STICK_Y] = AxisData(
+			mode=AxisMode.AXIS, byte_offset=2 + o, size=8,
+			data=AxisDataUnion(axis=AxisModeData(scale=-1.0, offset=127.5, clamp_max=257, deadzone=10)))
+		d.axes[AxisType.AXIS_RPAD_X] = AxisData(
+			mode=AxisMode.AXIS, byte_offset=3 + o, size=8,
+			data=AxisDataUnion(axis=AxisModeData(button=SCButtons.RPADTOUCH, scale=1.0, offset=-127.5, clamp_max=257, deadzone=10)))
+		d.axes[AxisType.AXIS_RPAD_Y] = AxisData(
+			mode=AxisMode.AXIS, byte_offset=4 + o, size=8,
+			data=AxisDataUnion(axis=AxisModeData(button=SCButtons.RPADTOUCH, scale=-1.0, offset=127.5, clamp_max=257, deadzone=10)))
+		d.axes[AxisType.AXIS_LTRIG] = AxisData(
+			mode=AxisMode.AXIS, byte_offset=8 + o, size=8,
+			data=AxisDataUnion(axis=AxisModeData(scale=1.0, clamp_max=1, deadzone=10)))
+		d.axes[AxisType.AXIS_RTRIG] = AxisData(
+			mode=AxisMode.AXIS, byte_offset=9 + o, size=8,
+			data=AxisDataUnion(axis=AxisModeData(scale=1.0, clamp_max=1, deadzone=10)))
+		d.axes[AxisType.AXIS_GPITCH] = AxisData(mode=AxisMode.DS4ACCEL, byte_offset=13 + o)
+		d.axes[AxisType.AXIS_GROLL] = AxisData(mode=AxisMode.DS4ACCEL, byte_offset=17 + o)
+		d.axes[AxisType.AXIS_GYAW] = AxisData(mode=AxisMode.DS4ACCEL, byte_offset=15 + o)
+		d.axes[AxisType.AXIS_Q1] = AxisData(mode=AxisMode.DS4GYRO, byte_offset=23 + o)
+		d.axes[AxisType.AXIS_Q2] = AxisData(mode=AxisMode.DS4GYRO, byte_offset=19 + o)
+		d.axes[AxisType.AXIS_Q3] = AxisData(mode=AxisMode.DS4GYRO, byte_offset=21 + o)
+		d.axes[AxisType.AXIS_CPAD_X] = AxisData(mode=AxisMode.DS4TOUCHPAD, byte_offset=36 + o)
+		d.axes[AxisType.AXIS_CPAD_Y] = AxisData(mode=AxisMode.DS4TOUCHPAD, byte_offset=37 + o, bit_offset=4)
+		d.buttons = ButtonData(enabled=True, byte_offset=5 + o, bit_offset=4, size=14, button_count=14)
+		for x in range(BUTTON_COUNT):
+			d.buttons.button_map[x] = 64
+		for x, sc in enumerate(DS4Controller.BUTTON_MAP):
+			d.buttons.button_map[x] = HIDController.button_to_bit(sc)
+		return d
+
+	def _input(self, *a) -> None:
+		try:
+			data = self._hidrawdev.read(BT_REPORT_SIZE)
+		except OSError:
+			return
+		if not getattr(self, "_logged_first", False):
+			# One-off: tells the BT test which report the controller sends. 0x11 =
+			# full report (good); 0x01 = basic report (the feature-report read did
+			# not switch it to full mode -> fix _set_operational / the report num).
+			self._logged_first = True
+			log.debug("DS4 hidraw first report: id=0x%02x len=%d",
+			          data[0] if data else -1, len(data) if data else 0)
+		if not data or data[0] != DS4_BT_REPORT_ID:
+			# Basic report until the controller switches to the full 0x11 report.
+			return
+		if not _lib.decode(ctypes.byref(self._decoder), bytes(data)):
+			return
+		if not self.mapper:
+			return
+		# CPADTOUCH bit + touchpad coordinate scaling, mirroring DS4Controller.input
+		# (touch bit and cpad axes are all shifted by the BT header).
+		st = self._decoder.state
+		if data[35 + BT_REPORT_OFFSET] >> 7:
+			st.buttons &= ~SCButtons.CPADTOUCH
+		else:
+			st.buttons |= SCButtons.CPADTOUCH
+			rng = STICK_PAD_MAX - STICK_PAD_MIN
+			st.cpad_x = max(STICK_PAD_MIN, min(STICK_PAD_MAX, STICK_PAD_MIN + st.cpad_x * rng // DS4_CPAD_RES_X))
+			st.cpad_y = max(STICK_PAD_MIN, min(STICK_PAD_MAX, STICK_PAD_MAX - st.cpad_y * rng // DS4_CPAD_RES_Y))
+		self.mapper.input(self, self._decoder.old_state, st)
+
+	def get_type(self) -> str:
+		return "ds4bt_hidraw"
+
+	def get_gui_config_file(self) -> str:
+		return "ds4-config.json"
+
+	def get_gyro_enabled(self) -> bool:
+		return True
+
+	def __repr__(self) -> str:
+		return f"<DS4HidRawController {self.get_id()}>"
+
+	def _generate_id(self) -> str:
+		magic_number = 1
+		id = "ds4"
+		while id in self.daemon.get_active_ids():
+			id = f"ds4:{magic_number}"
+			magic_number += 1
+		return id
+
+	def close(self) -> None:
+		if self._poller:
+			self._poller.unregister(self._fileno)
+		try:
+			self._hidrawdev._device.close()
+		except Exception:
+			pass
+		self.daemon.remove_controller(self)
+
+
+class DS4HidRawDriver:
+	"""Registers a Bluetooth hidraw callback for the DS4 (v1 + v2)."""
+
+	def __init__(self, daemon: "SCCDaemon", config: dict) -> None:
+		self.daemon = daemon
+		self.config = config
+		mon = daemon.get_device_monitor()
+		mon.add_callback("bluetooth", VENDOR_ID, PRODUCT_ID, self.make_bt_hidraw_callback, None)
+		mon.add_callback("bluetooth", VENDOR_ID, DS4_V1_PRODUCT_ID, self.make_bt_hidraw_callback, None)
+
+	def retry(self, syspath: str) -> None:
+		pass
+
+	def make_bt_hidraw_callback(self, syspath: str, *whatever):
+		hidrawname = self.daemon.get_device_monitor().get_hidraw(syspath)
+		if hidrawname is None:
+			return None
+		try:
+			dev = HIDRaw(open(os.path.join("/dev/", hidrawname), "w+b"))
+			return DS4HidRawController(self, syspath, dev)
+		except Exception as e:
+			log.exception(e)
+			return None
+
+
 def init(daemon: "SCCDaemon", config: dict) -> bool:
 	"""Register hotplug callback for DS4 device."""
 
@@ -541,7 +725,11 @@ def init(daemon: "SCCDaemon", config: dict) -> bool:
 		register_hotplug_device(hid_callback, VENDOR_ID, PRODUCT_ID, on_failure=fail_cb)
 		# DS4 v.1
 		register_hotplug_device(hid_callback, VENDOR_ID, DS4_V1_PRODUCT_ID, on_failure=fail_cb)
-		if HAVE_EVDEV and config["drivers"].get("evdevdrv"):
+		# Bluetooth: prefer the hidraw driver (full 0x11 report -> touchpad + gyro)
+		# when hiddrv is enabled, mirroring the DS5; otherwise fall back to evdev.
+		if config["drivers"].get("hiddrv"):
+			_drv = DS4HidRawDriver(daemon, config)
+		elif HAVE_EVDEV and config["drivers"].get("evdevdrv"):
 			# DS4 v.2
 			daemon.get_device_monitor().add_callback("bluetooth", VENDOR_ID, PRODUCT_ID, make_evdev_device, None)
 			# DS4 v.1
