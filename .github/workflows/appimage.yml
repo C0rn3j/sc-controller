@@ -16,14 +16,31 @@ jobs:
             arch: amd64
           - platform: linux/arm64
             arch: arm64
-        # Single, most-compatible base: Ubuntu 22.04 jammy (glibc 2.35) runs on
-        # everything newer - Ubuntu 22.04+, Debian 12+, Arch, etc. Add another
-        # entry here only if a specific newer-distro build is ever required.
+        # CI builds every base for compatibility coverage / downloadable
+        # artifacts, but releases attach only the most-compatible jammy pair
+        # (Ubuntu 22.04, glibc 2.35 - runs on everything newer: Ubuntu 22.04+,
+        # Debian 12+, Arch, etc.); see the release job's download pattern below.
+        # Add bases here freely - they won't bloat the release.
         base:
           - os: ubuntu
             codename: jammy
             pubkey: 871920D1991BC93C
             recipe: AppImageBuilder.yml
+          - os: ubuntu
+            codename: noble
+            pubkey: 871920D1991BC93C
+            recipe: AppImageBuilder.yml
+          - os: debian
+            codename: bookworm
+            pubkey: 54404762BBB6E853
+            pubkey_security: 6ED0E7B82643E131
+            recipe: AppImageBuilder.debian.yml
+          - os: debian
+            codename: trixie
+            pubkey: BDE6D2B9216EC7A8
+            pubkey_security: 8E9F831205B4BA95
+            pubkey_updates: 78DBA3BC47EF2265
+            recipe: AppImageBuilder.debian.yml
 
     steps:
       - uses: actions/checkout@v5
@@ -85,6 +102,7 @@ jobs:
           name: appimage-${{ matrix.base.codename }}-${{ matrix.target.arch }}
           path: |
             ./*.AppImage
+            ./*.AppImage.zsync
           if-no-files-found: error
 
   test:
@@ -160,9 +178,19 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v5
         with:
-          pattern: appimage-*
+          # CI builds all bases, but only the most-compatible jammy AppImages
+          # (one per arch) are attached to the release. Widen this pattern to
+          # ship additional bases.
+          pattern: appimage-jammy-*
           path: assets
           merge-multiple: true
+      - name: Create checksum for release assets
+        shell: bash
+        run: |
+          algo="${SHA_ALGORITHM:-256}"
+          find assets -type f | while read -r asset; do
+            shasum --binary --algorithm "${algo}" "${asset}" >"${asset}.sha${algo}"
+          done
       - name: Upload artifacts to GitHub release
         uses: softprops/action-gh-release@v2
         with:
