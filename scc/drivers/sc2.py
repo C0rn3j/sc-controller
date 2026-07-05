@@ -389,6 +389,17 @@ class SC2Device(USBDevice):
     def _on_input(self, endpoint: int, data: bytearray) -> None:
         idata = parse_input(data)
         if idata is None:
+            # Firmware watchdog (cheap, once): some SC2 firmware switched the
+            # default motion stream from 0x42 (on-controller quaternion) to 0x45
+            # ("TritonMTUNoQuat"). We parse only 0x42, so warn once if 0x45 turns
+            # up -- a firmware change should be visible, not a silently dead
+            # controller. See ValveSoftware/steam-for-linux#13255.
+            if data and data[0] == 0x45 and not getattr(self, "_warned_0x45", False):
+                self._warned_0x45 = True
+                log.warning(
+                    "Controller sent report 0x45 (NoQuat) instead of 0x42: "
+                    "on-controller quaternion is unavailable on this firmware. If "
+                    "the gamepad is also unresponsive, 0x42 was dropped entirely.")
             return                  # ignore non-0x42 reports
         c = self._controllers.get(endpoint) or self._add_controller(endpoint)
         if idata.seq % UNLIZARD_INTERVAL == 0:
