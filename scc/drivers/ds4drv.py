@@ -5,8 +5,10 @@ Extends HID driver with DS4-specific options.
 
 import ctypes
 import logging
+import math
 import os
 import sys
+import time
 from typing import TYPE_CHECKING
 
 import usb1
@@ -57,6 +59,47 @@ DS4_USB_OUTPUT_REPORT_ID = 0x05
 DS4_USB_OUTPUT_VALID_MOTOR = 0x01
 
 
+# Absolute-orientation (gyro tilt) support. The DS4 sends only angular velocity --
+# no on-controller quaternion -- so we integrate it host-side. The DS4 is an
+# EUREL_GYROS controller, so GyroAbsAction reads q1-q3 directly as pitch/yaw/roll
+# euler angles; we integrate each gyro axis into an absolute angle and store it
+# there. That keeps the axes 1:1 (no quaternion->quat2euler convention scrambling).
+#
+# Gyro-only integration: responds to tilt but DRIFTS, and large simultaneous
+# rotations gimbal (fine for aim near neutral). Accelerometer drift-correction is a
+# follow-up (the accel is still in q1-q3 right after decode, before this overwrites
+# them). TUNE on hardware: the deg/s scale and the per-axis signs below.
+_GYRO_DEG_PER_LSB = 1.0 / 16.0        # DS5 uses /16; verify for the DS4
+_GYRO_SIGN = (-1.0, -1.0, -1.0)       # per-axis (pitch, yaw, roll) sign; matches the
+                                      # relative path's built-in negation (verified)
+_EUREL_SCALE = 32768.0 / math.pi      # radians -> the 2**15/PI fixed point GyroAbsAction wants
+
+
+def _integrate_euler(state, angles: list, dt: float) -> list:
+	"""Accumulate the raw gyro into absolute euler angles (radians, wrapped to
+	[-pi, pi] so they stay bounded) and write them into state.q1-q3 in the EUREL
+	units GyroAbsAction expects. q4 is unused."""
+	k = _GYRO_DEG_PER_LSB * dt * math.pi / 180.0
+	raw = (state.gpitch, state.gyaw, state.groll)
+	for i in range(3):
+		a = angles[i] + raw[i] * _GYRO_SIGN[i] * k
+		angles[i] = (a + math.pi) % (2 * math.pi) - math.pi
+	state.q1 = int(angles[0] * _EUREL_SCALE)
+	state.q2 = int(angles[1] * _EUREL_SCALE)
+	state.q3 = int(angles[2] * _EUREL_SCALE)
+	return angles
+
+
+def _step_orientation(controller, state) -> None:
+	"""Per-controller wrapper: tracks dt from the host clock and the running
+	euler-angle vector as lazily-created attributes on the controller instance."""
+	now = time.time()
+	dt = now - getattr(controller, "_gyro_time", now)
+	controller._gyro_time = now
+	controller._gyro_angles = _integrate_euler(
+		state, getattr(controller, "_gyro_angles", [0.0, 0.0, 0.0]), dt)
+
+
 class DS4Controller(HIDController):
 	# Most of axes are the same
 	BUTTON_MAP = (
@@ -76,6 +119,9 @@ class DS4Controller(HIDController):
 		SCButtons.CPADPRESS,
 	)
 
+	# EUREL_GYROS: GyroAbsAction reads q1-q3 as pitch/yaw/roll euler angles, which
+	# _step_orientation synthesizes from the raw gyro. Gyro-as-mouse (relative) is
+	# unaffected -- it uses gpitch/gyaw/groll directly.
 	flags = (
 		ControllerFlags.EUREL_GYROS
 		| ControllerFlags.HAS_RSTICK
@@ -245,6 +291,8 @@ class DS4Controller(HIDController):
 					rng = STICK_PAD_MAX - STICK_PAD_MIN
 					st.cpad_x = max(STICK_PAD_MIN, min(STICK_PAD_MAX, STICK_PAD_MIN + st.cpad_x * rng // 1919))
 					st.cpad_y = max(STICK_PAD_MIN, min(STICK_PAD_MAX, STICK_PAD_MAX - st.cpad_y * rng // 942))
+				# Absolute-orientation quaternion (gyro tilt) -> q1-q4, every frame.
+				_step_orientation(self, self._decoder.state)
 				self.mapper.input(self, self._decoder.old_state, self._decoder.state)
 
 	def get_gyro_enabled(self) -> bool:
@@ -507,6 +555,7 @@ DS4_CPAD_RES_Y = 942
 
 
 class DS4HidRawController(Controller):
+	# EUREL_GYROS -- see DS4Controller.flags.
 	flags = (
 		ControllerFlags.EUREL_GYROS
 		| ControllerFlags.HAS_RSTICK
@@ -611,6 +660,8 @@ class DS4HidRawController(Controller):
 			rng = STICK_PAD_MAX - STICK_PAD_MIN
 			st.cpad_x = max(STICK_PAD_MIN, min(STICK_PAD_MAX, STICK_PAD_MIN + st.cpad_x * rng // DS4_CPAD_RES_X))
 			st.cpad_y = max(STICK_PAD_MIN, min(STICK_PAD_MAX, STICK_PAD_MAX - st.cpad_y * rng // DS4_CPAD_RES_Y))
+		# Absolute-orientation quaternion (gyro tilt) -> q1-q4, every frame.
+		_step_orientation(self, st)
 		self.mapper.input(self, self._decoder.old_state, st)
 
 	def get_type(self) -> str:
