@@ -19,7 +19,7 @@ classifiers = [
 	"Operating System :: POSIX :: Linux",
 	"Typing :: Typed",
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 #platforms = ["Linux"]
 
 # https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#creating-executable-scripts

@@ -49,24 +49,28 @@ else:
 MAX_FEEDBACK_EFFECTS = 4
 
 
-# Build these enums from the parsed kernel constants in CHEAD via the functional
-# IntEnum(...) API. A class body that instead did `locals().update(...)` relies
-# on dict.update() reaching enum's _EnumDict.__setitem__ -- which it does not, so
-# member registration depends on CPython's enum internals: it happens to work on
-# the newer Python we develop on but silently yields an EMPTY enum on Python 3.10
-# (KeyError: 'KEY_ESC' at import, as in the jammy AppImage). The functional API
-# registers every member identically across versions.
-Keys = IntEnum("Keys", {i: CHEAD[i] for i in CHEAD if i.startswith(("KEY_", "BTN_"))})
-Keys.__doc__ = "Keys enum contains all keys and buttons from linux/uinput.h (KEY_* BTN_*)."
+class Keys(IntEnum):
+	"""Keys enum contains all keys and buttons from linux/uinput.h (KEY_* BTN_*)."""
 
-KeysOnly = IntEnum("KeysOnly", {i: CHEAD[i] for i in CHEAD if i.startswith("KEY_")})
-KeysOnly.__doc__ = "KeysOnly enum contains all keys from linux/uinput.h (KEY_*)."
+	locals().update({i: CHEAD[i] for i in CHEAD if i.startswith(("KEY_", "BTN_"))})
 
-Axes = IntEnum("Axes", {i: CHEAD[i] for i in CHEAD if i.startswith("ABS_")})
-Axes.__doc__ = "Axes enum contains all axes from linux/uinput.h (ABS_*)."
 
-Rels = IntEnum("Rels", {i: CHEAD[i] for i in CHEAD if i.startswith("REL_")})
-Rels.__doc__ = "Rels enum contains all rels from linux/uinput.h (REL_*)."
+class KeysOnly(IntEnum):
+	"""KeysOnly enum contains all keys from linux/uinput.h (KEY_*)."""
+
+	locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("KEY_")})
+
+
+class Axes(IntEnum):
+	"""Axes enum contains all axes from linux/uinput.h (ABS_*)."""
+
+	locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("ABS_")})
+
+
+class Rels(IntEnum):
+	"""Rels enum contains all rels from linux/uinput.h (REL_*)."""
+
+	locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("REL_")})
 
 
 # Scan codes for each keys (taken from a logitech keyboard)
