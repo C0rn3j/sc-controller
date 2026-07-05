@@ -7,8 +7,18 @@ List of (possibly) planned features in no particular order:
       stick brighten / behave differently from each other;
     - the input icons drawn around the controller are the generic ones, not the
       DualShock face symbols (cross / circle / square / triangle);
-    - the DS4 gyro/IMU is unverified -- untested on the DS4 over both USB and
-      Bluetooth; the decoders populate it but it has never been confirmed to work;
+    - the DS4 gyro works as relative and absolute (host-side euler integration in
+      _step_orientation, verified on hardware) but the absolute path is gyro-only,
+      so it DRIFTS and gimbals on large combined rotations. The clean next step is
+      accelerometer drift-correction: fuse gyro + accel (complementary filter) to
+      pin pitch/roll to the gravity vector -- the raw accel is still in q1-q3 right
+      after decode, before _step_orientation overwrites them (yaw has no absolute
+      reference without a magnetometer, so it drifts inherently);
+    - gyro -> MOUSE routes to the stick instead: an Axes/Rels IntEnum value
+      collision (ABS_X == REL_X) makes a mouse axis serialize/round-trip as a stick
+      axis. The gyro editor labels + chooser display are fixed, but the save/reload
+      path still needs a proper Axes-vs-Rels disambiguation; use gamepad axes for
+      gyro meanwhile;
     - no rumble: neither DS4Controller nor DS4HidRawController drives the pad (the
       DS5 driver does) -- port the DS5/kernel output report; over Bluetooth the
       DS4HidRawController is input-only, so rumble + lightbar there need output
