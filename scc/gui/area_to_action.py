@@ -80,10 +80,15 @@ AREA_TO_ACTION = {
 		Rels.REL_Y,
 		1,
 	),
-	"MOUSE_X": (MouseAction, Rels.REL_X, 1),
-	"MOUSE_Y": (MouseAction, Rels.REL_Y, 1),
-	"MOUSE_WHEEL": (MouseAction, Rels.REL_WHEEL, 1),
-	"MOUSE_HWHEEL": (MouseAction, Rels.REL_HWHEEL, 1),
+	# Full-axis (whole) mouse entries are bare, mirroring the bare stick entries
+	# (ABS_X etc.) -- the whole X axis is MouseAction(REL_X), no direction. The
+	# trailing "1" made these 2-param, so action_to_area could never match the
+	# 1-param MouseAction the editors store (gyro Mouse X/Y went un-highlighted),
+	# and it duplicated the directional MOUSE_LEFT/RIGHT/UP/DOWN entries anyway.
+	"MOUSE_X": (MouseAction, Rels.REL_X),
+	"MOUSE_Y": (MouseAction, Rels.REL_Y),
+	"MOUSE_WHEEL": (MouseAction, Rels.REL_WHEEL),
+	"MOUSE_HWHEEL": (MouseAction, Rels.REL_HWHEEL),
 	# Mouse buttons
 	"MOUSE1": (ButtonAction, Keys.BTN_LEFT),
 	"MOUSE2": (ButtonAction, Keys.BTN_MIDDLE),
