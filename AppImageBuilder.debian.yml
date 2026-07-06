@@ -113,6 +113,10 @@ AppDir:
       - libbluetooth3
       - libgtk-3-0
       - libgtk-layer-shell-dev
+      - gir1.2-gtklayershell-0.1
+      - gir1.2-ayatanaappindicator3-0.1
+      - libdbusmenu-glib4
+      - libdbusmenu-gtk3-4
       - librsvg2-common
       - libwayland-client0
       - libwayland-cursor0
@@ -133,15 +137,18 @@ AppDir:
       - libgmp*         # arithmetics
 
       # gir1.2-rsvg-2.0
-      - libicu*         # i18n
+      # NOTE: libicu* and libxml* are intentionally NOT excluded. The bundled
+      # librsvg needs libxml2 (which pulls in icu), and minimal hosts such as
+      # SteamOS do not provide them, so excluding them gives a fatal
+      # "libxml2.so.2: cannot open shared object file" at GUI startup. Bundling
+      # them matches what the older appimage-build.sh shipped.
       - libstdc*        # development
-      - libxml*         # codec
 
       # libgtk3-0
       - "*-icon-theme"  # gui
       - "*crypt*"       # security
       - "*dconf*"       # gui configuration
-      - "*dbus*"        # process communication
+      - "libdbus-1*"    # process communication (keep libdbusmenu for the tray icon)
       - "*gcc*"         # development
       - "*systemd*"     # linux core
       - libblk*         # filesystem
