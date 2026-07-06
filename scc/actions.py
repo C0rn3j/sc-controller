@@ -789,7 +789,10 @@ class MouseAction(WholeHapticAction, Action):
 	def __init__(self, axis=None, speed=None):
 		Action.__init__(self, *strip_none(axis, speed))
 		WholeHapticAction.__init__(self)
-		self._mouse_axis = axis or None
+		# NOT `axis or None`: Rels.REL_X has integer value 0, which is falsy, so
+		# `or None` would collapse REL_X to None -- describing it as "Mouse" (not
+		# "Mouse X") and moving both axes instead of just X.
+		self._mouse_axis = axis if axis is not None else None
 		self._old_pos = None
 		if speed:
 			self.speed = (speed, speed)
@@ -1170,8 +1173,11 @@ class GyroAction(Action):
 	def gyro(self, mapper: Mapper, *pyr):
 		for i in (0, 1, 2):
 			axis = self.axes[i]
-			# 'gyro' cannot map to mouse, but 'mouse' does that.
-			if axis in Axes.__members__.values() or type(axis) is int:
+			# 'gyro' cannot map to mouse, but 'mouse' does that. isinstance, not
+			# `in Axes.__members__.values()`: Rels and Axes are IntEnums with
+			# overlapping values (REL_X == ABS_X == 0), so the membership test
+			# would misroute a mouse axis here as a gamepad axis.
+			if isinstance(axis, Axes) or type(axis) is int:
 				mapper.gamepad.axisEvent(axis, AxisAction.clamp_axis(axis, pyr[i] * self.speed[i] * -10))
 				mapper.syn_list.add(mapper.gamepad)
 
@@ -1179,15 +1185,18 @@ class GyroAction(Action):
 		if self.name:
 			return self.name
 		rv = []
-
-		if self.axes[0] in Rels.__members__.values():
-			return _("Mouse")
-
 		for x in self.axes:
-			if x:
+			# `is not None`, not truthiness: Rels.REL_X / Axes.ABS_X have value 0
+			# (falsy) yet are valid axes. isinstance keeps mouse (Rels) apart from
+			# stick (Axes) -- their integer values collide (REL_X == ABS_X == 0).
+			if x is None:
+				continue
+			if isinstance(x, Rels):
+				s = MouseAction(x).describe(context)
+			else:
 				s, trash, trash = AxisAction.get_axis_description(x)
-				if s not in rv:
-					rv.append(s)
+			if s not in rv:
+				rv.append(s)
 		return "\n".join(rv)
 
 
@@ -1248,7 +1257,11 @@ class GyroAbsAction(HapticEnabledAction, GyroAction):
 				pyr[i] = int(clamp(STICK_PAD_MIN, pyr[i], STICK_PAD_MAX))
 		for i in self.GYROAXES:
 			axis = self.axes[i]
-			if axis in Axes.__members__.values() or type(axis) == int:
+			# isinstance, not `in Axes.__members__.values()`: REL_X == ABS_X == 0
+			# and REL_Y == ABS_Y == 1 by IntEnum value, so the membership test
+			# swallowed the mouse axes into this gamepad branch (the elifs below
+			# never ran) -- gyro->mouse moved the stick instead of the cursor.
+			if isinstance(axis, Axes) or type(axis) == int:
 				val = AxisAction.clamp_axis(axis, pyr[i] * self.speed[i])
 				if self._deadzone_fn:
 					val, trash = self._deadzone_fn(val, 0, STICK_PAD_MAX)
@@ -1258,7 +1271,9 @@ class GyroAbsAction(HapticEnabledAction, GyroAction):
 			elif axis == Rels.REL_X:
 				mapper.mouse_move(AxisAction.clamp_axis(axis, pyr[i] * GyroAbsAction.MOUSE_FACTOR * self.speed[i]), 0)
 			elif axis == Rels.REL_Y:
-				mapper.mouse_move(0, AxisAction.clamp_axis(axis, pyr[i] * GyroAbsAction.MOUSE_FACTOR * self.speed[i]))
+				# Screen Y grows downward, so negate: tilting/looking up moves the
+				# cursor up. (REL_X needs no flip -- verified on hardware.)
+				mapper.mouse_move(0, -AxisAction.clamp_axis(axis, pyr[i] * GyroAbsAction.MOUSE_FACTOR * self.speed[i]))
 
 
 class ResetGyroAction(Action):
