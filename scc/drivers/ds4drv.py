@@ -65,25 +65,45 @@ DS4_USB_OUTPUT_VALID_MOTOR = 0x01
 # euler angles; we integrate each gyro axis into an absolute angle and store it
 # there. That keeps the axes 1:1 (no quaternion->quat2euler convention scrambling).
 #
-# Gyro-only integration: responds to tilt but DRIFTS, and large simultaneous
-# rotations gimbal (fine for aim near neutral). Accelerometer drift-correction is a
-# follow-up (the accel is still in q1-q3 right after decode, before this overwrites
-# them). TUNE on hardware: the deg/s scale and the per-axis signs below.
+# Pitch and roll are drift-corrected toward the accelerometer's gravity vector (a
+# complementary filter); yaw has no gravity reference, so it drifts inherently (that
+# needs a magnetometer, which the DS4 lacks). Large simultaneous rotations still
+# gimbal (fine for aim near neutral). TUNE on hardware: the deg/s scale, the gyro
+# per-axis signs, and the accel-correction signs below.
 _GYRO_DEG_PER_LSB = 1.0 / 16.0        # DS5 uses /16; verify for the DS4
 _GYRO_SIGN = (-1.0, -1.0, -1.0)       # per-axis (pitch, yaw, roll) sign; matches the
                                       # relative path's built-in negation (verified)
 _EUREL_SCALE = 32768.0 / math.pi      # radians -> the 2**15/PI fixed point GyroAbsAction wants
+# Accel drift-correction is implemented below but DISABLED (alpha = 1.0 -> pure
+# gyro) until the accel<->gyro axis correspondence is calibrated on hardware. With
+# it on, pitch/roll were pulled toward a mis-derived "level" and would not HOLD a
+# sustained tilt. Pure gyro holds the tilt correctly; the only cost is slow drift.
+# Re-enable (e.g. 0.98) once accel_pitch/roll are verified to track the gyro axes.
+_ACCEL_ALPHA = 1.0                    # complementary filter: gyro weight (1.0 = gyro only)
+_ACCEL_PITCH_SIGN = 1.0               # flip if the pitch drift-correction pulls the wrong way
+_ACCEL_ROLL_SIGN = 1.0                # flip if the roll drift-correction pulls the wrong way
 
 
 def _integrate_euler(state, angles: list, dt: float) -> list:
-	"""Accumulate the raw gyro into absolute euler angles (radians, wrapped to
-	[-pi, pi] so they stay bounded) and write them into state.q1-q3 in the EUREL
-	units GyroAbsAction expects. q4 is unused."""
+	"""Integrate the raw gyro into absolute euler angles (radians, wrapped to
+	[-pi, pi]), drift-correct pitch/roll toward the accel gravity vector, and write
+	them to state.q1-q3 in GyroAbsAction's EUREL units. q4 is unused."""
 	k = _GYRO_DEG_PER_LSB * dt * math.pi / 180.0
-	raw = (state.gpitch, state.gyaw, state.groll)
-	for i in range(3):
-		a = angles[i] + raw[i] * _GYRO_SIGN[i] * k
-		angles[i] = (a + math.pi) % (2 * math.pi) - math.pi
+	p = angles[0] + state.gpitch * _GYRO_SIGN[0] * k
+	y = angles[1] + state.gyaw * _GYRO_SIGN[1] * k
+	r = angles[2] + state.groll * _GYRO_SIGN[2] * k
+	# The decoder left the raw accelerometer in q1-q3 (DS4GYRO mode, negated), so
+	# recover it before we overwrite. At rest it reads gravity, giving an absolute
+	# pitch/roll to pull the drifting integral toward. Yaw is not observable here.
+	ax, ay, az = -state.q2, -state.q3, -state.q1
+	if _ACCEL_ALPHA < 1.0 and (ax or ay or az):
+		accel_pitch = _ACCEL_PITCH_SIGN * math.atan2(ax, math.sqrt(ay * ay + az * az))
+		accel_roll = _ACCEL_ROLL_SIGN * math.atan2(ay, az)
+		p = _ACCEL_ALPHA * p + (1.0 - _ACCEL_ALPHA) * accel_pitch
+		r = _ACCEL_ALPHA * r + (1.0 - _ACCEL_ALPHA) * accel_roll
+	angles[0] = (p + math.pi) % (2 * math.pi) - math.pi
+	angles[1] = (y + math.pi) % (2 * math.pi) - math.pi
+	angles[2] = (r + math.pi) % (2 * math.pi) - math.pi
 	state.q1 = int(angles[0] * _EUREL_SCALE)
 	state.q2 = int(angles[1] * _EUREL_SCALE)
 	state.q3 = int(angles[2] * _EUREL_SCALE)
