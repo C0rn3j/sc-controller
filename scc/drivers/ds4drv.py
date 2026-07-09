@@ -44,6 +44,10 @@ if TYPE_CHECKING:
 	from scc.sccdaemon import SCCDaemon
 
 log = logging.getLogger("DS4")
+if os.environ.get("SCC_GYRO_CALIB"):
+	# The daemon leaves the root logger at WARNING; opt this logger into INFO so
+	# the accel-calibration dump (_log_accel_calib) is actually visible.
+	log.setLevel(logging.INFO)
 
 VENDOR_ID = 0x054C
 PRODUCT_ID = 0x09CC
@@ -65,14 +69,16 @@ _GYRO_DEG_PER_LSB = 1.0 / 16.0        # DS5 uses /16; verify for the DS4
 _GYRO_SIGN = (-1.0, -1.0, -1.0)       # per-axis (pitch, yaw, roll) sign; matches the
                                       # relative path's built-in negation (verified)
 _EUREL_SCALE = 32768.0 / math.pi      # radians -> the 2**15/PI fixed point GyroAbsAction wants
-# Accel drift-correction is implemented below but DISABLED (alpha = 1.0 -> pure
-# gyro) until the accel<->gyro axis correspondence is calibrated on hardware. With
-# it on, pitch/roll were pulled toward a mis-derived "level" and would not HOLD a
-# sustained tilt. Pure gyro holds the tilt correctly; the only cost is slow drift.
-# Re-enable (e.g. 0.98) once accel_pitch/roll are verified to track the gyro axes.
-_ACCEL_ALPHA = 1.0                    # complementary filter: gyro weight (1.0 = gyro only)
+# Accel drift-correction (complementary filter), calibrated on hardware: at rest
+# gravity sits on accel +Y; a nose-down pitch swings it to +Z, a roll swings it to
+# X. So pitch = elevation of gravity out of the X-Y plane and roll = elevation out
+# of the Y-Z plane (decoupled forms, so one tilt doesn't contaminate the other).
+# Roll is sign-flipped to match the gyro's roll direction (accel reads -86 deg at a
+# roll where the gyro integrates +89). alpha weights the gyro; the small accel share
+# pins pitch/roll to gravity and kills the gyro-only drift.
+_ACCEL_ALPHA = 0.98                   # complementary filter: gyro weight (1.0 = gyro only)
 _ACCEL_PITCH_SIGN = 1.0               # flip if the pitch drift-correction pulls the wrong way
-_ACCEL_ROLL_SIGN = 1.0                # flip if the roll drift-correction pulls the wrong way
+_ACCEL_ROLL_SIGN = -1.0               # flip if the roll drift-correction pulls the wrong way
 
 
 def _integrate_euler(state, angles: list, dt: float) -> list:
@@ -88,8 +94,11 @@ def _integrate_euler(state, angles: list, dt: float) -> list:
 	# pitch/roll to pull the drifting integral toward. Yaw is not observable here.
 	ax, ay, az = -state.q2, -state.q3, -state.q1
 	if _ACCEL_ALPHA < 1.0 and (ax or ay or az):
-		accel_pitch = _ACCEL_PITCH_SIGN * math.atan2(ax, math.sqrt(ay * ay + az * az))
-		accel_roll = _ACCEL_ROLL_SIGN * math.atan2(ay, az)
+		# pitch = gravity's elevation out of the X-Y plane (swings to +Z on nose
+		# down); roll = elevation out of the Y-Z plane (swings to X). sqrt on the
+		# other two axes decouples them so a pure roll reads ~0 pitch and vice versa.
+		accel_pitch = _ACCEL_PITCH_SIGN * math.atan2(az, math.sqrt(ax * ax + ay * ay))
+		accel_roll = _ACCEL_ROLL_SIGN * math.atan2(ax, math.sqrt(ay * ay + az * az))
 		p = _ACCEL_ALPHA * p + (1.0 - _ACCEL_ALPHA) * accel_pitch
 		r = _ACCEL_ALPHA * r + (1.0 - _ACCEL_ALPHA) * accel_roll
 	angles[0] = (p + math.pi) % (2 * math.pi) - math.pi
@@ -101,9 +110,32 @@ def _integrate_euler(state, angles: list, dt: float) -> list:
 	return angles
 
 
+def _log_accel_calib(controller, state) -> None:
+	"""Throttled raw-accel + integrated-angle dump for accel-fusion calibration
+	(gate: env SCC_GYRO_CALIB=1). Runs BEFORE _integrate_euler, while the raw accel
+	still sits in q1-q3 (accel_x=-q2, accel_y=-q3, accel_z=-q1). Prints the gravity
+	unit vector plus the running gyro angles, so held orientations reveal which
+	accel axis/sign maps onto the gyro pitch and roll."""
+	now = time.time()
+	if now - getattr(controller, "_calib_last_t", 0.0) < 0.25:
+		return
+	controller._calib_last_t = now
+	ax, ay, az = -state.q2, -state.q3, -state.q1
+	mag = math.sqrt(ax * ax + ay * ay + az * az) or 1.0
+	a = getattr(controller, "_gyro_angles", [0.0, 0.0, 0.0])
+	log.info(
+		"GYRO-CALIB  accel unit=(% .2f % .2f % .2f) |a|=%5.0f  raw=(% d % d % d)  |  "
+		"gyro-int deg  pitch=% 6.1f yaw=% 6.1f roll=% 6.1f",
+		ax / mag, ay / mag, az / mag, mag, ax, ay, az,
+		math.degrees(a[0]), math.degrees(a[1]), math.degrees(a[2]),
+	)
+
+
 def _step_orientation(controller, state) -> None:
 	"""Per-controller wrapper: tracks dt from the host clock and the running
 	euler-angle vector as lazily-created attributes on the controller instance."""
+	if os.environ.get("SCC_GYRO_CALIB"):
+		_log_accel_calib(controller, state)
 	now = time.time()
 	dt = now - getattr(controller, "_gyro_time", now)
 	controller._gyro_time = now
