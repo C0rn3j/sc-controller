@@ -176,13 +176,6 @@ jobs:
           pattern: appimage-*
           path: assets
           merge-multiple: true
-      - name: Create checksum for release assets
-        shell: bash
-        run: |
-          algo="${SHA_ALGORITHM:-256}"
-          find assets -type f | while read -r asset; do
-            shasum --binary --algorithm "${algo}" "${asset}" >"${asset}.sha${algo}"
-          done
       - name: Upload artifacts to GitHub release
         uses: softprops/action-gh-release@v3
         with:
