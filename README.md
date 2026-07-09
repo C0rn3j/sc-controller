@@ -35,7 +35,7 @@ Donation links for kozec, who is the original developer, can be found on the [ol
 
 Linux:
   - **Arch Linux:** Found in official [extra](https://archlinux.org/packages/extra/x86_64/sc-controller/) repository and [AUR/sc-controller-git](https://aur.archlinux.org/packages/sc-controller-git/)
-  - **Ubuntu (22.04-jammy, 24.04-noble):** Packaged as AppImage in [GitHub releases](https://github.com/C0rn3j/sc-controller/releases), ***which may also run fine on other operating systems - jammy image is currently the most compatible one***
+  - **Ubuntu (24.04-noble, 26.04-resolute):** Packaged as AppImage in [GitHub releases](https://github.com/C0rn3j/sc-controller/releases), ***which may also run fine on other operating systems - noble image is currently the most compatible one***
   - **Gentoo:** Packaged as [game-util/sc-controller](https://packages.gentoo.org/packages/games-util/sc-controller)
   - **Void Linux:** Packaged as [sc-controller](https://github.com/void-linux/void-packages/blob/master/srcpkgs/sc-controller/template) - Run `xbps-install -S sc-controller` in a terminal, points to archived Ryochan7's fork at the time of writing
   - **Others:** You can attempt to use one of the AppImages (try all, AppImages built on older distributions tend to work better), or a package meant for your parent distribution if applicable. Flatpak is planned.

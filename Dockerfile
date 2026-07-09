@@ -9,10 +9,6 @@ RUN <<EOR
 
 	# Workaround for outstanding fix of https://bugs.launchpad.net/ubuntu/+source/python-build/+bug/1992108
 	. /etc/os-release
-	if [ ${UBUNTU_CODENAME-} = 'jammy' ]; then
-		echo >>/etc/apt/sources.list.d/jammy-proposed.list 'deb [arch=amd64] http://archive.ubuntu.com/ubuntu/     jammy-proposed universe'
-		echo >>/etc/apt/sources.list.d/jammy-proposed.list 'deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-proposed universe'
-	fi
 
 	apt-get update
 	export DEBIAN_FRONTEND=noninteractive
@@ -44,10 +40,7 @@ RUN <<EOR
 	python -m venv .env
 	. .env/bin/activate
 	pip install libusb1 pytest vdf
-	# Tests need Python 3.11+
-	if [ ${UBUNTU_CODENAME-} != 'jammy' ]; then
-		python -m pytest tests
-	fi
+	python -m pytest tests
 	pip install --prefix "${TARGET}/usr" --no-warn-script-location dist/*.whl
 
 	# Save version
