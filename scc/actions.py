@@ -1367,7 +1367,19 @@ class TiltAction(MultichildAction):
 
 	def gyro(self, mapper: Mapper, *pyr):
 		q1, q2, q3, q4 = pyr[-4:]
-		pyr = quat2euler(q1 / 32767.0, q2 / 32767.0, q3 / 32767.0, q4 / 32767.0)
+		if mapper.get_controller().flags & ControllerFlags.EUREL_GYROS:
+			# q1-q3 already hold euler angles in 2**15/PI fixed point (q4 unused).
+			# Feeding them into quat2euler as if they were a quaternion computes
+			# atan2 of near-zero noise products -> arbitrary full-range angles that
+			# constantly cross MIN and fire tilt actions with the pad at rest.
+			#
+			# Slot order below is (front down/up, TILTED left/right, ROTATED
+			# left/right) = (pitch, roll, yaw), so swap yaw/roll into that order;
+			# pitch and yaw are negated to match the slot firing directions against
+			# the DS4 integration conventions (all three axes hw-verified).
+			pyr = (-q1 / 10430.37, q3 / 10430.37, -q2 / 10430.37)
+		else:
+			pyr = quat2euler(q1 / 32767.0, q2 / 32767.0, q3 / 32767.0, q4 / 32767.0)
 		for j in (0, 1, 2):
 			i = j * 2
 			if self.actions[i]:
