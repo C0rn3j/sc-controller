@@ -47,7 +47,7 @@ Windows:
 ## Building the package by yourself
 
 ### Dependencies
-  - Python 3.9+
+  - Python 3.11+
   - GTK 3.24+
   - [PyGObject](https://live.gnome.org/PyGObject)
   - [python-gi-cairo](https://packages.debian.org/sid/python-gi-cairo) and [gir1.2-rsvg-2.0](https://packages.debian.org/sid/gir1.2-rsvg-2.0) on Debian-based distributions (included in PyGObject elsewhere)
