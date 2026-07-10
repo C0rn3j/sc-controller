@@ -96,10 +96,11 @@ class GyroComponent(AEComponent):
 		b = SimpleChooser(self.app, "axis", cb)
 		b.set_title(_("Select Axis"))
 		b.show_clear()
-		# Mouse is a valid target here: an axis marked "Absolute" becomes a
-		# GyroAbsAction, which maps orientation to REL_X/REL_Y (mapper.mouse_move).
-		# (Relative GyroAction ignores mouse -- use the dedicated Mouse gyro editor
-		# for that.) hide_mouse() wrongly blocked it, greying out the mouse arrows.
+		# Mouse is a valid target here in both modes: Absolute checked gives
+		# laser-pointer tracking (cursor follows the rotation, Steam-style,
+		# rate-based); unchecked gives lean-to-turn (cursor velocity follows the
+		# held tilt angle). hide_mouse() wrongly blocked it, greying out the
+		# mouse arrows.
 		#
 		# Show the current axis with the matching action class, or the chooser
 		# highlights the stick for a mouse axis (Axes/Rels value collision) and
