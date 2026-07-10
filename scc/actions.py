@@ -1155,6 +1155,11 @@ class GyroAction(Action):
 	"""Uses *relative* gyroscope position as input for emulated axes"""
 
 	COMMAND = "gyro"
+	# Mouse-path tuning, shared with GyroAbsAction. RATE_SIGN is per gyro axis
+	# (pitch, yaw, roll), hw-verified on the DS4. MOUSE_FACTOR scales the
+	# lean-to-turn cursor velocity into a sane default range.
+	MOUSE_RATE_SIGN = (1.0, -1.0, -1.0)
+	MOUSE_FACTOR = 0.01
 
 	def __init__(self, axis1, axis2=None, axis3=None):
 		Action.__init__(self, axis1, *strip_none(axis2, axis3))
@@ -1171,15 +1176,34 @@ class GyroAction(Action):
 		return self.speed
 
 	def gyro(self, mapper: Mapper, *pyr):
+		angles = None
 		for i in (0, 1, 2):
 			axis = self.axes[i]
-			# 'gyro' cannot map to mouse, but 'mouse' does that. isinstance, not
-			# `in Axes.__members__.values()`: Rels and Axes are IntEnums with
-			# overlapping values (REL_X == ABS_X == 0), so the membership test
-			# would misroute a mouse axis here as a gamepad axis.
+			# isinstance, not `in Axes.__members__.values()`: Rels and Axes are
+			# IntEnums with overlapping values (REL_X == ABS_X == 0), so the
+			# membership test would misroute a mouse axis here as a gamepad axis.
 			if isinstance(axis, Axes) or type(axis) is int:
 				mapper.gamepad.axisEvent(axis, AxisAction.clamp_axis(axis, pyr[i] * self.speed[i] * -10))
 				mapper.syn_list.add(mapper.gamepad)
+			# Relative mouse = lean-to-turn: cursor VELOCITY is proportional to
+			# the held tilt angle -- lean and the cursor keeps moving, return to
+			# level and it stops. (For laser-pointer tracking, where the cursor
+			# follows the rotation and stops with it, check Absolute.)
+			elif axis in (Rels.REL_X, Rels.REL_Y) and len(pyr) >= 7:
+				if angles is None:
+					q1, q2, q3, q4 = pyr[3:7]
+					if mapper.get_controller().flags & ControllerFlags.EUREL_GYROS:
+						angles = (q1 / 10430.37, q2 / 10430.37, q3 / 10430.37)  # 2**15 / PI
+					else:
+						angles = quat2euler(q1 / 32767.0, q2 / 32767.0, q3 / 32767.0, q4 / 32767.0)
+				# saturate at +-90 deg, then scale to a sane default velocity
+				v = clamp(STICK_PAD_MIN, angles[i] * (2**15) * 2 / PI, STICK_PAD_MAX)
+				v = v * GyroAction.MOUSE_FACTOR * self.speed[i]
+				if axis == Rels.REL_X:
+					mapper.mouse_move(v, 0)
+				else:
+					# screen Y grows downward (sign hw-verified on the DS4)
+					mapper.mouse_move(0, -v)
 
 	def describe(self, context):
 		if self.name:
@@ -1204,7 +1228,6 @@ class GyroAbsAction(HapticEnabledAction, GyroAction):
 	"""Uses *absolute* gyroscope position as input for emulated axes"""
 
 	COMMAND = "gyroabs"
-	MOUSE_FACTOR = 0.01  # Just random number to put default sensitivity into sane range
 
 	def __init__(self, *blah):
 		GyroAction.__init__(self, *blah)
@@ -1229,6 +1252,7 @@ class GyroAbsAction(HapticEnabledAction, GyroAction):
 	GYROAXES = (0, 1, 2)
 
 	def gyro(self, mapper: Mapper, pitch, yaw, roll, q1, q2, q3, q4):
+		rates = (pitch, yaw, roll)  # raw angular rates, used for the mouse axes
 		if mapper.get_controller().flags & ControllerFlags.EUREL_GYROS:
 			pyr = [q1 / 10430.37, q2 / 10430.37, q3 / 10430.37]  # 2**15 / PI
 		else:
@@ -1268,12 +1292,15 @@ class GyroAbsAction(HapticEnabledAction, GyroAction):
 					val = int(val)
 				mapper.gamepad.axisEvent(axis, val)
 				mapper.syn_list.add(mapper.gamepad)
+			# Absolute mouse = laser pointer: the angular RATE is the move delta
+			# (like MouseAction.gyro); the rate integrates to the rotation angle,
+			# so the cursor tracks the controller's absolute orientation and stops
+			# when the rotation stops (Steam's gyro-mouse behavior). For
+			# angle-proportional cursor velocity (lean-to-turn), uncheck Absolute.
 			elif axis == Rels.REL_X:
-				mapper.mouse_move(AxisAction.clamp_axis(axis, pyr[i] * GyroAbsAction.MOUSE_FACTOR * self.speed[i]), 0)
+				mapper.mouse_move(rates[i] * GyroAction.MOUSE_RATE_SIGN[i] * self.speed[i], 0)
 			elif axis == Rels.REL_Y:
-				# Screen Y grows downward, so negate: tilting/looking up moves the
-				# cursor up. (REL_X needs no flip -- verified on hardware.)
-				mapper.mouse_move(0, -AxisAction.clamp_axis(axis, pyr[i] * GyroAbsAction.MOUSE_FACTOR * self.speed[i]))
+				mapper.mouse_move(0, rates[i] * GyroAction.MOUSE_RATE_SIGN[i] * self.speed[i])
 
 
 class ResetGyroAction(Action):
