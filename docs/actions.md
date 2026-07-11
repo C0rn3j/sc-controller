@@ -325,6 +325,14 @@ A button whenever physical button is pressed.
 #### <a name="released"></a> released(action)
 Creates action that occurs for brief moment when button is released.
 
+#### <a name="inverted"></a> inverted(action)
+Acts on release: swaps press and release, so the wrapped action is held while
+the physical button is NOT pressed and released while it is. Meant for
+always-on sensors such as the capacitive handle grips, which read "on" the
+whole time the controller is held - inverting them fires the action when you
+let go. Unlike `pressed`/`released`, which emit a momentary tap, this is a
+true held inversion of the button state.
+
 #### <a name="touched"></a> pressed(action)
 Creates action that occurs for brief moment when finger touches pad.
 
