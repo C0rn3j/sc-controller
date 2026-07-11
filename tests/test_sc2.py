@@ -102,14 +102,29 @@ def test_dpad() -> None:
 
 def test_imu() -> None:
     # IMU lands at offsets 34..53 (only nonzero when the gyro is enabled).
-    assert parse_input(_frame(i16={48: 5000})).gpitch == -5000   # pitch inverted (up->up)
-    assert parse_input(_frame(i16={50: -6000})).groll == -6000
-    assert parse_input(_frame(i16={52: 7000})).gyaw == 7000
+    # Rates live at 40..45 (x/y/z); signs map to the DS4 conventions
+    # (rate + at nose-up / yaw-left / roll-left; hw-verified).
+    assert parse_input(_frame(i16={40: 5000})).gpitch == 5000
+    assert parse_input(_frame(i16={42: -6000})).groll == 6000    # roll negated
+    assert parse_input(_frame(i16={44: 7000})).gyaw == 7000
     assert parse_input(_frame(i16={38: 16000})).accel_z == 16000
-    assert parse_input(_frame(i16={46: 32000})).q4 == 32000
-    # zero (gyro disabled) -> neutral IMU
+    # The firmware quaternion (w@46 x@48 y@50 z@52, norm 32768) becomes euler
+    # in q1-q3, EUREL fixed point (2**15/PI per radian), DS4 conventions
+    # (pitch nose-down +, yaw yaw-left +, roll roll-right +). Ground truth: a
+    # real held-pose capture, controller pitched nose-down past vertical.
+    nose_down = parse_input(_frame(i16={46: 18232, 48: -26975, 50: -2361, 52: 2831}))
+    assert 100.0 < nose_down.q1 * 180.0 / 32768.0 < 125.0        # ~ +111 deg nose-down
+    assert abs(nose_down.q3 * 180.0 / 32768.0) < 15.0            # roll ~ level
+    assert nose_down.q4 == 0                                     # unused in EUREL mode
+    # a real roll-right capture -> positive q3, pitch near level
+    roll_right = parse_input(_frame(i16={46: 23715, 48: -2921, 50: 21679, 52: 5719}))
+    assert 70.0 < roll_right.q3 * 180.0 / 32768.0 < 95.0         # ~ +81 deg roll-right
+    # a real yaw-left capture -> negative q2 (yaw angle is + at yaw-RIGHT)
+    yaw_left = parse_input(_frame(i16={46: 20168, 48: -1919, 50: -1725, 52: 25695}))
+    assert -115.0 < yaw_left.q2 * 180.0 / 32768.0 < -90.0        # ~ -104 deg
+    # zero (gyro disabled) -> neutral IMU, identity-safe euler
     z = parse_input(_frame())
-    assert (z.gpitch, z.groll, z.gyaw, z.accel_z, z.q4) == (0, 0, 0, 0, 0)
+    assert (z.gpitch, z.groll, z.gyaw, z.accel_z, z.q1, z.q2, z.q3, z.q4) == (0, 0, 0, 0, 0, 0, 0, 0)
 
 
 def test_rest_frame_is_neutral() -> None:
