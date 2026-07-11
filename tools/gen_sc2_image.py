@@ -234,7 +234,12 @@ def main() -> None:
                   "STICK": (386.3, 222.0, 194.3, 196.2), "RSTICK": (795.8, 221.4, 195.7, 196.8),
                   "LPAD": (263.1, 423.0, 314.5, 321.4), "RPAD": (798.6, 423.5, 313.6, 322.0),
                   "DPAD": (145.7, 100.5, 219.7, 221.8),
-                  "LT": (40.0, 10.0, 120.0, 64.0), "RT": (1210.0, 10.0, 120.0, 64.0)}
+                  # LT/RT match the hand-added trigger art in the committed svg
+                  # (root-space paths above the bumpers; the committed viewBox is
+                  # hand-extended to y=-45 to show them). Values here are
+                  # root / SCALE, keeping AREA_LT/RT on the drawn triggers, not
+                  # beside the bumpers.
+                  "LT": (170.2, -23.6, 146.2, 57.6), "RT": (1061.6, -23.6, 146.2, 57.6)}
         for name, (x, y, w, h) in REGION.items():
             add_area(name, x * SCALE, y * SCALE, w * SCALE, h * SCALE)
         for name in ("LGRIPTOUCH", "RGRIPTOUCH"):  # AREA == grip surface bbox (+nudge)
