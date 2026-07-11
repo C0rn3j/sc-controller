@@ -58,6 +58,13 @@ class TestModifiers:
 		assert isinstance(a, ReleasedModifier)
 		assert _is_axis_with_value(a.action)
 
+	def test_inverted(self):
+		"""Tests if InvertedButtonModifier is parsed correctly from json.
+		"""
+		a = parser.from_json_data({"action": "inverted(axis(ABS_X))"})
+		assert isinstance(a, InvertedButtonModifier)
+		assert _is_axis_with_value(a.action)
+
 	def test_touched(self):
 		"""Tests if TouchedModifier is parsed correctly from json.
 		"""
