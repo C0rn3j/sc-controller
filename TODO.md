@@ -1,5 +1,27 @@
 List of (possibly) planned features in no particular order:
 
+- Selectable output device: virtual Xbox (today's default), virtual DS4/DS5,
+  or NO virtual controller at all. The current "Xbox 360 pad" is just a
+  generic uinput device wearing an X360 identity defined entirely in
+  config["output"] (scc/config.py: vendor/product/name/buttons/axes), so the
+  architecture already treats identity as data. Three tiers of work:
+    - no-controller mode (keyboard+mouse only) ALREADY EXISTS as the
+      undocumented SCC_NOGAMEPAD env var (scc/mapper.py create_gamepad);
+      promote it to a config key + GUI toggle (trivial), or per-profile
+      (moderate: create/destroy the uinput gamepad on profile switch).
+      Essential for games that refuse mouse/keyboard input while any
+      controller is detected;
+    - evdev-level DS4/DS5 identity presets (Sony VID/PID + the button/axis
+      layout SDL's gamecontrollerdb expects on the classic path): preset
+      table + GUI dropdown; gives PlayStation glyphs in most games, but no
+      gyro/touchpad/lightbar (those ride on hidraw, which uinput cannot
+      fake; SDL HIDAPI just falls back to evdev);
+    - faithful DS4/DS5 emulation via /dev/uhid: present a real HID device so
+      the kernel's hid-playstation binds and exposes motion/touchpad nodes
+      -> native in-game gyro from ANY supported controller. Big: a uhid
+      backend beside uinput, authentic report descriptors/streams, a udev
+      rule for /dev/uhid. Prior art exists (fake-DS4-over-uhid projects).
+
 - DualShock 4 / DualSense (ds4/ds5) polish. The HID driver is now functional
   (mapper rstick/dpad guards, touchpad coordinate scaling + click highlight), but
   rough edges remain:
