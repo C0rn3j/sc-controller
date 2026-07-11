@@ -44,8 +44,12 @@ RUN <<EOR
 	python -m venv .env
 	. .env/bin/activate
 	pip install libusb1 pytest vdf
-	# Tests need Python 3.11+
-	if [ ${UBUNTU_CODENAME-} != 'jammy' ]; then
+	# Tests need Python 3.11+, which jammy (3.10) lacks. os-release must be
+	# sourced HERE: each RUN is a fresh shell, so the previous RUN's sourcing
+	# doesn't carry over -- the old unquoted, unset ${UBUNTU_CODENAME} made
+	# this test error out and silently skip the suite on EVERY base.
+	. /etc/os-release
+	if [ "${UBUNTU_CODENAME-}" != 'jammy' ]; then
 		python -m pytest tests
 	fi
 	# --ignore-requires-python: the wheel declares the >=3.11 source-install
