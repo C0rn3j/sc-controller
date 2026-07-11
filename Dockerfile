@@ -48,7 +48,11 @@ RUN <<EOR
 	if [ ${UBUNTU_CODENAME-} != 'jammy' ]; then
 		python -m pytest tests
 	fi
-	pip install --prefix "${TARGET}/usr" --no-warn-script-location dist/*.whl
+	# --ignore-requires-python: the wheel declares the >=3.11 source-install
+	# floor, but the jammy AppImage bundles jammy's Python 3.10, where the
+	# runtime is deliberately kept working (the enums use the functional
+	# IntEnum API); without the flag pip refuses the install on jammy.
+	pip install --prefix "${TARGET}/usr" --no-warn-script-location --ignore-requires-python dist/*.whl
 
 	# Save version
 	PYTHONPATH=$(find "${TARGET}" -type d -name site-packages) \
