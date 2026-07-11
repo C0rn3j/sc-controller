@@ -22,12 +22,18 @@ jobs:
         # Debian 12+, Arch, etc.); see the release job's download pattern below.
         # Add bases here freely - they won't bloat the release.
         base:
+          # jammy stays in the fork even though upstream dropped it: it is the
+          # RELEASE base (glibc 2.35 covers Ubuntu 22.04 LTS onwards).
           - os: ubuntu
             codename: jammy
             pubkey: 871920D1991BC93C
             recipe: AppImageBuilder.yml
           - os: ubuntu
             codename: noble
+            pubkey: 871920D1991BC93C
+            recipe: AppImageBuilder.yml
+          - os: ubuntu
+            codename: resolute
             pubkey: 871920D1991BC93C
             recipe: AppImageBuilder.yml
           - os: debian
@@ -43,20 +49,20 @@ jobs:
             recipe: AppImageBuilder.debian.yml
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: rlespinasse/github-slug-action@v4
+      - uses: rlespinasse/github-slug-action@v5
 
       - name: Setup qemu for docker
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         if: matrix.target.platform != 'linux/amd64'
 
       - name: Setup buildx for docker
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Compile in docker
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           platforms: ${{ matrix.target.platform }}
@@ -86,7 +92,7 @@ jobs:
           printenv | grep ^APPIMAGE_ >>"${GITHUB_ENV}"
 
       - name: Build AppImage
-        uses: git-developer/build-appimage@v1.3
+        uses: C0rn3j/build-appimage@v1.3
         with:
           command: ${{
                      format('sh -c "set -eu; {0}; {1}; {2}; appimage-builder --recipe {3}"',
@@ -97,7 +103,7 @@ jobs:
                    }}
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: appimage-${{ matrix.base.codename }}-${{ matrix.target.arch }}
           path: |
@@ -131,31 +137,33 @@ jobs:
             codename: jammy
           - os: ubuntu
             codename: noble
+          - os: ubuntu
+            codename: resolute
           - os: debian
             codename: bookworm
           - os: debian
             codename: trixie
           - os: fedora
-            codename: "41"
+            codename: "43"
           - os: fedora
-            codename: "42"
+            codename: "44"
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Download artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           pattern: appimage-*-${{ matrix.target.arch }}
           path: appimages
           merge-multiple: true
 
       - name: Setup buildx for docker
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Test AppImages
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           file: AppImageBuilder.test.Dockerfile
           context: appimages
@@ -176,7 +184,7 @@ jobs:
 
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           # CI builds all bases, but only the most-compatible jammy AppImages
           # (one per arch) are attached to the release. Widen this pattern to
@@ -184,6 +192,8 @@ jobs:
           pattern: appimage-jammy-*
           path: assets
           merge-multiple: true
+      # Kept in the fork although upstream dropped it: our releases ship
+      # per-asset .sha256 checksums.
       - name: Create checksum for release assets
         shell: bash
         run: |
@@ -192,7 +202,7 @@ jobs:
             shasum --binary --algorithm "${algo}" "${asset}" >"${asset}.sha${algo}"
           done
       - name: Upload artifacts to GitHub release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           draft: ${{ !startsWith(github.ref, 'refs/tags/') }}
           files: assets/*

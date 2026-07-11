@@ -8,8 +8,9 @@ RUN <<EOR
 	set -eu
 
 	# Workaround for outstanding fix of https://bugs.launchpad.net/ubuntu/+source/python-build/+bug/1992108
+	# (upstream dropped this with jammy support; our releases still build on jammy)
 	. /etc/os-release
-	if [ ${UBUNTU_CODENAME-} = 'jammy' ]; then
+	if [ "${UBUNTU_CODENAME-}" = 'jammy' ]; then
 		echo >>/etc/apt/sources.list.d/jammy-proposed.list 'deb [arch=amd64] http://archive.ubuntu.com/ubuntu/     jammy-proposed universe'
 		echo >>/etc/apt/sources.list.d/jammy-proposed.list 'deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-proposed universe'
 	fi
