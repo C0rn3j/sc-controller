@@ -73,14 +73,14 @@ let
 in
 python3.pkgs.buildPythonApplication rec {
   pname = "sc-controller-cc";
-  version = "0.6.0.1";
+  version = "0.6.0.4";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "Patola";
     repo = "sc-controller-cc";
-    rev = "461c34d83dd4bef716004b4f234d9f4fe99219f3";
-    hash = "sha256-bk8CADJ9ZJO7e53+LSqVarj8jL6z9VMoE/34t1aFNWo=";
+    rev = "v${version}";
+    hash = "sha256-NMu+2yHb85Sjv5LgMxKbrWeOYX02DHAtdHtqE38fTN4=";
   };
 
   # The project's version is "dynamic" via setuptools_scm, which reads it from
