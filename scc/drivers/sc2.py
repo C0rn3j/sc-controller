@@ -22,7 +22,10 @@ Architecture mirrors the existing drivers:
 from __future__ import annotations
 
 import logging
+import math
+import os
 import struct
+import time
 from collections import namedtuple
 from enum import IntEnum
 from typing import TYPE_CHECKING
@@ -38,6 +41,36 @@ if TYPE_CHECKING:
     from scc.sccdaemon import SCCDaemon
 
 log = logging.getLogger("SC2")
+_CALIB = bool(os.environ.get("SCC_GYRO_CALIB"))
+if _CALIB:
+    # The daemon leaves the root logger at WARNING; opt this logger into INFO so
+    # the IMU-calibration dump (_log_imu_calib) is actually visible.
+    log.setLevel(logging.INFO)
+
+
+_calib_last_t = 0.0
+
+
+def _log_imu_calib(idata) -> None:
+    """Throttled IMU dump for SC2 gyro calibration (gate: env SCC_GYRO_CALIB=1).
+    Logs the parsed IMU state: accel gravity vector, the (sign-mapped) angular
+    rates, and the euler angles derived from the firmware quaternion -- held
+    orientations verify the axis/sign mapping end to end."""
+    global _calib_last_t
+    now = time.time()
+    if now - _calib_last_t < 0.25:
+        return
+    _calib_last_t = now
+    ax, ay, az = idata.accel_x, idata.accel_y, idata.accel_z
+    mag = math.sqrt(ax * ax + ay * ay + az * az) or 1.0
+    k = 180.0 / 32768.0  # EUREL fixed point -> degrees
+    log.info(
+        "IMU-CALIB  accel unit=(% .2f % .2f % .2f) |a|=%6.0f  |  "
+        "rates=(% 6d % 6d % 6d)  |  euler deg  pitch=% 6.1f yaw=% 6.1f roll=% 6.1f",
+        ax / mag, ay / mag, az / mag, mag,
+        idata.gpitch, idata.groll, idata.gyaw,
+        idata.q1 * k, idata.q2 * k, idata.q3 * k,
+    )
 
 VENDOR_ID = 0x28DE
 PID_PUCK = 0x1304   # wireless Controller Puck (dongle) - the path implemented here
@@ -83,10 +116,18 @@ UNLIZARD_INTERVAL = 100
 # 24..29  right pad X(i16) Y(i16) pressure(u16)
 # 30..33  IMU timestamp/counter (skipped)
 # 34..39  accel X/Y/Z (i16)         } only populated when the gyro is enabled
-# 40..47  quaternion x/y/z/w (i16)  } via configure(); zero/constant otherwise
-# 48..53  gyro pitch/roll/yaw (i16) }
+# 40..45  gyro angular rates x/y/z  } via configure(); zero/constant otherwise
+# 46..53  orientation quaternion, w@46 x@48 y@50 z@52 (norm 32768)
+#
+# The quaternion/rates split was pinned down from held-pose captures: the four
+# i16 at 46/48/50/52 have norm exactly 32768 in every orientation (a unit
+# quaternion), while 40..45 read ~0 whenever the controller is still (rates).
+# IMU axes (right-handed, Z up): x = pitch (nose-up +), y = roll (roll-right
+# +), z = yaw (yaw-left +); accel reads +Z flat, -Y nose-down, -X roll-right.
 _INPUT_FORMAT = "<BBBBBBHHhhhhhhHhhH4xhhhhhhhhhh"
 assert struct.calcsize(_INPUT_FORMAT) == INPUT_SIZE
+
+_EUREL_SCALE = 32768.0 / math.pi  # radians -> the 2**15/PI fixed point EUREL_GYROS wants
 
 
 class SC2Button(IntEnum):
@@ -192,7 +233,7 @@ def parse_input(data: bytes | bytearray) -> SC2Input | None:
         return None
     (_rid, seq, b2, b3, b4, b5, ltrig, rtrig,
      lsx, lsy, rsx, rsy, lpx, lpy, lpz, rpx, rpy, rpz,
-     ax, ay, az, q1, q2, q3, q4, gpitch, groll, gyaw) = struct.unpack(
+     ax, ay, az, rx, ry, rz, qw, qx, qy, qz) = struct.unpack(
         _INPUT_FORMAT, bytes(data[:INPUT_SIZE]))
     raw = b2 | (b3 << 8) | (b4 << 16) | (b5 << 24)
 
@@ -204,6 +245,14 @@ def parse_input(data: bytes | bytearray) -> SC2Input | None:
     dpad_x = STICK_PAD_MAX if raw & SC2Button.DPAD_RIGHT else STICK_PAD_MIN if raw & SC2Button.DPAD_LEFT else 0
     dpad_y = STICK_PAD_MAX if raw & SC2Button.DPAD_UP else STICK_PAD_MIN if raw & SC2Button.DPAD_DOWN else 0
 
+    # quaternion (w@46, x@48, y@50, z@52) -> euler about the IMU's own axes:
+    # about-x = physical pitch (nose-up +), about-y = roll (roll-right +),
+    # about-z = yaw (yaw-left +). Identity (all zero, gyro disabled) gives 0s.
+    w, x, y, z = qw / 32768.0, qx / 32768.0, qy / 32768.0, qz / 32768.0
+    _qe_pitch = math.atan2(2.0 * (w * x + y * z), 1.0 - 2.0 * (x * x + y * y))
+    _qe_roll = math.asin(min(1.0, max(-1.0, 2.0 * (w * y - z * x))))
+    _qe_yaw = math.atan2(2.0 * (w * z + x * y), 1.0 - 2.0 * (y * y + z * z))
+
     return SC2Input(
         buttons=buttons,
         # triggers are ~15-bit; scale to the 0..255 the mapper expects (cf. Deck >>7)
@@ -213,12 +262,21 @@ def parse_input(data: bytes | bytearray) -> SC2Input | None:
         lpad_x=lpx, lpad_y=lpy, rpad_x=rpx, rpad_y=rpy,
         lpad_pressure=lpz, rpad_pressure=rpz,
         # IMU: nonzero only when the gyro is enabled (configure() sends that).
-        # Axes @48/50/52 = pitch/roll/yaw. Polarity verified live via gyro->mouse:
-        # yaw is natural (right->right); pitch needed inverting (up->up); roll
-        # is untested by that mapping, so its sign is provisional.
+        # The firmware-fused quaternion is converted to euler HOST-side and the
+        # mapper gets DS4-convention EUREL angles in q1-q3 (SC2Controller sets
+        # EUREL_GYROS): ANGLES are + at nose-down / yaw-right / roll-right, and
+        # RATES are + in the opposite direction of each angle (nose-up /
+        # yaw-left / roll-left) -- that per-axis opposition is inherited from
+        # the DS4, whose relative path negates raw rates while its fused angles
+        # follow the calibrated directions. All hw-verified on both pads. This
+        # makes every gyro path (absolute, tilt, lean-to-turn, laser mouse)
+        # behave identically to the DS4.
         accel_x=ax, accel_y=ay, accel_z=az,
-        gpitch=-gpitch, groll=groll, gyaw=gyaw,
-        q1=q1, q2=q2, q3=q3, q4=q4,
+        gpitch=rx, groll=-ry, gyaw=rz,
+        q1=int(-_qe_pitch * _EUREL_SCALE),
+        q2=int(-_qe_yaw * _EUREL_SCALE),
+        q3=int(_qe_roll * _EUREL_SCALE),
+        q4=0,
         dpad_x=dpad_x, dpad_y=dpad_y, seq=seq,
     )
     # TODO: verify pad/stick Y polarity (may need inversion) once tested live.
@@ -226,7 +284,10 @@ def parse_input(data: bytes | bytearray) -> SC2Input | None:
 
 class SC2Controller(SCController):
     flags = (
-        ControllerFlags.SEPARATE_STICK
+        # EUREL_GYROS: parse_input converts the firmware quaternion to euler
+        # and hands the mapper 2**15/PI fixed-point angles in q1-q3.
+        ControllerFlags.EUREL_GYROS
+        | ControllerFlags.SEPARATE_STICK
         | ControllerFlags.HAS_RSTICK
         | ControllerFlags.HAS_DPAD
     )
@@ -401,6 +462,8 @@ class SC2Device(USBDevice):
                     "on-controller quaternion is unavailable on this firmware. If "
                     "the gamepad is also unresponsive, 0x42 was dropped entirely.")
             return                  # ignore non-0x42 reports
+        if _CALIB:
+            _log_imu_calib(idata)
         c = self._controllers.get(endpoint) or self._add_controller(endpoint)
         if idata.seq % UNLIZARD_INTERVAL == 0:
             c.clear_mappings()      # keep lizard mode from creeping back

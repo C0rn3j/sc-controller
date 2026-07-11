@@ -72,13 +72,27 @@ All multi-byte values are **little-endian**. Offsets are into the hidraw read
 | 26–27 | i16 | Right pad Y |
 | 28–29 | u16 | Right pad pressure |
 | 30–33 | u32 | IMU timestamp/counter |
-| 34–39 | i16×3 | **accelerometer** X/Y/Z (Z ≈ +16271 ≈ 1 g at rest) |
-| 40–47 | i16×4 | **orientation quaternion** x/y/z/w (w ≈ +32767 at rest) |
-| 48–53 | i16×3 | **gyro** pitch / roll / yaw (angular rate, ≈0 at rest) |
+| 34–39 | i16×3 | **accelerometer** X/Y/Z (Z ≈ +16271 ≈ 1 g flat at rest) |
+| 40–45 | i16×3 | **gyro angular rates** about x/y/z (≈0 whenever still) |
+| 46–53 | i16×4 | **orientation quaternion**, laid out **w`@46` x`@48` y`@50` z`@52`** |
 
 Offsets 30–53 are populated **only when the gyro is enabled** (constant
-otherwise). Gyro axes verified by isolated rotations (pitch→`@48`, roll→`@50`,
-yaw→`@52`); accel X/Y labels and IMU signs are provisional (see open questions).
+otherwise).
+
+The rates/quaternion split was pinned down from held-pose captures: the four
+i16 at 46/48/50/52 have **norm exactly 32768 in every orientation** (a unit
+quaternion), while 40–45 read ≈0 whenever the controller is still (rates).
+An earlier revision of this document had the boundary wrong (quaternion at
+40–47, rates at 48–53) — that misread the orientation components as rates,
+which is why they "followed the angle".
+
+**IMU axes** (right-handed, Z up), verified from seven held poses:
+x = pitch (nose-up +), y = roll (roll-right +), z = yaw (yaw-left +).
+Accelerometer: gravity reads **+Z** flat, **−Y** nose-down, **−X** roll-right.
+The quaternion is firmware-fused: pitch/roll are gravity-referenced (drift
+free); yaw is referenced to the enable-time orientation and drifts slowly.
+The driver converts the quaternion to euler angles host-side and reports
+EUREL (2¹⁵/π fixed-point) angles in DS4 conventions.
 
 ### Button bits (offsets 2–5)
 
@@ -169,10 +183,10 @@ index, not v1's bulk endpoint) and the **CONFIGURE register layout**.
 
 ## Open questions / TODO
 
-1. **IMU polarity (partly verified)**: gyro **yaw** and **pitch** signs checked
-   live via a gyro→mouse test — pitch is inverted in the driver so up→up; yaw is
-   natural. Still provisional: gyro **roll** sign (not exercised by that test),
-   and the accel X/Y labels / signs and quaternion handedness.
+1. **IMU rate scale**: the angular-rate unit (LSB per deg/s) at offsets 40–45
+   is not measured yet — relative-mode sensitivity may need tuning vs the DS4.
+   (Layout, axes and signs of rates/quaternion/accel are now verified; see the
+   report-0x42 section.)
 2. **Trackpad pressure** scaling and the exact meaning of the pressure word.
 3. The remaining unknown button bits.
 4. The **CDC ACM** interface's purpose.
