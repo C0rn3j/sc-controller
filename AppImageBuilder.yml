@@ -17,7 +17,7 @@ script:
 AppDir:
   app_info:
     id: org.c0rn3j.sc-controller
-    name: sc-controller
+    name: sc-controller-cc
     version: "{{APPIMAGE_VERSION}}"
     icon: sc-controller
     exec: usr/bin/python3
@@ -206,4 +206,4 @@ AppDir:
 
 AppImage:
   arch: "{{APPIMAGE_ARCH}}"
-  update-information: "gh-releases-zsync|C0rn3j|sc-controller|latest|sc-controller-*-{{APPIMAGE_APT_DISTRO}}-{{APPIMAGE_ARCH}}.AppImage.zsync"
+  update-information: "gh-releases-zsync|Patola|sc-controller-cc|latest|sc-controller-cc-*-{{APPIMAGE_APT_DISTRO}}-{{APPIMAGE_ARCH}}.AppImage.zsync"
