@@ -195,6 +195,23 @@ We also have a [Discord](https://discord.gg/Np7pgfTX6) available.
 	</tr>
 </table>
 
+### AppImage: install the udev rules
+
+The AppImage is self-contained but **cannot install the udev rules** it needs (those live in a system directory). Without them your user can't access the controller and SC Controller can't create the virtual gamepad (`/dev/uinput`), so a detected controller appears to "do nothing". Distro packages install these rules for you; **AppImage users must do it once, by hand:**
+
+1. Download `69-sc-controller.rules` from the [latest release](https://github.com/Patola/sc-controller-cc/releases/latest).
+2. Copy it into place — this needs `sudo`:
+   ```sh
+   sudo cp 69-sc-controller.rules /etc/udev/rules.d/69-sc-controller.rules
+   ```
+3. Reload and re-apply the rules:
+   ```sh
+   sudo udevadm control --reload-rules && sudo udevadm trigger
+   ```
+4. Unplug and replug the controller (or its wireless dongle) — or reboot.
+
+Only the AppImage needs this; the Arch and other distro packages already ship these rules. **The Steam Deck doesn't need it either** — SteamOS already ships udev rules for Steam devices, so the AppImage works out of the box there.
+
 ## Building the package by yourself
 
 ### Dependencies
