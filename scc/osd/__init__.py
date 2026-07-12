@@ -158,6 +158,7 @@ class OSDWindow(Gtk.Window):
 			Use negative value to specify as distance from bottom side (default: -20)""",
 		)
 		self.argparser.add_argument("--controller", type=str, help="""id of controller to use""")
+		self.argparser.add_argument("--controller-type", type=str, help="""type of controller to use""")
 		self.argparser.add_argument("-d", action="store_true", help="""display debug messages""")
 
 	def choose_controller(self, daemonmanager: DaemonManager) -> ControllerManager:
