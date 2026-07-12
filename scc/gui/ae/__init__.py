@@ -10,10 +10,67 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gdk, GLib, Gtk
 
 from scc.actions import Action, NoAction, XYAction
+from scc.constants import SCButtons
 from scc.gui.editor import ComboSetter
 from scc.tools import _, ensure_size
 
 log = logging.getLogger("AE")
+
+# Rear-paddle display names. On controllers whose four rear paddles are
+# physically labeled L4/L5/R4/R5 (Steam Controller 2, Steam Deck) the generic
+# "Left Grip (2)" naming is confusing -- especially on the SC2, where "grip"
+# reads as the capacitive handle sensor instead. The Steam Controller v1's
+# LGRIP/RGRIP are its squeeze grips and keep the "Left/Right Grip" naming.
+PADDLE_TYPES = ("sc2", "deck")
+PADDLE_NAMES = {
+	SCButtons.LGRIP: "L4",
+	SCButtons.RGRIP: "R4",
+	SCButtons.LGRIP2: "L5",
+	SCButtons.RGRIP2: "R5",
+}
+
+
+def button_label(app, button, default):
+	"""Per-controller display name for a button: the rear paddles are
+	L4/L5/R4/R5 on paddle controllers (sc2/deck), the default (grip) name
+	elsewhere. `app` may be None (falls back to the default label)."""
+	ctype = None
+	try:
+		c = app.profile_switchers[0].get_controller() if app else None
+		ctype = c.get_type() if c else None
+	except Exception:
+		pass
+	if ctype in PADDLE_TYPES and button in PADDLE_NAMES:
+		return PADDLE_NAMES[button]
+	return default
+
+
+# Buttons that only SOME controllers have and whose presence is reliably
+# recorded in the controller's gui config "buttons" capability list (sc2 and
+# deck ship configs; everything else falls back to DEFAULT_BUTTONS, which
+# correctly lacks these). Only these are ever filtered out of button lists --
+# filtering arbitrary buttons against the capability list would wrongly hide
+# valid entries on configless controllers (e.g. the DS4's stick presses).
+OPTIONAL_BUTTONS = {
+	SCButtons.LGRIP2, SCButtons.RGRIP2,
+	SCButtons.LGRIPTOUCH, SCButtons.RGRIPTOUCH,
+	SCButtons.LSTICKTOUCH, SCButtons.RSTICKTOUCH,
+}
+
+
+def button_available(app, button) -> bool:
+	"""True unless `button` is an optional extra (OPTIONAL_BUTTONS) that the
+	currently displayed controller's capability list does not include."""
+	if button not in OPTIONAL_BUTTONS:
+		return True
+	try:
+		available = app.background.get_config()["buttons"] if app else None
+	except Exception:
+		available = None
+	if not available:
+		return True
+	from scc.tools import nameof
+	return nameof(button) in available
 
 
 class AEComponent(ComboSetter):
