@@ -915,10 +915,16 @@ class MouseAction(WholeHapticAction, Action):
 			self._old_pos = None
 
 	def gyro(self, mapper: Mapper, pitch, yaw, roll, *a):
+		# Use the same per-gyro-axis rate signs as the Per-Axis mouse paths
+		# (GyroAction.MOUSE_RATE_SIGN, hw-verified on DS4 + SC2). The old
+		# hardcoded negation of ALL axes predates the drivers' rate-convention
+		# normalization; with normalized rates it inverted pitch (screen Y),
+		# while its yaw/roll negation happened to match the sign table.
+		sp, sy, sr = GyroAction.MOUSE_RATE_SIGN
 		if self._mouse_axis == YAW:
-			mapper.mouse_move(yaw * -self.speed[0], pitch * -self.speed[1])
+			mapper.mouse_move(yaw * sy * self.speed[0], pitch * sp * self.speed[1])
 		else:
-			mapper.mouse_move(roll * -self.speed[0], pitch * -self.speed[1])
+			mapper.mouse_move(roll * sr * self.speed[0], pitch * sp * self.speed[1])
 
 	def trigger(self, mapper: Mapper, position, old_position):
 		delta = position - old_position
