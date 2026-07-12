@@ -16,6 +16,7 @@ from scc.gui.daemon_manager import DaemonManager
 from scc.lib import xwrappers as X
 from scc.menu_data import MenuData, Separator, Submenu
 from scc.osd import OSDWindow, StickController
+from scc.parser import TalkingActionParser
 from scc.paths import get_share_path
 from scc.tools import _, circle_to_square, clamp, find_icon, find_menu
 
@@ -238,10 +239,15 @@ class Menu(OSDWindow):
 		return a.x, a.y
 
 	def parse_menu(self):
+		# Parse actions only when we may need to filter items by what they do
+		# (dropping "Turn Controller OFF" on the Steam Deck). Other controllers
+		# keep the lighter no-parse load: the daemon runs a menu action by id, so
+		# the OSD menu itself never needs the parsed action.
+		parser = TalkingActionParser() if getattr(self.args, "controller_type", None) == "deck" else None
 		if self.args.from_profile:
 			try:
 				self._menuid = self.args.items[0]
-				self.items = MenuData.from_profile(self.args.from_profile, self._menuid)
+				self.items = MenuData.from_profile(self.args.from_profile, self._menuid, parser)
 			except OSError:
 				print("%s: error: profile file not found" % (sys.argv[0]), file=sys.stderr)
 				return False
@@ -251,7 +257,7 @@ class Menu(OSDWindow):
 		elif self.args.from_file:
 			try:
 				self._menuid = self.args.from_file
-				self.items = MenuData.from_file(self.args.from_file)
+				self.items = MenuData.from_file(self.args.from_file, parser)
 			except:
 				print("%s: error: failed to load menu file" % (sys.argv[0]), file=sys.stderr)
 				return False
@@ -263,6 +269,24 @@ class Menu(OSDWindow):
 				print("%s: error: invalid number of arguments" % (sys.argv[0]), file=sys.stderr)
 				return False
 		return True
+
+	def _drop_inapplicable_items(self, items):
+		"""Removes generated menu items that don't apply to the connected
+		controller - currently "Turn Controller OFF" for the Steam Deck's
+		built-in controls, which can't be powered off. The live controller
+		isn't known when items are built (that happens before we connect to
+		the daemon), so the daemon passes its type via --controller-type.
+		"""
+		if getattr(self.args, "controller_type", None) != "deck":
+			return items
+		def is_turnoff(action):
+			# turnoff() directly, or wrapped e.g. as osd(turnoff()) - unwrap .action
+			while action is not None:
+				if getattr(action, "SA", "") == "turnoff":
+					return True
+				action = getattr(action, "action", None)
+			return False
+		return [i for i in items if not is_turnoff(getattr(i, "action", None))]
 
 	def parse_argumets(self, argv):
 		if not OSDWindow.parse_argumets(self, argv):
@@ -276,7 +300,7 @@ class Menu(OSDWindow):
 		self._size = self.args.size
 
 		# Create buttons that are displayed on screen
-		items = self.items.generate(self)
+		items = self._drop_inapplicable_items(self.items.generate(self))
 		self.items = []
 		for item in items:
 			item.widget = self.generate_widget(item)
