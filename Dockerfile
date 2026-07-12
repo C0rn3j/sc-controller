@@ -8,7 +8,12 @@ RUN <<EOR
 	set -eu
 
 	# Workaround for outstanding fix of https://bugs.launchpad.net/ubuntu/+source/python-build/+bug/1992108
+	# (upstream dropped this with jammy support; our releases still build on jammy)
 	. /etc/os-release
+	if [ "${UBUNTU_CODENAME-}" = 'jammy' ]; then
+		echo >>/etc/apt/sources.list.d/jammy-proposed.list 'deb [arch=amd64] http://archive.ubuntu.com/ubuntu/     jammy-proposed universe'
+		echo >>/etc/apt/sources.list.d/jammy-proposed.list 'deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-proposed universe'
+	fi
 
 	apt-get update
 	export DEBIAN_FRONTEND=noninteractive
@@ -42,9 +47,21 @@ RUN <<EOR
 	pip install evdev ioctl-opt libusb1 pytest vdf
 	# Install into the active environment for tests.
 	pip install dist/*.whl
-	python -m pytest tests
 
-	pip install --prefix "${TARGET}/usr" --no-warn-script-location --force-reinstall dist/*.whl
+	# Tests need Python 3.11+, which jammy (3.10) lacks. os-release must be
+	# sourced HERE: each RUN is a fresh shell, so the previous RUN's sourcing
+	# doesn't carry over -- the old unquoted, unset ${UBUNTU_CODENAME} made
+	# this test error out and silently skip the suite on EVERY base.
+	. /etc/os-release
+	if [ "${UBUNTU_CODENAME-}" != 'jammy' ]; then
+		python -m pytest tests
+	fi
+	# --ignore-requires-python: the wheel declares the >=3.11 source-install
+	# floor, but the jammy AppImage bundles jammy's Python 3.10, where the
+	# runtime is deliberately kept working (the enums use the functional
+	# IntEnum API); without the flag pip refuses the install on jammy.
+	pip install --prefix "${TARGET}/usr" --no-warn-script-location --force-reinstall --ignore-requires-python dist/*.whl
+
 
 	# Save version
 	PYTHONPATH=$(find "${TARGET}" -type d -name site-packages) \
