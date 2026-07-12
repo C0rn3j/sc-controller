@@ -98,7 +98,8 @@ class Dongle(USBDevice):
 		tup = ControllerInput._make(struct.unpack(TUP_FORMAT, data))
 		if tup.status == SCStatus.HOTPLUG:
 			# Most of INPUT_FORMAT doesn't apply here
-			if ord(str(data[4])) == 2:
+			# data[4] is the connect flag (2 == connected)
+			if data[4] == 2:
 				# Controller connected
 				if endpoint not in self._controllers:
 					self._add_controller(endpoint)
