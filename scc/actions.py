@@ -1179,6 +1179,15 @@ class GyroAction(Action):
 		Action.__init__(self, axis1, *strip_none(axis2, axis3))
 		self.axes = [axis1, axis2, axis3]
 		self.speed = (1.0, 1.0, 1.0)
+		# lean-to-turn neutral reference (per gyro axis, radians); captured on
+		# the first gyro event after (re)activation or a Recenter Gyro action.
+		self._lean_ref = [None, None, None]
+
+	def reset(self):
+		"""Re-captures the lean-to-turn neutral pose on the next gyro event.
+		Called by mapper.reset_gyros (the Recenter Gyro special action) and by
+		ModeModifier when a gated gyro deactivates."""
+		self._lean_ref = [None, None, None]
 
 	def get_compatible_modifiers(self):
 		return Action.MOD_SENSITIVITY | Action.MOD_SENS_Z
@@ -1210,8 +1219,15 @@ class GyroAction(Action):
 						angles = (q1 / 10430.37, q2 / 10430.37, q3 / 10430.37)  # 2**15 / PI
 					else:
 						angles = quat2euler(q1 / 32767.0, q2 / 32767.0, q3 / 32767.0, q4 / 32767.0)
+				# The lean is measured against the neutral reference captured on
+				# the first event after (re)activation or Recenter Gyro -- NOT
+				# against the driver's absolute zero, whose yaw is an arbitrary
+				# power-on orientation (and would make yaw-lean unusable).
+				if self._lean_ref[i] is None:
+					self._lean_ref[i] = angles[i]
+				lean = anglediff(self._lean_ref[i], angles[i])
 				# saturate at +-90 deg, then scale to a sane default velocity
-				v = clamp(STICK_PAD_MIN, angles[i] * (2**15) * 2 / PI, STICK_PAD_MAX)
+				v = clamp(STICK_PAD_MIN, lean * (2**15) * 2 / PI, STICK_PAD_MAX)
 				v = v * GyroAction.MOUSE_FACTOR * self.speed[i]
 				if axis == Rels.REL_X:
 					mapper.mouse_move(v, 0)
