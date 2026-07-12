@@ -265,7 +265,7 @@ class USBDriver:
 			log.error("Failed to claim USB device %.4x:%.4x : %s", tp[0], tp[1], e)
 			if tp in self._fail_cbs:
 				device.close()
-				self._fail_cbs[tp](*tp)
+				self._fail_cbs[tp](syspath, *tp)
 				return False
 			if self.daemon:
 				self.daemon.add_error(
