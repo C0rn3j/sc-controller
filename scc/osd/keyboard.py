@@ -302,12 +302,18 @@ class Keyboard(OSDWindow, TimerManager):
 		Action.register_all(sys.modules["scc.osd.osk_actions"], prefix="OSK")
 		self.profile = Profile(TalkingActionParser())
 		self.config = config or Config()
+		# The keyboard labels follow the active X keyboard layout group, which
+		# is read through XKB. That only works on GTK's X11 backend; under a
+		# Wayland session GdkX11.x11_get_default_xdisplay() does not return a
+		# usable Display, and calling into XKB with it aborts the whole OSD
+		# daemon at the C level (uncatchable in Python, like the autoswitcher).
+		# So only open the X display on an actual X11 backend and fall back to
+		# layout group 0 (the only group most users have) on Wayland.
 		if isinstance(Gdk.Display.get_default(), GdkX11.X11Display):
-			self.x11_dpy = X.Display(hash(GdkX11.x11_get_default_xdisplay()))
-			self.group = None
+			self.dpy = X.Display(hash(GdkX11.x11_get_default_xdisplay()))
 		else:
-			self.x11_dpy = None
-			self.group = 0
+			self.dpy = None
+		self.group = 0
 		self.limits = {}
 		self.background = None
 
@@ -439,9 +445,9 @@ class Keyboard(OSDWindow, TimerManager):
 	def update_labels(self):
 		"""Updates keyboard labels based on active X keymap"""
 		labels = {}
-		# Get current layout group
-		if self.x11_dpy is not None:
-			self.group = X.get_xkb_state(self.x11_dpy).group
+		# Get current layout group (X11 only; see __init__)
+		if self.dpy is not None:
+			self.group = X.get_xkb_state(self.dpy).group
 		# Get state of shift/alt/ctrl key
 		mt = Gdk.ModifierType(self.keymap.get_modifier_state())
 		for button in self.background.buttons:
@@ -554,9 +560,12 @@ class Keyboard(OSDWindow, TimerManager):
 		self.timer("labels", 0.1, self.update_labels)
 
 	def on_event(self, daemon, what, data):
-		"""Called when button press, button release or stick / pad update is sent by daemon."""
-		if self.x11_dpy is not None:
-			group = X.get_xkb_state(self.x11_dpy).group
+		"""Called when button press, button release or stick / pad update is
+		send by daemon.
+		"""
+		# Layout-group change tracking is X11 only (see __init__)
+		if self.dpy is not None:
+			group = X.get_xkb_state(self.dpy).group
 			if self.group != group:
 				self.group = group
 				self.timer("labels", 0.1, self.update_labels)
@@ -580,7 +589,8 @@ class Keyboard(OSDWindow, TimerManager):
 		self.key_from_cursor(self.cursors[action.side], pressed)
 
 	def set_cursor_position(self, x, y, cursor, limit):
-		"""Moves cursor image."""
+		"""Moves cursor image.
+		"""
 		if cursor not in self._hovers:
 			return
 		w = limit[2] - (cursor.get_allocation().width * 0.5)
