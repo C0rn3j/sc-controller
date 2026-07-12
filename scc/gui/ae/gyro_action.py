@@ -6,7 +6,7 @@ import re
 
 from scc.actions import Action, GyroAbsAction, GyroAction, MouseAbsAction, MouseAction, MultiAction, NoAction, RangeOP
 from scc.constants import ROLL, STICK, YAW, SCButtons
-from scc.gui.ae import AEComponent
+from scc.gui.ae import AEComponent, button_available, button_label
 from scc.gui.parser import GuiActionParser
 from scc.modifiers import ModeModifier, SensitivityModifier
 from scc.special_actions import CemuHookAction
@@ -38,8 +38,17 @@ class GyroActionComponent(AEComponent):
 		(SCButtons.LPAD, _("Left Pad Pressed")),
 		(SCButtons.RPAD, _("Right Pad Pressed")),
 		(None, None),
+		# The rear paddles. Labels are per-controller (see button_label):
+		# L4/R4/L5/R5 on sc2/deck, Left/Right Grip (2) elsewhere.
 		(SCButtons.LGRIP, _("Left Grip")),
 		(SCButtons.RGRIP, _("Right Grip")),
+		(SCButtons.LGRIP2, _("Left Grip 2")),
+		(SCButtons.RGRIP2, _("Right Grip 2")),
+		# Capacitive handle sensors (Steam Controller 2). On the SC2 the
+		# entries above are the rear paddles; the handle TOUCH sensors are
+		# separate buttons -- and the natural "gyro while gripping" enabler.
+		(SCButtons.LGRIPTOUCH, _("Left Grip Touched")),
+		(SCButtons.RGRIPTOUCH, _("Right Grip Touched")),
 		(STICK, _("Stick Tilted")),
 		(None, None),
 		(SCButtons.A, _("A")),
@@ -66,7 +75,7 @@ class GyroActionComponent(AEComponent):
 		AEComponent.load(self)
 		self._recursing = True
 		cbGyroButton = self.builder.get_object("cbGyroButton")
-		fill_buttons(cbGyroButton)
+		fill_buttons(cbGyroButton, self.app)
 		self._recursing = False
 
 	def set_action(self, mode: int, action) -> None:
@@ -312,9 +321,13 @@ def is_gyro_enable(modemod) -> bool:
 	return False
 
 
-def fill_buttons(cb):
+def fill_buttons(cb, app=None):
 	cb.set_row_separator_func(lambda model, iter: model.get_value(iter, 1) is None)
 	model = cb.get_model()
 	for button, text in GyroActionComponent.BUTTONS:
+		if button is not None:
+			if not button_available(app, button):
+				continue  # e.g. grip-touch / GRIP2 on controllers without them
+			text = button_label(app, button, text)
 		model.append((None if button is None else nameof(button), text))
 	cb.set_active(0)

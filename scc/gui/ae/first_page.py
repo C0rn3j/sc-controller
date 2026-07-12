@@ -6,7 +6,8 @@ Provides links for quick settings.
 import logging
 
 from scc.actions import Action
-from scc.gui.ae import AEComponent
+from scc.constants import SCButtons
+from scc.gui.ae import AEComponent, button_label
 from scc.tools import _, nameof
 
 log = logging.getLogger("AE.1st")
@@ -96,6 +97,8 @@ class FirstPage(AEComponent):
 				"RPAD": _("Right Pad"),
 				"LGRIP": _("Left Grip"),
 				"RGRIP": _("Right Grip"),
+				"LGRIP2": _("Left Grip 2"),
+				"RGRIP2": _("Right Grip 2"),
 				"LB": _("Left Bumper"),
 				"RB": _("Right Bumper"),
 				"LEFT": _("Left Trigger"),
@@ -103,8 +106,12 @@ class FirstPage(AEComponent):
 				"STICK": _("Stick"),
 			}
 
+			name = nameof(self.editor.get_id())
+			what = long_names.get(name, name.title())
+			# Per-controller paddle naming (L4/L5/R4/R5 on sc2/deck)
+			what = button_label(self.app, getattr(SCButtons, name, None), what)
 			markup = markup % {
-				"what": long_names.get(nameof(self.editor.get_id()), nameof(self.editor.get_id()).title()),
+				"what": what,
 			}
 			self.builder.get_object("lblMarkup").set_markup(markup.strip(" \r\n\t"))
 			return True

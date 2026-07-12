@@ -37,7 +37,7 @@ class GyroComponent(AEComponent):
 		cbGyroButton = self.builder.get_object("cbGyroButton")
 		self._recursing = True
 		cbGyroButton = self.builder.get_object("cbGyroButton")
-		fill_buttons(cbGyroButton)
+		fill_buttons(cbGyroButton, self.app)
 		self._recursing = False
 		self.buttons = [self.builder.get_object(x) for x in ("btPitch", "btYaw", "btRoll")]
 		self.cbs = [self.builder.get_object(x) for x in ("cbPitchAbs", "cbYawAbs", "cbRollAbs")]

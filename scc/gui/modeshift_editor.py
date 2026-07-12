@@ -10,6 +10,7 @@ from gi.repository import Gtk
 
 from scc.actions import Action, NoAction, RangeOP
 from scc.constants import HapticPos, SCButtons
+from scc.gui.ae import button_available, button_label
 from scc.gui.controller_widget import PADS, STICKS
 from scc.gui.dwsnc import headerbar
 from scc.gui.editor import Editor
@@ -102,6 +103,11 @@ class ModeshiftEditor(Editor):
 			if any([x[0] == item for x in self.actions[self.current_page]]):
 				# Skip already added buttons
 				continue
+			if isinstance(item, SCButtons):
+				if not button_available(self.app, item):
+					continue  # optional button this controller doesn't have
+				# Per-controller paddle naming (L4/L5/R4/R5 on sc2/deck)
+				text = button_label(self.app, item, text)
 			if type(item) is str:
 				# Special case for soft pull items
 				button = getattr(SCButtons, item.split(" ")[-1])
@@ -207,6 +213,10 @@ class ModeshiftEditor(Editor):
 		model.clear()
 		# Fill it again
 		for button, text in self.BUTTONS:
+			if isinstance(button, SCButtons):
+				if not button_available(self.app, button):
+					continue  # optional button this controller doesn't have
+				text = button_label(self.app, button, text)
 			model.append((None if button is None else nameof(button), text))
 			if button is not None:
 				if nameof(button) == active:
