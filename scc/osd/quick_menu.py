@@ -144,7 +144,7 @@ class QuickMenu(Menu):
 		self._timeout = self.args.timeout
 
 		# Create buttons that are displayed on screen
-		items = self.items.generate(self)
+		items = self._drop_inapplicable_items(self.items.generate(self))
 		self.items = []
 		self._button_index = 0
 		for item in items:
