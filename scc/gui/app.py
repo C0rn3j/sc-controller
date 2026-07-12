@@ -11,11 +11,11 @@ import re
 import sys
 import urllib
 
-from gi.repository import Gdk, Gio, GLib, Gtk
+from gi.repository import Gdk, GdkPixbuf, Gio, GLib, Gtk
 
 from scc.actions import NoAction
 from scc.config import Config
-from scc.constants import DAEMON_VERSION, LEFT, RIGHT, STICK, STICK_PAD_MAX, SCButtons
+from scc.constants import CPAD, DAEMON_VERSION, DPAD, LEFT, RIGHT, RSTICK, STICK, STICK_PAD_MAX, SCButtons
 from scc.custom import load_custom_module
 from scc.gui.binding_editor import BindingEditor
 from scc.gui.controller_image import ControllerImage
@@ -33,6 +33,7 @@ from scc.profile import Profile
 from scc.tools import (
 	_,
 	check_access,
+	find_controller_icon,
 	find_gksudo,
 	find_profile,
 	get_profile_name,
@@ -44,6 +45,25 @@ from scc.tools import (
 
 log = logging.getLogger("App")
 
+# Human-friendly default names per controller type (controller.get_type()).
+# Used when the user has not given the controller a custom name. Wrapped in
+# _() at lookup time so they remain translatable.
+CONTROLLER_TYPE_NAMES = {
+	"sc": "Steam Controller v1",
+	"scbt": "Steam Controller v1 (Bluetooth)",
+	"sc2": "Steam Controller v2",
+	"deck": "Steam Deck",
+	"ds4": "DualShock 4",
+	"ds4evdev": "DualShock 4",
+	"ds5": "DualSense",
+	"ds5evdev": "DualSense",
+	"ds5bt_hidraw": "DualSense",
+	"hid": "HID Controller",
+	"evdev": "Controller",
+	"rpad": "Remote Pad",
+	"fake": "Fake Controller",
+}
+
 
 class App(Gtk.Application, UserDataManager, BindingEditor):
 	"""Main application / window."""
@@ -52,7 +72,6 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 	OBSERVE_COLOR = "#FF60A0FF"  # ARGB
 	CONFIG = "scc.config.json"
 	RELEASE_URL = "https://github.com/C0rn3j/sc-controller/releases/tag/v%s"
-	OSD_MODE_PROF_NAME = ".scc-osd.profile_editor"
 
 	def __init__(self, gladepath: str = "/usr/share/scc", imagepath: str = "/usr/share/scc/images"):
 		Gtk.Application.__init__(
@@ -86,8 +105,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.status = "unknown"
 		self.context_menu_for = None
 		self.daemon_changed_profile = False
-		self.osd_mode = False  # In OSD mode, only active profile can be editted
-		self.osd_mode_mapper = None
+		self.osk_edit_mode = False  # --osd: open only the OSD-keyboard bindings editor
 		self.background = None
 		self.outdated_version = None
 		self.profile_switchers = []
@@ -95,6 +113,10 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.current_ui_layout = "default"  # only "default" and "deck" are supported
 		self.current_file = None  # Currently edited file
 		self.controller_count = 0
+		# Becomes True once a real controller's image has been shown. Used to
+		# keep that image (just with no controller) when the last controller is
+		# turned off, instead of reverting to the default Steam Controller image.
+		self._controller_shown = False
 		self.current = Profile(GuiActionParser())
 		self.just_started = True
 		self.button_widgets = {}
@@ -119,6 +141,15 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		ps.set_profile(self.load_profile_selection())
 		ps.connect("new-clicked", self.on_new_clicked)
 		ps.connect("save-clicked", self.on_save_clicked)
+
+		# Controller selector: shown above the profile switcher only when more
+		# than one controller is connected. Lets the user pick which controller
+		# the editor shows (replacing the old stack of one profile bar per
+		# controller + the per-bar "switch-to" pen button). Each row is the
+		# controller's icon + name, with its current profile as dim secondary
+		# text; selecting a row makes that controller the active/edited one.
+		self._selector_recursing = False
+		self.controller_selector = self._build_controller_selector()
 
 		# Drag&drop target
 		self.builder.get_object("content").drag_dest_set(
@@ -148,14 +179,15 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.lpad_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
 		self.rpad_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
 		self.stick_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
+		self.rstick_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
+		self.dpad_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
+		self.cpad_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
 		self.main_area.put(self.lpad_test, 40, 40)
 		self.main_area.put(self.rpad_test, 290, 90)
 		self.main_area.put(self.stick_test, 150, 40)
-
-		# OSD mode (if used)
-		if self.osd_mode:
-			self.builder.get_object("btDaemon").set_sensitive(False)
-			self.window.set_title(_("Edit Profile"))
+		self.main_area.put(self.rstick_test, 290, 40)
+		self.main_area.put(self.dpad_test, 40, 90)
+		self.main_area.put(self.cpad_test, 150, 90)
 
 		# Headerbar
 		headerbar(self.builder.get_object("hbWindow"))
@@ -171,6 +203,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		stckEditor = self.builder.get_object("stckEditor")
 		lblEmpty = self.builder.get_object("lblEmpty")
 		if controller:
+			self._controller_shown = True
 			config = controller.load_gui_config(self.imagepath or {})
 		else:
 			config = {}
@@ -202,6 +235,9 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		btDPAD = self.builder.get_object("btDPAD")
 		btGYRO = self.builder.get_object("btGYRO")
 		btC = self.builder.get_object("btC")
+		btLGRIPTOUCH = self.builder.get_object("btLGRIPTOUCH")
+		btRGRIPTOUCH = self.builder.get_object("btRGRIPTOUCH")
+		btRSTICK = self.builder.get_object("btRSTICK")
 
 		buttons = ControllerImage.get_names(config.get("buttons", {}))
 		axes = ControllerImage.get_names(config.get("axes", {}))
@@ -213,10 +249,18 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			if w:
 				w.set_sensitive(nameof(b) in buttons)
 		# Buttons (as GTK Widgets)
+		# A controller may ship its own side-panel icons under
+		# images/<background>/<NAME>.svg (e.g. images/sc2/); use them when
+		# present, else fall back to the shared default icon.
+		bg = config.get("gui", {}).get("background")
 		for b in self.button_widgets:
 			try:
 				w = self.button_widgets[b]
 				icon, trash = ControllerManager.get_button_icon(config, b, True)
+				if bg:
+					cand = os.path.join(self.imagepath, bg, nameof(b) + ".svg")
+					if os.path.exists(cand):
+						icon = cand
 				w.icon.set_from_file(icon)
 			except Exception:
 				pass
@@ -239,16 +283,34 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				# TODO: Maybe actual detection
 				w.set_sensitive(gyros)
 
-		for w in (btC, btCPAD, btDPAD, btGYRO):
-			w.set_visible(w.get_sensitive())
+		for w in (btC, btCPAD, btDPAD, btGYRO, btLGRIPTOUCH, btRGRIPTOUCH, btRSTICK):
+			if w:
+				w.set_visible(w.get_sensitive())
 
 		# Re-layout if needed
 		expected_layout = "default"
-		if len(axes) >= 8 and btC.get_sensitive():
+		if "rstick_x" in axes and btC.get_sensitive():
 			expected_layout = "deck"
 
 		if expected_layout != self.current_ui_layout:
 			self.apply_ui_layout(expected_layout)
+
+		# The Steam Deck maps its lower back paddles to LGRIP/RGRIP (labelled
+		# L5/R5) and the upper ones to LGRIP2/RGRIP2 (L4/R4) - the reverse of the
+		# SC2. Left alone the side panel reads L5/R5 above L4/R4; reorder the
+		# paddle buttons so they match the device (L4/R4 above L5/R5). Every other
+		# controller (incl. the SC2, whose LGRIP=L4) keeps the .glade order.
+		if bg == "deck":
+			grip_pairs = (("btLGRIP2", "btLGRIP"), ("btRGRIP2", "btRGRIP"))
+		else:
+			grip_pairs = (("btLGRIP", "btLGRIP2"), ("btRGRIP", "btRGRIP2"))
+		for above, below in grip_pairs:
+			wa = self.builder.get_object(above)
+			wb = self.builder.get_object(below)
+			if wa and wb and wa.get_parent() is wb.get_parent():
+				kids = wa.get_parent().get_children()
+				if kids.index(wa) > kids.index(wb):
+					wa.get_parent().reorder_child(wa, kids.index(wb))
 
 		stckEditor.set_visible_child(grEditor)
 		GLib.idle_add(self.on_c_size_allocate)
@@ -257,28 +319,24 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		"""Changes layout of ui elements to fit additional buttons needed for Deck
 		"""
 		if layout == "deck":
-			# Move 'C' button bellow LGRIP
-			btRGRIP = self.builder.get_object("btRGRIP")
+			btLGRIP = self.builder.get_object("btLGRIP")
+			# Put 'DPAD' at the top of the left column (above the back paddles),
+			# to mirror the Deck's physical layout: D-Pad, L4, L5, View, Steam.
+			btDPAD = self.builder.get_object("btDPAD")
+			btDPAD.get_parent().remove(btDPAD)
+			btLGRIP.get_parent().pack_start(btDPAD, False, True, 6)
+			btLGRIP.get_parent().reorder_child(btDPAD, 2)
+			# Move 'C' (Steam) to the bottom of the LEFT column (was the right)
 			btC = self.builder.get_object("btC")
 			btC.get_parent().remove(btC)
 			btC.set_margin_right(0)
-			btRGRIP.get_parent().pack_start(btC, False, True, 0)
-			btRGRIP.get_parent().reorder_child(btC, 5)
+			btLGRIP.get_parent().pack_start(btC, False, True, 0)
 			# Move 'GYRO' button to middle of image (where C was)
 			btGYRO = self.builder.get_object("btGYRO")
 			btGYRO.get_parent().remove(btGYRO)
 			vbC = self.builder.get_object("vbC")
 			vbC.pack_start(btGYRO, False, True, 0)
 			btGYRO.set_margin_top(30)
-			# Resize buttons at bottom
-			# for w in ['btSTICK', 'btRSTICK', 'btLPAD', 'btRPAD']:
-			# w.set_size_request(150, -1)
-			# Move 'DPAD' bellow 'LGRIP'
-			btLGRIP = self.builder.get_object("btLGRIP")
-			btDPAD = self.builder.get_object("btDPAD")
-			btDPAD.get_parent().remove(btDPAD)
-			btLGRIP.get_parent().pack_start(btDPAD, False, True, 6)
-			btLGRIP.get_parent().reorder_child(btDPAD, 5)
 
 	def setup_statusicon(self) -> None:
 		menu = self.builder.get_object("mnuTray")
@@ -511,6 +569,10 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		id = self.context_menu_for
 		if id == STICK:
 			id = nameof(SCButtons.STICKPRESS)
+		elif id == Profile.RSTICK:
+			id = nameof(SCButtons.RSTICKPRESS)
+		elif id == Profile.CPAD:
+			id = nameof(SCButtons.CPADPRESS)
 		self.show_editor(getattr(SCButtons, id))
 
 	def on_mnuGlobalSettings_activate(self, *a):
@@ -677,12 +739,6 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 	def on_profile_saved(self, giofile: Gio.File, send: bool = True):
 		"""Called when selected profile is saved to disk
 		"""
-		if self.osd_mode:
-			# Special case, profile shouldn't be changed while in osd_mode
-			if not giofile.get_path().endswith(".mod"):
-				self.profile_switchers[0].set_profile_modified(False, self.current.is_template)
-			return
-
 		if giofile.get_path().endswith(".mod"):
 			# Special case, this one is saved only to be sent to daemon
 			# and user doesn't need to know about it
@@ -696,8 +752,9 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 		self.profile_switchers[0].set_profile_modified(False, self.current.is_template)
 		if send and self.dm.is_alive() and not self.daemon_changed_profile:
-			for ps in self.profile_switchers:
-				controller = ps.get_controller()
+			# Re-send to every controller currently running this profile (not
+			# just the active one), so a saved profile reloads on all of them.
+			for controller in self.dm.get_controllers():
 				if controller:
 					active = controller.get_profile()
 					if active.endswith(".mod"):
@@ -819,7 +876,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.quit()
 
 	def on_mnuExit_activate(self, *a):
-		if not self.osd_mode and self.app.config["gui"]["autokill_daemon"]:
+		if self.app.config["gui"]["autokill_daemon"]:
 			log.debug("Terminating scc-daemon")
 			for x in ("content", "mnuEmulationEnabled", "mnuEmulationEnabledTray"):
 				w = self.builder.get_object(x)
@@ -847,46 +904,46 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		if not self.release_notes_visible():
 			self.hide_error()
 		self.just_started = False
-		if self.osd_mode:
-			self.enable_osd_mode()
-		elif self.profile_switchers[0].get_file() is not None and not self.just_started:
+		if self.profile_switchers[0].get_file() is not None and not self.just_started:
 			self.dm.set_profile(self.current_file.get_path())
 		GLib.timeout_add_seconds(1, self.check)
 		self.enable_test_mode()
 
 	def on_daemon_ccunt_changed(self, daemon, count):
-		if self.controller_count == 0:
-			# First controller connected
-			#
-			# 'event' signal should be connected only on first controller,
-			# so this block is executed only when number of connected
-			# controllers changes from 0 to 1
-			if len(self.dm.get_controllers()) > 0:
-				c = self.dm.get_controllers()[0]
-				self.load_gui_config_for_controller(c, first=True)
-		if count > self.controller_count:
-			# Controller added
-			while len(self.profile_switchers) < count:
-				s = self.add_switcher()
-		elif count < self.controller_count:
-			# Controller removed
-			while len(self.profile_switchers) > max(1, count):
-				s = self.profile_switchers.pop()
-				s.set_controller(None)
-				self.remove_switcher(s)
+		# A single profile switcher always shows the *active* controller; any
+		# others are reachable through the controller selector above it (built
+		# in setup_widgets). So here we only keep the active controller in the
+		# switcher and rebuild the selector.
+		controllers = list(self.dm.get_controllers())
+		ps0 = self.profile_switchers[0]
+		first_connect = self.controller_count == 0 and count >= 1
 
-		# Assign controllers to widgets
-		for i in range(count):
-			c = self.dm.get_controllers()[i]
-			self.profile_switchers[i].set_controller(c)
+		if count >= 1:
+			active = ps0.get_controller()
+			if active not in controllers:
+				# No active controller yet (first connect) or the active one was
+				# disconnected: fall back to the first connected controller and
+				# switch the editor image to it.
+				active = controllers[0]
+				ps0.set_controller(active)
+				self.load_gui_config_for_controller(active, first=first_connect)
+		else:
+			# No controllers connected, but one switcher has to stay on screen
+			ps0.set_controller(None)
+			if not self._controller_shown:
+				# Nothing has been connected yet (startup): show the default
+				# image. If a controller was connected and is now off, keep its
+				# image on screen instead of reverting to the default one.
+				self.load_gui_config_for_controller(None, first=True)
 
-		if count < 1:
-			# Special case, no controllers are connected, but one widget
-			# has to stay on screen
-			self.profile_switchers[0].set_controller(None)
-			self.load_gui_config_for_controller(None, first=True)
-
+		self.rebuild_controller_selector()
 		self.controller_count = count
+		if count >= 1:
+			# Re-arm Input Test on the (now) active controller. Without this, a
+			# controller connected *after* startup is never observed -- the
+			# enable at 'alive' ran while no controller was present -- so Input
+			# Test stays blank until the user toggles it off and on again.
+			self.enable_test_mode()
 
 	def new_profile(self, profile: Profile, name: str):
 		filename = os.path.join(get_profiles_path(), name + ".sccprofile")
@@ -924,9 +981,6 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			sepSwitchers.set_visible(True)
 		vbSwitchers.show_all()
 
-		if self.osd_mode:
-			ps.set_allow_switch(False)
-
 		if len(self.profile_switchers) > 0:
 			ps.set_profile_list(self.profile_switchers[0].get_profile_list())
 			ps.set_switch_to_enabled(True)
@@ -946,18 +1000,132 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		if len(vbSwitchers.get_children()) == 2:
 			sepSwitchers.set_visible(False)
 
+	def _build_controller_selector(self) -> Gtk.ComboBox:
+		"""Creates the 'which controller' combo and packs it above the profile
+		switcher. Hidden until 2+ controllers are connected."""
+		# model columns: controller object, icon pixbuf, name, current profile
+		model = Gtk.ListStore(object, GdkPixbuf.Pixbuf, str, str)
+		combo = Gtk.ComboBox.new_with_model(model)
+		rPix, rName, rProf = Gtk.CellRendererPixbuf(), Gtk.CellRendererText(), Gtk.CellRendererText()
+		rProf.set_property("foreground", "#888888")
+		combo.pack_start(rPix, False)
+		combo.pack_start(rName, True)
+		combo.pack_start(rProf, False)
+		combo.add_attribute(rPix, "pixbuf", 1)
+		combo.add_attribute(rName, "text", 2)
+		combo.add_attribute(rProf, "text", 3)
+		combo.set_margin_left(12)
+		combo.set_margin_right(12)
+		combo.set_margin_top(4)
+		combo.connect("changed", self.on_controller_selected)
+		combo.connect("notify::popup-shown", self._refresh_selector_profiles)
+		vbSwitchers = self.builder.get_object("vbSwitchers")
+		vbSwitchers.pack_start(combo, False, False, 0)
+		# Layout top-to-bottom: [ selector ][ separator ][ profile switcher ]
+		vbSwitchers.reorder_child(combo, 0)
+		vbSwitchers.reorder_child(self.builder.get_object("sepSwitchers"), 1)
+		combo.set_no_show_all(True)
+		combo.set_visible(False)
+		return combo
+
+	def _load_controller_pixbuf(self, c: ControllerManager) -> GdkPixbuf.Pixbuf | None:
+		"""Loads the 24px icon for a controller, or None if unavailable."""
+		try:
+			iconname = self.config.get_controller_config(c.get_id()).get("icon")
+			if iconname:
+				path = find_controller_icon(iconname)
+				if path and os.path.exists(path):
+					return GdkPixbuf.Pixbuf.new_from_file_at_size(path, 24, 24)
+		except Exception as e:
+			log.debug("No selector icon for %s: %s", c.get_id(), e)
+		return None
+
+	def controller_display_name(self, c: ControllerManager) -> str:
+		"""Human-friendly controller name: the user's custom name if one was set
+		in controller settings, otherwise a per-type label (e.g. 'Steam
+		Controller v2') rather than the raw internal id (e.g. 'sc1' / '3:4')."""
+		name = self.config.get_controller_config(c.get_id())["name"]
+		if name and name != c.get_id():
+			return name  # user-customised
+		return _(CONTROLLER_TYPE_NAMES.get(c.get_type(), "Controller"))
+
+	def rebuild_controller_selector(self) -> None:
+		"""Refills the controller selector from the connected controllers and
+		shows it only when more than one is connected."""
+		combo = self.controller_selector
+		controllers = list(self.dm.get_controllers())
+		active = self.profile_switchers[0].get_controller()
+		# Friendly names, disambiguating duplicates of the same type with #N
+		# (e.g. two 'Steam Controller v1' become '... #1' and '... #2').
+		names = [self.controller_display_name(c) for c in controllers]
+		dupes = {n for n in names if names.count(n) > 1}
+		seen = {}
+		labels = []
+		for n in names:
+			if n in dupes:
+				seen[n] = seen.get(n, 0) + 1
+				labels.append("%s #%d" % (n, seen[n]))
+			else:
+				labels.append(n)
+		self._selector_recursing = True
+		model = combo.get_model()
+		model.clear()
+		active_iter = None
+		for c, label in zip(controllers, labels):
+			prof = get_profile_name(c.get_profile() or "") or ""
+			it = model.append((c, self._load_controller_pixbuf(c), label, prof))
+			if c is active:
+				active_iter = it
+		if active_iter is not None:
+			combo.set_active_iter(active_iter)
+		self._selector_recursing = False
+		multi = len(controllers) >= 2
+		combo.set_visible(multi)
+		self.builder.get_object("sepSwitchers").set_visible(multi)
+
+	def _refresh_selector_profiles(self, combo: Gtk.ComboBox, *a: object) -> None:
+		"""Refreshes each row's profile subtext when the dropdown is opened."""
+		if not combo.get_property("popup-shown"):
+			return
+		for row in combo.get_model():
+			row[3] = get_profile_name(row[0].get_profile() or "") or ""
+
+	def on_controller_selected(self, combo: Gtk.ComboBox) -> None:
+		"""Makes the chosen controller the active (edited) one, with the same
+		image transition the old switch-to button used."""
+		if self._selector_recursing:
+			return
+		it = combo.get_active_iter()
+		if it is None:
+			return
+		c = combo.get_model().get_value(it, 0)
+		ps0 = self.profile_switchers[0]
+		if c is None or c is ps0.get_controller():
+			return
+		ps0.set_controller(c)
+		ps0.set_profile(c.get_profile())
+		self.load_gui_config_for_controller(c, False)
+		self.enable_test_mode()
+
 	def enable_test_mode(self):
 		"""Disables and re-enables Input Test mode. If sniffing is disabled in
 		daemon configuration, 2nd call fails and logs error.
 		"""
-		if self.dm.is_alive() and not self.osd_mode:
+		if self.dm.is_alive():
 			if self.test_mode_controller:
 				self.test_mode_controller.unlock_all()
-			try:
-				c = self.dm.get_controllers()[0]
-			except IndexError:
-				# Zero controllers
-				return
+			# Observe the controller currently selected in the GUI (the one drawn
+			# on the big image), not always the first one. With several
+			# controllers connected, the old get_controllers()[0] made Input Test
+			# read the first controller while the image showed the selected one,
+			# and it never worked at all for a non-first controller.
+			c = self.profile_switchers[0].get_controller()
+			if c is None:
+				try:
+					c = self.dm.get_controllers()[0]
+				except IndexError:
+					# Zero controllers
+					return
 			if c:
 				c.unlock_all()
 				c.observe(
@@ -974,6 +1142,12 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 					"RB",
 					"LPAD",
 					"RPAD",
+					# DS4/DS5 touchpad: the positional finger source (so the pad
+					# tracks the finger like the other pads, emitted only while
+					# touched) plus its click, which brightens the CPADPRESS element.
+					# Harmless on controllers without a touchpad.
+					"CPAD",
+					"CPADPRESS",
 					"LGRIP",
 					"RGRIP",
 					"LT",
@@ -982,64 +1156,27 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 					"RIGHT",
 					"STICK",
 					"STICKPRESS",
+					# v2 (Steam Controller 2025) additions: the "..." button and
+					# the capacitive handle-grip sensors (highlight by id; valid
+					# SCButtons, so harmless/never-fire on controllers without them)
+					"DOTS",
+					"LGRIPTOUCH",
+					"RGRIPTOUCH",
+					# Lower back paddles (L5/R5 -> LGRIP2/RGRIP2; the upper L4/R4
+					# are LGRIP/RGRIP, already above) and the right-stick click.
+					"LGRIP2",
+					"RGRIP2",
+					"RSTICKPRESS",
+					# Capacitive stick-touch sensors (Deck / SC 2025): highlight the
+					# touch dot centred over each stick.
+					"LSTICKTOUCH",
+					"RSTICKTOUCH",
+					# ...and the right stick + d-pad positions (positional axis
+					# sources; never fire on controllers without them)
+					"RSTICK",
+					"DPAD",
 				)
 				self.test_mode_controller = c
-
-	def enable_osd_mode(self):
-		# TODO: Support for multiple controllers here
-		self.osd_mode_controller = 0
-		osd_mode_profile = Profile(GuiActionParser())
-		osd_mode_profile.load(find_profile(App.OSD_MODE_PROF_NAME))
-		try:
-			c = self.dm.get_controllers()[self.osd_mode_controller]
-		except IndexError:
-			log.error("osd_mode: Controller not connected")
-			self.quit()
-			return
-
-		def on_lock_failed(*a):
-			log.error("osd_mode: Locking failed")
-			self.quit()
-
-		def on_lock_success(*a):
-			log.debug("osd_mode: Locked everything")
-			from scc.gui.osd_mode import OSDModeMapper, OSDModeMappings
-
-			self.osd_mode_mapper = OSDModeMapper(self, osd_mode_profile)
-			self.osd_mode_mapper.set_target_window(self.window.get_window())
-			self.builder.get_object("btUndo").set_visible(False)
-			self.builder.get_object("btRedo").set_visible(False)
-
-			m = OSDModeMappings(self, self.osd_mode_mapper, self.builder.get_object("OsdmodeMappings"))
-			m.set_controller(self.profile_switchers[0].get_controller())
-			m.show()
-
-		# Locks everything but pads. Pads are emulating mouse and this is
-		# better left in daemon - involving socket in mouse controls
-		# adds too much lags.
-		c.lock(
-			on_lock_success,
-			on_lock_failed,
-			"A",
-			"B",
-			"X",
-			"Y",
-			"START",
-			"BACK",
-			"LB",
-			"RB",
-			"C",
-			"STICK",
-			"LGRIP",
-			"RGRIP",
-			"LT",
-			"RT",
-			"STICKPRESS",
-		)
-
-		# Ask daemon to temporaly reconfigure pads for mouse emulation
-		c.replace(DaemonManager.nocallback, on_lock_failed, LEFT, osd_mode_profile.pads[LEFT])
-		c.replace(DaemonManager.nocallback, on_lock_failed, RIGHT, osd_mode_profile.pads[RIGHT])
 
 	def on_observe_failed(self, error):
 		log.debug("Failed to enable test mode: %s", error)
@@ -1059,8 +1196,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		# and we can check if there is anything new to inform user about
 		elif self.app.config["gui"]["news"]["last_version"] != App.get_release():
 			if self.app.config["gui"]["news"]["enabled"]:
-				if not self.osd_mode:
-					self.check_release_notes()
+				self.check_release_notes()
 
 	def on_daemon_error(self, daemon, error):
 		log.debug("Daemon reported error '%s'", error)
@@ -1093,35 +1229,58 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				return
 			# If check() fails to find error reason, error message is displayed as it is
 
-		if self.osd_mode:
-			self.quit()
-
 		self.show_error(msg)
 		self.set_daemon_status("error", True)
 
 	def on_daemon_event_observer(self, daemon, c, what, data):
-		if self.osd_mode_mapper:
-			self.osd_mode_mapper.handle_event(daemon, what, data)
-		elif what in (LEFT, RIGHT, STICK):
+		# Only react to the controller Input Test is observing. Other connected
+		# controllers also emit events; without this, their input would show on
+		# the selected controller's image.
+		if c is not self.test_mode_controller:
+			return
+		if what in (LEFT, RIGHT, STICK, RSTICK, DPAD, CPAD):
 			widget, area = {
 				LEFT: (self.lpad_test, "LPADTEST"),
 				RIGHT: (self.rpad_test, "RPADTEST"),
 				STICK: (self.stick_test, "STICKTEST"),
+				RSTICK: (self.rstick_test, "RSTICKTEST"),
+				DPAD: (self.dpad_test, "DPADTEST"),
+				# The touchpad has no *TEST rect; its full AREA_CPAD (a real
+				# rectangle, not a flat line) is the finger's range of motion.
+				CPAD: (self.cpad_test, "CPAD"),
 			}[what]
 			# Check if stick or pad is released
 			if data[0] == data[1] == 0:
 				widget.hide()
 				return
+			# Grab values. The controller image may not define a test area for
+			# this input (e.g. deck.svg has no STICKTEST); skip silently rather
+			# than crashing the GUI and spamming the log with ValueError.
+			try:
+				ax, ay, aw, ah = self.background.get_area_position(area)
+			except ValueError:
+				widget.hide()
+				return
+			# Area coords are in SVG document space, but the cursor is a GTK
+			# overlay placed in image pixels. Shift by the viewBox origin so a
+			# non-zero origin (e.g. sc2.svg's "0 -45 ..." trigger headroom)
+			# doesn't push every cursor up/left. Origin is (0,0) for the other
+			# controllers, so they are unaffected.
+			vbx, vby, _vbw, _vbh = self.background.get_viewbox()
+			ax -= vbx
+			ay -= vby
 			if not widget.is_visible():
 				widget.show()
-			# Grab values
-			ax, ay, aw, trash = self.background.get_area_position(area)
 			cw = widget.get_allocation().width
-			# Compute center
-			x, y = ax + aw * 0.5 - cw * 0.5, ay + 1.0 - cw * 0.5
-			# Add pad position
+			ch = widget.get_allocation().height
+			# Rest position = centre of the area on BOTH axes (the old code
+			# used 'ay + 1.0' for Y, pinning the cursor to the top of the area
+			# so it sat half a control too high until the stick/pad was pushed).
+			x = ax + aw * 0.5 - cw * 0.5
+			y = ay + ah * 0.5 - ch * 0.5
+			# Add pad/stick position
 			x += data[0] * aw / STICK_PAD_MAX * 0.5
-			y -= data[1] * aw / STICK_PAD_MAX * 0.5
+			y -= data[1] * ah / STICK_PAD_MAX * 0.5
 			# Move circle
 			self.main_area.move(widget, x, y)
 		elif what in ("LT", "RT", "STICKPRESS"):
@@ -1232,10 +1391,11 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		controllers = list(self.dm.get_controllers())
 		for c in controllers:
 			if get_profile_name(c.get_profile()) == old_name:
-				ps = self.profile_switchers[controllers.index(c)]
-				ps.set_profile(new_name, True)
 				c.set_profile(new_name)
+				if c is self.profile_switchers[0].get_controller():
+					self.profile_switchers[0].set_profile(new_name, True)
 		self.load_profile_list()
+		self.rebuild_controller_selector()
 		dlg.hide()
 
 	def on_mnuProfileDelete_activate(self, *a):
@@ -1281,8 +1441,6 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		if (event.state & Gdk.ModifierType.CONTROL_MASK) != 0:
 			if event.keyval == 115:
 				self.on_save_clicked()
-		elif self.osd_mode and event.keyval == 65471:
-			self.on_save_clicked()
 
 	def show_error(self, message, ribar=None):
 		if self.ribar is None or self.ribar.get_label() is None:
@@ -1307,8 +1465,15 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 	def on_daemon_reconfigured(self, *a):
 		log.debug("Reloading config...")
 		self.config.reload()
+		# If Input Test was just turned off, drop any highlights left over from
+		# the last observed press (e.g. a held grip sensor): with sniffing off no
+		# release event arrives to clear them, so they'd stay stuck on the image.
+		if not self.config["enable_sniffing"] and self.hilights[App.OBSERVE_COLOR]:
+			self.hilights[App.OBSERVE_COLOR].clear()
+			self._update_background()
 		for ps in self.profile_switchers:
 			ps.set_controller(ps.get_controller())
+		self.rebuild_controller_selector()
 
 	def on_daemon_dead(self, *a):
 		if self.just_started:
@@ -1317,12 +1482,14 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			self.set_daemon_status("unknown", True)
 			return
 
-		if self.osd_mode:
-			self.quit()
-
 		for ps in self.profile_switchers:
 			ps.set_controller(None)
 			ps.on_daemon_dead()
+		self._selector_recursing = True
+		self.controller_selector.get_model().clear()
+		self._selector_recursing = False
+		self.controller_selector.set_visible(False)
+		self.builder.get_object("sepSwitchers").set_visible(False)
 		self.set_daemon_status("dead", False)
 
 	def on_mnuEmulationEnabled_toggled(self, cb):
@@ -1344,13 +1511,17 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		Gtk.Application.do_startup(self, *a)
 		self.load_profile_list()
 		self.setup_widgets()
-		if self.app.config["gui"]["enable_status_icon"]:
+		# No tray icon for the transient OSD-keyboard bindings editor launch.
+		if self.app.config["gui"]["enable_status_icon"] and not self.osk_edit_mode:
 			self.setup_statusicon()
 		self.set_daemon_status("unknown", True)
 
 	def do_local_options(self, trash, lo):
 		set_logging_level(lo.contains("verbose"), lo.contains("debug"))
-		self.osd_mode = lo.contains("osd")
+		# --osd opens the standalone OSD-keyboard bindings editor (do_activate) -
+		# the same dialog as Settings > Menus & Keyboard > Advanced. Used on both
+		# X11 and Wayland for a consistent, reliable single-window experience.
+		self.osk_edit_mode = lo.contains("osd")
 		return -1
 
 	def do_command_line(self, cl):
@@ -1376,11 +1547,48 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		return 0
 
 	def do_activate(self, *a):
+		if self.osk_edit_mode:
+			# "Edit Bindings" (OSD menu): show only the OSD-keyboard bindings
+			# editor, never the main window, and quit when it is closed - so it
+			# can't pile up duplicate main windows.
+			if not getattr(self, "_osk_editor", None):
+				self.open_osk_editor()
+			return
 		self.builder.get_object("window").show()
 		if self.config["gui"]["minimize_on_start"] and self.statusicon and self.statusicon.get_property("active"):
 			self.builder.get_object("window").hide()
 		else:
 			self.builder.get_object("window").show()
+
+	def open_osk_editor(self) -> None:
+		"""Opens the standalone OSD-keyboard bindings editor (the same window
+		reachable from Settings > Menus & Keyboard > Advanced) as the only
+		window, quitting the app when it closes. Backs the OSD menu's
+		'Edit Bindings' item."""
+		import fcntl
+
+		import scc.osd.osk_actions
+		from scc.actions import Action
+		from scc.gui.osk_binding_editor import OSKBindingEditor
+		# Single-instance: each "Edit Bindings" is its own process (the app is
+		# NON_UNIQUE), so without this a repeated launch would stack a second
+		# editor window. Hold an exclusive lock for our lifetime; if another
+		# launch already holds it, just quit instead of opening a duplicate.
+		try:
+			self._osk_lock = open(os.path.join(get_config_path(), ".osk-editor.lock"), "w")
+			fcntl.flock(self._osk_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+		except OSError:
+			log.info("OSD-keyboard bindings editor already open; not opening another")
+			self.quit()
+			return
+		except Exception:
+			log.exception("OSK editor single-instance lock failed; opening anyway")
+		# The OSD-keyboard profile uses OSK.* actions; register them so the
+		# editor can parse it (GlobalSettings does the same before opening it).
+		Action.register_all(scc.osd.osk_actions, prefix="OSK")
+		self._osk_editor = OSKBindingEditor(self)
+		self._osk_editor.window.connect("destroy", lambda *a: self.quit())
+		self._osk_editor.show(None)
 
 	def remove_dot_profile(self):
 		"""Checks if first profile in list begins with dot and if yes, removes it.
@@ -1465,7 +1673,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 		aso("verbose", b"v", "Be verbose")
 		aso("debug", b"d", "Be more verbose (debug mode)")
-		aso("osd", b"o", "OSD mode (OSD-controllable editor for current profile)")
+		aso("osd", b"o", "Open the OSD-keyboard bindings editor")
 
 	def save_profile_selection(self, path):
 		"""Saves name of profile into config file"""

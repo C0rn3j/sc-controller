@@ -1,0 +1,551 @@
+"""SC Controller - Steam Controller (2026, "v2") Driver.
+
+Implements the reverse-engineered protocol from
+docs/steam-controller-v2-protocol.md. Validated end-to-end on real hardware
+via the wireless Puck (0x1304): lizard-mode disable plus button / stick / pad
+/ trigger / gyro input through scc-daemon to uinput, and click haptics.
+Wired (0x1302) is supported too (single HID interface 0), and the GUI gets
+images/sc2.config.json. Still TODO: continuous variable rumble, the Bluetooth
+(0x1303) transport, real serial read-back, and a dedicated v2 GUI background
+image (currently reuses the Deck's).
+
+Architecture mirrors the existing drivers:
+  - the wireless "Controller Puck" (0x1304) is a multi-slot dongle, like
+    sc_dongle.Dongle: 4 HID interfaces (2..5), one per controller slot, each
+    with an interrupt-IN endpoint (3..6);
+  - per-slot parsing/mapping mirrors steamdeck.py (separate left stick + left
+    pad, right stick, real d-pad, plus grips);
+  - commands are USB SET_REPORT, like sc_dongle, but addressed to feature
+    report 0x01 of each slot's interface (v1/Deck used feature report 0x00).
+"""
+
+from __future__ import annotations
+
+import logging
+import math
+import os
+import struct
+import time
+from collections import namedtuple
+from enum import IntEnum
+from typing import TYPE_CHECKING
+
+import usb1
+
+from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, HapticPos, SCButtons
+from scc.drivers.sc_dongle import SCController, SCPacketType
+from scc.drivers.usb import USBDevice, register_hotplug_device
+
+if TYPE_CHECKING:
+    from scc.controller import HapticData
+    from scc.sccdaemon import SCCDaemon
+
+log = logging.getLogger("SC2")
+_CALIB = bool(os.environ.get("SCC_GYRO_CALIB"))
+if _CALIB:
+    # The daemon leaves the root logger at WARNING; opt this logger into INFO so
+    # the IMU-calibration dump (_log_imu_calib) is actually visible.
+    log.setLevel(logging.INFO)
+
+
+_calib_last_t = 0.0
+
+
+def _log_imu_calib(idata) -> None:
+    """Throttled IMU dump for SC2 gyro calibration (gate: env SCC_GYRO_CALIB=1).
+    Logs the parsed IMU state: accel gravity vector, the (sign-mapped) angular
+    rates, and the euler angles derived from the firmware quaternion -- held
+    orientations verify the axis/sign mapping end to end."""
+    global _calib_last_t
+    now = time.time()
+    if now - _calib_last_t < 0.25:
+        return
+    _calib_last_t = now
+    ax, ay, az = idata.accel_x, idata.accel_y, idata.accel_z
+    mag = math.sqrt(ax * ax + ay * ay + az * az) or 1.0
+    k = 180.0 / 32768.0  # EUREL fixed point -> degrees
+    log.info(
+        "IMU-CALIB  accel unit=(% .2f % .2f % .2f) |a|=%6.0f  |  "
+        "rates=(% 6d % 6d % 6d)  |  euler deg  pitch=% 6.1f yaw=% 6.1f roll=% 6.1f",
+        ax / mag, ay / mag, az / mag, mag,
+        idata.gpitch, idata.groll, idata.gyaw,
+        idata.q1 * k, idata.q2 * k, idata.q3 * k,
+    )
+
+VENDOR_ID = 0x28DE
+PID_PUCK = 0x1304   # wireless Controller Puck (dongle) - the path implemented here
+PID_WIRED = 0x1302  # controller over USB-C cable          - TODO
+PID_BT = 0x1303     # controller over Bluetooth LE          - TODO
+
+# The puck exposes 4 controller slots as HID interfaces 2..5, each with an
+# interrupt-IN endpoint numbered one higher (3..6).
+FIRST_INTERFACE = 2
+FIRST_IN_ENDPOINT = 3
+MAX_SLOTS = 4
+
+# wired controller (0x1302): a single HID interface 0, interrupt IN ep 0x81 /
+# OUT ep 0x01. Same 0x42 report as the puck, so all parsing/commands reuse.
+WIRED_INTERFACE = 0
+WIRED_IN_ENDPOINT = 1
+WIRED_OUT_ENDPOINT = 1
+
+# report 0x42 is 54 bytes including the report-ID byte; the endpoint also
+# carries shorter reports (0x43/0x44/0x7b/...), so we request the full max
+# packet (64) and accept any length, filtering by report ID in parse_input.
+INPUT_REPORT_ID = 0x42
+INPUT_SIZE = 54
+INPUT_BUFFER = 64
+
+# sticks sit off-center and jitter at rest (same reason the Deck uses a
+# deadzone); value is a placeholder pending in-headset/desktop tuning.  TODO
+STICK_DEADZONE = 3000
+
+# resend CLEAR_MAPPINGS every N frames so the controller never falls back to
+# lizard (mouse/keyboard) mode, exactly as steamdeck.py does.
+UNLIZARD_INTERVAL = 100
+
+
+# --- report 0x42 layout (see docs/steam-controller-v2-protocol.md) ----------
+#  0      report id (0x42)
+#  1      packet counter
+#  2..5   four button bytes (bitfield below)
+#  6..7   left trigger  (u16, ~0..32767)
+#  8..9   right trigger (u16)
+# 10..17  left stick X/Y, right stick X/Y (i16 each)
+# 18..23  left pad  X(i16) Y(i16) pressure(u16)
+# 24..29  right pad X(i16) Y(i16) pressure(u16)
+# 30..33  IMU timestamp/counter (skipped)
+# 34..39  accel X/Y/Z (i16)         } only populated when the gyro is enabled
+# 40..45  gyro angular rates x/y/z  } via configure(); zero/constant otherwise
+# 46..53  orientation quaternion, w@46 x@48 y@50 z@52 (norm 32768)
+#
+# The quaternion/rates split was pinned down from held-pose captures: the four
+# i16 at 46/48/50/52 have norm exactly 32768 in every orientation (a unit
+# quaternion), while 40..45 read ~0 whenever the controller is still (rates).
+# IMU axes (right-handed, Z up): x = pitch (nose-up +), y = roll (roll-right
+# +), z = yaw (yaw-left +); accel reads +Z flat, -Y nose-down, -X roll-right.
+_INPUT_FORMAT = "<BBBBBBHHhhhhhhHhhH4xhhhhhhhhhh"
+assert struct.calcsize(_INPUT_FORMAT) == INPUT_SIZE
+
+_EUREL_SCALE = 32768.0 / math.pi  # radians -> the 2**15/PI fixed point EUREL_GYROS wants
+
+
+class SC2Button(IntEnum):
+    """Raw button bits as a 32-bit value: byte off2 = bits 0..7, off3 = 8..15,
+    off4 = 16..23, off5 = 24..31.  Verified by per-control capture.
+    """
+    # off2
+    A           = 1 << 0
+    B           = 1 << 1
+    X           = 1 << 2
+    Y           = 1 << 3
+    QUICKACCESS = 1 << 4          # the "..." button
+    RSTICKPRESS = 1 << 5          # R3
+    MENU        = 1 << 6          # hamburger
+    R4          = 1 << 7
+    # off3
+    R5          = 1 << 8
+    RB          = 1 << 9          # right bumper (R1)
+    DPAD_DOWN   = 1 << 10
+    DPAD_RIGHT  = 1 << 11
+    DPAD_LEFT   = 1 << 12
+    DPAD_UP     = 1 << 13
+    VIEW        = 1 << 14         # View button (overlapping rectangles, top-left)
+    LSTICKPRESS = 1 << 15         # L3
+    # off4
+    STEAM       = 1 << 16
+    L4          = 1 << 17
+    L5          = 1 << 18
+    LB          = 1 << 19         # left bumper (L1)
+    RSTICKTOUCH = 1 << 20         # capacitive right-stick touch
+    RPADTOUCH   = 1 << 21
+    RPADPRESS   = 1 << 22
+    RT_FULL     = 1 << 23         # right trigger digital full-pull
+    # off5
+    LSTICKTOUCH = 1 << 24         # capacitive left-stick touch
+    LPADTOUCH   = 1 << 25
+    LPADPRESS   = 1 << 26
+    LT_FULL     = 1 << 27         # left trigger digital full-pull
+    RGRIP_TOUCH = 1 << 28         # capacitive right handle (reads on against table)
+    LGRIP_TOUCH = 1 << 29         # capacitive left handle
+    UNKNOWN_5_6 = 1 << 30         # TODO: unmapped
+    UNKNOWN_5_7 = 1 << 31         # TODO: unmapped
+
+
+# raw SC2 bit -> SCButtons. Capacitive stick touch -> (L/R)STICKTOUCH and the
+# capacitive handle grips -> (L/R)GRIPTOUCH (the latter are Steam-Controller-only
+# and read "on" while the handles are held); only the unknown bits are unmapped.
+# L4/R4/L5/R5 follow the Deck convention: upper paddles -> (L/R)GRIP, lower ->
+# (L/R)GRIP2.
+_BUTTON_MAP = (
+    (SC2Button.A,           SCButtons.A),
+    (SC2Button.B,           SCButtons.B),
+    (SC2Button.X,           SCButtons.X),
+    (SC2Button.Y,           SCButtons.Y),
+    (SC2Button.RB,          SCButtons.RB),
+    (SC2Button.LB,          SCButtons.LB),
+    (SC2Button.RT_FULL,     SCButtons.RT),
+    (SC2Button.LT_FULL,     SCButtons.LT),
+    # Stick-press: the generic, cross-driver SCButtons set keeps the Steam
+    # Controller v1 name STICKPRESS for the LEFT stick (v1 had a single, left
+    # stick) and RSTICKPRESS for the right - so the left maps to STICKPRESS and
+    # the right to RSTICKPRESS, exactly like the Steam Deck driver. (SC2Button
+    # itself has only LSTICKPRESS/RSTICKPRESS; there is no SC2Button.STICKPRESS.)
+    (SC2Button.LSTICKPRESS, SCButtons.STICKPRESS),
+    (SC2Button.RSTICKPRESS, SCButtons.RSTICKPRESS),
+    (SC2Button.LPADTOUCH,   SCButtons.LPADTOUCH),
+    (SC2Button.RPADTOUCH,   SCButtons.RPADTOUCH),
+    (SC2Button.LSTICKTOUCH, SCButtons.LSTICKTOUCH),
+    (SC2Button.RSTICKTOUCH, SCButtons.RSTICKTOUCH),
+    (SC2Button.LGRIP_TOUCH, SCButtons.LGRIPTOUCH),
+    (SC2Button.RGRIP_TOUCH, SCButtons.RGRIPTOUCH),
+    (SC2Button.LPADPRESS,   SCButtons.LPAD),
+    (SC2Button.RPADPRESS,   SCButtons.RPAD),
+    (SC2Button.L4,          SCButtons.LGRIP),
+    (SC2Button.R4,          SCButtons.RGRIP),
+    (SC2Button.L5,          SCButtons.LGRIP2),
+    (SC2Button.R5,          SCButtons.RGRIP2),
+    (SC2Button.STEAM,       SCButtons.C),      # Steam / home button
+    (SC2Button.MENU,        SCButtons.START),  # hamburger (☰), top-right
+    (SC2Button.VIEW,        SCButtons.BACK),   # view / select (⧉), top-left
+    (SC2Button.QUICKACCESS, SCButtons.DOTS),   # "..." quick access, bottom-center
+)
+
+# field set mirrors steamdeck.DeckInput so the mapper sees familiar attributes
+SC2Input = namedtuple("SC2Input", (
+    "buttons ltrig rtrig "
+    "stick_x stick_y rstick_x rstick_y "
+    "lpad_x lpad_y rpad_x rpad_y "
+    "lpad_pressure rpad_pressure "
+    "accel_x accel_y accel_z gpitch groll gyaw q1 q2 q3 q4 "
+    "dpad_x dpad_y seq"
+))
+SC2_NULL = SC2Input(*([0] * len(SC2Input._fields)))
+
+
+def _deadzone(v: int) -> int:
+    return 0 if -STICK_DEADZONE < v < STICK_DEADZONE else v
+
+
+def parse_input(data: bytes | bytearray) -> SC2Input | None:
+    """Parse a raw report 0x42 into an SC2Input. Returns None for other reports."""
+    if not data or data[0] != INPUT_REPORT_ID or len(data) < INPUT_SIZE:
+        return None
+    (_rid, seq, b2, b3, b4, b5, ltrig, rtrig,
+     lsx, lsy, rsx, rsy, lpx, lpy, lpz, rpx, rpy, rpz,
+     ax, ay, az, rx, ry, rz, qw, qx, qy, qz) = struct.unpack(
+        _INPUT_FORMAT, bytes(data[:INPUT_SIZE]))
+    raw = b2 | (b3 << 8) | (b4 << 16) | (b5 << 24)
+
+    buttons = 0
+    for from_, to in _BUTTON_MAP:
+        if raw & from_:
+            buttons |= to
+
+    dpad_x = STICK_PAD_MAX if raw & SC2Button.DPAD_RIGHT else STICK_PAD_MIN if raw & SC2Button.DPAD_LEFT else 0
+    dpad_y = STICK_PAD_MAX if raw & SC2Button.DPAD_UP else STICK_PAD_MIN if raw & SC2Button.DPAD_DOWN else 0
+
+    # quaternion (w@46, x@48, y@50, z@52) -> euler about the IMU's own axes:
+    # about-x = physical pitch (nose-up +), about-y = roll (roll-right +),
+    # about-z = yaw (yaw-left +). Identity (all zero, gyro disabled) gives 0s.
+    w, x, y, z = qw / 32768.0, qx / 32768.0, qy / 32768.0, qz / 32768.0
+    _qe_pitch = math.atan2(2.0 * (w * x + y * z), 1.0 - 2.0 * (x * x + y * y))
+    _qe_roll = math.asin(min(1.0, max(-1.0, 2.0 * (w * y - z * x))))
+    _qe_yaw = math.atan2(2.0 * (w * z + x * y), 1.0 - 2.0 * (y * y + z * z))
+
+    return SC2Input(
+        buttons=buttons,
+        # triggers are ~15-bit; scale to the 0..255 the mapper expects (cf. Deck >>7)
+        ltrig=ltrig >> 7, rtrig=rtrig >> 7,
+        stick_x=_deadzone(lsx), stick_y=_deadzone(lsy),
+        rstick_x=_deadzone(rsx), rstick_y=_deadzone(rsy),
+        lpad_x=lpx, lpad_y=lpy, rpad_x=rpx, rpad_y=rpy,
+        lpad_pressure=lpz, rpad_pressure=rpz,
+        # IMU: nonzero only when the gyro is enabled (configure() sends that).
+        # The firmware-fused quaternion is converted to euler HOST-side and the
+        # mapper gets DS4-convention EUREL angles in q1-q3 (SC2Controller sets
+        # EUREL_GYROS): ANGLES are + at nose-down / yaw-right / roll-right, and
+        # RATES are + in the opposite direction of each angle (nose-up /
+        # yaw-left / roll-left) -- that per-axis opposition is inherited from
+        # the DS4, whose relative path negates raw rates while its fused angles
+        # follow the calibrated directions. All hw-verified on both pads. This
+        # makes every gyro path (absolute, tilt, lean-to-turn, laser mouse)
+        # behave identically to the DS4.
+        accel_x=ax, accel_y=ay, accel_z=az,
+        gpitch=rx, groll=-ry, gyaw=rz,
+        q1=int(-_qe_pitch * _EUREL_SCALE),
+        q2=int(-_qe_yaw * _EUREL_SCALE),
+        q3=int(_qe_roll * _EUREL_SCALE),
+        q4=0,
+        dpad_x=dpad_x, dpad_y=dpad_y, seq=seq,
+    )
+    # TODO: verify pad/stick Y polarity (may need inversion) once tested live.
+
+
+class SC2Controller(SCController):
+    flags = (
+        # EUREL_GYROS: parse_input converts the firmware quaternion to euler
+        # and hands the mapper 2**15/PI fixed-point angles in q1-q3.
+        ControllerFlags.EUREL_GYROS
+        | ControllerFlags.SEPARATE_STICK
+        | ControllerFlags.HAS_RSTICK
+        | ControllerFlags.HAS_DPAD
+    )
+
+    def __init__(self, driver: SC2Device, ccidx: int, in_endpoint: int, out_endpoint: int) -> None:
+        super().__init__(driver, ccidx, in_endpoint)
+        self._out_ep = out_endpoint   # interrupt-OUT endpoint for haptics
+        self._old_state = SC2_NULL
+
+    def get_type(self) -> str:
+        return "sc2"
+
+    def __repr__(self) -> str:
+        return f"<SC2 {self.get_id()}>"
+
+    def get_gui_config_file(self) -> str:
+        # images/sc2.config.json (mirrors the Deck; reuses the deck background
+        # for now — a dedicated controller-images/sc2.svg is TODO)
+        return "sc2.config.json"
+
+    def generate_serial(self) -> None:
+        # real GET_SERIAL read-back over feature 0x01 is TODO; derive from topology
+        self._serial = "%s:%s" % (self._driver.device.getBusNumber(), self._driver.device.getPortNumber())
+
+    def disconnected(self) -> None:
+        # override SCController.disconnected: the puck keeps no serial pool
+        pass
+
+    # --- v2 command channel -------------------------------------------------
+    # All commands are CLEAR_MAPPINGS / CONFIGURE etc. (SCPacketType), but sent
+    # to feature report 0x01 (handled by the puck's send_control override).
+
+    def clear_mappings(self) -> None:
+        # observed from Steam as "81 00" (after the 0x01 report-id prefix)
+        self._driver.overwrite_control(self._ccidx, struct.pack(">BB", SCPacketType.CLEAR_MAPPINGS, 0x00))
+
+    def configure(self, idle_timeout: int | None = None, enable_gyros: bool | None = None,
+                  led_level: int | None = None) -> None:
+        # Replay the config blocks captured from Steam. These put the controller
+        # into gamepad mode; the exact gyro-enable register is still TODO.
+        if led_level is not None:
+            self._led_level = led_level
+        # main config block: 87 0f 30 18 00 07 07 00 08 07 00 31 02 00 52 03
+        self._driver.overwrite_control(self._ccidx, bytes(
+            (SCPacketType.CONFIGURE, 0x0F, 0x30, 0x18, 0x00, 0x07, 0x07, 0x00,
+             0x08, 0x07, 0x00, 0x31, 0x02, 0x00, 0x52, 0x03)))
+        # LED level: 87 03 2d <level>
+        self._driver.overwrite_control(self._ccidx, struct.pack(
+            ">BBBB", SCPacketType.CONFIGURE, 0x03, 0x2D, int(self._led_level)))
+
+    def set_gyro_enabled(self, enabled: bool) -> None:
+        self._enable_gyros = enabled
+        # TODO: which 0x87 CONFIGURE register enables the IMU?
+
+    def get_gyro_enabled(self) -> bool:
+        return self._enable_gyros
+
+    def feedback(self, data: HapticData) -> None:
+        # v2 haptic = output report 0x82 on the interrupt-OUT endpoint (self._out_ep):
+        #   82 <side> <effect> <amplitude>
+        #   side 0=left 1=right 2=both; effect 0x01 = single click; amp 0..255.
+        # NOTE: this is a per-call "click", not continuous variable rumble, so
+        # it suits pad/scroll detents; sustained game rumble may need another
+        # report (not yet found). data.data = (position, amplitude, period, count).
+        pos = data.data[0]
+        amp = data.data[1] if len(data.data) > 1 else 0x4000
+        if amp <= 0:
+            return
+        side = {HapticPos.LEFT: 0, HapticPos.RIGHT: 1, HapticPos.BOTH: 2}.get(pos, 1)
+        report = bytes([0x82, side, 0x01, min(255, amp >> 7)])
+        self._driver.send_haptic(self._out_ep, report)
+
+
+class SC2Device(USBDevice):
+    """Shared base for both v2 USB transports (puck and wired): the lenient
+    interrupt-IN reader, SET_REPORT-to-feature-0x01 commands, interrupt-OUT
+    haptics, and controller bookkeeping. Subclasses claim their interface(s),
+    start their input endpoint(s), and implement _add_controller()."""
+
+    def __init__(self, device: usb1.USBDevice, handle: usb1.USBDeviceHandle, daemon: SCCDaemon) -> None:
+        self.daemon = daemon
+        USBDevice.__init__(self, device, handle)
+        self._controllers: dict[int, SC2Controller] = {}   # keyed by IN endpoint
+        self._out_transfers = set()   # in-flight interrupt-OUT (haptic) transfers
+
+    def send_haptic(self, endpoint: int, report: bytes) -> None:
+        """Fire-and-forget interrupt-OUT transfer (haptics). The device stalls
+        these over SET_REPORT control, so they must go to the OUT endpoint."""
+        def _done(transfer: usb1.USBTransfer) -> None:
+            self._out_transfers.discard(transfer)
+        t = self.handle.getTransfer()
+        t.setInterrupt(endpoint, report, callback=_done)
+        try:
+            t.submit()
+            self._out_transfers.add(t)
+        except usb1.USBError:
+            pass
+
+    def _listen(self, endpoint: int) -> None:
+        """Submit a lenient interrupt-IN transfer.
+
+        Unlike USBDevice.set_input_interrupt, this resubmits regardless of the
+        received length, because this endpoint multiplexes reports of several
+        sizes (0x42=54B plus shorter 0x43/0x44/0x7b/... ). A strict length
+        check would stop resubmitting on the first short report and freeze input.
+        """
+        def cb(transfer: usb1.USBTransfer) -> None:
+            status = transfer.getStatus()
+            if status == usb1.TRANSFER_COMPLETED:
+                data = transfer.getBuffer()[:transfer.getActualLength()]
+                try:
+                    self._on_input(endpoint, data)
+                except Exception:
+                    log.exception("SC2 input handler failed")
+            elif status in (usb1.TRANSFER_NO_DEVICE, usb1.TRANSFER_CANCELLED):
+                return  # device gone / shutting down: do not resubmit
+            try:
+                transfer.submit()
+            except Exception:
+                pass
+
+        transfer = self.handle.getTransfer()
+        transfer.setInterrupt(usb1.ENDPOINT_IN | endpoint, INPUT_BUFFER, callback=cb)
+        transfer.submit()
+        self._transfer_list.append(transfer)
+
+    # --- v2 command transport: SET_REPORT to feature report 0x01 -------------
+    # The base USBDevice targets feature report 0x00 (wValue 0x0300); v2's
+    # numbered reports need 0x0301 and a leading 0x01 byte in the payload.
+
+    def send_control(self, index: int, data: bytes) -> None:
+        # prefix the report-ID byte and pad/clamp to exactly 64 bytes (the
+        # device stalls SET_REPORTs of any other length)
+        payload = (bytes([0x01]) + bytes(data))[:64]
+        payload = payload + b"\x00" * (64 - len(payload))
+        self._cmsg.insert(0, (0x21, 0x09, 0x0301, index, payload, 0))
+
+    def overwrite_control(self, index: int, data: bytes) -> None:
+        for x in self._cmsg:
+            x_index, x_data = x[3], x[4]
+            # x_data[0] is our 0x01 prefix; the real packet starts at [1]
+            if x_index == index and x_data[1:4] == (bytes([0x01]) + bytes(data))[1:4]:
+                self._cmsg.remove(x)
+                break
+        self.send_control(index, data)
+
+    def _make_controller(self, in_ep: int, ccidx: int, out_ep: int) -> SC2Controller:
+        # ccidx == interface number (SET_REPORT wIndex); out_ep == interrupt-OUT ep
+        c = SC2Controller(self, ccidx=ccidx, in_endpoint=in_ep, out_endpoint=out_ep)
+        c.clear_mappings()
+        c.configure()
+        c.generate_serial()        # TODO: real GET_SERIAL read-back over 0x01
+        self._controllers[in_ep] = c
+        c.on_serial_got()          # registers the controller with the daemon
+        return c
+
+    def _add_controller(self, endpoint: int) -> SC2Controller:
+        raise NotImplementedError
+
+    def _on_input(self, endpoint: int, data: bytearray) -> None:
+        idata = parse_input(data)
+        if idata is None:
+            # Firmware watchdog (cheap, once): some SC2 firmware switched the
+            # default motion stream from 0x42 (on-controller quaternion) to 0x45
+            # ("TritonMTUNoQuat"). We parse only 0x42, so warn once if 0x45 turns
+            # up -- a firmware change should be visible, not a silently dead
+            # controller. See ValveSoftware/steam-for-linux#13255.
+            if data and data[0] == 0x45 and not getattr(self, "_warned_0x45", False):
+                self._warned_0x45 = True
+                log.warning(
+                    "Controller sent report 0x45 (NoQuat) instead of 0x42: "
+                    "on-controller quaternion is unavailable on this firmware. If "
+                    "the gamepad is also unresponsive, 0x42 was dropped entirely.")
+            return                  # ignore non-0x42 reports
+        if _CALIB:
+            _log_imu_calib(idata)
+        c = self._controllers.get(endpoint) or self._add_controller(endpoint)
+        if idata.seq % UNLIZARD_INTERVAL == 0:
+            c.clear_mappings()      # keep lizard mode from creeping back
+        if c.mapper:
+            c.mapper.input(c, c._old_state, idata)
+        c._old_state = idata
+
+    def flush(self) -> None:
+        """Like USBDevice.flush, but a control write to one slot that fails with
+        a pipe error (its controller was e.g. turned off) drops only that
+        controller instead of letting the error tear down the whole dongle - so
+        the dongle keeps listening and re-adds the controller when it is turned
+        back on. A genuinely unplugged dongle raises USBErrorNoDevice instead,
+        which still propagates and closes the device."""
+        while self._cmsg:
+            msg = self._cmsg.pop()
+            try:
+                self.handle.controlWrite(*msg)
+            except usb1.USBErrorPipe:
+                self._slot_gone(msg[3])   # msg[3] == wIndex == interface
+        while self._rmsg:
+            msg, index, size, callback = self._rmsg.pop()
+            try:
+                self.handle.controlWrite(*msg)
+                data = self.handle.controlRead(0xA1, 0x01, 0x0300, index, size)
+                callback(data)
+            except usb1.USBErrorPipe:
+                self._slot_gone(index)
+
+    def _slot_gone(self, interface: int) -> None:
+        """Remove the controller on the given interface (slot) but keep the
+        dongle open, so a controller turned off then on is picked up again."""
+        for ep, c in list(self._controllers.items()):
+            if c._ccidx == interface:
+                log.debug("SC2 slot (interface %d) gone; keeping dongle alive", interface)
+                self.daemon.remove_controller(c)
+                del self._controllers[ep]
+                return
+
+    def close(self) -> None:
+        for c in self._controllers.values():
+            self.daemon.remove_controller(c)
+        self._controllers = {}
+        USBDevice.close(self)
+
+
+class SC2Puck(SC2Device):
+    """The wireless Controller Puck (0x1304): up to MAX_SLOTS controllers, one
+    per HID interface 2..5 (interrupt IN 0x83..0x86, OUT 0x02..0x05)."""
+
+    def __init__(self, device: usb1.USBDevice, handle: usb1.USBDeviceHandle, daemon: SCCDaemon) -> None:
+        super().__init__(device, handle, daemon)
+        self.claim_by(klass=3, subclass=0, protocol=0)   # the 4 HID interfaces
+        for i in range(MAX_SLOTS):
+            self._listen(FIRST_IN_ENDPOINT + i)
+
+    def _add_controller(self, endpoint: int) -> SC2Controller:
+        slot = endpoint - FIRST_IN_ENDPOINT
+        interface = FIRST_INTERFACE + slot   # OUT endpoint number == interface
+        log.debug("New SC2 puck controller: slot %d (interface %d, in-ep %d)",
+                  slot, interface, endpoint)
+        return self._make_controller(endpoint, ccidx=interface, out_ep=interface)
+
+
+class SC2Wired(SC2Device):
+    """The controller wired over USB-C (0x1302): one HID interface 0."""
+
+    def __init__(self, device: usb1.USBDevice, handle: usb1.USBDeviceHandle, daemon: SCCDaemon) -> None:
+        super().__init__(device, handle, daemon)
+        self.claim_by(klass=3, subclass=0, protocol=0)   # the single HID interface
+        self._listen(WIRED_IN_ENDPOINT)
+
+    def _add_controller(self, endpoint: int) -> SC2Controller:
+        log.debug("New SC2 wired controller (interface %d, in-ep %d)", WIRED_INTERFACE, endpoint)
+        return self._make_controller(endpoint, ccidx=WIRED_INTERFACE, out_ep=WIRED_OUT_ENDPOINT)
+
+
+def init(daemon: SCCDaemon, config: dict) -> bool:
+    """Register hotplug callbacks for the new Steam Controller."""
+    register_hotplug_device(
+        lambda device, handle: SC2Puck(device, handle, daemon), VENDOR_ID, PID_PUCK)
+    register_hotplug_device(
+        lambda device, handle: SC2Wired(device, handle, daemon), VENDOR_ID, PID_WIRED)
+    # TODO: Bluetooth (PID_BT) is a separate transport (cf. sc_by_bt).
+    return True

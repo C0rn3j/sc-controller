@@ -42,6 +42,13 @@ class TestModifiers:
 		a = _parse_compressed("pressed(axis(KEY_A))")
 		assert isinstance(a, PressedModifier)
 
+	def test_inverted(self):
+		"""Tests if InvertedButtonModifier is parsed
+		"""
+		a = _parse_compressed("inverted(button(KEY_A))")
+		assert isinstance(a, InvertedButtonModifier)
+		assert isinstance(a.action, ButtonAction)
+
 	def test_touched(self):
 		"""Tests if TouchedModifier is parsed
 		"""

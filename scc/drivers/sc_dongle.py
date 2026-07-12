@@ -97,8 +97,14 @@ class Dongle(USBDevice):
 	def _on_input(self, endpoint, data):
 		tup = ControllerInput._make(struct.unpack(TUP_FORMAT, data))
 		if tup.status == SCStatus.HOTPLUG:
-			# Most of INPUT_FORMAT doesn't apply here
-			if ord(str(data[4])) == 2:
+			# Most of INPUT_FORMAT doesn't apply here.
+			# data[4] is the connect flag (2 == connected). It is already an int
+			# in Python 3; the old `ord(str(data[4]))` computed ord("2") == 50,
+			# so this branch never fired -- idle controllers that announce via
+			# HOTPLUG (instead of streaming INPUT) were never added, and every
+			# HOTPLUG packet fell through to the 'disconnected' branch below,
+			# spuriously dropping already-connected controllers.
+			if data[4] == 2:
 				# Controller connected
 				if endpoint not in self._controllers:
 					self._add_controller(endpoint)
@@ -172,6 +178,11 @@ class SCController(Controller):
 
 	def get_type(self) -> str:
 		return "sc"
+
+	def get_gui_config_file(self) -> str:
+		# Steam Controller (v1): GUI-only config that puts the Steam logo on the
+		# C button (image + side icon). Inherited by SCByCable / SCByBt.
+		return "sc-config.json"
 
 	def __repr__(self) -> str:
 		return "<SCWireless %s>" % (self.get_id(),)
@@ -273,7 +284,16 @@ class SCController(Controller):
 
 		self._driver.make_request(
 			self._ccidx, cb, struct.pack(">BBB61x", SCPacketType.GET_SERIAL, SCPacketLength.GET_SERIAL, 0x01),
+			on_giveup=self._on_serial_giveup,
 		)
+
+	def _on_serial_giveup(self) -> None:
+		"""Called when the GET_SERIAL request kept stalling. Add the controller
+		with a generated id anyway, so it still appears (it just won't have a
+		stable serial-based identity)."""
+		log.warning("GET_SERIAL kept stalling for SC on endpoint %s; using a generated id", self._endpoint)
+		self.generate_serial()
+		self.on_serial_got()
 
 	def generate_serial(self):
 		"""Called only if ignore_serials is enabled"""
@@ -289,7 +309,13 @@ class SCController(Controller):
 		except UnicodeDecodeError:
 			log.debug("Failed to decode wireless SC serial")
 			self._serial = self._driver._available_serials.pop()
-		self._id = str(self._serial)
+		serial = str(self._serial).strip()
+		if not serial or serial in self._driver.daemon.get_active_ids():
+			# A blank or already-used id would make two controllers collapse into
+			# one in the GUI (it keys controllers by id). Keep them distinct by
+			# falling back to a generated positional id.
+			serial = self._generate_id()
+		self._id = serial
 		self._driver.daemon.add_controller(self)
 
 	def apply_config(self, config: dict):

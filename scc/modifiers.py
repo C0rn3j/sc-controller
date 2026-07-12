@@ -5,6 +5,8 @@ way how resulting action works.
 For example, click() modifier executes action only if pad is pressed.
 """
 
+from __future__ import annotations
+
 import inspect
 import itertools
 import logging
@@ -12,6 +14,7 @@ import time
 from collections import OrderedDict, deque
 from math import atan2, copysign, cos, sin, sqrt
 from math import pi as PI
+from typing import TYPE_CHECKING
 
 from scc.actions import (
 	Action,
@@ -45,6 +48,9 @@ from scc.constants import (
 from scc.controller import HapticData
 from scc.tools import clamp, nameof
 from scc.uinput import Axes, Rels
+
+if TYPE_CHECKING:
+	from scc.mapper import Mapper
 
 log = logging.getLogger("Modifiers")
 _ = lambda x: x
@@ -336,6 +342,39 @@ class ReleasedModifier(PressedModifier):
 	def button_release(self, mapper):
 		self.action.button_press(mapper)
 		mapper.schedule(0.02, self._release)
+
+
+class InvertedButtonModifier(Modifier):
+	"""Acts on button release instead of press ("Act on release").
+
+	Swaps press and release, so the wrapped action is held while the physical
+	button is NOT pressed. Meant for always-on sensors such as the Steam
+	Controller's capacitive handle grips, which read "on" the whole time the
+	controller is held - inverting them lets the action fire when you let go.
+	Unlike PressedModifier/ReleasedModifier (which emit a momentary tap), this
+	is a true held inversion of the button state.
+	"""
+	COMMAND = "inverted"
+
+	def describe(self, context: int) -> str:
+		if context in (Action.AC_STICK, Action.AC_PAD):
+			return _("(act on release)") + "\n" + self.action.describe(context)
+		return _("(act on release)") + " " + self.action.describe(context)
+
+	def strip(self) -> Action:
+		return self.action.strip()
+
+	def compress(self) -> Action:
+		self.action = self.action.compress()
+		return self
+
+	def button_press(self, mapper: Mapper) -> None:
+		# Physical press -> the wrapped action is released
+		self.action.button_release(mapper)
+
+	def button_release(self, mapper: Mapper) -> None:
+		# Physical release -> the wrapped action is pressed
+		self.action.button_press(mapper)
 
 
 class BallModifier(Modifier, WholeHapticAction):
@@ -1000,6 +1039,16 @@ class ModeModifier(Modifier):
 		sel = self.select(mapper)
 		if sel is not self.old_action:
 			if self.old_action:
+				# Neutralize the outgoing gyro action so its output axis doesn't stay
+				# stuck when the enable button is released. Relative GyroAction zeroes
+				# on (0,0,0), but GyroAbsAction ignores pitch/yaw/roll (it tracks
+				# q1-q4), so it would emit its last orientation and leave the axis
+				# deflected. Reset each GyroAbsAction's reference first (the only gyro
+				# action with reset()) so the neutralizing call below emits 0. Covers
+				# MultiAction (mixed relative+absolute) via its .actions children.
+				for a in getattr(self.old_action, "actions", None) or (self.old_action,):
+					if hasattr(a, "reset"):
+						a.reset()
 				self.old_action.gyro(mapper, 0, 0, 0, *q)
 			self.old_action = sel
 		return sel.gyro(mapper, pitch, yaw, roll, *q)

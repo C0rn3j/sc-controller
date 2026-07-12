@@ -10,6 +10,7 @@ from gi.repository import Gtk
 
 from scc.actions import Action, NoAction, RangeOP
 from scc.constants import HapticPos, SCButtons
+from scc.gui.ae import button_available, button_label
 from scc.gui.controller_widget import PADS, STICKS
 from scc.gui.dwsnc import headerbar
 from scc.gui.editor import Editor
@@ -34,6 +35,8 @@ class ModeshiftEditor(Editor):
 		(None, None),
 		(SCButtons.LGRIP, _("Left Grip")),
 		(SCButtons.RGRIP, _("Right Grip")),
+		(SCButtons.LGRIP2, _("Left Grip 2")),
+		(SCButtons.RGRIP2, _("Right Grip 2")),
 		(SCButtons.LB, _("Left Bumper")),
 		(SCButtons.RB, _("Right Bumper")),
 		(None, None),
@@ -42,11 +45,16 @@ class ModeshiftEditor(Editor):
 		("Soft LT", _("Left Trigger (soft)")),
 		("Soft RT", _("Right Trigger (soft)")),
 		(None, None),
-		(SCButtons.STICKPRESS, _("Stick Pressed")),
+		(SCButtons.STICKPRESS, _("Left Stick Pressed")),
+		(SCButtons.RSTICKPRESS, _("Right Stick Pressed")),
 		(SCButtons.LPAD, _("Left Pad Pressed")),
 		(SCButtons.RPAD, _("Right Pad Pressed")),
 		(SCButtons.LPADTOUCH, _("Left Pad Touched")),
 		(SCButtons.RPADTOUCH, _("Right Pad Touched")),
+		(SCButtons.LSTICKTOUCH, _("Left Stick Touched")),
+		(SCButtons.RSTICKTOUCH, _("Right Stick Touched")),
+		(SCButtons.LGRIPTOUCH, _("Left Grip Touched")),
+		(SCButtons.RGRIPTOUCH, _("Right Grip Touched")),
 	)
 
 	def __init__(self, app, callback):
@@ -59,6 +67,10 @@ class ModeshiftEditor(Editor):
 		self.current_page = 0
 		self.actions = ([], [], [])
 		self.nomods = [NoAction(), NoAction(), NoAction()]
+		# Touch tab: bound to the capacitive stick-touch sensor (a separate
+		# button), only shown when editing a stick-press action.
+		self.touch_id = None
+		self.touch_action = NoAction()
 		self.setup_widgets()
 
 	def setup_widgets(self):
@@ -91,6 +103,11 @@ class ModeshiftEditor(Editor):
 			if any([x[0] == item for x in self.actions[self.current_page]]):
 				# Skip already added buttons
 				continue
+			if isinstance(item, SCButtons):
+				if not button_available(self.app, item):
+					continue  # optional button this controller doesn't have
+				# Per-controller paddle naming (L4/L5/R4/R5 on sc2/deck)
+				text = button_label(self.app, item, text)
 			if type(item) is str:
 				# Special case for soft pull items
 				button = getattr(SCButtons, item.split(" ")[-1])
@@ -196,6 +213,10 @@ class ModeshiftEditor(Editor):
 		model.clear()
 		# Fill it again
 		for button, text in self.BUTTONS:
+			if isinstance(button, SCButtons):
+				if not button_available(self.app, button):
+					continue  # optional button this controller doesn't have
+				text = button_label(self.app, button, text)
 			model.append((None if button is None else nameof(button), text))
 			if button is not None:
 				if nameof(button) == active:
@@ -239,9 +260,16 @@ class ModeshiftEditor(Editor):
 
 	def on_ntbMore_switch_page(self, ntb, box, index):
 		self.current_page = index
+		cb = self.builder.get_object("cbButtonChooser")
+		add = self.builder.get_object("btAddAction")
+		if index >= len(self.actions):
+			# Touch tab: no mode-shift grid / button chooser here
+			cb.set_sensitive(False)
+			add.set_sensitive(False)
+			return
 		self._fill_button_chooser()
-		self.builder.get_object("cbButtonChooser").set_sensitive(box.get_sensitive())
-		self.builder.get_object("btAddAction").set_sensitive(box.get_sensitive())
+		cb.set_sensitive(box.get_sensitive())
+		add.set_sensitive(box.get_sensitive())
 
 	def on_nomodbt_clicked(self, button, *a):
 		actionButton = self.action_widgets[self.current_page][1]
@@ -258,6 +286,20 @@ class ModeshiftEditor(Editor):
 		self.nomods[self.current_page] = NoAction()
 		actionButton = self.action_widgets[self.current_page][1]
 		actionButton.set_label(self.nomods[self.current_page].describe(self.mode))
+
+	def on_btTouch_clicked(self, *a: object) -> None:
+		"""'Touch' tab: edit the action bound to the stick-touch sensor."""
+		def on_chosen(id: str, action: Action) -> None:
+			self.touch_action = action
+			self.builder.get_object("btTouch").set_label(action.describe(self.mode))
+
+		ae = self._choose_editor(self.touch_action, on_chosen)
+		ae.set_input(self.touch_id, self.touch_action, mode=Action.AC_BUTTON)
+		ae.show(self.window)
+
+	def on_btClearTouch_clicked(self, *a: object) -> None:
+		self.touch_action = NoAction()
+		self.builder.get_object("btTouch").set_label(self.touch_action.describe(self.mode))
 
 	def on_btAddAction_clicked(self, *a):
 		cbButtonChooser = self.builder.get_object("cbButtonChooser")
@@ -302,6 +344,9 @@ class ModeshiftEditor(Editor):
 		"""Handler for OK button"""
 		if self.ac_callback is not None:
 			self.ac_callback(self.id, self._make_action())
+			if self.touch_id is not None:
+				# Touch tab maps to a separate input (the stick-touch sensor)
+				self.ac_callback(self.touch_id, self.touch_action)
 		self.close()
 
 	def _make_action(self):
@@ -408,3 +453,24 @@ class ModeshiftEditor(Editor):
 		if mode != Action.AC_BUTTON:
 			for w in ("vbHold", "vbDoubleClick", "lblHold", "lblDoubleClick"):
 				self.builder.get_object(w).set_sensitive(False)
+
+		# Touch tab: only for the stick-press inputs; binds the capacitive
+		# stick-touch sensor (a separate button). Hidden for everything else.
+		# (Editor.show() uses window.show(), not show_all, so hiding sticks.)
+		touch_for = {SCButtons.STICKPRESS: SCButtons.LSTICKTOUCH,
+		             SCButtons.RSTICKPRESS: SCButtons.RSTICKTOUCH}
+		self.touch_id = touch_for.get(id) if id in SCButtons.__members__.values() else None
+		vbTouch = self.builder.get_object("vbTouch")
+		lblTouch = self.builder.get_object("lblTouch")
+		if self.touch_id is not None:
+			try:
+				self.touch_action = self.app.current.buttons[self.touch_id] or NoAction()
+			except (KeyError, TypeError):
+				self.touch_action = NoAction()
+			self.builder.get_object("btTouch").set_label(self.touch_action.describe(self.mode))
+			vbTouch.set_visible(True)
+			lblTouch.set_visible(True)
+		else:
+			self.touch_action = NoAction()
+			vbTouch.set_visible(False)
+			lblTouch.set_visible(False)

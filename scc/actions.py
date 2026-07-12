@@ -789,7 +789,10 @@ class MouseAction(WholeHapticAction, Action):
 	def __init__(self, axis=None, speed=None):
 		Action.__init__(self, *strip_none(axis, speed))
 		WholeHapticAction.__init__(self)
-		self._mouse_axis = axis or None
+		# NOT `axis or None`: Rels.REL_X has integer value 0, which is falsy, so
+		# `or None` would collapse REL_X to None -- describing it as "Mouse" (not
+		# "Mouse X") and moving both axes instead of just X.
+		self._mouse_axis = axis if axis is not None else None
 		self._old_pos = None
 		if speed:
 			self.speed = (speed, speed)
@@ -883,11 +886,10 @@ class MouseAction(WholeHapticAction, Action):
 		# if what == STICK:
 		# mapper.mouse_move(x * self.speed[0] * 0.01, y * self.speed[1] * 0.01)
 		# mapper.force_event.add(FE_STICK)
-		if (
-			(what == STICK)
-			or (what == RSTICK)
-			or (what == RIGHT and mapper.controller_flags() & ControllerFlags.HAS_RSTICK)
-		):
+		# Only actual sticks drive velocity-style mouse; the right *pad* (what ==
+		# RIGHT) is a relative trackball even on controllers that have a right
+		# stick (HAS_RSTICK) -- the right stick arrives separately as RSTICK.
+		if (what == STICK) or (what == RSTICK):
 			ratio_x = x / (STICK_PAD_MAX if x > 0 else STICK_PAD_MIN) * copysign(1, x)
 			ratio_y = y / (STICK_PAD_MAX if y > 0 else STICK_PAD_MIN) * copysign(1, y)
 			mouse_dx = ratio_x * (mapper.time_elapsed * BASE_STICK_MOUSE_SPEED) * self.speed[0]
@@ -905,10 +907,16 @@ class MouseAction(WholeHapticAction, Action):
 			self._old_pos = None
 
 	def gyro(self, mapper: Mapper, pitch, yaw, roll, *a):
+		# Use the same per-gyro-axis rate signs as the Per-Axis mouse paths
+		# (GyroAction.MOUSE_RATE_SIGN, hw-verified on DS4 + SC2). The old
+		# hardcoded negation of ALL axes predates the drivers' rate-convention
+		# normalization; with normalized rates it inverted pitch (screen Y),
+		# while its yaw/roll negation happened to match the sign table.
+		sp, sy, sr = GyroAction.MOUSE_RATE_SIGN
 		if self._mouse_axis == YAW:
-			mapper.mouse_move(yaw * -self.speed[0], pitch * -self.speed[1])
+			mapper.mouse_move(yaw * sy * self.speed[0], pitch * sp * self.speed[1])
 		else:
-			mapper.mouse_move(roll * -self.speed[0], pitch * -self.speed[1])
+			mapper.mouse_move(roll * sr * self.speed[0], pitch * sp * self.speed[1])
 
 	def trigger(self, mapper: Mapper, position, old_position):
 		delta = position - old_position
@@ -1153,11 +1161,25 @@ class GyroAction(Action):
 	"""Uses *relative* gyroscope position as input for emulated axes"""
 
 	COMMAND = "gyro"
+	# Mouse-path tuning, shared with GyroAbsAction. RATE_SIGN is per gyro axis
+	# (pitch, yaw, roll), hw-verified on the DS4. MOUSE_FACTOR scales the
+	# lean-to-turn cursor velocity into a sane default range.
+	MOUSE_RATE_SIGN = (1.0, -1.0, -1.0)
+	MOUSE_FACTOR = 0.01
 
 	def __init__(self, axis1, axis2=None, axis3=None):
 		Action.__init__(self, axis1, *strip_none(axis2, axis3))
 		self.axes = [axis1, axis2, axis3]
 		self.speed = (1.0, 1.0, 1.0)
+		# lean-to-turn neutral reference (per gyro axis, radians); captured on
+		# the first gyro event after (re)activation or a Recenter Gyro action.
+		self._lean_ref = [None, None, None]
+
+	def reset(self):
+		"""Re-captures the lean-to-turn neutral pose on the next gyro event.
+		Called by mapper.reset_gyros (the Recenter Gyro special action) and by
+		ModeModifier when a gated gyro deactivates."""
+		self._lean_ref = [None, None, None]
 
 	def get_compatible_modifiers(self):
 		return Action.MOD_SENSITIVITY | Action.MOD_SENS_Z
@@ -1169,26 +1191,58 @@ class GyroAction(Action):
 		return self.speed
 
 	def gyro(self, mapper: Mapper, *pyr):
+		angles = None
 		for i in (0, 1, 2):
 			axis = self.axes[i]
-			# 'gyro' cannot map to mouse, but 'mouse' does that.
-			if axis in Axes.__members__.values() or type(axis) is int:
+			# isinstance, not `in Axes.__members__.values()`: Rels and Axes are
+			# IntEnums with overlapping values (REL_X == ABS_X == 0), so the
+			# membership test would misroute a mouse axis here as a gamepad axis.
+			if isinstance(axis, Axes) or type(axis) is int:
 				mapper.gamepad.axisEvent(axis, AxisAction.clamp_axis(axis, pyr[i] * self.speed[i] * -10))
 				mapper.syn_list.add(mapper.gamepad)
+			# Relative mouse = lean-to-turn: cursor VELOCITY is proportional to
+			# the held tilt angle -- lean and the cursor keeps moving, return to
+			# level and it stops. (For laser-pointer tracking, where the cursor
+			# follows the rotation and stops with it, check Absolute.)
+			elif axis in (Rels.REL_X, Rels.REL_Y) and len(pyr) >= 7:
+				if angles is None:
+					q1, q2, q3, q4 = pyr[3:7]
+					if mapper.get_controller().flags & ControllerFlags.EUREL_GYROS:
+						angles = (q1 / 10430.37, q2 / 10430.37, q3 / 10430.37)  # 2**15 / PI
+					else:
+						angles = quat2euler(q1 / 32767.0, q2 / 32767.0, q3 / 32767.0, q4 / 32767.0)
+				# The lean is measured against the neutral reference captured on
+				# the first event after (re)activation or Recenter Gyro -- NOT
+				# against the driver's absolute zero, whose yaw is an arbitrary
+				# power-on orientation (and would make yaw-lean unusable).
+				if self._lean_ref[i] is None:
+					self._lean_ref[i] = angles[i]
+				lean = anglediff(self._lean_ref[i], angles[i])
+				# saturate at +-90 deg, then scale to a sane default velocity
+				v = clamp(STICK_PAD_MIN, lean * (2**15) * 2 / PI, STICK_PAD_MAX)
+				v = v * GyroAction.MOUSE_FACTOR * self.speed[i]
+				if axis == Rels.REL_X:
+					mapper.mouse_move(v, 0)
+				else:
+					# screen Y grows downward (sign hw-verified on the DS4)
+					mapper.mouse_move(0, -v)
 
 	def describe(self, context):
 		if self.name:
 			return self.name
 		rv = []
-
-		if self.axes[0] in Rels.__members__.values():
-			return _("Mouse")
-
 		for x in self.axes:
-			if x:
+			# `is not None`, not truthiness: Rels.REL_X / Axes.ABS_X have value 0
+			# (falsy) yet are valid axes. isinstance keeps mouse (Rels) apart from
+			# stick (Axes) -- their integer values collide (REL_X == ABS_X == 0).
+			if x is None:
+				continue
+			if isinstance(x, Rels):
+				s = MouseAction(x).describe(context)
+			else:
 				s, trash, trash = AxisAction.get_axis_description(x)
-				if s not in rv:
-					rv.append(s)
+			if s not in rv:
+				rv.append(s)
 		return "\n".join(rv)
 
 
@@ -1196,7 +1250,6 @@ class GyroAbsAction(HapticEnabledAction, GyroAction):
 	"""Uses *absolute* gyroscope position as input for emulated axes"""
 
 	COMMAND = "gyroabs"
-	MOUSE_FACTOR = 0.01  # Just random number to put default sensitivity into sane range
 
 	def __init__(self, *blah):
 		GyroAction.__init__(self, *blah)
@@ -1221,6 +1274,7 @@ class GyroAbsAction(HapticEnabledAction, GyroAction):
 	GYROAXES = (0, 1, 2)
 
 	def gyro(self, mapper: Mapper, pitch, yaw, roll, q1, q2, q3, q4):
+		rates = (pitch, yaw, roll)  # raw angular rates, used for the mouse axes
 		if mapper.get_controller().flags & ControllerFlags.EUREL_GYROS:
 			pyr = [q1 / 10430.37, q2 / 10430.37, q3 / 10430.37]  # 2**15 / PI
 		else:
@@ -1249,17 +1303,26 @@ class GyroAbsAction(HapticEnabledAction, GyroAction):
 				pyr[i] = int(clamp(STICK_PAD_MIN, pyr[i], STICK_PAD_MAX))
 		for i in self.GYROAXES:
 			axis = self.axes[i]
-			if axis in Axes.__members__.values() or type(axis) == int:
+			# isinstance, not `in Axes.__members__.values()`: REL_X == ABS_X == 0
+			# and REL_Y == ABS_Y == 1 by IntEnum value, so the membership test
+			# swallowed the mouse axes into this gamepad branch (the elifs below
+			# never ran) -- gyro->mouse moved the stick instead of the cursor.
+			if isinstance(axis, Axes) or type(axis) == int:
 				val = AxisAction.clamp_axis(axis, pyr[i] * self.speed[i])
 				if self._deadzone_fn:
 					val, trash = self._deadzone_fn(val, 0, STICK_PAD_MAX)
 					val = int(val)
 				mapper.gamepad.axisEvent(axis, val)
 				mapper.syn_list.add(mapper.gamepad)
+			# Absolute mouse = laser pointer: the angular RATE is the move delta
+			# (like MouseAction.gyro); the rate integrates to the rotation angle,
+			# so the cursor tracks the controller's absolute orientation and stops
+			# when the rotation stops (Steam's gyro-mouse behavior). For
+			# angle-proportional cursor velocity (lean-to-turn), uncheck Absolute.
 			elif axis == Rels.REL_X:
-				mapper.mouse_move(AxisAction.clamp_axis(axis, pyr[i] * GyroAbsAction.MOUSE_FACTOR * self.speed[i]), 0)
+				mapper.mouse_move(rates[i] * GyroAction.MOUSE_RATE_SIGN[i] * self.speed[i], 0)
 			elif axis == Rels.REL_Y:
-				mapper.mouse_move(0, AxisAction.clamp_axis(axis, pyr[i] * GyroAbsAction.MOUSE_FACTOR * self.speed[i]))
+				mapper.mouse_move(0, rates[i] * GyroAction.MOUSE_RATE_SIGN[i] * self.speed[i])
 
 
 class ResetGyroAction(Action):
@@ -1345,7 +1408,19 @@ class TiltAction(MultichildAction):
 
 	def gyro(self, mapper: Mapper, *pyr):
 		q1, q2, q3, q4 = pyr[-4:]
-		pyr = quat2euler(q1 / 32767.0, q2 / 32767.0, q3 / 32767.0, q4 / 32767.0)
+		if mapper.get_controller().flags & ControllerFlags.EUREL_GYROS:
+			# q1-q3 already hold euler angles in 2**15/PI fixed point (q4 unused).
+			# Feeding them into quat2euler as if they were a quaternion computes
+			# atan2 of near-zero noise products -> arbitrary full-range angles that
+			# constantly cross MIN and fire tilt actions with the pad at rest.
+			#
+			# Slot order below is (front down/up, TILTED left/right, ROTATED
+			# left/right) = (pitch, roll, yaw), so swap yaw/roll into that order;
+			# pitch and yaw are negated to match the slot firing directions against
+			# the DS4 integration conventions (all three axes hw-verified).
+			pyr = (-q1 / 10430.37, q3 / 10430.37, -q2 / 10430.37)
+		else:
+			pyr = quat2euler(q1 / 32767.0, q2 / 32767.0, q3 / 32767.0, q4 / 32767.0)
 		for j in (0, 1, 2):
 			i = j * 2
 			if self.actions[i]:

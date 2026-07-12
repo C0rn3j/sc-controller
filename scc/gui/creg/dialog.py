@@ -15,11 +15,11 @@ from gi.repository import GdkPixbuf, GLib, Gtk
 
 from scc.config import Config
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, SCButtons
+from scc.gui import BUTTON_ORDER
 from scc.gui.app import App
 from scc.gui.controller_image import ControllerImage
 from scc.gui.creg.constants import (
 	AXIS_ORDER,
-	BUTTON_ORDER,
 	SDL_AXES,
 	SDL_DPAD,
 	SDL_TO_SCC_NAMES,

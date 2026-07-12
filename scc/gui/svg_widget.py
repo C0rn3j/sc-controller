@@ -88,10 +88,20 @@ class SVGWidget(Gtk.EventBox):
 	def on_mouse_moved(self, trash, event):
 		"""Not actual signal handler, just called from App.
 		"""
+		# Areas live in SVG document coords; shift mouse coords by the viewBox
+		# origin so a non-zero origin (sc2.svg's "0 -45 ..." headroom) doesn't
+		# offset the hover hit-test. Origin is (0,0) for other controllers.
+		vbx, vby, _vbw, _vbh = self.get_viewbox()
 		x_offset = (self.get_allocation().width - self.image_width) / 2
-		x = event.x - x_offset
-		y = event.y
+		x = event.x - x_offset + vbx
+		y = event.y + vby
 		for a in self.areas:
+			# *TEST areas exist only to bound the Input Test cursor (looked up
+			# by id via get_area_position), not as hover targets. Skip them so
+			# they can't shadow a real control area — on the Deck the stick/dpad
+			# TEST areas otherwise swallowed the hover and nothing highlighted.
+			if a.name.endswith("TEST"):
+				continue
 			if a.contains(x, y):
 				self.emit("hover", a.name)
 				return a.name
@@ -126,6 +136,25 @@ class SVGWidget(Gtk.EventBox):
 		if a:
 			return a.x, a.y, a.w, a.h
 		raise ValueError("Area '%s' not found" % (area_id,))
+
+	def get_viewbox(self) -> tuple[float, float, float, float]:
+		"""Returns the SVG viewBox as (min_x, min_y, width, height).
+
+		Used to map area coordinates (SVG document space) onto the rendered
+		image when overlaying widgets such as the Input-Test cursor: a non-zero
+		origin (e.g. headroom added with viewBox="0 -45 ...") otherwise shifts
+		those overlays. Returns (0, 0, 0, 0) if no viewBox is present.
+		"""
+		svg = self.current_svg
+		if isinstance(svg, bytes):
+			svg = svg.decode("utf-8", "replace")
+		m = re.search(
+			r'viewBox\s*=\s*["\']\s*([-\d.eE]+)[\s,]+([-\d.eE]+)[\s,]+([-\d.eE]+)[\s,]+([-\d.eE]+)',
+			svg or "",
+		)
+		if m:
+			return tuple(float(g) for g in m.groups())
+		return (0.0, 0.0, 0.0, 0.0)
 
 	@staticmethod
 	def find_areas(xml, parent_transform, areas, get_colors=False, prefix="AREA_"):
@@ -281,13 +310,32 @@ class SVGEditor:
 	@staticmethod
 	def _deep_copy(element):
 		"""Creates deep copy of XML element"""
-		e = element.copy()
+		# Element.copy() was deprecated since Python 3.4 and removed in 3.13.
+		# Rebuild the element instead of using copy.copy(): copy.copy() shares
+		# the original's attrib dict, so writing the clone's id (as the radial
+		# menu does) would clobber the template. makeelement() with a fresh
+		# attrib dict gives an independent copy; text/tail and deep-copied
+		# children are carried over explicitly.
+		e = element.makeelement(element.tag, dict(element.attrib))
+		e.text = element.text
+		e.tail = element.tail
 		for ch in element:
-			copy = SVGEditor._deep_copy(ch)
-			e.remove(ch)
-			e.append(copy)
-			copy.parent = e
+			e.append(SVGEditor._deep_copy(ch))
 		return e
+
+	@staticmethod
+	def _find_parent(tree: ET.Element, target: ET.Element) -> ET.Element | None:
+		"""Returns the parent element of `target` within `tree`, or None.
+
+		ElementTree does not track parents, and Elements cannot hold a `.parent`
+		attribute on Python 3.13+ (no __dict__), so the parent is found by
+		walking the tree.
+		"""
+		for parent in tree.iter():
+			for child in parent:
+				if child is target:
+					return parent
+		return None
 
 	def clone_element(self, id):
 		"""Grabs element with specified ID, duplicates it and returns created
@@ -299,11 +347,12 @@ class SVGEditor:
 		e = SVGEditor.get_element(self, id)
 		if e is not None:
 			copy = SVGEditor._deep_copy(e)
-			parent = e.find("..")
-			if parent:
+			# Attach the clone next to the original so it renders. ElementTree's
+			# find("..") has no parent axis (returns None), so locate the parent
+			# by walking the tree.
+			parent = SVGEditor._find_parent(self._tree, e)
+			if parent is not None:
 				parent.append(copy)
-			# e.parent.append(copy)
-			# copy.parent = e.parent
 			return copy
 		return None
 
@@ -316,7 +365,9 @@ class SVGEditor:
 		if type(e) == str:
 			e = SVGEditor.get_element(self, e)
 		if e is not None:
-			e.parent.remove(e)
+			parent = SVGEditor._find_parent(self._tree, e)
+			if parent is not None:
+				parent.remove(e)
 		return self
 
 	def keep(self, *ids):

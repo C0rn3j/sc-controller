@@ -101,6 +101,10 @@ class SCButtons(IntEnum):
 	DOTS        = 0b000000000000000000000000000001000 # Deck only
 	RGRIP2      = 0b000000000000000000000000000100000 # Deck only
 	LGRIP2      = 0b000000000000000000000000000010000 # Deck only
+	LSTICKTOUCH = 1 << 16 # capacitive left-stick touch (Deck / new Steam Controller)
+	RSTICKTOUCH = 1 << 17 # capacitive right-stick touch
+	LGRIPTOUCH  = 1 << 18 # capacitive left handle grip (Steam Controller only, not Deck)
+	RGRIPTOUCH  = 1 << 19 # capacitive right handle grip
 
 
 # If lpad and stick is used at once, this is sent as

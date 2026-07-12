@@ -5,10 +5,14 @@ Extends HID driver with DS4-specific options.
 
 import ctypes
 import logging
+import math
+import os
 import sys
+import time
 from typing import TYPE_CHECKING
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons
+from scc.controller import Controller
 from scc.drivers.evdevdrv import (
 	HAVE_EVDEV,
 	EvdevController,
@@ -31,6 +35,7 @@ from scc.drivers.hiddrv import (
 	hiddrv_test,
 )
 from scc.drivers.usb import register_hotplug_device
+from scc.lib.hidraw import HIDRaw
 from scc.tools import init_logging, set_logging_level
 
 if TYPE_CHECKING:
@@ -39,10 +44,103 @@ if TYPE_CHECKING:
 	from scc.sccdaemon import SCCDaemon
 
 log = logging.getLogger("DS4")
+if os.environ.get("SCC_GYRO_CALIB"):
+	# The daemon leaves the root logger at WARNING; opt this logger into INFO so
+	# the accel-calibration dump (_log_accel_calib) is actually visible.
+	log.setLevel(logging.INFO)
 
 VENDOR_ID = 0x054C
 PRODUCT_ID = 0x09CC
 DS4_V1_PRODUCT_ID = 0x05C4
+
+
+# Absolute-orientation (gyro tilt) support. The DS4 sends only angular velocity --
+# no on-controller quaternion -- so we integrate it host-side. The DS4 is an
+# EUREL_GYROS controller, so GyroAbsAction reads q1-q3 directly as pitch/yaw/roll
+# euler angles; we integrate each gyro axis into an absolute angle and store it
+# there. That keeps the axes 1:1 (no quaternion->quat2euler convention scrambling).
+#
+# Pitch and roll are drift-corrected toward the accelerometer's gravity vector (a
+# complementary filter); yaw has no gravity reference, so it drifts inherently (that
+# needs a magnetometer, which the DS4 lacks). Large simultaneous rotations still
+# gimbal (fine for aim near neutral). TUNE on hardware: the deg/s scale, the gyro
+# per-axis signs, and the accel-correction signs below.
+_GYRO_DEG_PER_LSB = 1.0 / 16.0        # DS5 uses /16; verify for the DS4
+_GYRO_SIGN = (-1.0, -1.0, -1.0)       # per-axis (pitch, yaw, roll) sign; matches the
+                                      # relative path's built-in negation (verified)
+_EUREL_SCALE = 32768.0 / math.pi      # radians -> the 2**15/PI fixed point GyroAbsAction wants
+# Accel drift-correction (complementary filter), calibrated on hardware: at rest
+# gravity sits on accel +Y; a nose-down pitch swings it to +Z, a roll swings it to
+# X. So pitch = elevation of gravity out of the X-Y plane and roll = elevation out
+# of the Y-Z plane (decoupled forms, so one tilt doesn't contaminate the other).
+# Roll is sign-flipped to match the gyro's roll direction (accel reads -86 deg at a
+# roll where the gyro integrates +89). alpha weights the gyro; the small accel share
+# pins pitch/roll to gravity and kills the gyro-only drift.
+_ACCEL_ALPHA = 0.98                   # complementary filter: gyro weight (1.0 = gyro only)
+_ACCEL_PITCH_SIGN = 1.0               # flip if the pitch drift-correction pulls the wrong way
+_ACCEL_ROLL_SIGN = -1.0               # flip if the roll drift-correction pulls the wrong way
+
+
+def _integrate_euler(state, angles: list, dt: float) -> list:
+	"""Integrate the raw gyro into absolute euler angles (radians, wrapped to
+	[-pi, pi]), drift-correct pitch/roll toward the accel gravity vector, and write
+	them to state.q1-q3 in GyroAbsAction's EUREL units. q4 is unused."""
+	k = _GYRO_DEG_PER_LSB * dt * math.pi / 180.0
+	p = angles[0] + state.gpitch * _GYRO_SIGN[0] * k
+	y = angles[1] + state.gyaw * _GYRO_SIGN[1] * k
+	r = angles[2] + state.groll * _GYRO_SIGN[2] * k
+	# The decoder left the raw accelerometer in q1-q3 (DS4GYRO mode, negated), so
+	# recover it before we overwrite. At rest it reads gravity, giving an absolute
+	# pitch/roll to pull the drifting integral toward. Yaw is not observable here.
+	ax, ay, az = -state.q2, -state.q3, -state.q1
+	if _ACCEL_ALPHA < 1.0 and (ax or ay or az):
+		# pitch = gravity's elevation out of the X-Y plane (swings to +Z on nose
+		# down); roll = elevation out of the Y-Z plane (swings to X). sqrt on the
+		# other two axes decouples them so a pure roll reads ~0 pitch and vice versa.
+		accel_pitch = _ACCEL_PITCH_SIGN * math.atan2(az, math.sqrt(ax * ax + ay * ay))
+		accel_roll = _ACCEL_ROLL_SIGN * math.atan2(ax, math.sqrt(ay * ay + az * az))
+		p = _ACCEL_ALPHA * p + (1.0 - _ACCEL_ALPHA) * accel_pitch
+		r = _ACCEL_ALPHA * r + (1.0 - _ACCEL_ALPHA) * accel_roll
+	angles[0] = (p + math.pi) % (2 * math.pi) - math.pi
+	angles[1] = (y + math.pi) % (2 * math.pi) - math.pi
+	angles[2] = (r + math.pi) % (2 * math.pi) - math.pi
+	state.q1 = int(angles[0] * _EUREL_SCALE)
+	state.q2 = int(angles[1] * _EUREL_SCALE)
+	state.q3 = int(angles[2] * _EUREL_SCALE)
+	return angles
+
+
+def _log_accel_calib(controller, state) -> None:
+	"""Throttled raw-accel + integrated-angle dump for accel-fusion calibration
+	(gate: env SCC_GYRO_CALIB=1). Runs BEFORE _integrate_euler, while the raw accel
+	still sits in q1-q3 (accel_x=-q2, accel_y=-q3, accel_z=-q1). Prints the gravity
+	unit vector plus the running gyro angles, so held orientations reveal which
+	accel axis/sign maps onto the gyro pitch and roll."""
+	now = time.time()
+	if now - getattr(controller, "_calib_last_t", 0.0) < 0.25:
+		return
+	controller._calib_last_t = now
+	ax, ay, az = -state.q2, -state.q3, -state.q1
+	mag = math.sqrt(ax * ax + ay * ay + az * az) or 1.0
+	a = getattr(controller, "_gyro_angles", [0.0, 0.0, 0.0])
+	log.info(
+		"GYRO-CALIB  accel unit=(% .2f % .2f % .2f) |a|=%5.0f  raw=(% d % d % d)  |  "
+		"gyro-int deg  pitch=% 6.1f yaw=% 6.1f roll=% 6.1f",
+		ax / mag, ay / mag, az / mag, mag, ax, ay, az,
+		math.degrees(a[0]), math.degrees(a[1]), math.degrees(a[2]),
+	)
+
+
+def _step_orientation(controller, state) -> None:
+	"""Per-controller wrapper: tracks dt from the host clock and the running
+	euler-angle vector as lazily-created attributes on the controller instance."""
+	if os.environ.get("SCC_GYRO_CALIB"):
+		_log_accel_calib(controller, state)
+	now = time.time()
+	dt = now - getattr(controller, "_gyro_time", now)
+	controller._gyro_time = now
+	controller._gyro_angles = _integrate_euler(
+		state, getattr(controller, "_gyro_angles", [0.0, 0.0, 0.0]), dt)
 
 
 class DS4Controller(HIDController):
@@ -64,6 +162,9 @@ class DS4Controller(HIDController):
 		SCButtons.CPADPRESS,
 	)
 
+	# EUREL_GYROS: GyroAbsAction reads q1-q3 as pitch/yaw/roll euler angles, which
+	# _step_orientation synthesizes from the raw gyro. Gyro-as-mouse (relative) is
+	# unaffected -- it uses gpitch/gyaw/groll directly.
 	flags = (
 		ControllerFlags.EUREL_GYROS
 		| ControllerFlags.HAS_RSTICK
@@ -203,6 +304,16 @@ class DS4Controller(HIDController):
 					self._decoder.state.buttons &= ~SCButtons.CPADTOUCH
 				else:
 					self._decoder.state.buttons |= SCButtons.CPADTOUCH
+					# The DS4TOUCHPAD decoder leaves the pad coordinates raw (0..1919
+					# x, 0..942 y over the DS4's 1920x943 touchpad), so a touchpad-
+					# bound mouse/pad action only jitters. Scale them into the
+					# STICK_PAD range (y flipped, so finger-up is positive), clamped.
+					st = self._decoder.state
+					rng = STICK_PAD_MAX - STICK_PAD_MIN
+					st.cpad_x = max(STICK_PAD_MIN, min(STICK_PAD_MAX, STICK_PAD_MIN + st.cpad_x * rng // 1919))
+					st.cpad_y = max(STICK_PAD_MIN, min(STICK_PAD_MAX, STICK_PAD_MAX - st.cpad_y * rng // 942))
+				# Absolute-orientation quaternion (gyro tilt) -> q1-q4, every frame.
+				_step_orientation(self, self._decoder.state)
 				self.mapper.input(self, self._decoder.old_state, self._decoder.state)
 
 	def get_gyro_enabled(self) -> bool:
@@ -408,6 +519,190 @@ class DS4EvdevController(EvdevController):
 		return id
 
 
+# --- Bluetooth hidraw driver ----------------------------------------------------
+# Mirrors scc/drivers/ds5drv.py's DS5HidRawController. Reads the DS4's full
+# Bluetooth report (0x11) from /dev/hidraw and decodes it with the SAME HID
+# decoder DS4Controller uses over USB, shifted by the 2-byte BT report header.
+# Less invasive than the libusb DS4Controller (it doesn't claim the USB interface)
+# and a proper replacement for the "far from optimal" DS4EvdevController BT path.
+#
+# Verified over Bluetooth: buttons, both sticks (+ clicks), triggers, d-pad and the
+# touchpad. Still TODO: the gyro/IMU is decoded but unverified (untested on the DS4
+# even over USB), and output reports (rumble / lightbar) are not implemented -- the
+# phase-2 payoff that needs the BT CRC32 wrapper.
+
+DS4_BT_REPORT_ID = 0x11    # full input report id over Bluetooth
+BT_REPORT_OFFSET = 2       # BT report prefixes the USB payload with 2 header bytes
+BT_REPORT_SIZE = 78        # bytes to read per report (id + payload + trailing CRC32)
+DS4_CPAD_RES_X = 1919      # DS4 touchpad native resolution (1920x943)
+DS4_CPAD_RES_Y = 942
+
+
+class DS4HidRawController(Controller):
+	# EUREL_GYROS -- see DS4Controller.flags.
+	flags = (
+		ControllerFlags.EUREL_GYROS
+		| ControllerFlags.HAS_RSTICK
+		| ControllerFlags.HAS_CPAD
+		| ControllerFlags.HAS_DPAD
+		| ControllerFlags.SEPARATE_STICK
+		| ControllerFlags.NO_GRIPS
+	)
+
+	def __init__(self, driver: "DS4HidRawDriver", syspath: str, hidrawdev: HIDRaw) -> None:
+		self.driver = driver
+		self.daemon = driver.daemon
+		self.syspath = syspath
+		Controller.__init__(self)
+		self._hidrawdev = hidrawdev
+		self._fileno = hidrawdev._device.fileno()
+		self._decoder = self._build_bt_decoder()
+		self._id = self._generate_id()
+		# Over Bluetooth the DS4 emits a cut-down report until the host reads a
+		# feature report; reading calibration report 0x02 flips it to the full 0x11
+		# report (verified: the controller then streams id=0x11, len=78).
+		try:
+			self._hidrawdev.getFeatureReport(0x02)
+		except Exception as e:
+			log.warning("DS4 hidraw: could not enable full report: %s", e)
+		self._poller = self.daemon.get_poller()
+		if self._poller:
+			self._poller.register(self._fileno, self._poller.POLLIN, self._input)
+		self.daemon.get_device_monitor().add_remove_callback(syspath, self.close)
+		self.daemon.add_controller(self)
+		log.debug("Connected DS4 over Bluetooth hidraw: %s", self._id)
+
+	def _build_bt_decoder(self) -> HIDDecoder:
+		"""DS4Controller._load_hid_descriptor with every byte_offset shifted by the
+		BT header. Duplicated for now -- factor a shared builder(base_offset) out of
+		DS4Controller and call it from both if this grows."""
+		o = BT_REPORT_OFFSET
+		d = HIDDecoder()
+		d.axes[AxisType.AXIS_LPAD_X] = AxisData(
+			mode=AxisMode.HATSWITCH, byte_offset=5 + o, size=8,
+			data=AxisDataUnion(hatswitch=HatswitchModeData(
+				button=SCButtons.LPAD | SCButtons.LPADTOUCH, min=STICK_PAD_MIN, max=STICK_PAD_MAX)))
+		d.axes[AxisType.AXIS_STICK_X] = AxisData(
+			mode=AxisMode.AXIS, byte_offset=1 + o, size=8,
+			data=AxisDataUnion(axis=AxisModeData(scale=1.0, offset=-127.5, clamp_max=257, deadzone=10)))
+		d.axes[AxisType.AXIS_STICK_Y] = AxisData(
+			mode=AxisMode.AXIS, byte_offset=2 + o, size=8,
+			data=AxisDataUnion(axis=AxisModeData(scale=-1.0, offset=127.5, clamp_max=257, deadzone=10)))
+		d.axes[AxisType.AXIS_RPAD_X] = AxisData(
+			mode=AxisMode.AXIS, byte_offset=3 + o, size=8,
+			data=AxisDataUnion(axis=AxisModeData(button=SCButtons.RPADTOUCH, scale=1.0, offset=-127.5, clamp_max=257, deadzone=10)))
+		d.axes[AxisType.AXIS_RPAD_Y] = AxisData(
+			mode=AxisMode.AXIS, byte_offset=4 + o, size=8,
+			data=AxisDataUnion(axis=AxisModeData(button=SCButtons.RPADTOUCH, scale=-1.0, offset=127.5, clamp_max=257, deadzone=10)))
+		d.axes[AxisType.AXIS_LTRIG] = AxisData(
+			mode=AxisMode.AXIS, byte_offset=8 + o, size=8,
+			data=AxisDataUnion(axis=AxisModeData(scale=1.0, clamp_max=1, deadzone=10)))
+		d.axes[AxisType.AXIS_RTRIG] = AxisData(
+			mode=AxisMode.AXIS, byte_offset=9 + o, size=8,
+			data=AxisDataUnion(axis=AxisModeData(scale=1.0, clamp_max=1, deadzone=10)))
+		d.axes[AxisType.AXIS_GPITCH] = AxisData(mode=AxisMode.DS4ACCEL, byte_offset=13 + o)
+		d.axes[AxisType.AXIS_GROLL] = AxisData(mode=AxisMode.DS4ACCEL, byte_offset=17 + o)
+		d.axes[AxisType.AXIS_GYAW] = AxisData(mode=AxisMode.DS4ACCEL, byte_offset=15 + o)
+		d.axes[AxisType.AXIS_Q1] = AxisData(mode=AxisMode.DS4GYRO, byte_offset=23 + o)
+		d.axes[AxisType.AXIS_Q2] = AxisData(mode=AxisMode.DS4GYRO, byte_offset=19 + o)
+		d.axes[AxisType.AXIS_Q3] = AxisData(mode=AxisMode.DS4GYRO, byte_offset=21 + o)
+		d.axes[AxisType.AXIS_CPAD_X] = AxisData(mode=AxisMode.DS4TOUCHPAD, byte_offset=36 + o)
+		d.axes[AxisType.AXIS_CPAD_Y] = AxisData(mode=AxisMode.DS4TOUCHPAD, byte_offset=37 + o, bit_offset=4)
+		d.buttons = ButtonData(enabled=True, byte_offset=5 + o, bit_offset=4, size=14, button_count=14)
+		for x in range(BUTTON_COUNT):
+			d.buttons.button_map[x] = 64
+		for x, sc in enumerate(DS4Controller.BUTTON_MAP):
+			d.buttons.button_map[x] = HIDController.button_to_bit(sc)
+		return d
+
+	def _input(self, *a) -> None:
+		try:
+			data = self._hidrawdev.read(BT_REPORT_SIZE)
+		except OSError:
+			return
+		if not getattr(self, "_logged_first", False):
+			# One-off: tells the BT test which report the controller sends. 0x11 =
+			# full report (good); 0x01 = basic report (the feature-report read did
+			# not switch it to full mode -> fix _set_operational / the report num).
+			self._logged_first = True
+			log.debug("DS4 hidraw first report: id=0x%02x len=%d",
+			          data[0] if data else -1, len(data) if data else 0)
+		if not data or data[0] != DS4_BT_REPORT_ID:
+			# Basic report until the controller switches to the full 0x11 report.
+			return
+		if not _lib.decode(ctypes.byref(self._decoder), bytes(data)):
+			return
+		if not self.mapper:
+			return
+		# CPADTOUCH bit + touchpad coordinate scaling, mirroring DS4Controller.input
+		# (touch bit and cpad axes are all shifted by the BT header).
+		st = self._decoder.state
+		if data[35 + BT_REPORT_OFFSET] >> 7:
+			st.buttons &= ~SCButtons.CPADTOUCH
+		else:
+			st.buttons |= SCButtons.CPADTOUCH
+			rng = STICK_PAD_MAX - STICK_PAD_MIN
+			st.cpad_x = max(STICK_PAD_MIN, min(STICK_PAD_MAX, STICK_PAD_MIN + st.cpad_x * rng // DS4_CPAD_RES_X))
+			st.cpad_y = max(STICK_PAD_MIN, min(STICK_PAD_MAX, STICK_PAD_MAX - st.cpad_y * rng // DS4_CPAD_RES_Y))
+		# Absolute-orientation quaternion (gyro tilt) -> q1-q4, every frame.
+		_step_orientation(self, st)
+		self.mapper.input(self, self._decoder.old_state, st)
+
+	def get_type(self) -> str:
+		return "ds4bt_hidraw"
+
+	def get_gui_config_file(self) -> str:
+		return "ds4-config.json"
+
+	def get_gyro_enabled(self) -> bool:
+		return True
+
+	def __repr__(self) -> str:
+		return f"<DS4HidRawController {self.get_id()}>"
+
+	def _generate_id(self) -> str:
+		magic_number = 1
+		id = "ds4"
+		while id in self.daemon.get_active_ids():
+			id = f"ds4:{magic_number}"
+			magic_number += 1
+		return id
+
+	def close(self) -> None:
+		if self._poller:
+			self._poller.unregister(self._fileno)
+		try:
+			self._hidrawdev._device.close()
+		except Exception:
+			pass
+		self.daemon.remove_controller(self)
+
+
+class DS4HidRawDriver:
+	"""Registers a Bluetooth hidraw callback for the DS4 (v1 + v2)."""
+
+	def __init__(self, daemon: "SCCDaemon", config: dict) -> None:
+		self.daemon = daemon
+		self.config = config
+		mon = daemon.get_device_monitor()
+		mon.add_callback("bluetooth", VENDOR_ID, PRODUCT_ID, self.make_bt_hidraw_callback, None)
+		mon.add_callback("bluetooth", VENDOR_ID, DS4_V1_PRODUCT_ID, self.make_bt_hidraw_callback, None)
+
+	def retry(self, syspath: str) -> None:
+		pass
+
+	def make_bt_hidraw_callback(self, syspath: str, *whatever):
+		hidrawname = self.daemon.get_device_monitor().get_hidraw(syspath)
+		if hidrawname is None:
+			return None
+		try:
+			dev = HIDRaw(open(os.path.join("/dev/", hidrawname), "w+b"))
+			return DS4HidRawController(self, syspath, dev)
+		except Exception as e:
+			log.exception(e)
+			return None
+
+
 def init(daemon: "SCCDaemon", config: dict) -> bool:
 	"""Register hotplug callback for DS4 device."""
 
@@ -465,7 +760,11 @@ def init(daemon: "SCCDaemon", config: dict) -> bool:
 		register_hotplug_device(hid_callback, VENDOR_ID, PRODUCT_ID, on_failure=fail_cb)
 		# DS4 v.1
 		register_hotplug_device(hid_callback, VENDOR_ID, DS4_V1_PRODUCT_ID, on_failure=fail_cb)
-		if HAVE_EVDEV and config["drivers"].get("evdevdrv"):
+		# Bluetooth: prefer the hidraw driver (full 0x11 report -> touchpad + gyro)
+		# when hiddrv is enabled, mirroring the DS5; otherwise fall back to evdev.
+		if config["drivers"].get("hiddrv"):
+			_drv = DS4HidRawDriver(daemon, config)
+		elif HAVE_EVDEV and config["drivers"].get("evdevdrv"):
 			# DS4 v.2
 			daemon.get_device_monitor().add_callback("bluetooth", VENDOR_ID, PRODUCT_ID, make_evdev_device, None)
 			# DS4 v.1

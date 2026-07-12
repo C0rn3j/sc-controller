@@ -321,6 +321,15 @@ class DS5Controller(HIDController):
 					self._decoder.state.buttons &= ~SCButtons.CPADTOUCH
 				else:
 					self._decoder.state.buttons |= SCButtons.CPADTOUCH
+					# Scale the raw touchpad coordinates into the STICK_PAD range,
+					# like the DS4 (and the DS5 evdev path); otherwise a touchpad-
+					# bound mouse/pad action only jitters. UNTESTED (no DS5 hardware
+					# here): the DualSense pad is 1920x1080 -- verify the divisors if
+					# the pointer feels off.
+					st = self._decoder.state
+					rng = STICK_PAD_MAX - STICK_PAD_MIN
+					st.cpad_x = max(STICK_PAD_MIN, min(STICK_PAD_MAX, STICK_PAD_MIN + st.cpad_x * rng // 1919))
+					st.cpad_y = max(STICK_PAD_MIN, min(STICK_PAD_MAX, STICK_PAD_MAX - st.cpad_y * rng // 1079))
 				self.mapper.input(self, self._decoder.old_state, self._decoder.state)
 
 	def feedback(self, data):
