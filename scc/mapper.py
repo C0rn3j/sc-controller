@@ -3,7 +3,7 @@ import os
 import time
 import traceback
 
-from scc.actions import ButtonAction, GyroAbsAction
+from scc.actions import ButtonAction, GyroAction
 from scc.aliases import ALL_AXES, ALL_BUTTONS
 from scc.config import Config
 from scc.constants import (
@@ -377,8 +377,12 @@ class Mapper:
 			a.cancel(self)
 
 	def reset_gyros(self):
+		# GyroAction covers GyroAbsAction (subclass): absolute actions re-capture
+		# their orientation reference (ir), relative ones their lean-to-turn
+		# neutral pose. Rate-based outputs (laser-pointer mouse, relative stick)
+		# have no reference by nature, so recentering rightly leaves them alone.
 		for a in self.profile.get_all_actions():
-			if isinstance(a, GyroAbsAction):
+			if isinstance(a, GyroAction):
 				a.reset()
 
 	def input(self, controller, old_state, state):
