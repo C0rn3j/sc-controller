@@ -310,9 +310,10 @@ class EvdevController(Controller):
 		"""TODO: It would be nice to have feedback..."""
 
 
-def parse_axis(axis):
+def parse_axis(axis: dict[str, str | int]) -> AxisCalibrationData:
 	min = axis.get("min", -127)
 	max = axis.get("max", 128)
+	is_trigger = axis.get("axis") in TRIGGERS
 	center = axis.get("center", 0)
 	clamp_min = STICK_PAD_MIN
 	clamp_max = STICK_PAD_MAX
@@ -327,11 +328,12 @@ def parse_axis(axis):
 	else:
 		scale = (-2.0 / (min - max)) if min != max else 1.0
 		deadzone = abs(float(deadzone) * scale)
-	if axis in TRIGGERS:
+	if is_trigger:
 		clamp_min = TRIGGER_MIN
 		clamp_max = TRIGGER_MAX
-		offset += 1.0
-		scale *= 0.5
+		# Map the controller's trigger range to 0..255:
+		scale = 1.0 / (max - min) if min != max else 1.0
+		offset = -float(min) * scale
 
 	return AxisCalibrationData(scale, offset, center, clamp_min, clamp_max, deadzone)
 
