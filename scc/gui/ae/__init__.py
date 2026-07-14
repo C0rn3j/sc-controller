@@ -1,9 +1,11 @@
-#!/usr/bin/env python3
 """ae - Action Editor components"""
 
 import logging
 import os
 
+import gi
+
+gi.require_version("Gdk", "3.0")
 from gi.repository import Gdk, GLib, Gtk
 
 from scc.actions import Action, NoAction, XYAction
