@@ -51,6 +51,9 @@ log = logging.getLogger("DS5")
 
 VENDOR_ID = 0x054C
 PRODUCT_ID = 0x0CE6
+# TODO(Martin): We do not currently support the 4 extra buttons
+EDGE_PRODUCT_ID = 0x0DF2
+PRODUCT_IDS = (PRODUCT_ID, EDGE_PRODUCT_ID)
 
 
 OPERATING_MODE_DS5_BT = 0x31
@@ -424,7 +427,10 @@ class DS5HidRawDriver:
 	def __init__(self, daemon: SCCDaemon, config: dict):
 		self.config = config
 		self.daemon = daemon
-		daemon.get_device_monitor().add_callback("bluetooth", VENDOR_ID, PRODUCT_ID, self.make_bt_hidraw_callback, None)
+		for product_id in PRODUCT_IDS:
+			daemon.get_device_monitor().add_callback(
+				"bluetooth", VENDOR_ID, product_id, self.make_bt_hidraw_callback, None,
+			)
 
 	def retry(self, syspath: str):
 		pass
@@ -1195,19 +1201,21 @@ def init(daemon, config):
 		# daemon.add_error("ds5", "No access to DS5 device")
 
 	if config["drivers"].get("hiddrv") or (HAVE_EVDEV and config["drivers"].get("evdevdrv")):
-		register_hotplug_device(hid_callback, VENDOR_ID, PRODUCT_ID, on_failure=fail_cb)
+		for product_id in PRODUCT_IDS:
+			register_hotplug_device(hid_callback, VENDOR_ID, product_id, on_failure=fail_cb)
 		if config["drivers"].get("hiddrv"):
 			# Only enable HIDRaw support for BT connections if hiddrv is enabled
 			_drv = DS5HidRawDriver(daemon, config)
 		elif HAVE_EVDEV and config["drivers"].get("evdevdrv"):
 			# Attempt evdev as a backup
-			daemon.get_device_monitor().add_callback(
-				"bluetooth",
-				VENDOR_ID,
-				PRODUCT_ID,
-				make_evdev_device,
-				None,
-			)
+			for product_id in PRODUCT_IDS:
+				daemon.get_device_monitor().add_callback(
+					"bluetooth",
+					VENDOR_ID,
+					product_id,
+					make_evdev_device,
+					None,
+				)
 		return True
 	log.warning("Neither HID nor Evdev driver is enabled, DS5 support cannot be enabled.")
 	return False
@@ -1217,4 +1225,4 @@ if __name__ == "__main__":
 	""" Called when executed as script """
 	init_logging()
 	set_logging_level(True, True)
-	sys.exit(hiddrv_test(DS5Controller, ["054c:0ce6"]))
+	sys.exit(hiddrv_test(DS5Controller, ["054c:0ce6", "054c:0df2"]))

@@ -39,9 +39,12 @@ RUN <<EOR
 	python -m build --wheel
 	python -m venv .env
 	. .env/bin/activate
-	pip install libusb1 pytest vdf
+	pip install evdev ioctl-opt libusb1 pytest vdf
+	# Install into the active environment for tests.
+	pip install dist/*.whl
 	python -m pytest tests
-	pip install --prefix "${TARGET}/usr" --no-warn-script-location dist/*.whl
+
+	pip install --prefix "${TARGET}/usr" --no-warn-script-location --force-reinstall dist/*.whl
 
 	# Save version
 	PYTHONPATH=$(find "${TARGET}" -type d -name site-packages) \
