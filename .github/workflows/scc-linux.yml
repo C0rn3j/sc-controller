@@ -23,7 +23,7 @@ jobs:
           python-version: '3.14'
 
       - name: Install dependencies
-        run: pip install build setuptools ioctl-opt libusb1 vdf pytest
+        run: pip install build evdev setuptools ioctl-opt libusb1 vdf pytest
 
       - name: Build SCC
         run: python -m build
