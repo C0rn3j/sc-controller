@@ -15,3 +15,12 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 """
+
+import os
+import subprocess
+
+# AppImageBuilder relies on its exec hooks to resolve relative shebang and ELF
+# interpreter paths. Python 3.13+ uses posix_spawn() in more situations, which
+# bypasses that compatibility path.
+if os.environ.get("APPDIR") and hasattr(subprocess, "_USE_POSIX_SPAWN"):
+	subprocess._USE_POSIX_SPAWN = False
