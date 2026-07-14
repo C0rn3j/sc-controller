@@ -49,28 +49,34 @@ else:
 MAX_FEEDBACK_EFFECTS = 4
 
 
-class Keys(IntEnum):
-	"""Keys enum contains all keys and button from linux/uinput.h (KEY_* BTN_*)."""
+if TYPE_CHECKING:
+	# Static analyzers cannot see enum members added through locals().update().
+	# Regenerate this stub with scripts/generate-uinput-stubs.py when the
+	# canonical Linux input header changes.
+	from scc._uinput_codes import Axes, Keys, KeysOnly, Rels
+else:
+	class Keys(IntEnum):
+		"""Keys enum contains all keys and button from linux/uinput.h (KEY_* BTN_*)."""
 
-	locals().update({i: CHEAD[i] for i in CHEAD if i.startswith(("KEY_", "BTN_"))})
-
-
-class KeysOnly(IntEnum):
-	"""Keys enum contains all keys and button from linux/uinput.h (KEY_* BTN_*)."""
-
-	locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("KEY_")})
-
-
-class Axes(IntEnum):
-	"""Axes enum contains all axes from linux/uinput.h (ABS_*)."""
-
-	locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("ABS_")})
+		locals().update({i: CHEAD[i] for i in CHEAD if i.startswith(("KEY_", "BTN_"))})
 
 
-class Rels(IntEnum):
-	"""Rels enum contains all rels from linux/uinput.h (REL_*)."""
+	class KeysOnly(IntEnum):
+		"""Keys enum contains all keys from linux/uinput.h (KEY_*)."""
 
-	locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("REL_")})
+		locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("KEY_")})
+
+
+	class Axes(IntEnum):
+		"""Axes enum contains all axes from linux/uinput.h (ABS_*)."""
+
+		locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("ABS_")})
+
+
+	class Rels(IntEnum):
+		"""Rels enum contains all rels from linux/uinput.h (REL_*)."""
+
+		locals().update({i: CHEAD[i] for i in CHEAD if i.startswith("REL_")})
 
 
 # Scan codes for each keys (taken from a logitech keyboard)
