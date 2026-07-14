@@ -50,8 +50,8 @@ RUN <<EOR
 	PYTHONPATH=$(find "${TARGET}" -type d -name site-packages) \
 	python -c "from scc.constants import DAEMON_VERSION; print('VERSION=' + DAEMON_VERSION)" >>/build/.build-metadata.env
 
-	# Fix shebangs of scripts from '#!/work/.env/bin/python'
-	find "${TARGET}/usr/bin" -type f | xargs sed -i 's:work/.env:usr:'
+	# Fix shebangs of scripts from '#!/work/.env/bin/python' - note that AppImage builder will strip the leading /
+	find "${TARGET}/usr/bin" -type f | xargs sed -i 's:work/.env/bin/:usr/bin/env :'
 
 	# Provide input-event-codes.h as fallback for runtime systems without linux headers
 	cp -a \
