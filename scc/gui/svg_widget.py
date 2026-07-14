@@ -12,6 +12,8 @@ from math import cos, sin
 from math import pi as PI
 from xml.etree import ElementTree as ET
 
+import gi
+gi.require_version("Rsvg", "2.0")
 from gi.repository import Gdk, GdkPixbuf, GObject, Gtk, Rsvg
 
 # sys.modules.pop('xml.etree.ElementTree', None)
