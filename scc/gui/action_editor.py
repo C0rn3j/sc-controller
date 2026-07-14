@@ -12,7 +12,7 @@ import math
 from gi.repository import GLib, Gtk
 
 from scc.actions import Action, NoAction, RingAction, TriggerAction
-from scc.constants import CUT, LINEAR, MINIMUM, ROUND, HapticPos, SCButtons
+from scc.constants import CUT, LINEAR, MINIMUM, ROUND, TRIGGER_CLICK, HapticPos, SCButtons
 from scc.gui.ae import AEComponent
 from scc.gui.controller_widget import GYROS, PADS, PRESSABLE, STICKS, TRIGGERS
 from scc.gui.dwsnc import headerbar
@@ -248,7 +248,7 @@ class ActionEditor(Editor):
 		elif link == "grab://trigger_button":
 
 			def cb(action):
-				action = TriggerAction(254, 255, action)
+				action = TriggerAction(TRIGGER_CLICK, action)
 				self.set_action(action, from_custom=True)
 				self.force_page("trigger")
 

@@ -74,11 +74,26 @@ class TriggerComponent(AEComponent, BindingEditor):
 					return False, half, full, analog
 				analog = a
 			elif isinstance(a, TriggerAction):
+				# New format:
+				#   half pressed: release_level == TRIGGER_MAX (255)
+				#   full pressed: release_level == press_level
+				# Old format:
+				#   half and full both used release_level == TRIGGER_MAX.
+				#   A lone action below TRIGGER_CLICK is treated as half;
+				#   one at TRIGGER_CLICK is treated as legacy full.
 				if full and half:
 					# UI can handle only one full and
 					# one half-press action
 					return False, half, full, analog
-				if a.release_level == TRIGGER_MAX:
+				if a.release_level == a.press_level:
+					if full:
+						if not half and full.release_level == TRIGGER_MAX:
+							half, full = full, a
+						else:
+							return False, half, full, analog
+					else:
+						full = a
+				elif a.release_level == TRIGGER_MAX:
 					if full and a.press_level < full.press_level:
 						if half:
 							# UI can handle only one half-press action
@@ -106,7 +121,11 @@ class TriggerComponent(AEComponent, BindingEditor):
 			else:
 				# Unhandled action type
 				return False, half, full, analog
-		if full and not half:
+		# Older profiles used (254, 255) for a full-only action and the
+		# same (level, 255) form for a partial-only action.  Preserve the
+		# common default-level cases while new profiles use equal levels for
+		# an unambiguous full-only action.
+		if full and not half and full.press_level < TRIGGER_CLICK:
 			full, half = NoAction(), full
 		return True, half, full, analog
 
@@ -190,7 +209,7 @@ class TriggerComponent(AEComponent, BindingEditor):
 				else:
 					actions.append(TriggerAction(half_level, TRIGGER_MAX, self.half))
 			if self.full:
-				actions.append(TriggerAction(full_level, TRIGGER_MAX, self.full))
+				actions.append(TriggerAction(full_level, self.full))
 
 			if self.analog:
 				analog_start = int(self.builder.get_object("sclARangeStart").get_value())
