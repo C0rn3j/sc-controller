@@ -2285,16 +2285,16 @@ class TriggerAction(Action, HapticEnabledAction):
 	PROFILE_KEYS = ("levels",)
 	PROFILE_KEY_PRIORITY = -5
 
-	def __init__(self, press_level, *params):
+	def __init__(self, press_level: int, *params) -> None:
 		Action.__init__(self, press_level, *params)
 		HapticEnabledAction.__init__(self)
-		self.press_level = int(press_level)
+		self.press_level: int = int(press_level)
 		if len(params) == 1:
-			self.release_level = press_level
-			self.action = params[0]
+			self.release_level: int = press_level
+			self.action: Action = params[0]
 		elif len(params) == 2:
-			self.release_level = params[0]
-			self.action = params[1]
+			self.release_level: int = params[0]
+			self.action: Action = params[1]
 		else:
 			raise TypeError("Invalid number of parameters")
 		self.pressed = False
