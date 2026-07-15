@@ -86,7 +86,7 @@ class OSDModeMouse:
 	def synEvent(self, *a):
 		pass
 
-	def keyEvent(self, key, val):
+	def keyEvent(self, key, val) -> None:
 		tp = Gdk.EventType.BUTTON_PRESS if val else Gdk.EventType.BUTTON_RELEASE
 		event = Gdk.Event.new(tp)
 		event.button = int(key) - Keys.BTN_LEFT + 1

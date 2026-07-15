@@ -11,7 +11,7 @@ import time
 
 log = logging.getLogger("SCController")
 
-next_id = 1  # Used with fallback controller id generator
+next_id: int = 1  # Used with fallback controller id generator
 
 
 class Controller:
@@ -25,12 +25,12 @@ class Controller:
 	def __init__(self) -> None:
 		global next_id
 		self.mapper: Mapper | None = None
-		self._id = next_id
+		self._id: int | str = next_id
 		next_id += 1
-		self.lastTime = time.time()
-		self.time_elapsed = 0.0
+		self.lastTime: float = time.time()
+		self.time_elapsed: float = 0.0
 
-	def get_type(self) -> None:
+	def get_type(self) -> str:
 		"""Has to return type identifier
 
 		Returns a short string without spaces
@@ -43,29 +43,28 @@ class Controller:
 		"""
 		raise RuntimeError("Controller.get_type not overriden")
 
-	def get_id(self):
+	def get_id(self) -> int | str:
 		"""Returns identifier that has to be unique at least until daemon is restarted.
 
 		Ideally derived from HW device serial number.
 		"""
 		return self._id
 
-	def get_gui_config_file(self) -> None:
-		"""Returns file name of json file that GUI can use to load more data about
-		controller (background image, button images, available buttons and
-		axes, etc...) File name may be absolute path or just name of file in
-		/usr/share/scc
+	def get_gui_config_file(self) -> str | None:
+		"""Returns file name of json file that GUI can use to load more data about controller
 
-		Returns None if there is no configuration file (GUI will use
-		defaults in such case)
+		(background image, button images, available buttons and axes, etc...)
+		File name may be absolute path or just name of file in /usr/share/scc
+
+		Returns None if there is no configuration file (GUI will use defaults in such case)
 		"""
 		return
 
-	def set_mapper(self, mapper: Mapper):
+	def set_mapper(self, mapper: Mapper) -> None:
 		"""Sets mapper for controller"""
 		self.mapper = mapper
 
-	def get_mapper(self):
+	def get_mapper(self) -> Mapper | None:
 		"""Returns mapper set for controller"""
 		return self.mapper
 
