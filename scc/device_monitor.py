@@ -121,7 +121,6 @@ class DeviceMonitor(Monitor):
 				log.debug(f"Failed to get VID:PID for {syspath}, will retry…")
 				self._schedule_bt_retry(syspath)
 			return
-		self._pending_bt.pop(syspath, None)
 		key = (subsystem, vendor, product)
 		cb = self.dev_added_cbs.get(key)
 		rem_cb = self.dev_removed_cbs.get(key)
@@ -130,9 +129,13 @@ class DeviceMonitor(Monitor):
 			try:
 				if cb(syspath, vendor, product) is None:
 					del self.known_devs[syspath]
+					if subsystem == "bluetooth" and os.path.exists(syspath):
+						self._schedule_bt_retry(syspath)
+					return
 			except Exception as e:
 				log.exception(e)
 				del self.known_devs[syspath]
+		self._pending_bt.pop(syspath, None)
 
 	def _schedule_bt_retry(self, syspath: str) -> None:
 		attempt, _task = self._pending_bt.get(syspath, (0, None))

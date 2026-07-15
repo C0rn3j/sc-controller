@@ -491,6 +491,11 @@ def get_evdev_devices_from_syspath(syspath: str) -> list:
 					dev = evdev.InputDevice(eventnode)
 					assert dev.path == eventnode
 					rv.append(dev)
+				except PermissionError:
+					# udev may create the node before applying its uaccess ACL.
+					# Bluetooth discovery will retry once the node is accessible.
+					log.debug("Evdev node is not accessible yet: %s", eventnode)
+					continue
 				except Exception as e:
 					log.exception(e)
 					continue

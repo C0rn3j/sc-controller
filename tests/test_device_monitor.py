@@ -37,6 +37,28 @@ def test_bluetooth_discovery_retries_until_vendor_is_available(_exists: Mock) ->
 	assert "/sys/devices/hci0:1" not in monitor._pending_bt
 
 
+@patch("scc.device_monitor.os.path.exists", return_value=True)
+def test_bluetooth_discovery_retries_until_added_callback_is_ready(_exists: Mock) -> None:
+	monitor = make_monitor()
+	callback = Mock(side_effect=[None, object()])
+	monitor.dev_added_cbs[("bluetooth", 0x054C, 0x05C4)] = callback
+	monitor.get_vendor_product = Mock(return_value=(0x054C, 0x05C4))
+	scheduled = []
+	monitor.daemon.get_scheduler.return_value.schedule.side_effect = (
+		lambda delay, fn: scheduled.append((delay, fn)) or Mock()
+	)
+
+	monitor._on_new_syspath("bluetooth", "/sys/devices/hci0:1")
+
+	assert callback.call_count == 1
+	assert "/sys/devices/hci0:1" not in monitor.known_devs
+	assert monitor._pending_bt["/sys/devices/hci0:1"][0] == 1
+	scheduled[0][1]()
+	assert callback.call_count == 2
+	assert "/sys/devices/hci0:1" in monitor.known_devs
+	assert "/sys/devices/hci0:1" not in monitor._pending_bt
+
+
 def test_bluetooth_discovery_retry_is_cancelled_on_remove() -> None:
 	monitor = make_monitor()
 	task = Mock()

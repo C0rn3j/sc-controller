@@ -638,7 +638,7 @@ def init(daemon: SCCDaemon, config: dict) -> bool:
 				# 8 axes - Controller
 				controllerdevice = device
 		if not controllerdevice:
-			log.warning("Failed to determine controller device")
+			log.debug("DS4 evdev controller node is not ready; discovery will retry")
 			return None
 		# 2nd, find motion sensor and touchpad with physical address matching controllerdevice
 		gyro, touchpad = None, None
