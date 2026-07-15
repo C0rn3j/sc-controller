@@ -42,7 +42,10 @@ class Menu(OSDWindow):
 		self.config = None
 		self.feedback = None
 		self.controller = None
-		self.xdisplay = X.Display(hash(GdkX11.x11_get_default_xdisplay()))  # Magic
+		if isinstance(Gdk.Display.get_default(), GdkX11.X11Display):
+			self.xdisplay = X.Display(hash(GdkX11.x11_get_default_xdisplay()))  # Magic
+		else:
+			self.xdisplay = None
 
 		cursor = os.path.join(get_share_path(), "images", "menu-cursor.svg")
 		self.cursor = Gtk.Image.new_from_file(cursor)

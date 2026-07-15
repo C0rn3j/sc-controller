@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
 """SC-Controller - OSD Menu
 
 Display menu that user can navigate through
 """
-
+from __future__ import annotations
 
 import json
 import logging
@@ -11,6 +10,9 @@ import os
 import sys
 from math import atan2, cos, sin
 from math import pi as PI
+from typing import TYPE_CHECKING
+
+import cairo
 
 from scc.config import Config
 from scc.constants import STICK, STICK_PAD_MAX
@@ -22,6 +24,9 @@ from scc.osd.menu import Menu, MenuIcon
 from scc.paths import get_share_path
 from scc.tools import degdiff, find_icon
 
+if TYPE_CHECKING:
+	from gi.repository import Gtk
+
 log = logging.getLogger("osd.menu")
 
 
@@ -31,16 +36,22 @@ class RadialMenu(Menu):
 	MIN_DISTANCE = 3000  # Minimal cursor distance from center (in px^2)
 	ICON_SIZE = 96
 
-	def __init__(
-		self,
-	):
+	def __init__(self) -> None:
 		Menu.__init__(self, "osd-radial-menu")
 		self.angle = 0
 		self.rotation = 0
 		self.scale = 1.0
 		self.items_with_icon = []
+		if self.xdisplay is None:
+			# Compositors normally provide an RGBA visual, but the API can
+			# return null if it is not supported, so retain a rectangular fallback.
+			visual = self.get_screen().get_rgba_visual()
+			if visual is not None:
+				self.set_visual(visual)
+				self.set_app_paintable(True)
+				self.connect("draw", self._on_draw_clip_circle)
 
-	def create_parent(self):
+	def create_parent(self) -> SVGWidget:
 		background = os.path.join(get_share_path(), "images", "radial-menu.svg")
 		self.b = SVGWidget(background)
 		self.b.connect("size-allocate", self.on_size_allocate)
@@ -185,17 +196,41 @@ class RadialMenu(Menu):
 		self.editor.commit()
 		del self.editor
 
-	def show(self):
+	def _on_draw_clip_circle(self, widget: Gtk.Widget, cr: cairo.Context[cairo.Surface]) -> bool:
+		"""Wayland circular shaping
+
+		Clear the surface to transparent and clip all drawing (background, arcs, icons)
+		to a centered circle inscribed in the window.
+
+		The transparent corners give the same round appearance the X SHAPE extension produces on X11.
+
+		Returns False so the default handler then draws the children within this clip.
+		"""
+		cr.set_source_rgba(0, 0, 0, 0)
+		cr.set_operator(cairo.OPERATOR_SOURCE)
+		cr.paint()
+		cr.set_operator(cairo.OPERATOR_OVER)
+		w = widget.get_allocated_width()
+		h = widget.get_allocated_height()
+		cr.arc(w / 2.0, h / 2.0, min(w, h) / 2.0, 0, 2 * PI)
+		cr.clip()
+		return False
+
+	def show(self) -> None:
 		OSDWindow.show(self)
 
-
 		pb = self.b.get_pixbuf()
-		win = X.XID(self.get_window().get_xid())
 
 		width = int(pb.get_width() * self.scale * self.get_scale_factor())
 		height = int(pb.get_height() * self.scale * self.get_scale_factor())
-		pixmap = X.create_pixmap(self.xdisplay, win, width, height, 1)
 		self.f.move(self.cursor, int(width / 2), int(height / 2))
+
+		if self.xdisplay is None:
+			# Clipping to circle on Wayland is handled in __init__()
+			return
+
+		win = X.XID(self.get_window().get_xid())
+		pixmap = X.create_pixmap(self.xdisplay, win, width, height, 1)
 
 		gc = X.create_gc(self.xdisplay, pixmap, 0, None)
 		X.set_foreground(self.xdisplay, gc, 0)
@@ -215,7 +250,7 @@ class RadialMenu(Menu):
 
 		X.flush(self.xdisplay)
 
-	def select(self, i):
+	def select(self, i) -> None:
 		if type(i) == int:
 			i = self.items[i]
 		if self._selected and hasattr(self._selected, "icon_widget"):
@@ -266,6 +301,7 @@ class RadialMenu(Menu):
 							self.select(i)
 		else:
 			return Menu.on_event(self, daemon, what, data)
+		return None
 
 
 if __name__ == "__main__":
