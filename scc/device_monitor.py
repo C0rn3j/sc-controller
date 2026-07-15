@@ -20,7 +20,6 @@ import fcntl
 import logging
 import os
 import re
-import time
 
 log = logging.getLogger("DevMon")
 
@@ -37,6 +36,9 @@ except Exception:
 
 
 class DeviceMonitor(Monitor):
+	BT_DISCOVERY_RETRY_DELAY = 0.25
+	BT_DISCOVERY_RETRY_COUNT = 20
+
 	def __init__(self, *a) -> None:
 		Monitor.__init__(self, *a)
 		self.daemon: SCCDaemon | None = None
@@ -44,6 +46,7 @@ class DeviceMonitor(Monitor):
 		self.dev_removed_cbs = {}
 		self.bt_addresses = {}
 		self.known_devs = {}
+		self._pending_bt = {}
 
 	# removed_cb type can be None
 	def add_callback(self, subsystem: str, vendor_id: int, product_id: int, added_cb, removed_cb) -> None:
@@ -79,6 +82,11 @@ class DeviceMonitor(Monitor):
 		Monitor.start(self)
 
 	def _on_new_syspath(self, subsystem: str, syspath: str) -> None:
+		# Bluetooth adapters are reported as e.g. hci0, while actual device
+		# links are reported as hci0:<connection handle>. Only links can be
+		# resolved to a HID device and vendor/product pair.
+		if subsystem == "bluetooth" and ":" not in os.path.basename(syspath):
+			return
 		try:
 			if subsystem == "input":
 				vendor, product = None, None
@@ -86,7 +94,15 @@ class DeviceMonitor(Monitor):
 				vendor, product = self.get_vendor_product(syspath, subsystem)
 		except OSError:
 			# Cannot grab vendor & product, probably subdevice or bus itself
+
+			# BlueZ creates the bluetooth link before UHID has created the HID
+			# hierarchy from which vendor and product IDs are read. Retry without
+			# blocking the daemon while that hierarchy is being constructed.
+			if subsystem == "bluetooth" and os.path.exists(syspath):
+				log.debug(f"Failed to get VID:PID for {syspath}, will retry…")
+				self._schedule_bt_retry(syspath)
 			return
+		self._pending_bt.pop(syspath, None)
 		key = (subsystem, vendor, product)
 		cb = self.dev_added_cbs.get(key)
 		rem_cb = self.dev_removed_cbs.get(key)
@@ -98,6 +114,27 @@ class DeviceMonitor(Monitor):
 			except Exception as e:
 				log.exception(e)
 				del self.known_devs[syspath]
+
+	def _schedule_bt_retry(self, syspath: str) -> None:
+		attempt, _task = self._pending_bt.get(syspath, (0, None))
+		if attempt >= self.BT_DISCOVERY_RETRY_COUNT:
+			log.warning("Bluetooth device did not become ready: %s", syspath)
+			self._pending_bt.pop(syspath, None)
+			return
+
+		def retry() -> None:
+			if os.path.exists(syspath) and syspath not in self.known_devs:
+				self._get_hci_addresses()
+				self._on_new_syspath("bluetooth", syspath)
+
+		task = self.daemon.get_scheduler().schedule(self.BT_DISCOVERY_RETRY_DELAY, retry)
+		self._pending_bt[syspath] = (attempt + 1, task)
+
+	def _cancel_bt_retry(self, syspath: str) -> None:
+		pending = self._pending_bt.pop(syspath, None)
+		if pending:
+			_attempt, task = pending
+			task.cancel()
 
 	def _get_hci_addresses(self) -> None:
 		if not HAVE_BLUETOOTH_LIB:
@@ -159,10 +196,12 @@ class DeviceMonitor(Monitor):
 					if event.subsystem == "bluetooth":
 						self._get_hci_addresses()
 					self._on_new_syspath(event.subsystem, event.syspath)
-			elif event.action in ("remove", "unbind") and event.syspath in self.known_devs:
-				vendor, product, cb = self.known_devs.pop(event.syspath)
-				if cb:
-					cb(event.syspath, vendor, product)
+			elif event.action in ("remove", "unbind"):
+				self._cancel_bt_retry(event.syspath)
+				if event.syspath in self.known_devs:
+					vendor, product, cb = self.known_devs.pop(event.syspath)
+					if cb:
+						cb(event.syspath, vendor, product)
 
 	def rescan(self) -> None:
 		"""Scan and call callbacks for already connected devices."""
@@ -206,11 +245,6 @@ class DeviceMonitor(Monitor):
 			# Above method works for anything _but_ SteamController
 			# For that one, following desperate mess is needed
 
-			# Sleep for 1 second to make sure info is available on system
-			time.sleep(1)
-			logging.debug(
-				"TODO: Hardcoded 1s sleep!",
-			)  # https://github.com/C0rn3j/sc-controller/commit/43d148327a1b92042d67dd6cfdf1128aa6f9b25d
 			node = self._dev_for_hci(syspath)
 			if node:
 				name = node.split("/")[-1]
