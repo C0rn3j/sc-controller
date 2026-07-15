@@ -1202,7 +1202,7 @@ class LockedAction(ReportingAction):
 		self.original_action = original_action
 		original_action.cancel(self.mapper)
 		self._store_lock()
-		log.debug("%s locked by %s", self.what, self.client)
+		log.debug("%s locked by %s", nameof(self.what), self.client)
 
 	def reaply(self, client, daemon):
 		client.lock_action(daemon, self.what)
@@ -1218,7 +1218,7 @@ class LockedAction(ReportingAction):
 			return a
 
 		daemon._apply(self.mapper, self.what, _unlock)
-		log.debug("%s unlocked", self.what)
+		log.debug("%s unlocked", nameof(self.what))
 
 
 class ReplacedAction(LockedAction):
@@ -1228,7 +1228,7 @@ class ReplacedAction(LockedAction):
 		self.new_action = new_action.compress()
 		original_action.cancel(self.mapper)
 		self._store_lock()
-		log.debug("%s replaced by %s", self.what, self.client)
+		log.debug("%s replaced by %s", nameof(self.what), self.client)
 
 	def reaply(self, client, daemon):
 		client.replace_action(daemon, self.what, self.new_action)
@@ -1254,7 +1254,7 @@ class ObservingAction(ReportingAction):
 		ReportingAction.__init__(self, what, client)
 		self.original_action = original_action
 		self._store_lock()
-		log.debug("%s on %s observed by %x", self.what, client.mapper.get_controller(), hash(self.client))
+		log.debug("%s on %s observed by %x", nameof(self.what), client.mapper.get_controller(), hash(self.client))
 
 	def reaply(self, client, daemon):
 		client.observe_action(daemon, self.what)
@@ -1275,7 +1275,7 @@ class ObservingAction(ReportingAction):
 			return a
 
 		daemon._apply(self.mapper, self.what, _unobserve)
-		log.debug("%s on %s no longer observed by %x", self.what, self.mapper.get_controller(), hash(self.client))
+		log.debug("%s on %s no longer observed by %x", nameof(self.what), self.mapper.get_controller(), hash(self.client))
 
 	def trigger(self, mapper, position, old_position):
 		ReportingAction.trigger(self, mapper, position, old_position)
