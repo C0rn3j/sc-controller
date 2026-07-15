@@ -775,7 +775,7 @@ class SCCDaemon(Daemon):
 		elif message.startswith(b"Replace:"):
 			try:
 				l, actionstr = message.split(b":", 1)[1].strip(b" \t\r").split(b" ", 1)
-				action = TalkingActionParser().restart(actionstr).parse().compress()
+				action = TalkingActionParser().restart(str(actionstr)).parse().compress()
 			except Exception as e:
 				e = str(e).encode("utf-8").decode("unicode_escape").encode("latin1")
 				client.wfile.write(b"Fail: failed to parse: " + e + b"\n")

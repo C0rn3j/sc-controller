@@ -10,9 +10,11 @@ import re
 from collections import OrderedDict
 from math import cos, sin
 from math import pi as PI
+from typing import Self
 from xml.etree import ElementTree as ET
 
 import gi
+
 gi.require_version("Rsvg", "2.0")
 from gi.repository import Gdk, GdkPixbuf, GObject, Gtk, Rsvg
 
@@ -265,7 +267,7 @@ class SVGEditor:
 			else:
 				self._tree = ET.fromstring(svgw.current_svg)
 
-	def commit(self):
+	def commit(self) -> Self:
 		"""Sends modified SVG back to original SVGWidget instance.
 
 		Return self.
@@ -309,7 +311,7 @@ class SVGEditor:
 			return copy
 		return None
 
-	def remove_element(self, e):
+	def remove_element(self, e) -> Self:
 		"""Removes element with specified ID, or, if element is passed,
 		removed that element. If  'id' is None, does nothing.
 
@@ -321,7 +323,7 @@ class SVGEditor:
 			e.parent.remove(e)
 		return self
 
-	def keep(self, *ids):
+	def keep(self, *ids) -> Self:
 		"""Removes all elements but ones with ID specified.
 		Keeps child elements as well.
 
@@ -441,7 +443,7 @@ class SVGEditor:
 					child.attrib["style"] = child.attrib["style"].replace(s_from, s_to)
 			SVGEditor._recolor(child, s_from, s_to)
 
-	def recolor_background(self, change_from, change_to):
+	def recolor_background(self, change_from, change_to) -> Self:
 		"""Recursively travels entire DOM tree and changes every matching
 		background color into specified color.
 
@@ -452,7 +454,7 @@ class SVGEditor:
 		SVGEditor._recolor(self._tree, s_from, s_to)
 		return self
 
-	def recolor_strokes(self, change_from, change_to):
+	def recolor_strokes(self, change_from, change_to) -> Self:
 		"""Recursively travels entire DOM tree and changes every matching
 		line (stroke) color into specified color.
 
@@ -609,7 +611,7 @@ class SVGEditor:
 		if not has_valid_children:
 			xml.text = text
 
-	def set_labels(self, labels):
+	def set_labels(self, labels) -> Self:
 		"""Replaces text on every element named LABEL_something with coresponding
 		value from 'labels' dict.
 

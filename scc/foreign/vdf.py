@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
-"""Imports VDF profile and converts it to Profile object.
-"""
+"""Imports VDF profile and converts it to Profile object."""
 
 import logging
+from typing import Self
 
 from scc.actions import (
 	Action,
@@ -578,7 +577,7 @@ class VDFProfile(Profile):
 			data = parse_vdf(file)
 		self.load_data(data)
 
-	def load_data(self, data):
+	def load_data(self, data) -> Self:
 		if "controller_mappings" not in data:
 			raise ValueError("Invalid profile file")
 		data = data["controller_mappings"]

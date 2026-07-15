@@ -5,6 +5,7 @@ two components with MenuAction selectable.
 
 import logging
 import os
+from typing import Self
 
 from gi.repository import Gtk
 
@@ -38,7 +39,7 @@ class MenuActionCofC(UserDataManager):
 		self.allow_globals = True
 		self.allow_in_profile = True
 
-	def allow_menus(self, allow_globals, allow_in_profile):
+	def allow_menus(self, allow_globals, allow_in_profile) -> Self:
 		"""Sets which type of menu should be selectable.
 		By default, both are enabled.
 

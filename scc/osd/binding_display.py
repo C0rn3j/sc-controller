@@ -11,6 +11,7 @@ import logging
 import os
 import sys
 from enum import IntEnum
+from typing import Self
 
 from gi.repository import Gtk
 
@@ -173,7 +174,7 @@ class Line:
 		# TODO: This
 		return gen.char_width * len(self.text), gen.line_height
 
-	def add_icon(self, icon):
+	def add_icon(self, icon) -> Self:
 		self.icons.append(icon)
 		return self
 
@@ -187,7 +188,7 @@ class LineCollection:
 	def __init__(self, *lines):
 		self.lines = lines
 
-	def add_icon(self, icon):
+	def add_icon(self, icon) -> Self:
 		for line in self.lines:
 			line.add_icon(icon)
 		return self

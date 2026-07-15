@@ -12,6 +12,7 @@ import time
 from collections import OrderedDict, deque
 from math import atan2, copysign, cos, sin, sqrt
 from math import pi as PI
+from typing import Self
 
 from scc.actions import (
 	Action,
@@ -112,7 +113,7 @@ class Modifier(Action):
 	def strip(self):
 		return self.action.strip()
 
-	def compress(self):
+	def compress(self) -> Self:
 		if self.action:
 			self.action = self.action.compress()
 		return self
@@ -187,7 +188,7 @@ class ClickModifier(Modifier):
 	def strip(self):
 		return self.action.strip()
 
-	def compress(self):
+	def compress(self) -> Self:
 		self.action = self.action.compress()
 		return self
 
@@ -274,7 +275,7 @@ class TouchedModifier(Modifier):
 	def strip(self):
 		return self.action.strip()
 
-	def compress(self):
+	def compress(self) -> Self:
 		self.action = self.action.compress()
 		return self
 
@@ -307,7 +308,7 @@ class PressedModifier(Modifier):
 	def strip(self):
 		return self.action.strip()
 
-	def compress(self):
+	def compress(self) -> Self:
 		self.action = self.action.compress()
 		return self
 
@@ -558,7 +559,7 @@ class BallModifier(Modifier, WholeHapticAction):
 			return self.action.get_haptic()
 		return WholeHapticAction.get_haptic(self)
 
-	def compress(self):
+	def compress(self) -> CircularModifier | Self:
 		# ball(circular(...) has to be turned around
 		if isinstance(self.action, CircularModifier):
 			cm = self.action
@@ -671,7 +672,7 @@ class DeadzoneModifier(Modifier):
 			a,
 		)
 
-	def compress(self):
+	def compress(self) -> BallModifier | GyroAbsAction | Self:
 		self.action = self.action.compress()
 		if isinstance(self.action, BallModifier) and self.mode == MINIMUM:
 			# Special case where BallModifier has to be applied before
@@ -838,7 +839,7 @@ class ModeModifier(Modifier):
 		# Empty ModeModifier
 		return NoAction()
 
-	def compress(self):
+	def compress(self) -> Self:
 		if self.default:
 			self.default = self.default.compress()
 		for check in self.mods:
@@ -1070,7 +1071,7 @@ class DoubleclickModifier(Modifier, HapticEnabledAction):
 			return self.holdaction.strip()
 		return self.action.strip()
 
-	def compress(self):
+	def compress(self) -> Self:
 		self.action = self.action.compress()
 		self.holdaction = self.holdaction.compress()
 		self.normalaction = self.normalaction.compress()
@@ -1209,7 +1210,7 @@ class HoldModifier(DoubleclickModifier):
 			a = mod
 		return a
 
-	def compress(self):
+	def compress(self) -> Self:
 		self.action = self.action.compress()
 		self.holdaction = self.holdaction.compress()
 		self.normalaction = self.normalaction.compress()
@@ -1358,7 +1359,7 @@ class RotateInputModifier(Modifier):
 	def strip(self):
 		return self.action.strip()
 
-	def compress(self):
+	def compress(self) -> Action | NoAction | Self:
 		if hasattr(self.action, "set_rotation"):
 			self.action.set_rotation(self.angle * PI / -180.0)
 			return self.action

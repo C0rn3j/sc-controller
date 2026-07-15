@@ -149,7 +149,7 @@ def shjoin(lst: list) -> bytes:
 	return b" ".join(s)
 
 
-def shsplit(s: bytes) -> list[str]:
+def shsplit(s: str) -> list[str]:
 	"""Returns original list from what shjoin returned"""
 	lex = shlex.shlex(s, posix=True)
 	lex.escapedquotes = "\"'"

@@ -12,7 +12,7 @@ import logging
 import sys
 from difflib import get_close_matches
 from math import sqrt
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 from scc.actions import (
 	Action,
@@ -229,7 +229,7 @@ class OSDAction(Action, SpecialAction):
 			parameters.append("'%s'" % (str(self.text),))
 		return (" " * pad) + "%s(%s)" % (self.COMMAND, ",".join(parameters))
 
-	def strip(self) -> Action | OSDAction:
+	def strip(self) -> Action | Self:
 		if self.action:
 			return self.action.strip()
 		return self
@@ -701,7 +701,7 @@ class GesturesAction(Action, OSDEnabledAction, SpecialAction):
 			rv += ["'%s'" % (gstr,), self.gestures[gstr].to_string(False)]
 		return self.COMMAND + "(" + ", ".join(rv) + ")"
 
-	def compress(self):
+	def compress(self) -> Self:
 		for gstr in self.gestures:
 			a = self.gestures[gstr].compress()
 			if "i" in gstr:

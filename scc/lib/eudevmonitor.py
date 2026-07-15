@@ -22,7 +22,7 @@ import ctypes
 import errno
 import os
 from ctypes.util import find_library
-from typing import NamedTuple, TypeVar
+from typing import NamedTuple, Self, TypeVar
 
 
 class Eudev:
@@ -173,7 +173,7 @@ class Enumerator:
 			self._eudev._lib.udev_enumerate_unref(self._enumerator)
 			self._enumerator = None
 
-	def _add_match(self, whichone: str, *pars) -> Enumerator:
+	def _add_match(self, whichone: str, *pars) -> Self:
 		if self._enumeration_started:
 			raise RuntimeError("Cannot add match after enumeration is started")
 		fn = getattr(self._eudev._lib, "udev_enumerate_add_" + whichone)
@@ -185,35 +185,35 @@ class Enumerator:
 		return self
 
 	@twoargs
-	def match_sysattr(self, sysattr, value):
+	def match_sysattr(self, sysattr, value) -> Self:
 		return self._add_match("match_sysattr", sysattr, value)
 
 	@twoargs
-	def nomatch_sysattr(self, sysattr, value):
+	def nomatch_sysattr(self, sysattr, value) -> Self:
 		return self._add_match("nomatch_sysattr", sysattr, value)
 
 	@twoargs
-	def match_property(self, property, value):
+	def match_property(self, property, value) -> Self:
 		return self._add_match("match_property", property, value)
 
-	def match_subsystem(self, subsystem: str):
+	def match_subsystem(self, subsystem: str) -> Self:
 		return self._add_match("match_subsystem", subsystem)
 
-	def nomatch_subsystem(self, subsystem: str):
+	def nomatch_subsystem(self, subsystem: str) -> Self:
 		return self._add_match("nomatch_subsystem", subsystem)
 
-	def match_sysname(self, sysname: str):
+	def match_sysname(self, sysname: str) -> Self:
 		return self._add_match("match_sysname", sysname)
 
-	def match_tag(self, tag):
+	def match_tag(self, tag) -> Self:
 		return self._add_match("match_tag", tag)
 
-	def match_is_initialized(self):
+	def match_is_initialized(self) -> Self:
 		return self._add_match("match_is_initialized")
 
 	# match_parent is not implemented
 
-	def __iter__(self) -> Enumerator:
+	def __iter__(self) -> Self:
 		if self._enumeration_started:
 			raise RuntimeError("Cannot iterate same Enumerator twice")
 		self._enumeration_started = True
@@ -270,7 +270,7 @@ class Monitor:
 			self._eudev._lib.udev_monitor_unref(self._monitor)
 			self._monitor = None
 
-	def _add_match(self, whichone, *pars):
+	def _add_match(self, whichone, *pars) -> Self:
 		key = tuple([whichone] + list(pars))
 		if key in self._enabled_matches:
 			# Already done
@@ -306,7 +306,7 @@ class Monitor:
 			raise OSError("udev_monitor_get_fd: error %s" % (errno.errorcode.get(fileno, fileno),))
 		return fileno
 
-	def enable_receiving(self):
+	def enable_receiving(self) -> Self | None:
 		"""Returns self for chaining"""
 		if self._monitor_started:
 			return None  # Error, but unimportant
@@ -316,7 +316,7 @@ class Monitor:
 		self._monitor_started = True
 		return self
 
-	def set_receive_buffer_size(self, size):
+	def set_receive_buffer_size(self, size) -> Self:
 		"""Returns self for chaining"""
 		err = self._eudev._lib.udev_monitor_set_receive_buffer_size(self._monitor, size)
 		if err < 0:

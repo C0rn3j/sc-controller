@@ -9,7 +9,7 @@ from __future__ import annotations
 import sys
 import token as TokenType
 from tokenize import TokenError, generate_tokens
-from typing import NamedTuple
+from typing import NamedTuple, Self
 
 from scc.actions import Action, MultiAction, NoAction, RangeOP
 from scc.constants import PARSER_CONSTANTS, STICK, HapticPos, SCButtons
@@ -88,7 +88,7 @@ class ActionParser:
 				a = cls.decode(data, a, self, 0)  # Profile version is not yet used anywhere
 		return a
 
-	def restart(self, s: str | bytes) -> ActionParser:
+	def restart(self, s: str | bytes) -> Self:
 		"""Restart parsing with a new string.
 
 		Returns self for chaining.

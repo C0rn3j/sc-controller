@@ -7,7 +7,7 @@ trigger should be pressed.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 from scc.tools import _
 
@@ -236,12 +236,12 @@ class Action:
 			),
 		)
 
-	def set_name(self, name):
+	def set_name(self, name) -> Self:
 		"""Sets display name of action. Returns self."""
 		self.name = name
 		return self
 
-	def strip(self):
+	def strip(self) -> Self:
 		"""For modifier, returns first child action that actually
 		does something (first non-modifier).
 		For everything else, returns itself.
@@ -250,7 +250,7 @@ class Action:
 		"""
 		return self
 
-	def compress(self):
+	def compress(self) -> Self:
 		"""For most of actions, returns itself.
 
 		For few special cases, like FeedbackModifier and SensitivityModifier,
@@ -1281,7 +1281,7 @@ class ResetGyroAction(Action):
 class MultichildAction(Action):
 	"""Mixin with nice looking to_string() method"""
 
-	def compress(self):
+	def compress(self) -> Self:
 		self.actions = [x.compress() for x in self.actions]
 		return self
 
@@ -1713,7 +1713,7 @@ class MultiAction(MultichildAction):
 			return actions[0]
 		return MultiAction.make(*actions)
 
-	def compress(self):
+	def compress(self) -> Self:
 		nw = [x.compress() for x in self.actions]
 		self.actions = nw
 		return self
@@ -2004,7 +2004,7 @@ class RingAction(MultichildAction):
 		self._radius_m = STICK_PAD_MAX * self.radius  # radius, multiplied
 		self._active = NoAction()
 
-	def compress(self):
+	def compress(self) -> Self:
 		self.inner = self.inner.compress()
 		self.outer = self.outer.compress()
 		return self
@@ -2128,7 +2128,7 @@ class XYAction(WholeHapticAction, Action):
 		y = parser.from_json_data(data["Y"]) if "Y" in data else NoAction()
 		return XYAction(x, y)
 
-	def compress(self):
+	def compress(self) -> Self:
 		self.x = self.x.compress()
 		self.y = self.y.compress()
 		return self
@@ -2312,7 +2312,7 @@ class TriggerAction(Action, HapticEnabledAction):
 	def get_compatible_modifiers(self):
 		return Action.MOD_FEEDBACK
 
-	def compress(self):
+	def compress(self) -> Self:
 		self.action = self.action.compress()
 		return self
 
@@ -2429,7 +2429,7 @@ class HipfireAction(Action, HapticEnabledAction):
 	def get_compatible_modifiers(self):
 		return Action.MOD_FEEDBACK
 
-	def compress(self):
+	def compress(self) -> Self:
 		self.partialpress_action = self.partialpress_action.compress()
 		self.fullpress_action = self.fullpress_action.compress()
 		return self

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import logging
+from typing import Self
 
 from scc.actions import NoAction
 from scc.constants import CPAD, DPAD, GYRO, LEFT, RIGHT, RSTICK, STICK, WHOLE, SCButtons
@@ -46,13 +47,13 @@ class Profile:
 		self.is_template: bool = False
 		self.description: str = ""
 
-	def save(self, filename: str) -> Profile:
+	def save(self, filename: str) -> Self:
 		"""Saves profile into file. Returns self"""
 		with open(filename, "w") as fileobj:
 			self.save_fileobj(fileobj)
 		return self
 
-	def save_fileobj(self, fileobj) -> Profile:
+	def save_fileobj(self, fileobj) -> Self:
 		"""Saves profile into file-like object. Returns self"""
 		data = {
 			"_": (self.description if "\n" not in self.description else self.description.strip("\n").split("\n")),
@@ -80,14 +81,14 @@ class Profile:
 		fileobj.write(jstr)
 		return self
 
-	def load(self, filename: str) -> Profile:
+	def load(self, filename: str) -> Self:
 		"""Loads profile from file. Returns self"""
 		with open(filename) as fileobj:
 			self.load_fileobj(fileobj)
 		self.filename = filename
 		return self
 
-	def load_fileobj(self, fileobj) -> Profile:
+	def load_fileobj(self, fileobj) -> Self:
 		"""Loads profile from file-like object.
 
 		Filename attribute is not set, what may cause some trouble if used in GUI.
