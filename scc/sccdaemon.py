@@ -395,7 +395,7 @@ class SCCDaemon(Daemon):
 
 				if GtkLayerShell.is_supported():
 					log.warning(
-						"Wayland with WLRoots detected. Disabling X11 support, some functionality will be unavailable",
+						"Wayland detected. Disabling X11 support, some functionality will be unavailable",
 					)
 					self.xdisplay = None
 					self.subprocs.append(Subprocess("scc-osd-daemon", True))
@@ -403,7 +403,7 @@ class SCCDaemon(Daemon):
 			except (ImportError, ValueError):
 				pass
 
-			log.warning("Wayland detected. Disabling X11 support, some functionality will be unavailable")
+			log.warning("Wayland without zwlr_layer_shell_v1 support detected! Disabling X11 support, some functionality, including OSD, will be unavailable")
 			self.xdisplay = None
 			return
 
