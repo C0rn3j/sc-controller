@@ -597,13 +597,21 @@ class AxisAction(Action):
 		return Action.MOD_DEADZONE
 
 	@staticmethod
-	def get_axis_description(id, xy=False):
-		"""Returns (axis_description, 'Negative', 'Positive'), where all strings
-		are localized and Negative/Positive may be switched over depending on
-		axis.
+	def get_axis_description(id, xy: bool = False):
+		"""Returns (axis_description, 'Negative', 'Positive'), where all strings are localized.
+
+		Negative/Positive may be switched over depending on axis.
 		"""
-		if id in Axes.__members__.values() or id in Rels.__members__.values():
-			axis, neg, pos = "%s %s" % (id.name, _("Axis")), _("Negative"), _("Positive")
+		axis_or_rel: bool = False
+		if id in Axes.__members__.values():
+			id = Axes(id)
+			axis_or_rel = True
+		elif id in Rels.__members__.values():
+			id = Rels(id)
+			axis_or_rel = True
+
+		if axis_or_rel:
+			axis, neg, pos = "{} {}".format(id.name, _("Axis")), _("Negative"), _("Positive")
 			if id in AxisAction.AXIS_NAMES:
 				axis, neg, pos = [_(x) for x in AxisAction.AXIS_NAMES[id]]
 			if xy:
@@ -711,7 +719,7 @@ class HatAction(AxisAction):
 
 	COMMAND = None
 
-	def describe(self, context):
+	def describe(self, context) -> str:
 		if self.name:
 			return self.name
 		axis, neg, pos = AxisAction.get_axis_description(self.id)
