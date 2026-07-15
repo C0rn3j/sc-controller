@@ -1,6 +1,6 @@
 from unittest.mock import Mock, patch
 
-from scc.device_monitor import HCI_OE_USER_ENDED_CONNECTION, DeviceMonitor
+from scc.device_monitor import DeviceMonitor
 
 
 def make_monitor() -> DeviceMonitor:
@@ -58,16 +58,11 @@ def test_bluetooth_adapter_is_not_retried_as_device() -> None:
 	monitor.daemon.get_scheduler.return_value.schedule.assert_not_called()
 
 
-@patch("scc.device_monitor.HAVE_BLUETOOTH_LIB", True)
-@patch("scc.device_monitor.os.close")
-@patch("scc.device_monitor.btlib")
-def test_disconnect_bluetooth_uses_adapter_and_connection_handle(btlib: Mock, close: Mock) -> None:
+@patch("scc.device_monitor._disconnect_bluez")
+def test_disconnect_bluetooth_uses_bluez_device_path(disconnect_bluez: Mock) -> None:
 	monitor = make_monitor()
-	btlib.hci_open_dev.return_value = 12
-	btlib.hci_disconnect.return_value = 0
+	monitor.bt_addresses = {"hci0:50": "A0:5A:5D:87:82:17"}
 
 	monitor.disconnect_bluetooth("/sys/devices/bluetooth/hci0/hci0:50")
 
-	btlib.hci_open_dev.assert_called_once_with(0)
-	btlib.hci_disconnect.assert_called_once_with(12, 50, HCI_OE_USER_ENDED_CONNECTION, 1000)
-	close.assert_called_once_with(12)
+	disconnect_bluez.assert_called_once_with("/org/bluez/hci0/dev_A0_5A_5D_87_82_17")

@@ -1,6 +1,6 @@
 import pytest
 
-pytest.importorskip("gi", reason="PyGObject is required for trigger GUI tests")
+pytest.importorskip("gi", reason="PyGObject is required for GUI tests")
 
 import gi
 

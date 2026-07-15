@@ -1,3 +1,8 @@
+import pytest
+
+# BT disconnect needs it
+pytest.importorskip("gi", reason="PyGObject is required for GUI tests")
+
 from unittest.mock import Mock
 
 from scc.constants import HapticPos
@@ -108,3 +113,13 @@ def test_bluetooth_read_error_disconnects_without_escaping() -> None:
 	controller._poller.unregister.assert_called_once_with(12)
 	controller.daemon.remove_controller.assert_called_once_with(controller)
 	controller._hidrawdev._device.close.assert_called_once_with()
+
+
+def test_bluetooth_turnoff_disconnects_hci_link() -> None:
+	controller = object.__new__(DS4HIDRawController)
+	controller.daemon = Mock()
+	controller.syspath = "/sys/devices/bluetooth/hci0/hci0:50"
+
+	controller.turnoff()
+
+	controller.daemon.get_device_monitor.return_value.disconnect_bluetooth.assert_called_once_with(controller.syspath)

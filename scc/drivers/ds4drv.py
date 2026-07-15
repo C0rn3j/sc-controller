@@ -338,7 +338,7 @@ class DS4HIDRawController(DS4Controller):
 	def _input(self, *args) -> None:
 		try:
 			data = self._hidrawdev.read(self._packet_size)
-		except OSError as error:
+		except Exception as error:
 			log.debug("DS4 Bluetooth hidraw device disconnected: %s", error)
 			self.close()
 			return
@@ -356,6 +356,12 @@ class DS4HIDRawController(DS4Controller):
 		self.daemon.remove_controller(self)
 		self._hidrawdev._device.close()
 
+	def turnoff(self) -> None:
+		try:
+			self.daemon.get_device_monitor().disconnect_bluetooth(self.syspath)
+		except OSError as error:
+			log.warning("Failed to turn off DS4 Bluetooth controller: %s", error)
+
 
 class DS4HIDRawDriver:
 	def __init__(self, daemon: SCCDaemon, config: dict) -> None:
@@ -368,6 +374,7 @@ class DS4HIDRawDriver:
 		pass
 
 	def make_bt_hidraw_callback(self, syspath: str, vid, pid, *whatever) -> DS4HIDRawController | None:
+		log.debug("DS4 Bluetooth callback: syspath=%s vid=%04x pid=%04x", syspath, vid, pid)
 		hidrawname = self.daemon.get_device_monitor().get_hidraw(syspath)
 		if hidrawname is None:
 			return None

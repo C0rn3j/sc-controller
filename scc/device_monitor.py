@@ -24,6 +24,7 @@ import re
 log = logging.getLogger("DevMon")
 
 RE_BT_NUMBERS = re.compile(r"[0-9A-F]{4}:([0-9A-F]{4}):([0-9A-F]{4}).*")
+RE_HCI_LINK = re.compile(r"hci([0-9]+):([0-9]+)")
 HCIGETCONNLIST = IOR(ord("H"), 212, ctypes.c_int)
 HAVE_BLUETOOTH_LIB = False
 try:
@@ -33,6 +34,24 @@ try:
 	HAVE_BLUETOOTH_LIB = True
 except Exception:
 	pass
+
+
+def _disconnect_bluez(device_path: str) -> None:
+	# Import lazily so importing DeviceMonitor does not require PyGObject.
+	from gi.repository import Gio
+
+	bus = Gio.bus_get_sync(Gio.BusType.SYSTEM, None)
+	bus.call_sync(
+		"org.bluez",
+		device_path,
+		"org.bluez.Device1",
+		"Disconnect",
+		None,
+		None,
+		Gio.DBusCallFlags.NONE,
+		5000,
+		None,
+	)
 
 
 class DeviceMonitor(Monitor):
@@ -155,6 +174,24 @@ class DeviceMonitor(Monitor):
 			id = f"hci{cl.dev_id}:{ci.handle}"
 			address = ":".join([hex(x).lstrip("0x").zfill(2).upper() for x in reversed(ci.bdaddr)])
 			self.bt_addresses[id] = address
+
+	def disconnect_bluetooth(self, syspath: str) -> None:
+		"""Ask BlueZ to disconnect the device represented by an hciX:handle syspath."""
+		match = RE_HCI_LINK.fullmatch(os.path.basename(syspath))
+		if match is None:
+			raise OSError(f"Cannot identify Bluetooth connection from {syspath}")
+
+		dev_id, _handle = match.groups()
+		link_name = os.path.basename(syspath)
+		address = self.bt_addresses.get(link_name)
+		if address is None:
+			self._get_hci_addresses()
+			address = self.bt_addresses.get(link_name)
+		if address is None:
+			raise OSError(f"Cannot determine Bluetooth address for {link_name}")
+
+		device_path = "/org/bluez/hci{}/dev_{}".format(dev_id, address.replace(":", "_"))
+		_disconnect_bluez(device_path)
 
 	def _dev_for_hci(self, sys_bus_path: str) -> str | None:
 		"""For given syspath leading to ../hciX:ABCD, returns input device node.
