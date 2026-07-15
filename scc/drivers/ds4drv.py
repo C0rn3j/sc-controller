@@ -7,7 +7,9 @@ from __future__ import annotations
 import ctypes
 import logging
 import os
+import struct
 import sys
+import zlib
 from typing import TYPE_CHECKING
 
 import usb1
@@ -57,6 +59,11 @@ DS4_USB_OUTPUT_ENDPOINT = 2
 DS4_USB_OUTPUT_REPORT_SIZE = 32
 DS4_USB_OUTPUT_REPORT_ID = 0x05
 DS4_USB_OUTPUT_VALID_MOTOR = 0x01
+DS4_BT_OUTPUT_REPORT_SIZE = 78
+DS4_BT_OUTPUT_REPORT_ID = 0x11
+DS4_BT_OUTPUT_HW_CONTROL = 0xC4
+DS4_BT_OUTPUT_VALID_MOTOR = 0x01
+DS4_BT_OUTPUT_CRC_SEED = 0xA2
 
 
 class DS4Controller(Controller):
@@ -319,6 +326,11 @@ class DS4HIDRawController(DS4Controller):
 		self._fileno = hidrawdev._device.fileno()
 		self._id = self._generate_id() if driver else "-"
 		self._closed: bool = False
+		self._feedback_output = bytearray(DS4_BT_OUTPUT_REPORT_SIZE)
+		self._feedback_output[0] = DS4_BT_OUTPUT_REPORT_ID
+		self._feedback_output[1] = DS4_BT_OUTPUT_HW_CONTROL
+		self._feedback_output[3] = DS4_BT_OUTPUT_VALID_MOTOR
+		self._feedback_cancel_tasks = [None, None]
 
 		self._packet_size = 78
 		self._load_hid_descriptor(driver.config, self._packet_size, vid, pid, None)
@@ -355,6 +367,44 @@ class DS4HIDRawController(DS4Controller):
 
 		self.daemon.remove_controller(self)
 		self._hidrawdev._device.close()
+
+	def _write_feedback_report(self) -> None:
+		crc = zlib.crc32(bytes((DS4_BT_OUTPUT_CRC_SEED,)))
+		crc = zlib.crc32(self._feedback_output[:-4], crc)
+		struct.pack_into("<I", self._feedback_output, DS4_BT_OUTPUT_REPORT_SIZE - 4, crc)
+		#log.debug("DS4 Bluetooth output: motors=(%s,%s)", self._feedback_output[7], self._feedback_output[6])
+		self._hidrawdev.write(bytes(self._feedback_output))
+
+	def feedback(self, data) -> None:
+		position, amplitude, period, count = data.data
+		amplitude = min(amplitude, 0x8000) / 0x8000
+		motor_amplitude = int(amplitude * 0xFF)
+
+		motors = []
+		if position in (HapticPos.LEFT, HapticPos.BOTH):
+			self._feedback_output[7] = motor_amplitude
+			motors.append((0, 7))
+		if position in (HapticPos.RIGHT, HapticPos.BOTH):
+			self._feedback_output[6] = motor_amplitude
+			motors.append((1, 6))
+
+		duration = max(float(period) * count / 0x10000, 0.02)
+		for task_index, report_index in motors:
+			task = self._feedback_cancel_tasks[task_index]
+			if task:
+				task.cancel()
+			if amplitude == 0 or count == 0:
+				self._feedback_cancel_tasks[task_index] = None
+				continue
+
+			def clear_feedback(mapper, task_index=task_index, report_index=report_index):
+				self._feedback_output[report_index] = 0
+				self._feedback_cancel_tasks[task_index] = None
+				self._write_feedback_report()
+
+			self._feedback_cancel_tasks[task_index] = self.mapper.schedule(duration, clear_feedback)
+
+		self._write_feedback_report()
 
 	def turnoff(self) -> None:
 		try:

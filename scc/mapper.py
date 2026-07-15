@@ -130,6 +130,7 @@ class Mapper:
 				self.send_feedback(
 					HapticData(HapticPos.BOTH, period=period_command, amplitude=amplitude, count=count),
 				)
+				self.generate_feedback()
 				return
 
 			period_command = 0
@@ -158,6 +159,7 @@ class Mapper:
 					# count = min(0x7FFF, ef.duration * ef.repetitions / 30)
 				),
 			)
+			self.generate_feedback()
 
 	def get_gamepad_name(self):
 		"""Returns name of emulated gamepad (as displayed by jstest & co)
@@ -505,6 +507,16 @@ class Mapper:
 
 	def generate_feedback(self):
 		if self.controller:
+			left, right = self.feedbacks
+			if (
+				self.controller.get_type() == "ds4"
+				and left
+				and right
+				and left.data[1:] == right.data[1:]
+			):
+				self.feedbacks = [None, None]
+				self.controller.feedback(left.with_position(HapticPos.BOTH))
+				return
 			for x in (0, 1):
 				if self.feedbacks[x]:
 					self.controller.feedback(self.feedbacks[x])

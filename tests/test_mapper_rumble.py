@@ -1,5 +1,6 @@
 from unittest.mock import Mock
 
+from scc.constants import HapticPos
 from scc.mapper import Mapper
 
 
@@ -18,10 +19,12 @@ def test_conventional_rumble_uses_normal_amplitude_and_duration() -> None:
 
 	mapper._rumble_ready(0, 0)
 
-	for feedback in mapper.feedbacks:
-		_position, amplitude, period, count = feedback.data
-		assert amplitude == 0x7FFF
-		assert period * count / 0x10000 == 2.0
+	mapper.controller.feedback.assert_called_once()
+	position, amplitude, period, count = mapper.controller.feedback.call_args.args[0].data
+	assert position == HapticPos.BOTH
+	assert amplitude == 0x7FFF
+	assert period * count / 0x10000 == 2.0
+	assert mapper.feedbacks == [None, None]
 
 
 def test_rumble_stop_event_has_zero_amplitude() -> None:
@@ -29,8 +32,10 @@ def test_rumble_stop_event_has_zero_amplitude() -> None:
 
 	mapper._rumble_ready(0, 0)
 
-	for feedback in mapper.feedbacks:
-		_position, amplitude, period, count = feedback.data
-		assert amplitude == 0
-		assert period == 1024
-		assert count == 0
+	mapper.controller.feedback.assert_called_once()
+	position, amplitude, period, count = mapper.controller.feedback.call_args.args[0].data
+	assert position == HapticPos.BOTH
+	assert amplitude == 0
+	assert period == 1024
+	assert count == 0
+	assert mapper.feedbacks == [None, None]
