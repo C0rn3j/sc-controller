@@ -61,7 +61,7 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 		self._current = None
 		self._recursing = False
 		self._timer = None  # Used to prevent sending too many request
-		# when user scrolls throught combobox
+		# when user scrolls through combobox
 		self._signal = None
 		self._controller = None
 		self.setup_widgets()

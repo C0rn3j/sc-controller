@@ -39,10 +39,11 @@ class SVGWidget(Gtk.EventBox):
 		"click": (GObject.SignalFlags.RUN_FIRST, None, (object,)),
 	}
 
-	def __init__(self, filename, init_hilighted=True):
+	def __init__(self, filename, init_hilighted=True) -> None:
 		Gtk.EventBox.__init__(self)
 		self.cache = OrderedDict()
 		self.areas = []
+		self.current_svg: str | bytes
 
 		self.connect("motion-notify-event", self.on_mouse_moved)
 		self.connect("button-press-event", self.on_mouse_click)
@@ -133,7 +134,7 @@ class SVGWidget(Gtk.EventBox):
 
 	@staticmethod
 	def find_areas(xml, parent_transform, areas, get_colors=False, prefix="AREA_"):
-		"""Recursively searches throught XML for anything with ID of 'AREA_SOMETHING'
+		"""Recursively searches through XML for anything with ID of 'AREA_SOMETHING'
 		"""
 		for child in xml:
 			child_transform = SVGEditor.matrixmul(
@@ -187,7 +188,7 @@ class SVGWidget(Gtk.EventBox):
 			# 200 images by hand;
 			if len(buttons) == 0:
 				# Quick way out - changes are not needed
-				tmp = self.current_svg.encode("utf-8") if type(self.current_svg) == str else self.current_svg
+				tmp = self.current_svg.encode("utf-8") if type(self.current_svg) is str else self.current_svg
 				svg = Rsvg.Handle.new_from_data(tmp)
 			else:
 				# 1st, parse source as XML
@@ -253,8 +254,8 @@ class SVGEditor:
 	RE_PARSE_TRANSFORM = re.compile(r"([a-z]+)\(([-0-9\.,]+)\)(.*)")
 	IDENTITY = ((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0))
 
-	def __init__(self, svgw):
-		if type(svgw) == str:
+	def __init__(self, svgw: SVGWidget | str) -> None:
+		if type(svgw) is str:
 			self._svgw = None
 			self._tree = ET.fromstring(svgw)
 		# elif type(svgw) == unicode:
@@ -262,7 +263,7 @@ class SVGEditor:
 		# self._tree = ET.fromstring(svgw.encode("utf-8"))
 		else:
 			self._svgw = svgw
-			if type(svgw.current_svg) == bytes:
+			if type(svgw.current_svg) is bytes:
 				self._tree = ET.fromstring(svgw.current_svg.decode("utf-8"))
 			else:
 				self._tree = ET.fromstring(svgw.current_svg)
@@ -278,12 +279,12 @@ class SVGEditor:
 
 		return self
 
-	def to_string(self):
+	def to_string(self) -> bytes:
 		"""Returns modivied SVG as string"""
 		return ET.tostring(self._tree)
 
 	@staticmethod
-	def _deep_copy(element):
+	def _deep_copy(element: ET.Element):
 		"""Creates deep copy of XML element"""
 		e = element.copy()
 		for ch in element:
@@ -311,13 +312,13 @@ class SVGEditor:
 			return copy
 		return None
 
-	def remove_element(self, e) -> Self:
+	def remove_element(self, e: str | ET.Element) -> Self:
 		"""Removes element with specified ID, or, if element is passed,
 		removed that element. If  'id' is None, does nothing.
 
 		Returns self.
 		"""
-		if type(e) == str:
+		if type(e) is str:
 			e = SVGEditor.get_element(self, e)
 		if e is not None:
 			e.parent.remove(e)
@@ -325,12 +326,11 @@ class SVGEditor:
 
 	def keep(self, *ids) -> Self:
 		"""Removes all elements but ones with ID specified.
-		Keeps child elements as well.
 
-		Returns self.
+		Keeps child elements as well.
 		"""
 
-		def recursive(element):
+		def recursive(element) -> None:
 			for child in list(element):
 				if (
 					child.tag.endswith("metadata")
@@ -362,8 +362,8 @@ class SVGEditor:
 			tree.parent = None
 
 	@staticmethod
-	def get_element(tree, id):
-		"""Recursively searches throught XML until element with specified ID is found.
+	def get_element(tree, id: str) -> ET.Element | None:
+		"""Recursively searches through XML until element with specified ID is found.
 
 		Returns element or None, if there is not any.
 		"""
@@ -373,23 +373,22 @@ class SVGEditor:
 		return SVGEditor.find_by_id(tree, id)
 
 	@staticmethod
-	def find_by_id(tree, id):
-		"""Recursively searches throught XML until element with specified ID is found.
+	def find_by_id(tree, id: str) -> ET.Element | None:
+		"""Recursively searches through XML until element with specified ID is found.
 
 		Returns element or None, if there is not any.
 		"""
 		for child in tree:
-			if "id" in child.attrib:
-				if child.attrib["id"] == id:
-					return child
+			if "id" in child.attrib and child.attrib["id"] == id:
+				return child
 			r = SVGEditor.find_by_id(child, id)
 			if r is not None:
 				return r
 		return None
 
 	@staticmethod
-	def find_by_tag(tree, tag):
-		"""Recursively searches throught XML until element with specified tag is found.
+	def find_by_tag(tree, tag) -> ET.Element | None:
+		"""Recursively searches through XML until element with specified tag is found.
 
 		Returns element or None, if there is not any.
 		"""
@@ -402,8 +401,9 @@ class SVGEditor:
 		return None
 
 	@staticmethod
-	def recolor(element, color):
+	def recolor(element, color) -> bool:
 		"""Changes background color of element.
+
 		If element is group, descends into first element with fill set.
 
 		Returns True on success, False if element cannot be recolored.
@@ -435,7 +435,7 @@ class SVGEditor:
 		return False
 
 	@staticmethod
-	def _recolor(tree, s_from, s_to):
+	def _recolor(tree, s_from, s_to) -> None:
 		"""Recursive part of recolor_strokes and recolor_background"""
 		for child in tree:
 			if "style" in child.attrib:
@@ -472,7 +472,7 @@ class SVGEditor:
 		return [[sum(a * b for a, b in zip(x, y)) for y in zip(*Y)] for x in X]
 
 	@staticmethod
-	def scale(xml, sx, sy=None):
+	def scale(xml, sx, sy=None) -> None:
 		"""Changes element scale.
 		Creates or updates 'transform' attribute.
 		"""
@@ -486,7 +486,7 @@ class SVGEditor:
 		)
 
 	@staticmethod
-	def rotate(xml, a, x, y):
+	def rotate(xml, a, x, y) -> None:
 		"""Changes element rotation.
 		Creates or updates 'transform' attribute.
 		"""
@@ -502,7 +502,7 @@ class SVGEditor:
 		)
 
 	@staticmethod
-	def translate(xml, x, y):
+	def translate(xml, x, y) -> None:
 		"""Changes element translation.
 		Creates or updates 'transform' attribute.
 		"""
@@ -515,7 +515,7 @@ class SVGEditor:
 		)
 
 	@staticmethod
-	def set_transform(xml, matrix):
+	def set_transform(xml, matrix) -> None:
 		"""Sets element transformation matrix
 		"""
 		xml.attrib["transform"] = "matrix(%s,%s,%s,%s,%s,%s)" % (
@@ -552,8 +552,7 @@ class SVGEditor:
 
 	@staticmethod
 	def parse_transform(xml):
-		"""Returns element transform data in transformation matrix,
-		"""
+		"""Returns element transform data in transformation matrix,"""
 		matrix = SVGEditor.IDENTITY
 		if "x" in xml.attrib or "y" in xml.attrib:
 			x = float(xml.attrib.get("x", 0.0))
@@ -602,7 +601,7 @@ class SVGEditor:
 		return matrix
 
 	@staticmethod
-	def set_text(xml, text):
+	def set_text(xml, text) -> None:
 		has_valid_children = False
 		for child in xml:
 			if child.tag.endswith("text") or child.tag.endswith("tspan"):
@@ -611,7 +610,7 @@ class SVGEditor:
 		if not has_valid_children:
 			xml.text = text
 
-	def set_labels(self, labels) -> Self:
+	def set_labels(self, labels: dict) -> Self:
 		"""Replaces text on every element named LABEL_something with coresponding
 		value from 'labels' dict.
 
