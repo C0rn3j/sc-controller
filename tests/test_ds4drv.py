@@ -21,6 +21,7 @@ from scc.drivers.ds4drv import (
 	DS4_USB_OUTPUT_VALID_MOTOR,
 	DS4HIDController,
 	DS4HIDRawController,
+	DS4EvdevController,
 )
 
 
@@ -177,3 +178,15 @@ def test_bluetooth_turnoff_disconnects_hci_link() -> None:
 	controller.turnoff()
 
 	controller.daemon.get_device_monitor.return_value.disconnect_bluetooth.assert_called_once_with(controller.syspath)
+
+
+def test_bluetooth_evdev_turnoff_disconnects_hci_link() -> None:
+	controller = object.__new__(DS4EvdevController)
+	controller.daemon = Mock()
+	controller.device = Mock()
+	controller.device.info.bustype = controller.ECODES.BUS_BLUETOOTH
+	controller._syspath = "/sys/devices/bluetooth/hci0/hci0:50"
+
+	controller.turnoff()
+
+	controller.daemon.get_device_monitor.return_value.disconnect_bluetooth.assert_called_once_with(controller._syspath)
