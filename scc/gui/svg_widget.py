@@ -8,6 +8,7 @@ Also supports clicking on areas defined in SVG image.
 import logging
 import re
 from collections import OrderedDict
+from copy import deepcopy
 from math import cos, sin
 from math import pi as PI
 from typing import Self
@@ -155,9 +156,10 @@ class SVGWidget(Gtk.EventBox):
 
 	def get_rect_area(self, element):
 		"""Returns x, y, width and height of rect element relative to document root.
-		element can be specified by it's id.
+
+		element can be specified by its id.
 		"""
-		if type(element) == str:
+		if type(element) is str:
 			tree = ET.fromstring(self.current_svg.encode("utf-8"))
 			# SVGEditor.update_parents(tree)
 			element = SVGEditor.get_element(tree, element)
@@ -283,17 +285,6 @@ class SVGEditor:
 		"""Returns modivied SVG as string"""
 		return ET.tostring(self._tree)
 
-	@staticmethod
-	def _deep_copy(element: ET.Element):
-		"""Creates deep copy of XML element"""
-		e = element.copy()
-		for ch in element:
-			copy = SVGEditor._deep_copy(ch)
-			e.remove(ch)
-			e.append(copy)
-			copy.parent = e
-		return e
-
 	def clone_element(self, id):
 		"""Grabs element with specified ID, duplicates it and returns created
 		element. Returned element may get invalidated when commit() is called.
@@ -303,25 +294,26 @@ class SVGEditor:
 		# SVGEditor.update_parents(self)
 		e = SVGEditor.get_element(self, id)
 		if e is not None:
-			copy = SVGEditor._deep_copy(e)
-			parent = e.find("..")
-			if parent:
-				parent.append(copy)
-			# e.parent.append(copy)
-			# copy.parent = e.parent
-			return copy
+			clone = deepcopy(e)
+			parent = SVGEditor.find_parent(self._tree, e)
+			if parent is not None:
+				parent.append(clone)
+			return clone
 		return None
 
-	def remove_element(self, e: str | ET.Element) -> Self:
-		"""Removes element with specified ID, or, if element is passed,
-		removed that element. If  'id' is None, does nothing.
+	def remove_element(self, e: str | ET.Element | None) -> Self:
+		"""Removes element with specified ID, or, if element is passed, remove that element.
+
+		If 'id' is None, does nothing.
 
 		Returns self.
 		"""
 		if type(e) is str:
 			e = SVGEditor.get_element(self, e)
 		if e is not None:
-			e.parent.remove(e)
+			parent = SVGEditor.find_parent(self._tree, e)
+			if parent is not None:
+				parent.remove(e)
 		return self
 
 	def keep(self, *ids) -> Self:
@@ -346,20 +338,13 @@ class SVGEditor:
 		return self
 
 	@staticmethod
-	def update_parents(tree):
-		"""Ensures that parent fields of all tree elements are are set.
-		"""
-		if isinstance(tree, SVGEditor):
-			tree = tree._tree
-
-		def add_parent(parent):
+	def find_parent(tree: ET.Element, element: ET.Element) -> ET.Element | None:
+		"""Find an element's parent without relying on custom attributes."""
+		for parent in tree.iter():
 			for child in parent:
-				child.parent = parent
-				add_parent(child)
-
-		add_parent(tree)
-		if not hasattr(tree, "parent"):
-			tree.parent = None
+				if child is element:
+					return parent
+		return None
 
 	@staticmethod
 	def get_element(tree, id: str) -> ET.Element | None:
