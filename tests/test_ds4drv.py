@@ -7,12 +7,12 @@ from scc.drivers.ds4drv import (
 	DS4_USB_OUTPUT_REPORT_ID,
 	DS4_USB_OUTPUT_REPORT_SIZE,
 	DS4_USB_OUTPUT_VALID_MOTOR,
-	DS4Controller,
+	DS4HIDController,
 )
 
 
-def make_controller() -> DS4Controller:
-	controller = object.__new__(DS4Controller)
+def make_controller() -> DS4HIDController:
+	controller = object.__new__(DS4HIDController)
 	controller.handle = Mock()
 	controller.mapper = Mock()
 	controller._cmsg = []
@@ -88,4 +88,4 @@ def test_ds4_finds_interrupt_output_on_hid_interface() -> None:
 	hid.getClass.return_value = 3
 	hid.__iter__ = Mock(return_value=iter([hid_endpoint]))
 
-	assert DS4Controller._find_feedback_endpoint([[[audio], [hid]]]) == 2
+	assert DS4HIDController._find_feedback_endpoint([[[audio], [hid]]]) == 2
