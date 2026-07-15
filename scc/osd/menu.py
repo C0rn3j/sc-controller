@@ -64,6 +64,14 @@ class Menu(OSDWindow):
 		self._menuid = None
 		self._use_cursor = False
 		self._eh_ids = []
+		# Reveal-after-lock state: the menu is not made visible until inputs are
+		# locked, so a button press can't reach the normal mapping before the
+		# (asynchronous) lock lands. A fallback reveals anyway if the lock is
+		# slow, so the menu can never get stuck invisible.
+		self._inputs_locked = False
+		self._show_pending = False
+		self._reveal_timer = None
+		self._quit_done = False
 		self._control_with = STICK
 		self._control_with_dpad = False
 		self._confirm_with = "A"
@@ -399,8 +407,43 @@ class Menu(OSDWindow):
 		if not self.select(0):
 			self.next_item(1)
 		self._fit_scroll()
-		OSDWindow.show(self, *a)
+		# Reveal only once inputs are locked, so a button press can never reach
+		# the normal mapping before the lock lands. That matters for more than a
+		# stray keystroke: if the press is handled by the old action (e.g. a key
+		# goes DOWN) and the release is then captured by the menu, the key never
+		# goes UP and gets stuck. So we must never show the menu while unlocked:
+		# if the lock does not land within the timeout, give up and CLOSE the
+		# menu rather than revealing it.
+		self._show_pending = True
+		if self._reveal_timer is None:
+			self._reveal_timer = GLib.timeout_add(2000, self._lock_timed_out)
+		self._reveal_if_locked()
+
+	def _on_inputs_locked(self, *a):
+		"""Called from the lock-success callback, once inputs are diverted to
+		this menu and it is safe to reveal it."""
+		self._inputs_locked = True
+		self._reveal_if_locked()
+
+	def _reveal_if_locked(self):
+		"""Reveal the menu, but only once it is both requested and locked."""
+		if not (self._show_pending and self._inputs_locked):
+			return
+		self._show_pending = False
+		if self._reveal_timer is not None:
+			GLib.source_remove(self._reveal_timer)
+			self._reveal_timer = None
+		OSDWindow.show(self)
 		GLib.timeout_add(1, self._check_on_screen_position, True)
+
+	def _lock_timed_out(self, *a):
+		"""The lock never landed; close the menu instead of revealing it while
+		unlocked (which could leak input or strand a key)."""
+		self._reveal_timer = None
+		if self._show_pending:
+			self._show_pending = False
+			self.quit(3)
+		return False
 
 	def on_daemon_connected(self, *a):
 		if not self.config:
@@ -452,7 +495,7 @@ class Menu(OSDWindow):
 
 	def lock_inputs(self):
 		def success(*a):
-			log.error("Sucessfully locked input")
+			self._on_inputs_locked()
 
 		locks = [self._control_with, self._confirm_with, self._cancel_with]
 		if self._control_with == "STICK":
@@ -462,6 +505,19 @@ class Menu(OSDWindow):
 		self.controller.lock(success, self.on_failed_to_lock, *locks)
 
 	def quit(self, code=-2):
+		# A menu must unlock exactly once. quit() can be re-entered — most
+		# importantly by a *previous* menu's leftover timeout firing after this
+		# object should be gone — and unlock_all() is per-CLIENT: it clears every
+		# lock the OSD daemon holds, not just this menu's. Re-running it would
+		# strip the locks of whatever menu is open *now*, leaving it visible but
+		# dead (it stops responding and leaks input to the normal mapping). So
+		# make quit idempotent: a menu that already quit never unlocks again.
+		if self._quit_done:
+			return
+		self._quit_done = True
+		if self._reveal_timer is not None:
+			GLib.source_remove(self._reveal_timer)
+			self._reveal_timer = None
 		if not self._is_submenu:
 			if self.get_controller():
 				self.get_controller().unlock_all()
