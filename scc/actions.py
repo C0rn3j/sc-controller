@@ -1549,10 +1549,8 @@ class ButtonAction(HapticEnabledAction, Action):
 		else:
 			mapper.keyrelease_list.append(button)
 
-	def button_press(self, mapper: Mapper):
+	def button_press(self, mapper: Mapper) -> None:
 		ButtonAction._button_press(mapper, self.button, haptic=self.haptic)
-		if self.haptic:
-			mapper.send_feedback(self.haptic)
 
 	def button_release(self, mapper: Mapper):
 		ButtonAction._button_release(mapper, self.button)
