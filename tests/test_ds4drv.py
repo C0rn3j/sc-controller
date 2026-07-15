@@ -1,0 +1,91 @@
+from unittest.mock import Mock
+
+from scc.constants import HapticPos
+from scc.controller import HapticData
+from scc.drivers.ds4drv import (
+	DS4_USB_OUTPUT_ENDPOINT,
+	DS4_USB_OUTPUT_REPORT_ID,
+	DS4_USB_OUTPUT_REPORT_SIZE,
+	DS4_USB_OUTPUT_VALID_MOTOR,
+	DS4Controller,
+)
+
+
+def make_controller() -> DS4Controller:
+	controller = object.__new__(DS4Controller)
+	controller.handle = Mock()
+	controller.mapper = Mock()
+	controller._cmsg = []
+	controller._rmsg = []
+	controller._feedback_output = bytearray(DS4_USB_OUTPUT_REPORT_SIZE)
+	controller._feedback_output[0] = DS4_USB_OUTPUT_REPORT_ID
+	controller._feedback_output[1] = DS4_USB_OUTPUT_VALID_MOTOR
+	controller._feedback_endpoint = DS4_USB_OUTPUT_ENDPOINT
+	controller._feedback_pending = False
+	controller._feedback_cancel_tasks = [None, None]
+	return controller
+
+
+def test_wired_ds4_feedback_writes_usb_output_report() -> None:
+	controller = make_controller()
+
+	controller.feedback(HapticData(HapticPos.BOTH, amplitude=0x8000))
+	controller.flush()
+
+	controller.handle.interruptWrite.assert_called_once()
+	endpoint, report = controller.handle.interruptWrite.call_args.args
+	assert endpoint == DS4_USB_OUTPUT_ENDPOINT
+	assert len(report) == DS4_USB_OUTPUT_REPORT_SIZE
+	assert report[0] == DS4_USB_OUTPUT_REPORT_ID
+	assert report[1] == DS4_USB_OUTPUT_VALID_MOTOR
+	assert report[4] == 0xFF
+	assert report[5] == 0xFF
+	assert report[6:9] == b"\x00\x00\x00"
+
+
+def test_wired_ds4_feedback_clear_stops_selected_motor() -> None:
+	controller = make_controller()
+	scheduled = []
+	controller.mapper.schedule.side_effect = (
+		lambda duration, callback: scheduled.append((duration, callback)) or Mock()
+	)
+
+	controller.feedback(HapticData(HapticPos.RIGHT, amplitude=0x4000, period=1024, count=2))
+	assert controller._feedback_output[4] == 0x7F
+	assert controller._feedback_output[5] == 0
+	assert scheduled[0][0] == 0.03125
+
+	scheduled[0][1](controller.mapper)
+	assert controller._feedback_output[4] == 0
+	assert controller._feedback_pending
+
+
+def test_wired_ds4_stop_is_written_without_scheduling() -> None:
+	controller = make_controller()
+	controller._feedback_output[4] = 0xFF
+	old_task = Mock()
+	controller._feedback_cancel_tasks[1] = old_task
+
+	controller.feedback(HapticData(HapticPos.RIGHT, amplitude=0, period=0, count=0))
+	controller.flush()
+
+	old_task.cancel.assert_called_once_with()
+	controller.mapper.schedule.assert_not_called()
+	assert controller.handle.interruptWrite.call_args.args[1][4] == 0
+
+
+def test_ds4_finds_interrupt_output_on_hid_interface() -> None:
+	audio_endpoint = Mock()
+	audio_endpoint.getAddress.return_value = 3
+	audio_endpoint.getAttributes.return_value = 1
+	audio = Mock()
+	audio.getClass.return_value = 1
+	audio.__iter__ = Mock(return_value=iter([audio_endpoint]))
+	hid_endpoint = Mock()
+	hid_endpoint.getAddress.return_value = 2
+	hid_endpoint.getAttributes.return_value = 3
+	hid = Mock()
+	hid.getClass.return_value = 3
+	hid.__iter__ = Mock(return_value=iter([hid_endpoint]))
+
+	assert DS4Controller._find_feedback_endpoint([[[audio], [hid]]]) == 2

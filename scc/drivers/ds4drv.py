@@ -8,7 +8,9 @@ import logging
 import sys
 from typing import TYPE_CHECKING
 
-from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons
+import usb1
+
+from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, HapticPos, SCButtons
 from scc.drivers.evdevdrv import (
 	HAVE_EVDEV,
 	EvdevController,
@@ -44,6 +46,13 @@ VENDOR_ID = 0x054C
 PRODUCT_ID = 0x09CC
 DS4_V1_PRODUCT_ID = 0x05C4
 
+# CUH-ZCT2x exposes endpoint 0x03 as isochronous audio output and the HID
+# interrupt output endpoint as 0x02.
+DS4_USB_OUTPUT_ENDPOINT = 2
+DS4_USB_OUTPUT_REPORT_SIZE = 32
+DS4_USB_OUTPUT_REPORT_ID = 0x05
+DS4_USB_OUTPUT_VALID_MOTOR = 0x01
+
 
 class DS4Controller(HIDController):
 	# Most of axes are the same
@@ -72,6 +81,28 @@ class DS4Controller(HIDController):
 		| ControllerFlags.SEPARATE_STICK
 		| ControllerFlags.NO_GRIPS
 	)
+
+	def __init__(self, device, daemon, handle, config_file, config, test_mode=False):
+		self._feedback_endpoint = self._find_feedback_endpoint(device)
+		self._feedback_output = bytearray(DS4_USB_OUTPUT_REPORT_SIZE)
+		self._feedback_output[0] = DS4_USB_OUTPUT_REPORT_ID
+		self._feedback_output[1] = DS4_USB_OUTPUT_VALID_MOTOR
+		self._feedback_pending = False
+		self._feedback_cancel_tasks = [None, None]
+		super().__init__(device, daemon, handle, config_file, config, test_mode)
+
+	@staticmethod
+	def _find_feedback_endpoint(device) -> int:
+		"""Return the interrupt OUT endpoint belonging to the HID interface."""
+		for interface in device[0]:
+			for setting in interface:
+				if setting.getClass() != 3:
+					continue
+				for endpoint in setting:
+					address = endpoint.getAddress()
+					if endpoint.getAttributes() == 3 and address & usb1.ENDPOINT_IN == 0:
+						return address
+		return DS4_USB_OUTPUT_ENDPOINT
 
 	def _load_hid_descriptor(self, config, max_size, vid, pid, test_mode):
 		# Overrided and hardcoded
@@ -209,6 +240,43 @@ class DS4Controller(HIDController):
 		# Cannot be actually turned off, so it's always active
 		# TODO: Maybe emulate turning off?
 		return True
+
+	def feedback(self, data) -> None:
+		position, amplitude, period, count = data.data
+		amplitude = min(amplitude, 0x8000) / 0x8000
+		right_amplitude = int(amplitude * 0xFF)
+		left_amplitude = int(amplitude * 0xFF)
+
+		motors = []
+		if position in (HapticPos.LEFT, HapticPos.BOTH):
+			self._feedback_output[5] = left_amplitude
+			motors.append((0, 5))
+		if position in (HapticPos.RIGHT, HapticPos.BOTH):
+			self._feedback_output[4] = right_amplitude
+			motors.append((1, 4))
+		self._feedback_pending = True
+
+		duration = max(float(period) * count / 0x10000, 0.02)
+		for task_index, report_index in motors:
+			task = self._feedback_cancel_tasks[task_index]
+			if task:
+				task.cancel()
+			if amplitude == 0 or count == 0:
+				self._feedback_cancel_tasks[task_index] = None
+				continue
+
+			def clear_feedback(mapper, task_index=task_index, report_index=report_index):
+				self._feedback_output[report_index] = 0
+				self._feedback_pending = True
+				self._feedback_cancel_tasks[task_index] = None
+
+			self._feedback_cancel_tasks[task_index] = self.mapper.schedule(duration, clear_feedback)
+
+	def flush(self) -> None:
+		super().flush()
+		if self._feedback_pending:
+			self.handle.interruptWrite(self._feedback_endpoint, bytes(self._feedback_output))
+			self._feedback_pending = False
 
 	def get_type(self) -> str:
 		return "ds4"

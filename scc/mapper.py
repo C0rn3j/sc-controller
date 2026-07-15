@@ -122,9 +122,19 @@ class Mapper:
 		STEAM_CONTROLLER_MAGIC_PERIOD_RATIO = 495483.0
 		ef = self.gamepad.ff_read()
 		if ef:  # tale of...
+			if self.controller and self.controller.get_type() != "sc":
+				amplitude = min(abs(ef.level), 0x7FFF) if ef.repetitions > 0 else 0
+				period_command = 1024
+				duration_seconds = ef.duration / 1000.0 * ef.repetitions
+				count = min(round(duration_seconds * 0x10000 / period_command), 0x7FFF) if amplitude else 0
+				self.send_feedback(
+					HapticData(HapticPos.BOTH, period=period_command, amplitude=amplitude, count=count),
+				)
+				return
+
 			period_command = 0
 			amplitude = 0
-			if ef.level != 0:
+			if ef.level != 0 and ef.repetitions > 0:
 				tempRatio = ef.level / 32767.5
 				period_command = (6000 - 25000) * tempRatio + 25000
 				amplitude = (900 - 600) * tempRatio + 600
