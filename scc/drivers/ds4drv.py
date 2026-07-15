@@ -318,6 +318,7 @@ class DS4HIDRawController(DS4Controller):
 		self._hidrawdev = hidrawdev
 		self._fileno = hidrawdev._device.fileno()
 		self._id = self._generate_id() if driver else "-"
+		self._closed: bool = False
 
 		self._packet_size = 78
 		self._load_hid_descriptor(driver.config, self._packet_size, vid, pid, None)
@@ -327,7 +328,7 @@ class DS4HIDRawController(DS4Controller):
 		self._poller = self.daemon.get_poller()
 		if self._poller:
 			self._poller.register(self._fileno, self._poller.POLLIN, self._input)
-		# self.daemon.get_device_monitor().add_remove_callback(syspath, self.close)
+		self.daemon.get_device_monitor().add_remove_callback(syspath, self.close)
 		self.daemon.add_controller(self)
 		log.debug("DS4 %s using Bluetooth/hidraw (%s)", self.get_id(), self.syspath)
 
@@ -335,12 +336,20 @@ class DS4HIDRawController(DS4Controller):
 		self._serial = (self._hidrawdev.getPhysicalAddress().replace(b":", b""))
 
 	def _input(self, *args) -> None:
-		data = self._hidrawdev.read(self._packet_size)
+		try:
+			data = self._hidrawdev.read(self._packet_size)
+		except OSError as error:
+			log.debug("DS4 Bluetooth hidraw device disconnected: %s", error)
+			self.close()
+			return
 		if data[0] != 0x11:
 			return
 		self.input(self._fileno, data[2:])
 
-	def close(self) -> None:
+	def close(self, *args) -> None:
+		if self._closed:
+			return
+		self._closed = True
 		if self._poller:
 			self._poller.unregister(self._fileno)
 

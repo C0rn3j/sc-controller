@@ -8,6 +8,7 @@ from scc.drivers.ds4drv import (
 	DS4_USB_OUTPUT_REPORT_SIZE,
 	DS4_USB_OUTPUT_VALID_MOTOR,
 	DS4HIDController,
+	DS4HIDRawController,
 )
 
 
@@ -89,3 +90,21 @@ def test_ds4_finds_interrupt_output_on_hid_interface() -> None:
 	hid.__iter__ = Mock(return_value=iter([hid_endpoint]))
 
 	assert DS4HIDController._find_feedback_endpoint([[[audio], [hid]]]) == 2
+
+
+def test_bluetooth_read_error_disconnects_without_escaping() -> None:
+	controller = object.__new__(DS4HIDRawController)
+	controller._hidrawdev = Mock()
+	controller._hidrawdev.read.side_effect = OSError(5, "Input/output error")
+	controller._hidrawdev._device = Mock()
+	controller._packet_size = 78
+	controller._fileno = 12
+	controller._poller = Mock()
+	controller.daemon = Mock()
+	controller._closed = False
+
+	controller._input()
+
+	controller._poller.unregister.assert_called_once_with(12)
+	controller.daemon.remove_controller.assert_called_once_with(controller)
+	controller._hidrawdev._device.close.assert_called_once_with()
