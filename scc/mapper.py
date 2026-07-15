@@ -509,7 +509,7 @@ class Mapper:
 		if self.controller:
 			left, right = self.feedbacks
 			if (
-				self.controller.get_type() == "ds4"
+				self.controller.get_type() in ("ds4", "ds4evdev")
 				and left
 				and right
 				and left.data[1:] == right.data[1:]
