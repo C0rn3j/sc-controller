@@ -1,5 +1,5 @@
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, TRIGGER_MAX, TRIGGER_MIN
-from scc.drivers.evdevdrv import AxisCalibrationData, parse_axis
+from scc.drivers.evdevdrv import AxisCalibrationData, EvdevDriver, parse_axis
 from scc.tools import clamp
 
 
@@ -38,3 +38,11 @@ def test_parse_stick_axis_remains_bipolar() -> None:
 	# Bipolar scaling uses the positive magnitude for both endpoints.
 	assert calibrated_value(calibration, 0) == -STICK_PAD_MAX
 	assert calibrated_value(calibration, 255) == STICK_PAD_MAX
+
+
+def test_get_event_node_accepts_kernel_event_device() -> None:
+	assert EvdevDriver.get_event_node("/sys/devices/input/input1/event17") == "/dev/input/event17"
+
+
+def test_get_event_node_rejects_event_count_attribute() -> None:
+	assert EvdevDriver.get_event_node("/sys/devices/wakeup/wakeup1/event_count") is None

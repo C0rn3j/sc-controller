@@ -67,7 +67,7 @@ class EvdevController(Controller):
 		| ControllerFlags.NO_GRIPS
 	)
 
-	def __init__(self, daemon: SCCDaemon, device: InputDevice, config_file: str, config: dict):
+	def __init__(self, daemon: SCCDaemon, device: InputDevice[str], config_file: str, config: dict):
 		try:
 			self._parse_config(config)
 		except Exception:
@@ -358,7 +358,8 @@ class EvdevDriver:
 	@staticmethod
 	def get_event_node(syspath: str):
 		filename = syspath.rsplit("/", maxsplit=1)[-1]
-		if not filename.startswith("event"):
+		# Digit check to prevent returning funny endpoints like /dev/input/event_count
+		if not filename.startswith("event") or not filename[5:].isdigit():
 			return None
 		return f"/dev/input/{filename}"
 
