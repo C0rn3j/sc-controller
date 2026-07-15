@@ -694,9 +694,8 @@ class SCCDaemon(Daemon):
 				self.autoswitch_daemon = None
 			self.clients.remove(client)
 
-	def _handle_message(self, client, message):
-		"""Handles message received from client.
-		"""
+	def _handle_message(self, client, message: bytes):
+		"""Handles message received from client."""
 		if message.startswith(b"Profile:"):
 			with self.lock:
 				try:
@@ -724,13 +723,13 @@ class SCCDaemon(Daemon):
 		elif message.startswith(b"Feedback:"):
 			try:
 				position, amplitude = message[9:].strip().split(b" ", 2)
-				data = HapticData(getattr(HapticPos, position.strip(" \t\r")), int(amplitude))
+				data = HapticData(getattr(HapticPos, position.decode("ascii")), int(amplitude))
 				if client.mapper.get_controller():
 					client.mapper.get_controller().feedback(data)
 				client.wfile.write(b"OK.\n")
 			except Exception as e:
 				log.exception(e)
-				client.wfile.write(b"Fail: %s\n" % (e,))
+				client.wfile.write((f"Fail: {e}\n").encode())
 		elif message.startswith(b"Controller."):
 			with self.lock:
 				client.mapper = self.default_mapper
@@ -759,7 +758,7 @@ class SCCDaemon(Daemon):
 				number = int(message[4:])
 				number = clamp(0, number, 100)
 			except Exception as e:
-				client.wfile.write(b"Fail: %s\n" % (e,))
+				client.wfile.write(f"Fail: {e}\n".encode())
 				return
 			if client.mapper.get_controller():
 				client.mapper.get_controller().set_led_level(number)
@@ -784,7 +783,7 @@ class SCCDaemon(Daemon):
 			with self.lock:
 				try:
 					if not self._can_lock_action(client.mapper, SCCDaemon.source_to_constant(l)):
-						client.wfile.write(b"Fail: Cannot lock " + l.encode("utf-8") + b"\n")
+						client.wfile.write(b"Fail: Cannot lock " + l + b"\n")
 						return
 				except ValueError:
 					tb = str(traceback.format_exc()).encode("utf-8").decode("unicode_escape").encode("latin1")
@@ -798,7 +797,7 @@ class SCCDaemon(Daemon):
 				try:
 					for l in to_lock:
 						if not self._can_lock_action(client.mapper, SCCDaemon.source_to_constant(l)):
-							client.wfile.write(b"Fail: Cannot lock " + l.encode("utf-8") + b"\n")
+							client.wfile.write(b"Fail: Cannot lock " + l + b"\n")
 							return
 				except ValueError:
 					tb = str(traceback.format_exc()).encode("utf-8").decode("unicode_escape").encode("latin1")
