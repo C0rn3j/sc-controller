@@ -359,5 +359,9 @@ class AutoswitchOptsMenuGenerator(MenuGenerator):
 			setattr(menuitem, k, kws[k])
 		return menuitem
 
+def register_menu_generators() -> None:
+	"""Add class to MENU_GENERATORS dict
 
-MENU_GENERATORS[AutoswitchOptsMenuGenerator.GENERATOR_NAME] = AutoswitchOptsMenuGenerator
+	Needs to be called from menu otherwise autoswitcher entries will be empty
+	"""
+	MENU_GENERATORS[AutoswitchOptsMenuGenerator.GENERATOR_NAME] = AutoswitchOptsMenuGenerator

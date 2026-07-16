@@ -15,16 +15,16 @@ from scc.constants import DEFAULT, LEFT, RIGHT, SAME, STICK, STICK_PAD_MAX, Cont
 from scc.gui.daemon_manager import DaemonManager
 from scc.lib import xwrappers as X
 from scc.menu_data import MenuData, Separator, Submenu
-from scc.osd import OSDWindow, StickController
+from scc.osd import OSDWindow, StickController, menu_generators
 from scc.paths import get_share_path
 from scc.tools import _, circle_to_square, clamp, find_icon, find_menu
+from scc.x11 import autoswitcher
 
 log = logging.getLogger("osd.menu")
 
-# Fill MENU_GENERATORS dict
-import scc.osd.menu_generators
-import scc.x11.autoswitcher
 
+menu_generators.register_menu_generators()
+autoswitcher.register_menu_generators()
 
 class Menu(OSDWindow):
 	EPILOG = """Exit codes:

@@ -166,7 +166,15 @@ class GameListMenuGenerator(MenuGenerator):
 		return GameListMenuGenerator._games
 
 
-# Add classes to MENU_GENERATORS dict
-for i in [globals()[x] for x in dir() if hasattr(globals()[x], "GENERATOR_NAME")]:
-	if i.GENERATOR_NAME is not None:
-		MENU_GENERATORS[i.GENERATOR_NAME] = i
+def register_menu_generators() -> None:
+	"""Add classes to MENU_GENERATORS dict
+
+	Needs to be called from menu otherwise entries will be empty
+	"""
+	for cls in (
+		ProfileListMenuGenerator,
+		RecentListMenuGenerator,
+		WindowListMenuGenerator,
+		GameListMenuGenerator,
+	):
+		MENU_GENERATORS[cls.GENERATOR_NAME] = cls
