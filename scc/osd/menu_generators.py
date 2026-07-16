@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """SC-Controller - OSD Menu Generators
 
 Auto-generated menus with stuff like list of all available profiles...

@@ -22,6 +22,8 @@ from scc.tools import _, circle_to_square, clamp, find_icon, find_menu
 log = logging.getLogger("osd.menu")
 
 # Fill MENU_GENERATORS dict
+import scc.osd.menu_generators
+import scc.x11.autoswitcher
 
 
 class Menu(OSDWindow):

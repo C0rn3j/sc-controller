@@ -2,6 +2,7 @@
 
 Observes active window and commands scc-daemon to change profiles as needed.
 """
+from __future__ import annotations
 
 import logging
 import os
@@ -81,7 +82,7 @@ class AutoSwitcher:
 					count += 1
 		log.debug("Removed %s autoswitcher conditions", count)
 
-	def connect_daemon(self, *a):
+	def connect_daemon(self, *a) -> None:
 		try:
 			self.socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 			self.socket.connect(get_daemon_socket())
@@ -238,15 +239,14 @@ class Condition:
 		return _("matches nothing")
 
 	@staticmethod
-	def parse(data):
+	def parse(data) -> Condition:
 		if "regexp" in data:
 			data = dict(data)
 			data["regexp"] = re.compile(data["regexp"])
 		return Condition(**data)
 
 	def encode(self):
-		"""Returns Condition in dict that can be stored in json configuration
-		"""
+		"""Returns Condition in dict that can be stored in json configuration"""
 		rv = {}
 		if self.title:
 			rv["title"] = self.title
