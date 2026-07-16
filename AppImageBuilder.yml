@@ -133,8 +133,7 @@ AppDir:
       # NOTE: libicu* and libxml* are intentionally NOT excluded. The bundled
       # librsvg needs libxml2 (which pulls in icu), and minimal hosts such as
       # SteamOS do not provide them, so excluding them gives a fatal
-      # "libxml2.so.2: cannot open shared object file" at GUI startup. Bundling
-      # them matches what the older appimage-build.sh shipped.
+      # "libxml2.so.2: cannot open shared object file" at GUI startup.
       - libstdc*        # development
 
       # libgtk3-0
