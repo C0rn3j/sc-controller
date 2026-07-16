@@ -4,6 +4,7 @@ Modifier is Action that just sits between input and actual action, changing
 way how resulting action works.
 For example, click() modifier executes action only if pad is pressed.
 """
+from __future__ import annotations
 
 import inspect
 import itertools
