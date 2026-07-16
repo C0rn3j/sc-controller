@@ -290,7 +290,7 @@ class Condition:
 class AutoswitchOptsMenuGenerator(MenuGenerator):
 	"""Generates entire Autoswich Options submenu"""
 
-	GENERATOR_NAME = "autoswitch"
+	GENERATOR_NAME: str = "autoswitch"
 
 	def callback(self, menu, daemon, controller, menuitem):
 		def on_response(*a):
@@ -317,8 +317,12 @@ class AutoswitchOptsMenuGenerator(MenuGenerator):
 	def describe(self):
 		return _("[ All Profiles ]")
 
-	def generate(self, menuhandler):
-		rv = []
+	def generate(self, menuhandler) -> list[MenuItem]:
+		rv: list[MenuItem] = []
+		if os.environ.get("WAYLAND_DISPLAY"):
+			rv.append(self.mk_item(None, _("Autoswitch is not currently supported in Wayland")))
+			return rv
+
 		win = X.get_current_window(menuhandler.xdisplay)
 		if not win:
 			# Bail out if active window cannot be determined
@@ -351,9 +355,9 @@ class AutoswitchOptsMenuGenerator(MenuGenerator):
 			rv.append(self.mk_item("as::assign", _("Assign Current Profile")))
 		return rv
 
-	def mk_item(self, id, title, **kws):
-		"""Creates menu item and assigns callback"""
-		menuitem = MenuItem(id, title)
+	def mk_item(self, item_id: str | None, title, **kws) -> MenuItem:
+		"""Creates a MenuItem and assigns it a callback"""
+		menuitem = MenuItem(item_id, title)
 		menuitem.callback = self.callback
 		for k in kws:
 			setattr(menuitem, k, kws[k])
