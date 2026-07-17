@@ -524,6 +524,10 @@ class Keyboard(OSDWindow, TimerManager):
 			self.profile.pads[CPAD].speed = [0.85, 1.2]
 			self.profile.buttons[SCButtons.CPADPRESS] = scc.osd.osk_actions.OSKPressAction(CPAD)
 
+			for button, action in self.profile.buttons.items():
+				if isinstance(action, scc.osd.osk_actions.OSKPressAction):
+					self.profile.buttons[button] = scc.osd.osk_actions.OSKPressAction(CPAD)
+
 			for i in (LEFT, RIGHT):
 				if isinstance(self.profile.triggers[i], scc.osd.osk_actions.OSKPressAction):
 					self.profile.triggers[i] = scc.osd.osk_actions.OSKPressAction(CPAD)
