@@ -91,7 +91,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.background = None
 		self.outdated_version = None
 		self.profile_switchers: list[ProfileSwitcher] = []
-		self.test_mode_controller = None
+		self.test_mode_controller: ControllerManager | None = None
 		self.current_ui_layout = "default"  # only "default" and "deck" are supported
 		self.current_file = None  # Currently edited file
 		self.controller_count: int = 0
@@ -885,6 +885,14 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			# First load, default controller decided by _ensure_config() in controller_image.py
 			if not self._controller_shown:
 				self.load_gui_config_for_controller(None, first=True)
+			if self.test_mode_controller:
+				self.test_mode_controller.unlock_all()
+				self.test_mode_controller = None
+		else:
+			# A reconnected controller may receive any recycled mapper. Reinstall
+			# observation on the controller currently shown by the editor instead
+			# of relying on observation state left on a previous mapper.
+			self.enable_test_mode(self.profile_switchers[0].get_controller())
 
 		self.controller_count = count
 
