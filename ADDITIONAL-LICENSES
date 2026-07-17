@@ -5,7 +5,6 @@ are licensed under the CC0 license - https://creativecommons.org/publicdomain/ze
 Images in images/menu-icons subdirectories are licensed as described
 in the 'LICENSES' files in their respective subdirectories.
 
-lib/jsonencoder.py is licensed under the PSFL, https://www.python.org/download/releases/2.7/license/
 gamecontrollerdb.txt is taken from the Simple DirectMedia Layer library and licensed under the zlib license.
 scc/lib/xwrappers.py and scc/lib/vdf.py are part of SC Controller, licensed under GPL-2.0-only like the rest of the project.
 

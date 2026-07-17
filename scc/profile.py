@@ -7,11 +7,11 @@ from __future__ import annotations
 
 import json
 import logging
+from json import JSONEncoder
 from typing import Self
 
 from scc.actions import NoAction
 from scc.constants import CPAD, DPAD, GYRO, LEFT, RIGHT, RSTICK, STICK, WHOLE, SCButtons
-from scc.lib.jsonencoder import JSONEncoder
 from scc.menu_data import MenuData
 from scc.modifiers import HoldModifier
 from scc.special_actions import MenuAction
