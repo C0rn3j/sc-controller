@@ -3,11 +3,11 @@
 # MODE="0660", GROUP="games" to allow r/w access only to members of that group.
 
 # Valve USB devices
-SUBSYSTEM=="usb", ATTRS{idVendor}=="28de", MODE="0666"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="28de", MODE="0666", TAG+="uaccess"
 # Valve HID devices over bluetooth hidraw
 KERNEL=="hidraw*", KERNELS=="*28DE:*", MODE="0666", TAG+="uaccess"
 # Sony USB devices
-SUBSYSTEM=="usb", ATTRS{idVendor}=="054c", MODE="0666"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="054c", MODE="0666", TAG+="uaccess"
 # Sony input devices over bluetooth
 SUBSYSTEM=="input", KERNELS=="*054C:09CC*", MODE="0666", TAG+="uaccess"
 SUBSYSTEM=="input", KERNELS=="*054C:0CE6*", MODE="0666", TAG+="uaccess"
