@@ -6,7 +6,10 @@ Images in images/menu-icons subdirectories are licensed as described
 in the 'LICENSES' files in their respective subdirectories.
 
 lib/jsonencoder.py is licensed under the PSFL, https://www.python.org/download/releases/2.7/license/
-scripts/gamecontrollerdb.txt is taken from the Simple DirectMedia Layer library and licensed under the zlib license.
-lib/xwrappers.py and lib/vdf.py are part of SC Controller, licensed under GPL2 like the rest of the project.
+gamecontrollerdb.txt is taken from the Simple DirectMedia Layer library and licensed under the zlib license.
+scc/lib/xwrappers.py and scc/lib/vdf.py are part of SC Controller, licensed under GPL-2.0-only like the rest of the project.
 
-Everything else is licensed under GPL2, as described in the 'LICENSE' file.
+note(Martin): scc/uinput.c, scc/constants.py, scc/cheader.py and scc/uinput.py have MIT License headers
+              but are not mentioned here, probably ommitted by a mistake
+
+Everything else is licensed under GPL-2.0-only, as described in the 'LICENSE' file.
