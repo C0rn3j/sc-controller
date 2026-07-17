@@ -1510,12 +1510,16 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 		displays infobar informing user that they are ready to be displayed
 		"""
-		url = App.RELEASE_URL % (App.get_release(),)
+		url: str = App.RELEASE_URL % (App.get_release(),)
+		# We're checking URLs such as https://github.com/C0rn3j/sc-controller/releases/tag/v0.6.2.dev6+gf4a040743
+		if ".dev" in url:
+			log.debug(f"Dev build - skipping loading release notes")
+			return
 		log.debug(f"Loading release notes from '{url}'")
 		f = Gio.File.new_for_uri(url)
 		buffer = b""
 
-		def stream_ready(stream, task, buffer):
+		def stream_ready(stream, task, buffer) -> None:
 			try:
 				bytes = stream.read_bytes_finish(task)
 				if bytes.get_size() > 0:
@@ -1528,7 +1532,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				log.exception(e)
 				return
 
-		def http_ready(f, task, buffer):
+		def http_ready(f, task, buffer) -> None:
 			try:
 				stream = f.read_finish(task)
 				assert stream
@@ -1541,7 +1545,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		f.read_async(0, None, http_ready, buffer)
 
 	def on_got_release_notes(self, data):
-		""" " Called after entire HTML page of release notes is downloaded"""
+		"""Called after entire HTML page of release notes is downloaded"""
 		# There is actually only one thing parsed here;
 		# Sequence of words "see ... for more", in bold, containing <A> tag.
 		# If such sequence is found, it's displayed with message about extended
