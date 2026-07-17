@@ -22,15 +22,15 @@ log = logging.getLogger("ContImage")
 
 class ControllerImage(SVGWidget):
 	DEFAULT = "sc"
-	BUTTONS_WITH_IMAGES = (
-		SCButtons.A,
-		SCButtons.B,
-		SCButtons.X,
-		SCButtons.Y,
-		SCButtons.BACK,
-		SCButtons.C,
-		SCButtons.START,
-		SCButtons.DOTS,
+	BUTTON_IMAGE_SLOTS = (
+		(SCButtons.A, 0),
+		(SCButtons.B, 1),
+		(SCButtons.X, 2),
+		(SCButtons.Y, 3),
+		(SCButtons.BACK, 4),
+		(SCButtons.C, 5),
+		(SCButtons.START, 6),
+		(SCButtons.DOTS, 16),
 	)
 
 	DEFAULT_AXES = (
@@ -45,7 +45,7 @@ class ControllerImage(SVGWidget):
 		"rtrig",
 	)
 
-	DEFAULT_BUTTONS = [nameof(x) for x in BUTTONS_WITH_IMAGES] + [
+	DEFAULT_BUTTONS = [nameof(button) for button, _slot in BUTTON_IMAGE_SLOTS] + [
 		# Used only by Steam Controller
 		nameof(SCButtons.LB),
 		nameof(SCButtons.RB),
@@ -146,11 +146,10 @@ class ControllerImage(SVGWidget):
 		# SVGEditor.update_parents(e)
 		target = SVGEditor.get_element(e, "controller")
 		target_x, target_y = SVGEditor.get_translation(target)
-		for i in range(len(ControllerImage.BUTTONS_WITH_IMAGES)):
-			b = nameof(ControllerImage.BUTTONS_WITH_IMAGES[i])
-			if b == "DOTS":
-				# How did I managed to create this kind of special case? -_-
-				i = 16
+		for button, slot in ControllerImage.BUTTON_IMAGE_SLOTS:
+			b = nameof(button)
+			if slot >= len(buttons):
+				continue
 			path = None
 			try:
 				elm = SVGEditor.get_element(e, f"AREA_{b}")
@@ -169,7 +168,7 @@ class ControllerImage(SVGWidget):
 					else:
 						x -= (tw - w) * 0.25
 						y -= (th - h) * 0.25
-				path = os.path.join(self.app.imagepath, "button-images", f"{buttons[i]}.svg")
+				path = os.path.join(self.app.imagepath, "button-images", f"{buttons[slot]}.svg")
 				img = SVGEditor.get_element(SVGEditor.load_from_file(path), "button")
 				img.attrib["transform"] = f"translate({x - target_x}, {y - target_y}) scale({scale})"
 				img.attrib["id"] = b
