@@ -354,7 +354,7 @@ def run_osd_tool(tool, argv0: str, argv: list[str]) -> None:
 	init_logging()
 
 	sys.argv[0] = "scc osd-keyboard"
-	if not tool.parse_argumets([argv0] + argv):
+	if not tool.parse_arguments([argv0] + argv):
 		sys.exit(1)
 	tool.run()
 	sys.exit(tool.get_exit_code())

@@ -32,8 +32,8 @@ class Area(OSDWindow, TimerManager):
 			"--height", type=int, metavar="pixels", default=-20, help="""area height in pixels""",
 		)
 
-	def parse_argumets(self, argv) -> bool:
-		if not OSDWindow.parse_argumets(self, argv):
+	def parse_arguments(self, argv) -> bool:
+		if not OSDWindow.parse_arguments(self, argv):
 			return False
 		self.position = (self.position[0] - self.BORDER_WIDTH, self.position[1] - self.BORDER_WIDTH)
 		self.size = (self.args.width + 2 * self.BORDER_WIDTH, self.args.height + 2 * self.BORDER_WIDTH)

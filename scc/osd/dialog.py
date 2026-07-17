@@ -70,7 +70,7 @@ class Dialog(OSDWindow):
 
 	def use_daemon(self, d):
 		"""Allows (re)using already existing DaemonManager instance in same process.
-		use_config() should be be called before parse_argumets() if this is used.
+		use_config() should be be called before parse_arguments() if this is used.
 		"""
 		self.daemon = d
 		self._connect_handlers()
@@ -78,7 +78,7 @@ class Dialog(OSDWindow):
 
 	def use_config(self, c):
 		"""Allows reusing already existin Config instance in same process.
-		Has to be called before parse_argumets()
+		Has to be called before parse_arguments()
 		"""
 		self.config = c
 
@@ -109,8 +109,8 @@ class Dialog(OSDWindow):
 		self.argparser.add_argument("--text", type=str, metavar="text", help="Dialog text")
 		self.argparser.add_argument("items", type=str, nargs="*", metavar="id text", help="Dialog buttons")
 
-	def parse_argumets(self, argv):
-		if not OSDWindow.parse_argumets(self, argv):
+	def parse_arguments(self, argv):
+		if not OSDWindow.parse_arguments(self, argv):
 			return False
 		if not self.config:
 			self.config = Config()

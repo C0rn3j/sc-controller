@@ -125,8 +125,8 @@ class QuickMenu(Menu):
 		locks = [x for x in self.BUTTONS] + [self._cancel_with]
 		self.controller.lock(success, self.on_failed_to_lock, *locks)
 
-	def parse_argumets(self, argv):
-		if not OSDWindow.parse_argumets(self, argv):
+	def parse_arguments(self, argv):
+		if not OSDWindow.parse_arguments(self, argv):
 			print("failed to parse args")
 			return False
 		if not self.parse_menu():
@@ -169,7 +169,7 @@ class QuickMenu(Menu):
 				sub_pos[i] = sub_pos[i] - self.SUBMENU_OFFSET if sub_pos[i] < 0 else sub_pos[i] + self.SUBMENU_OFFSET
 
 			self._submenu.use_config(self.config)
-			self._submenu.parse_argumets(
+			self._submenu.parse_arguments(
 				[
 					"menu.py",
 					"-x",
@@ -268,7 +268,7 @@ if __name__ == "__main__":
 	init_logging()
 
 	m = QuickMenu()
-	if not m.parse_argumets(sys.argv):
+	if not m.parse_arguments(sys.argv):
 		sys.exit(1)
 	m.run()
 	if m.get_exit_code() == 0:

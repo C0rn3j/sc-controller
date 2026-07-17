@@ -24,7 +24,7 @@ def main():
 	from scc.osd.binding_display import BindingDisplay
 
 	d = BindingDisplay()
-	if not d.parse_argumets(sys.argv):
+	if not d.parse_arguments(sys.argv):
 		sys.exit(1)
 	d.run()
 	sys.exit(d.get_exit_code())

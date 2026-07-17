@@ -463,8 +463,8 @@ class Keyboard(OSDWindow, TimerManager):
 		OSDWindow._add_arguments(self)
 		self.argparser.add_argument("image", type=str, nargs="?", default=self.kbimage, help="keyboard image to use")
 
-	def parse_argumets(self, argv):
-		if not OSDWindow.parse_argumets(self, argv):
+	def parse_arguments(self, argv):
+		if not OSDWindow.parse_arguments(self, argv):
 			return False
 		return True
 
@@ -671,7 +671,7 @@ def main():
 	init_logging()
 
 	k = Keyboard()
-	if not k.parse_argumets(sys.argv):
+	if not k.parse_arguments(sys.argv):
 		sys.exit(1)
 	k.run()
 

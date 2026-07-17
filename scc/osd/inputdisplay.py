@@ -63,7 +63,7 @@ class InputDisplay(OSDWindow):
 
 	def use_daemon(self, d):
 		"""Allows (re)using already existing DaemonManager instance in same process.
-		use_config() should be be called before parse_argumets() if this is used.
+		use_config() should be be called before parse_arguments() if this is used.
 		"""
 		self.daemon = d
 		self._connect_handlers()
@@ -184,7 +184,7 @@ if __name__ == "__main__":
 	init_logging()
 
 	m = InputDisplay()
-	if not m.parse_argumets(sys.argv):
+	if not m.parse_arguments(sys.argv):
 		sys.exit(1)
 	m.run()
 	sys.exit(m.get_exit_code())

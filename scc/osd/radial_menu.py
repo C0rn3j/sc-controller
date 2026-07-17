@@ -106,9 +106,9 @@ class RadialMenu(Menu):
 		Menu._add_arguments(self)
 		self.argparser.add_argument("--rotation", type=float, default=0, help="rotates input by angle (default: 0)")
 
-	def parse_argumets(self, argv):
+	def parse_arguments(self, argv):
 		self.editor = self.b.edit()
-		rv = Menu.parse_argumets(self, argv)
+		rv = Menu.parse_arguments(self, argv)
 		self.rotation = self.args.rotation
 		if rv:
 			self.enable_cursor()
@@ -316,7 +316,7 @@ if __name__ == "__main__":
 	init_logging()
 
 	m = RadialMenu()
-	if not m.parse_argumets(sys.argv):
+	if not m.parse_arguments(sys.argv):
 		sys.exit(1)
 	m.run()
 	if m.get_exit_code() == 0:

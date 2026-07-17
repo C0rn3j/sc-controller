@@ -88,7 +88,7 @@ class Menu(OSDWindow):
 
 	def use_daemon(self, d):
 		"""Allows (re)using already existing DaemonManager instance in same process.
-		use_config() should be be called before parse_argumets() if this is used.
+		use_config() should be be called before parse_arguments() if this is used.
 		"""
 		self.daemon = d
 		if not self._is_submenu:
@@ -97,7 +97,7 @@ class Menu(OSDWindow):
 
 	def use_config(self, c):
 		"""Allows reusing already existin Config instance in same process.
-		Has to be called before parse_argumets()
+		Has to be called before parse_arguments()
 		"""
 		self.config = c
 
@@ -193,8 +193,8 @@ class Menu(OSDWindow):
 				return False
 		return True
 
-	def parse_argumets(self, argv):
-		if not OSDWindow.parse_argumets(self, argv):
+	def parse_arguments(self, argv):
+		if not OSDWindow.parse_arguments(self, argv):
 			return False
 		if not self.parse_menu():
 			return False
@@ -465,7 +465,7 @@ class Menu(OSDWindow):
 				sub_pos[i] = sub_pos[i] - self.SUBMENU_OFFSET if sub_pos[i] < 0 else sub_pos[i] + self.SUBMENU_OFFSET
 
 			self._submenu.use_config(self.config)
-			self._submenu.parse_argumets(
+			self._submenu.parse_arguments(
 				[
 					"menu.py",
 					"-x",

@@ -24,7 +24,7 @@ def main():
 	from scc.osd.dialog import Dialog
 
 	m = Dialog()
-	if not m.parse_argumets(sys.argv):
+	if not m.parse_arguments(sys.argv):
 		sys.exit(1)
 	m.run()
 	if m.get_exit_code() == 0:

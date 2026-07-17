@@ -24,7 +24,7 @@ if __name__ == "__main__":
 	from scc.osd.keyboard import Keyboard
 
 	k = Keyboard()
-	if not k.parse_argumets(sys.argv):
+	if not k.parse_arguments(sys.argv):
 		sys.exit(1)
 	k.run()
 	sys.exit(k.get_exit_code())

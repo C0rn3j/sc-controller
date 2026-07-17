@@ -160,7 +160,7 @@ class OSDDaemon:
 		if message.startswith("OSD: message"):
 			args = shsplit(message)[1:]
 			m = Message()
-			m.parse_argumets(args)
+			m.parse_arguments(args)
 			hsh = m.hash()
 			if hsh in self._visible_messages:
 				self._visible_messages[hsh].extend()
@@ -185,7 +185,7 @@ class OSDDaemon:
 				args = shsplit(message)[1:]
 				self._window = Keyboard(self.config)
 				self._window.connect("destroy", self.on_keyboard_closed)
-				self._window.parse_argumets(args)
+				self._window.parse_arguments(args)
 				self._window.show()
 				self._window.use_daemon(self.daemon)
 		elif message.startswith("OSD: gesture"):
@@ -194,7 +194,7 @@ class OSDDaemon:
 			else:
 				args = shsplit(message)[1:]
 				self._window = GestureDisplay(self.config)
-				self._window.parse_argumets(args)
+				self._window.parse_arguments(args)
 				self._window.use_daemon(self.daemon)
 				self._window.show()
 				self._window.connect("destroy", self.on_gesture_recognized)
@@ -218,7 +218,7 @@ class OSDDaemon:
 				self._window.connect("destroy", self.on_menu_closed)
 				self._window.use_config(self.config)
 				try:
-					if self._window.parse_argumets(args):
+					if self._window.parse_arguments(args):
 						self._window.show()
 						self._window.use_daemon(self.daemon)
 					else:
@@ -236,7 +236,7 @@ class OSDDaemon:
 				args = shsplit(message)[1:]
 				self._window = Area()
 				self._window.connect("destroy", self.on_keyboard_closed)
-				if self._window.parse_argumets(args):
+				if self._window.parse_arguments(args):
 					self._window.show()
 				else:
 					self._window.quit()

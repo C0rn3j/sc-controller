@@ -23,7 +23,7 @@ def main() -> None:
 	from scc.osd.message import Message
 
 	m = Message()
-	if not m.parse_argumets(sys.argv):
+	if not m.parse_arguments(sys.argv):
 		sys.exit(1)
 	m.run()
 	sys.exit(m.get_exit_code())

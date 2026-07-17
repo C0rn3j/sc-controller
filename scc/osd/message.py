@@ -66,8 +66,8 @@ class Message(OSDWindow):
 		)
 		self.argparser.add_argument("text", type=str, help="text to display")
 
-	def parse_argumets(self, argv):
-		if not OSDWindow.parse_argumets(self, argv):
+	def parse_arguments(self, argv):
+		if not OSDWindow.parse_arguments(self, argv):
 			return False
 		self.text = self.args.text
 		self.timeout = self.args.t

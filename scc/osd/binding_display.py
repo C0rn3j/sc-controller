@@ -85,8 +85,8 @@ class BindingDisplay(OSDWindow):
 			y = geometry.y + ((geometry.height - height) / 2)
 		return x, y
 
-	def parse_argumets(self, argv):
-		if not OSDWindow.parse_argumets(self, argv):
+	def parse_arguments(self, argv):
+		if not OSDWindow.parse_arguments(self, argv):
 			return False
 		self._cancel_with = self.args.cancel_with
 		return True
@@ -488,7 +488,7 @@ class Generator:
 
 def main():
 	m = BindingDisplay()
-	if not m.parse_argumets(sys.argv):
+	if not m.parse_arguments(sys.argv):
 		sys.exit(1)
 	m.run()
 	sys.exit(m.get_exit_code())

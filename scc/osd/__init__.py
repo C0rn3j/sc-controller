@@ -157,7 +157,7 @@ class OSDWindow(Gtk.Window):
 		"""Return controller chosen by choose_controller."""
 		return self._controller
 
-	def parse_argumets(self, argv) -> bool:
+	def parse_arguments(self, argv) -> bool:
 		"""Returns True on success."""
 		try:
 			self.args = self.argparser.parse_args(argv[1:])

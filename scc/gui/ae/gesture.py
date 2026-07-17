@@ -283,11 +283,11 @@ class GestureGrabber:
 			self._gd.quit()
 		self._gd = GestureDisplay(self.editor.app.config)
 		if self.editor.get_id() == "RPAD":
-			self._gd.parse_argumets(["GestureDisplay", "--control-with", "RIGHT"])
+			self._gd.parse_arguments(["GestureDisplay", "--control-with", "RIGHT"])
 		elif self.editor.get_id() == "CPAD":
-			self._gd.parse_argumets(["GestureDisplay", "--control-with", "CPAD"])
+			self._gd.parse_arguments(["GestureDisplay", "--control-with", "CPAD"])
 		else:
-			self._gd.parse_argumets(["GestureDisplay", "--control-with", "LEFT"])
+			self._gd.parse_arguments(["GestureDisplay", "--control-with", "LEFT"])
 		self._gd.use_daemon(self.editor.app.dm)
 		self._gd.show()
 		self._gd.connect("gesture-updated", self.on_gesture_updated)
