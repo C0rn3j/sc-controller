@@ -672,7 +672,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		ps.set_profile(p0)
 
 		self.load_gui_config_for_controller(c, False)
-		self.enable_test_mode()
+		self.enable_test_mode(c)
 
 	def on_profile_saved(self, giofile: Gio.File, send: bool = True) -> None:
 		"""Called when selected profile is saved to disk"""
@@ -944,7 +944,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		if len(vbSwitchers.get_children()) == 2:
 			sepSwitchers.set_visible(False)
 
-	def enable_test_mode(self) -> None:
+	def enable_test_mode(self, controller: ControllerManager | None = None) -> None:
 		"""Disables and re-enables Input Test mode.
 
 		If sniffing is disabled in daemon configuration, 2nd call fails and logs error.
@@ -952,37 +952,40 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		if self.dm.is_alive() and not self.osd_mode:
 			if self.test_mode_controller:
 				self.test_mode_controller.unlock_all()
-			try:
-				c = self.dm.get_controllers()[0]
-			except IndexError:
-				# Zero controllers
+			if controller is None:
+				try:
+					controller = self.dm.get_controllers()[0]
+				except IndexError:
+					# Zero controllers
+					return
+			c = controller
+			if c is None:
 				return
-			if c:
-				c.unlock_all()
-				c.observe(
-					DaemonManager.nocallback,
-					self.on_observe_failed,
-					"A",
-					"B",
-					"C",
-					"X",
-					"Y",
-					"START",
-					"BACK",
-					"LB",
-					"RB",
-					"LPAD",
-					"RPAD",
-					"LGRIP",
-					"RGRIP",
-					"LT",
-					"RT",
-					"LEFT",
-					"RIGHT",
-					"STICK",
-					"STICKPRESS",
-				)
-				self.test_mode_controller = c
+			c.unlock_all()
+			c.observe(
+				DaemonManager.nocallback,
+				self.on_observe_failed,
+				"A",
+				"B",
+				"C",
+				"X",
+				"Y",
+				"START",
+				"BACK",
+				"LB",
+				"RB",
+				"LPAD",
+				"RPAD",
+				"LGRIP",
+				"RGRIP",
+				"LT",
+				"RT",
+				"LEFT",
+				"RIGHT",
+				"STICK",
+				"STICKPRESS",
+			)
+			self.test_mode_controller = c
 
 	def enable_osd_mode(self):
 		# TODO: Support for multiple controllers here
