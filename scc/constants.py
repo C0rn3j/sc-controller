@@ -23,7 +23,9 @@
 from enum import IntEnum
 from importlib.metadata import packages_distributions, version
 
-distribution_name = packages_distributions()[__package__][0]
+distribution_name: str = "N/A"
+if __package__ is not None:
+	distribution_name = packages_distributions()[__package__][0]
 
 """
 If SC Controller is updated while daemon is running, DAEMON_VERSION send by
@@ -124,8 +126,8 @@ class ControllerFlags(IntEnum):
 	HAS_RSTICK     = 1 << 0 # Controller has right stick instead of touchpad
 	SEPARATE_STICK = 1 << 1 # Left stick and left pad are using separate axes
 	EUREL_GYROS    = 1 << 2 # Gyro sensor values are provided as pitch, yaw
-	                        # and roll instead of quaterion. 'q4' is unused
-	                        # in such case.
+	                                    # and roll instead of quaterion. 'q4' is unused
+	                                    # in such case.
 	HAS_CPAD       = 1 << 3 # Controller has DS4-like touchpad in center
 	HAS_DPAD       = 1 << 4 # Controller has normal d-pad instead of touchpad
 	NO_GRIPS       = 1 << 5 # Controller has no grips
@@ -147,7 +149,6 @@ CPAD_MIN   = 0
 CPAD_X_MAX = 1916
 CPAD_Y_MAX = 930
 
-STICK_PAD_MIN_HALF     = STICK_PAD_MIN / 3
 TRIGGER_MIN            = 0
 TRIGGER_HALF           = 50
 TRIGGER_CLICK          = 254 # Values under this are generated until trigger clicks
