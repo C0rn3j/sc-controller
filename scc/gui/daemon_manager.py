@@ -6,6 +6,7 @@ I'd call it DaemonController normally, but having something with
 full name of "Steam Controller Controller Daemon Controller" sounds
 probably too crazy even for me.
 """
+from __future__ import annotations
 
 import json
 import logging
@@ -22,8 +23,7 @@ log = logging.getLogger("DaemonCtrl")
 
 
 class DaemonManager(GObject.GObject):
-	"""Communicates with daemon socket and provides wrappers around everything
-	it can do.
+	"""Communicates with daemon socket and provides wrappers around everything it can do.
 
 	List of signals:
 		alive ()
@@ -74,43 +74,41 @@ class DaemonManager(GObject.GObject):
 
 	RECONNECT_INTERVAL = 5
 
-	def __init__(self):
+	def __init__(self) -> None:
 		GObject.GObject.__init__(self)
-		self.alive = None
+		self.alive: bool | None = None
 		self.connection = None
-		self.connecting = False
+		self.connecting: bool = False
 		self.buffer = b""
 		self._connect()
 		self._requests = []
-		self._controllers = []  # Ordered as daemon says
-		self._controller_by_id = {}  # Source of memory leak
+		self._controllers: list[ControllerManager] = []  # Ordered as daemon says
+		self._controller_by_id: dict[str, ControllerManager] = {}  # Source of memory leak
 
-	def get_controllers(self):
-		"""Returns list of all controllers connected to daemon.
-		Value is cached locally.
-		"""
+	def get_controllers(self) -> list[ControllerManager]:
+		"""Returns list of all controllers connected to daemon. Value is cached locally."""
 		return [] + self._controllers
 
-	def get_controller(self, controller_id, type=None):
+	def get_controller(self, controller_id: str, controller_type: str | None = None) -> ControllerManager:
 		"""Returns ControllerManager instance bound to provided controller_id.
+
 		Note that this method will return instance for any controller_id,
 		even if controller with such ID is not connected to daemon.
 
 		For same controller_id, there is always same instance returned.
 		"""
 		if controller_id not in self._controller_by_id:
-			c = self._controller_by_id[controller_id] = ControllerManager(self, controller_id, type)
+			c = self._controller_by_id[controller_id] = ControllerManager(self, controller_id, controller_type)
 		else:
 			c = self._controller_by_id[controller_id]
-			c.set_type(type)
+			c.set_type(controller_type)
 		return c
 
-	def has_controller(self):
-		"""Returns True if there is at lease one controller connected to daemon.
-		"""
+	def has_controller(self) -> bool:
+		"""Returns True if there is at lease one controller connected to daemon."""
 		return len(self._controllers) > 0
 
-	def _connect(self):
+	def _connect(self) -> None:
 		if self.connecting:
 			return
 		self.connecting = True
@@ -118,7 +116,7 @@ class DaemonManager(GObject.GObject):
 		address = Gio.UnixSocketAddress.new(get_daemon_socket())
 		sc.connect_async(address, None, self._on_connected)
 
-	def _on_daemon_died(self, *a):
+	def _on_daemon_died(self, *a) -> None:
 		"""Called from various places when daemon looks like dead"""
 		# Log stuff
 		if self.alive is True:
@@ -135,7 +133,7 @@ class DaemonManager(GObject.GObject):
 		# Try to reconnect
 		GLib.timeout_add_seconds(self.RECONNECT_INTERVAL, self._connect)
 
-	def _on_connected(self, sc, results):
+	def _on_connected(self, sc, results) -> None:
 		"""Called when connection to daemon socket is initiated"""
 		self.connecting = False
 		try:
@@ -148,14 +146,14 @@ class DaemonManager(GObject.GObject):
 		self.buffer = b""
 		self.connection.get_input_stream().read_bytes_async(102400, 1, None, self._on_read_data)
 
-	def _on_read_data(self, sc, results):
+	def _on_read_data(self, sc, results) -> None:
 		"""Called when daemon sends some data"""
 		try:
 			response = sc.read_bytes_finish(results)
-			if response == None:
+			if response is None:
 				raise Exception("No data received")
 		except Exception:
-			# Broken sonnection, daemon was probbaly terminated
+			# Broken sonnection, daemon was probably terminated
 			self._on_daemon_died()
 			return
 		data = response.get_data()
@@ -235,11 +233,11 @@ class DaemonManager(GObject.GObject):
 		if self.connection:
 			self.connection.get_input_stream().read_bytes_async(102400, 1, None, self._on_read_data)
 
-	def is_alive(self):
+	def is_alive(self) -> bool | None:
 		"""Returns True if daemon is running"""
 		return self.alive
 
-	def request(self, message, success_cb, error_cb):
+	def request(self, message, success_cb, error_cb) -> None:
 		"""Creates request and remembers callback for next 'Ok' or 'Fail' message.
 		"""
 		if self.alive and self.connection is not None:
@@ -251,10 +249,10 @@ class DaemonManager(GObject.GObject):
 			error_cb("Not connected.")
 
 	@classmethod
-	def nocallback(*a):
+	def nocallback(*a) -> None:
 		"""Used when request doesn't needs callback"""
 
-	def set_profile(self, filename):
+	def set_profile(self, filename) -> None:
 		"""Asks daemon to change 1st controller profile"""
 		self.request("Controller.\nProfile: %s" % (filename,), DaemonManager.nocallback, DaemonManager.nocallback)
 
@@ -296,6 +294,7 @@ class DaemonManager(GObject.GObject):
 
 class ControllerManager(GObject.GObject):
 	"""Represents controller connected to daemon.
+
 	Returned by DaemonManager.get_controller or DaemonManager.get_controllers.
 
 	List of signals:
@@ -317,7 +316,7 @@ class ControllerManager(GObject.GObject):
 		"profile-changed": (GObject.SignalFlags.RUN_FIRST, None, (object,)),
 	}
 
-	DEFAULT_ICONS = [
+	DEFAULT_ICONS: list[str] = [
 		"A",
 		"B",
 		"X",
@@ -338,69 +337,67 @@ class ControllerManager(GObject.GObject):
 	]
 	# ^^ those are icon names
 
-	def __init__(self, daemon_manager, controller_id, controller_type):
+	def __init__(self, daemon_manager: DaemonManager, controller_id: str, controller_type: str) -> None:
 		GObject.GObject.__init__(self)
-		self._dm = daemon_manager
-		self._controller_id = controller_id
-		self._type = controller_type
-		self._config_file = None
-		self._connected = False
+		self._dm: DaemonManager = daemon_manager
+		self._controller_id: str = controller_id
+		self._type: str = controller_type
+		self._config_file: str | None = None
+		self._connected: bool = False
 		self._profile = None
-		self._type = None
+		self._type: str | None = None
 		self._flags = 0
 
-	def __repr__(self):
-		return "<ControllerManager for ID '%s'>" % (self._controller_id,)
+	def __repr__(self) -> str:
+		return f"<ControllerManager for ID '{self._controller_id}'>"
 
-	def _send_id(self):
-		"""Sends Controller: message to daemon, so next message goes to correct
-		controller.
-		"""
-		self._dm.request("Controller: %s" % (self._controller_id,), DaemonManager.nocallback, DaemonManager.nocallback)
+	def _send_id(self) -> None:
+		"""Sends Controller: message to daemon, so next message goes to correct controller."""
+		self._dm.request(f"Controller: {self._controller_id}", DaemonManager.nocallback, DaemonManager.nocallback)
 
-	def is_connected(self):
+	def is_connected(self) -> bool:
 		"""Returns True, if controller is still connected to daemon.
+
 		Value is cached locally.
 		"""
 		return self._connected
 
-	def get_type(self):
+	def get_type(self) -> str | None:
 		"""Returns string identifier of controller driver.
 
 		Value is cached locally, but may be None before controller is connected.
 		"""
 		return self._type
 
-	def set_type(self, type):
-		"""Sets type, if none is yet set.
-		"""
+	def set_type(self, controller_type: str) -> None:
+		"""Sets type, if none is yet set."""
 		if self._type is None:
-			self._type = type
+			self._type = controller_type
 
-	def get_flags(self):
+	def get_flags(self) -> int:
 		"""Returns flags for this controller. See ControllerFlags enum for more info.
 
 		Value is cached locally and returns 0 until controller is connected.
 		"""
 		return self._flags
 
-	def get_id(self):
+	def get_id(self) -> str:
 		"""Returns ID of this controller. Value is cached locally."""
 		return self._controller_id
 
-	def get_gui_config_file(self):
-		"""Returns file name of json file that GUI can use to load more data about
-		controller (background image, button images, available buttons and
-		axes, etc...) File name may be absolute path or just name of file in
-		/usr/share/scc
+	def get_gui_config_file(self) -> str | None:
+		"""Returns file name of json file that GUI can use to load more data about controller
 
-		Returns None if there is no configuration file (GUI will use
-		defaults in such case)
+		(background image, button images, available buttons and axes, etc...)
+		File name may be absolute path or just name of file in /usr/share/scc
+
+		Returns None if there is no configuration file (GUI will use defaults in such case)
 		"""
 		return self._config_file
 
 	def load_gui_config(self, default_path):
 		"""As get_gui_config_file, but returns loaded and parsed config.
+
 		Returns None if config cannot be loaded.
 		"""
 		filename = self.get_gui_config_file()

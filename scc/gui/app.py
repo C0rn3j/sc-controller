@@ -90,11 +90,11 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.osd_mode_mapper = None
 		self.background = None
 		self.outdated_version = None
-		self.profile_switchers = []
+		self.profile_switchers: list[ProfileSwitcher] = []
 		self.test_mode_controller = None
 		self.current_ui_layout = "default"  # only "default" and "deck" are supported
 		self.current_file = None  # Currently edited file
-		self.controller_count = 0
+		self.controller_count: int = 0
 		self.current = Profile(GuiActionParser())
 		self.just_started = True
 		self.button_widgets = {}
@@ -160,9 +160,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		# Headerbar
 		headerbar(self.builder.get_object("hbWindow"))
 
-	def load_gui_config_for_controller(self, controller, first):
-		"""Loads controller config, changes image and hides, shows or disables
-		buttons around it.
+	def load_gui_config_for_controller(self, controller: ControllerManager, first) -> None:
+		"""Loads controller config, changes image and hides, shows or disables buttons around it.
 
 		To make this look less jumpy, Gtk.Stack is used to make transition
 		to empty page and only after that is grid repopulated, everything
@@ -170,13 +169,10 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		"""
 		stckEditor = self.builder.get_object("stckEditor")
 		lblEmpty = self.builder.get_object("lblEmpty")
-		if controller:
-			config = controller.load_gui_config(self.imagepath or {})
-		else:
-			config = {}
+		config = controller.load_gui_config(self.imagepath or {}) if controller else {}
 		config = self.background.use_config(config, controller=controller)
 
-		def do_loading():
+		def do_loading() -> None:
 			"""Called after transition is finished"""
 			self.background.use_config(config, controller=controller)
 			self.apply_gui_config_buttons(config)
@@ -189,12 +185,12 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				# not changing, transition would just look weird
 				do_loading()
 				return
-		if not first:
+		else:
 			stckEditor.set_transition_type(Gtk.StackTransitionType.SLIDE_DOWN)
 		stckEditor.set_visible_child(lblEmpty)
 		GLib.timeout_add(stckEditor.get_transition_duration(), do_loading)
 
-	def apply_gui_config_buttons(self, config):
+	def apply_gui_config_buttons(self, config) -> None:
 		"""Changes UI according to controller configuration"""
 		stckEditor = self.builder.get_object("stckEditor")
 		grEditor = self.builder.get_object("grEditor")
@@ -253,9 +249,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		stckEditor.set_visible_child(grEditor)
 		GLib.idle_add(self.on_c_size_allocate)
 
-	def apply_ui_layout(self, layout):
-		"""Changes layout of ui elements to fit additional buttons needed for Deck
-		"""
+	def apply_ui_layout(self, layout) -> None:
+		"""Changes layout of ui elements to fit additional buttons needed for Deck"""
 		if layout == "deck":
 			# Move 'C' button bellow LGRIP
 			btRGRIP = self.builder.get_object("btRGRIP")
@@ -550,7 +545,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			self.builder.get_object("btRedo").set_sensitive(False)
 		self.on_profile_modified()
 
-	def on_profiles_loaded(self, profiles):
+	def on_profiles_loaded(self, profiles) -> None:
 		for ps in self.profile_switchers:
 			ps.set_profile_list(profiles)
 
@@ -591,7 +586,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				txNewProfile.set_text(self.generate_copy_name(txNewProfile._name))
 			self.recursing = False
 
-	def on_profile_modified(self, update_ui: bool = True):
+	def on_profile_modified(self, update_ui: bool = True) -> None:
 		"""Called when selected profile is modified in memory."""
 		if update_ui:
 			self.profile_switchers[0].set_profile_modified(True, self.current.is_template)
@@ -657,7 +652,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 		self.save_profile(self.current_file, self.current)
 
-	def on_switch_to_clicked(self, ps, *a):
+	def on_switch_to_clicked(self, ps, *a) -> None:
 		"""Switches editor to another controller"""
 		ps0 = self.profile_switchers[0]
 		if ps == ps0:
@@ -675,8 +670,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.enable_test_mode()
 
 	def on_profile_saved(self, giofile: Gio.File, send: bool = True):
-		"""Called when selected profile is saved to disk
-		"""
+		"""Called when selected profile is saved to disk"""
 		if self.osd_mode:
 			# Special case, profile shouldn't be changed while in osd_mode
 			if not giofile.get_path().endswith(".mod"):
@@ -881,14 +875,13 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			self.profile_switchers[i].set_controller(c)
 
 		if count < 1:
-			# Special case, no controllers are connected, but one widget
-			# has to stay on screen
+			# Special case, no controllers are connected, but one widget has to stay on screen
 			self.profile_switchers[0].set_controller(None)
 			self.load_gui_config_for_controller(None, first=True)
 
 		self.controller_count = count
 
-	def new_profile(self, profile: Profile, name: str):
+	def new_profile(self, profile: Profile, name: str) -> None:
 		filename = os.path.join(get_profiles_path(), name + ".sccprofile")
 		self.current_file = Gio.File.new_for_path(filename)
 		self.save_profile(self.current_file, profile)
@@ -899,9 +892,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			self.dm.set_profile(filename)
 		self.profile_switchers[0].set_profile(name, create=True)
 
-	def add_switcher(self, margin_left=24, margin_right=24):
-		"""Adds new profile switcher widgets on top of window. Called
-		when new controller is connected to daemon.
+	def add_switcher(self, margin_left=24, margin_right=24) -> ProfileSwitcher:
+		"""Adds new profile switcher widgets on top of window. Called when new controller is connected to daemon.
 
 		Returns generated ProfileSwitcher instance.
 		"""
@@ -937,8 +929,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		return ps
 
 	def remove_switcher(self, s):
-		"""Removes given profile switcher from UI.
-		"""
+		"""Removes given profile switcher from UI."""
 		vbSwitchers = self.builder.get_object("vbSwitchers")
 		sepSwitchers = self.builder.get_object("sepSwitchers")
 		vbSwitchers.remove(s)
@@ -946,9 +937,10 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		if len(vbSwitchers.get_children()) == 2:
 			sepSwitchers.set_visible(False)
 
-	def enable_test_mode(self):
-		"""Disables and re-enables Input Test mode. If sniffing is disabled in
-		daemon configuration, 2nd call fails and logs error.
+	def enable_test_mode(self) -> None:
+		"""Disables and re-enables Input Test mode.
+
+		If sniffing is disabled in daemon configuration, 2nd call fails and logs error.
 		"""
 		if self.dm.is_alive() and not self.osd_mode:
 			if self.test_mode_controller:

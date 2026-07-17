@@ -1,17 +1,21 @@
-#!/usr/bin/env python3
 """SC-Controller - Controller Image
 
 Big, SVGWidget based widget with interchangeable controller and button images.
 """
+from __future__ import annotations
 
 import copy
 import json
 import logging
 import os
+from typing import TYPE_CHECKING
 
 from scc.constants import SCButtons
 from scc.gui.svg_widget import SVGEditor, SVGWidget
 from scc.tools import nameof
+
+if TYPE_CHECKING:
+	from scc.gui.daemon_manager import ControllerManager
 
 log = logging.getLogger("ContImage")
 
@@ -54,7 +58,7 @@ class ControllerImage(SVGWidget):
 		nameof(SCButtons.RGRIP),
 	]
 
-	def __init__(self, app, config=None):
+	def __init__(self, app, config=None) -> None:
 		self.app = app
 		self.backup = None
 		self.current = self._ensure_config({}, None)
@@ -63,12 +67,11 @@ class ControllerImage(SVGWidget):
 		if config:
 			self._controller_image.use_config(config)
 
-	def _make_controller_image_path(self, img):
+	def _make_controller_image_path(self, img) -> str:
 		return os.path.join(self.app.imagepath, f"controller-images/{img}.svg")
 
 	def get_config(self):
-		"""Returns last used config
-		"""
+		"""Returns last used config"""
 		return self.current
 
 	def _ensure_config(self, data, controller):
@@ -84,16 +87,18 @@ class ControllerImage(SVGWidget):
 
 	@staticmethod
 	def get_names(dict_or_tuple):
-		"""There are three different ways how button and axis names are stored
-		in config. This wrapper provides unified way to get list of them.
+		"""There are three different ways how button and axis names are stored in config.
+
+		This wrapper provides unified way to get list of them.
 		"""
 		if type(dict_or_tuple) in (list, tuple):
 			return dict_or_tuple
 		return [(x["axis"] if type(x) is dict else x) for x in dict_or_tuple.values()]
 
-	def use_config(self, config, backup=None, controller=None):
-		"""Loads controller settings from provided config, adding default values
-		when needed. Returns same config.
+	def use_config(self, config, backup=None, controller: ControllerManager | None = None):
+		"""Loads controller settings from provided config, adding default values when needed.
+
+		Returns same config.
 		"""
 		self.backup = backup
 		self.current = self._ensure_config(config or {}, controller)

@@ -287,7 +287,7 @@ class Keyboard(OSDWindow, TimerManager):
 		SCButtons.RGRIP.name: Keys.KEY_RIGHTALT,
 	}
 
-	def __init__(self, config=None):
+	def __init__(self, config=None) -> None:
 		self.kbimage = os.path.join(get_config_path(), "keyboard.svg")
 		if not os.path.exists(self.kbimage):
 			# Prefer image in ~/.config/scc, but load default one as fallback
@@ -295,7 +295,7 @@ class Keyboard(OSDWindow, TimerManager):
 
 		TimerManager.__init__(self)
 		OSDWindow.__init__(self, "osd-keyboard")
-		self.daemon = None
+		self.daemon: DaemonManager | None = None
 		self.mapper = None
 		self.keymap = Gdk.Keymap.get_default()
 		self.keymap.connect("state-changed", self.on_keymap_state_changed)
@@ -361,9 +361,8 @@ class Keyboard(OSDWindow, TimerManager):
 		self.background.color_pressed = _get("pressed")
 		self.background.color_text = _get("text")
 
-	def use_daemon(self, d):
-		"""Allows (re)using already existing DaemonManager instance in same process
-		"""
+	def use_daemon(self, d: DaemonManager) -> None:
+		"""Allows (re)using already existing DaemonManager instance in same process"""
 		self.daemon = d
 		self._cononect_handlers()
 		self.on_daemon_connected(self.daemon)
@@ -489,8 +488,8 @@ class Keyboard(OSDWindow, TimerManager):
 		self.load_profile()
 		log.debug("Reloaded profile")
 
-	def on_daemon_connected(self, *a):
-		def success(*a):
+	def on_daemon_connected(self, *a) -> None:
+		def success(*a) -> None:
 			log.info("Sucessfully locked input")
 
 		c = self.choose_controller(self.daemon)
@@ -533,7 +532,7 @@ class Keyboard(OSDWindow, TimerManager):
 		c.lock(success, self.on_failed_to_lock, *locks)
 		self.set_help()
 
-	def quit(self, code=-1):
+	def quit(self, code=-1) -> None:
 		if self.get_controller():
 			self.get_controller().unlock_all()
 		for source, eid in self._eh_ids:

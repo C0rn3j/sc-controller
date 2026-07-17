@@ -2,14 +2,22 @@
 
 Common methods for OSD-related stuff
 """
+from __future__ import annotations
 
 import argparse
 import logging
 import os
 import traceback
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import cairo
 import gi
+
+if TYPE_CHECKING:
+	from argparse import ArgumentParser
+
+	from scc.gui.daemon_manager import ControllerManager, DaemonManager
 
 gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")
@@ -20,13 +28,18 @@ from gi.repository import Gdk, GLib, GObject, Gtk
 from scc.config import Config
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN
 from scc.controller import Controller
-from scc.gui.daemon_manager import DaemonManager
 from scc.osd.timermanager import TimerManager
 from scc.paths import get_share_path
 from scc.tools import set_logging_level
 
 log = logging.getLogger("osd")
 
+@dataclass
+class OSDArguments(argparse.Namespace):
+	x: int
+	y: int
+	controller: str | None
+	d: bool
 
 class OSDWindow(Gtk.Window):
 	# TODO: Get rid of CSS_3_20, maybe just by dropping support
@@ -50,14 +63,16 @@ class OSDWindow(Gtk.Window):
 		Gtk.Window.__init__(self)
 		OSDWindow._apply_css(Config())
 
-		self.argparser = argparse.ArgumentParser(
+		self.args: OSDArguments
+		self.argparser: ArgumentParser = argparse.ArgumentParser(
 			description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter, epilog=self.EPILOG,
 		)
 		self._add_arguments()
 		self.exit_code = -1
 		self.position = (20, -20)
 		self.mainloop = None
-		self._controller = None
+		self._controller: ControllerManager | None = None
+		self.daemon: DaemonManager
 		self.set_name(wmclass)
 		self.set_wmclass(wmclass, wmclass)
 		self.using_wlroots = False
@@ -145,15 +160,15 @@ class OSDWindow(Gtk.Window):
 		self.argparser.add_argument("--controller", type=str, help="""id of controller to use""")
 		self.argparser.add_argument("-d", action="store_true", help="""display debug messages""")
 
-	def choose_controller(self, daemonmanager: DaemonManager) -> Controller:
+	def choose_controller(self, daemonmanager: DaemonManager) -> ControllerManager:
 		"""Return first available controller, or, if --controller argument was specified, controller with a matching ID."""
 		if self.args.controller:
-			self._controller = self.daemon.get_controller(self.args.controller)
-		elif self.daemon.has_controller():
-			self._controller = self.daemon.get_controllers()[0]
+			self._controller = daemonmanager.get_controller(self.args.controller)
+		elif daemonmanager.has_controller():
+			self._controller = daemonmanager.get_controllers()[0]
 		return self._controller
 
-	def get_controller(self) -> Controller:
+	def get_controller(self) -> ControllerManager:
 		"""Return controller chosen by choose_controller."""
 		return self._controller
 
