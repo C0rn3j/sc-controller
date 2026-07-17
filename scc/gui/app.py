@@ -95,6 +95,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.current_ui_layout = "default"  # only "default" and "deck" are supported
 		self.current_file = None  # Currently edited file
 		self.controller_count: int = 0
+		self._controller_shown: bool = False
 		self.current = Profile(GuiActionParser())
 		self.just_started = True
 		self.button_widgets = {}
@@ -169,7 +170,11 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		"""
 		stckEditor = self.builder.get_object("stckEditor")
 		lblEmpty = self.builder.get_object("lblEmpty")
-		config = controller.load_gui_config(self.imagepath or {}) if controller else {}
+		if controller:
+			self._controller_shown = True
+			config = controller.load_gui_config(self.imagepath or {})
+		else:
+			config = {}
 		config = self.background.use_config(config, controller=controller)
 
 		def do_loading() -> None:
@@ -669,7 +674,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.load_gui_config_for_controller(c, False)
 		self.enable_test_mode()
 
-	def on_profile_saved(self, giofile: Gio.File, send: bool = True):
+	def on_profile_saved(self, giofile: Gio.File, send: bool = True) -> None:
 		"""Called when selected profile is saved to disk"""
 		if self.osd_mode:
 			# Special case, profile shouldn't be changed while in osd_mode
@@ -877,7 +882,9 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		if count < 1:
 			# Special case, no controllers are connected, but one widget has to stay on screen
 			self.profile_switchers[0].set_controller(None)
-			self.load_gui_config_for_controller(None, first=True)
+			# First load, default controller decided by _ensure_config() in controller_image.py
+			if not self._controller_shown:
+				self.load_gui_config_for_controller(None, first=True)
 
 		self.controller_count = count
 
