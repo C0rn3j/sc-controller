@@ -1324,6 +1324,12 @@ class FeedbackModifier(Modifier):
 			return self.name
 		return self.action.describe(context)
 
+	def button_press(self, mapper) -> None:
+		self.action.button_press(mapper)
+
+	def button_release(self, mapper) -> None:
+		self.action.button_release(mapper)
+
 	def to_string(self, multiline=False, pad=0):
 		return self._mod_to_string(self.strip_defaults(), multiline, pad)
 

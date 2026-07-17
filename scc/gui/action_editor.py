@@ -117,6 +117,7 @@ class ActionEditor(Editor):
 		self.sens = [1.0, 1.0, 1.0]          # Sensitivity slider values
 		self.sens_defaults = [1.0, 1.0, 1.0] # Clear button clears to this
 		self.feedback = [0.0, 0.0, 0.0]      # Feedback slider values, set later
+		self.feedback_count = 1               # Not exposed in UI; preserve custom actions
 		self.deadzone = [0, 0]               # Deadzone slider values, set later
 		self.deadzone_mode = None            # None for 'disabled'
 		self.feedback_position = None        # None for 'disabled'
@@ -651,8 +652,13 @@ class ActionEditor(Editor):
 			if self.feedback_position != None:
 				# Strip defaults from feedback values
 				feedback = [] + self.feedback
-				while len(feedback) > 0 and feedback[-1] == self.feedback_widgets[len(feedback) - 1][-1]:
-					feedback = feedback[0:-1]
+				if self.feedback_count == 1:
+					while len(feedback) > 0 and feedback[-1] == self.feedback_widgets[len(feedback) - 1][-1]:
+						feedback = feedback[0:-1]
+				else:
+					# Count is the fifth positional argument, so all preceding
+					# feedback values must be retained when preserving it.
+					feedback.append(self.feedback_count)
 
 				cbFeedbackSide = self.builder.get_object("cbFeedbackSide")
 				cbFeedback = self.builder.get_object("cbFeedback")
@@ -741,6 +747,7 @@ class ActionEditor(Editor):
 				self.feedback[0] = action.haptic.get_amplitude()
 				self.feedback[1] = action.haptic.get_frequency()
 				self.feedback[2] = action.haptic.get_period()
+				self.feedback_count = action.haptic.get_count()
 				action = action.action
 			if isinstance(action, SmoothModifier):
 				self.smoothing = (action.level, action.multiplier, action.filter)
