@@ -1004,13 +1004,11 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		if self.dm.is_alive() and not self.osd_mode:
 			if self.test_mode_controller:
 				self.test_mode_controller.unlock_all()
-			if controller is None:
-				try:
-					controller = self.dm.get_controllers()[0]
-				except IndexError:
-					# Zero controllers
-					return
-			c = controller
+			try:
+				c = self.dm.get_controllers()[0]
+			except IndexError:
+				# Zero controllers
+				return
 			if c:
 				c.unlock_all()
 				c.observe(
