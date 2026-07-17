@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """SC-Controller - ProfileSwitcher
 
 Set of widgets designed to allow user to select profile, placed in one Gtk.Box:
@@ -7,10 +6,13 @@ Set of widgets designed to allow user to select profile, placed in one Gtk.Box:
 ... where (S) is Save button that can be shown on demand and (ch) is change
 indicator drawn in combobox.
 """
+from __future__ import annotations
 
 import logging
 import os
 import random
+from scc.gui.daemon_manager import ControllerManager
+from typing import TYPE_CHECKING
 
 from gi.repository import Gio, GLib, GObject, Gtk
 
@@ -18,11 +20,15 @@ from scc.gui.userdata_manager import UserDataManager
 from scc.paths import get_controller_icons_path, get_default_controller_icons_path
 from scc.tools import _, find_controller_icon, find_profile
 
+if TYPE_CHECKING:
+	from scc.gui.daemon_manager import ControllerManager
+
 log = logging.getLogger("PS")
 
 
 class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 	"""List of signals:
+
 	changed (name, giofile)
 		Emited when value of selection combobox is changed
 	new-clicked (name)
@@ -48,8 +54,7 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 		"unknown-profile": (GObject.SignalFlags.RUN_FIRST, None, (object,)),
 	}
 
-	SEND_TIMEOUT = 100  # How many ms should switcher wait before sending event
-	# about profile being switched
+	SEND_TIMEOUT = 100  # How many ms should switcher wait before sending event about profile being switched
 
 	def __init__(self, imagepath, config):
 		Gtk.EventBox.__init__(self)
@@ -63,7 +68,7 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 		self._timer = None  # Used to prevent sending too many request
 		# when user scrolls through combobox
 		self._signal = None
-		self._controller = None
+		self._controller: ControllerManager | None = None
 		self.setup_widgets()
 
 	def setup_widgets(self):
@@ -97,8 +102,9 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 		self._box.pack_start(self._combo, True, True, 0)
 		self.add(self._box)
 
-	def set_profile(self, name, create=False):
+	def set_profile(self, name: str | None, create: bool = False) -> bool | None:
 		"""Selects specified profile in UI.
+
 		Returns True on success or False if profile is not in combobox.
 
 		If 'create' is set to True, creates new combobox item if needed.
@@ -136,20 +142,20 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 
 	def set_allow_new(self, allow):
 		"""Enables or disables creating new profile from this ProfileSwitcher.
+
 		Should be called before set_profile_list.
 		"""
 		self._allow_new = allow
 
 	def set_allow_switch(self, allow):
 		"""Enables or disables profile switching for this ProfileSwitcher.
+
 		When disabled, only save button is be usable.
 		"""
 		self._combo.set_sensitive(allow)
 
 	def set_profile_list(self, lst):
-		"""Fills combobox with given list of available profiles.
-		'lst' is expected to be iterable of GIO.File's.
-		"""
+		"""Fills combobox with given list of available profiles. 'lst' is expected to be iterable of GIO.File's."""
 		self._model.clear()
 		i, current_index = 0, 0
 		for f in sorted(lst, key=lambda f: f.get_basename()):
@@ -183,6 +189,7 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 
 	def refresh_profile_path(self, name):
 		"""Called from main window after profile file is deleted.
+
 		May either change path to profile in default_profiles directory,
 		or remove entry entirely.
 		"""
@@ -272,7 +279,8 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 
 	def set_profile_modified(self, has_changes, is_template=False):
 		"""Called to signalize that profile has changes to save in UI
-		by displaying "changed" next to profile name and showing Save button.
+
+		By displaying "changed" next to profile name and showing Save button.
 
 		Returns giofile for currently selected profile. If profile is set as
 		changed, giofile is automatically changed to 'original/filename.mod',
@@ -300,9 +308,8 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 				iter = self._combo.get_active_iter()
 				self._model.set_value(iter, 2, _("(template)"))
 
-	def set_switch_to_enabled(self, enabled):
-		"""Shows or hides 'switch-to' button
-		"""
+	def set_switch_to_enabled(self, enabled) -> None:
+		"""Shows or hides 'switch-to' button"""
 		if enabled:
 			if not self._switch_to_button:
 				# Save button has to be created
@@ -316,11 +323,11 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 			# Nothing to hide if there is no revealer
 			self._switch_to_button.set_reveal_child(False)
 
-	def get_file(self):
+	def get_file(self) -> None:
 		"""Returns set profile as GIO file or None if there is no any"""
 		return
 
-	def set_controller(self, c):
+	def set_controller(self, c: ControllerManager) -> None:
 		if self._signal:
 			self._controller.disconnect(self._signal)
 			self._signal = None
@@ -333,11 +340,11 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 			self._icon.set_tooltip_text(_("Profile"))
 		self.update_icon()
 
-	def get_controller(self):
+	def get_controller(self) -> ControllerManager | None:
 		"""Returns controller set by set_controller function"""
 		return self._controller
 
-	def update_icon(self):
+	def update_icon(self) -> None:
 		"""Changes displayed icon to whatever is currently set in config"""
 		# Called internally and from ControllerSettings
 		if not self._controller:
@@ -384,7 +391,7 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 
 
 class ButtonInRevealer(Gtk.Revealer):
-	def __init__(self, button_name, tooltip, callback):
+	def __init__(self, button_name, tooltip, callback) -> None:
 		Gtk.Revealer.__init__(self)
 		self.button = Gtk.Button.new_from_icon_name(button_name, Gtk.IconSize.SMALL_TOOLBAR)
 		self.button.connect("clicked", callback)
