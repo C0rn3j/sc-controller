@@ -457,7 +457,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 		mnuPopup.popup(None, None, None, None, 3, Gtk.get_current_event_time())
 
-	def save_config(self):
+	def save_config(self) -> None:
 		self.config.save()
 		self.dm.reconfigure()
 		self.enable_test_mode()
@@ -841,7 +841,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 		AboutDialog(self).show(self.window)
 
-	def on_daemon_alive(self, *a):
+	def on_daemon_alive(self, *a) -> None:
 		self.set_daemon_status("alive", True)
 		if not self.release_notes_visible():
 			self.hide_error()
@@ -853,7 +853,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		GLib.timeout_add_seconds(1, self.check)
 		self.enable_test_mode()
 
-	def on_daemon_ccunt_changed(self, daemon, count):
+	def on_daemon_ccunt_changed(self, daemon, count: int) -> None:
 		if self.controller_count == 0:
 			# First controller connected
 			#
@@ -879,12 +879,14 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			c = self.dm.get_controllers()[i]
 			self.profile_switchers[i].set_controller(c)
 
-		if count < 1:
+		if count == 0:
 			# Special case, no controllers are connected, but one widget has to stay on screen
 			self.profile_switchers[0].set_controller(None)
 			# First load, default controller decided by _ensure_config() in controller_image.py
 			if not self._controller_shown:
 				self.load_gui_config_for_controller(None, first=True)
+		else:
+			self.enable_test_mode(self.profile_switchers[0].get_controller())
 
 		self.controller_count = count
 
@@ -1406,10 +1408,10 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 	def get_current_profile(self):
 		return self.profile_switchers[0].get_profile_name()
 
-	def set_daemon_status(self, status, daemon_runs) -> None:
+	def set_daemon_status(self, status: str, daemon_runs: bool) -> None:
 		"""Updates image that shows daemon status and menu shown when image is clicked"""
 		log.debug("daemon status: %s", status)
-		icon = os.path.join(self.imagepath, "scc-%s.svg" % (status,))
+		icon = os.path.join(self.imagepath, f"scc-{status}.svg")
 		imgDaemonStatus = self.builder.get_object("imgDaemonStatus")
 		btDaemon = self.builder.get_object("btDaemon")
 		mnuEmulationEnabled = self.builder.get_object("mnuEmulationEnabled")
