@@ -71,12 +71,14 @@ python -m build --wheel
 #python -m installer --destdir=".env" dist/*.whl
 pip install --prefix ".env" dist/*.whl --force-reinstall
 
-# Start either the daemon in debug mode if first parameter is 'debug', or the regular sc-controller app
+# Start either the daemon in debug mode if first parameter is 'daemon', or the regular sc-controller app in debug mode
 if [[ ${1-} == 'daemon' ]]; then
 	# Kill any existing daemons before spawning our own
-	pkill -f scc-daemon || true
+	if pkill -f scc-daemon; then
+		sleep 1
+	fi
 	shift
 	scc-daemon debug $@
 else
-	sc-controller $@
+	sc-controller --debug $@
 fi
