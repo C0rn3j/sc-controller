@@ -1099,7 +1099,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.show_error(msg)
 		self.set_daemon_status("error", True)
 
-	def on_daemon_event_observer(self, daemon, c, what, data):
+	def on_daemon_event_observer(self, daemon, c, what, data) -> None:
 		if self.osd_mode_mapper:
 			self.osd_mode_mapper.handle_event(daemon, what, data)
 		elif what in (LEFT, RIGHT, STICK):
@@ -1143,7 +1143,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		else:
 			print("event", what)
 
-	def on_profile_right_clicked(self, ps):
+	def on_profile_right_clicked(self, ps) -> None:
 		for name in ("mnuConfigureController", "mnuTurnoffController"):
 			# Disable controller-related menu items if controller is not connected
 			obj = self.builder.get_object(name)
@@ -1176,27 +1176,27 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		mnuPS.ps = ps
 		mnuPS.popup(None, None, None, None, 3, Gtk.get_current_event_time())
 
-	def on_mnuConfigureController_activate(self, *a):
+	def on_mnuConfigureController_activate(self, *a) -> None:
 		from scc.gui.controller_settings import ControllerSettings
 
 		mnuPS = self.builder.get_object("mnuPS")
 		cs = ControllerSettings(self, mnuPS.ps.get_controller(), mnuPS.ps)
 		cs.show(self.window)
 
-	def on_mnuProfileNew_activate(self, *a):
+	def on_mnuProfileNew_activate(self, *a) -> None:
 		mnuPS = self.builder.get_object("mnuPS")
 		self.on_new_clicked(mnuPS.ps, mnuPS.ps.get_name())
 
-	def on_mnuProfileCopy_activate(self, *a):
+	def on_mnuProfileCopy_activate(self, *a) -> None:
 		mnuPS = self.builder.get_object("mnuPS")
 		rbCopyProfile = self.builder.get_object("rbCopyProfile")
 		self.on_new_clicked(mnuPS.ps, mnuPS.ps.get_profile_name())
 		rbCopyProfile.set_active(True)
 
-	def on_mnuProfileDetails_activate(self, *a):
+	def on_mnuProfileDetails_activate(self, *a) -> None:
 		self.builder.get_object("dlgProfileDetails").show()
 
-	def on_mnuProfileRename_activate(self, *a):
+	def on_mnuProfileRename_activate(self, *a) -> None:
 		dlg = self.builder.get_object("dlgRenameProfile")
 		txRename = self.builder.get_object("txRename")
 		mnuPS = self.builder.get_object("mnuPS")
@@ -1206,12 +1206,12 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		dlg.set_transient_for(self.window)
 		dlg.show()
 
-	def on_txRename_changed(self, tx):
+	def on_txRename_changed(self, tx) -> None:
 		name = tx.get_text()
 		btRenameProfile = self.builder.get_object("btRenameProfile")
 		btRenameProfile.set_sensitive(find_profile(name) is None)
 
-	def on_btRenameProfile_clicked(self, *a):
+	def on_btRenameProfile_clicked(self, *a) -> None:
 		dlg = self.builder.get_object("dlgRenameProfile")
 		txRename = self.builder.get_object("txRename")
 		old_name = dlg._name
@@ -1238,7 +1238,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.load_profile_list()
 		dlg.hide()
 
-	def on_mnuProfileDelete_activate(self, *a):
+	def on_mnuProfileDelete_activate(self, *a) -> None:
 		mnuPS = self.builder.get_object("mnuPS")
 		name = mnuPS.ps.get_profile_name()
 		is_override = profile_is_override(name)
@@ -1272,12 +1272,12 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				log.error("Failed to remove %s: %s", fname, e)
 		d.destroy()
 
-	def mnuTurnoffController_activate(self, *a):
+	def mnuTurnoffController_activate(self, *a) -> None:
 		mnuPS = self.builder.get_object("mnuPS")
 		if mnuPS.ps.get_controller():
 			mnuPS.ps.get_controller().turnoff()
 
-	def on_window_key_press_event(self, window, event):
+	def on_window_key_press_event(self, window, event) -> None:
 		if (event.state & Gdk.ModifierType.CONTROL_MASK) != 0:
 			if event.keyval == 115:
 				self.on_save_clicked()
@@ -1304,7 +1304,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				self.ribar.get_parent().remove(self.ribar)
 		self.ribar = None
 
-	def on_daemon_reconfigured(self, *a):
+	def on_daemon_reconfigured(self, *a) -> None:
 		log.debug("Reloading config...")
 		self.config.reload()
 		for ps in self.profile_switchers:
@@ -1375,14 +1375,14 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			self.activate()
 		return 0
 
-	def do_activate(self, *a):
+	def do_activate(self, *a) -> None:
 		self.builder.get_object("window").show()
 		if self.config["gui"]["minimize_on_start"] and self.statusicon and self.statusicon.get_property("active"):
 			self.builder.get_object("window").hide()
 		else:
 			self.builder.get_object("window").show()
 
-	def remove_dot_profile(self):
+	def remove_dot_profile(self) -> None:
 		"""Checks if first profile in list begins with dot and if yes, removes it.
 		This is done to undo automatic addition that is done when daemon reports
 		selecting such profile.
@@ -1405,7 +1405,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 	def get_current_profile(self):
 		return self.profile_switchers[0].get_profile_name()
 
-	def set_daemon_status(self, status, daemon_runs):
+	def set_daemon_status(self, status, daemon_runs) -> None:
 		"""Updates image that shows daemon status and menu shown when image is clicked"""
 		log.debug("daemon status: %s", status)
 		icon = os.path.join(self.imagepath, "scc-%s.svg" % (status,))
@@ -1433,22 +1433,22 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		mnuEmulationEnabledTray.set_active(daemon_runs)
 		self.recursing = False
 
-	def on_btCloseDetails_clicked(self, *a):
+	def on_btCloseDetails_clicked(self, *a) -> None:
 		self.builder.get_object("dlgProfileDetails").hide()
 
-	def on_buffProfileDescription_changed(self, buffer, *a):
+	def on_buffProfileDescription_changed(self, buffer, *a) -> None:
 		if self.recursing:
 			return
 		self.current.description = buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter(), True)
 		self.on_profile_modified()
 
-	def on_cbProfileIsTemplate_toggled(self, widget, *a):
+	def on_cbProfileIsTemplate_toggled(self, widget, *a) -> None:
 		if self.recursing:
 			return
 		self.current.is_template = widget.get_active()
 		self.on_profile_modified()
 
-	def setup_commandline(self):
+	def setup_commandline(self) -> None:
 		def aso(long_name, short_name, description, arg=None, flags=GLib.OptionFlags.IN_MAIN):
 			"""add_simple_option, adds program argument in simple way"""
 			o = GLib.OptionEntry()
@@ -1467,7 +1467,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		aso("debug", b"d", "Be more verbose (debug mode)")
 		aso("osd", b"o", "OSD mode (OSD-controllable editor for current profile)")
 
-	def save_profile_selection(self, path):
+	def save_profile_selection(self, path) -> None:
 		"""Saves name of profile into config file"""
 		name = os.path.split(path)[-1]
 		if name.endswith(".sccprofile"):
@@ -1488,6 +1488,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 	@staticmethod
 	def get_release(n: int = 4) -> str:
 		"""Returns current version rounded to max. 'n' numbers.
+
 		( v0.14.1.3 ; n=3 -> v0.14.1   )
 		( v0.14.0.0 ; n=3 -> v0.14.0.0 )
 		"""
@@ -1504,9 +1505,10 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		riNewRelease = self.builder.get_object("riNewRelease")
 		return self.ribar._infobar == riNewRelease
 
-	def check_release_notes(self):
-		"""Silently downloads release notes from github and displays infobar
-		informing user that they are ready to be displayed.
+	def check_release_notes(self) -> None:
+		"""Silently downloads release notes from github
+
+		displays infobar informing user that they are ready to be displayed
 		"""
 		url = App.RELEASE_URL % (App.get_release(),)
 		log.debug(f"Loading release notes from '{url}'")
@@ -1645,10 +1647,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				else:
 					log.error("Unknown file type: '%s'...", path)
 
-	def convert_old_profiles(self):
-		"""Checks all available profiles and automatically converts anything with
-		version 1.3 or lower.
-		"""
+	def convert_old_profiles(self) -> None:
+		"""Checks all available profiles and automatically converts anything with version 1.3 or lower."""
 		from scc.parser import ActionParser
 
 		to_convert = {}
@@ -1659,7 +1659,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			try:
 				p = Profile(ActionParser())
 				p.load(os.path.join(get_profiles_path(), name))
-			except:
+			except Exception:
+				log.debug("Failed loading old profile %s for conversion", name)
 				# Just ignore invalid profiles here
 				continue
 			if p.original_version < 1.4:
