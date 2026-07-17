@@ -3,15 +3,14 @@
 import logging
 import os
 
-from gi.repository import GLib, GObject, Gtk
+from gi.repository import Gdk, GdkX11, GLib, GObject, Gtk
 
 from scc.gui.dwsnc import IS_GNOME, IS_UNITY
 from scc.tools import _  # gettext function
 
 log = logging.getLogger("StatusIcon")
 
-# Taken from Syncthing-GTK, but got all KDE stuff removed, since it doesn't
-# work in latest KDE anymore.
+# Taken from Syncthing-GTK, but got all Plasma stuff removed, since it doesn't work in latest Plasma anymore.
 
 
 #                | MATE      | Unity      | Cinnamon   | Cairo-Dock (classic) | Cairo-Dock (modern) |
@@ -67,7 +66,7 @@ class StatusIcon(GObject.GObject):
 		"""
 		return self.get_property("active")
 
-	def set(self, icon=None, text=None):
+	def set(self, icon=None, text=None) -> None:
 		"""Set the status icon image and descriptive text
 
 		If either of these are `None` their previous value will be used.
@@ -155,16 +154,15 @@ class StatusIcon(GObject.GObject):
 
 
 class StatusIconDummy(StatusIcon):
-	"""Dummy status icon implementation that does nothing
-	"""
+	"""Dummy status icon implementation that does nothing"""
 
-	def __init__(self, *args, **kwargs):
+	def __init__(self, *args, **kwargs) -> None:
 		StatusIcon.__init__(self, *args, **kwargs)
 
 		# Pretty unlikely that this will be visible...
 		self.set_property("active", False)
 
-	def set(self, icon=None, text=None):
+	def set(self, icon=None, text=None) -> None:
 		StatusIcon.set(self, icon, text)
 
 		self._get_icon(icon)
@@ -172,11 +170,13 @@ class StatusIconDummy(StatusIcon):
 
 
 class StatusIconGTK3(StatusIcon):
-	"""Gtk.StatusIcon based status icon backend
-	"""
+	"""Gtk.StatusIcon based status icon backend"""
 
-	def __init__(self, *args, **kwargs):
+	def __init__(self, *args, **kwargs) -> None:
 		StatusIcon.__init__(self, *args, **kwargs)
+		# This backend is not supported on Wayland
+		if not isinstance(Gdk.Display.get_default(), GdkX11.X11Display):
+			raise NotImplementedError
 
 		if not self._is_forced():
 			if IS_UNITY:
@@ -200,31 +200,30 @@ class StatusIconGTK3(StatusIcon):
 		# See: http://stackoverflow.com/a/6365904/277882
 		GLib.idle_add(self._on_embedded_change)
 
-	def destroy(self):
+	def destroy(self) -> None:
 		self.hide()
 		self._tray = None
 
-	def set(self, icon=None, text=None):
+	def set(self, icon=None, text=None) -> None:
 		StatusIcon.set(self, icon, text)
 
 		self._tray.set_from_icon_name(self._get_icon(icon))
 		self._tray.set_tooltip_text(self._get_text(text))
 
-	def _on_embedded_change(self, *args):
+	def _on_embedded_change(self, *args) -> None:
 		# Without an icon update at this point GTK might consider the icon embedded and visible even through
 		# it can't actually be seen...
 		self._tray.set_from_file(self._get_icon())
 
-		# An invisible tray icon will never be embedded but it also should not be replaced
-		# by a fallback icon
+		# An invisible tray icon will never be embedded but it also should not be replaced by a fallback icon
 		is_embedded = self._tray.is_embedded() or not self._tray.get_visible()
 		if is_embedded != self.get_property("active"):
 			self.set_property("active", is_embedded)
 
-	def _on_rclick(self, si, button, time):
+	def _on_rclick(self, si, button, time) -> None:
 		self._get_popupmenu().popup(None, None, None, None, button, time)
 
-	def _set_visible(self, active):
+	def _set_visible(self, active) -> None:
 		StatusIcon._set_visible(self, active)
 
 		self._tray.set_visible(active)
@@ -235,8 +234,7 @@ class StatusIconDBus(StatusIcon):
 
 
 class StatusIconAppIndicator(StatusIconDBus):
-	"""Unity's AppIndicator3.Indicator based status icon backend
-	"""
+	"""Unity's AppIndicator3.Indicator based status icon backend"""
 
 	def __init__(self, *args, **kwargs):
 		StatusIcon.__init__(self, *args, **kwargs)
@@ -285,7 +283,7 @@ class StatusIconAppIndicator(StatusIconDBus):
 
 
 class StatusIconProxy(StatusIcon):
-	def __init__(self, *args, **kwargs):
+	def __init__(self, *args, **kwargs) -> None:
 		StatusIcon.__init__(self, *args, **kwargs)
 
 		self._arguments = (args, kwargs)
@@ -331,7 +329,7 @@ class StatusIconProxy(StatusIcon):
 			active = True
 		self.set_property("active", active)
 
-	def _load_fallback(self):
+	def _load_fallback(self) -> None:
 		status_icon_backends = [StatusIconAppIndicator, StatusIconDummy]
 
 		if not self._status_fb:
@@ -342,7 +340,7 @@ class StatusIconProxy(StatusIcon):
 					self._status_fb.connect("notify::active", self._on_notify_active_fb)
 					self._on_notify_active_fb()
 
-					log.warning("StatusIcon: Using backend %s (fallback)" % StatusIconBackend.__name__)
+					log.warning("StatusIcon: Using backend %s", StatusIconBackend.__name__)
 					break
 				except NotImplementedError:
 					continue
@@ -364,7 +362,7 @@ class StatusIconProxy(StatusIcon):
 		self._icon = icon
 		self._text = text
 
-		if self._status_gtk:
+		if self._status_gtk and self._status_gtk.get_active():
 			self._status_gtk.set(icon, text)
 		if self._status_fb:
 			self._status_fb.set(icon, text)
