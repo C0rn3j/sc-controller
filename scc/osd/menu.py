@@ -458,7 +458,7 @@ class Menu(OSDWindow):
 			if self.using_wlroots:
 				if self.layer_shell.is_supported():
 					layer = self.layer_shell.Layer.OVERLAY
-					self.layer_shell.set_layer(self, self.layer_shell.Layer.TOP)
+					self.layer_shell.set_layer(self, self.layer_shell.Layer.OVERLAY)
 			self._submenu = self.__class__(layer=layer)
 			sub_pos = list(self.position)
 			for i in (0, 1):

@@ -87,7 +87,7 @@ class OSDWindow(Gtk.Window):
 				self.x_layer_anchor = GtkLayerShell.Edge.LEFT
 				self.y_layer_anchor = GtkLayerShell.Edge.BOTTOM
 				GtkLayerShell.init_for_window(self)
-				GtkLayerShell.set_layer(self, layer if layer is not None else GtkLayerShell.Layer.TOP)
+				GtkLayerShell.set_layer(self, layer if layer is not None else GtkLayerShell.Layer.OVERLAY)
 				GtkLayerShell.set_anchor(self, self.x_layer_anchor, True)
 				GtkLayerShell.set_anchor(self, self.y_layer_anchor, True)
 				self.layer_shell = GtkLayerShell
