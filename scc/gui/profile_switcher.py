@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """SC-Controller - ProfileSwitcher
 
 Set of widgets designed to allow user to select profile, placed in one Gtk.Box:
@@ -281,7 +280,7 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 		if has_changes:
 			if not self._savebutton:
 				# Save button has to be created
-				self._savebutton = ButtonInRevealer("gtk-save", _("Save changes"), self.on_savebutton_clicked)
+				self._savebutton = ButtonInRevealer("document-save", _("Save changes"), self.on_savebutton_clicked)
 				self._box.pack_start(self._savebutton, False, True, 0)
 				self.show_all()
 			self._savebutton.set_reveal_child(True)
@@ -307,7 +306,7 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 			if not self._switch_to_button:
 				# Save button has to be created
 				self._switch_to_button = ButtonInRevealer(
-					"gtk-edit", _("Edit mappings of this controller"), self.on_switch_to_clicked,
+					"document-edit", _("Edit mappings of this controller"), self.on_switch_to_clicked,
 				)
 				self._box.pack_start(self._switch_to_button, False, True, 0)
 				self.show_all()
