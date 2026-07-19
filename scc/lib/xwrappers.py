@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 from ctypes import (
 	CDLL,
+	CFUNCTYPE,
 	POINTER,
 	Structure,
 	byref,
@@ -49,6 +50,21 @@ def _load_lib(*names):
 libXFixes = _load_lib("libXfixes.so", "libXfixes.so.3")
 libX11 = _load_lib("libX11.so", "libX11.so.6")
 libXext = _load_lib("libXext.so", "libXext.so.6")
+
+# By default Xlib aborts the whole process on an X protocol error (e.g. BadWindow
+# when querying a stale/invalid window id - which happens under XWayland, where
+# the focused window may not be an X window). Install a no-op error handler so the
+# offending call fails quietly (callers already cope with missing data) instead of
+# killing the process (this previously crashed scc-osd-daemon from Autoswitch).
+_XErrorHandler = CFUNCTYPE(c_int, c_void_p, c_void_p)
+
+
+def _ignore_x_error(display, error):
+	return 0
+
+
+_x_error_handler = _XErrorHandler(_ignore_x_error)  # keep a reference so it isn't GC'd
+libX11.XSetErrorHandler(_x_error_handler)
 
 
 # Types
