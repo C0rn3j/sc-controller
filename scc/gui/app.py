@@ -477,6 +477,27 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				self.window.set_visible(False)
 			else:
 				log.error("Tray icon not available/active, refusing to close window!")
+				dialog = Gtk.MessageDialog(
+					transient_for=self.window,
+					modal=True,
+					message_type=Gtk.MessageType.WARNING,
+					buttons=Gtk.ButtonsType.NONE,
+					text=_("Unable to hide the window to the system tray"),
+				)
+				dialog.format_secondary_text(
+					_("Do you want to quit the application instead?")
+				)
+				dialog.add_buttons(
+					_("_Cancel"), Gtk.ResponseType.CANCEL,
+					_("_Quit"), Gtk.ResponseType.OK,
+				)
+				dialog.set_default_response(Gtk.ResponseType.CANCEL)
+
+				response = dialog.run()
+				dialog.destroy()
+
+				if response == Gtk.ResponseType.OK:
+					self.on_mnuExit_activate()
 		else:
 			self.on_mnuExit_activate()
 		return True # TRUE to stop other handlers from being invoked for the event. FALSE to propagate the event further.
