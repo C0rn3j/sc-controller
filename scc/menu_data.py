@@ -5,6 +5,9 @@ Container for list of menu items + required parsers
 
 import json
 import os
+import logging
+
+log = logging.getLogger("menu_data")
 
 from scc.actions import Action
 from scc.tools import _
@@ -25,7 +28,10 @@ class MenuData:
 		items = []
 		for i in self:
 			if isinstance(i, MenuGenerator):
-				items.extend(i.generate(menuhandler))
+				try:
+					items.extend(i.generate(menuhandler))
+				except Exception:
+					log.exception("Menu generator %r failed", getattr(i, "GENERATOR_NAME", i))
 			else:
 				items.append(i)
 		return MenuData(*items)
