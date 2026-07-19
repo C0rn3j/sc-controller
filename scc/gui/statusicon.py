@@ -168,6 +168,9 @@ class StatusIconDummy(StatusIcon):
 		self._get_icon(icon)
 		self._get_text(text)
 
+	def destroy(self):
+		return
+
 
 class StatusIconGTK3(StatusIcon):
 	"""Gtk.StatusIcon based status icon backend"""
