@@ -21,7 +21,7 @@ from scc.gui.binding_editor import BindingEditor
 from scc.gui.controller_image import ControllerImage
 from scc.gui.controller_widget import BUTTONS, GYROS, PADS, STICKS, TRIGGERS
 from scc.gui.daemon_manager import ControllerManager, DaemonManager
-from scc.gui.dwsnc import IS_UNITY, headerbar
+from scc.gui.dwsnc import headerbar
 from scc.gui.parser import GuiActionParser, InvalidAction
 from scc.gui.profile_switcher import ProfileSwitcher
 from scc.gui.ribar import RIBar
@@ -468,7 +468,12 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 	def on_window_delete_event(self, *a):
 		"""Called when user tries to close window"""
-		if not IS_UNITY and self.config["gui"]["enable_status_icon"] and self.config["gui"]["minimize_to_status_icon"]:
+		if (
+			self.config["gui"]["enable_status_icon"]
+			and self.config["gui"]["minimize_to_status_icon"]
+			and self.statusicon
+			and self.statusicon.get_property("active")
+		):
 			# Override closing and hide instead
 			self.window.set_visible(False)
 		else:
