@@ -281,9 +281,13 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			btLGRIP.get_parent().reorder_child(btDPAD, 5)
 
 	def setup_statusicon(self) -> None:
-		menu = self.builder.get_object("mnuTray")
-		self.statusicon = get_status_icon(self.imagepath, menu)
-		self.statusicon.connect("clicked", self.on_statusicon_clicked)
+		if self.statusicon is None:
+			menu = self.builder.get_object("mnuTray")
+			self.statusicon = get_status_icon(self.imagepath, menu)
+			self.statusicon.connect("clicked", self.on_statusicon_clicked)
+		else:
+			self.statusicon.show()
+
 		# if not self.statusicon.is_clickable():
 		# self.builder.get_object("mnuShowWindowTray").set_visible(True)
 		# Workaround - always add it to the menu, see https://github.com/C0rn3j/sc-controller/issues/53
@@ -291,8 +295,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		GLib.idle_add(self.statusicon.set, f"scc-{self.status}", _("SC Controller"))
 
 	def destroy_statusicon(self):
-		self.statusicon.destroy()
-		self.statusicon = None
+		self.statusicon.hide()
 
 	def check(self):
 		"""Performs various (three) checks and reports possible problems"""
