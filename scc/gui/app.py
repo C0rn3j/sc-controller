@@ -469,14 +469,17 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		"""Handler for user clicking on tray icon button."""
 		self.window.set_visible(not self.window.get_visible())
 
-	def on_window_delete_event(self, *a):
+	def on_window_delete_event(self, *a) -> bool:
 		"""Called when user tries to close window"""
 		if not IS_UNITY and self.config["gui"]["enable_status_icon"] and self.config["gui"]["minimize_to_status_icon"]:
-			# Override closing and hide instead
-			self.window.set_visible(False)
+			if self.statusicon and self.statusicon.get_property("active"):
+				# Override closing and hide instead
+				self.window.set_visible(False)
+			else:
+				log.error("Tray icon not available/active, refusing to close window!")
 		else:
 			self.on_mnuExit_activate()
-		return True
+		return True # TRUE to stop other handlers from being invoked for the event. FALSE to propagate the event further.
 
 	def on_mnuClear_activate(self, *a):
 		"""Handler for 'Clear' context menu item.
