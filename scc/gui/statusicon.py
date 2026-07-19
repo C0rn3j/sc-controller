@@ -9,6 +9,25 @@ from scc.gui.dwsnc import IS_GNOME, IS_UNITY
 from scc.tools import _  # gettext function
 
 log = logging.getLogger("StatusIcon")
+ayatana_deprecation_warning_silenced = False
+
+
+def silence_ayatana_deprecation_warning() -> None:
+	"""Silence the annoying "switch to ayatana glib" warning
+
+	We can't switch yet, see https://github.com/C0rn3j/sc-controller/issues/113
+	"""
+	global ayatana_deprecation_warning_silenced
+	if ayatana_deprecation_warning_silenced:
+		return
+
+	def filter_warning(domain, level, message, *args) -> None:
+		if "libayatana-appindicator is deprecated" not in message:
+			GLib.log_default_handler(domain, level, message, None)
+
+	GLib.log_set_handler("libayatana-appindicator", GLib.LogLevelFlags.LEVEL_WARNING, filter_warning)
+	ayatana_deprecation_warning_silenced = True
+
 
 # Taken from Syncthing-GTK, but got all Plasma stuff removed, since it doesn't work in latest Plasma anymore.
 
@@ -239,7 +258,7 @@ class StatusIconDBus(StatusIcon):
 class StatusIconAppIndicator(StatusIconDBus):
 	"""Unity's AppIndicator3.Indicator based status icon backend"""
 
-	def __init__(self, *args, **kwargs):
+	def __init__(self, *args, **kwargs) -> None:
 		StatusIcon.__init__(self, *args, **kwargs)
 
 		try:
@@ -247,6 +266,7 @@ class StatusIconAppIndicator(StatusIconDBus):
 
 			try:
 				gi.require_version("AyatanaAppIndicator3", "0.1")
+				silence_ayatana_deprecation_warning()
 				from gi.repository import AyatanaAppIndicator3 as appindicator
 			except (ImportError, ValueError):
 				log.warning(
