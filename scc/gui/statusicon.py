@@ -245,7 +245,7 @@ class StatusIconAppIndicator(StatusIconDBus):
 			try:
 				gi.require_version("AyatanaAppIndicator3", "0.1")
 				from gi.repository import AyatanaAppIndicator3 as appindicator
-			except ImportError:
+			except (ImportError, ValueError):
 				log.warning(
 					"Failed to import AyatanaAppIndicator3, trying fallback to an old implementation of AppIndicator3!",
 				)
@@ -254,7 +254,7 @@ class StatusIconAppIndicator(StatusIconDBus):
 
 			self._status_active = appindicator.IndicatorStatus.ACTIVE
 			self._status_passive = appindicator.IndicatorStatus.PASSIVE
-		except ImportError:
+		except (ImportError, ValueError):
 			log.warning("Failed to import AppIndicator3")
 			raise NotImplementedError
 
