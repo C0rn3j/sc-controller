@@ -687,7 +687,7 @@ class DS5HidRawController(Controller):
 			self._feedback_cancel_task.cancel()
 		self._feedback_cancel_task = self.mapper.schedule(duration, clear_feedback)
 
-	def _input(self, *a):
+	def _input(self, *a) -> None:
 		# log.debug("FOUND INPUT")
 		tempdata = self._device_file.read(78)
 		# Skip over packet if not a DS5 mode input packet

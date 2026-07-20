@@ -31,6 +31,10 @@ from scc.uinput import Dummy, Keyboard, Mouse, UInput
 
 if TYPE_CHECKING:
 	from scc.controller import Controller
+	from scc.poller import Poller
+	from scc.profile import Profile
+	from scc.scheduler import Scheduler
+
 log = logging.getLogger("Mapper")
 
 
@@ -39,21 +43,21 @@ class Mapper:
 
 	def __init__(
 		self,
-		profile,
-		scheduler,
+		profile: Profile,
+		scheduler: Scheduler,
 		keyboard: bytes = b"SCController Keyboard",
 		mouse: bytes = b"SCController Mouse",
 		gamepad: bool = True,
-		poller=None,
-	):
+		poller: Poller | None =None,
+	) -> None:
 		"""If any of keyboard, mouse or gamepad is set to None, that device will not be emulated.
 
 		Emulated gamepad will have rumble enabled only if poller is set to instance and configuration allows it.
 		"""
-		self.profile = profile
+		self.profile: Profile = profile
 		self.controller = None
 		self.xdisplay = None
-		self.scheduler = scheduler
+		self.scheduler: Scheduler = scheduler
 
 		# Create virtual devices
 		log.debug("Creating virtual devices")
@@ -81,7 +85,7 @@ class Mapper:
 		self.force_event = set()
 		self.time_elapsed = 0.0
 
-	def create_gamepad(self, enabled: bool, poller) -> UInput | None:
+	def create_gamepad(self, enabled: bool, poller: Poller | None) -> UInput | None:
 		"""Parses gamepad configuration and creates apropriate unput device"""
 		if not enabled or "SCC_NOGAMEPAD" in os.environ:
 			# Completly undocumented and for debuging purposes only.
@@ -94,7 +98,7 @@ class Mapper:
 		product = int(cfg["output"]["product"], 16)
 		version = int(cfg["output"]["version"], 16)
 		name = cfg["output"]["name"]
-		rumble = cfg["output"]["rumble"] and poller != None
+		rumble = cfg["output"]["rumble"] and poller is not None
 		axes: list[tuple[int, int, int, int, int]] = []
 		i = 0
 		for min, max in cfg["output"]["axes"]:

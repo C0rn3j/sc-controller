@@ -127,11 +127,11 @@ class Config:
 		"menu_cancel": "B",
 	}
 
-	def __init__(self):
+	def __init__(self) -> None:
 		self.filename: str = os.path.join(get_config_path(), "config.json")
 		self.reload()
 
-	def reload(self):
+	def reload(self) -> None:
 		"""(Re)loads configuration. Works as load(), but handles exceptions"""
 		try:
 			self.load()
@@ -144,6 +144,7 @@ class Config:
 
 	def _check_dict(self, values, defaults):
 		"""Recursively checks if 'config' contains all keys in 'defaults'.
+
 		Creates keys with default values where missing.
 
 		Returns True if anything was changed.
@@ -158,8 +159,7 @@ class Config:
 		return rv
 
 	def check_values(self):
-		"""Check if all required values are in place and fill by default
-		whatever is missing.
+		"""Check if all required values are in place and fill by default whatever is missing.
 
 		Returns True if anything gets changed.
 		"""

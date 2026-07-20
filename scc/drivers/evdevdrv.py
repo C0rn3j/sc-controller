@@ -302,11 +302,11 @@ class EvdevController(Controller):
 		typically cannot be shut down like this.
 		"""
 
-	def get_gyro_enabled(self):
+	def get_gyro_enabled(self) -> bool:
 		"""Returns True if gyroscope input is currently enabled"""
 		return False
 
-	def feedback(self, data):
+	def feedback(self, data) -> None:
 		"""TODO: It would be nice to have feedback..."""
 
 

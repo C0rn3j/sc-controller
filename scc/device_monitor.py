@@ -63,7 +63,7 @@ class DeviceMonitor(Monitor):
 		self.daemon: SCCDaemon | None = None
 		self.dev_added_cbs = {}
 		self.dev_removed_cbs = {}
-		self.bt_addresses = {}
+		self.bt_addresses: dict[str, str] = {}
 		self.known_devs = {}
 		self._pending_bt = {}
 
