@@ -517,7 +517,6 @@ class DS4EvdevController(EvdevController):
 		controllerdevice: InputDevice[str],
 		gyro: InputDevice[str],
 		touchpad: InputDevice[str],
-		syspath: str,
 	) -> None:
 		config = {
 			"axes": DS4EvdevController.AXIS_MAP,
@@ -531,7 +530,6 @@ class DS4EvdevController(EvdevController):
 			config["buttons"] = DS4EvdevController.BUTTON_MAP_OLD
 		self._gyro = gyro
 		self._touchpad = touchpad
-		self._syspath: str = syspath
 		self._feedback_effect_id: int | None = None
 		for device in (self._gyro, self._touchpad):
 			if device:
@@ -611,15 +609,6 @@ class DS4EvdevController(EvdevController):
 		# Cannot be actually turned off, so it's always active
 		# TODO: Maybe emulate turning off?
 		return True
-
-	def turnoff(self) -> None:
-		if self.device.info.bustype != self.ECODES.BUS_BLUETOOTH:
-			log.warning("Ignoring request to turn off wired DS4 controller")
-			return
-		try:
-			self.daemon.get_device_monitor().disconnect_bluetooth(self._syspath)
-		except Exception as error:
-			log.warning("Failed to turn off DS4 evdev controller: %s", error)
 
 	def _stop_feedback(self) -> None:
 		if self._feedback_effect_id is None:
@@ -720,7 +709,7 @@ def init(daemon: SCCDaemon, config: dict) -> bool:
 					touchpad = device
 		# 3rd, do a magic
 		if controllerdevice and gyro and touchpad:
-			return make_new_device(DS4EvdevController, controllerdevice, gyro, touchpad, sys_dev_path)
+			return make_new_device(DS4EvdevController, controllerdevice, gyro, touchpad)
 
 	def fail_cb(syspath: str, vid: int, pid: int) -> None:
 		if HAVE_EVDEV:

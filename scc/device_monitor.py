@@ -196,6 +196,17 @@ class DeviceMonitor(Monitor):
 		device_path = "/org/bluez/hci{}/dev_{}".format(dev_id, address.replace(":", "_"))
 		_disconnect_bluez(device_path)
 
+	def get_bluetooth_syspath(self, address: str) -> str | None:
+		"""Return the hciX:handle link name for a connected Bluetooth address."""
+		if not address:
+			return None
+		self._get_hci_addresses()
+		address = address.upper()
+		for link_name, link_address in self.bt_addresses.items():
+			if link_address.upper() == address:
+				return link_name
+		return None
+
 	def _dev_for_hci(self, sys_bus_path: str) -> str | None:
 		"""For given syspath leading to ../hciX:ABCD, returns input device node.
 

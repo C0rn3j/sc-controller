@@ -88,3 +88,11 @@ def test_disconnect_bluetooth_uses_bluez_device_path(disconnect_bluez: Mock) -> 
 	monitor.disconnect_bluetooth("/sys/devices/bluetooth/hci0/hci0:50")
 
 	disconnect_bluez.assert_called_once_with("/org/bluez/hci0/dev_A0_5A_5D_87_82_17")
+
+
+def test_get_bluetooth_syspath_matches_address_case_insensitively() -> None:
+	monitor = make_monitor()
+	monitor.bt_addresses = {"hci0:50": "A0:5A:5D:87:82:17"}
+
+	assert monitor.get_bluetooth_syspath("a0:5a:5d:87:82:17") == "hci0:50"
+	monitor._get_hci_addresses.assert_called_once_with()

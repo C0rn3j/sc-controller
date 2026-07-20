@@ -297,10 +297,20 @@ class EvdevController(Controller):
 		# TODO: This, maybe.
 		pass
 
-	def turnoff(self):
-		"""Exists to stay compatibile with SCController class as evdev controller
-		typically cannot be shut down like this.
-		"""
+	def turnoff(self) -> None:
+		"""Disconnect a Bluetooth controller through BlueZ."""
+		if self.device.info.bustype != self.ECODES.BUS_BLUETOOTH:
+			log.warning("Ignoring request to turn off wired evdev controller")
+			return
+
+		try:
+			monitor = self.daemon.get_device_monitor()
+			syspath = monitor.get_bluetooth_syspath(self.device.uniq)
+			if syspath is None:
+				raise OSError(f"Cannot determine Bluetooth connection for {self.device.uniq}")
+			monitor.disconnect_bluetooth(syspath)
+		except Exception as error:
+			log.warning("Failed to turn off Bluetooth evdev controller: %s", error)
 
 	def get_gyro_enabled(self) -> bool:
 		"""Returns True if gyroscope input is currently enabled"""

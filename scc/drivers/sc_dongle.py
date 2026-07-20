@@ -384,13 +384,13 @@ class SCController(Controller):
 	def set_gyro_enabled(self, enabled: bool):
 		self.configure(enable_gyros=enabled)
 
-	def turnoff(self):
+	def turnoff(self) -> None:
 		log.debug("Turning off the controller...")
 
 		# Mercilessly stolen from scraw library
 		self._driver.send_control(self._ccidx, struct.pack("<BBBBBB", SCPacketType.OFF, 0x04, 0x6F, 0x66, 0x66, 0x21))
 
-	def get_gyro_enabled(self):
+	def get_gyro_enabled(self) -> bool:
 		"""Returns True if gyroscope input is currently enabled"""
 		return self._enable_gyros
 

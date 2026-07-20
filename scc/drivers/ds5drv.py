@@ -539,6 +539,7 @@ class DS5HidRawController(Controller):
 		self._hidrawdev: HIDRaw = hidrawdev
 		self._fileno: int = self._device_file.fileno()
 		self._id: str = self._generate_id() if driver else "-"
+		self._closed = False
 		self._previous_quat = [1.0, 0.0, 0.0, 0.0]
 		self._delta_time: float = time.time()
 		self._previous_time: float = time.time()
@@ -558,6 +559,12 @@ class DS5HidRawController(Controller):
 
 	def get_type(self):
 		return "ds5bt_hidraw"
+
+	def turnoff(self) -> None:
+		try:
+			self.daemon.get_device_monitor().disconnect_bluetooth(self.syspath)
+		except Exception as error:
+			log.warning("Failed to turn off DS5 Bluetooth controller: %s", error)
 
 	def apply_config(self, config):
 		icon = config["icon"]
@@ -689,7 +696,15 @@ class DS5HidRawController(Controller):
 
 	def _input(self, *a) -> None:
 		# log.debug("FOUND INPUT")
-		tempdata = self._device_file.read(78)
+		try:
+			tempdata = self._device_file.read(78)
+		except OSError as error:
+			log.debug("DS5 Bluetooth hidraw device disconnected: %s", error)
+			self.close()
+			return
+		if not tempdata:
+			self.close()
+			return
 		# Skip over packet if not a DS5 mode input packet
 		if tempdata[0] != 0x31:
 			return
@@ -865,7 +880,10 @@ class DS5HidRawController(Controller):
 		# print("TEST QUAT: {}".format(self._previous_quat))
 		# print("TEST QUAT Z: {}".format(self._previous_quat[3] * -1))
 
-	def close(self) -> None:
+	def close(self, *args) -> None:
+		if self._closed:
+			return
+		self._closed = True
 		if self._poller:
 			self._poller.unregister(self._fileno)
 
