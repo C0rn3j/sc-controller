@@ -14,8 +14,9 @@ import sys
 from math import cos, sin
 from typing import TYPE_CHECKING
 
+from hidraw import HIDRaw
+
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags
-from scc.lib.hidraw import HIDRaw
 from scc.tools import find_library
 
 from .sc_dongle import SCConfigType, SCController, SCPacketLength, SCPacketType

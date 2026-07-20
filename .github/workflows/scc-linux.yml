@@ -22,8 +22,9 @@ jobs:
         with:
           python-version: '3.14'
 
+      # TODO(Martin): Replace URL with just 'hidraw-pure' when https://github.com/vpelletier/python-hidraw/issues/7 is resolved
       - name: Install dependencies
-        run: pip install build evdev setuptools ioctl-opt libusb1 vdf pytest
+        run: pip install build evdev setuptools https://github.com/C0rn3j/python-hidraw/archive/modernize.zip ioctl-opt libusb1 vdf pytest
 
       - name: Build SCC
         run: python -m build

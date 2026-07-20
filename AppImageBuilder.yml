@@ -26,8 +26,9 @@ AppDir:
   after_bundle: |
     set -eu
 
-    # install python3-ioctl-opt manually as it is not packaged anywhere
-    pip install --target "${TARGET_APPDIR}/usr/lib/python3/dist-packages/" ioctl-opt
+    # install python-hidraw-pure and python-ioctl-opt manually as they were only packaged in Debian 14
+    # TODO(Martin): Replace URL with just 'hidraw-pure' when https://github.com/vpelletier/python-hidraw/issues/7 is resolved
+    pip install --target "${TARGET_APPDIR}/usr/lib/python3/dist-packages/" https://github.com/C0rn3j/python-hidraw/archive/modernize.zip ioctl-opt
 
     # appimage-builder expects .desktop file to start with appinfo-id
     desktop="$(find "${TARGET_APPDIR}/usr" -name sc-controller.desktop)"

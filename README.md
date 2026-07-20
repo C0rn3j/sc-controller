@@ -56,6 +56,7 @@ Windows:
   - [python-pylibacl](http://pylibacl.k1024.org/)
   - [python-vdf](https://pypi.org/project/vdf/)
   - [python-libusb1](https://github.com/vpelletier/python-libusb1)
+  - [python-hidraw-pure](https://github.com/vpelletier/python-hidraw)
   - [python-ioctl-opt](https://pypi.org/project/ioctl-opt/)
   - [gtk-layer-shell](https://github.com/wmww/gtk-layer-shell)
 

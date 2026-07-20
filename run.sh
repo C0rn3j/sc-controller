@@ -29,6 +29,10 @@ function testDeps() {
 #		echo -e "${Red}python3-gi-cairo not found, install it. ${Yellow}The package may be named python3-gobject or python-gobject on your distribution!${NoColor}"
 #		exit 1
 #	fi
+#	if ! python -c "import importlib.util; exit(0 if importlib.util.find_spec('hidraw') is not None else 1)"; then
+#		echo -e "${Red}python3-hidraw-pure not found, install it. ${Yellow}The package may be named or python-hidraw-pure on your distribution, hidraw-pure on PyPi!${NoColor}"
+#		exit 1
+#	fi
 #	if ! python -c "import importlib.util; exit(0 if importlib.util.find_spec('ioctl_opt') is not None else 1)"; then
 #		echo -e "${Red}python3-ioctl-opt not found, install it. ${Yellow}The package may be named or python-ioctl-opt on your distribution, ioctl-opt on PyPi!${NoColor}"
 #		exit 1

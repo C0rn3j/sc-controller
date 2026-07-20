@@ -39,7 +39,8 @@ RUN <<EOR
 	python -m build --wheel
 	python -m venv .env
 	. .env/bin/activate
-	pip install evdev ioctl-opt libusb1 pytest vdf
+	# TODO(Martin): Replace URL with just 'hidraw-pure' when https://github.com/vpelletier/python-hidraw/issues/7 is resolved
+	pip install evdev https://github.com/C0rn3j/python-hidraw/archive/modernize.zip ioctl-opt libusb1 pytest vdf
 	# Install into the active environment for tests.
 	pip install dist/*.whl
 	python -m pytest tests

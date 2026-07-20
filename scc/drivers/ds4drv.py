@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING, BinaryIO
 
 import usb1
 from evdev import ff
+from hidraw import HIDRaw
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, HapticPos, SCButtons
 from scc.controller import Controller
@@ -40,7 +41,6 @@ from scc.drivers.hiddrv import (
 	hiddrv_test,
 )
 from scc.drivers.usb import USBDevice, register_hotplug_device
-from scc.lib.hidraw import HIDRaw
 from scc.tools import init_logging, set_logging_level
 
 if TYPE_CHECKING:

@@ -1,4 +1,5 @@
 evdev
+hidraw-pure @ https://github.com/C0rn3j/python-hidraw/archive/modernize.zip
 ioctl-opt
 libusb1
 setuptools
