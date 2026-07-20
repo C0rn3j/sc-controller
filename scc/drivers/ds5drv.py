@@ -452,7 +452,7 @@ class DS5HidRawDriver:
 
 		# log.debug(whatever)
 		try:
-			device_file: BinaryIO = open(os.path.join("/dev/", hidrawname), "w+b")
+			device_file = open(os.path.join("/dev/", hidrawname), "r+b", buffering=0)
 			hidraw = HIDRaw(device_file)
 			return DS5HidRawController(self, syspath, hidraw, device_file)
 		except Exception:

@@ -109,7 +109,7 @@ class Driver:
 		if hidrawname is None:
 			return None
 		try:
-			device_file = open(os.path.join("/dev/", hidrawname), "w+b")
+			device_file = open(os.path.join("/dev/", hidrawname), "r+b", buffering=0)
 			hidraw = HIDRaw(device_file)
 			return SCByBt(self, syspath, hidraw, device_file)
 		except Exception as e:

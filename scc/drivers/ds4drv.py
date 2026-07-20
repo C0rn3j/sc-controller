@@ -430,7 +430,7 @@ class DS4HIDRawDriver:
 		if hidrawname is None:
 			return None
 		try:
-			device_file = open(os.path.join("/dev/", hidrawname), "w+b")
+			device_file = open(os.path.join("/dev/", hidrawname), "r+b", buffering=0)
 			hidraw = HIDRaw(device_file)
 			return DS4HIDRawController(self, syspath, hidraw, device_file, vid, pid)
 		except Exception as e:
