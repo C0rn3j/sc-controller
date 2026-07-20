@@ -328,18 +328,18 @@ class UInput:
 		"""
 		self._lib.uinput_rel(self._fd, ctypes.c_uint16(rel), ctypes.c_int32(val))
 
-	def scanEvent(self, val: int):
+	def scanEvent(self, val: int) -> None:
 		"""Generate a scan event (MSC_SCAN).
 
 		@param int val		  scan event value (scancode)
 		"""
 		self._lib.uinput_scan(self._fd, ctypes.c_int32(val))
 
-	def synEvent(self):
+	def synEvent(self) -> None:
 		"""Generate a syn event."""
 		self._lib.uinput_syn(self._fd)
 
-	def setDelayPeriod(self, delay: int, period: int):
+	def setDelayPeriod(self, delay: int, period: int) -> None:
 		"""Update delay period values for keyboard.
 
 		@param int delay		delay in ms
@@ -347,13 +347,13 @@ class UInput:
 		"""
 		self._lib.uinput_set_delay_period(self._fd, ctypes.c_int32(delay), ctypes.c_int32(period))
 
-	def keyManaged(self, ev):
+	def keyManaged(self, ev) -> bool:
 		return ev in self._k
 
-	def axisManaged(self, ev):
+	def axisManaged(self, ev) -> bool:
 		return ev in self._a
 
-	def relManaged(self, ev):
+	def relManaged(self, ev) -> bool:
 		return ev in self._r
 
 	def ff_read(self):

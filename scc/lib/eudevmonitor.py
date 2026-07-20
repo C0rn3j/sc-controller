@@ -1,4 +1,4 @@
-"""udevmonitor.py - enumerates and monitors devices using (e)udev.
+"""eudevmonitor.py - enumerates and monitors devices using (e)udev.
 
 Copyright (C) 2018 by Kozec
 

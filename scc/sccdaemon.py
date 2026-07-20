@@ -1,4 +1,5 @@
 """SC Controller - Daemon class."""
+from __future__ import annotations
 
 import json
 import logging
@@ -12,6 +13,7 @@ import threading
 import time
 import traceback
 from socketserver import StreamRequestHandler, ThreadingMixIn, UnixStreamServer
+from typing import TYPE_CHECKING
 
 from scc import drivers
 from scc.actions import Action
@@ -34,30 +36,33 @@ from scc.scheduler import Scheduler
 from scc.tools import clamp, find_binary, find_menu, find_profile, nameof, set_logging_level, shjoin, shsplit
 from scc.uinput import CannotCreateUInputException
 
+if TYPE_CHECKING:
+	from scc.device_monitor import DeviceMonitor
+
 log = logging.getLogger("SCCDaemon")
 tlog = logging.getLogger("Socket Thread")
 
 
 class ThreadingUnixStreamServer(ThreadingMixIn, UnixStreamServer):
-	daemon_threads = True
+	daemon_threads: bool = True
 
 
 class SCCDaemon(Daemon):
-	def __init__(self, piddile, socket_file):
+	def __init__(self, piddile: str, socket_file: str) -> None:
 		set_logging_level(True, True)
 		Daemon.__init__(self, piddile)
 		Config()  # Generates ~/.config/scc and default config if needed
-		self.started = False
-		self.exiting = False
-		self.socket_file = socket_file
-		self.poller = Poller()
-		self.dev_monitor = create_device_monitor(self)
-		self.scheduler = Scheduler()
+		self.started: bool = False
+		self.exiting: bool = False
+		self.socket_file: str = socket_file
+		self.poller: Poller = Poller()
+		self.dev_monitor: DeviceMonitor = create_device_monitor(self)
+		self.scheduler: Scheduler = Scheduler()
 		self.xdisplay = None
 		self.sserver = None  # UnixStreamServer instance
 		self.errors = []
 		self.alone = False  # Set by launching script from --alone flag
-		self.custom_py_loaded = False
+		self.custom_py_loaded: bool = False
 		self.osd_daemon = None
 		self.default_profile = None
 		self.autoswitch_daemon = None
@@ -73,7 +78,7 @@ class SCCDaemon(Daemon):
 		self.default_mapper = None
 		self.free_mappers = []
 		self.clients = set()
-		self.cwd = os.getcwd()
+		self.cwd: str = os.getcwd()
 
 	def init_drivers(self):
 		"""Search and initialize all controller drivers.
@@ -104,7 +109,7 @@ class SCCDaemon(Daemon):
 				if hasattr(mod, "start"):
 					self._to_start.add(mod.start)
 
-	def init_default_mapper(self):
+	def init_default_mapper(self) -> Mapper:
 		"""default_mapper is persistent mapper assigned to first Controller instance.
 		Even if all controllers are removed, this mapper stays active. This is
 		needed so various stuff (mainlg GUI) doesn't need to check if there is
@@ -118,16 +123,16 @@ class SCCDaemon(Daemon):
 		"""
 		self.default_profile = profile_file
 
-	def start_drivers(self):
+	def start_drivers(self) -> None:
 		for s in self._to_start:
 			s(self)
 		del self._to_start
 
-	def stop_drivers(self):
+	def stop_drivers(self) -> None:
 		for s in self.drivers_to_stop:
 			s(self)
 
-	def get_poller(self):
+	def get_poller(self) -> Poller:
 		"""Returns poller that can be used for polling file descriptors"""
 		return self.poller
 
@@ -136,37 +141,37 @@ class SCCDaemon(Daemon):
 		"""
 		return self.dev_monitor
 
-	def get_scheduler(self):
+	def get_scheduler(self) -> Scheduler:
 		"""Returns scheduler instance"""
 		return self.scheduler
 
-	def add_mainloop(self, fn):
+	def add_mainloop(self, fn) -> None:
 		"""Adds function that is called in every mainloop iteration.
 		Can be called only durring initialization, in driver 'init' method.
 		"""
 		if fn not in self.mainloops:
 			self.mainloops.append(fn)
 
-	def remove_mainloop(self, fn):
+	def remove_mainloop(self, fn) -> None:
 		"""Removes function added by add_mainloop
 		"""
 		if fn in self.mainloops:
 			self.mainloops.remove(fn)
 
-	def add_on_exit(self, fn):
+	def add_on_exit(self, fn) -> None:
 		"""Adds function that is called just before daemon is stopped.
 		Usefull for cleanup.
 		"""
 		if fn not in self.on_exit_cbs:
 			self.on_exit_cbs.append(fn)
 
-	def add_on_rescan(self, fn):
+	def add_on_rescan(self, fn) -> None:
 		"""Adds function that is called when `Rescan.` message is received.
 		"""
 		if fn not in self.on_exit_cbs:
 			self.rescan_cbs.append(fn)
 
-	def _set_profile(self, mapper, filename):
+	def _set_profile(self, mapper, filename) -> None:
 		# Called from socket server thread
 		p = Profile(TalkingActionParser())
 		p.load(filename).compress()
@@ -199,7 +204,7 @@ class SCCDaemon(Daemon):
 		else:
 			self.send_profile_info(None, self._send_to_all, mapper=mapper)
 
-	def _send_to_all(self, message_str):
+	def _send_to_all(self, message_str) -> None:
 		"""Sends message to all connect clients.
 		Should be called while lock is acquired.
 		Message should be utf-8 encoded str.

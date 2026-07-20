@@ -218,7 +218,7 @@ class DS5Controller(HIDController):
 
 	def __init__(self, device, daemon, handle, config_file, config, test_mode=False) -> None:
 		self._decoder: HIDDecoder
-		self._outputs = {}
+		self._outputs: dict[str, DualSenseHIDOutput] = {}
 		self._feedback_output: DualSenseHIDOutput = DualSenseHIDOutput(
 			operating_mode=OperatingMode.DS5_MODE,
 			physical_effect_control=PhysicalEffectControl.ENABLE_HAPTICS,
@@ -421,7 +421,7 @@ class DS5Controller(HIDController):
 			magic_number += 1
 		return device_id
 
-	def schedule_output(self, output_id, output):
+	def schedule_output(self, output_id: str, output: DualSenseHIDOutput) -> None:
 		self._outputs[output_id] = output
 
 	def flush(self) -> None:
@@ -445,7 +445,7 @@ class DS5HidRawDriver:
 	def retry(self, syspath: str) -> None:
 		pass
 
-	def make_bt_hidraw_callback(self, syspath: str, *whatever):
+	def make_bt_hidraw_callback(self, syspath: str, *whatever) -> DS5HidRawController | None:
 		hidrawname = self.daemon.get_device_monitor().get_hidraw(syspath)
 		if hidrawname is None:
 			return None
@@ -455,8 +455,8 @@ class DS5HidRawDriver:
 			device_file: BinaryIO = open(os.path.join("/dev/", hidrawname), "w+b")
 			hidraw = HIDRaw(device_file)
 			return DS5HidRawController(self, syspath, hidraw, device_file)
-		except Exception as e:
-			log.exception(e)
+		except Exception:
+			log.exception("Failed making bt hidraw callback")
 			return None
 
 
@@ -514,6 +514,7 @@ class DS5HidRawController(Controller):
 
 	# def __init__(self, device, daemon, handle, config_file, config, test_mode=False):
 	def __init__(self, driver: DS5HidRawDriver, syspath: str, hidrawdev: HIDRaw, device_file: BinaryIO) -> None:
+		self._serial: bytes
 		self.driver: DS5HidRawDriver = driver
 		self.daemon: SCCDaemon = driver.daemon
 		self.syspath: str = syspath
@@ -529,15 +530,15 @@ class DS5HidRawController(Controller):
 			motor_right=0,
 		)
 		self._feedback_cancel_task = None
-		self._outputs = {}
+		self._outputs: dict[str, bytearray] = {}
 		# Use empty struct for starting state
-		self._old_state = DualSenseBTControllerInput()
+		self._old_state: DualSenseBTControllerInput = DualSenseBTControllerInput()
 
 		self._device_name: str = hidrawdev.getName()
 		self._device_file: BinaryIO = device_file
 		self._hidrawdev: HIDRaw = hidrawdev
 		self._fileno: int = self._device_file.fileno()
-		self._id = self._generate_id() if driver else "-"
+		self._id: str = self._generate_id() if driver else "-"
 		self._previous_quat = [1.0, 0.0, 0.0, 0.0]
 		self._delta_time: float = time.time()
 		self._previous_time: float = time.time()
@@ -563,7 +564,7 @@ class DS5HidRawController(Controller):
 		led_level = config["led_level"]
 		self.configure(icon=icon, led_level=led_level)
 
-	def configure(self, icon=None, led_level=100):
+	def configure(self, icon=None, led_level=100) -> None:
 		# log.debug("CALLED CONFIGURE")
 		# return
 
@@ -608,7 +609,7 @@ class DS5HidRawController(Controller):
 		# time.sleep(2)
 		# self._device_file.read(78)
 
-	def _set_operational(self):
+	def _set_operational(self) -> None:
 		# log.debug("CALLING SET_OPERATIONAL")
 		# Get feature report for serial performs initial switch
 		# to DS5 mode
@@ -641,7 +642,7 @@ class DS5HidRawController(Controller):
 		# feature_data = self._hidrawdev.getFeatureReport(9)
 		# time.sleep(2)
 
-	def _prepare_buffer_crc(self, buf):
+	def _prepare_buffer_crc(self, buf) -> None:
 		calcCrc32 = zlib.crc32(b"\xa2") & 0xFFFFFFFF
 		calcCrc32 = zlib.crc32(buf[0:74], calcCrc32) & 0xFFFFFFFF
 		buf[74] = calcCrc32 & 0xFF
@@ -649,7 +650,8 @@ class DS5HidRawController(Controller):
 		buf[76] = (calcCrc32 >> 16) & 0xFF
 		buf[77] = (calcCrc32 >> 24) & 0xFF
 
-	def feedback(self, data):
+	def feedback(self, data) -> None:
+		#log.debug("Physical feedback: %s", data.data)
 		position, amplitude, period, count = data.data
 
 		normalized_amp = float(amplitude) / 0x8000
@@ -674,7 +676,7 @@ class DS5HidRawController(Controller):
 		self.schedule_output("feedback", tempman)
 		self.flush()
 
-		def clear_feedback(mapper):
+		def clear_feedback(mapper) -> None:
 			self._feedback_output.motor_right = self._feedback_output.motor_left = 0
 			tempman = bytearray(self._feedback_output)
 			self._prepare_buffer_crc(tempman)
@@ -871,10 +873,10 @@ class DS5HidRawController(Controller):
 		self._device_file.close()
 		# log.debug("CLOSING")
 
-	def read_serial(self):
+	def read_serial(self) -> None:
 		self._serial = self._hidrawdev.getPhysicalAddress().replace(b":", b"")
 
-	def schedule_output(self, output_id, output):
+	def schedule_output(self, output_id: str, output: bytearray) -> None:
 		self._outputs[output_id] = output
 
 	def flush(self) -> None:
@@ -890,7 +892,7 @@ class DS5HidRawController(Controller):
 	# TODO: Remove. Temporarily keep as a reference to the nonsense
 	# I went through to figure out how to compute valid CRC32 that
 	# the controller would accept
-	def flushni(self):
+	def flushni(self) -> None:
 		output = []
 		print(hex(zlib.crc32(b"hello-world") & 0xFFFFFFFF))
 
@@ -957,24 +959,25 @@ class DS5HidRawController(Controller):
 		time.sleep(0.1)
 		print(result)
 
-	def get_type(self):
+	def get_type(self) -> str:
 		return "ds5"
 
-	def get_gui_config_file(self):
+	def get_gui_config_file(self) -> str:
 		return "ds5-config.json"
 
-	def _generate_id(self):
-		"""ID is generated as 'ds5' or 'ds5:X' where 'X' starts as 1 and increases
-		as controllers with same ids are connected.
+	def _generate_id(self) -> str:
+		"""ID is generated as 'ds5' or 'ds5:X'
+
+		where 'X' starts as 1 and increases as controllers with same ids are connected.
 		"""
 		magic_number = 1
-		id = "ds5"
-		while id in self.daemon.get_active_ids():
-			id = "ds5:%s" % (magic_number,)
+		controller_id = "ds5"
+		while controller_id in self.daemon.get_active_ids():
+			controller_id = f"ds5:{magic_number}"
 			magic_number += 1
-		return id
+		return controller_id
 
-	def get_gyro_enabled(self):
+	def get_gyro_enabled(self) -> bool:
 		# Cannot be actually turned off, so it's always active
 		# TODO: Maybe emulate turning off?
 		return True

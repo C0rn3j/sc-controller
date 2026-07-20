@@ -41,9 +41,9 @@ class Mapper:
 		self,
 		profile,
 		scheduler,
-		keyboard=b"SCController Keyboard",
-		mouse=b"SCController Mouse",
-		gamepad=True,
+		keyboard: bytes = b"SCController Keyboard",
+		mouse: bytes = b"SCController Mouse",
+		gamepad: bool = True,
 		poller=None,
 	):
 		"""If any of keyboard, mouse or gamepad is set to None, that device will not be emulated.
@@ -57,11 +57,11 @@ class Mapper:
 
 		# Create virtual devices
 		log.debug("Creating virtual devices")
-		self.keyboard = self.create_keyboard(keyboard) if keyboard else Dummy()
+		self.keyboard: Keyboard | Dummy = self.create_keyboard(keyboard) if keyboard else Dummy()
 		log.debug("Keyboard: %s" % (self.keyboard,))
-		self.mouse = self.create_mouse(mouse) if mouse else Dummy()
+		self.mouse: Mouse | Dummy = self.create_mouse(mouse) if mouse else Dummy()
 		log.debug("Mouse:    %s" % (self.mouse,))
-		self.gamepad = self.create_gamepad(gamepad, poller) if gamepad else Dummy()
+		self.gamepad: UInput | Dummy | None = self.create_gamepad(gamepad, poller) if gamepad else Dummy()
 		log.debug("Gamepad:  %s" % (self.gamepad,))
 
 		# Set by SCCDaemon instance; Used to handle actions
@@ -81,7 +81,7 @@ class Mapper:
 		self.force_event = set()
 		self.time_elapsed = 0.0
 
-	def create_gamepad(self, enabled, poller):
+	def create_gamepad(self, enabled: bool, poller) -> UInput | None:
 		"""Parses gamepad configuration and creates apropriate unput device"""
 		if not enabled or "SCC_NOGAMEPAD" in os.environ:
 			# Completly undocumented and for debuging purposes only.
@@ -115,13 +115,13 @@ class Mapper:
 			poller.register(ui.getDescriptor(), poller.POLLIN, self._rumble_ready)
 		return ui
 
-	def create_keyboard(self, name):
+	def create_keyboard(self, name: bytes) -> Keyboard:
 		return Keyboard(name=name)
 
-	def create_mouse(self, name):
+	def create_mouse(self, name: bytes) -> Mouse:
 		return Mouse(name=name)
 
-	def _rumble_ready(self, fd, event):
+	def _rumble_ready(self, fd, event) -> None:
 		# Taken from Steam Controller Singer project
 		# https://gitlab.com/Pilatomic/SteamControllerSinger
 		STEAM_CONTROLLER_MAGIC_PERIOD_RATIO = 495483.0

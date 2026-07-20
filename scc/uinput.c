@@ -72,7 +72,7 @@ int uinput_init(
 	int i;
 
 	memset(&uidev, 0, sizeof(uidev));
-	
+
 	int mode = O_WRONLY | O_NONBLOCK;
 	if (ff_effects_max > 0)
 		mode = O_RDWR | O_NONBLOCK;
@@ -145,7 +145,7 @@ int uinput_init(
 			return -10;
 		}
 	}
-	
+
 	/* rumble initialisation */
 	if (ff_effects_max > 0) {
 		if (ioctl (fd, UI_SET_EVBIT, EV_FF) < 0) return -13;
@@ -155,7 +155,7 @@ int uinput_init(
 		if (ioctl (fd, UI_SET_FFBIT, FF_TRIANGLE) < 0) return -13;
 		if (ioctl (fd, UI_SET_FFBIT, FF_SINE) < 0) return -13;
 		if (ioctl (fd, UI_SET_FFBIT, FF_GAIN) < 0) return -13;
-		
+
 		uidev.ff_effects_max = ff_effects_max;
 	}
 
@@ -265,7 +265,7 @@ int uinput_ff_read(int fd, int ff_effects_max, struct feedback_effect** ff_effec
 						memset(&upload, 0, sizeof(struct uinput_ff_upload));
 						upload.request_id = event.value;
 						ioctl(fd, UI_BEGIN_FF_UPLOAD, &upload);
-						
+
 						upload.effect.id = -1;
 						if ((upload.old.type != 0) && (upload.old.id >= 0) && (upload.old.id < ff_effects_max) && (ff_effects[upload.old.id]->in_use)) {
 							// Updating old effect
@@ -283,7 +283,7 @@ int uinput_ff_read(int fd, int ff_effects_max, struct feedback_effect** ff_effec
 								}
 							}
 						}
-						
+
 						if (upload.effect.id >= 0) {
 							int32_t avg;
 							eid = upload.effect.id;
@@ -353,14 +353,14 @@ int uinput_ff_read(int fd, int ff_effects_max, struct feedback_effect** ff_effec
 									ff_effects[eid]->level = 0x7FFF;
 									break;
 							}
-							
+
 							upload.retval = 0;
 						} else {
 							// Upload failed
 							RUMBLE_DEBUG("Cannot create more effects!\n");
 							upload.retval = -1;
 						}
-						
+
 						ioctl(fd, UI_END_FF_UPLOAD, &upload);
 						break;
 					case UI_FF_ERASE:
