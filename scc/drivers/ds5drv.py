@@ -14,6 +14,7 @@ import zlib
 from enum import IntEnum
 from typing import TYPE_CHECKING
 
+from evdev import ff
 from hidraw import HIDRaw
 
 from scc.constants import (
@@ -1082,6 +1083,7 @@ class DS5EvdevController(EvdevController):
 		# 	config['buttons'] = DS4EvdevController.BUTTON_MAP_OLD
 		self._gyro = gyro
 		self._touchpad = touchpad
+		self._feedback_effect_id: int | None = None
 		for device in (self._gyro, self._touchpad):
 			if device:
 				device.grab()
@@ -1146,6 +1148,7 @@ class DS5EvdevController(EvdevController):
 				self.mapper.input(self, old_state, new_state)
 
 	def close(self) -> None:
+		self._stop_feedback()
 		EvdevController.close(self)
 		for device in (self._gyro, self._touchpad):
 			try:
@@ -1153,6 +1156,47 @@ class DS5EvdevController(EvdevController):
 				device.ungrab()
 			except:
 				pass
+
+	def _stop_feedback(self) -> None:
+		if self._feedback_effect_id is None:
+			return
+		try:
+			self.device.write(self.ECODES.EV_FF, self._feedback_effect_id, 0)
+			self.device.erase_effect(self._feedback_effect_id)
+		except OSError as error:
+			log.debug("Failed to stop DS5 evdev rumble effect: %s", error)
+		finally:
+			self._feedback_effect_id = None
+
+	def feedback(self, data) -> None:
+		position, amplitude, period, count = data.data
+		self._stop_feedback()
+		if amplitude == 0 or count == 0:
+			return
+
+		magnitude = min(amplitude * 2, 0xFFFF)
+		strong_magnitude = magnitude if position in (HapticPos.LEFT, HapticPos.BOTH) else 0
+		weak_magnitude = magnitude if position in (HapticPos.RIGHT, HapticPos.BOTH) else 0
+		duration = max(min(round(float(period) * count / 0x10000 * 1000), 0xFFFF), 20)
+		effect = ff.Effect(
+			self.ECODES.FF_RUMBLE,
+			-1,
+			0,
+			ff.Trigger(0, 0),
+			ff.Replay(duration, 0),
+			ff.EffectType(
+				ff_rumble_effect=ff.Rumble(
+					strong_magnitude=strong_magnitude,
+					weak_magnitude=weak_magnitude,
+				),
+			),
+		)
+		try:
+			self._feedback_effect_id = self.device.upload_effect(effect)
+			self.device.write(self.ECODES.EV_FF, self._feedback_effect_id, 1)
+		except OSError as error:
+			self._feedback_effect_id = None
+			log.warning("Failed to play DS5 evdev rumble effect: %s", error)
 
 	def get_gyro_enabled(self) -> bool:
 		# Cannot be actually turned off, so it's always active

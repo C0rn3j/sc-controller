@@ -130,6 +130,13 @@ class Mapper:
 		# https://gitlab.com/Pilatomic/SteamControllerSinger
 		STEAM_CONTROLLER_MAGIC_PERIOD_RATIO = 495483.0
 		ef = self.gamepad.ff_read()
+		#log.warning("Received virtual gamepad rumble event")
+		#log.warning(
+		#	"FF event: level=%s duration=%s repetitions=%s",
+		#	ef.level if ef else None,
+		#	ef.duration if ef else None,
+		#	ef.repetitions if ef else None,
+		#)
 		if ef:  # tale of...
 			if self.controller and self.controller.get_type() != "sc":
 				amplitude = min(abs(ef.level), 0x7FFF) if ef.repetitions > 0 else 0
@@ -518,7 +525,7 @@ class Mapper:
 		if self.controller:
 			left, right = self.feedbacks
 			if (
-				self.controller.get_type() in ("ds4", "ds4evdev")
+				self.controller.get_type() in ("ds4", "ds4evdev", "ds5evdev")
 				and left
 				and right
 				and left.data[1:] == right.data[1:]

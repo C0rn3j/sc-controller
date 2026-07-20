@@ -78,3 +78,29 @@ def make_evdev_controller() -> ds5drv.DS5EvdevController:
 	controller.device.upload_effect.return_value = 7
 	controller._feedback_effect_id = None
 	return controller
+
+
+def test_evdev_ds5_feedback_uploads_and_plays_rumble_effect() -> None:
+	controller = make_evdev_controller()
+
+	controller.feedback(HapticData(HapticPos.BOTH, amplitude=0x4000, period=1024, count=64))
+
+	controller.device.upload_effect.assert_called_once()
+	effect = controller.device.upload_effect.call_args.args[0]
+	assert effect.type == controller.ECODES.FF_RUMBLE
+	assert effect.u.ff_rumble_effect.strong_magnitude == 0x8000
+	assert effect.u.ff_rumble_effect.weak_magnitude == 0x8000
+	assert effect.ff_replay.length == 1000
+	controller.device.write.assert_called_once_with(controller.ECODES.EV_FF, 7, 1)
+
+
+def test_evdev_ds5_feedback_stop_stops_and_erases_effect() -> None:
+	controller = make_evdev_controller()
+	controller._feedback_effect_id = 7
+
+	controller.feedback(HapticData(HapticPos.BOTH, amplitude=0, count=0))
+
+	controller.device.write.assert_called_once_with(controller.ECODES.EV_FF, 7, 0)
+	controller.device.erase_effect.assert_called_once_with(7)
+	controller.device.upload_effect.assert_not_called()
+	assert controller._feedback_effect_id is None
