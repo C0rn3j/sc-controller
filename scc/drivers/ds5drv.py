@@ -2,6 +2,7 @@
 
 Extends HID driver with DS5-specific options.
 """
+from __future__ import annotations
 
 import ctypes
 import logging
@@ -11,6 +12,7 @@ import sys
 import time
 import zlib
 from enum import IntEnum
+from typing import TYPE_CHECKING
 
 from scc.constants import (
 	STICK_PAD_MAX,
@@ -45,8 +47,13 @@ from scc.drivers.hiddrv import (
 )
 from scc.drivers.usb import register_hotplug_device
 from scc.lib.hidraw import HIDRaw
-from scc.sccdaemon import SCCDaemon
 from scc.tools import init_logging, set_logging_level
+
+if TYPE_CHECKING:
+	from typing import BinaryIO
+
+	from scc.sccdaemon import SCCDaemon
+
 
 log = logging.getLogger("DS5")
 
@@ -208,9 +215,10 @@ class DS5Controller(HIDController):
 		| ControllerFlags.NO_GRIPS
 	)
 
-	def __init__(self, device, daemon, handle, config_file, config, test_mode=False):
+	def __init__(self, device, daemon, handle, config_file, config, test_mode=False) -> None:
+		self._decoder: HIDDecoder
 		self._outputs = {}
-		self._feedback_output = DualSenseHIDOutput(
+		self._feedback_output: DualSenseHIDOutput = DualSenseHIDOutput(
 			operating_mode=OperatingMode.DS5_MODE,
 			physical_effect_control=PhysicalEffectControl.ENABLE_HAPTICS,
 			motor_left=0,
@@ -219,7 +227,7 @@ class DS5Controller(HIDController):
 		self._feedback_cancel_task = None
 		super().__init__(device, daemon, handle, config_file, config, test_mode)
 
-	def _load_hid_descriptor(self, config, max_size, vid, pid, test_mode):
+	def _load_hid_descriptor(self, config, max_size, vid, pid, test_mode) -> None:
 		# Overrided and hardcoded
 		self._decoder = HIDDecoder()
 
@@ -327,7 +335,7 @@ class DS5Controller(HIDController):
 					self._decoder.state.buttons |= SCButtons.CPADTOUCH
 				self.mapper.input(self, self._decoder.old_state, self._decoder.state)
 
-	def feedback(self, data):
+	def feedback(self, data) -> None:
 		position, amplitude, period, count = data.data
 
 		normalized_amp = float(amplitude) / 0x8000
@@ -349,7 +357,7 @@ class DS5Controller(HIDController):
 
 		self.schedule_output("feedback", self._feedback_output)
 
-		def clear_feedback(mapper):
+		def clear_feedback(mapper) -> None:
 			self._feedback_output.motor_right = self._feedback_output.motor_left = 0
 			self.schedule_output("feedback", self._feedback_output)
 
@@ -357,12 +365,12 @@ class DS5Controller(HIDController):
 			self._feedback_cancel_task.cancel()
 		self._feedback_cancel_task = self.mapper.schedule(duration, clear_feedback)
 
-	def apply_config(self, config):
+	def apply_config(self, config) -> None:
 		icon = config["icon"]
 		led_level = config["led_level"]
 		self.configure(icon=icon, led_level=led_level)
 
-	def configure(self, icon=None, led_level=100):
+	def configure(self, icon=None, led_level=100) -> None:
 		lightbar_color = (0.0, 0.0, 1.0)  # blue by default
 		if icon:
 			basename, ext = icon.rsplit(".", 1)
@@ -389,33 +397,33 @@ class DS5Controller(HIDController):
 		)
 		self.schedule_output("lightbar", output)
 
-	def get_gyro_enabled(self):
+	def get_gyro_enabled(self) -> bool:
 		# Cannot be actually turned off, so it's always active
 		# TODO: Maybe emulate turning off?
 		return True
 
-	def get_type(self):
+	def get_type(self) -> str:
 		return "ds5"
 
-	def get_gui_config_file(self):
+	def get_gui_config_file(self) -> str:
 		return "ds5-config.json"
 
-	def __repr__(self):
-		return "<DS5Controller %s>" % (self.get_id(),)
+	def __repr__(self) -> str:
+		return f"<DS5Controller {self.get_id()}>"
 
-	def _generate_id(self):
+	def _generate_id(self) -> str:
 		"""ID is generated as 'ds5' or 'ds5:X' where 'X' starts as 1 and increases as controllers with same ids are connected."""
 		magic_number = 1
-		id = "ds5"
-		while id in self.daemon.get_active_ids():
-			id = f"ds5:{magic_number}"
+		device_id = "ds5"
+		while device_id in self.daemon.get_active_ids():
+			device_id = f"ds5:{magic_number}"
 			magic_number += 1
-		return id
+		return device_id
 
 	def schedule_output(self, output_id, output):
 		self._outputs[output_id] = output
 
-	def flush(self):
+	def flush(self) -> None:
 		super().flush()
 
 		while self._outputs:
@@ -425,7 +433,7 @@ class DS5Controller(HIDController):
 
 
 class DS5HidRawDriver:
-	def __init__(self, daemon: SCCDaemon, config: dict):
+	def __init__(self, daemon: SCCDaemon, config: dict) -> None:
 		self.config = config
 		self.daemon = daemon
 		for product_id in PRODUCT_IDS:
@@ -433,7 +441,7 @@ class DS5HidRawDriver:
 				"bluetooth", VENDOR_ID, product_id, self.make_bt_hidraw_callback, None,
 			)
 
-	def retry(self, syspath: str):
+	def retry(self, syspath: str) -> None:
 		pass
 
 	def make_bt_hidraw_callback(self, syspath: str, *whatever):
@@ -443,8 +451,9 @@ class DS5HidRawDriver:
 
 		# log.debug(whatever)
 		try:
-			dev = HIDRaw(open(os.path.join("/dev/", hidrawname), "w+b"))
-			return DS5HidRawController(self, syspath, dev)
+			device_file: BinaryIO = open(os.path.join("/dev/", hidrawname), "w+b")
+			hidraw = HIDRaw(device_file)
+			return DS5HidRawController(self, syspath, hidraw, device_file)
 		except Exception as e:
 			log.exception(e)
 			return None
@@ -452,9 +461,9 @@ class DS5HidRawDriver:
 
 class DS5HidRawController(Controller):
 	class _DPadOutputValues:
-		def __init__(self, x, y):
-			self.x = x
-			self.y = y
+		def __init__(self, x: int, y: int) -> None:
+			self.x: int = x
+			self.y: int = y
 
 	"""# (x, y) values
 	DPAD_STATE_TYPES = {
@@ -503,15 +512,15 @@ class DS5HidRawController(Controller):
 	)
 
 	# def __init__(self, device, daemon, handle, config_file, config, test_mode=False):
-	def __init__(self, driver, syspath, hidrawdev):
-		self.driver = driver
-		self.daemon = driver.daemon
-		self.syspath = syspath
+	def __init__(self, driver: DS5HidRawDriver, syspath: str, hidrawdev: HIDRaw, device_file: BinaryIO) -> None:
+		self.driver: DS5HidRawDriver = driver
+		self.daemon: SCCDaemon = driver.daemon
+		self.syspath: str = syspath
 
 		super().__init__()
 		# super().__init__(device, daemon, handle, config_file, config, test_mode=False)
 
-		self._feedback_output = DualSenseHIDOutputBT(
+		self._feedback_output: DualSenseHIDOutputBT = DualSenseHIDOutputBT(
 			operating_mode=OperatingMode.DS5_MODE_BT,
 			data_id_byte=0x02,
 			physical_effect_control=PhysicalEffectControl.ENABLE_HAPTICS,
@@ -523,13 +532,14 @@ class DS5HidRawController(Controller):
 		# Use empty struct for starting state
 		self._old_state = DualSenseBTControllerInput()
 
-		self._device_name = hidrawdev.getName()
-		self._hidrawdev = hidrawdev
-		self._fileno = hidrawdev._device.fileno()
+		self._device_name: str = hidrawdev.getName()
+		self._device_file: BinaryIO = device_file
+		self._hidrawdev: HIDRaw = hidrawdev
+		self._fileno: int = self._device_file.fileno()
 		self._id = self._generate_id() if driver else "-"
 		self._previous_quat = [1.0, 0.0, 0.0, 0.0]
-		self._delta_time = time.time()
-		self._previous_time = time.time()
+		self._delta_time: float = time.time()
+		self._previous_time: float = time.time()
 
 		# time.sleep(1)
 		self._set_operational()
@@ -592,10 +602,10 @@ class DS5HidRawController(Controller):
 		self.schedule_output("lightbar", tempbuffer)
 		# time.sleep(2)
 		self.flush()
-		# self._hidrawdev.read(78)
+		# self._device_file.read(78)
 		# feature_data = self._hidrawdev.getFeatureReport(9)
 		# time.sleep(2)
-		# self._hidrawdev.read(78)
+		# self._device_file.read(78)
 
 	def _set_operational(self):
 		# log.debug("CALLING SET_OPERATIONAL")
@@ -620,14 +630,13 @@ class DS5HidRawController(Controller):
 		tempman[76] = (calcCrc32 >> 16) & 0xFF
 		tempman[77] = (calcCrc32 >> 24) & 0xFF
 		"""
-		# self._hidrawdev.write(tempman)
+		# self._device_file.write(tempman)
 		# time.sleep(1)
 		self._prepare_buffer_crc(tempman)
 		self.schedule_output("init", tempman)
 		self.flush()
-		# Seems to not register until the next device read. Need
-		# to see if there is a way around that
-		self._hidrawdev.read(78)
+		# Seems to not register until the next device read. Need to see if there is a way around that
+		self._device_file.read(78)
 		# feature_data = self._hidrawdev.getFeatureReport(9)
 		# time.sleep(2)
 
@@ -677,7 +686,7 @@ class DS5HidRawController(Controller):
 
 	def _input(self, *a):
 		# log.debug("FOUND INPUT")
-		tempdata = self._hidrawdev.read(78)
+		tempdata = self._device_file.read(78)
 		# Skip over packet if not a DS5 mode input packet
 		if tempdata[0] != 0x31:
 			return
@@ -853,12 +862,12 @@ class DS5HidRawController(Controller):
 		# print("TEST QUAT: {}".format(self._previous_quat))
 		# print("TEST QUAT Z: {}".format(self._previous_quat[3] * -1))
 
-	def close(self):
+	def close(self) -> None:
 		if self._poller:
 			self._poller.unregister(self._fileno)
 
 		self.daemon.remove_controller(self)
-		self._hidrawdev._device.close()
+		self._device_file.close()
 		# log.debug("CLOSING")
 
 	def read_serial(self):
@@ -867,14 +876,13 @@ class DS5HidRawController(Controller):
 	def schedule_output(self, output_id, output):
 		self._outputs[output_id] = output
 
-	def flush(self):
+	def flush(self) -> None:
 		while self._outputs:
 			output_id, output = self._outputs.popitem()
 			# print("PAYLOAD {} {}".format(output_id, output))
-			self._hidrawdev.write(output)
+			self._device_file.write(output)
 			# time.sleep(0.1)
 			# print("")
-
 		# print("SLEEPING")
 		# time.sleep(0.5)
 
@@ -944,7 +952,7 @@ class DS5HidRawController(Controller):
 		# print(len(_test))
 		# print("THE THING {} {} {}".format(_test[40], _test[46], _test[77]))
 
-		result = self._hidrawdev.write(tempman)
+		result = self._device_file.write(tempman)
 		time.sleep(0.1)
 		print(result)
 
@@ -1043,7 +1051,7 @@ class DS5EvdevController(EvdevController):
 		| ControllerFlags.NO_GRIPS
 	)
 
-	def __init__(self, daemon, controllerdevice, gyro, touchpad):
+	def __init__(self, daemon, controllerdevice, gyro, touchpad) -> None:
 		config = {"axes": DS5EvdevController.AXIS_MAP, "buttons": DS5EvdevController.BUTTON_MAP, "dpads": {}}
 		# if controllerdevice.info.version & 0x8000 == 0:
 		# 	# Older kernel uses different mappings
@@ -1060,7 +1068,7 @@ class DS5EvdevController(EvdevController):
 			self.poller.register(touchpad.fd, self.poller.POLLIN, self._touchpad_input)
 			self.poller.register(gyro.fd, self.poller.POLLIN, self._gyro_input)
 
-	def _gyro_input(self, *a):
+	def _gyro_input(self, *a) -> None:
 		new_state = self._state
 		try:
 			for event in self._gyro.read():
@@ -1115,7 +1123,7 @@ class DS5EvdevController(EvdevController):
 			if self.mapper:
 				self.mapper.input(self, old_state, new_state)
 
-	def close(self):
+	def close(self) -> None:
 		EvdevController.close(self)
 		for device in (self._gyro, self._touchpad):
 			try:
@@ -1124,35 +1132,35 @@ class DS5EvdevController(EvdevController):
 			except:
 				pass
 
-	def get_gyro_enabled(self):
+	def get_gyro_enabled(self) -> bool:
 		# Cannot be actually turned off, so it's always active
 		# TODO: Maybe emulate turning off?
 		return True
 
-	def get_type(self):
+	def get_type(self) -> str:
 		return "ds5evdev"
 
 	# TODO: Create ds5-config.json for GUI
-	def get_gui_config_file(self):
+	def get_gui_config_file(self) -> str:
 		return "ds5-config.json"
 
-	def __repr__(self):
-		return "<DS5EvdevController %s>" % (self.get_id(),)
+	def __repr__(self) -> str:
+		return f"<DS5EvdevController {self.get_id()}>"
 
-	def _generate_id(self):
+	def _generate_id(self) -> str:
 		"""ID is generated as 'ds5' or 'ds5:X' where 'X' starts as 1 and increases as controllers with same ids are connected."""
 		magic_number = 1
-		id = "ds5"
-		while id in self.daemon.get_active_ids():
-			id = "ds5:%s" % (magic_number,)
+		device_id = "ds5"
+		while device_id in self.daemon.get_active_ids():
+			device_id = f"ds5:{magic_number}"
 			magic_number += 1
-		return id
+		return device_id
 
 
-def init(daemon, config):
+def init(daemon, config) -> bool:
 	"""Register hotplug callback for DS5 device."""
 
-	def hid_callback(device, handle):
+	def hid_callback(device, handle) -> DS5Controller:
 		return DS5Controller(device, daemon, handle, None, None)
 
 	def make_evdev_device(syspath: str, *whatever):
@@ -1189,8 +1197,9 @@ def init(daemon, config):
 		# 3rd, do a magic
 		if controllerdevice and gyro and touchpad:
 			return make_new_device(DS5EvdevController, controllerdevice, gyro, touchpad)
+		return None
 
-	def fail_cb(syspath: str, vid: int, pid: int):
+	def fail_cb(syspath: str, vid: int, pid: int) -> None:
 		if HAVE_EVDEV:
 			log.warning("Failed to acquire USB device, falling back to evdev driver. This is far from optimal.")
 			make_evdev_device(syspath)

@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import logging
 import os
 import time
 import traceback
+from typing import TYPE_CHECKING
 
 from scc.actions import ButtonAction, GyroAbsAction
 from scc.aliases import ALL_AXES, ALL_BUTTONS
@@ -26,6 +29,8 @@ from scc.controller import HapticData
 from scc.lib import xwrappers as X
 from scc.uinput import Dummy, Keyboard, Mouse, UInput
 
+if TYPE_CHECKING:
+	from scc.controller import Controller
 log = logging.getLogger("Mapper")
 
 
@@ -363,7 +368,7 @@ class Mapper:
 			if isinstance(a, GyroAbsAction):
 				a.reset()
 
-	def input(self, controller, old_state, state):
+	def input(self, controller: Controller, old_state, state) -> None:
 		# print(type(controller), type(old_state), type(state))
 		# Store states
 		self.old_state = old_state
@@ -480,7 +485,7 @@ class Mapper:
 		self.generate_events()
 		self.generate_feedback()
 
-	def generate_events(self):
+	def generate_events(self) -> None:
 		# Generate events - keys
 		if len(self.keypress_list):
 			self.keyboard.pressEvent(self.keypress_list)
@@ -505,7 +510,7 @@ class Mapper:
 		self.mouse_movements = [0, 0, 0, 0, 0, 0]
 		self.sync()
 
-	def generate_feedback(self):
+	def generate_feedback(self) -> None:
 		if self.controller:
 			left, right = self.feedbacks
 			if (

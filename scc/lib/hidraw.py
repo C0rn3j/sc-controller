@@ -1,8 +1,19 @@
+from __future__ import annotations
+
 import ctypes
 import fcntl
-from typing import NamedTuple
+from typing import TYPE_CHECKING, NamedTuple
 
 import ioctl_opt
+
+if TYPE_CHECKING:
+	import sys
+	if sys.version_info >= (3, 12):
+		from collections.abc import Buffer
+	else:
+		from typing_extensions import Buffer
+
+	from typing import BinaryIO
 
 # input.h
 BUS_USB = 0x03
@@ -33,10 +44,10 @@ class _hidraw_devinfo(ctypes.Structure):
 _HIDIOCGRDESCSIZE = ioctl_opt.IOR(ord("H"), 0x01, ctypes.c_int)
 _HIDIOCGRDESC = ioctl_opt.IOR(ord("H"), 0x02, _hidraw_report_descriptor)
 _HIDIOCGRAWINFO = ioctl_opt.IOR(ord("H"), 0x03, _hidraw_devinfo)
-_HIDIOCGRAWNAME = lambda len: ioctl_opt.IOC(ioctl_opt.IOC_READ, ord("H"), 0x04, len)
-_HIDIOCGRAWPHYS = lambda len: ioctl_opt.IOC(ioctl_opt.IOC_READ, ord("H"), 0x05, len)
-_HIDIOCSFEATURE = lambda len: ioctl_opt.IOC(ioctl_opt.IOC_WRITE | ioctl_opt.IOC_READ, ord("H"), 0x06, len)
-_HIDIOCGFEATURE = lambda len: ioctl_opt.IOC(ioctl_opt.IOC_WRITE | ioctl_opt.IOC_READ, ord("H"), 0x07, len)
+_HIDIOCGRAWNAME = lambda length: ioctl_opt.IOC(ioctl_opt.IOC_READ, ord("H"), 0x04, length)
+_HIDIOCGRAWPHYS = lambda length: ioctl_opt.IOC(ioctl_opt.IOC_READ, ord("H"), 0x05, length)
+_HIDIOCSFEATURE = lambda length: ioctl_opt.IOC(ioctl_opt.IOC_WRITE | ioctl_opt.IOC_READ, ord("H"), 0x06, length)
+_HIDIOCGFEATURE = lambda length: ioctl_opt.IOC(ioctl_opt.IOC_WRITE | ioctl_opt.IOC_READ, ord("H"), 0x07, length)
 
 HIDRAW_FIRST_MINOR = 0
 HIDRAW_MAX_DEVICES = 64
@@ -59,23 +70,17 @@ class DevInfo(NamedTuple):
 class HIDRaw:
 	"""Provide methods to access hidraw device's ioctls."""
 
-	def __init__(self, device):
+	def __init__(self, device: BinaryIO | int) -> None:
 		"""Device (file, fileno).
 
 		A file object or a fileno of an open hidraw device node.
 		"""
-		self._device = device
+		self._device: BinaryIO | int = device
 
-	def _ioctl(self, func, arg, mutate_flag: bool = False):
+	def _ioctl(self, func: int, arg: int | Buffer, mutate_flag: bool = False) -> None:
 		result = fcntl.ioctl(self._device, func, arg, mutate_flag)
 		if result < 0:
 			raise OSError(result)
-
-	def read(self, size):
-		return self._device.read(size)
-
-	def write(self, buf):
-		return self._device.write(buf)
 
 	def getRawReportDescriptor(self) -> str:
 		"""Return a binary string containing the raw HID report descriptor."""
@@ -96,22 +101,21 @@ class HIDRaw:
 		return DevInfo(devinfo.bustype, devinfo.vendor, devinfo.product)
 
 	def getName(self, length: int = 512) -> str:
-		"""Return device name as an unicode object."""
+		"""Return device name as an Unicode string."""
 		name = ctypes.create_string_buffer(length)
 		self._ioctl(_HIDIOCGRAWNAME(length), name, True)
 		return name.value.decode("UTF-8")
 
-	def getPhysicalAddress(self, length: int = 512) -> str:
-		"""Return device's physical address as a string.
+	def getPhysicalAddress(self, length: int = 512) -> bytes:
+		"""Return device's physical address as bytes.
 
-		See hidraw documentation for value signification, as it depends on
-		device's bus type.
+		See hidraw documentation for value signification, as it depends on device's bus type.
 		"""
 		name = ctypes.create_string_buffer(length)
 		self._ioctl(_HIDIOCGRAWPHYS(length), name, True)
 		return name.value
 
-	def sendFeatureReport(self, report, report_num: int = 0) -> None:
+	def sendFeatureReport(self, report: bytes, report_num: int = 0) -> None:
 		"""Send a feature report."""
 		length = len(report) + 1
 		buf = bytearray(length)
@@ -126,8 +130,7 @@ class HIDRaw:
 	def getFeatureReport(self, report_num: int = 0, length: int = 63) -> bytearray:
 		"""Receive a feature report.
 
-		Blocks, unless you configured provided file (descriptor) to be
-		non-blocking.
+		Blocks, unless you configured provided file (descriptor) to be non-blocking.
 		"""
 		length += 1
 		buf = bytearray(length)

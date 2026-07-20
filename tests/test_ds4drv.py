@@ -108,8 +108,8 @@ def test_ds4_finds_interrupt_output_on_hid_interface() -> None:
 def test_bluetooth_read_error_disconnects_without_escaping() -> None:
 	controller = object.__new__(DS4HIDRawController)
 	controller._hidrawdev = Mock()
-	controller._hidrawdev.read.side_effect = OSError(5, "Input/output error")
-	controller._hidrawdev._device = Mock()
+	controller._device_file = Mock()
+	controller._device_file.read.side_effect = OSError(5, "Input/output error")
 	controller._packet_size = 78
 	controller._fileno = 12
 	controller._poller = Mock()
@@ -120,12 +120,13 @@ def test_bluetooth_read_error_disconnects_without_escaping() -> None:
 
 	controller._poller.unregister.assert_called_once_with(12)
 	controller.daemon.remove_controller.assert_called_once_with(controller)
-	controller._hidrawdev._device.close.assert_called_once_with()
+	controller._device_file.close.assert_called_once_with()
 
 
 def make_bluetooth_controller() -> DS4HIDRawController:
 	controller = object.__new__(DS4HIDRawController)
 	controller._hidrawdev = Mock()
+	controller._device_file = Mock()
 	controller.mapper = Mock()
 	controller._feedback_output = bytearray(DS4_BT_OUTPUT_REPORT_SIZE)
 	controller._feedback_output[0] = DS4_BT_OUTPUT_REPORT_ID
@@ -140,8 +141,8 @@ def test_bluetooth_ds4_feedback_writes_output_report_with_crc() -> None:
 
 	controller.feedback(HapticData(HapticPos.BOTH, amplitude=0x8000))
 
-	controller._hidrawdev.write.assert_called_once()
-	report = controller._hidrawdev.write.call_args.args[0]
+	controller._device_file.write.assert_called_once()
+	report = controller._device_file.write.call_args.args[0]
 	assert len(report) == DS4_BT_OUTPUT_REPORT_SIZE
 	assert report[0] == DS4_BT_OUTPUT_REPORT_ID
 	assert report[1] == DS4_BT_OUTPUT_HW_CONTROL
@@ -162,12 +163,12 @@ def test_bluetooth_ds4_feedback_clear_writes_stopped_motor() -> None:
 	)
 
 	controller.feedback(HapticData(HapticPos.RIGHT, amplitude=0x4000, period=1024, count=2))
-	assert controller._hidrawdev.write.call_args.args[0][6] == 0x7F
+	assert controller._device_file.write.call_args.args[0][6] == 0x7F
 	assert scheduled[0][0] == 0.03125
 
 	scheduled[0][1](controller.mapper)
-	assert controller._hidrawdev.write.call_count == 2
-	assert controller._hidrawdev.write.call_args.args[0][6] == 0
+	assert controller._device_file.write.call_count == 2
+	assert controller._device_file.write.call_args.args[0][6] == 0
 
 
 def test_bluetooth_turnoff_disconnects_hci_link() -> None:

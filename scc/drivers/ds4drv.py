@@ -10,7 +10,7 @@ import os
 import struct
 import sys
 import zlib
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, BinaryIO
 
 import usb1
 from evdev import ff
@@ -218,16 +218,15 @@ class DS4Controller(Controller):
 			for x, sc in enumerate(DS4Controller.BUTTON_MAP):
 				self._decoder.buttons.button_map[x] = button_to_bit(sc)
 
-	def input(self, endpoint: int, data: bytearray) -> None:
+	def input(self, endpoint: int, data: bytes | bytearray) -> None:
 		# Special override for CPAD touch button
-		if _lib.decode(ctypes.byref(self._decoder), bytes(data)):
-			if self.mapper:
-				if data[35] >> 7:
-					# cpad is not touched
-					self._decoder.state.buttons &= ~SCButtons.CPADTOUCH
-				else:
-					self._decoder.state.buttons |= SCButtons.CPADTOUCH
-				self.mapper.input(self, self._decoder.old_state, self._decoder.state)
+		if _lib.decode(ctypes.byref(self._decoder), bytes(data)) and self.mapper:
+			if data[35] >> 7:
+				# cpad is not touched
+				self._decoder.state.buttons &= ~SCButtons.CPADTOUCH
+			else:
+				self._decoder.state.buttons |= SCButtons.CPADTOUCH
+			self.mapper.input(self, self._decoder.old_state, self._decoder.state)
 
 	def get_gyro_enabled(self) -> bool:
 		# Cannot be actually turned off, so it's always active
@@ -316,16 +315,17 @@ class DS4HIDController(DS4Controller, HIDController):
 
 
 class DS4HIDRawController(DS4Controller):
-	def __init__(self, driver: DS4HIDRawDriver, syspath, hidrawdev: HIDRaw, vid, pid) -> None:
-		self.driver = driver
-		self.syspath = syspath
+	def __init__(self, driver: DS4HIDRawDriver, syspath: str, hidrawdev: HIDRaw, device_file: BinaryIO, vid, pid) -> None:
+		self.driver: DS4HIDRawDriver = driver
+		self.syspath: str = syspath
 
 		DS4Controller.__init__(self, driver.daemon)
 
-		self._device_name = hidrawdev.getName()
-		self._hidrawdev = hidrawdev
-		self._fileno = hidrawdev._device.fileno()
-		self._id = self._generate_id() if driver else "-"
+		self._device_name: str = hidrawdev.getName()
+		self._hidrawdev: HIDRaw = hidrawdev
+		self._device_file: BinaryIO = device_file
+		self._fileno: int = self._device_file.fileno()
+		self._id: str = self._generate_id() if driver else "-"
 		self._closed: bool = False
 		self._feedback_output = bytearray(DS4_BT_OUTPUT_REPORT_SIZE)
 		self._feedback_output[0] = DS4_BT_OUTPUT_REPORT_ID
@@ -350,7 +350,7 @@ class DS4HIDRawController(DS4Controller):
 
 	def _input(self, *args) -> None:
 		try:
-			data = self._hidrawdev.read(self._packet_size)
+			data = self._device_file.read(self._packet_size)
 		except Exception as error:
 			log.debug("DS4 Bluetooth hidraw device disconnected: %s", error)
 			self.close()
@@ -367,14 +367,14 @@ class DS4HIDRawController(DS4Controller):
 			self._poller.unregister(self._fileno)
 
 		self.daemon.remove_controller(self)
-		self._hidrawdev._device.close()
+		self._device_file.close()
 
 	def _write_feedback_report(self) -> None:
 		crc = zlib.crc32(bytes((DS4_BT_OUTPUT_CRC_SEED,)))
 		crc = zlib.crc32(self._feedback_output[:-4], crc)
 		struct.pack_into("<I", self._feedback_output, DS4_BT_OUTPUT_REPORT_SIZE - 4, crc)
 		#log.debug("DS4 Bluetooth output: motors=(%s,%s)", self._feedback_output[7], self._feedback_output[6])
-		self._hidrawdev.write(bytes(self._feedback_output))
+		self._device_file.write(bytes(self._feedback_output))
 
 	def feedback(self, data) -> None:
 		position, amplitude, period, count = data.data
@@ -430,8 +430,9 @@ class DS4HIDRawDriver:
 		if hidrawname is None:
 			return None
 		try:
-			dev = HIDRaw(open(os.path.join("/dev/", hidrawname), "w+b"))
-			return DS4HIDRawController(self, syspath, dev, vid, pid)
+			device_file = open(os.path.join("/dev/", hidrawname), "w+b")
+			hidraw = HIDRaw(device_file)
+			return DS4HIDRawController(self, syspath, hidraw, device_file, vid, pid)
 		except Exception as e:
 			log.exception(e)
 			return None
