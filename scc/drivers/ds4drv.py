@@ -40,13 +40,16 @@ from scc.drivers.hiddrv import (
 	button_to_bit,
 	hiddrv_test,
 )
-from scc.drivers.usb import USBDevice, register_hotplug_device
+from scc.drivers.usb import register_hotplug_device
 from scc.tools import init_logging, set_logging_level
 
 if TYPE_CHECKING:
 	from evdev import InputDevice
+	from usb1 import USBDevice
 
+	from scc.mapper import Mapper
 	from scc.sccdaemon import SCCDaemon
+	from scc.scheduler import Task
 
 log = logging.getLogger("DS4")
 
@@ -253,13 +256,13 @@ class DS4Controller(Controller):
 
 
 class DS4HIDController(DS4Controller, HIDController):
-	def __init__(self, device: USBDevice, daemon: SCCDaemon, handle: usb1.USBDeviceHandle, config_file, config, test_mode=False) -> None:
-		self._feedback_endpoint = self._find_feedback_endpoint(device)
-		self._feedback_output = bytearray(DS4_USB_OUTPUT_REPORT_SIZE)
+	def __init__(self, device: USBDevice, daemon: SCCDaemon, handle: usb1.USBDeviceHandle, config_file: str, config: dict, test_mode: bool = False) -> None:
+		self._feedback_endpoint: int = self._find_feedback_endpoint(device)
+		self._feedback_output: bytearray = bytearray(DS4_USB_OUTPUT_REPORT_SIZE)
 		self._feedback_output[0] = DS4_USB_OUTPUT_REPORT_ID
 		self._feedback_output[1] = DS4_USB_OUTPUT_VALID_MOTOR
-		self._feedback_pending = False
-		self._feedback_cancel_tasks = [None, None]
+		self._feedback_pending: bool = False
+		self._feedback_cancel_tasks: list[Task | None] = [None, None]
 		HIDController.__init__(self, device, daemon, handle, config_file, config, test_mode)
 		log.debug("DS4 %s using USB/libusb", self.get_id())
 
@@ -300,7 +303,7 @@ class DS4HIDController(DS4Controller, HIDController):
 				self._feedback_cancel_tasks[task_index] = None
 				continue
 
-			def clear_feedback(mapper, task_index=task_index, report_index=report_index):
+			def clear_feedback(mapper: Mapper, task_index: int = task_index, report_index: int = report_index) -> None:
 				self._feedback_output[report_index] = 0
 				self._feedback_pending = True
 				self._feedback_cancel_tasks[task_index] = None
@@ -331,9 +334,9 @@ class DS4HIDRawController(DS4Controller):
 		self._feedback_output[0] = DS4_BT_OUTPUT_REPORT_ID
 		self._feedback_output[1] = DS4_BT_OUTPUT_HW_CONTROL
 		self._feedback_output[3] = DS4_BT_OUTPUT_VALID_MOTOR
-		self._feedback_cancel_tasks = [None, None]
+		self._feedback_cancel_tasks: list[Task | None] = [None, None]
 
-		self._packet_size = 78
+		self._packet_size: int = 78
 		self._load_hid_descriptor(driver.config, self._packet_size, vid, pid, None)
 
 		# self._set_operational()
@@ -416,8 +419,8 @@ class DS4HIDRawController(DS4Controller):
 
 class DS4HIDRawDriver:
 	def __init__(self, daemon: SCCDaemon, config: dict) -> None:
-		self.config = config
-		self.daemon = daemon
+		self.config: dict = config
+		self.daemon: SCCDaemon = daemon
 		daemon.get_device_monitor().add_callback("bluetooth", VENDOR_ID, PRODUCT_ID, self.make_bt_hidraw_callback, None)
 		daemon.get_device_monitor().add_callback("bluetooth", VENDOR_ID, DS4_V1_PRODUCT_ID, self.make_bt_hidraw_callback, None)
 
@@ -557,7 +560,7 @@ class DS4EvdevController(EvdevController):
 			if self.mapper:
 				self.mapper.input(self, old_state, new_state)
 
-	def _touchpad_input(self, *a):
+	def _touchpad_input(self, *a) -> None:
 		new_state = self._state
 		try:
 			for event in self._touchpad.read():
@@ -663,11 +666,11 @@ class DS4EvdevController(EvdevController):
 	def _generate_id(self) -> str:
 		"""ID is generated as 'ds4' or 'ds4:X' where 'X' starts as 1 and increases as controllers with same ids are connected."""
 		magic_number = 1
-		id = "ds4"
-		while id in self.daemon.get_active_ids():
-			id = f"ds4:{magic_number}"
+		controller_id = "ds4"
+		while controller_id in self.daemon.get_active_ids():
+			controller_id = f"ds4:{magic_number}"
 			magic_number += 1
-		return id
+		return controller_id
 
 
 def init(daemon: SCCDaemon, config: dict) -> bool:
@@ -710,6 +713,7 @@ def init(daemon: SCCDaemon, config: dict) -> bool:
 		# 3rd, do a magic
 		if controllerdevice and gyro and touchpad:
 			return make_new_device(DS4EvdevController, controllerdevice, gyro, touchpad)
+		return None
 
 	def fail_cb(syspath: str, vid: int, pid: int) -> None:
 		if HAVE_EVDEV:

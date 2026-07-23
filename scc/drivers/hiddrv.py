@@ -14,16 +14,17 @@ from enum import IntEnum
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-	from usb1 import USBDeviceHandle
+	from usb1 import USBDevice, USBDeviceHandle
 
 	from scc.device_monitor import DeviceMonitor
+	from scc.poller import Poller
 	from scc.sccdaemon import SCCDaemon
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons
 from scc.controller import Controller
 from scc.drivers.evdevdrv import FIRST_BUTTON, TRIGGERS, parse_axis
 from scc.drivers.usb import (
-	USBDevice,
+	SCUSBDevice,
 	register_hotplug_device,
 	unregister_hotplug_device,
 )
@@ -216,8 +217,29 @@ _lib = find_library("libhiddrv")
 _lib.decode.restype = bool
 _lib.decode.argtypes = [HIDDecoderPtr, ctypes.c_char_p]
 
+class HIDDrvFakeDaemon:
 
-class HIDController(USBDevice, Controller):
+	def __init__(self) -> None:
+		from scc.device_monitor import create_device_monitor
+		from scc.poller import Poller
+		self.poller: Poller = Poller()
+		self.dev_monitor: DeviceMonitor = create_device_monitor(self)
+		self.exitcode: int = -1
+
+	def get_device_monitor(self) -> DeviceMonitor:
+		return self.dev_monitor
+
+	def add_error(self, id, error: str) -> None:
+		self.exitcode = 2
+		log.error(error)
+
+	def remove_error(*a) -> None:
+		pass
+
+	def get_poller(self) -> Poller:
+		return self.poller
+
+class HIDController(SCUSBDevice, Controller):
 	flags = (
 		ControllerFlags.HAS_RSTICK
 		| ControllerFlags.SEPARATE_STICK
@@ -233,11 +255,11 @@ class HIDController(USBDevice, Controller):
 		config_file: str,
 		config: dict,
 		test_mode: bool = False,
-	):
-		USBDevice.__init__(self, device, handle)
-		self._ready = False
-		self.daemon = daemon
-		self.config_file = config_file
+	) -> None:
+		SCUSBDevice.__init__(self, device, handle)
+		self._ready: bool = False
+		self.daemon: SCCDaemon = daemon
+		self.config_file: str = config_file
 
 		id = None
 		max_size = 64
@@ -476,7 +498,7 @@ class HIDController(USBDevice, Controller):
 
 	def close(self) -> None:
 		# Called when pad is disconnected
-		USBDevice.close(self)
+		SCUSBDevice.close(self)
 		if self._ready:
 			self.daemon.remove_controller(self)
 			self._ready = False
@@ -508,7 +530,7 @@ class HIDController(USBDevice, Controller):
 		vid, pid = self.device.getVendorID(), self.device.getProductID()
 		return "<HID %.4x%.4x>" % (vid, pid)
 
-	def test_input(self, endpoint: int, data):
+	def test_input(self, endpoint: int, data) -> None:
 		if not _lib.decode(ctypes.byref(self._decoder), data):
 			# Returns True if anything changed
 			return
@@ -533,37 +555,37 @@ class HIDController(USBDevice, Controller):
 				print("ButtonRelease", FIRST_BUTTON + j)
 				sys.stdout.flush()
 
-	def input(self, endpoint: int, data):
+	def input(self, endpoint: int, data) -> None:
 		if _lib.decode(ctypes.byref(self._decoder), data):
 			if self.mapper:
 				self.mapper.input(self, self._decoder.old_state, self._decoder.state)
 
-	def apply_config(self, config):
+	def apply_config(self, config) -> None:
 		# TODO: This?
 		pass
 
-	def disconnected(self):
+	def disconnected(self) -> None:
 		# TODO: This!
 		pass
 
 	# def configure(self, idle_timeout=None, enable_gyros=None, led_level=None):
 
-	def set_led_level(self, level):
+	def set_led_level(self, level) -> None:
 		# TODO: This?
 		pass
 
-	def set_gyro_enabled(self, enabled):
+	def set_gyro_enabled(self, enabled) -> None:
 		# TODO: This, maybe.
 		pass
 
 
 class HIDDrv:
-	def __init__(self, daemon: SCCDaemon):
+	def __init__(self, daemon: SCCDaemon) -> None:
 		self.registered = set()
-		self.config_files = {}
-		self.configs = {}
+		self.config_files: dict[tuple[int, int], str] = {}
+		self.configs: dict[tuple[int, int], dict] = {}
 		self.scan_files()
-		self.daemon = daemon
+		self.daemon: SCCDaemon = daemon
 
 	def hotplug_cb(self, device: USBDevice, handle: USBDeviceHandle) -> HIDController | None:
 		vid, pid = device.getVendorID(), device.getProductID()
@@ -616,9 +638,7 @@ def hiddrv_test(cls, args) -> int:
 
 	Basically, if HID device works with this, it will work with daemon as well.
 	"""
-	from scc.device_monitor import create_device_monitor
 	from scc.drivers.usb import _usb
-	from scc.poller import Poller
 	from scc.scripts import InvalidArguments
 
 	try:
@@ -629,26 +649,7 @@ def hiddrv_test(cls, args) -> int:
 	except Exception:
 		raise InvalidArguments()
 
-	class FakeDaemon:
-		def __init__(self) -> None:
-			self.poller = Poller()
-			self.dev_monitor = create_device_monitor(self)
-			self.exitcode = -1
-
-		def get_device_monitor(self) -> DeviceMonitor:
-			return self.dev_monitor
-
-		def add_error(self, id, error: str) -> None:
-			fake_daemon.exitcode = 2
-			log.error(error)
-
-		def remove_error(*a) -> None:
-			pass
-
-		def get_poller(self) -> Poller:
-			return self.poller
-
-	fake_daemon = FakeDaemon()
+	fake_daemon = HIDDrvFakeDaemon()
 
 	def cb(device: USBDevice, handle: USBDeviceHandle):
 		try:

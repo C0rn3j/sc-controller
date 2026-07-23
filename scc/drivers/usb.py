@@ -6,7 +6,8 @@ method to get notified about connected USB devices.
 
 Callback will be called with following arguments:
 	callback(device, handle)
-Callback has to return created USBDevice instance or None.
+
+Callback has to return created (SC?)USBDevice instance or None.
 """
 
 from __future__ import annotations
@@ -19,23 +20,24 @@ from typing import TYPE_CHECKING
 import usb1
 
 if TYPE_CHECKING:
-	from usb1 import USBDeviceHandle, USBTransfer
+	from usb1 import USBContext, USBDevice, USBDeviceHandle, USBTransfer
 
+	from scc.drivers.hiddrv import HIDDrvFakeDaemon
 	from scc.sccdaemon import SCCDaemon
 
 log = logging.getLogger("USB")
 
 
-class USBDevice:
+class SCUSBDevice:
 	"""Base class for all handled usb devices."""
 
 	def __init__(self, device: USBDevice, handle: USBDeviceHandle) -> None:
-		self.device = device
-		self.handle = handle
-		self._claimed = []
+		self.device: USBDevice = device
+		self.handle: USBDeviceHandle = handle
+		self._claimed: list[int] = []
 		self._cmsg = []  # controll messages
 		self._rmsg = []  # requests (excepts response)
-		self._transfer_list = []
+		self._transfer_list: list[USBTransfer] = []
 
 	def set_input_interrupt(self, endpoint: int, size: int, callback) -> None:
 		"""Set up input transfer
@@ -85,7 +87,7 @@ class USBDevice:
 			),
 		)
 
-	def overwrite_control(self, index, data):
+	def overwrite_control(self, index, data) -> None:
 		"""Similar to send_control, but this one checks and overwrites already scheduled controll for same device/index."""
 		for x in self._cmsg:
 			x_index, x_data, x_timeout = x[-3:]
@@ -95,7 +97,7 @@ class USBDevice:
 				break
 		self.send_control(index, data)
 
-	def make_request(self, index, callback, data, size=64):
+	def make_request(self, index, callback, data, size=64) -> None:
 		"""Schedule a synchronous request that requires response.
 
 		Request is done ASAP and provided callback is called with received data.
@@ -115,7 +117,7 @@ class USBDevice:
 			),
 		)
 
-	def flush(self):
+	def flush(self) -> None:
 		"""Flush all prepared control messages to the device."""
 		while len(self._cmsg):
 			msg = self._cmsg.pop()
@@ -133,7 +135,7 @@ class USBDevice:
 			)
 			callback(data)
 
-	def force_restart(self):
+	def force_restart(self) -> None:
 		"""Restart device, close handle and try to re-grab it again.
 
 		Don't use unless absolutely necessary.
@@ -142,7 +144,7 @@ class USBDevice:
 		self.close()
 		_usb._retry_devices.append(tp)
 
-	def claim(self, number: int):
+	def claim(self, number: int) -> None:
 		"""Remember list of claimed interfaces and allow to unclaim them all at once using unclaim() method
 
 		or automatically when device is closed.
@@ -150,7 +152,7 @@ class USBDevice:
 		self.handle.claimInterface(number)
 		self._claimed.append(number)
 
-	def claim_by(self, klass, subclass, protocol) -> int:
+	def claim_by(self, klass: int, subclass: int, protocol: int) -> int:
 		"""Claim all interfaces with specified parameters.
 
 		Return number of claimed interfaces
@@ -167,7 +169,7 @@ class USBDevice:
 					rv += 1
 		return rv
 
-	def unclaim(self):
+	def unclaim(self) -> None:
 		"""Unclaim all claimed interfaces."""
 		for number in self._claimed:
 			try:
@@ -178,7 +180,7 @@ class USBDevice:
 				pass
 		self._claimed = []
 
-	def close(self):
+	def close(self) -> None:
 		"""Called after device is disconnected."""
 		try:
 			self.unclaim()
@@ -192,22 +194,22 @@ class USBDevice:
 
 
 class USBDriver:
-	def __init__(self):
-		self.daemon = None
+	def __init__(self) -> None:
+		self.daemon: SCCDaemon | HIDDrvFakeDaemon | None = None
 		self._known_ids = {}
 		self._fail_cbs = {}
 		self._devices = {}
 		self._syspaths = {}
-		self._started = False
+		self._started: bool = False
 		self._retry_devices = []
 		self._retry_devices_timer = 0
-		self._ctx = None  # Set by start method
-		self._changed = 0
+		self._ctx: USBContext | None = None  # Set by start method
+		self._changed: int = 0
 
-	def set_daemon(self, daemon: SCCDaemon) -> None:
+	def set_daemon(self, daemon: SCCDaemon | HIDDrvFakeDaemon) -> None:
 		self.daemon = daemon
 
-	def on_exit(self, *a):
+	def on_exit(self, *a) -> None:
 		"""Close all devices and unclaim all interfaces."""
 		if len(self._devices):
 			log.debug("Releasing devices...")
@@ -215,16 +217,16 @@ class USBDriver:
 			for d in to_release:
 				d.close()
 
-	def start(self):
+	def start(self) -> None:
 		self._ctx = usb1.USBContext()
 
-		def fd_cb(*a):
+		def fd_cb(*a) -> None:
 			self._changed += 1
 
-		def register_fd(fd, events, *a):
+		def register_fd(fd, events, *a) -> None:
 			self.daemon.get_poller().register(fd, events, fd_cb)
 
-		def unregister_fd(fd, *a):
+		def unregister_fd(fd, *a) -> None:
 			self.daemon.get_poller().unregister(fd)
 
 		self._ctx.setPollFDNotifiers(register_fd, unregister_fd)
@@ -313,7 +315,7 @@ class USBDriver:
 				del self._fail_cbs[vendor_id, product_id]
 			log.debug("Unregistred USB driver for %.4x:%.4x", vendor_id, product_id)
 
-	def mainloop(self):
+	def mainloop(self) -> None:
 		if self._changed > 0:
 			self._ctx.handleEventsTimeout()
 			self._changed = 0

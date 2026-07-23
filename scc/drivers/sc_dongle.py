@@ -12,11 +12,20 @@ from collections import namedtuple
 from enum import IntEnum
 from math import cos, sin
 from math import pi as PI
+from typing import TYPE_CHECKING
 
 from scc.config import Config
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, SCButtons
 from scc.controller import Controller
-from scc.drivers.usb import USBDevice, register_hotplug_device
+from scc.drivers.usb import SCUSBDevice, register_hotplug_device
+
+if TYPE_CHECKING:
+	from usb1 import USBDevice, USBDeviceHandle
+
+	from scc.drivers.sc_by_bt import SCByBt
+	from scc.drivers.sc_by_cable import SCByCable
+	from scc.drivers.steamdeck import Deck
+	from scc.sccdaemon import SCCDaemon
 
 VENDOR_ID = 0x28DE
 PRODUCT_ID = 0x1142
@@ -62,39 +71,37 @@ STICKPRESS = 0b1000000000000000000000000000000
 log = logging.getLogger("SCDongle")
 
 
-class Dongle(USBDevice):
+class Dongle(SCUSBDevice):
 	MAX_ENDPOINTS = 4
 	_available_serials = set()  # used only is ignore_serials option is enabled
 
-	def __init__(self, device, handle, daemon):
-		self.daemon = daemon
-		USBDevice.__init__(self, device, handle)
+	def __init__(self, device: USBDevice, handle: USBDeviceHandle, daemon: SCCDaemon) -> None:
+		self.daemon: SCCDaemon = daemon
+		SCUSBDevice.__init__(self, device, handle)
 
 		self.claim_by(klass=3, subclass=0, protocol=0)
-		self._controllers = {}
+		self._controllers: dict[int, SCController] = {}
 		self._no_serial = []
 		for i in range(Dongle.MAX_ENDPOINTS):
 			# Steam dongle apparently can do only 4 controllers at once
 			self.set_input_interrupt(FIRST_ENDPOINT + i, 64, self._on_input)
 
-	def close(self):
+	def close(self) -> None:
 		# Called when dongle is removed
 		for c in self._controllers.values():
 			self.daemon.remove_controller(c)
 		self._controllers = {}
-		USBDevice.close(self)
+		SCUSBDevice.close(self)
 
-	def _add_controller(self, endpoint):
-		"""Called when new controller is detected either by HOTPLUG message or
-		by receiving first input event.
-		"""
-		ccidx = FIRST_CONTROLIDX + endpoint - FIRST_ENDPOINT
+	def _add_controller(self, endpoint: int) -> None:
+		"""Called when new controller is detected either by HOTPLUG message or by receiving first input event."""
+		ccidx: int = FIRST_CONTROLIDX + endpoint - FIRST_ENDPOINT
 		c = SCController(self, ccidx, endpoint)
 		c.configure()
 		c.read_serial()
 		self._controllers[endpoint] = c
 
-	def _on_input(self, endpoint, data):
+	def _on_input(self, endpoint: int, data) -> None:
 		tup = ControllerInput._make(struct.unpack(TUP_FORMAT, data))
 		if tup.status == SCStatus.HOTPLUG:
 			# Most of INPUT_FORMAT doesn't apply here
@@ -156,26 +163,26 @@ class SCConfigType(IntEnum):
 
 
 class SCController(Controller):
-	def __init__(self, driver: str, ccidx: int, endpoint: int):
+	def __init__(self, driver: Deck | Dongle | SCByBt | SCByCable, ccidx: int, endpoint: int) -> None:
 		Controller.__init__(self)
-		self._driver = driver
-		self._endpoint = endpoint
-		self._idle_timeout = 600
-		self._enable_gyros = False
+		self._driver: Deck | Dongle | SCByBt | SCByCable = driver
+		self._endpoint: int = endpoint
+		self._idle_timeout: int = 600
+		self._enable_gyros: bool = False
 		self._input_rotation_l = 0
 		self._input_rotation_r = 0
-		self._led_level = 10
+		self._led_level: int = 10
 		# TODO: Is serial really used anywhere?
-		self._serial = "0000000000"
-		self._id = self._generate_id() if driver else "-"
-		self._old_state = SCI_NULL
-		self._ccidx = ccidx
+		self._serial: str = "0000000000"
+		self._id: str = self._generate_id() if driver else "-"
+		self._old_state: ControllerInput = SCI_NULL
+		self._ccidx: int = ccidx
 
 	def get_type(self) -> str:
 		return "sc"
 
 	def __repr__(self) -> str:
-		return "<SCWireless %s>" % (self.get_id(),)
+		return f"<SCWireless {self.get_id()}>"
 
 	def input(self, idata: ControllerInput) -> None:
 		old_state, self._old_state = self._old_state, idata
@@ -210,7 +217,7 @@ class SCController(Controller):
 					value = int(idata.rpad_x * s + idata.rpad_y * c)
 					ry = max(STICK_PAD_MIN, min(STICK_PAD_MAX, value))
 
-				# TODO: This is awfull :(
+				# TODO: This is awful :(
 				idata = ControllerInput(
 					idata.type,
 					idata.status,
@@ -236,25 +243,21 @@ class SCController(Controller):
 
 			self.mapper.input(self, old_state, idata)
 
-	def _generate_id(self):
-		"""ID is generated as 'scX' where where 'X' starts as 0 and increases
-		as more controllers are connected.
+	def _generate_id(self) -> str:
+		"""ID is generated as 'scX' where where 'X' starts as 0 and increases as more controllers are connected.
 
 		This is used only when reading serial numbers from device is disabled.
 		sc_by_cable generates ids in scBUS:PORT format.
 		"""
 		magic_number = 1
 		tp = self.get_type()
-		id = None
-		while id is None or id in self._driver.daemon.get_active_ids():
-			id = "%s%s" % (
-				tp,
-				magic_number,
-			)
+		controller_id = None
+		while controller_id is None or controller_id in self._driver.daemon.get_active_ids():
+			controller_id = f"{tp}{magic_number}"
 			magic_number += 1
-		return id
+		return controller_id
 
-	def read_serial(self):
+	def read_serial(self) -> None:
 		"""Requests and reads serial number from controller"""
 		if Config()["ignore_serials"]:
 			# Special exception for cases when controller drops instead of
@@ -263,7 +266,7 @@ class SCController(Controller):
 			self.on_serial_got()
 			return
 
-		def cb(rawserial):
+		def cb(rawserial) -> None:
 			size, serial = struct.unpack(">xBx12s49x", rawserial)
 			if size > 1:
 				serial = serial.strip(b" \x00").decode("ASCII")
@@ -276,7 +279,7 @@ class SCController(Controller):
 			self._ccidx, cb, struct.pack(">BBB61x", SCPacketType.GET_SERIAL, SCPacketLength.GET_SERIAL, 0x01),
 		)
 
-	def generate_serial(self):
+	def generate_serial(self) -> None:
 		"""Called only if ignore_serials is enabled"""
 		if len(self._driver._available_serials) > 0:
 			self._serial = self._driver._available_serials.pop()
@@ -284,7 +287,7 @@ class SCController(Controller):
 			self._serial = self.get_id()
 		log.debug("Not requesting serial number for SC %s", self._serial)
 
-	def on_serial_got(self):
+	def on_serial_got(self) -> None:
 		try:
 			log.debug("Got wireless SC with serial %s", self._serial)
 		except UnicodeDecodeError:
@@ -293,12 +296,12 @@ class SCController(Controller):
 		self._id = str(self._serial)
 		self._driver.daemon.add_controller(self)
 
-	def apply_config(self, config: dict):
+	def apply_config(self, config: dict) -> None:
 		self.configure(idle_timeout=int(config["idle_timeout"]), led_level=float(config["led_level"]))
 		self._input_rotation_l = float(config["input_rotation_l"]) * PI / -180.0
 		self._input_rotation_r = float(config["input_rotation_r"]) * PI / -180.0
 
-	def disconnected(self):
+	def disconnected(self) -> None:
 		# If ignore_serials config option is enabled, fake serial used by this
 		# controller is stored away and reused when next controller is connected
 		if Config()["ignore_serials"]:
@@ -310,8 +313,9 @@ class SCController(Controller):
 
 	def configure(
 		self, idle_timeout: int | None = None, enable_gyros: bool | None = None, led_level: int | None = None,
-	):
+	) -> None:
 		"""Sets and, if possible, sends configuration to controller.
+
 		Only value that is provided is changed.
 		'idle_timeout' is in seconds.
 		'led_level' is precent (0-100)
@@ -373,7 +377,7 @@ class SCController(Controller):
 			),
 		)
 
-	def set_led_level(self, level: int):
+	def set_led_level(self, level: int) -> None:
 		level = min(100, int(level)) & 0xFF
 		if self._led_level != level:
 			self._led_level = level
@@ -381,7 +385,7 @@ class SCController(Controller):
 				self._ccidx, struct.pack(">BBBB59x", SCPacketType.CONFIGURE, 0x03, SCConfigType.LED, self._led_level),
 			)
 
-	def set_gyro_enabled(self, enabled: bool):
+	def set_gyro_enabled(self, enabled: bool) -> None:
 		self.configure(enable_gyros=enabled)
 
 	def turnoff(self) -> None:
@@ -394,10 +398,10 @@ class SCController(Controller):
 		"""Returns True if gyroscope input is currently enabled"""
 		return self._enable_gyros
 
-	def feedback(self, data):
+	def feedback(self, data) -> None:
 		self._feedback(*data.data)
 
-	def _feedback(self, position, amplitude=128, period=0, count=1):
+	def _feedback(self, position: int, amplitude: int = 128, period: int = 0, count: int = 1) -> None:
 		"""Add haptic feedback to be send on next usb tick.
 
 		@param int position		haptic to use 1 for left 0 for right
@@ -411,10 +415,10 @@ class SCController(Controller):
 			)
 
 
-def init(daemon, config: dict) -> Dongle | bool:
+def init(daemon: SCCDaemon, config: dict) -> Dongle | bool:
 	"""Registers hotplug callback for controller dongle"""
 
-	def cb(device, handle):
+	def cb(device: USBDevice, handle: USBDeviceHandle) -> Dongle:
 		return Dongle(device, handle, daemon)
 
 	register_hotplug_device(cb, VENDOR_ID, PRODUCT_ID)

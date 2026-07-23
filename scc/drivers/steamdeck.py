@@ -7,15 +7,23 @@ Deck uses slightly different packed format and so common handle_inpu is not used
 On top of that, deck will automatically enable lizard mode unless requested
 to not do so periodically.
 """
+from __future__ import annotations
 
 import ctypes
 import logging
 import struct
 from enum import IntEnum
+from typing import TYPE_CHECKING
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons
 from scc.drivers.sc_dongle import SCController, SCPacketType
-from scc.drivers.usb import USBDevice, register_hotplug_device
+from scc.drivers.usb import SCUSBDevice, register_hotplug_device
+
+if TYPE_CHECKING:
+	from usb1 import USBDevice, USBDeviceHandle
+
+	from scc.sccdaemon import SCCDaemon
+
 
 VENDOR_ID = 0x28DE
 PRODUCT_ID = 0x1205
@@ -128,13 +136,13 @@ def map_dpad(i, low, hi) -> int:
 	return 0
 
 
-def apply_deadzone(value, deadzone):
+def apply_deadzone(value: int, deadzone: int) -> int:
 	if value > -deadzone and value < deadzone:
 		return 0
 	return value
 
 
-class Deck(USBDevice, SCController):
+class Deck(SCUSBDevice, SCController):
 	flags = (
 		0
 		| ControllerFlags.SEPARATE_STICK
@@ -143,25 +151,25 @@ class Deck(USBDevice, SCController):
 		| ControllerFlags.HAS_RSTICK
 	)
 
-	def __init__(self, device, handle, daemon):
-		self.daemon = daemon
-		USBDevice.__init__(self, device, handle)
+	def __init__(self, device: USBDevice, handle: USBDeviceHandle, daemon: SCCDaemon) -> None:
+		self.daemon: SCCDaemon = daemon
+		SCUSBDevice.__init__(self, device, handle)
 		SCController.__init__(self, self, CONTROLIDX, ENDPOINT)
-		self._old_state = DeckInput()
-		self._input = DeckInput()
-		self._ready = False
+		self._old_state: DeckInput = DeckInput()
+		self._input: DeckInput = DeckInput()
+		self._ready: bool = False
 
 		self.claim_by(klass=3, subclass=0, protocol=0)
 		self.read_serial()
 
-	def generate_serial(self):
-		self._serial = "%s:%s" % (self.device.getBusNumber(), self.device.getPortNumber())
+	def generate_serial(self) -> None:
+		self._serial = f"{self.device.getBusNumber()}:{self.device.getPortNumber()}"
 
-	def disconnected(self):
+	def disconnected(self) -> None:
 		# Overrided to skip returning serial# to pool.
 		pass
 
-	def set_gyro_enabled(self, enabled):
+	def set_gyro_enabled(self, enabled: bool) -> None:
 		# Always on on deck
 		pass
 
@@ -183,12 +191,12 @@ class Deck(USBDevice, SCController):
 		# Timeout & Gyros
 		self._driver.overwrite_control(self._ccidx, struct.pack(FORMAT, SCPacketType.CONFIGURE, 0x03, 0x08, 0x07))
 
-	def clear_mappings(self):
+	def clear_mappings(self) -> None:
 		FORMAT = b">BB62x"
 		# Timeout & Gyros
 		self._driver.overwrite_control(self._ccidx, struct.pack(FORMAT, SCPacketType.CLEAR_MAPPINGS, 0x01))
 
-	def on_serial_got(self):
+	def on_serial_got(self) -> None:
 		log.debug("Got SteamDeck with serial %s", self._serial)
 		self._id = f"deck{self._serial}"
 		self.set_input_interrupt(ENDPOINT, 64, self._on_input)
@@ -236,20 +244,20 @@ class Deck(USBDevice, SCController):
 		if m:
 			self.mapper.input(self, self._old_state, self._input)
 
-	def close(self):
+	def close(self) -> None:
 		if self._ready:
 			self.daemon.remove_controller(self)
 			self._ready = False
-		USBDevice.close(self)
+		SCUSBDevice.close(self)
 
-	def turnoff(self):
+	def turnoff(self) -> None:
 		log.warning("Ignoring request to turn off steamdeck.")
 
 
-def init(daemon, config):
+def init(daemon: SCCDaemon, config: dict) -> bool:
 	"""Register hotplug callback for controller dongle"""
 
-	def cb(device, handle):
+	def cb(device: USBDevice, handle: USBDeviceHandle) -> Deck:
 		return Deck(device, handle, daemon)
 
 	register_hotplug_device(cb, VENDOR_ID, PRODUCT_ID)

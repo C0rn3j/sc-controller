@@ -14,6 +14,7 @@ from ioctl_opt import IOR
 from scc.lib.eudevmonitor import Eudev, Monitor
 
 if TYPE_CHECKING:
+	from scc.drivers.hiddrv import HIDDrvFakeDaemon
 	from scc.sccdaemon import SCCDaemon
 import ctypes
 import fcntl
@@ -372,7 +373,7 @@ class hci_conn_list_req(ctypes.Structure):
 	]
 
 
-def create_device_monitor(daemon: SCCDaemon) -> DeviceMonitor:
+def create_device_monitor(daemon: SCCDaemon | HIDDrvFakeDaemon) -> DeviceMonitor:
 	mon = Eudev().monitor(subclass=DeviceMonitor)
 	assert type(mon) is DeviceMonitor  # Satisfy type checker
 	mon.daemon = daemon

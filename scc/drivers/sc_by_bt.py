@@ -22,7 +22,10 @@ from scc.tools import find_library
 from .sc_dongle import SCConfigType, SCController, SCPacketLength, SCPacketType
 
 if TYPE_CHECKING:
-	from typing import BinaryIO
+	from typing import BinaryIO, Never
+
+	from scc.poller import Poller
+	from scc.sccdaemon import SCCDaemon
 
 VENDOR_ID = 0x28DE
 PRODUCT_ID = 0x1106
@@ -74,11 +77,11 @@ class Driver:
 
 	# TODO: It should be possible to merge this, usb and hiddrv
 
-	def __init__(self, daemon, config) -> None:
-		self.config = config
-		self.daemon = daemon
+	def __init__(self, daemon: SCCDaemon, config: dict) -> None:
+		self.config: dict = config
+		self.daemon: SCCDaemon = daemon
 		self.reconnecting: set[str] = set()
-		self._lib = find_library("libsc_by_bt")
+		self._lib: ctypes.CDLL = find_library("libsc_by_bt")
 		read_input = self._lib.read_input
 		read_input.restype = ctypes.c_int
 		read_input.argtypes = [SCByBtCPtr]
@@ -87,7 +90,7 @@ class Driver:
 	def retry(self, syspath: str) -> None:
 		"""Schedules reconnecting controller after read operation fails."""
 
-		def reconnect(*a):
+		def reconnect(*a) -> None:
 			if syspath in self.reconnecting:
 				self.reconnecting.remove(syspath)
 				log.debug("Reconnecting to controller...")
@@ -97,9 +100,10 @@ class Driver:
 		self.daemon.get_device_monitor().add_remove_callback(syspath, self._retry_cancel)
 		self.daemon.get_scheduler().schedule(1.0, reconnect)
 
-	def _retry_cancel(self, syspath, vendor, product):
-		"""Cancels reconnection scheduled by 'retry'. Called when device monitor
-		reports controller (as in BT device) being disconencted.
+	def _retry_cancel(self, syspath: str, vendor: int, product: int) -> None:
+		"""Cancels reconnection scheduled by 'retry'.
+
+		Called when device monitor reports controller (as in BT device) being disconencted.
 		"""
 		if syspath in self.reconnecting:
 			self.reconnecting.remove(syspath)
@@ -125,7 +129,7 @@ class SCByBt(SCController):
 		self._cmsg = []  # controll messages
 		self._transfer_list = []
 		self.driver: Driver = driver
-		self.daemon = driver.daemon
+		self.daemon: SCCDaemon = driver.daemon
 		self.syspath: str = syspath
 		SCController.__init__(self, self, -1, -1)
 		self._led_level = 30
@@ -137,7 +141,7 @@ class SCByBt(SCController):
 		self._c_data_ptr = ctypes.byref(self._c_data)
 		self._old_state = self._c_data.old_state
 		self._state = self._c_data.state
-		self._poller = self.daemon.get_poller()
+		self._poller: Poller = self.daemon.get_poller()
 		if self._poller:
 			self._poller.register(self._fileno, self._poller.POLLIN, self._input)
 		self.daemon.get_device_monitor().add_remove_callback(syspath, self.close)
@@ -297,7 +301,7 @@ class SCByBt(SCController):
 			self.driver.retry(self.syspath)
 
 
-def hidraw_test(filename: str):
+def hidraw_test(filename: str) -> Never:
 	class FakeDaemon:
 		def add_error(self, id, error) -> None:
 			log.error(error)
@@ -329,10 +333,7 @@ def hidraw_test(filename: str):
 		print({x[0]: getattr(c._state, x[0]) for x in c._state._fields_})
 
 
-_drv = None
-
-
-def init(daemon, config):
+def init(daemon: SCCDaemon, config: dict) -> bool:
 	"""Registers hotplug callback for controller dongle"""
 	# if not (HAVE_EVDEV and config["drivers"].get("evdevdrv")):
 	# 	log.warning("Evdev driver is not enabled, Steam Controller over Bluetooth support cannot be enabled.")
@@ -340,6 +341,8 @@ def init(daemon, config):
 	_drv = Driver(daemon, config)
 	return True
 
+
+_drv: Driver | None = None
 
 if __name__ == "__main__":
 	""" Called when executed as script """
