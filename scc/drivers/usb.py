@@ -38,6 +38,10 @@ class SCUSBDevice:
 		self._cmsg = []  # controll messages
 		self._rmsg = []  # requests (excepts response)
 		self._transfer_list: list[USBTransfer] = []
+		self._detached: list[int] = []
+		self._close_requested: bool = False
+		self._closed: bool = False
+		self._usb_driver: USBDriver | None = None
 
 	def set_input_interrupt(self, endpoint: int, size: int, callback) -> None:
 		"""Set up input transfer
@@ -46,7 +50,20 @@ class SCUSBDevice:
 		"""
 
 		def callback_wrapper(transfer: USBTransfer) -> None:
-			if transfer.getStatus() != usb1.TRANSFER_COMPLETED or transfer.getActualLength() != size:
+			status = transfer.getStatus()
+			if status != usb1.TRANSFER_COMPLETED:
+				if not self._close_requested and status != usb1.TRANSFER_CANCELLED:
+					log.error("USB transfer failed with status %s for %s", status, self)
+					self._close_requested = True
+				return
+			if transfer.getActualLength() != size:
+				log.error(
+					"USB transfer for %s returned %s bytes instead of %s",
+					self,
+					transfer.getActualLength(),
+					size,
+				)
+				self._close_requested = True
 				return
 
 			data = transfer.getBuffer()
@@ -57,10 +74,12 @@ class SCUSBDevice:
 				log.error(e)
 				log.error(traceback.format_exc())
 			finally:
-				try:  # https://github.com/C0rn3j/sc-controller/issues/57
-					transfer.submit()
-				except Exception:
-					log.exception("Failed to submit the transfer!")
+				if not self._close_requested:
+					try:  # https://github.com/C0rn3j/sc-controller/issues/57
+						transfer.submit()
+					except usb1.USBError:
+						log.exception("Failed to submit the transfer for %s", self)
+						self._close_requested = True
 
 		transfer = self.handle.getTransfer()
 		transfer.setInterrupt(
@@ -140,9 +159,10 @@ class SCUSBDevice:
 
 		Don't use unless absolutely necessary.
 		"""
-		tp = self.device.getVendorID(), self.device.getProductID()
-		self.close()
-		_usb._retry_devices.append(tp)
+		if self._usb_driver is None:
+			self.close()
+			return
+		self._usb_driver.retry_device(self)
 
 	def claim(self, number: int) -> None:
 		"""Remember list of claimed interfaces and allow to unclaim them all at once using unclaim() method
@@ -161,10 +181,11 @@ class SCUSBDevice:
 		for inter in self.device[0]:
 			for setting in inter:
 				number = setting.getNumber()
-				if self.handle.kernelDriverActive(number):
-					self.handle.detachKernelDriver(number)
 				ksp = setting.getClass(), setting.getSubClass(), setting.getProtocol()
 				if ksp == (klass, subclass, protocol):
+					if self.handle.kernelDriverActive(number):
+						self.handle.detachKernelDriver(number)
+						self._detached.append(number)
 					self.claim(number)
 					rv += 1
 		return rv
@@ -174,23 +195,56 @@ class SCUSBDevice:
 		for number in self._claimed:
 			try:
 				self.handle.releaseInterface(number)
-				self.handle.attachKernelDriver(number)
 			except usb1.USBErrorNoDevice:
 				# Safe to ignore, happens when USB is removed
 				pass
+			if number in self._detached:
+				try:
+					self.handle.attachKernelDriver(number)
+				except usb1.USBErrorNoDevice:
+					# Safe to ignore, happens when USB is removed
+					pass
 		self._claimed = []
+		self._detached = []
 
 	def close(self) -> None:
-		"""Called after device is disconnected."""
+		"""Begin asynchronous teardown after the device fails or disconnects."""
+		if self._closed:
+			return
+		self._close_requested = True
+		for transfer in self._transfer_list:
+			if transfer.isSubmitted():
+				try:
+					transfer.cancel()
+				except (usb1.USBErrorNoDevice, usb1.USBErrorNotFound):
+					pass
+		if self._usb_driver is not None:
+			self._usb_driver.queue_close(self)
+		elif self.close_ready():
+			self.finish_close()
+
+	def close_ready(self) -> bool:
+		"""Return whether all asynchronous transfers have completed."""
+		return not any(transfer.isSubmitted() for transfer in self._transfer_list)
+
+	def finish_close(self) -> None:
+		"""Release interfaces and close the handle after transfers have stopped."""
+		if self._closed:
+			return
+		if not self.close_ready():
+			raise RuntimeError("Cannot close a USB device with submitted transfers")
 		try:
 			self.unclaim()
-		except Exception:
-			pass
+		except usb1.USBError:
+			log.exception("Failed to release USB interfaces for %s", self)
+		for transfer in self._transfer_list:
+			transfer.close()
+		self._transfer_list = []
 		try:
-			self.handle.resetDevice()
 			self.handle.close()
-		except Exception:
-			pass
+		except usb1.USBError:
+			log.exception("Failed to close USB handle for %s", self)
+		self._closed = True
 
 
 class USBDriver:
@@ -205,6 +259,7 @@ class USBDriver:
 		self._retry_devices_timer = 0
 		self._ctx: USBContext | None = None  # Set by start method
 		self._changed: int = 0
+		self._closing_devices: set[SCUSBDevice] = set()
 
 	def set_daemon(self, daemon: SCCDaemon | HIDDrvFakeDaemon) -> None:
 		self.daemon = daemon
@@ -216,6 +271,10 @@ class USBDriver:
 			to_release, self._devices, self._syspaths = self._devices.values(), {}, {}
 			for d in to_release:
 				d.close()
+		while self._closing_devices:
+			self._ctx.handleEventsTimeout(0.01)
+			if not self._finish_closing_devices():
+				continue
 
 	def start(self) -> None:
 		self._ctx = usb1.USBContext()
@@ -278,6 +337,7 @@ class USBDriver:
 			device.close()
 			return True
 		if handled_device:
+			handled_device._usb_driver = self
 			self._devices[device] = handled_device
 			self._syspaths[syspath] = device
 			log.debug("USB device added: %.4x:%.4x", *tp)
@@ -300,6 +360,39 @@ class USBDriver:
 				# Safe to ignore, happens when device is physically removed
 				pass
 
+	def queue_close(self, device: SCUSBDevice) -> None:
+		"""Keep a closing device alive until all transfer callbacks complete."""
+		self._closing_devices.add(device)
+
+	def retry_device(self, handled_device: SCUSBDevice) -> None:
+		"""Close a device and schedule it to be opened again."""
+		for syspath, usb_device in self._syspaths.items():
+			if self._devices.get(usb_device) is handled_device:
+				vendor_product = usb_device.getVendorID(), usb_device.getProductID()
+				self._retry_devices.append((syspath, vendor_product))
+				handled_device.close()
+				return
+		handled_device.close()
+
+	def _finish_closing_devices(self) -> bool:
+		"""Finish devices whose asynchronous transfers are no longer submitted."""
+		finished = {device for device in self._closing_devices if device.close_ready()}
+		for device in finished:
+			device.finish_close()
+			self._closing_devices.remove(device)
+		return bool(finished)
+
+	def _close_failed_devices(self) -> None:
+		"""Remove devices whose transfer callbacks requested teardown."""
+		for usb_device, handled_device in list(self._devices.items()):
+			if not handled_device._close_requested:
+				continue
+			for syspath, mapped_device in list(self._syspaths.items()):
+				if mapped_device is usb_device:
+					del self._syspaths[syspath]
+			del self._devices[usb_device]
+			handled_device.close()
+
 	def register_hotplug_device(self, callback, vendor_id: int, product_id: int, on_failure) -> None:
 		self._known_ids[vendor_id, product_id] = callback
 		if on_failure:
@@ -320,11 +413,15 @@ class USBDriver:
 			self._ctx.handleEventsTimeout()
 			self._changed = 0
 
-		for d in self._devices.values():  # TODO: don't use .values() here
+		self._close_failed_devices()
+		self._finish_closing_devices()
+
+		for d in list(self._devices.values()):
 			try:
 				d.flush()
-			except usb1.USBErrorPipe:
-				log.error("USB device %s disconnected durring flush", d)
+			except usb1.USBError:
+				log.exception("USB device %s failed during flush", d)
+				d._close_requested = True
 				d.close()
 				break
 		if len(self._retry_devices):
