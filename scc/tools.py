@@ -42,7 +42,8 @@ except ImportError:
 log = logging.getLogger("tools.py")
 _ = lambda x: x
 
-LOG_FORMAT = "%(levelname)s %(name)-13s %(message)s"
+LOG_FORMAT = "%(asctime)s.%(msecs)03d %(levelname)s %(name)-13s %(message)s"
+LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 def init_logging(prefix: str = "", suffix: str = ""):
@@ -50,7 +51,7 @@ def init_logging(prefix: str = "", suffix: str = ""):
 
 	prefix and suffix arguments can be used to modify log level prefixes.
 	"""
-	logging.basicConfig(format=LOG_FORMAT)
+	logging.basicConfig(format=LOG_FORMAT, datefmt=LOG_DATE_FORMAT)
 	logger = logging.getLogger()
 	# Rename levels
 	logging.addLevelName(10, prefix + "D" + suffix)  # Debug
