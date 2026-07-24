@@ -28,6 +28,8 @@ if TYPE_CHECKING:
 	from collections.abc import Callable
 	from typing import Any
 
+	from scc.mapper import Mapper
+
 log = logging.getLogger("SActions")
 _: Callable[[str], str] = lambda x: x
 
@@ -39,7 +41,7 @@ class ChangeProfileAction(Action, SpecialAction):
 		Action.__init__(self, profile)
 		self.profile: str = profile
 
-	def describe(self, context: int):
+	def describe(self, context: int) -> str:
 		if self.name:
 			return self.name
 		if context == Action.AC_OSD:
@@ -54,13 +56,13 @@ class ChangeProfileAction(Action, SpecialAction):
 	def to_string(self, multiline: bool = False, pad: int = 0) -> str:
 		return (" " * pad) + "%s('%s')" % (self.COMMAND, self.profile)
 
-	def button_release(self, mapper):
+	def button_release(self, mapper: Mapper) -> None:
 		# Execute only when button is released (executing this when button
 		# is pressed would send following button_release event to another
 		# action from loaded profile)
 		self.execute(mapper)
 
-	def whole(self, mapper, *a):
+	def whole(self, mapper: Mapper, *a) -> None:
 		self.execute(mapper)
 
 
@@ -68,7 +70,7 @@ class ShellCommandAction(Action, SpecialAction):
 	SA: str = "shell"
 	COMMAND: str = SA
 
-	def __init__(self, command: str):
+	def __init__(self, command: str) -> None:
 		# if type(command) == str:
 		# command = command.decode("unicode_escape")
 		# assert type(command) == unicode
@@ -84,9 +86,9 @@ class ShellCommandAction(Action, SpecialAction):
 		return Action.MOD_OSD
 
 	def to_string(self, multiline: bool = False, pad: int = 0) -> str:
-		return (" " * pad) + "%s('%s')" % (self.COMMAND, self.parameters[0])
+		return (" " * pad) + f"{self.COMMAND}('{self.parameters[0]}')"
 
-	def button_press(self, mapper):
+	def button_press(self, mapper: Mapper):
 		# Executes only when button is pressed
 		return self.execute(mapper)
 
@@ -95,7 +97,7 @@ class TurnOffAction(Action, SpecialAction):
 	SA: str = "turnoff"
 	COMMAND: str = SA
 
-	def __init__(self):
+	def __init__(self) -> None:
 		Action.__init__(self)
 
 	def describe(self, context: int) -> str:
@@ -111,13 +113,13 @@ class TurnOffAction(Action, SpecialAction):
 	def get_compatible_modifiers(self) -> int:
 		return Action.MOD_OSD
 
-	def button_release(self, mapper):
+	def button_release(self, mapper: Mapper) -> None:
 		# Execute only when button is released (executing this when button
 		# is pressed would hold stuck any other action bound to same button,
 		# as button_release is not sent after controller turns off)
 		self.execute(mapper)
 
-	def whole(self, mapper, *a):
+	def whole(self, mapper: Mapper, *a) -> None:
 		self.execute(mapper)
 
 
@@ -126,7 +128,7 @@ class RestartDaemonAction(Action, SpecialAction):
 	COMMAND: str = SA
 	ALIASES: tuple[str] = ("exit",)
 
-	def __init__(self):
+	def __init__(self) -> None:
 		Action.__init__(self)
 
 	def describe(self, context) -> str:
@@ -137,7 +139,7 @@ class RestartDaemonAction(Action, SpecialAction):
 	def to_string(self, multiline: bool = False, pad: int = 0) -> str:
 		return (" " * pad) + "%s()" % (self.COMMAND,)
 
-	def button_release(self, mapper):
+	def button_release(self, mapper: Mapper) -> None:
 		# Execute only when button is released (for same reason as
 		# TurnOffAction does)
 		self.execute(mapper)
@@ -147,7 +149,7 @@ class LedAction(Action, SpecialAction):
 	SA: str = "led"
 	COMMAND: str = SA
 
-	def __init__(self, brightness: float):
+	def __init__(self, brightness: float) -> None:
 		Action.__init__(self, brightness)
 		self.brightness: int = clamp(0, int(brightness), 100)
 
@@ -159,15 +161,13 @@ class LedAction(Action, SpecialAction):
 	def get_compatible_modifiers(self) -> int:
 		return Action.MOD_OSD
 
-	def button_press(self, mapper):
+	def button_press(self, mapper: Mapper) -> None:
 		# Execute only when button is pressed
 		self.execute(mapper)
 
 
 class OSDAction(Action, SpecialAction):
-	"""Displays text in OSD, or, if used as modifier, displays action description
-	and executes that action.
-	"""
+	"""Displays text in OSD, or, if used as modifier, displays action description and executes that action."""
 
 	SA: str = "osd"
 	COMMAND: str = SA
@@ -175,7 +175,7 @@ class OSDAction(Action, SpecialAction):
 	DEFAULT_SIZE: int = 3
 	PROFILE_KEY_PRIORITY: int = -5  # After XYAction, but before everything else
 
-	def __init__(self, *parameters):
+	def __init__(self, *parameters) -> None:
 		Action.__init__(self, *parameters)
 		self.action: Action | None = None
 		self.timeout: float = self.DEFAULT_TIMEOUT
@@ -214,7 +214,7 @@ class OSDAction(Action, SpecialAction):
 		if self.action:
 			return _("%s (with OSD)") % (self.action.describe(context),)
 		if context == Action.AC_OSD:
-			return _("Display '%s'" % self.text)
+			return _(f"Display '{self.text}'")
 		return _("OSD Message")
 
 	def to_string(self, multiline: bool = False, pad: int = 0) -> str:
@@ -226,8 +226,8 @@ class OSDAction(Action, SpecialAction):
 		if self.action:
 			parameters.append(self.action.to_string(multiline=multiline, pad=pad))
 		else:
-			parameters.append("'%s'" % (str(self.text),))
-		return (" " * pad) + "%s(%s)" % (self.COMMAND, ",".join(parameters))
+			parameters.append(f"'{str(self.text)}'")
+		return (" " * pad) + "{}({})".format(self.COMMAND, ",".join(parameters))
 
 	def strip(self) -> Action | Self:
 		if self.action:
@@ -241,36 +241,34 @@ class OSDAction(Action, SpecialAction):
 			self.action = self.action.compress()
 		return self
 
-	def button_press(self, mapper):
+	def button_press(self, mapper: Mapper) -> None:
 		self.execute(mapper)
 		if self.action:
 			return self.action.button_press(mapper)
 
-	def button_release(self, mapper):
+	def button_release(self, mapper: Mapper) -> None:
 		if self.action:
 			return self.action.button_release(mapper)
 
-	def trigger(self, mapper, position, old_position):
+	def trigger(self, mapper: Mapper, position, old_position) -> None:
 		if self.action:
 			return self.action.trigger(mapper, position, old_position)
 
-	def axis(self, mapper, position, what):
+	def axis(self, mapper: Mapper, position, what) -> None:
 		if self.action:
 			return self.action.axis(mapper, position, what)
 
-	def pad(self, mapper, position, what):
+	def pad(self, mapper: Mapper, position, what) -> None:
 		if self.action:
 			return self.action.pad(mapper, position, what)
 
-	def whole(self, mapper, x, y, what):
+	def whole(self, mapper: Mapper, x, y, what) -> None:
 		if self.action:
 			return self.action.whole(mapper, x, y, what)
 
 
 class ClearOSDAction(Action, SpecialAction):
-	"""Clears all windows from OSD layer. Cancels all menus, clears all messages,
-	etc, etc.
-	"""
+	"""Clears all windows from OSD layer. Cancels all menus, clears all messages, etc, etc."""
 
 	SA: str = "clearosd"
 	COMMAND: str = SA
@@ -283,8 +281,7 @@ class ClearOSDAction(Action, SpecialAction):
 
 
 class MenuAction(Action, SpecialAction, HapticEnabledAction):
-	"""Displays menu defined in profile or globally.
-	"""
+	"""Displays menu defined in profile or globally."""
 
 	SA: str = "menu"
 	COMMAND: str = SA
@@ -336,19 +333,19 @@ class MenuAction(Action, SpecialAction, HapticEnabledAction):
 			if dflt == vals:
 				# Special case when menu is assigned to pad
 				if self.size == 0:
-					return "%s%s('%s')" % (" " * pad, self.COMMAND, self.menu_id)
-				return "%s%s('%s', %s)" % (" " * pad, self.COMMAND, self.menu_id, self.size)
+					return "{}{}('{}')".format(" " * pad, self.COMMAND, self.menu_id)
+				return "{}{}('{}', {})".format(" " * pad, self.COMMAND, self.menu_id, self.size)
 
-		return "%s%s(%s)" % (" " * pad, self.COMMAND, ",".join(Action.encode_parameters(self.strip_defaults())))
+		return "{}{}({})".format(" " * pad, self.COMMAND, ",".join(Action.encode_parameters(self.strip_defaults())))
 
 	def get_previewable(self) -> bool:
 		return True
 
-	def button_press(self, mapper):
+	def button_press(self, mapper: Mapper) -> None:
 		if not self.show_with_release:
 			confirm_with = self.confirm_with
 			cancel_with = self.cancel_with
-			args = [mapper]
+			args: list[Mapper | str] = [mapper]
 			if confirm_with == SAME:
 				confirm_with = mapper.get_pressed_button() or DEFAULT
 			elif confirm_with == DEFAULT:
@@ -373,11 +370,11 @@ class MenuAction(Action, SpecialAction, HapticEnabledAction):
 			]
 			self.execute(*args)
 
-	def button_release(self, mapper):
+	def button_release(self, mapper: Mapper) -> None:
 		if self.show_with_release:
 			self.execute(mapper, "-x", str(self.x), "-y", str(self.y))
 
-	def whole(self, mapper, x: float, y: float, what: str, *params):
+	def whole(self, mapper: Mapper, x: float, y: float, what: str, *params) -> None:
 		if x == 0 and y == 0:
 			# Sent when pad is released - don't display menu then
 			return
@@ -445,43 +442,38 @@ class MenuAction(Action, SpecialAction, HapticEnabledAction):
 
 
 class HorizontalMenuAction(MenuAction):
-	"""Same as menu, but packed as row
-	"""
+	"""Same as menu, but packed as row"""
 
 	COMMAND: str = "hmenu"
 	MENU_TYPE: str = "hmenu"
 
 class GridMenuAction(MenuAction):
-	"""Same as menu, but displayed in grid
-	"""
+	"""Same as menu, but displayed in grid"""
 
 	COMMAND: str = "gridmenu"
 	MENU_TYPE: str = "gridmenu"
 
 class QuickMenuAction(MenuAction):
-	"""Quickmenu. Max.6 items, controller by buttons
-	"""
+	"""Quickmenu. Max.6 items, controller by buttons"""
 
 	COMMAND: str = "quickmenu"
 	MENU_TYPE: str = "quickmenu"
 
-	def describe(self, context):
+	def describe(self, context) -> str:
 		if self.name:
 			return self.name
 		return _("QuickMenu")
 
-	def button_press(self, mapper):
+	def button_press(self, mapper) -> None:
 		# QuickMenu is always shown with release
 		pass
 
-	def button_release(self, mapper):
+	def button_release(self, mapper) -> None:
 		self.execute(mapper, "-x", str(self.x), "-y", str(self.y))
 
 
 class RadialMenuAction(MenuAction):
-	"""Same as grid menu, which is same as menu but displayed in grid,
-	but displayed as circle.
-	"""
+	"""Same as grid menu, which is same as menu but displayed in grid, but displayed as circle."""
 
 	COMMAND: str = "radialmenu"
 	MENU_TYPE: str = "radialmenu"
@@ -494,17 +486,17 @@ class RadialMenuAction(MenuAction):
 		cancel_with: str = DEFAULT,
 		show_with_release: bool = False,
 		size: int = 0,
-	):
+	) -> None:
 		MenuAction.__init__(self, menu_id, control_with, confirm_with, cancel_with, show_with_release, size)
 		self.rotation: float = 0
 
-	def whole(self, mapper, x: float, y: float, what: str):
+	def whole(self, mapper: Mapper, x: float, y: float, what: str) -> None:
 		if self.rotation:
 			MenuAction.whole(self, mapper, x, y, what, "--rotation", self.rotation)
 		else:
 			MenuAction.whole(self, mapper, x, y, what)
 
-	def set_rotation(self, angle: float):
+	def set_rotation(self, angle: float) -> None:
 		self.rotation = angle
 
 	def get_compatible_modifiers(self) -> int:
@@ -512,14 +504,13 @@ class RadialMenuAction(MenuAction):
 
 
 class DialogAction(Action, SpecialAction):
-	"""Dialog is actually kind of menu, but options for it are different.
-	"""
+	"""Dialog is actually kind of menu, but options for it are different."""
 
 	SA: str = "dialog"
 	COMMAND: str = SA
 	DEFAULT_POSITION: tuple[int, int] = 10, -10
 
-	def __init__(self, *pars):
+	def __init__(self, *pars) -> None:
 		Action.__init__(self, pars)
 
 		self.options = []
@@ -567,7 +558,7 @@ class DialogAction(Action, SpecialAction):
 	def get_previewable(self) -> bool:
 		return False
 
-	def button_release(self, mapper):
+	def button_release(self, mapper: Mapper) -> None:
 		confirm_with = self.confirm_with
 		cancel_with = self.cancel_with
 		args = [
@@ -589,13 +580,12 @@ class DialogAction(Action, SpecialAction):
 
 
 class KeyboardAction(Action, SpecialAction):
-	"""Shows OSD keyboard.
-	"""
+	"""Shows OSD keyboard."""
 
 	SA: str = "keyboard"
 	COMMAND: str = SA
 
-	def __init__(self):
+	def __init__(self) -> None:
 		Action.__init__(self)
 
 	def get_compatible_modifiers(self) -> int:
@@ -611,17 +601,16 @@ class KeyboardAction(Action, SpecialAction):
 	def to_string(self, multiline: bool = False, pad: int = 0) -> str:
 		return (" " * pad) + "%s()" % (self.COMMAND,)
 
-	def button_press(self, mapper):
+	def button_press(self, mapper: Mapper) -> None:
 		self.execute(mapper)
 
 
 class PositionModifier(Modifier):
-	"""Sets position for OSD menu.
-	"""
+	"""Sets position for OSD menu."""
 
 	COMMAND: str = "position"
 
-	def _mod_init(self, x: int, y: int):
+	def _mod_init(self, x: int, y: int) -> None:
 		self.position: tuple[int, int] = (x, y)
 
 	def compress(self):
@@ -650,7 +639,7 @@ class GesturesAction(Action, OSDEnabledAction, SpecialAction):
 	PROFILE_KEY_PRIORITY: int = 2
 	DEFAULT_PRECISION: float = 1.0
 
-	def __init__(self, *stuff):
+	def __init__(self, *stuff) -> None:
 		OSDEnabledAction.__init__(self)
 		Action.__init__(self, *stuff)
 		self.gestures = {}
@@ -678,7 +667,7 @@ class GesturesAction(Action, OSDEnabledAction, SpecialAction):
 			return self.name
 		return _("Gestures")
 
-	def to_string(self, multiline=False, pad=0):
+	def to_string(self, multiline: bool = False, pad: int = 0) -> str:
 		if multiline:
 			rv = [(" " * pad) + self.COMMAND + "("]
 			if self.precision != self.DEFAULT_PRECISION:
@@ -749,13 +738,13 @@ class GesturesAction(Action, OSDEnabledAction, SpecialAction):
 		action = action or self._find_best_match_gesture(gesture_string)
 		return action
 
-	def gesture(self, mapper, gesture_string: str):
+	def gesture(self, mapper: Mapper, gesture_string: str) -> None:
 		action = self.find_gesture_action(gesture_string)
 		if action:
 			action.button_press(mapper)
 			mapper.schedule(0, action.button_release)
 
-	def whole(self, mapper, x, y, what):
+	def whole(self, mapper: Mapper, x, y, what) -> None:
 		if (x, y) != (0, 0):
 			# (0, 0) singlanizes released touchpad
 			self.execute(mapper, x, y, what)
@@ -767,7 +756,7 @@ class CemuHookAction(Action, SpecialAction):
 	MAGIC_GYRO: float = 2000.0 / 32768.0
 	ACC_RES_PER_G: float = 16384.0
 
-	def gyro(self, mapper, *pyr):
+	def gyro(self, mapper: Mapper, *pyr) -> None:
 		sa_data = (
 			-mapper.state.accel_x / CemuHookAction.ACC_RES_PER_G,  # AccelX
 			-mapper.state.accel_z / CemuHookAction.ACC_RES_PER_G,  # AccelZ
