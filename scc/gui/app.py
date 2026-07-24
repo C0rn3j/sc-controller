@@ -2,6 +2,7 @@
 
 Main application window
 """
+from __future__ import annotations
 
 import json
 import logging
@@ -41,6 +42,11 @@ from scc.tools import (
 	profile_is_override,
 	set_logging_level,
 )
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+	from gi.repository.Gio import ApplicationCommandLine
+	from typing import Never
 
 log = logging.getLogger("App")
 
@@ -103,7 +109,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.undo = []
 		self.redo = []
 
-	def setup_widgets(self):
+	def setup_widgets(self) -> None:
 		# Important stuff
 		self.builder = Gtk.Builder()
 		self.builder.add_from_file(os.path.join(self.gladepath, "app.glade"))
@@ -1383,7 +1389,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.osd_mode = lo.contains("osd")
 		return -1
 
-	def do_command_line(self, cl):
+	def do_command_line(self, cl: ApplicationCommandLine) -> int:
 		Gtk.Application.do_command_line(self, cl)
 		if len(cl.get_arguments()) > 1:
 			filename = " ".join(cl.get_arguments()[1:])  # 'cos fuck Gtk...
@@ -1392,7 +1398,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			if Dialog.determine_type(filename) is not None:
 				ied = Dialog(self)
 
-				def i_told_you_to_quit(*a):
+				def i_told_you_to_quit(*a) -> Never:
 					sys.exit(0)
 
 				ied.window.connect("destroy", i_told_you_to_quit)
@@ -1400,6 +1406,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				# Skip first screen and try to import this file
 				ied.import_file(filename)
 			else:
+				log.error(f"Not enough arguments were passed ({cl.get_arguments()}), exiting")
 				sys.exit(1)
 		else:
 			self.activate()

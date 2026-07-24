@@ -6,6 +6,7 @@ also called on main thread.
 
 Use schedule(delay, callback, *data) to register one-time task.
 """
+from __future__ import annotations
 
 import logging
 import queue
@@ -17,15 +18,15 @@ log = logging.getLogger("Scheduler")
 
 
 class Scheduler:
-	def __init__(self):
+	def __init__(self) -> None:
 		self._scheduled = queue.PriorityQueue()
 		self._next = None
-		self._now = time.time()
+		self._now: float = time.time()
 
-	def schedule(self, delay, callback, *data):
-		"""Schedules one-time task to be executed no sooner than after 'delay' of
-		seconds. Delay may be float number.
-		'callback' is called as callback(*data).
+	def schedule(self, delay, callback, *data) -> Task:
+		"""Schedules one-time task to be executed no sooner than after 'delay' of seconds.
+
+		Delay may be float number. 'callback' is called as callback(*data).
 
 		Returned Task instance can be used to cancel task once scheduled.
 		"""
@@ -38,9 +39,8 @@ class Scheduler:
 			self._scheduled.put(task)
 		return task
 
-	def cancel_task(self, task):
-		"""Returns True if task was sucessfully removed or False if task was
-		already executed or not known at all.
+	def cancel_task(self, task: Task) -> bool:
+		"""Returns True if task was sucessfully removed or False if task was already executed or not known at all.
 
 		Note that this is slow as hell and completly thread-unsafe,
 		so it _has_ to be called on main thread.
@@ -61,7 +61,7 @@ class Scheduler:
 			self._scheduled.put(t)
 		return found
 
-	def run(self):
+	def run(self) -> None:
 		self._now = time.time()
 		while self._next and self._now >= self._next.time:
 			callback, data = self._next.callback, self._next.data
@@ -70,15 +70,15 @@ class Scheduler:
 
 
 class Task:
-	def __init__(self, time, callback, data):
+	def __init__(self, time, callback, data) -> None:
 		self.time = time
 		self.callback = callback
 		self.data = data
 
-	def cancel(self):
+	def cancel(self) -> None:
 		"""Marks task as canceled, without actually removing it from scheduler"""
 		self.callback = lambda *a, **b: False
 		self.data = ()
 
-	def __lt__(self, other):
+	def __lt__(self, other) -> None:
 		self.time < other.time

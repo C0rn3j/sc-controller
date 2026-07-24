@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 	from scc.controller import Controller
 	from scc.poller import Poller
 	from scc.profile import Profile
-	from scc.scheduler import Scheduler
+	from scc.scheduler import Scheduler, Task
 
 log = logging.getLogger("Mapper")
 
@@ -55,7 +55,8 @@ class Mapper:
 		Emulated gamepad will have rumble enabled only if poller is set to instance and configuration allows it.
 		"""
 		self.profile: Profile = profile
-		self.controller = None
+		# TODO(Martin): This probably isn't Controller but needs to be a subset class of all the EvdevController etc
+		self.controller: Controller | None = None
 		self.xdisplay = None
 		self.scheduler: Scheduler = scheduler
 
@@ -192,7 +193,7 @@ class Mapper:
 				dev.synEvent()
 			self.syn_list = set()
 
-	def set_controller(self, c):
+	def set_controller(self, c) -> None:
 		"""Sets controller device, used by some (one so far) actions"""
 		self.controller = c
 
@@ -200,59 +201,63 @@ class Mapper:
 		"""Returns assigned controller device or None if no controller is set"""
 		return self.controller
 
-	def set_special_actions_handler(self, sa):
+	def set_special_actions_handler(self, sa) -> None:
 		self._sa_handler = sa
 
 	def get_special_actions_handler(self):
 		return self._sa_handler
 
-	def set_xdisplay(self, x):
+	def set_xdisplay(self, x) -> None:
 		self.xdisplay = x
 
 	def get_xdisplay(self):
 		return self.xdisplay
 
 	def get_current_window(self):
-		"""Returns window id of current window or None if xdisplay is not set
-		"""
+		"""Returns window id of current window or None if xdisplay is not set"""
 		if self.xdisplay:
 			return X.get_current_window(self.xdisplay)
 		return None
 
-	def schedule(self, delay, cb):
+	def schedule(self, delay, cb) -> Task:
 		"""Schedules callback to be ran no sooner than after delay.
+
 		Delay is float number in seconds.
 		Callback is called with mapper as only argument.
 		"""
 		return self.scheduler.schedule(delay, cb, self)
 
-	def cancel_task(self, task):
+	def cancel_task(self, task: Task) -> bool:
 		"""Removes scheduled task."""
 		return self.scheduler.cancel_task(task)
 
-	def mouse_move(self, dx, dy):
+	def mouse_move(self, dx, dy) -> None:
 		"""Schedules mouse movement to be done at end of processing callback.
+
 		Called from actions while callback is being processed.
 		"""
 		self.mouse_movements[0] += dx
 		self.mouse_movements[1] += dy
 
-	def mouse_wheel(self, wx, wy):
+	def mouse_wheel(self, wx, wy) -> None:
 		"""Schedules mouse wheel movement to be done at end of processing callback.
+
 		Called from actions while callback is being processed.
 		"""
 		self.mouse_movements[2] += wx
 		self.mouse_movements[3] += wy
 
-	def mouse_move_stick(self, dx, dy):
+	def mouse_move_stick(self, dx, dy) -> None:
 		"""Schedules mouse movement to be done at end of processing callback.
+
 		Called from actions while callback is being processed.
 		"""
 		self.mouse_movements[4] += dx
 		self.mouse_movements[5] += dy
 
-	def send_feedback(self, hapticdata):
+	def send_feedback(self, hapticdata) -> None:
 		"""Schedules haptic feedback to be sent at end of processing callback.
+
 		Called from actions while callback is being processed.
 		"""
 		if hapticdata.get_position() == HapticPos.BOTH:
@@ -263,14 +268,13 @@ class Mapper:
 		else:
 			self.feedbacks[hapticdata.get_position()] = hapticdata
 
-	def controller_flags(self):
-		"""Returns controller flags or, if there is no controller set to
-		this mapper, sc_by_cable driver matching defaults.
-		"""
+	def controller_flags(self) -> int:
+		"""Returns controller flags or, if there is no controller set to this mapper, sc_by_cable driver matching defaults."""
 		return 0 if self.controller is None else self.controller.flags
 
 	def is_touched(self, what) -> bool:
 		"""Returns True if specified pad is being touched.
+
 		May randomly return False for aphephobic pads.
 
 		'what' should be LEFT or RIGHT (from scc.constants)

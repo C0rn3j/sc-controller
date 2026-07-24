@@ -404,7 +404,7 @@ class HIDController(SCUSBDevice, Controller):
 							total += size
 					elif kind == GenericDesktopPage.Hatswitch:
 						if count * size != 4:
-							raise UnparsableDescriptor("Invalid size for Hatswitch (%sb)" % (count * size,))
+							raise UnparsableDescriptor(f"Invalid size for Hatswitch ({count * size}b)")
 						if next_axis + 1 < AXIS_COUNT:
 							log.debug("Found hat #%s at bit %s", int(next_axis), total)
 							if config:
@@ -482,7 +482,7 @@ class HIDController(SCUSBDevice, Controller):
 					pass
 			return None
 
-		pattern = ":%.4x:%.4x" % (vid, pid)
+		pattern = f":{vid:04x}:{pid:04x}"
 		full_path = recursive_search(pattern, SYS_DEVICES)
 		try:
 			if full_path:
@@ -516,7 +516,7 @@ class HIDController(SCUSBDevice, Controller):
 		vid, pid = self.device.getVendorID(), self.device.getProductID()
 		id = "hid%.4x:%.4x" % (vid, pid)
 		while id in self.daemon.get_active_ids():
-			id = "hid%.4x:%.4x:%s" % (vid, pid, magic_number)
+			id = f"hid{vid:04x}:{pid:04x}:{magic_number}"
 			magic_number += 1
 		return id
 
@@ -581,7 +581,7 @@ class HIDController(SCUSBDevice, Controller):
 
 class HIDDrv:
 	def __init__(self, daemon: SCCDaemon) -> None:
-		self.registered = set()
+		self.registered: set[tuple[int, int]] = set()
 		self.config_files: dict[tuple[int, int], str] = {}
 		self.configs: dict[tuple[int, int], dict] = {}
 		self.scan_files()
@@ -601,7 +601,7 @@ class HIDDrv:
 			# Nothing to do
 			return
 
-		known = set()
+		known: set[tuple[int, int]] = set()
 		for name in os.listdir(path):
 			if name.startswith("hid-") and name.endswith(".json"):
 				vid, pid = name.split("-", 2)[1].split(":")[0:2]
@@ -655,7 +655,7 @@ def hiddrv_test(cls, args) -> int:
 		try:
 			return cls(device, None, handle, None, None, test_mode=True)
 		except NotHIDDevice:
-			print("%.4x:%.4x is not a HID device" % (vid, pid), file=sys.stderr)
+			print(f"{vid:04x}:{pid:04x} is not a HID device", file=sys.stderr)
 			fake_daemon.exitcode = 3
 		except UnparsableDescriptor as e:
 			print("Invalid or unparsable HID descriptor", str(e), file=sys.stderr)

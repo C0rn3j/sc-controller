@@ -432,18 +432,18 @@ class Mouse(UInput):
 		self.updateScrollParams()
 		self.reset()
 
-	def reset(self):
+	def reset(self) -> None:
 		"""Reset internal counters, especially the one used for wheel.
 
 		Fixes scroll wheel feedback desynchronisation, as reported
 		in https://github.com/kozec/sc-controller/issues/222
 		"""
-		self._scr_dx = 0.0
-		self._scr_dy = 0.0
-		self._dx = 0.0
-		self._dy = 0.0
+		self._scr_dx: float = 0.0
+		self._scr_dy: float = 0.0
+		self._dx: float = 0.0
+		self._dy: float = 0.0
 
-	def updateParams(self, xscale: float = DEFAULT_XSCALE, yscale: float = DEFAULT_YSCALE):
+	def updateParams(self, xscale: float = DEFAULT_XSCALE, yscale: float = DEFAULT_YSCALE) -> None:
 		"""Update Movement parameters.
 
 		@param float mass	   mass in g of the ball
@@ -456,7 +456,7 @@ class Mouse(UInput):
 		self._xscale = xscale
 		self._yscale = yscale
 
-	def updateScrollParams(self, xscale: float = DEFAULT_SCR_XSCALE, yscale: float = DEFAULT_SCR_YSCALE):
+	def updateScrollParams(self, xscale: float = DEFAULT_SCR_XSCALE, yscale: float = DEFAULT_SCR_YSCALE) -> None:
 		"""Update Scroll parameters
 
 		@param float mass	   mass in g of the ball

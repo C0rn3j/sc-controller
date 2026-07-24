@@ -80,7 +80,7 @@ class Controller:
 		'level' goes from 0.0 to 100.0
 		"""
 
-	def set_gyro_enabled(self, enabled) -> None:
+	def set_gyro_enabled(self, enabled: bool) -> None:
 		"""Enables or disables gyroscope, if supported"""
 
 	def get_gyro_enabled(self) -> bool:

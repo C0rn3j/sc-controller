@@ -61,7 +61,7 @@ def init_logging(prefix: str = "", suffix: str = ""):
 	logging.addLevelName(15, prefix + "V" + suffix)  # Verbose
 
 	# Add 'logging.verbose' method
-	def verbose(self: logging.Logger, msg: str, *args, **kwargs):
+	def verbose(self: logging.Logger, msg: str, *args, **kwargs) -> None:
 		return self.log(15, msg, *args, **kwargs)
 
 	logging.Logger.verbose = verbose
@@ -76,7 +76,7 @@ def init_logging(prefix: str = "", suffix: str = ""):
 	logging.Logger._log = _log
 
 
-def set_logging_level(verbose, debug):
+def set_logging_level(verbose: bool, debug: bool) -> None:
 	"""Set logging level"""
 	logger = logging.getLogger()
 	if debug:  # everything
@@ -173,7 +173,7 @@ def profile_is_override(name: str) -> bool:
 	"""Returns True if named profile exists both in user config directory and
 	default_profiles directory.
 	"""
-	filename = "%s.sccprofile" % (name,)
+	filename = f"{name}.sccprofile"
 	if os.path.exists(os.path.join(get_profiles_path(), filename)):
 		if os.path.exists(os.path.join(get_default_profiles_path(), filename)):
 			return True
@@ -184,7 +184,7 @@ def profile_is_default(name: str) -> bool:
 	"""Returns True if named profile exists in default_profiles directory, even
 	if it is overrided by profile in user config directory.
 	"""
-	filename = "%s.sccprofile" % (name,)
+	filename = f"{name}.sccprofile"
 	return os.path.exists(os.path.join(get_default_profiles_path(), filename))
 
 
@@ -202,13 +202,14 @@ def get_profile_name(path: str) -> str:
 
 def find_profile(name: str) -> str | None:
 	"""Returns filename for specified profile name.
+
 	This is done by searching for name + '.sccprofile' in ~/.config/scc/profiles
 	first and in /usr/share/scc/default_profiles if file is not found in first
 	location.
 
 	Returns None if profile cannot be found.
 	"""
-	filename = "%s.sccprofile" % (name,)
+	filename = f"{name}.sccprofile"
 	for p in (get_profiles_path(), get_default_profiles_path()):
 		path = os.path.join(p, filename)
 		if os.path.exists(path):
@@ -223,6 +224,7 @@ def find_icon(
 	extensions: tuple[str, ...] = ("png", "svg"),
 ) -> tuple[None, bool] | tuple[str, bool]:
 	"""Returns (filename, has_colors) for specified icon name.
+
 	This is done by searching for name + '.png' and name + ".bw.png"
 	in user and default menu-icons folders. ".svg" is also supported, but only
 	if no pngs are found.
@@ -242,8 +244,8 @@ def find_icon(
 	if name.endswith(".bw"):
 		name = name[0:-3]
 	for extension in extensions:
-		gray_filename = "%s.bw.%s" % (name, extension)
-		colors_filename = "%s.%s" % (name, extension)
+		gray_filename = f"{name}.bw.{extension}"
+		colors_filename = f"{name}.{extension}"
 		gray, colors = None, None
 		for p in paths:
 			# Check grayscale
@@ -283,6 +285,7 @@ def menu_is_default(name: str) -> bool:
 
 def find_menu(name: str) -> str | None:
 	"""Returns filename for specified menu name.
+
 	This is done by searching for name in ~/.config/scc/menus
 	first and in /usr/share/scc/default_menus later.
 
@@ -297,6 +300,7 @@ def find_menu(name: str) -> str | None:
 
 def find_controller_icon(name: str) -> str | None:
 	"""Returns filename for specified controller icon name.
+
 	This is done by searching for name in ~/.config/controller-icons
 	first and in /usr/share/scc/images/controller-icons later.
 
@@ -395,7 +399,7 @@ def check_access(filename: str, write_required: bool = True) -> bool:
 	return os.access(filename, os.R_OK)
 
 
-def strip_gesture(gstr: str):
+def strip_gesture(gstr: str) -> str:
 	"""Converts gesture string to version where stroke lenght is ignored.
 
 	That means removing repeating characters and adding 'i' to front.
@@ -417,8 +421,7 @@ PId4 = PI / 4.0
 
 
 def circle_to_square(x: float, y: float) -> tuple[float, float]:
-	"""Projects coordinate in circle (of radius 1.0) to coordinate in square.
-	"""
+	"""Projects coordinate in circle (of radius 1.0) to coordinate in square."""
 	# Adapted from http://theinstructionlimit.com/squaring-the-thumbsticks
 
 	# Determine the theta angle

@@ -4,13 +4,13 @@ Handles no devices by default. Instead of trying to guess which evdev device
 is a gamepad and which user actually wants to be handled by SCC, list of enabled
 devices is read from config file.
 """
+from __future__ import annotations
 
 from evdev import InputDevice
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, TRIGGER_MAX, TRIGGER_MIN, ControllerFlags, SCButtons
 from scc.controller import Controller
 from scc.paths import get_config_path
-from scc.sccdaemon import SCCDaemon
 from scc.tools import clamp
 
 HAVE_EVDEV = False
@@ -34,6 +34,11 @@ import logging
 import os
 import sys
 from collections import namedtuple
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+	from scc.mapper import Mapper
+	from scc.sccdaemon import SCCDaemon
 
 log = logging.getLogger("evdev")
 
@@ -129,10 +134,10 @@ class EvdevController(Controller):
 	def get_id(self):
 		return self._id
 
-	def get_device_filename(self):
+	def get_device_filename(self) -> str:
 		return self.device.path
 
-	def get_device_name(self):
+	def get_device_name(self) -> str:
 		return self.device.name
 
 	def _generate_id(self):
@@ -231,7 +236,7 @@ class EvdevController(Controller):
 					)
 				self.mapper.input(self, old_state, new_state)
 
-	def test_input(self, event):
+	def test_input(self, event) -> None:
 		if event.type == ecodes.EV_KEY:
 			if event.code >= FIRST_BUTTON:
 				if event.value:
@@ -243,7 +248,7 @@ class EvdevController(Controller):
 			print("Axis", event.code, event.value)
 			sys.stdout.flush()
 
-	def cancel_padpress_emulation(self, mapper):
+	def cancel_padpress_emulation(self, mapper: Mapper) -> None:
 		"""Since evdev gamepad typically can't generate LPADTOUCH nor RPADTOUCH
 		buttons/events, pushing those buttons is emulated when apropriate stick
 		is moved.
@@ -279,21 +284,21 @@ class EvdevController(Controller):
 		else:
 			self._padpressemu_task = None
 
-	def apply_config(self, config):
+	def apply_config(self, config) -> None:
 		# TODO: This?
 		pass
 
-	def disconnected(self):
+	def disconnected(self) -> None:
 		# TODO: This!
 		pass
 
 	# def configure(self, idle_timeout=None, enable_gyros=None, led_level=None):
 
-	def set_led_level(self, level):
+	def set_led_level(self, level) -> None:
 		# TODO: This?
 		pass
 
-	def set_gyro_enabled(self, enabled):
+	def set_gyro_enabled(self, enabled: bool) -> None:
 		# TODO: This, maybe.
 		pass
 
@@ -351,22 +356,22 @@ def parse_axis(axis: dict[str, str | int]) -> AxisCalibrationData:
 class EvdevDriver:
 	SCAN_INTERVAL = 5
 
-	def __init__(self):
-		self.daemon = None
+	def __init__(self) -> None:
+		self.daemon: SCCDaemon | None = None
 		self._devices = {}
 		self._scan_thread = None
 		self._next_scan = None
 
-	def start(self):
+	def start(self) -> None:
 		self.daemon.get_device_monitor().add_callback(
 			"input", None, None, self.handle_new_device, self.handle_removed_device,
 		)
 
-	def set_daemon(self, daemon: SCCDaemon):
+	def set_daemon(self, daemon: SCCDaemon) -> None:
 		self.daemon = daemon
 
 	@staticmethod
-	def get_event_node(syspath: str):
+	def get_event_node(syspath: str) -> str | None:
 		filename = syspath.rsplit("/", maxsplit=1)[-1]
 		# Digit check to prevent returning funny endpoints like /dev/input/event_count
 		if not filename.startswith("event") or not filename[5:].isdigit():
@@ -416,18 +421,18 @@ class EvdevDriver:
 			return True
 		return False
 
-	def handle_removed_device(self, syspath, *bunchofnones):
+	def handle_removed_device(self, syspath, *bunchofnones) -> None:
 		eventnode = EvdevDriver.get_event_node(syspath)
 		self.device_removed(eventnode)
 
-	def device_removed(self, eventnode):
+	def device_removed(self, eventnode) -> None:
 		if eventnode in self._devices:
 			controller = self._devices[eventnode]
 			del self._devices[eventnode]
 			self.daemon.remove_controller(controller)
 			controller.close()
 
-	def handle_callback(self, callback, devices):
+	def handle_callback(self, callback, devices) -> None:
 		try:
 			controller = callback(devices)
 		except Exception as e:
@@ -460,11 +465,11 @@ if HAVE_EVDEV:
 	# Just like USB driver, EvdevDriver is process-wide singleton
 	_evdevdrv = EvdevDriver()
 
-	def start(daemon):
+	def start(daemon: SCCDaemon) -> None:
 		_evdevdrv.start()
 
 
-def init(daemon, config):
+def init(daemon: SCCDaemon, config) -> bool:
 	if not HAVE_EVDEV:
 		log.warning("Failed to enable Evdev driver: 'python-evdev' package is missing.")
 		return False
@@ -485,7 +490,7 @@ def make_new_device(factory, evdevdevice, *userdata):
 	return _evdevdrv.make_new_device(factory, evdevdevice, *userdata)
 
 
-def get_evdev_devices_from_syspath(syspath: str) -> list:
+def get_evdev_devices_from_syspath(syspath: str) -> list[InputDevice[str]]:
 	"""For given syspath, returns all assotiated event devices."""
 	# Broken because sometimes it uses UHID which the HCI string does not point to for some reason - https://github.com/C0rn3j/sc-controller/issues/21
 	# /sys/devices/pci0000:00/0000:00:02.1/0000:03:00.0/0000:04:0c.0/0000:13:00.0/usb3/3-7/3-7:1.0/bluetooth/hci0/hci0:50

@@ -66,11 +66,12 @@ class ImportSccprofile:
 
 		self.check_shell_commands()
 
-	def import_scc_tar(self, filename):
+	def import_scc_tar(self, filename: str) -> None:
 		"""Imports packaged profiles.
+
 		Checks for shell() actions everywhere and ask user to
-		enter main name, check generated ones and optionaly change
-		them as he wish.
+		enter main name, check generated ones and optionally change
+		them as they wish.
 		"""
 		files = self.builder.get_object("lstImportPackage")
 		try:
