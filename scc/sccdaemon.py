@@ -41,6 +41,8 @@ if TYPE_CHECKING:
 	from collections.abc import Callable
 	from typing import Never
 
+	from gi.repository import Gio, GLib
+
 	from scc.device_monitor import DeviceMonitor
 
 log = logging.getLogger("SCCDaemon")
@@ -84,6 +86,59 @@ class SCCDaemon(Daemon):
 		self.free_mappers = []
 		self.clients = set()
 		self.cwd: str = os.getcwd()
+		self._system_bus: Gio.DBusConnection | None = None
+		self._prepare_for_sleep_subscription: int | None = None
+		self._glib_context: GLib.MainContext | None = None
+
+	def init_sleep_monitor(self) -> None:
+		"""Listen for systemd-logind suspend notifications."""
+		try:
+			from gi.repository import Gio, GLib
+
+			self._system_bus = Gio.bus_get_sync(Gio.BusType.SYSTEM, None)
+			self._glib_context = GLib.MainContext.default()
+			self._prepare_for_sleep_subscription = self._system_bus.signal_subscribe(
+				"org.freedesktop.login1",
+				"org.freedesktop.login1.Manager",
+				"PrepareForSleep",
+				"/org/freedesktop/login1",
+				None,
+				Gio.DBusSignalFlags.NONE,
+				self._on_prepare_for_sleep,
+				None,
+			)
+			self.add_mainloop(self._dispatch_glib_events)
+			self.add_on_exit(self._close_sleep_monitor)
+		except Exception:
+			log.exception("Failed to listen for system sleep events")
+
+	def _on_prepare_for_sleep(
+		self,
+		_connection: Gio.DBusConnection,
+		_sender_name: str | None,
+		_object_path: str,
+		_interface_name: str,
+		_signal_name: str,
+		parameters: GLib.Variant,
+		_user_data: object | None,
+	) -> None:
+		sleeping = parameters.get_child_value(0).get_boolean()
+		if sleeping:
+			log.info("System going to sleep")
+		else:
+			log.info("System woke up")
+
+	def _dispatch_glib_events(self) -> None:
+		if self._glib_context is not None:
+			while self._glib_context.pending():
+				_ = self._glib_context.iteration(False)
+
+	def _close_sleep_monitor(self, _daemon: SCCDaemon) -> None:
+		if self._system_bus is not None and self._prepare_for_sleep_subscription is not None:
+			self._system_bus.signal_unsubscribe(self._prepare_for_sleep_subscription)
+		self._prepare_for_sleep_subscription = None
+		self._system_bus = None
+		self._glib_context = None
 
 	def init_drivers(self) -> None:
 		"""Search and initialize all controller drivers.
@@ -604,6 +659,7 @@ class SCCDaemon(Daemon):
 	def run(self) -> Never:
 		log.debug("Starting SCCDaemon...")
 		signal.signal(signal.SIGTERM, self.sigterm)
+		self.init_sleep_monitor()
 		self.init_drivers()
 		self.dev_monitor.start()
 		load_custom_module(log)
