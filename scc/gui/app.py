@@ -55,6 +55,7 @@ CONTROLLER_TYPE_NAMES = {
 	"deck": "Steam Deck",
 	"ds4": "DualShock 4",
 	"ds4evdev": "DualShock 4",
+	"ds4bt_hidraw": "DualShock 4",
 	"ds5": "DualSense",
 	"ds5evdev": "DualSense",
 	"ds5bt_hidraw": "DualSense",
