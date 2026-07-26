@@ -1,5 +1,14 @@
 List of (possibly) planned features in no particular order:
 
+- Fix the TRIXIE AppImage segfault on newest-glibc distros. The
+  debian-trixie-based AppImage (a CI artifact; releases ship the jammy pair)
+  segfaults (SIGSEGV, exit 245) during AppRun dependency-check when run on
+  Ubuntu resolute / Fedora 43 / Fedora 44 containers, while passing on
+  jammy/noble/bookworm/trixie itself. Reproduce with
+  AppImageBuilder.test.Dockerfile against those bases. Until fixed, those
+  three test-matrix entries are marked experimental (continue-on-error) in
+  .github/workflows/appimage.yml so they don't block releases.
+
 - Selectable output device: virtual Xbox (today's default), virtual DS4/DS5,
   or NO virtual controller at all. The current "Xbox 360 pad" is just a
   generic uinput device wearing an X360 identity defined entirely in

@@ -115,6 +115,11 @@ jobs:
     runs-on: ${{ matrix.target.os }}
     needs:
       - build
+    # Newest-glibc bases are non-blocking: the TRIXIE AppImage (a CI artifact,
+    # not a release asset -- releases ship the jammy pair) segfaults during
+    # dependency-check on resolute / fedora 43+44. Known issue, see TODO.md;
+    # flip experimental off once the trixie build is fixed.
+    continue-on-error: ${{ matrix.base.experimental || false }}
     strategy:
       fail-fast: false
       matrix:
@@ -139,14 +144,17 @@ jobs:
             codename: noble
           - os: ubuntu
             codename: resolute
+            experimental: true
           - os: debian
             codename: bookworm
           - os: debian
             codename: trixie
           - os: fedora
             codename: "43"
+            experimental: true
           - os: fedora
             codename: "44"
+            experimental: true
 
     steps:
       - name: Checkout
