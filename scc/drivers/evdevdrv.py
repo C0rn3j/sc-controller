@@ -29,6 +29,7 @@ except ImportError:
 	ecodes = FakeECodes()
 
 import binascii
+import errno
 import json
 import logging
 import os
@@ -375,8 +376,11 @@ class EvdevDriver:
 			config_fn = "evdev-{}.json".format(dev.name.strip().replace("/", ""))
 			config_file = os.path.join(get_config_path(), "devices", config_fn)
 		except OSError as ose:
-			if ose.errno == 13:
-				# Excepted error that happens often, don't report
+			if ose.errno in (errno.EACCES, errno.ENOENT):
+				# EACCES: no permission (common). ENOENT: the event node vanished
+				# between enumeration and open -- a normal hotplug race (e.g. a
+				# Bluetooth pad reconnecting). Both are expected; log quietly.
+				log.debug("Skipping evdev node %s: %s", eventnode, ose)
 				return False
 			log.exception(ose)
 			return False
