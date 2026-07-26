@@ -1264,7 +1264,11 @@ class GyroAbsAction(HapticEnabledAction, GyroAction):
 	def __init__(self, *blah):
 		GyroAction.__init__(self, *blah)
 		HapticEnabledAction.__init__(self)
-		self.ir = [0, 0, None, 0]  # Initial rotation, last has to be determined
+		# Orientation reference: None = capture at the next gyro event. All
+		# axes capture-at-first-event, so the very first activation centers at
+		# the current pose exactly like every later one (re-centered by
+		# reset() on deactivation / Recenter Gyro).
+		self.ir = [None, None, None, None]
 		self._was_oor = False
 		self._deadzone_fn = None
 
@@ -1290,7 +1294,10 @@ class GyroAbsAction(HapticEnabledAction, GyroAction):
 		else:
 			pyr = list(quat2euler(q1 / 32767.0, q2 / 32767.0, q3 / 32767.0, q4 / 32767.0))
 		for i in self.GYROAXES:
-			self.ir[i] = self.ir[i] or pyr[i]
+			# explicit None test, not `or`: a legitimate 0.0 reference is falsy
+			# and would re-capture on every event
+			if self.ir[i] is None:
+				self.ir[i] = pyr[i]
 			pyr[i] = anglediff(self.ir[i], pyr[i]) * (2**15) * self.speed[2] * 2 / PI
 		if self.haptic:
 			oor = False  # oor - Out Of Range
