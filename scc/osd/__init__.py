@@ -46,6 +46,26 @@ class OSDWindow(Gtk.Window):
 	EPILOG = ""
 	css_provider = None  # Used by staticmethods
 
+	@staticmethod
+	def _default_layer(GtkLayerShell):
+		"""Layer-shell layer the OSD is placed on.
+
+		OVERLAY, not TOP: compositors stack an active FULLSCREEN window above
+		the TOP layer (KWin puts it in its ActiveLayer, between AboveLayer and
+		OverlayLayer), so a TOP-layer OSD is hidden by fullscreen games -- which
+		is most of the OSD's purpose. OVERLAY sits above them.
+
+		Set SCC_OSD_LAYER=TOP|OVERLAY|BOTTOM|BACKGROUND to override, for
+		comparing behaviour between compositors without a rebuild.
+		"""
+		name = os.environ.get("SCC_OSD_LAYER", "").strip().upper()
+		if name:
+			layer = getattr(GtkLayerShell.Layer, name, None)
+			if layer is not None:
+				return layer
+			log.warning("Ignoring unknown SCC_OSD_LAYER=%s", name)
+		return GtkLayerShell.Layer.OVERLAY
+
 	def __init__(self, wmclass, layer=None) -> None:
 		Gtk.Window.__init__(self)
 		OSDWindow._apply_css(Config())
@@ -69,15 +89,28 @@ class OSDWindow(Gtk.Window):
 
 			if GtkLayerShell.is_supported():
 				self.using_wlroots = True
+				# Anchor to the TOP-LEFT corner by default so a positive
+				# position counts from the top/left and a negative one flips the
+				# anchor in show() -- the same semantics as the X11 path. The
+				# y anchor used to default to BOTTOM, which silently measured
+				# positive y offsets from the bottom edge instead.
 				self.x_layer_anchor = GtkLayerShell.Edge.LEFT
-				self.y_layer_anchor = GtkLayerShell.Edge.BOTTOM
+				self.y_layer_anchor = GtkLayerShell.Edge.TOP
 				GtkLayerShell.init_for_window(self)
-				GtkLayerShell.set_layer(self, layer if layer is not None else GtkLayerShell.Layer.TOP)
+				GtkLayerShell.set_layer(self, layer if layer is not None else self._default_layer(GtkLayerShell))
 				GtkLayerShell.set_anchor(self, self.x_layer_anchor, True)
 				GtkLayerShell.set_anchor(self, self.y_layer_anchor, True)
 				self.layer_shell = GtkLayerShell
+				log.debug("%s: using layer-shell, layer %s", wmclass,
+					GtkLayerShell.get_layer(self))
+			else:
+				# No zwlr_layer_shell_v1: either an X11/XWayland session (the
+				# hints below do work there) or a compositor without the
+				# protocol, e.g. GNOME/Mutter -- where nothing can put the OSD
+				# above a fullscreen window.
+				log.debug("%s: layer-shell unsupported, using X11 window hints", wmclass)
 		except ImportError:
-			pass
+			log.debug("%s: GtkLayerShell not installed, using X11 window hints", wmclass)
 		if not self.using_wlroots:
 			self.set_decorated(False)
 			self.stick()
@@ -225,7 +258,7 @@ class OSDWindow(Gtk.Window):
 				self.x_layer_anchor = self.layer_shell.Edge.RIGHT
 				self.layer_shell.set_anchor(self, self.x_layer_anchor, True)
 				x = -x
-			if y < 0:
+			if y < 0:  # Negative Y position is counted from the bottom border
 				self.layer_shell.set_anchor(self, self.y_layer_anchor, False)
 				self.y_layer_anchor = self.layer_shell.Edge.BOTTOM
 				self.layer_shell.set_anchor(self, self.y_layer_anchor, True)
