@@ -1,5 +1,40 @@
 List of (possibly) planned features in no particular order:
 
+- GTK3 -> GTK4 port (evaluated 2026-07, NOT urgent). The original driver for
+  this -- "the OSD cannot draw over fullscreen games on Wayland" -- turned out
+  to be a layer-shell layer choice, fixed in GTK3 (OSD now uses layer OVERLAY;
+  see scc/osd/__init__.py _default_layer). Note gtk4-layer-shell would NOT have
+  helped by itself: it speaks the same zwlr_layer_shell_v1 protocol, so it works
+  on KDE/wlroots and fails on GNOME/Mutter exactly as the GTK3 version does.
+  Scope if/when it happens: ~15.6k lines scc/gui + 5.0k lines scc/osd, plus 31
+  glade files (18.5k lines XML, all gtk+ 3.24). Work areas, roughly in size
+  order:
+    - glade -> GTK4 builder XML: gtk4-builder-tool simplify --3to4 does the
+      bulk, but 12 GtkMenu + 47 GtkMenuItem need a real rewrite to GMenu /
+      GtkPopoverMenu, plus GtkAlignment (2), GtkToolbar (2), GtkColorButton
+      (13) and child-properties -> layout-properties over 64 grids / 95 boxes.
+      There is no Glade for GTK4; the editor is Cambalache;
+    - container/visibility sweep: ~190 sites (121 add(, 49 pack_start, 22
+      show_all) -- mechanical, high volume;
+    - scc/gui/svg_widget.py is the riskiest single piece: it subclasses the
+      removed Gtk.EventBox and uses motion-notify/button-press events, and it
+      backs both the main editor and four OSD modules -> rewrite on
+      GtkDrawingArea/GtkPicture + GtkGestureClick + GtkEventControllerMotion;
+    - OSD windows can REGRESS on X11: GTK4 removed set_type_hint,
+      set_keep_above, stick and set_wmclass, which are exactly the fallback
+      used when layer-shell is unavailable; keeping parity needs Gdk.X11Surface
+      plus raw Xlib property setting. The Wayland side is a near 1:1
+      gtk-layer-shell -> gtk4-layer-shell swap;
+    - Gtk.StatusIcon (2 sites) is gone -> AppIndicator/SNI only;
+      Gdk.Screen (7 sites) -> GdkDisplay/GdkMonitor.
+  Estimate ~25-40 focused days plus a cross-compositor/multi-controller test
+  pass. The 7 OSD binaries are separate processes, so a phased port (OSD first,
+  GUI still GTK3) is possible -- blocked only by the shared svg_widget and
+  daemon_manager. NOT part of this: the nine modules coupled to Xlib via
+  scc/lib/xwrappers (pointer position, XKB for the OSK, window-title detection
+  for the autoswitcher) are broken on Wayland regardless of toolkit version and
+  need per-compositor work (KWin DBus/scripting, wlr-foreign-toplevel).
+
 - Fix the TRIXIE AppImage segfault on newest-glibc distros. The
   debian-trixie-based AppImage (a CI artifact; releases ship the jammy pair)
   segfaults (SIGSEGV, exit 245) during AppRun dependency-check when run on
