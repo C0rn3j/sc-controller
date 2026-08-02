@@ -14,6 +14,7 @@ from scc.tools import _
 
 import inspect
 import logging
+import operator
 import sys
 from enum import IntEnum
 from math import atan2, copysign, cos, sin, sqrt
@@ -392,11 +393,21 @@ class RangeOP:
 
 	OPS = ("<", ">", "<=", ">=")
 
+	# An analog axis parked near a modeshift threshold jitters across it, and
+	# every crossing runs ModeModifier's switch path -- which releases held
+	# buttons and recenters gyro references. With a hair-trigger comparison a
+	# trigger held at "70%" could re-center an absolute gyro several times a
+	# second, leaving it permanently at its neutral output. Once the condition
+	# holds, the value has to travel this far (as a fraction of the axis range)
+	# back past the threshold before it stops holding.
+	HYSTERESIS = 0.05
+
 	def __init__(self, what, op, value):
 		"""Raises ValueError if 'what' or 'op' is not supported value"""
 		self.what = what
 		self.op = op
 		self.value = value
+		self.held = False
 		self.min = float(TRIGGER_MIN)
 		self.max = float(TRIGGER_MAX)
 
@@ -446,41 +457,43 @@ class RangeOP:
 	def cmp_or(self, mapper: Mapper):
 		return any([x(mapper) for x in self.children])
 
-	def cmp_gt(self, mapper: Mapper):
+	def _cmp(self, mapper: Mapper, op, state, rising: bool) -> bool:
+		"""Compares 'state' against the threshold with HYSTERESIS applied, and
+		latches the result. 'rising' says which side of the threshold satisfies
+		the operator, so the band always widens in the holding direction.
+		"""
+		margin = -RangeOP.HYSTERESIS if self.held else RangeOP.HYSTERESIS
+		self.held = op(state, self.value + (margin if rising else -margin))
+		return self.held
+
+	def _state(self, mapper: Mapper):
 		if mapper.state is None:
-			return False
-		state = float(getattr(mapper.state, self.axis_name)) / self.max
-		return state > self.value
+			return None
+		return float(getattr(mapper.state, self.axis_name)) / self.max
+
+	def cmp_gt(self, mapper: Mapper):
+		state = self._state(mapper)
+		return False if state is None else self._cmp(mapper, operator.gt, state, True)
 
 	def cmp_lt(self, mapper: Mapper):
-		if mapper.state is None:
-			return False
-		state = float(getattr(mapper.state, self.axis_name)) / self.max
-		return state < self.value
+		state = self._state(mapper)
+		return False if state is None else self._cmp(mapper, operator.lt, state, False)
 
 	def cmp_ge(self, mapper: Mapper):
-		if mapper.state is None:
-			return False
-		state = float(getattr(mapper.state, self.axis_name)) / self.max
-		return state >= self.value
+		state = self._state(mapper)
+		return False if state is None else self._cmp(mapper, operator.ge, state, True)
 
 	def cmp_le(self, mapper: Mapper):
-		if mapper.state is None:
-			return False
-		state = float(getattr(mapper.state, self.axis_name)) / self.max
-		return state <= self.value
+		state = self._state(mapper)
+		return False if state is None else self._cmp(mapper, operator.le, state, False)
 
 	def cmp_labs(self, mapper: Mapper):
-		if mapper.state is None:
-			return False
-		state = float(getattr(mapper.state, self.axis_name)) / self.max
-		return abs(state) < self.value
+		state = self._state(mapper)
+		return False if state is None else self._cmp(mapper, operator.lt, abs(state), False)
 
 	def cmp_gabs(self, mapper: Mapper):
-		if mapper.state is None:
-			return False
-		state = float(getattr(mapper.state, self.axis_name)) / self.max
-		return abs(state) > self.value
+		state = self._state(mapper)
+		return False if state is None else self._cmp(mapper, operator.gt, abs(state), True)
 
 	def __call__(self, mapper: Mapper):
 		return self.op_method(mapper)
