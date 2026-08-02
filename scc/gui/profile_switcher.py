@@ -347,39 +347,41 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 		cfg = self.config.get_controller_config(id)
 		if cfg["icon"]:
 			icon = find_controller_icon(cfg["icon"])
-			self._icon.set_from_file(icon)
-		else:
-			log.debug("There is no icon for controller %s, auto assinging one", id)
-			paths = [get_default_controller_icons_path(), get_controller_icons_path()]
+			if icon is not None:
+				self._icon.set_from_file(icon)
+				return
 
-			def cb(icons):
-				if id != self._controller.get_id():
-					# Controller was changed before callback was called
-					return
-				icon = None
-				used_icons = {
-					self.config["controllers"][x]["icon"]
-					for x in self.config["controllers"]
-					if "icon" in self.config["controllers"][x]
-				}
-				tp = "%s-" % (self._controller.get_type(),)
-				icons = sorted(os.path.split(x.get_path())[-1] for x in icons)
-				log.debug("Searching for icon type: %s", tp.strip("-"))
-				for i in icons:
-					if i not in used_icons and i.startswith(tp):
-						# Unused icon found
-						icon = i
-						break
-				else:
-					# All icons are already used, assign anything
-					icon = random.choice(icons)
-				log.debug("Auto-assigned icon %s for controller %s", icon, id)
-				cfg = self.config.get_controller_config(id)
-				cfg["icon"] = icon
-				self.config.save()
-				GLib.idle_add(self.update_icon)
+		log.debug("There is no icon for controller %s, auto assinging one", id)
+		paths = [get_default_controller_icons_path(), get_controller_icons_path()]
 
-			self.load_user_data(paths, "*.svg", None, cb)
+		def cb(icons) -> None:
+			if id != self._controller.get_id():
+				# Controller was changed before callback was called
+				return
+			icon = None
+			used_icons = {
+				self.config["controllers"][x]["icon"]
+				for x in self.config["controllers"]
+				if "icon" in self.config["controllers"][x]
+			}
+			tp = f"{self._controller.get_type()}-"
+			icons = sorted(os.path.split(x.get_path())[-1] for x in icons)
+			log.debug("Searching for icon type: %s", tp.strip("-"))
+			for i in icons:
+				if i not in used_icons and i.startswith(tp):
+					# Unused icon found
+					icon = i
+					break
+			else:
+				# All icons are already used, assign anything
+				icon = random.choice(icons)
+			log.debug("Auto-assigned icon %s for controller %s", icon, id)
+			cfg = self.config.get_controller_config(id)
+			cfg["icon"] = icon
+			self.config.save()
+			GLib.idle_add(self.update_icon)
+
+		self.load_user_data(paths, "*.svg", None, cb)
 
 
 class ButtonInRevealer(Gtk.Revealer):
