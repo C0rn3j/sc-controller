@@ -1,12 +1,13 @@
-"""Runtime behaviour of the gyro actions.
+"""Runtime behaviour of the gyro actions and of the analog modeshift gate.
 
-Driven through a fake mapper: the real one needs a daemon, a controller and
-uinput devices.
+Both are driven through a fake mapper: the real one needs a daemon, a
+controller and uinput devices.
 """
 import math
 
-from scc.actions import GyroAbsAction, GyroAction
-from scc.constants import STICK_PAD_MAX, TRIGGER_MAX, ControllerFlags
+from scc.actions import GyroAbsAction, GyroAction, RangeOP
+from scc.constants import STICK_PAD_MAX, TRIGGER_MAX, ControllerFlags, SCButtons
+from scc.parser import ActionParser
 from scc.uinput import Axes
 
 # driver-side euler encoding: 2**15 / PI fixed point, see ControllerFlags.EUREL_GYROS
@@ -98,3 +99,62 @@ class TestGyroAxisRange:
 		m = FakeMapper()
 		sweep(GyroAbsAction(Axes.ABS_X), m, 90)
 		assert peak(m, Axes.ABS_X) == STICK_PAD_MAX
+
+
+class TestRangeOPHysteresis:
+	"""`mode(RT >= 0.7, ...)` must not flip while the trigger is parked near
+	the threshold: every flip runs ModeModifier's switch path, which recenters
+	gyro references and releases held buttons.
+	"""
+
+	def test_holds_through_jitter(self):
+		m = FakeMapper()
+		op = RangeOP(SCButtons.RT, ">=", 0.7)
+		m.state.rtrig = int(0.9 * TRIGGER_MAX)
+		assert op(m)
+		# dip just under the raw threshold, still inside the hysteresis band
+		m.state.rtrig = int((0.7 - RangeOP.HYSTERESIS / 2) * TRIGGER_MAX)
+		assert op(m)
+
+	def test_still_releases(self):
+		m = FakeMapper()
+		op = RangeOP(SCButtons.RT, ">=", 0.7)
+		m.state.rtrig = int(0.9 * TRIGGER_MAX)
+		assert op(m)
+		m.state.rtrig = int((0.7 - 2 * RangeOP.HYSTERESIS) * TRIGGER_MAX)
+		assert not op(m)
+
+	def test_needs_the_full_threshold_to_engage(self):
+		"""Approaching from below, the band tightens rather than loosens."""
+		m = FakeMapper()
+		op = RangeOP(SCButtons.RT, ">=", 0.7)
+		m.state.rtrig = int((0.7 + RangeOP.HYSTERESIS / 2) * TRIGGER_MAX)
+		assert not op(m)
+		m.state.rtrig = int((0.7 + 2 * RangeOP.HYSTERESIS) * TRIGGER_MAX)
+		assert op(m)
+
+	def test_less_than_direction(self):
+		m = FakeMapper()
+		op = RangeOP(SCButtons.RT, "<", 0.3)
+		m.state.rtrig = 0
+		assert op(m)
+		m.state.rtrig = int((0.3 + RangeOP.HYSTERESIS / 2) * TRIGGER_MAX)
+		assert op(m)
+		m.state.rtrig = int((0.3 + 2 * RangeOP.HYSTERESIS) * TRIGGER_MAX)
+		assert not op(m)
+
+	def test_gated_absolute_gyro_survives_jitter(self):
+		"""End to end: the reported symptom was an absolute gyro producing
+		nothing at all when gated behind a trigger held at 70%.
+		"""
+		action = ActionParser().restart("mode(RT >= 0.7, gyroabs(Axes.ABS_X), None)").parse().compress()
+		m = FakeMapper()
+		prev = None
+		for n in range(21):
+			m.state.rtrig = TRIGGER_MAX if n % 3 else int(0.69 * TRIGGER_MAX)
+			a = math.radians(20.0 * n / 20)
+			rate = 0 if prev is None else (a - prev) * 3000.0
+			prev = a
+			q = int(a * EUREL)
+			action.gyro(m, rate, rate, rate, q, q, q, 0)
+		assert peak(m, Axes.ABS_X) > 0.15 * STICK_PAD_MAX
