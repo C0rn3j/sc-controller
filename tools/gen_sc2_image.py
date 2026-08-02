@@ -418,7 +418,10 @@ def main() -> None:
 			("DPADTEST", "DPAD"),
 		):
 			x, y, w, h = REGION[k]
-			add_area(name, x * SCALE, y * SCALE, w * SCALE, h * SCALE)
+			# Input-test areas are horizontal centerlines, not the complete
+			# control bounds.  app.py uses AREA_*TEST.y as the neutral cursor
+			# position and AREA_*TEST.width as its full movement range.
+			add_area(name, x * SCALE, (y + h * 0.5 + region_y_offset) * SCALE, w * SCALE, 1.0)
 		return ET.ElementTree(svg)
 
 	build(False).write(OUT_IMG, encoding="unicode", xml_declaration=True)
