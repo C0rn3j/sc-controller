@@ -15,6 +15,7 @@ User-mode driver, mapper and GTK3 based GUI for Steam Controller, DS4 and many o
 - Connect multiple controllers at the same time
 - Supports profiles switchable in GUI or with controller button
 - Stick, Pads and Gyroscope input
+- Steam Controller 2 (2026) support, including its capacitive stick-touch and grip sensors — bind actions to them directly, or use them as conditions in mode-shift combinations
 - Haptic Feedback and in-game Rumble support
 - OSD, Menus, On-Screen Keyboard for desktop *and* in games.
 - Automatic profile switching based on active window.
