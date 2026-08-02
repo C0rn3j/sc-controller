@@ -42,9 +42,15 @@ GLYPH_DIR = "images/button-images"
 PANEL_DIR = "images/sc2"
 
 SCALE = 0.5
-VB_W, VB_H = 1370.9014, 986.0376
+#VB_W, VB_H = 1370.9014, 986.0376
+source_root = ET.parse(SRC).getroot()
+_vbx, _vby, VB_W, VB_H = map(float, source_root.get("viewBox").split())
 W, H = VB_W * SCALE, VB_H * SCALE
-G1TX, G1TY = -33.923347, -55.346467
+G1TX, G1TY = -33.923347, -23.468467
+
+# TODO(Martin): Just manually recalculate REGION and unscrew scnovo svg and remove the OLD_G1TY and offset hacks
+OLD_G1TY = -55.346467
+region_y_offset = G1TY - OLD_G1TY
 
 BODY_FILL = "#b8b8b8"
 SYMBOL_FILL = "#000000"
@@ -58,6 +64,8 @@ KEEP = {
 	"rpad": "RPAD",
 	"lb": "LB",
 	"rb": "RB",
+	"LT": "LT",
+	"RT": "RT",
 	"steamcontrollerbody": "BODY",
 }
 FACE = {"abxy": None, "steam": "C", "view": "BACK", "menu": "START", "dots": "DOTS"}
@@ -306,19 +314,14 @@ def main() -> None:
 			"LPAD": (263.1, 423.0, 314.5, 321.4),
 			"RPAD": (798.6, 423.5, 313.6, 322.0),
 			"DPAD": (145.7, 100.5, 219.7, 221.8),
-			# LT/RT match the hand-added trigger art in the committed svg
-			# (root-space paths above the bumpers; the committed viewBox is
-			# hand-extended to y=-45 to show them). Values here are
-			# root / SCALE, keeping AREA_LT/RT on the drawn triggers, not
-			# beside the bumpers.
 			"LT": (170.2, -23.6, 146.2, 57.6),
 			"RT": (1061.6, -23.6, 146.2, 57.6),
 		}
 		for name, (x, y, w, h) in REGION.items():
-			add_area(name, x * SCALE, y * SCALE, w * SCALE, h * SCALE)
+			add_area(name, x * SCALE, (y + region_y_offset) * SCALE, w * SCALE, h * SCALE)
 		for name in ("LGRIPTOUCH", "RGRIPTOUCH"):  # AREA == grip surface bbox (+nudge)
 			x, y, w, h = grip[name][1]
-			add_area(name, (x + GRIP_SHIFT_X) * SCALE, y * SCALE, w * SCALE, h * SCALE)
+			add_area(name, (x + GRIP_SHIFT_X) * SCALE, (y + region_y_offset) * SCALE, w * SCALE, h * SCALE)
 		for name, k in (
 			("LPADTEST", "LPAD"),
 			("RPADTEST", "RPAD"),

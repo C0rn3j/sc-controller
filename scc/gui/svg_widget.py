@@ -92,8 +92,7 @@ class SVGWidget(Gtk.EventBox):
 			self.emit("click", area)
 
 	def on_mouse_moved(self, trash, event):
-		"""Not actual signal handler, just called from App.
-		"""
+		"""Not actual signal handler, just called from App."""
 		x_offset = (self.get_allocation().width - self.image_width) / 2
 		x = event.x - x_offset
 		y = event.y
