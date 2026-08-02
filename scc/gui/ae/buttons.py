@@ -181,7 +181,7 @@ class ButtonsComponent(AEComponent, Chooser):
 			cbToggle.set_active(False)
 		self.apply_keys()
 
-	def on_cbActOnRelease_toggled(self, cb):
+	def on_cbActOnRelease_toggled(self, cb: Gtk.CheckButton) -> None:
 		self.apply_keys()
 
 	def hide_toggle(self):
