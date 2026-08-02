@@ -1184,6 +1184,26 @@ class GyroAction(Action):
 	def get_compatible_modifiers(self):
 		return Action.MOD_SENSITIVITY | Action.MOD_SENS_Z
 
+	@staticmethod
+	def emit_axis(mapper: Mapper, axis, value):
+		"""Sends a stick-range gyro value (STICK_PAD_MIN..STICK_PAD_MAX) to a
+		gamepad axis, rescaled to that axis' own range.
+
+		Triggers need the rescale: they are unipolar (TRIGGER_MIN..TRIGGER_MAX
+		== 0..255), so merely clamping a stick-range value into them -- what
+		this used to do -- discarded the whole negative half and saturated the
+		positive half within about 0.7 deg of rotation. A gyro-driven trigger
+		behaved like a button. Mapping the positive half across the full
+		trigger travel keeps the neutral pose at "released" (which is what a
+		trigger has to rest at) and full pull at the same rotation that would
+		fully deflect a stick; bind the opposite rotation with a negative
+		sensitivity or the 'inverted' modifier.
+		"""
+		if axis in AxisAction.Z:
+			value = value * TRIGGER_MAX / STICK_PAD_MAX
+		mapper.gamepad.axisEvent(axis, AxisAction.clamp_axis(axis, value))
+		mapper.syn_list.add(mapper.gamepad)
+
 	def set_speed(self, x: float, y: float, z: float):
 		self.speed = (x, y, z)
 
@@ -1198,8 +1218,7 @@ class GyroAction(Action):
 			# IntEnums with overlapping values (REL_X == ABS_X == 0), so the
 			# membership test would misroute a mouse axis here as a gamepad axis.
 			if isinstance(axis, Axes) or type(axis) is int:
-				mapper.gamepad.axisEvent(axis, AxisAction.clamp_axis(axis, pyr[i] * self.speed[i] * -10))
-				mapper.syn_list.add(mapper.gamepad)
+				GyroAction.emit_axis(mapper, axis, pyr[i] * self.speed[i] * -10)
 			# Relative mouse = lean-to-turn: cursor VELOCITY is proportional to
 			# the held tilt angle -- lean and the cursor keeps moving, return to
 			# level and it stops. (For laser-pointer tracking, where the cursor
@@ -1315,12 +1334,11 @@ class GyroAbsAction(HapticEnabledAction, GyroAction):
 			# swallowed the mouse axes into this gamepad branch (the elifs below
 			# never ran) -- gyro->mouse moved the stick instead of the cursor.
 			if isinstance(axis, Axes) or type(axis) == int:
-				val = AxisAction.clamp_axis(axis, pyr[i] * self.speed[i])
+				val = pyr[i] * self.speed[i]
 				if self._deadzone_fn:
-					val, trash = self._deadzone_fn(val, 0, STICK_PAD_MAX)
-					val = int(val)
-				mapper.gamepad.axisEvent(axis, val)
-				mapper.syn_list.add(mapper.gamepad)
+					# deadzone works in stick range, before the axis rescale
+					val, trash = self._deadzone_fn(clamp(STICK_PAD_MIN, val, STICK_PAD_MAX), 0, STICK_PAD_MAX)
+				GyroAction.emit_axis(mapper, axis, val)
 			# Absolute mouse = laser pointer: the angular RATE is the move delta
 			# (like MouseAction.gyro); the rate integrates to the rotation angle,
 			# so the cursor tracks the controller's absolute orientation and stops
