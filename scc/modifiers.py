@@ -6,6 +6,8 @@ For example, click() modifier executes action only if pad is pressed.
 """
 from __future__ import annotations
 
+from __future__ import annotations
+
 import inspect
 import itertools
 import logging
@@ -356,23 +358,23 @@ class InvertedButtonModifier(Modifier):
 	"""
 	COMMAND = "inverted"
 
-	def describe(self, context):
+	def describe(self, context: int) -> str:
 		if context in (Action.AC_STICK, Action.AC_PAD):
 			return _("(act on release)") + "\n" + self.action.describe(context)
 		return _("(act on release)") + " " + self.action.describe(context)
 
-	def strip(self):
+	def strip(self) -> Action:
 		return self.action.strip()
 
-	def compress(self):
+	def compress(self) -> Action:
 		self.action = self.action.compress()
 		return self
 
-	def button_press(self, mapper):
+	def button_press(self, mapper: Mapper) -> None:
 		# Physical press -> the wrapped action is released
 		self.action.button_release(mapper)
 
-	def button_release(self, mapper):
+	def button_release(self, mapper: Mapper) -> None:
 		# Physical release -> the wrapped action is pressed
 		self.action.button_press(mapper)
 
