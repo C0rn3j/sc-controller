@@ -644,8 +644,9 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton" id="btLGRIP2">
+                      <object class="GtkButton" id="btLGRIP">
                         <property name="width-request">170</property>
+                        <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
                         <child>
@@ -659,9 +660,8 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton" id="btLGRIP">
+                      <object class="GtkButton" id="btLGRIP2">
                         <property name="width-request">170</property>
-                        <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
                         <child>
@@ -735,8 +735,9 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton" id="btRGRIP2">
+                      <object class="GtkButton" id="btRGRIP">
                         <property name="width-request">170</property>
+                        <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
                         <child>
@@ -750,9 +751,8 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton" id="btRGRIP">
+                      <object class="GtkButton" id="btRGRIP2">
                         <property name="width-request">170</property>
-                        <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
                         <child>
@@ -809,6 +809,21 @@
                     <property name="can-focus">False</property>
                     <property name="spacing">12</property>
                     <property name="baseline-position">bottom</property>
+                    <child>
+                      <object class="GtkButton" id="btLGRIPTOUCH">
+                        <property name="width-request">220</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                        <child>
+                          <placeholder/>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
                     <child>
                       <object class="GtkButton" id="btLPAD">
                         <property name="width-request">220</property>
@@ -898,6 +913,21 @@
                         <property name="expand">False</property>
                         <property name="fill">True</property>
                         <property name="position">6</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="btRGRIPTOUCH">
+                        <property name="width-request">220</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                        <child>
+                          <placeholder/>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">8</property>
                       </packing>
                     </child>
                   </object>
