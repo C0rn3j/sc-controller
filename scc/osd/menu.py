@@ -96,7 +96,7 @@ class Menu(OSDWindow):
 		v.set_name("osd-menu")
 		return v
 
-	def scroll_wrap(self, parent) -> Gtk.ScrolledWindow:
+	def scroll_wrap(self, parent: Gtk.Widget) -> Gtk.ScrolledWindow:
 		"""Wrap the vertical item list in a scrolled viewport capped to the screen height
 
 		So very long menus (e.g. hundreds of profiles) don't run off-screen.
@@ -140,7 +140,7 @@ class Menu(OSDWindow):
 		else:
 			sw.set_size_request(natw, nath)
 
-	def _ensure_visible(self, widget) -> None:
+	def _ensure_visible(self, widget: Gtk.Widget) -> None:
 		"""Scroll the viewport so the selected item and its section heading stay visible."""
 		sw = getattr(self, "_scrollwindow", None)
 		if sw is None or widget is None:
@@ -459,13 +459,13 @@ class Menu(OSDWindow):
 			self._reveal_timer = GLib.timeout_add(2000, self._lock_timed_out)
 		self._reveal_if_locked()
 
-	def _on_inputs_locked(self, *a):
+	def _on_inputs_locked(self, *a: object) -> None:
 		"""Called from the lock-success callback, once inputs are diverted to
 		this menu and it is safe to reveal it."""
 		self._inputs_locked = True
 		self._reveal_if_locked()
 
-	def _reveal_if_locked(self):
+	def _reveal_if_locked(self) -> None:
 		"""Reveal the menu, but only once it is both requested and locked."""
 		if not (self._show_pending and self._inputs_locked):
 			return
@@ -476,7 +476,7 @@ class Menu(OSDWindow):
 		OSDWindow.show(self)
 		GLib.timeout_add(1, self._check_on_screen_position, True)
 
-	def _lock_timed_out(self, *a):
+	def _lock_timed_out(self, *a: object) -> None:
 		"""The lock never landed; close the menu instead of revealing it while
 		unlocked (which could leak input or strand a key)."""
 		self._reveal_timer = None
