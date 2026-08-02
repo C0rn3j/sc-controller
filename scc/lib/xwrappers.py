@@ -59,7 +59,7 @@ libXext = _load_lib("libXext.so", "libXext.so.6")
 _XErrorHandler = CFUNCTYPE(c_int, c_void_p, c_void_p)
 
 
-def _ignore_x_error(display, error):
+def _ignore_x_error(display: int, error: int) -> int:
 	return 0
 
 
