@@ -1,4 +1,4 @@
-# Steam Controller (2025, "v2") — USB/HID protocol notes
+# Steam Controller (2026, "v2") — USB/HID protocol notes
 
 Reverse-engineering notes for adding support for the **new Steam Controller**
 (released May 2026), distinct from the original Steam Controller (here "v1",

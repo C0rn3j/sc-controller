@@ -1,4 +1,4 @@
-// SVGO config for sc-controller-cc's SVGs.
+// SVGO config
 //
 // These SVGs are not just artwork: the GUI reads element ids (AREA_*, "button",
 // recolor targets, control ids), <rect> geometry for input-test/hover areas, the
