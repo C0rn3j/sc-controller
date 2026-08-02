@@ -45,7 +45,7 @@ class RadialMenu(Menu):
 		provider.load_from_data(b"window { background: transparent; border: none; box-shadow: none; }")
 		self.get_style_context().add_provider(provider, Gtk.STYLE_PROVIDER_PRIORITY_USER + 1)
 
-	def scroll_wrap(self, parent):
+	def scroll_wrap(self, parent: Gtk.Widget) -> Gtk.Widget:
 		"""Radial menus draw items on an SVG - no scroll viewport - return unchanged"""
 		return parent
 
