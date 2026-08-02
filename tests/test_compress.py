@@ -145,8 +145,7 @@ class TestCompress:
 				)
 
 	def test_hold_doubleclick(self):
-		"""Tests parsing of hold & doubleclick combination.
-		"""
+		"""Tests parsing of hold & doubleclick combination."""
 		a = parser.from_json_data(
 			{"action": "axis(ABS_RX)", "hold": {"action": "axis(ABS_X)"}, "doubleclick": {"action": "axis(ABS_Z)"}},
 		).compress()

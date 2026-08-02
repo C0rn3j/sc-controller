@@ -1,4 +1,3 @@
-
 from scc.actions import AxisAction
 from scc.modifiers import *
 from scc.uinput import Axes

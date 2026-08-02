@@ -22,8 +22,8 @@ def test_bluetooth_discovery_retries_until_vendor_is_available(_exists: Mock) ->
 	monitor.dev_added_cbs[("bluetooth", 0x054C, 0x05C4)] = callback
 	monitor.get_vendor_product = Mock(side_effect=[OSError(), (0x054C, 0x05C4)])
 	scheduled = []
-	monitor.daemon.get_scheduler.return_value.schedule.side_effect = (
-		lambda delay, fn: scheduled.append((delay, fn)) or Mock()
+	monitor.daemon.get_scheduler.return_value.schedule.side_effect = lambda delay, fn: (
+		scheduled.append((delay, fn)) or Mock()
 	)
 
 	monitor._on_new_syspath("bluetooth", "/sys/devices/hci0:1")
@@ -44,8 +44,8 @@ def test_bluetooth_discovery_retries_until_added_callback_is_ready(_exists: Mock
 	monitor.dev_added_cbs[("bluetooth", 0x054C, 0x05C4)] = callback
 	monitor.get_vendor_product = Mock(return_value=(0x054C, 0x05C4))
 	scheduled = []
-	monitor.daemon.get_scheduler.return_value.schedule.side_effect = (
-		lambda delay, fn: scheduled.append((delay, fn)) or Mock()
+	monitor.daemon.get_scheduler.return_value.schedule.side_effect = lambda delay, fn: (
+		scheduled.append((delay, fn)) or Mock()
 	)
 
 	monitor._on_new_syspath("bluetooth", "/sys/devices/hci0:1")

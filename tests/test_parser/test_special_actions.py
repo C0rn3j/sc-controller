@@ -29,8 +29,7 @@ MENU_CLASSES = (MenuAction, HorizontalMenuAction, GridMenuAction, RadialMenuActi
 
 class TestSpecialActions:
 	def test_tests(self):
-		"""Tests if this class has test for each known SpecialAction defined.
-		"""
+		"""Tests if this class has test for each known SpecialAction defined."""
 		for cls in Action.ALL.values():
 			if "/special_actions.py" in inspect.getfile(cls):
 				if cls in MENU_CLASSES:
@@ -133,5 +132,4 @@ class TestSpecialActions:
 		assert _parses_as_itself(GesturesAction("UUDD", KeyboardAction(), "LRLR", TurnOffAction()))
 
 	def test_cemuhook(self):
-		"""Nothing to test here
-		"""
+		"""Nothing to test here"""

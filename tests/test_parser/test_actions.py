@@ -9,8 +9,7 @@ from . import _parses_as_itself, parser
 
 class TestActions:
 	def test_tests(self):
-		"""Tests if this class has test for every Action defined in acitons.py.
-		"""
+		"""Tests if this class has test for every Action defined in acitons.py."""
 		for cls in Action.ALL.values():
 			if "/actions.py" in inspect.getfile(cls):
 				if HatAction in cls.__bases__ or cls in (NoAction,):
@@ -21,8 +20,7 @@ class TestActions:
 				assert hasattr(self, method_name), "There is no test for %s" % (cls.COMMAND)
 
 	def test_none(self):
-		"""Tests if everything what should parse as NoAction parses as NoAction.
-		"""
+		"""Tests if everything what should parse as NoAction parses as NoAction."""
 		assert not parser.restart("None").parse()
 		assert not parser.restart("None()").parse()
 
@@ -127,7 +125,10 @@ class TestActions:
 		# With all buttons
 		assert _parses_as_itself(
 			TiltAction(
-				ButtonAction(Keys.KEY_D), ButtonAction(Keys.KEY_U), ButtonAction(Keys.KEY_L), ButtonAction(Keys.KEY_R),
+				ButtonAction(Keys.KEY_D),
+				ButtonAction(Keys.KEY_U),
+				ButtonAction(Keys.KEY_L),
+				ButtonAction(Keys.KEY_R),
 			),
 		)
 

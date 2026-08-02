@@ -9,8 +9,7 @@ class TestDocs:
 	"""
 
 	def test_every_action_has_docs(self):
-		"""Tests if every known Action is documentated in docs/actions.md
-		"""
+		"""Tests if every known Action is documentated in docs/actions.md"""
 		# Read docs first
 		with open("docs/actions.md") as f:
 			actions_md = f.read()

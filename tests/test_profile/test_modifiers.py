@@ -19,16 +19,14 @@ def _is_axis_with_value(a, value=Axes.ABS_X):
 
 class TestModifiers:
 	def test_tests(self):
-		"""Tests if this class has test for each known modifier defined.
-		"""
+		"""Tests if this class has test for each known modifier defined."""
 		for cls in Action.ALL.values():
 			if "/modifiers.py" in inspect.getfile(cls):
 				method_name = "test_%s" % (cls.COMMAND,)
 				assert hasattr(self, method_name), "There is no test for %s modifier" % (cls.COMMAND)
 
 	def test_name(self):
-		"""Tests if NameModifier is parsed correctly from json.
-		"""
+		"""Tests if NameModifier is parsed correctly from json."""
 		a = parser.from_json_data({"action": "axis(ABS_X)", "name": "hithere"})
 
 		# NameModifier is lost in parsing
@@ -37,62 +35,53 @@ class TestModifiers:
 		assert _is_axis_with_value(a)
 
 	def test_click(self):
-		"""Tests if ClickModifier is parsed correctly from json.
-		"""
+		"""Tests if ClickModifier is parsed correctly from json."""
 		a = parser.from_json_data({"action": "axis(ABS_X)", "click": True})
 
 		assert isinstance(a, ClickModifier)
 		assert _is_axis_with_value(a.action)
 
 	def test_pressed(self):
-		"""Tests if PressedModifier is parsed correctly from json.
-		"""
+		"""Tests if PressedModifier is parsed correctly from json."""
 		a = parser.from_json_data({"action": "pressed(axis(ABS_X))"})
 		assert isinstance(a, PressedModifier)
 		assert _is_axis_with_value(a.action)
 
 	def test_released(self):
-		"""Tests if ReleasedModifier is parsed correctly from json.
-		"""
+		"""Tests if ReleasedModifier is parsed correctly from json."""
 		a = parser.from_json_data({"action": "released(axis(ABS_X))"})
 		assert isinstance(a, ReleasedModifier)
 		assert _is_axis_with_value(a.action)
 
 	def test_touched(self):
-		"""Tests if TouchedModifier is parsed correctly from json.
-		"""
+		"""Tests if TouchedModifier is parsed correctly from json."""
 		a = parser.from_json_data({"action": "touched(button(KEY_A))"})
 		assert isinstance(a, TouchedModifier)
 
 	def test_untouched(self):
-		"""Tests if UntouchedModifier is parsed correctly from json.
-		"""
+		"""Tests if UntouchedModifier is parsed correctly from json."""
 		a = parser.from_json_data({"action": "untouched(button(KEY_A))"})
 		assert isinstance(a, UntouchedModifier)
 
 	def test_circular(self):
-		"""Tests if CircularModifier is parsed correctly from json.
-		"""
+		"""Tests if CircularModifier is parsed correctly from json."""
 		a = parser.from_json_data({"action": "axis(ABS_X)", "circular": True})
 		assert isinstance(a, CircularModifier)
 
 	def test_circularabs(self):
-		"""Tests if CircularModifier is parsed correctly from json.
-		"""
+		"""Tests if CircularModifier is parsed correctly from json."""
 		a = parser.from_json_data({"action": "axis(ABS_X)", "circularabs": True})
 		assert isinstance(a, CircularAbsModifier)
 
 	def test_ball(self):
-		"""Tests if BallModifier is parsed correctly from json.
-		"""
+		"""Tests if BallModifier is parsed correctly from json."""
 		a = parser.from_json_data({"action": "axis(ABS_X)", "ball": True})
 
 		assert isinstance(a, BallModifier)
 		assert _is_axis_with_value(a.action)
 
 	def test_smooth(self):
-		"""Tests if SmoothModifier is parsed correctly from json.
-		"""
+		"""Tests if SmoothModifier is parsed correctly from json."""
 		a = parser.from_json_data({"action": "axis(ABS_X)", "smooth": [5, 0.3]})
 
 		assert isinstance(a, SmoothModifier)
@@ -101,8 +90,7 @@ class TestModifiers:
 		assert _is_axis_with_value(a.action)
 
 	def test_deadzone(self):
-		"""Tests if DeadzoneModifier is parsed correctly from json.
-		"""
+		"""Tests if DeadzoneModifier is parsed correctly from json."""
 		# One parameter
 		a = parser.from_json_data({"action": "axis(ABS_X)", "deadzone": {"upper": 300}})
 
@@ -118,8 +106,7 @@ class TestModifiers:
 		assert _is_axis_with_value(a.action)
 
 	def test_sens(self):
-		"""Tests if SensitivityModifier is parsed correctly from json.
-		"""
+		"""Tests if SensitivityModifier is parsed correctly from json."""
 		# Simple
 		a = parser.from_json_data({"action": "axis(ABS_X)", "sensitivity": [2.0, 3.0, 4.0]})
 		assert isinstance(a, SensitivityModifier)
@@ -166,8 +153,7 @@ class TestModifiers:
 		assert isinstance(a.default, AxisAction) and a.default.get_speed() == (12.0,)
 
 	def test_feedback(self):
-		"""Tests if FeedbackModifier is parsed correctly from json.
-		"""
+		"""Tests if FeedbackModifier is parsed correctly from json."""
 		# One parameter
 		a = parser.from_json_data({"action": "axis(ABS_X)", "feedback": ["BOTH"]})
 
@@ -186,8 +172,7 @@ class TestModifiers:
 		assert _is_axis_with_value(a.action)
 
 	def test_rotate(self):
-		"""Tests if RotateInputModifier is parsed correctly from json.
-		"""
+		"""Tests if RotateInputModifier is parsed correctly from json."""
 		a = parser.from_json_data({"action": "axis(ABS_X)", "rotate": 33.14})
 
 		assert isinstance(a, RotateInputModifier)
@@ -195,8 +180,7 @@ class TestModifiers:
 		assert _is_axis_with_value(a.action)
 
 	def test_mode(self):
-		"""Tests if ModeModifier is parsed correctly from json.
-		"""
+		"""Tests if ModeModifier is parsed correctly from json."""
 		# Without default
 		a = parser.from_json_data(
 			{
@@ -230,8 +214,7 @@ class TestModifiers:
 		assert _is_axis_with_value(a.mods[SCButtons.RT], Axes.ABS_Z)
 
 	def test_doubleclick(self):
-		"""Tests if DoubleclickModifier is parsed correctly from json.
-		"""
+		"""Tests if DoubleclickModifier is parsed correctly from json."""
 		a = parser.from_json_data({"action": "axis(ABS_RX)", "doubleclick": {"action": "axis(ABS_X)"}})
 
 		assert isinstance(a, DoubleclickModifier)
@@ -240,8 +223,7 @@ class TestModifiers:
 		assert not a.holdaction
 
 	def test_hold(self):
-		"""Tests if HoldModifier is parsed correctly from json.
-		"""
+		"""Tests if HoldModifier is parsed correctly from json."""
 		a = parser.from_json_data({"action": "axis(ABS_RX)", "hold": {"action": "axis(ABS_X)"}})
 
 		assert isinstance(a, HoldModifier)

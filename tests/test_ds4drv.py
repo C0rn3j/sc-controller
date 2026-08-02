@@ -60,9 +60,7 @@ def test_wired_ds4_feedback_writes_usb_output_report() -> None:
 def test_wired_ds4_feedback_clear_stops_selected_motor() -> None:
 	controller = make_controller()
 	scheduled = []
-	controller.mapper.schedule.side_effect = (
-		lambda duration, callback: scheduled.append((duration, callback)) or Mock()
-	)
+	controller.mapper.schedule.side_effect = lambda duration, callback: scheduled.append((duration, callback)) or Mock()
 
 	controller.feedback(HapticData(HapticPos.RIGHT, amplitude=0x4000, period=1024, count=2))
 	assert controller._feedback_output[4] == 0x7F
@@ -158,9 +156,7 @@ def test_bluetooth_ds4_feedback_writes_output_report_with_crc() -> None:
 def test_bluetooth_ds4_feedback_clear_writes_stopped_motor() -> None:
 	controller = make_bluetooth_controller()
 	scheduled = []
-	controller.mapper.schedule.side_effect = (
-		lambda duration, callback: scheduled.append((duration, callback)) or Mock()
-	)
+	controller.mapper.schedule.side_effect = lambda duration, callback: scheduled.append((duration, callback)) or Mock()
 
 	controller.feedback(HapticData(HapticPos.RIGHT, amplitude=0x4000, period=1024, count=2))
 	assert controller._device_file.write.call_args.args[0][6] == 0x7F

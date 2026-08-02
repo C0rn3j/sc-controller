@@ -9,8 +9,7 @@ from . import _parses_as_itself
 
 class TestMacros:
 	def test_tests(self):
-		"""Tests if this class has test for each known macro-related action defined.
-		"""
+		"""Tests if this class has test for each known macro-related action defined."""
 		for cls in Action.ALL.values():
 			if "/macros.py" in inspect.getfile(cls):
 				method_name = "test_%s" % (cls.COMMAND,)

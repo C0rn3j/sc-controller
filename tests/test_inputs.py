@@ -149,12 +149,11 @@ class TestInputs:
 	@input_test
 	def test_trackball(self, mapper: Mapper):
 		"""Test trackball emulation."""
-		mapper.profile.pads[Profile.LEFT] = (parser.restart(
-			"ball(XY("
-			"	mouse(Rels.REL_HWHEEL, 1.0), "
-			"	mouse(Rels.REL_WHEEL, 1.0)"
-			"))",
-		)).parse()
+		mapper.profile.pads[Profile.LEFT] = (
+			parser.restart(
+				"ball(XY(	mouse(Rels.REL_HWHEEL, 1.0), 	mouse(Rels.REL_WHEEL, 1.0)))",
+			)
+		).parse()
 
 		# Create movement over left pad
 		state = ZERO_STATE
@@ -170,15 +169,14 @@ class TestInputs:
 			mapper.input(mapper.controller, ZERO_STATE, ZERO_STATE)
 		assert int(mapper.mouse.scroll_x) == -24479
 
-
 	@input_test
 	def test_dpad(self, mapper: Mapper):
 		"""Test WSAD."""
-		mapper.profile.pads[Profile.LEFT] = (parser.restart(
-			"dpad("
-			"	button(Keys.KEY_W), button(Keys.KEY_S),"
-			"	button(Keys.KEY_A), button(Keys.KEY_D))",
-		)).parse()
+		mapper.profile.pads[Profile.LEFT] = (
+			parser.restart(
+				"dpad(	button(Keys.KEY_W), button(Keys.KEY_S),	button(Keys.KEY_A), button(Keys.KEY_D))",
+			)
+		).parse()
 
 		# Create movements over left pad
 		# - A
@@ -197,16 +195,14 @@ class TestInputs:
 		assert Keys["KEY_D"] in mapper.keyboard.pressed
 		mapper.input(mapper.controller, state, ZERO_STATE)
 
-
 	@input_test
 	def test_joystick_camera(self, mapper: Mapper):
 		"""Test joystick camera, mapping trackball to right joystick."""
-		mapper.profile.pads[Profile.RIGHT] = (parser.restart(
-			"ball(XY("
-			"	axis(Axes.ABS_RX),"
-			"	axis(Axes.ABS_RY)"
-			"))",
-		)).parse()
+		mapper.profile.pads[Profile.RIGHT] = (
+			parser.restart(
+				"ball(XY(	axis(Axes.ABS_RX),	axis(Axes.ABS_RY)))",
+			)
+		).parse()
 
 		# Create movement over right pad
 		state = ZERO_STATE
@@ -231,13 +227,14 @@ class TestInputs:
 			mapper.input(mapper.controller, ZERO_STATE, ZERO_STATE)
 		assert mapper.gamepad.axes[Axes["ABS_RX"]] == 0
 
-
 	@input_test
 	def test_modeshift(self, mapper: Mapper):
 		"""Test WSAD."""
-		mapper.profile.buttons[SCButtons.A] = (parser.restart(
-			"mode(B, button(Keys.KEY_V), button(Keys.KEY_Y))",
-		)).parse()
+		mapper.profile.buttons[SCButtons.A] = (
+			parser.restart(
+				"mode(B, button(Keys.KEY_V), button(Keys.KEY_Y))",
+			)
+		).parse()
 
 		# Press single button
 		state = ZERO_STATE._replace(buttons=SCButtons.A)

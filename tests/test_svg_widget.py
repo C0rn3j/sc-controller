@@ -41,7 +41,7 @@ def test_recolor_group_preserves_text_fill() -> None:
 		'<svg><g id="button">'
 		'<circle id="background" style="fill:#666666;opacity:0" />'
 		'<text id="label" style="fill:#000000;opacity:0"><tspan>L5</tspan></text>'
-		'</g></svg>',
+		"</g></svg>",
 	)
 	button = SVGEditor.get_element(editor, "button")
 	background = SVGEditor.get_element(editor, "background")

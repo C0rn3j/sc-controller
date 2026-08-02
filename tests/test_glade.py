@@ -3,8 +3,7 @@ import xml.etree.ElementTree as ET
 
 
 def _get_files():
-	"""Generates list of all glade files in glade/ directory.
-	"""
+	"""Generates list of all glade files in glade/ directory."""
 	# TODO: Caching, when there is more than one test using this
 	rv = []
 
