@@ -101,6 +101,39 @@ class TestGyroAxisRange:
 		assert peak(m, Axes.ABS_X) == STICK_PAD_MAX
 
 
+class TestGyroSensitivity:
+	"""Per-axis sensitivity used to be read from index 2 for every axis and
+	then applied a second time per-axis, squaring it.
+	"""
+
+	def test_applied_once(self):
+		plain, scaled = FakeMapper(), FakeMapper()
+		a = GyroAbsAction(Axes.ABS_X)
+		sweep(a, plain, 10)
+		b = GyroAbsAction(Axes.ABS_X)
+		b.set_speed(2.0, 2.0, 2.0)
+		sweep(b, scaled, 10)
+		assert peak(scaled, Axes.ABS_X) == 2 * peak(plain, Axes.ABS_X)
+
+	def test_is_per_axis(self):
+		"""Sensitivity of gyro axis 0 must not be taken from axis 2."""
+		m = FakeMapper()
+		a = GyroAbsAction(Axes.ABS_X, Axes.ABS_Y, Axes.ABS_RX)
+		a.set_speed(1.0, 1.0, 3.0)
+		sweep(a, m, 10)
+		assert peak(m, Axes.ABS_RX) == 3 * peak(m, Axes.ABS_X)
+
+	def test_moves_the_full_deflection_point(self):
+		"""Sensitivity has to change the rotation needed to peg the axis, not
+		just scale a value that already saturated at 90 deg.
+		"""
+		m = FakeMapper()
+		a = GyroAbsAction(Axes.ABS_X)
+		a.set_speed(3.0, 3.0, 3.0)
+		sweep(a, m, 35)  # 3x35 deg is past the 90 deg full-deflection point
+		assert peak(m, Axes.ABS_X) == STICK_PAD_MAX
+
+
 class TestRangeOPHysteresis:
 	"""`mode(RT >= 0.7, ...)` must not flip while the trigger is parked near
 	the threshold: every flip runs ModeModifier's switch path, which recenters
