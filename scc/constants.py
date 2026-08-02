@@ -1,3 +1,8 @@
+"""Various constants.
+
+If SC Controller is updated while daemon is running, DAEMON_VERSION sent by
+daemon will differ from the one expected by the UI, and daemon will be forcefully restarted.
+"""
 # The MIT License (MIT)
 #
 # Copyright (c) 2015 Stany MARCEL <stanypub@gmail.com>
@@ -27,10 +32,6 @@ distribution_name: str = "N/A"
 if __package__ is not None:
 	distribution_name = packages_distributions()[__package__][0]
 
-"""
-If SC Controller is updated while daemon is running, DAEMON_VERSION send by
-daemon will differ one one expected by UI and daemon will be forcefully restarted.
-"""
 DAEMON_VERSION = version(distribution_name)
 
 HPERIOD  = 0.02
@@ -133,7 +134,8 @@ class ControllerFlags(IntEnum):
 	                                    # and roll instead of quaterion. 'q4' is unused
 	                                    # in such case.
 	HAS_CPAD       = 1 << 3 # Controller has DS4-like touchpad in center
-	HAS_DPAD       = 1 << 4 # Controller has normal d-pad instead of touchpad
+	# TODO(Martin): Historically this assumed that it has dpad INSTEAD of touchpad - check if we have a problem with that
+	HAS_DPAD       = 1 << 4 # Controller has d-pad
 	NO_GRIPS       = 1 << 5 # Controller has no grips
 	IS_DECK        = 1 << 6 # Very special case
 
