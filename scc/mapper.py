@@ -453,7 +453,7 @@ class Mapper:
 			elif FE_PAD in fe or self.buttons & SCButtons.RPADTOUCH or SCButtons.RPADTOUCH & btn_rem:
 				self.profile.pads[RIGHT].whole(self, state.rpad_x, state.rpad_y, RIGHT)
 			# DPAD
-			if controller.flags & ControllerFlags.IS_DECK:
+			if controller.flags & ControllerFlags.HAS_DPAD and hasattr(state, "dpad_x"):
 				if FE_PAD in fe or self.old_state.dpad_x != state.dpad_x or self.old_state.dpad_y != state.dpad_y:
 					self.profile.pads[DPAD].whole(self, state.dpad_x, state.dpad_y, DPAD)
 
