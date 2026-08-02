@@ -66,6 +66,10 @@ class ModeshiftEditor(Editor):
 		self.current_page = 0
 		self.actions = ([], [], [])
 		self.nomods = [NoAction(), NoAction(), NoAction()]
+		# Touch tab: bound to the capacitive stick-touch sensor (a separate
+		# button), only shown when editing a stick-press action.
+		self.touch_id = None
+		self.touch_action = NoAction()
 		self.setup_widgets()
 
 	def setup_widgets(self):
@@ -246,9 +250,16 @@ class ModeshiftEditor(Editor):
 
 	def on_ntbMore_switch_page(self, ntb, box, index):
 		self.current_page = index
+		cb = self.builder.get_object("cbButtonChooser")
+		add = self.builder.get_object("btAddAction")
+		if index >= len(self.actions):
+			# Touch tab: no mode-shift grid / button chooser here
+			cb.set_sensitive(False)
+			add.set_sensitive(False)
+			return
 		self._fill_button_chooser()
-		self.builder.get_object("cbButtonChooser").set_sensitive(box.get_sensitive())
-		self.builder.get_object("btAddAction").set_sensitive(box.get_sensitive())
+		cb.set_sensitive(box.get_sensitive())
+		add.set_sensitive(box.get_sensitive())
 
 	def on_nomodbt_clicked(self, button, *a):
 		actionButton = self.action_widgets[self.current_page][1]
@@ -265,6 +276,20 @@ class ModeshiftEditor(Editor):
 		self.nomods[self.current_page] = NoAction()
 		actionButton = self.action_widgets[self.current_page][1]
 		actionButton.set_label(self.nomods[self.current_page].describe(self.mode))
+
+	def on_btTouch_clicked(self, *a):
+		"""'Touch' tab: edit the action bound to the stick-touch sensor."""
+		def on_chosen(id, action):
+			self.touch_action = action
+			self.builder.get_object("btTouch").set_label(action.describe(self.mode))
+
+		ae = self._choose_editor(self.touch_action, on_chosen)
+		ae.set_input(self.touch_id, self.touch_action, mode=Action.AC_BUTTON)
+		ae.show(self.window)
+
+	def on_btClearTouch_clicked(self, *a):
+		self.touch_action = NoAction()
+		self.builder.get_object("btTouch").set_label(self.touch_action.describe(self.mode))
 
 	def on_btAddAction_clicked(self, *a):
 		cbButtonChooser = self.builder.get_object("cbButtonChooser")
@@ -309,6 +334,9 @@ class ModeshiftEditor(Editor):
 		"""Handler for OK button"""
 		if self.ac_callback is not None:
 			self.ac_callback(self.id, self._make_action())
+			if self.touch_id is not None:
+				# Touch tab maps to a separate input (the stick-touch sensor)
+				self.ac_callback(self.touch_id, self.touch_action)
 		self.close()
 
 	def _make_action(self):
@@ -415,3 +443,24 @@ class ModeshiftEditor(Editor):
 		if mode != Action.AC_BUTTON:
 			for w in ("vbHold", "vbDoubleClick", "lblHold", "lblDoubleClick"):
 				self.builder.get_object(w).set_sensitive(False)
+
+		# Touch tab: only for the stick-press inputs; binds the capacitive
+		# stick-touch sensor (a separate button). Hidden for everything else.
+		# (Editor.show() uses window.show(), not show_all, so hiding sticks.)
+		touch_for = {SCButtons.STICKPRESS: SCButtons.LSTICKTOUCH,
+		             SCButtons.RSTICKPRESS: SCButtons.RSTICKTOUCH}
+		self.touch_id = touch_for.get(id) if id in SCButtons.__members__.values() else None
+		vbTouch = self.builder.get_object("vbTouch")
+		lblTouch = self.builder.get_object("lblTouch")
+		if self.touch_id is not None:
+			try:
+				self.touch_action = self.app.current.buttons[self.touch_id] or NoAction()
+			except (KeyError, TypeError):
+				self.touch_action = NoAction()
+			self.builder.get_object("btTouch").set_label(self.touch_action.describe(self.mode))
+			vbTouch.set_visible(True)
+			lblTouch.set_visible(True)
+		else:
+			self.touch_action = NoAction()
+			vbTouch.set_visible(False)
+			lblTouch.set_visible(False)
