@@ -423,7 +423,7 @@ class Mapper:
 			elif not self.buttons & SCButtons.LPADTOUCH:
 				if FE_STICK in fe or self.old_state.lpad_x != state.lpad_x or self.old_state.lpad_y != state.lpad_y:
 					self.profile.stick.whole(self, state.lpad_x, state.lpad_y, STICK)
-			if self.controller.flags & ControllerFlags.IS_DECK:
+			if self.controller.flags & ControllerFlags.HAS_RSTICK:
 				if (
 					FE_STICK in fe
 					or self.old_state.rstick_x != state.rstick_x
