@@ -6,6 +6,8 @@ devices is read from config file.
 """
 from __future__ import annotations
 
+import errno
+
 from evdev import InputDevice
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, TRIGGER_MAX, TRIGGER_MIN, ControllerFlags, SCButtons
@@ -393,27 +395,29 @@ class EvdevDriver:
 			config_fn = "evdev-{}.json".format(dev.name.strip().replace("/", ""))
 			config_file = os.path.join(get_config_path(), "devices", config_fn)
 		except OSError as ose:
-			if ose.errno == 13:
-				# Excepted error that happens often, don't report
+			if ose.errno == errno.EACCES:
+				log.debug("Permission error, skipping evdev node %s: %s", eventnode, ose)
 				return False
-			log.exception(ose)
+			if ose.errno == errno.ENOENT:
+				log.warning("Device vanished while enumerating, skipping evdev node %s: %s", eventnode, ose)
+				return False
+			log.exception("Unhandled OSError, skipping evdev node %s", eventnode)
 			return False
-		except Exception as e:
-			log.exception(e)
+		except Exception:
+			log.exception("Unknown exception, skipping evdev node %s", eventnode)
 			return False
 
 		if os.path.exists(config_file):
 			config = None
 			try:
 				config = json.loads(open(config_file).read())
-			except Exception as e:
-				log.exception(e)
+			except Exception:
+				log.exception("Unknown exception loading config, skipping evdev node %s", eventnode)
 				return False
 			try:
 				controller = EvdevController(self.daemon, dev, config_file, config)
-			except Exception as e:
-				log.debug("Failed to add evdev device: %s", e)
-				log.exception(e)
+			except Exception:
+				log.exception("Failed to add evdev device: %s")
 				return False
 			self._devices[eventnode] = controller
 			self.daemon.add_controller(controller)
