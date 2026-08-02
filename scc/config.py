@@ -14,7 +14,7 @@ from scc.special_actions import ChangeProfileAction
 log = logging.getLogger("Config")
 
 
-def _is_steam_deck():
+def _is_steam_deck() -> bool:
 	"""Return True when running on Steam Deck hardware (LCD reports DMI product
 	name 'Jupiter', OLED 'Galileo').
 
