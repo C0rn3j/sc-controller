@@ -277,9 +277,9 @@ class ModeshiftEditor(Editor):
 		actionButton = self.action_widgets[self.current_page][1]
 		actionButton.set_label(self.nomods[self.current_page].describe(self.mode))
 
-	def on_btTouch_clicked(self, *a):
+	def on_btTouch_clicked(self, *a: object) -> None:
 		"""'Touch' tab: edit the action bound to the stick-touch sensor."""
-		def on_chosen(id, action):
+		def on_chosen(id: str, action: Action) -> None:
 			self.touch_action = action
 			self.builder.get_object("btTouch").set_label(action.describe(self.mode))
 
@@ -287,7 +287,7 @@ class ModeshiftEditor(Editor):
 		ae.set_input(self.touch_id, self.touch_action, mode=Action.AC_BUTTON)
 		ae.show(self.window)
 
-	def on_btClearTouch_clicked(self, *a):
+	def on_btClearTouch_clicked(self, *a: object) -> None:
 		self.touch_action = NoAction()
 		self.builder.get_object("btTouch").set_label(self.touch_action.describe(self.mode))
 
