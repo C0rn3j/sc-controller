@@ -35,7 +35,6 @@ SVG = "http://www.w3.org/2000/svg"
 INK = "http://www.inkscape.org/namespaces/inkscape"
 SRC = "tools/sc2-source.svg"
 GRIPS = "tools/sc2-assets/scnovo-grips-fim.svg"
-ASSETS = "tools/sc2-assets"
 OUT_IMG = "images/controller-images/sc2.svg"
 OUT_DEBUG = "/tmp/sc2-debug.svg"
 GLYPH_DIR = "images/button-images"
@@ -90,8 +89,8 @@ PANEL_FACTOR = {
 	"C": 2.5,
 	"DOTS": 2.5,
 }
-# rear-paddle panel icons: user-made oval buttons (already 49x32)
-PADDLE_ICON = {"LGRIP": "l4", "RGRIP": "r4", "LGRIP2": "l5", "RGRIP2": "r5"}
+# Rear-paddle panel icons are extracted from these groups in sc2-source.svg.
+PADDLE_ICON = ("LGRIP", "RGRIP", "LGRIP2", "RGRIP2")
 
 ET.register_namespace("", SVG)
 
@@ -199,6 +198,48 @@ def write_panel_icon(path: str, d: str, style: str | None, factor: float) -> Non
 	ET.ElementTree(svg).write(path, encoding="unicode", xml_declaration=True)
 
 
+def write_paddle_panel_icon(path: str, name: str, group_elem: ET.Element) -> None:
+	"""Write a visible standalone icon from a paddle group in sc2-source.svg."""
+	circle = next((e for e in group_elem.iter() if e.tag.endswith("circle")), None)
+	if circle is None:
+		raise ValueError(f"Paddle group {name} has no circle")
+
+	cx, cy, radius = (float(circle.get(key)) for key in ("cx", "cy", "r"))
+	pad = radius * 0.08
+	size = 2 * (radius + pad)
+	svg = ET.Element(
+		f"{{{SVG}}}svg",
+		{
+			"viewBox": f"{cx - radius - pad:g} {cy - radius - pad:g} {size:g} {size:g}",
+			"width": "36",
+			"height": "36",
+		},
+	)
+
+	group = clean(group_elem)
+	group.set("id", name)
+	# Transforms place this group and its children on the controller.  The panel
+	# icon's viewBox is already based on the source circle's local coordinates.
+	# Keep the authored geometry, but discard those controller-space transforms.
+	for element in group.iter():
+		element.attrib.pop("transform", None)
+		# The source objects are hidden until the controller image highlights them.
+		# A standalone panel icon must show the same authored circle and label.
+		if "style" not in element.attrib:
+			continue
+		style = {
+			key: value
+			for key, value in (
+				item.split(":", 1) for item in element.attrib["style"].split(";") if ":" in item
+			)
+		}
+		style["opacity"] = "1"
+		element.set("style", ";".join(f"{key}:{value}" for key, value in style.items()))
+
+	svg.append(group)
+	ET.ElementTree(svg).write(path, encoding="unicode", xml_declaration=True)
+
+
 def grips() -> dict[str, tuple[ET.Element, tuple[float, float, float, float]]]:
 	"""Return {'LGRIPTOUCH': (group_elem, src_bbox), 'RGRIPTOUCH': (...)}"""
 	import subprocess
@@ -271,11 +312,8 @@ def main() -> None:
 		write_panel_icon(
 			os.path.join(PANEL_DIR, f"{name}.svg"), _svgpath.to_absolute(el.get("d")), el.get("style"), PANEL_FACTOR[name]
 		)
-	for name, src in PADDLE_ICON.items():  # rear paddles: copy user-made ovals
-		with open(os.path.join(ASSETS, f"{src}.svg")) as f:
-			data = f.read()
-		with open(os.path.join(PANEL_DIR, f"{name}.svg"), "w") as f:
-			f.write(data)
+	for name in PADDLE_ICON:
+		write_paddle_panel_icon(os.path.join(PANEL_DIR, f"{name}.svg"), name, lab[name])
 	for name in ("LGRIPTOUCH", "RGRIPTOUCH"):  # grip-touch panel icon = the surface
 		write_grip_panel_icon(os.path.join(PANEL_DIR, f"{name}.svg"), *grip[name])
 
@@ -290,7 +328,7 @@ def main() -> None:
 				"version": "1.1",
 			},
 		)
-		ET.SubElement(svg, f"{{{SVG}}}defs", {"id": "defs1"})
+		_ = ET.SubElement(svg, f"{{{SVG}}}defs", {"id": "defs1"})
 		scaler = ET.SubElement(svg, f"{{{SVG}}}g", {"id": "scaler", "transform": f"scale({SCALE:g})"})
 		art = ET.SubElement(scaler, f"{{{SVG}}}g", {"id": "art", "transform": g1.get("transform", "")})
 		overlays = {

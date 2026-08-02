@@ -97,6 +97,12 @@ class SVGWidget(Gtk.EventBox):
 		x = event.x - x_offset
 		y = event.y
 		for a in self.areas:
+			# *TEST areas exist only to bound the Input Test cursor (looked up
+			# by id via get_area_position), not as hover targets. Skip them so
+			# they can't shadow a real control area — on the Deck the stick/dpad
+			# TEST areas otherwise swallowed the hover and nothing highlighted.
+			if a.name.endswith("TEST"):
+				continue
 			if a.contains(x, y):
 				self.emit("hover", a.name)
 				return a.name
@@ -131,6 +137,25 @@ class SVGWidget(Gtk.EventBox):
 		if a:
 			return a.x, a.y, a.w, a.h
 		raise ValueError("Area '%s' not found" % (area_id,))
+
+	def get_viewbox(self) -> tuple[float, float, float, float]:
+		"""Returns the SVG viewBox as (min_x, min_y, width, height).
+
+		Used to map area coordinates (SVG document space) onto the rendered
+		image when overlaying widgets such as the Input-Test cursor: a non-zero
+		origin (e.g. headroom added with viewBox="0 -45 ...") otherwise shifts
+		those overlays. Returns (0, 0, 0, 0) if no viewBox is present.
+		"""
+		svg = self.current_svg
+		if isinstance(svg, bytes):
+			svg = svg.decode("utf-8", "replace")
+		m = re.search(
+			r'viewBox\s*=\s*["\']\s*([-\d.eE]+)[\s,]+([-\d.eE]+)[\s,]+([-\d.eE]+)[\s,]+([-\d.eE]+)',
+			svg or "",
+		)
+		if m:
+			return tuple(float(g) for g in m.groups())
+		return (0.0, 0.0, 0.0, 0.0)
 
 	@staticmethod
 	def find_areas(xml, parent_transform, areas, get_colors=False, prefix="AREA_"):
@@ -392,24 +417,38 @@ class SVGEditor:
 
 		Returns True on success, False if element cannot be recolored.
 		"""
-		if (
+		if element.tag.endswith("text"):
+			# Text used as a label on a highlighted shape must become visible,
+			# but retain its authored fill. Recoloring it to the shape's fill
+			# makes inherited tspans disappear into the background and leaves
+			# only their stroke visible.
+			if "style" in element.attrib:
+				style = {y[0]: y[1] for y in [x.split(":", 1) for x in element.attrib["style"].split(";")]}
+				if "fill" in style:
+					if len(color.strip("#")) == 8:
+						alpha = float(int(color.strip("#")[0:2], 16)) / 255.0
+						style["fill-opacity"] = style["opacity"] = str(alpha)
+					else:
+						style["fill-opacity"] = style["opacity"] = "1"
+					element.attrib["style"] = ";".join([f"{x}:{style[x]}" for x in style])
+					return True
+		elif (
 			element.tag.endswith("path")
 			or element.tag.endswith("rect")
 			or element.tag.endswith("circle")
 			or element.tag.endswith("ellipse")
-			or element.tag.endswith("text")
 		):
 			if "style" in element.attrib:
 				style = {y[0]: y[1] for y in [x.split(":", 1) for x in element.attrib["style"].split(";")]}
 				if "fill" in style:
 					if len(color.strip("#")) == 8:
-						style["fill"] = "#%s" % (color[-6:],)
+						style["fill"] = f"#{color[-6:]}"
 						alpha = float(int(color.strip("#")[0:2], 16)) / 255.0
 						style["fill-opacity"] = style["opacity"] = str(alpha)
 					else:
 						style["fill"] = color
 						style["fill-opacity"] = style["opacity"] = "1"
-					element.attrib["style"] = ";".join(["%s:%s" % (x, style[x]) for x in style])
+					element.attrib["style"] = ";".join([f"{x}:{style[x]}" for x in style])
 					return True
 		elif element.tag.endswith("g"):
 			# Group, needs to find RECT, CIRCLE or PATH, whatever comes first
