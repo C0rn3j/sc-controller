@@ -1330,7 +1330,15 @@ class GyroAbsAction(HapticEnabledAction, GyroAction):
 			# and would re-capture on every event
 			if self.ir[i] is None:
 				self.ir[i] = pyr[i]
-			pyr[i] = anglediff(self.ir[i], pyr[i]) * (2**15) * self.speed[2] * 2 / PI
+			# speed[i], not speed[2]: sensitivity is per gyro axis, and the Z
+			# one used to be applied to all three -- and then applied a SECOND
+			# time, per-axis, down in the output loop, so a sensitivity of 2
+			# came out as 4. Scaling here rather than there also means the
+			# clamp and the out-of-range haptic below see the value that is
+			# actually emitted: sensitivity now moves the rotation needed for
+			# full deflection, instead of merely scaling an already saturated
+			# reading.
+			pyr[i] = anglediff(self.ir[i], pyr[i]) * (2**15) * self.speed[i] * 2 / PI
 		if self.haptic:
 			oor = False  # oor - Out Of Range
 			for i in self.GYROAXES:
@@ -1357,7 +1365,7 @@ class GyroAbsAction(HapticEnabledAction, GyroAction):
 			# swallowed the mouse axes into this gamepad branch (the elifs below
 			# never ran) -- gyro->mouse moved the stick instead of the cursor.
 			if isinstance(axis, Axes) or type(axis) == int:
-				val = pyr[i] * self.speed[i]
+				val = pyr[i]
 				if self._deadzone_fn:
 					# deadzone works in stick range, before the axis rescale
 					val, trash = self._deadzone_fn(clamp(STICK_PAD_MIN, val, STICK_PAD_MAX), 0, STICK_PAD_MAX)
