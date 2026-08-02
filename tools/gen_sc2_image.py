@@ -67,6 +67,14 @@ KEEP = {
 	"LT": "LT",
 	"RT": "RT",
 	"steamcontrollerbody": "BODY",
+	"STICKPRESS": "STICKPRESS",
+	"LSTICKTOUCH": "LSTICKTOUCH",
+	"RSTICKPRESS": "RSTICKPRESS",
+	"RSTICKTOUCH": "RSTICKTOUCH",
+	"LGRIP": "LGRIP",
+	"RGRIP": "RGRIP",
+	"LGRIP2": "LGRIP2",
+	"RGRIP2": "RGRIP2",
 }
 FACE = {"abxy": None, "steam": "C", "view": "BACK", "menu": "START", "dots": "DOTS"}
 
@@ -89,11 +97,29 @@ ET.register_namespace("", SVG)
 
 
 def clean(
-	e: ET.Element, keep: tuple[str, ...] = ("id", "d", "style", "transform", "x", "y", "width", "height", "rx", "ry")
+	e: ET.Element,
+	keep: tuple[str, ...] = (
+		"id",
+		"d",
+		"style",
+		"transform",
+		"x",
+		"y",
+		"width",
+		"height",
+		"rx",
+		"ry",
+		"cx",
+		"cy",
+		"r",
+	),
 ) -> ET.Element:
 	"""Deep-copy an element keeping only safe attributes (drop inkscape/sodipodi)."""
 	tag = e.tag.split("}")[-1]
 	new = ET.Element(f"{{{SVG}}}{tag}", {k: v for k, v in e.attrib.items() if k in keep})
+	# Preserve text/tspan content (the L4/R4/L5/R5 paddle labels).
+	new.text = e.text
+	new.tail = e.tail
 	for ch in e:
 		new.append(clean(ch, keep))
 	return new
@@ -102,7 +128,11 @@ def clean(
 def src_elements() -> tuple[ET.Element, dict[str, ET.Element]]:
 	root = ET.parse(SRC).getroot()
 	g1 = next(e for e in root.iter() if e.get("id") == "g1")
-	return g1, {e.get(f"{{{INK}}}label"): e for e in g1 if e.get(f"{{{INK}}}label")}
+	return g1, {
+		(e.get(f"{{{INK}}}label") or e.get("id")): e
+		for e in g1
+		if e.get(f"{{{INK}}}label") or e.get("id")
+	}
 
 
 def abxy_split(abxy: ET.Element) -> dict[str, str]:
@@ -263,27 +293,47 @@ def main() -> None:
 		ET.SubElement(svg, f"{{{SVG}}}defs", {"id": "defs1"})
 		scaler = ET.SubElement(svg, f"{{{SVG}}}g", {"id": "scaler", "transform": f"scale({SCALE:g})"})
 		art = ET.SubElement(scaler, f"{{{SVG}}}g", {"id": "art", "transform": g1.get("transform", "")})
-		for label, e in lab.items():
-			if label in FACE or label not in KEEP:
-				continue
-			attrs = {k: v for k, v in e.attrib.items() if k in ("d", "style", "transform")}
+		overlays = {
+			"STICKPRESS",
+			"LSTICKTOUCH",
+			"RSTICKPRESS",
+			"RSTICKTOUCH",
+			"LGRIP",
+			"RGRIP",
+			"LGRIP2",
+			"RGRIP2",
+		}
+
+		def append_source_element(label: str, element: ET.Element) -> None:
+			copied = clean(element)
+			copied.set("id", KEEP[label])
 			if label == "steamcontrollerbody":
-				attrs["style"] = attrs.get("style", "").replace("#c8c8c8", BODY_FILL)
-			else:
-				attrs["id"] = KEEP[label]
-			ET.SubElement(art, "{{{}}}{}".format(SVG, e.tag.split("}")[-1]), attrs)
+				copied.set("style", copied.get("style", "").replace("#c8c8c8", BODY_FILL))
+			art.append(copied)
+
+		# Draw the base controller first. Stick indicators and rear paddles are
+		# deferred until after the grip-touch surfaces so they remain visible.
+		for label, element in lab.items():
+			if label in FACE or label not in KEEP or label in overlays:
+				continue
+			append_source_element(label, element)
 		# grip-touch surfaces (overlay the handles; recolor green on hover).
 		# In the source grips file g6/g7 live INSIDE g1 (translate -33.9,-55.3),
 		# so they must go in `art` (same transform) or they shift down-right.
 		for name in ("LGRIPTOUCH", "RGRIPTOUCH"):
-			el = clean(grip[name][0])
-			el.set("transform", "translate({:g},0) {}".format(GRIP_SHIFT_X, el.get("transform", "")))
+			element = clean(grip[name][0])
+			element.set("transform", "translate({:g},0) {}".format(GRIP_SHIFT_X, element.get("transform", "")))
 			if debug:
-				for p in el.iter(f"{{{SVG}}}path"):
+				for p in element.iter(f"{{{SVG}}}path"):
 					p.set("style", "fill:#00ff00;fill-opacity:.45")
-			art.append(el)
+			art.append(element)
 
-		ET.SubElement(svg, f"{{{SVG}}}g", {"id": "controller"})
+		# Draw interactive overlays last, above the grip-touch surfaces.
+		for label, element in lab.items():
+			if label in overlays:
+				append_source_element(label, element)
+
+		_ = ET.SubElement(svg, f"{{{SVG}}}g", {"id": "controller"})
 
 		areas = ET.SubElement(
 			svg, f"{{{SVG}}}g", {"id": "layerAreas", "style": "display:inline" if debug else "display:none"}
@@ -291,7 +341,7 @@ def main() -> None:
 
 		def add_area(name: str, x: float, y: float, w: float, h: float) -> None:
 			style = "fill:none;stroke:#ff0000;stroke-width:1" if debug else "fill:none;stroke:none"
-			ET.SubElement(
+			_ = ET.SubElement(
 				areas,
 				f"{{{SVG}}}rect",
 				{
