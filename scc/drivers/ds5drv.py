@@ -68,9 +68,49 @@ _GYRO_REST_LSB = 32.0  # per-axis window counting as "not moving" (~2 deg/s)
 _GYRO_REST_SECONDS = 0.5  # how long it has to stay there before we adapt, so a
                           # slow deliberate rotation is not absorbed as offset
 _GYRO_BIAS_ALPHA = 0.01  # per-sample blend once adapting
+# Set SCC_GYRO_CALIB=1 to dump raw gyro/accel next to the integrated angles.
+_CALIB = bool(os.environ.get("SCC_GYRO_CALIB"))
+if _CALIB:
+	# The daemon leaves the root logger at WARNING; opt this one into INFO so
+	# the dump is actually visible.
+	log.setLevel(logging.INFO)
 
 
 OPERATING_MODE_DS5_BT = 0x31
+
+
+def _log_imu_calib(controller, state, dt) -> None:
+	"""Throttled raw-IMU dump for gyro calibration (gate: env SCC_GYRO_CALIB=1).
+
+	Prints the raw rates alongside the angles they integrate to, so a
+	controlled rotation through a known angle measures _GYRO_LSB_PER_DEG_SEC
+	directly: rotate 90 degrees about one axis and read off how far the
+	corresponding angle actually travelled. The gravity unit vector comes
+	along to identify which physical axis each rate belongs to.
+
+	The angles are read back out of q1-q3, i.e. AFTER the EUREL sign
+	convention has been applied, so what this prints is what the mapper
+	actually receives. Logging the internal euler angles instead invites
+	exactly the wrong conclusion, since pitch is negated on the way into q1.
+	"""
+	now = time.time()
+	if now - getattr(controller, "_calib_last_t", 0.0) < 0.25:
+		return
+	controller._calib_last_t = now
+	ax, ay, az = state.accel_x, state.accel_y, state.accel_z
+	mag = math.sqrt(ax * ax + ay * ay + az * az) or 1.0
+	bp, by, br = controller._gyro_bias
+	log.info(
+		"GYRO-CALIB  raw rate=(p% 7d y% 7d r% 7d)  bias=(% 6.1f % 6.1f % 6.1f)  "
+		"rest=%4.1fs  |  EUREL deg (+ = nose-down / yaw-right / roll-right)  "
+		"pitch=% 8.2f yaw=% 8.2f roll=% 8.2f  |  accel unit=(% .2f % .2f % .2f)",
+		state.gpitch, state.gyaw, state.groll, bp, by, br,
+		controller._gyro_rest_time,
+		math.degrees(state.q1 / _EUREL_SCALE),
+		math.degrees(state.q2 / _EUREL_SCALE),
+		math.degrees(state.q3 / _EUREL_SCALE),
+		ax / mag, ay / mag, az / mag,
+	)
 
 
 class OperatingMode(IntEnum):
@@ -926,6 +966,9 @@ class DS5HidRawController(Controller):
 		state.q2 = int(yaw * _EUREL_SCALE)
 		state.q3 = int(roll * _EUREL_SCALE)
 		state.q4 = 0
+
+		if _CALIB:
+			_log_imu_calib(self, state, self._delta_time)
 		# print("TEST QUAT: {}".format(self._previous_quat))
 		# print("TEST QUAT Z: {}".format(self._previous_quat[3] * -1))
 
