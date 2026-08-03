@@ -4,6 +4,7 @@ Extends HID driver with DS5-specific options.
 """
 
 import ctypes
+import errno
 import logging
 import math
 import os
@@ -521,6 +522,7 @@ class DS5HidRawController(Controller):
 			motor_right=0,
 		)
 		self._feedback_cancel_task = None
+		self._closed = False
 		self._outputs = {}
 		# Use empty struct for starting state
 		self._old_state = DualSenseBTControllerInput()
@@ -679,7 +681,19 @@ class DS5HidRawController(Controller):
 
 	def _input(self, *a):
 		# log.debug("FOUND INPUT")
-		tempdata = self._hidrawdev.read(78)
+		try:
+			tempdata = self._hidrawdev.read(78)
+		except OSError as e:
+			# The DualSense has no "powering off" report -- a long press on the
+			# PS button just drops the link -- so the disconnect surfaces here,
+			# as a failing read. Uncaught it propagated out of the poller
+			# callback and killed the entire daemon, taking every other
+			# controller and the OSD down with it.
+			if e.errno not in (errno.EIO, errno.ENODEV, errno.ENXIO):
+				raise
+			log.debug("DS5 disconnected (%s), removing controller", e.strerror)
+			self.close()
+			return
 		# Skip over packet if not a DS5 mode input packet
 		if tempdata[0] != 0x31:
 			return
@@ -856,6 +870,12 @@ class DS5HidRawController(Controller):
 		# print("TEST QUAT Z: {}".format(self._previous_quat[3] * -1))
 
 	def close(self):
+		# Idempotent: a disconnect is now noticed by the failing read in
+		# _input, which closes right away, while the hotplug teardown that
+		# follows closes again.
+		if self._closed:
+			return
+		self._closed = True
 		if self._poller:
 			self._poller.unregister(self._fileno)
 
