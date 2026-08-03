@@ -20,6 +20,15 @@ classifiers = [
 	"Typing :: Typed",
 ]
 requires-python = ">=3.11"
+dependencies = [
+	"evdev",
+	"hidraw-pure",
+	"ioctl-opt",
+	"libusb1",
+	"pygobject",
+	"setuptools",
+	"vdf",
+]
 #platforms = ["Linux"]
 
 # https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#creating-executable-scripts
@@ -62,32 +71,31 @@ target-version = "py311"
 line-length = 120
 
 [tool.ruff.lint.flake8-quotes]
-# Existing codebase was already mostly doublequoted
-inline-quotes = 'double'
+inline-quotes = "double"
 
 
 [tool.ruff.format]
 # Existing codebase was already mostly doublequoted
-quote-style = 'double'
-indent-style = 'tab'
+quote-style = "double"
+indent-style = "tab"
 
 [tool.ruff.lint]
-select = ['ALL']
+select = ["ALL"]
 ignore = [
-	'W191',   # We use tabs for indents, disabling this atrocious PEP 8 recommendation
-	'D206',   # ^
-	'D203',   # incorrect-blank-line-before-class         - Clashes with D211
-	#'D211',   # no-blank-line-before-class                - Clashes with D203
-	#'D212',   # multi-line-summary-first-line             - Clashes with D213
-	'D213',   # multi-line-summary-second-line            - Clashes with D212
-	'D400',   # ends-in-period      - We do not care if docstrings end with a period
-	'D415',    # ends-in-punctuation - ^
-	'D401',   # non-imperative-mood - Wants docstrings in imperative language but it's really not foolproof, disable
-	'EM101',  # raw-string-in-exception                   - We do not care about .format in exceptions, readability is not *our* problem, traceback should be colorized to avoid this instead
-	'EM102',  # f-string-in-exception                     - ^
-	'EM103',  # dot-format-in-exception                   - ^
-	'ERA001', # Test for commented out code, but it has way too many false positives, so disable
-	'FBT001', # boolean-type-hint-positional-argument     - Allow positional booleans in functions, it's not really that much of an issue
-	'FBT002', # boolean-default-value-positional-argument - ^
-	'FBT003', # boolean-positional-value-in-call          - ^
+	"W191",   # We use tabs for indents, disabling this atrocious PEP 8 recommendation
+	"D206",   # ^
+	"D203",   # incorrect-blank-line-before-class         - Clashes with D211
+	#"D211",   # no-blank-line-before-class                - Clashes with D203
+	#"D212",   # multi-line-summary-first-line             - Clashes with D213
+	"D213",   # multi-line-summary-second-line            - Clashes with D212
+	"D400",   # ends-in-period      - We do not care if docstrings end with a period
+	"D415",    # ends-in-punctuation - ^
+	"D401",   # non-imperative-mood - Wants docstrings in imperative language but it's really not foolproof, disable
+	"EM101",  # raw-string-in-exception                   - We do not care about .format in exceptions, readability is not *our* problem, traceback should be colorized to avoid this instead
+	"EM102",  # f-string-in-exception                     - ^
+	"EM103",  # dot-format-in-exception                   - ^
+	"ERA001", # Test for commented out code, but it has way too many false positives, so disable
+	"FBT001", # boolean-type-hint-positional-argument     - Allow positional booleans in functions, it's not really that much of an issue
+	"FBT002", # boolean-default-value-positional-argument - ^
+	"FBT003", # boolean-positional-value-in-call          - ^
 ]

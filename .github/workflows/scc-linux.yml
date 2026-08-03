@@ -23,14 +23,15 @@ jobs:
           python-version: '3.14'
 
       # TODO(Martin): Replace URL with just 'hidraw-pure' when https://github.com/vpelletier/python-hidraw/issues/7 is resolved
+      # pygobject is skipped as it seems to lack prebuilt wheels and we don't really need it to run the CI tests
       - name: Install dependencies
-        run: pip install build evdev setuptools https://github.com/C0rn3j/python-hidraw/archive/modernize.zip ioctl-opt libusb1 vdf pytest
+        run: pip install build evdev https://github.com/C0rn3j/python-hidraw/archive/modernize.zip ioctl-opt libusb1 pytest setuptools vdf
 
       - name: Build SCC
         run: python -m build
 
-      - name: Install SCC
-        run: python -m pip install dist/*.whl
+      - name: Install SCC - skipping deps
+        run: python -m pip install --no-deps dist/*.whl
 
       - name: Run tests
         run: python -m pytest tests
