@@ -54,6 +54,20 @@ VENDOR_ID = 0x054C
 PRODUCT_ID = 0x0CE6
 
 _EUREL_SCALE = 32768.0 / math.pi  # radians -> the 2**15/PI fixed point EUREL_GYROS wants
+# Raw gyro LSBs per degree/second. UNVERIFIED for this path: the value was
+# carried over from code that reads a kernel-calibrated stream (evdev/hiddrv),
+# while this driver reads the uncalibrated hidraw report directly, so the two
+# are not in the same units. Measure with SCC_GYRO_CALIB=1 before trusting it.
+_GYRO_LSB_PER_DEG_SEC = 16.0
+# Zero-rate offset removal. The DualSense reports a small, temperature-dependent
+# offset on each gyro axis even when it is sitting still -- measured at roughly
+# 24 LSB (1.5 deg/s) on roll, which looks like nothing in a raw dump but
+# integrates an absolute gyro across its entire range in half a minute. Nothing
+# here ever subtracted it. Estimate it whenever the controller is at rest.
+_GYRO_REST_LSB = 32.0  # per-axis window counting as "not moving" (~2 deg/s)
+_GYRO_REST_SECONDS = 0.5  # how long it has to stay there before we adapt, so a
+                          # slow deliberate rotation is not absorbed as offset
+_GYRO_BIAS_ALPHA = 0.01  # per-sample blend once adapting
 
 
 OPERATING_MODE_DS5_BT = 0x31
@@ -525,6 +539,8 @@ class DS5HidRawController(Controller):
 		)
 		self._feedback_cancel_task = None
 		self._closed = False
+		self._gyro_bias = [0.0, 0.0, 0.0]  # pitch, yaw, roll -- see _debias_gyro
+		self._gyro_rest_time = 0.0
 		self._outputs = {}
 		# Use empty struct for starting state
 		self._old_state = DualSenseBTControllerInput()
@@ -816,13 +832,29 @@ class DS5HidRawController(Controller):
 		result = int(tempRatio * STICK_PAD_RES + STICK_PAD_MIN)
 		return result
 
+	def _debias_gyro(self, state, dt):
+		"""Returns the raw rates with the estimated zero-rate offset removed,
+		refining that estimate whenever the controller has been still for
+		_GYRO_REST_SECONDS. Rest is judged against the current estimate, so a
+		large offset still reads as "at rest" and gets corrected."""
+		raw = (state.gpitch, state.gyaw, state.groll)
+		bias = self._gyro_bias
+		if all(abs(r - b) < _GYRO_REST_LSB for r, b in zip(raw, bias)):
+			self._gyro_rest_time += dt
+			if self._gyro_rest_time > _GYRO_REST_SECONDS:
+				for i in (0, 1, 2):
+					bias[i] += (raw[i] - bias[i]) * _GYRO_BIAS_ALPHA
+		else:
+			self._gyro_rest_time = 0.0
+		return tuple(r - b for r, b in zip(raw, bias))
+
 	def _calculate_quaternion(self, state):
+		gpitch, gyaw, groll = self._debias_gyro(state, self._delta_time)
 		# Convert raw gyro values to degrees per second
-		GYRO_RES_IN_DEG_SEC = 16
 		(yaw, pitch, roll) = (
-			(state.gyaw / GYRO_RES_IN_DEG_SEC),
-			(state.gpitch / GYRO_RES_IN_DEG_SEC),
-			(state.groll / GYRO_RES_IN_DEG_SEC),
+			(gyaw / _GYRO_LSB_PER_DEG_SEC),
+			(gpitch / _GYRO_LSB_PER_DEG_SEC),
+			(groll / _GYRO_LSB_PER_DEG_SEC),
 		)
 
 		# Remove time delta element to get gyro angles and convert to radians
