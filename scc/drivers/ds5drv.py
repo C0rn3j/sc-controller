@@ -53,6 +53,8 @@ log = logging.getLogger("DS5")
 VENDOR_ID = 0x054C
 PRODUCT_ID = 0x0CE6
 
+_EUREL_SCALE = 32768.0 / math.pi  # radians -> the 2**15/PI fixed point EUREL_GYROS wants
+
 
 OPERATING_MODE_DS5_BT = 0x31
 
@@ -856,16 +858,42 @@ class DS5HidRawController(Controller):
 		Q0Q1_y = old_qw * qy - old_qx * qz + old_qy * qw + old_qz * qx
 		Q0Q1_z = old_qw * qz + old_qx * qy - old_qy * qx + old_qz * qw
 
-		# Convert normalized values to mapper expected range and store
-		# in state object
-		# q1 (Theta), q2 (Pitch), q3 (Roll), q4 (Yaw)
-		state.q1 = int(Q0Q1_w * 32767.0)
-		state.q2 = int(Q0Q1_y * 32767.0)
-		state.q3 = int(Q0Q1_x * 32767.0)
-		# Invert Yaw to match Steam Controller
-		state.q4 = int(Q0Q1_z * -32767.0)
 		# Store calculated quaternion for next poll
 		self._previous_quat = [Q0Q1_w, Q0Q1_x, Q0Q1_y, Q0Q1_z]
+
+		# DS5Controller declares EUREL_GYROS, so q1-q3 have to be euler angles
+		# in 2**15/PI fixed point -- not quaternion components, which is what
+		# this used to store (q1=w, q2=y, q3=x). The mapper then read the
+		# quaternion scalar w as "pitch", the pitch term as "yaw" and left the
+		# real yaw in q4 where nothing ever looks, so absolute gyro, gyro-lean
+		# and every tilt binding were driven by the wrong quantity.
+		#
+		# The conversion below is the exact inverse of the composition above,
+		# which builds the standard aerospace ZYX quaternion from (roll about
+		# x, pitch about y, yaw about z) -- so no convention has to be guessed.
+		roll = math.atan2(
+			2.0 * (Q0Q1_w * Q0Q1_x + Q0Q1_y * Q0Q1_z),
+			1.0 - 2.0 * (Q0Q1_x * Q0Q1_x + Q0Q1_y * Q0Q1_y),
+		)
+		pitch = math.asin(max(-1.0, min(1.0, 2.0 * (Q0Q1_w * Q0Q1_y - Q0Q1_z * Q0Q1_x))))
+		yaw = math.atan2(
+			2.0 * (Q0Q1_w * Q0Q1_z + Q0Q1_x * Q0Q1_y),
+			1.0 - 2.0 * (Q0Q1_y * Q0Q1_y + Q0Q1_z * Q0Q1_z),
+		)
+		# Signs are hardware-verified, not derived: _convert_input_data already
+		# flips gyaw and groll (but not gpitch) on the way in, so only pitch
+		# comes out needing the negation that turns a rate sense into the EUREL
+		# angle sense (+ at nose-down / yaw-right / roll-right).
+		#
+		# Note that ZYX euler angles gimbal-lock at pitch = +-90 deg, where yaw
+		# and roll stop being separable and yaw swings hard. That is inherent
+		# to the representation EUREL_GYROS is defined in, so every controller
+		# on this path shares it; it sits well outside the range gyro aiming
+		# uses, and avoiding it would mean changing the flag's contract.
+		state.q1 = int(-pitch * _EUREL_SCALE)
+		state.q2 = int(yaw * _EUREL_SCALE)
+		state.q3 = int(roll * _EUREL_SCALE)
+		state.q4 = 0
 		# print("TEST QUAT: {}".format(self._previous_quat))
 		# print("TEST QUAT Z: {}".format(self._previous_quat[3] * -1))
 
