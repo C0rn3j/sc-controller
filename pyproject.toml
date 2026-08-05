@@ -1,7 +1,4 @@
-# TODO add requirements.txt https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html#dynamic-metadata
-# but it is BETA
-
-# TODO migrate files from setup.py - https://setuptools.pypa.io/en/latest/userguide/miscellaneous.html
+# TODO(Martin): Migrate files from setup.py - https://setuptools.pypa.io/en/latest/userguide/miscellaneous.html
 
 [build-system]
 requires = ["setuptools>=60", "setuptools-scm>=8.0", "wheel"]
@@ -31,6 +28,12 @@ dependencies = [
 	"vdf",
 ]
 #platforms = ["Linux"]
+
+[project.optional-dependencies]
+	dev = [
+		"pygobject-stubs", # needs PYGOBJECT_STUB_CONFIG=Gtk3 env var when being installed
+	]
+
 
 # https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#creating-executable-scripts
 [project.gui-scripts]

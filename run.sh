@@ -69,9 +69,9 @@ export SCC_SHARED="${PWD}"
 rm -rf dist
 python -m venv .env
 source .env/bin/activate
-pip install -r requirements.txt
-pip install -r requirements_dev.txt
-pip install build
+# To build the dev dependencies correctly
+export PYGOBJECT_STUB_CONFIG=Gtk3
+pip install ".[dev]" build
 python -m build --wheel
 #python -m installer --destdir=".env" dist/*.whl
 pip install --prefix ".env" dist/*.whl --force-reinstall

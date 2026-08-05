@@ -41,11 +41,12 @@ RUN <<EOR
 	. .env/bin/activate
 	# TODO(Martin): Replace URL with just 'hidraw-pure' when https://github.com/vpelletier/python-hidraw/issues/7 is resolved
 	pip install evdev https://github.com/C0rn3j/python-hidraw/archive/modernize.zip ioctl-opt libusb1 pytest vdf
-	# Install into the active environment for tests.
-	pip install dist/*.whl
+	# Install into the active environment for tests - --no-deps to avoid building pygobject
+	pip install --no-deps dist/*.whl
 	python -m pytest tests
 
-	pip install --prefix "${TARGET}/usr" --no-warn-script-location --force-reinstall dist/*.whl
+	# --no-deps to avoid building pygobject - we don't need the deps for this, just the project files
+	pip install --no-deps --prefix "${TARGET}/usr" --no-warn-script-location --force-reinstall dist/*.whl
 
 	# Save version
 	PYTHONPATH=$(find "${TARGET}" -type d -name site-packages) \

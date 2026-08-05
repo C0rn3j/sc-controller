@@ -50,7 +50,7 @@ jobs:
       - name: Setup buildx for docker
         uses: docker/setup-buildx-action@v4
 
-      - name: Compile in docker
+      - name: Compile in docker using the repo Dockerfile
         uses: docker/build-push-action@v7
         with:
           context: .
