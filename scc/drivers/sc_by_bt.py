@@ -14,7 +14,17 @@ import sys
 from math import cos, sin
 from typing import TYPE_CHECKING
 
-from hidraw import HIDRaw
+# TODO(Martin): Remove this mess after https://github.com/vpelletier/python-hidraw/issues/8 is resolved
+# Try hidraw_pure(hopefully what hidraw-pure renames itself to)
+# If that fails, try hidraw, which is either from python-hidapi (wrong) or from hidraw-pure v1.2
+# If all fails just use the vendored version
+try:
+	from hidraw_pure import HIDRaw
+except ImportError:
+	try:
+		from hidraw import HIDRaw
+	except ImportError:
+		from scc.lib.hidraw import HIDRaw
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags
 from scc.tools import find_library

@@ -22,7 +22,8 @@ classifiers = [
 requires-python = ">=3.11"
 dependencies = [
 	"evdev",
-	"hidraw-pure",
+	# Vendored, dep check disabled until a rename happens in v1.3+ to avoid failing a `pip check` run
+	#"hidraw-pure",
 	"ioctl-opt",
 	"libusb1",
 	"pygobject",
