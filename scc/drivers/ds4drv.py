@@ -484,30 +484,6 @@ class DS4EvdevController(EvdevController):
 		16: {"axis": "lpad_x", "deadzone": 0, "max": 1, "min": -1},
 		17: {"axis": "lpad_y", "deadzone": 0, "max": -1, "min": 1},
 	}
-	BUTTON_MAP_OLD = {
-		304: "X",
-		305: "A",
-		306: "B",
-		307: "Y",
-		308: "LB",
-		309: "RB",
-		312: "BACK",
-		313: "START",
-		314: "STICKPRESS",
-		315: "RPAD",
-		316: "C",
-		# 317: "CPAD",
-	}
-	AXIS_MAP_OLD = {
-		0: {"axis": "stick_x", "deadzone": 4, "max": 255, "min": 0},
-		1: {"axis": "stick_y", "deadzone": 4, "max": 0, "min": 255},
-		2: {"axis": "rpad_x", "deadzone": 4, "max": 255, "min": 0},
-		5: {"axis": "rpad_y", "deadzone": 8, "max": 0, "min": 255},
-		3: {"axis": "ltrig", "max": 32767, "min": -32767},
-		4: {"axis": "rtrig", "max": 32767, "min": -32767},
-		16: {"axis": "lpad_x", "deadzone": 0, "max": 1, "min": -1},
-		17: {"axis": "lpad_y", "deadzone": 0, "max": -1, "min": 1},
-	}
 	GYRO_MAP = {
 		EvdevController.ECODES.ABS_RX: ("gpitch", 0.01),
 		EvdevController.ECODES.ABS_RY: ("gyaw", 0.01),
@@ -537,11 +513,6 @@ class DS4EvdevController(EvdevController):
 			"buttons": DS4EvdevController.BUTTON_MAP,
 			"dpads": {},
 		}
-		if controllerdevice.info.version & 0x8000 == 0:
-			# Older kernel uses different mappings
-			# see kernel source, drivers/hid/hid-sony.c#L2748
-			config["axes"] = DS4EvdevController.AXIS_MAP_OLD
-			config["buttons"] = DS4EvdevController.BUTTON_MAP_OLD
 		self._gyro = gyro
 		self._touchpad = touchpad
 		self._feedback_effect_id: int | None = None
