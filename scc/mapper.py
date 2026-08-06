@@ -6,7 +6,7 @@ import time
 import traceback
 from typing import TYPE_CHECKING
 
-from scc.actions import ButtonAction, GyroAbsAction
+from scc.actions import ButtonAction, GyroAction
 from scc.aliases import ALL_AXES, ALL_BUTTONS
 from scc.config import Config
 from scc.constants import (
@@ -340,6 +340,17 @@ class Mapper:
 			button = SCButtons.LPADTOUCH
 		elif button == RIGHT:
 			button = SCButtons.RPADTOUCH
+		elif button == RSTICK:
+			button = SCButtons.RSTICKTOUCH
+		elif button == STICK:
+			button = SCButtons.LSTICKTOUCH
+		elif button == CPAD:
+			button = SCButtons.CPADTOUCH
+		elif isinstance(button, str):
+			# Sources like DPAD/GYRO have no button bit to toggle; skip rather
+			# than crash on ~button. A ModeModifier on the (v2) right stick used
+			# to pass the RSTICK string here -> "bad operand type for unary ~".
+			return
 
 		if state:
 			self.buttons |= button
@@ -356,6 +367,15 @@ class Mapper:
 			button = SCButtons.LPADTOUCH
 		elif button == RIGHT:
 			button = SCButtons.RPADTOUCH
+		elif button == RSTICK:
+			button = SCButtons.RSTICKTOUCH
+		elif button == STICK:
+			button = SCButtons.LSTICKTOUCH
+		elif button == CPAD:
+			button = SCButtons.CPADTOUCH
+		elif isinstance(button, str):
+			# See set_button: skip non-button sources instead of crashing.
+			return
 
 		if state:
 			self.old_buttons |= button
@@ -379,8 +399,12 @@ class Mapper:
 			a.cancel(self)
 
 	def reset_gyros(self):
+		# GyroAction covers GyroAbsAction (subclass): absolute actions re-capture
+		# their orientation reference (ir), relative ones their lean-to-turn
+		# neutral pose. Rate-based outputs (laser-pointer mouse, relative stick)
+		# have no reference by nature, so recentering rightly leaves them alone.
 		for a in self.profile.get_all_actions():
-			if isinstance(a, GyroAbsAction):
+			if isinstance(a, GyroAction):
 				a.reset()
 
 	def input(self, controller: Controller, old_state, state) -> None:
@@ -423,7 +447,14 @@ class Mapper:
 			elif not self.buttons & SCButtons.LPADTOUCH:
 				if FE_STICK in fe or self.old_state.lpad_x != state.lpad_x or self.old_state.lpad_y != state.lpad_y:
 					self.profile.stick.whole(self, state.lpad_x, state.lpad_y, STICK)
-			if self.controller.flags & ControllerFlags.HAS_RSTICK:
+			# HAS_RSTICK controllers store the right stick either as a real rstick
+			# (Steam Controller 2 / Deck) or, for gamepads on the generic HID decoder
+			# (DS4/DS5), as the right pad (pads[RIGHT]). The latter's state struct
+			# (HIDControllerInput) has no rstick_* fields, so guard the access:
+			# without it every event raised AttributeError here, which aborted the
+			# rest of input processing (right pad, triggers, touchpad) -- the reason
+			# those controls were dead on the DS4.
+			if self.controller.flags & ControllerFlags.HAS_RSTICK and hasattr(state, "rstick_x"):
 				if (
 					FE_STICK in fe
 					or self.old_state.rstick_x != state.rstick_x

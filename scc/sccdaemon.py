@@ -33,7 +33,7 @@ from scc.parser import TalkingActionParser
 from scc.poller import Poller
 from scc.profile import Profile
 from scc.scheduler import Scheduler
-from scc.tools import clamp, find_binary, find_menu, find_profile, nameof, set_logging_level, shjoin, shsplit
+from scc.tools import clamp, find_binary, find_menu, find_profile, get_profile_name, nameof, set_logging_level, shjoin, shsplit
 from scc.uinput import CannotCreateUInputException
 
 if TYPE_CHECKING:
@@ -280,6 +280,31 @@ class SCCDaemon(Daemon):
 		else:
 			self.send_profile_info(None, self._send_to_all, mapper=mapper)
 
+	def _remember_controller_profile(self, client: "Client", filename: str) -> None:
+		"""Persists a controller's profile so it is restored on (re)connect.
+
+		Only explicit, user-initiated selections are remembered: the autoswitch
+		daemon's contextual per-window switches and transient live-edit (.mod)
+		profiles are skipped. Stored by name under
+		config["controllers"][<id>]["profile"]; with "Use Serial Numbers" on
+		that id is the physical device, otherwise it is the connection slot.
+		"""
+		if client is self.autoswitch_daemon:
+			# Autoswitcher changes are contextual, not the controller's choice
+			return
+		if filename.endswith(".mod"):
+			# Transient profile produced while live-editing in the GUI
+			return
+		c = client.mapper.get_controller() if client.mapper else None
+		if c is None:
+			return
+		name = get_profile_name(filename)
+		config = Config()
+		cc = config.get_controller_config(c.get_id())
+		if cc.get("profile") != name:
+			cc["profile"] = name
+			config.save()
+
 	def _send_to_all(self, message_str: bytes) -> None:
 		"""Sends message to all connect clients.
 
@@ -311,6 +336,25 @@ class SCCDaemon(Daemon):
 
 	def on_sa_shell(self, mapper: Mapper, action: ShellCommandAction) -> Popen[bytes]:
 		"""Called when 'shell' action is used"""
+		cmd = shsplit(action.command)
+		# scc's own helpers (scc-osd-launcher, scc-osd-show-bindings, sc-controller
+		# ...) are Python entry points whose shebang and PATH can't be relied on in
+		# every environment - notably inside the AppImage, where a bare shell spawn
+		# silently fails (the same reason the daemon launches its other helpers via
+		# find_python() + find_binary()). Launch these the same way, bypassing the
+		# shebang; arbitrary user commands still go through the shell unchanged.
+		if cmd and (cmd[0].startswith("scc-") or cmd[0] == "sc-controller"):
+			args = cmd[1:]
+			# scc-osd-show-bindings renders, and locks input on, one specific
+			# controller. Without --controller it falls back to the first
+			# connected controller (OSDWindow.choose_controller), so with several
+			# controllers it shows the wrong one's bindings AND its cancel button
+			# is locked on that other controller, so the window can't be
+			# dismissed. Target the controller that actually invoked the action.
+			c = mapper.get_controller()
+			if c and cmd[0] == "scc-osd-show-bindings" and "--controller" not in args:
+				args = ["--controller", c.get_id(), *args]
+			return subprocess.Popen([find_python(), find_binary(cmd[0]), *args])
 		return subprocess.Popen(action.command, shell=True)
 
 	def on_sa_gestures(self, mapper: Mapper, action: GesturesAction, x, y, what) -> None:
@@ -394,8 +438,9 @@ class SCCDaemon(Daemon):
 	def on_sa_menu(self, mapper: Mapper, action: MenuAction, *pars) -> None:
 		"""Called when 'menu' action is used"""
 		p = [action.MENU_TYPE]
-		if mapper.get_controller():
-			p += ["--controller", mapper.get_controller().get_id()]
+		c = mapper.get_controller()
+		if c:
+			p += ["--controller", c.get_id(), "--controller-type", c.get_type()]
 		if "." in action.menu_id:
 			path = find_menu(action.menu_id)
 			if not path:
@@ -568,9 +613,27 @@ class SCCDaemon(Daemon):
 		else:
 			# New controller, but no mapper created
 			mapper = self.init_mapper()
-			self.load_default_profile(mapper)
 		mapper.set_controller(c)
 		c.set_mapper(mapper)
+
+		# Load this controller's remembered profile if it has a valid one,
+		# otherwise fall back to the global default. Done explicitly (rather
+		# than relying on the mapper's existing profile) so a reused/pooled
+		# mapper never carries over the profile of a previously-bound
+		# controller. With a single controller and no remembered profile this
+		# is exactly the old behavior (the global default is loaded).
+		remembered = Config().get_controller_config(c.get_id()).get("profile")
+		path = find_profile(remembered) if remembered else None
+		if path:
+			try:
+				mapper.profile.load(path).compress()
+				log.debug("Loaded remembered profile '%s' for %s", remembered, c.get_id())
+			except Exception as e:
+				log.warning("Failed to load remembered profile '%s' for %s: %s", remembered, c.get_id(), e)
+				self.load_default_profile(mapper)
+		else:
+			self.load_default_profile(mapper)
+
 		if mapper == self.default_mapper:
 			log.debug("Assigned default_mapper to %s", c)
 		if mapper.profile.gyro:
@@ -779,6 +842,7 @@ class SCCDaemon(Daemon):
 				try:
 					filename = message[8:].decode("utf-8").strip("\t ")
 					self._set_profile(client.mapper, filename)
+					self._remember_controller_profile(client, filename)
 					log.info("Loaded profile '%s'", filename)
 					client.wfile.write(b"OK.\n")
 				except Exception as e:
@@ -1279,6 +1343,16 @@ class LockedAction(ReportingAction):
 	def __init__(self, what, client: Client, original_action) -> None:
 		ReportingAction.__init__(self, what, client)
 		self.original_action = original_action
+		# If the button being locked is currently held, the original action's
+		# press already ran (a key it bound may be DOWN). Its release will now be
+		# captured by this lock instead of the original action, leaving the key
+		# stuck down (it has locked people's keyboards). Release the original
+		# action here so the matching key-UP is sent.
+		if what in SCButtons.__members__.values() and self.mapper and (self.mapper.buttons & what):
+			try:
+				original_action.button_release(self.mapper)
+			except Exception as e:
+				log.warning("Failed to release held action while locking %s: %s", what, e)
 		original_action.cancel(self.mapper)
 		self._store_lock()
 		log.debug("%s locked by %s", nameof(self.what), self.client)

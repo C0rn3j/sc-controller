@@ -84,7 +84,10 @@ class BindingEditor:
 			self.button_widgets[id.name].update()
 		elif id in BUTTONS:
 			before, profile.buttons[id] = profile.buttons[id], action
-			self.button_widgets[id].update()
+			# Some buttons (e.g. the stick-touch sensors, set via the Touch tab)
+			# have no on-screen widget; just store the action for those.
+			if id in self.button_widgets:
+				self.button_widgets[id].update()
 		elif id in TRIGGERS:
 			# TODO: Use LT and RT in profile as well
 			side = LEFT if id == "LT" else RIGHT

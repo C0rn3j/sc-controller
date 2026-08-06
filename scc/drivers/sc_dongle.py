@@ -7,17 +7,20 @@ Handles one or multiple controllers connected to dongle.
 from __future__ import annotations
 
 import logging
+import os
 import struct
+import time
 from collections import namedtuple
 from enum import IntEnum
-from math import cos, sin
+from math import asin, atan2, cos, sin, sqrt
 from math import pi as PI
 from typing import TYPE_CHECKING
 
 from scc.config import Config
-from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, SCButtons
+from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons
 from scc.controller import Controller
 from scc.drivers.usb import SCUSBDevice, register_hotplug_device
+from scc.tools import quat2euler
 
 if TYPE_CHECKING:
 	from usb1 import USBDevice, USBDeviceHandle
@@ -27,6 +30,27 @@ if TYPE_CHECKING:
 	from scc.drivers.sc_by_cable import SCByCable
 	from scc.drivers.steamdeck import Deck
 	from scc.sccdaemon import SCCDaemon
+
+_EUREL_SCALE = 32768.0 / PI  # radians -> the 2**15/PI fixed point EUREL_GYROS wants
+
+
+def _quat_to_eurel(q1: int, q2: int, q3: int, q4: int) -> tuple[int, int, int]:
+	"""Convert the SC1 hardware quaternion (q1=w q2=x q3=y q4=z, unit * 32767)
+	to DS4/SC2-convention EUREL euler angles (pitch, yaw, roll) in 2**15/PI fixed
+	point. Measured from held poses: the SC1 and SC2 use the identical quaternion
+	convention -- x=pitch (nose-up +), y=roll (roll-right +), z=yaw (yaw-left +) --
+	so this is byte-for-byte the sc2.parse_input mapping. Feeding these to the
+	mapper (with EUREL_GYROS set) puts SC1 on the same single gyro code path as
+	the DS4/SC2, where all the axis/sign conventions are hardware-verified."""
+	w, x, y, z = q1 / 32767.0, q2 / 32767.0, q3 / 32767.0, q4 / 32767.0
+	pitch = atan2(2.0 * (w * x + y * z), 1.0 - 2.0 * (x * x + y * y))
+	roll = asin(max(-1.0, min(1.0, 2.0 * (w * y - z * x))))
+	yaw = atan2(2.0 * (w * z + x * y), 1.0 - 2.0 * (y * y + z * z))
+	return (
+		int(-pitch * _EUREL_SCALE),
+		int(-yaw * _EUREL_SCALE),
+		int(roll * _EUREL_SCALE),
+	)
 
 VENDOR_ID = 0x28DE
 PRODUCT_ID = 0x1142
@@ -70,7 +94,39 @@ STICKPRESS = 0b1000000000000000000000000000000
 
 
 log = logging.getLogger("SCDongle")
+_CALIB = bool(os.environ.get("SCC_GYRO_CALIB"))
+if _CALIB:
+	# The daemon leaves the root logger at WARNING; opt this logger into INFO so
+	# the IMU-calibration dump is visible.
+	log.setLevel(logging.INFO)
+_calib_last_t = 0.0
 
+
+def _log_imu_calib(idata) -> None:
+	"""Throttled IMU dump for Steam Controller v1 gyro calibration (gate: env
+	SCC_GYRO_CALIB=1). Logs the accel gravity vector, the raw hardware
+	quaternion, what quat2euler currently makes of it, and the raw rates -- so
+	held poses reveal the quaternion's real axis/sign convention vs the
+	EUREL convention the DS4/SC2 use."""
+	global _calib_last_t
+	now = time.time()
+	if now - _calib_last_t < 0.25:
+		return
+	_calib_last_t = now
+	ax, ay, az = idata.accel_x, idata.accel_y, idata.accel_z
+	mag = sqrt(ax * ax + ay * ay + az * az) or 1.0
+	q = (idata.q1 / 32767.0, idata.q2 / 32767.0, idata.q3 / 32767.0, idata.q4 / 32767.0)
+	qnorm = sqrt(sum(c * c for c in q)) * 32767.0
+	e = quat2euler(*q)
+	deg = 180.0 / PI
+	log.info(
+		"IMU-CALIB  accel unit=(% .2f % .2f % .2f) |a|=%6.0f  |  quat=(% 6d % 6d % 6d % 6d) |q|=%6.0f  |  "
+		"quat2euler deg=(% 6.1f % 6.1f % 6.1f)  |  rates(gpitch,groll,gyaw)=(% 5d % 5d % 5d)",
+		ax / mag, ay / mag, az / mag, mag,
+		idata.q1, idata.q2, idata.q3, idata.q4, qnorm,
+		e[0] * deg, e[1] * deg, e[2] * deg,
+		idata.gpitch, idata.groll, idata.gyaw,
+	)
 
 class Dongle(SCUSBDevice):
 	MAX_ENDPOINTS = 4
@@ -164,6 +220,10 @@ class SCConfigType(IntEnum):
 
 
 class SCController(Controller):
+	# The SC1 quaternion is converted to euler host-side (input()) and handed to
+	# the mapper in q1-q3 as EUREL angles, so SC1 shares the DS4/SC2 gyro path.
+	flags = ControllerFlags.EUREL_GYROS
+
 	def __init__(self, driver: Deck | Dongle | SCByBt | SCByCable | SC2Device, ccidx: int, endpoint: int) -> None:
 		Controller.__init__(self)
 		self._driver: Deck | Dongle | SCByBt | SCByCable | SC2Device = driver
@@ -181,6 +241,11 @@ class SCController(Controller):
 
 	def get_type(self) -> str:
 		return "sc"
+
+	def get_gui_config_file(self) -> str:
+		# Steam Controller (v1): GUI-only config that puts the Steam logo on the
+		# C button (image + side icon). Inherited by SCByCable / SCByBt.
+		return "sc-config.json"
 
 	def __repr__(self) -> str:
 		return f"<SCWireless {self.get_id()}>"
@@ -242,6 +307,15 @@ class SCController(Controller):
 					idata.q4,
 				)
 
+			if _CALIB:
+				_log_imu_calib(idata)  # logs the RAW quaternion, before conversion
+			# Convert the hardware quaternion (q1-q4) to EUREL euler angles in
+			# q1-q3 (q4 unused) so the mapper's gyro paths -- absolute, tilt,
+			# lean-to-turn -- match the DS4/SC2 exactly. Only when the gyro is
+			# streaming (a nonzero quaternion); disabled, q1-q4 are 0.
+			if idata.q1 or idata.q2 or idata.q3 or idata.q4:
+				p, y, r = _quat_to_eurel(idata.q1, idata.q2, idata.q3, idata.q4)
+				idata = idata._replace(q1=p, q2=y, q3=r, q4=0)
 			self.mapper.input(self, old_state, idata)
 
 	def _generate_id(self) -> str:
@@ -278,7 +352,16 @@ class SCController(Controller):
 
 		self._driver.make_request(
 			self._ccidx, cb, struct.pack(">BBB61x", SCPacketType.GET_SERIAL, SCPacketLength.GET_SERIAL, 0x01),
+			on_giveup=self._on_serial_giveup,
 		)
+
+	def _on_serial_giveup(self) -> None:
+		"""Called when the GET_SERIAL request kept stalling. Add the controller
+		with a generated id anyway, so it still appears (it just won't have a
+		stable serial-based identity)."""
+		log.warning("GET_SERIAL kept stalling for SC on endpoint %s; using a generated id", self._endpoint)
+		self.generate_serial()
+		self.on_serial_got()
 
 	def generate_serial(self) -> None:
 		"""Called only if ignore_serials is enabled"""
@@ -294,7 +377,13 @@ class SCController(Controller):
 		except UnicodeDecodeError:
 			log.debug("Failed to decode wireless SC serial")
 			self._serial = self._driver._available_serials.pop()
-		self._id = str(self._serial)
+		serial = str(self._serial).strip()
+		if not serial or serial in self._driver.daemon.get_active_ids():
+			# A blank or already-used id would make two controllers collapse into
+			# one in the GUI (it keys controllers by id). Keep them distinct by
+			# falling back to a generated positional id.
+			serial = self._generate_id()
+		self._id = serial
 		self._driver.daemon.add_controller(self)
 
 	def apply_config(self, config: dict) -> None:

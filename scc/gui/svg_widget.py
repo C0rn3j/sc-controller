@@ -94,8 +94,8 @@ class SVGWidget(Gtk.EventBox):
 	def on_mouse_moved(self, trash, event):
 		"""Not actual signal handler, just called from App."""
 		x_offset = (self.get_allocation().width - self.image_width) / 2
-		x = event.x - x_offset
-		y = event.y
+		x = event.x - x_offset + vbx
+		y = event.y + vby
 		for a in self.areas:
 			# *TEST areas exist only to bound the Input Test cursor (looked up
 			# by id via get_area_position), not as hover targets. Skip them so

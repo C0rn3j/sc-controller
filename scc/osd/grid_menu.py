@@ -25,6 +25,9 @@ class GridMenu(Menu):
 		Menu.__init__(self, cls)
 		self.ipr = 1  # items per row
 
+	def scroll_wrap(self, parent: Gtk.Widget) -> Gtk.Widget:
+		return parent  # grid menus manage their own fixed layout
+
 	def create_parent(self):
 		g = Gtk.Grid()
 		g.set_name("osd-menu")
