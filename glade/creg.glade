@@ -534,7 +534,7 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="lblRigthStick">
+                      <object class="GtkLabel" id="lblRightStick">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="margin-left">40</property>
