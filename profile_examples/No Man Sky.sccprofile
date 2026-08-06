@@ -1,84 +1,84 @@
 {
-    "_": "", 
+    "_": "",
     "buttons": {
         "A": {
-            "action": "button(Keys.KEY_SPACE)", 
+            "action": "button(Keys.KEY_SPACE)",
             "name": "Jump / Swim Up"
-        }, 
+        },
         "B": {
-            "action": "button(Keys.KEY_X)", 
+            "action": "button(Keys.KEY_X)",
             "name": "Weapon Mode"
-        }, 
+        },
         "BACK": {
-            "action": "button(Keys.KEY_TAB)", 
+            "action": "button(Keys.KEY_TAB)",
             "name": "[TAB] Inventory"
-        }, 
+        },
         "C": {
             "action": "menu('Default.menu')"
-        }, 
+        },
         "LB": {
-            "action": "button(Keys.BTN_MIDDLE)", 
+            "action": "button(Keys.BTN_MIDDLE)",
             "name": "Grenade"
-        }, 
+        },
         "LGRIP": {
-            "action": "button(Keys.KEY_LEFTSHIFT)", 
+            "action": "button(Keys.KEY_LEFTSHIFT)",
             "name": "Sprint"
-        }, 
+        },
         "LPAD": {
-            "action": "button(Keys.KEY_M)", 
+            "action": "button(Keys.KEY_M)",
             "name": "Map"
-        }, 
+        },
         "RB": {
-            "action": "button(Keys.KEY_Q)", 
+            "action": "button(Keys.KEY_Q)",
             "name": "Melle"
-        }, 
+        },
         "RGRIP": {
-            "action": "button(Keys.KEY_Q)", 
+            "action": "button(Keys.KEY_Q)",
             "name": "Swim Down"
-        }, 
+        },
         "RPAD": {
-            "action": "button(Keys.KEY_T)", 
+            "action": "button(Keys.KEY_T)",
             "name": "Torch"
-        }, 
+        },
         "START": {
-            "action": "button(Keys.KEY_ESC)", 
+            "action": "button(Keys.KEY_ESC)",
             "name": "Menu"
-        }, 
+        },
         "STICKPRESS": {
-            "action": "button(Keys.KEY_C)", 
+            "action": "button(Keys.KEY_C)",
             "name": "Scan"
-        }, 
+        },
         "X": {
-            "action": "button(Keys.KEY_E)", 
+            "action": "button(Keys.KEY_E)",
             "name": "(E) Interact"
-        }, 
+        },
         "Y": {
-            "action": "button(Keys.KEY_R)", 
+            "action": "button(Keys.KEY_R)",
             "name": "Reload"
         }
-    }, 
-    "cpad": {}, 
-    "gyro": {}, 
-    "is_template": false, 
-    "menus": {}, 
+    },
+    "cpad": {},
+    "gyro": {},
+    "is_template": false,
+    "menus": {},
     "pad_left": {
-        "action": "dpad(button(Keys.KEY_UP), button(Keys.KEY_DOWN), button(Keys.KEY_LEFT), button(Keys.KEY_RIGHT))", 
+        "action": "dpad(button(Keys.KEY_UP), button(Keys.KEY_DOWN), button(Keys.KEY_LEFT), button(Keys.KEY_RIGHT))",
         "name": "Move Map"
-    }, 
+    },
     "pad_right": {
-        "action": "feedback(RIGHT, 256, sens(0.5, 0.5, ball(mouse(None, 1.0))))", 
+        "action": "feedback(RIGHT, 256, sens(0.5, 0.5, ball(mouse(None, 1.0))))",
         "name": "Mouse"
-    }, 
+    },
     "stick": {
         "action": "dpad(button(Keys.KEY_W), button(Keys.KEY_S), button(Keys.KEY_A), button(Keys.KEY_D))"
-    }, 
+    },
     "trigger_left": {
-        "action": "trigger(50, 50, button(Keys.BTN_RIGHT))", 
+        "action": "trigger(50, 50, button(Keys.BTN_RIGHT))",
         "name": "(RClick) Zoom"
-    }, 
+    },
     "trigger_right": {
-        "action": "trigger(50, 50, button(Keys.BTN_LEFT))", 
+        "action": "trigger(50, 50, button(Keys.BTN_LEFT))",
         "name": "(LClick) Fire"
-    }, 
+    },
     "version": 1.4
 }

@@ -1,66 +1,66 @@
 {
-    "_": "", 
+    "_": "",
     "buttons": {
         "A": {
             "action": "button(Keys.KEY_ENTER)"
-        }, 
+        },
         "B": {
             "action": "button(Keys.KEY_BACKSPACE)"
-        }, 
+        },
         "BACK": {
             "action": "mode(RT, button(Keys.KEY_LEFTCTRL) and button(Keys.KEY_LEFTSHIFT) and button(Keys.KEY_R), button(Keys.KEY_LEFTCTRL) and button(Keys.KEY_LEFTALT) and button(Keys.KEY_LEFT))"
-        }, 
+        },
         "C": {
             "action": "hold(menu('Default.menu'), menu('Default.menu'))"
-        }, 
+        },
         "LB": {
             "action": "button(Keys.KEY_LEFTCTRL) and button(Keys.KEY_LEFTSHIFT) and button(Keys.KEY_TAB)"
-        }, 
+        },
         "LGRIP": {
             "action": "doubleclick(button(Keys.KEY_END), mode(RT, button(Keys.KEY_LEFTCTRL) and button(Keys.KEY_KPMINUS), button(Keys.KEY_PAGEDOWN)))"
-        }, 
+        },
         "RB": {
             "action": "button(Keys.KEY_LEFTCTRL) and button(Keys.KEY_TAB)"
-        }, 
+        },
         "RGRIP": {
             "action": "doubleclick(button(Keys.KEY_HOME), mode(RT, button(Keys.KEY_LEFTCTRL) and button(Keys.KEY_KPPLUS), button(Keys.KEY_PAGEUP)))"
-        }, 
+        },
         "RPAD": {
             "action": "button(Keys.BTN_LEFT)"
-        }, 
+        },
         "START": {
             "action": "mode(RT, button(Keys.KEY_LEFTCTRL) and button(Keys.KEY_R), button(Keys.KEY_LEFTCTRL) and button(Keys.KEY_LEFTALT) and button(Keys.KEY_RIGHT))"
-        }, 
+        },
         "STICKPRESS": {
             "action": "keyboard()"
-        }, 
+        },
         "X": {
             "action": "button(Keys.KEY_SPACE)"
-        }, 
+        },
         "Y": {
             "action": "button(Keys.KEY_LEFTCTRL) and button(Keys.KEY_W)"
         }
-    }, 
-    "cpad": {}, 
+    },
+    "cpad": {},
     "gyro": {
         "action": "mode(RPADTOUCH, mouse(ROLL), None)"
-    }, 
-    "is_template": false, 
-    "menus": {}, 
+    },
+    "is_template": false,
+    "menus": {},
     "pad_left": {
         "action": "circular(mouse(Rels.REL_WHEEL))"
-    }, 
+    },
     "pad_right": {
         "action": "feedback(RIGHT, 256, ball(mouse(None, 1.0)))"
-    }, 
+    },
     "stick": {
         "action": "dpad(button(Keys.KEY_UP), button(Keys.KEY_DOWN), button(Keys.KEY_LEFT), button(Keys.KEY_RIGHT))"
-    }, 
+    },
     "trigger_left": {
         "action": "trigger(50, 50, button(Keys.BTN_RIGHT))"
-    }, 
+    },
     "trigger_right": {
         "action": "trigger(50, 50, button(Keys.BTN_LEFT))"
-    }, 
+    },
     "version": 1.4
 }

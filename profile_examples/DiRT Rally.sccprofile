@@ -1,78 +1,78 @@
 {
-    "_": ["For best results Steering Linearity, Steering Deadzone, Throttle Deadzone and", "Brake Deadzone should be set to 0 in Advanced Gamepad Settings. Steering Sensitivity,", "Steering Saturation, Throttle Saturation and Brake Saturation should be set to 100."], 
+    "_": ["For best results Steering Linearity, Steering Deadzone, Throttle Deadzone and", "Brake Deadzone should be set to 0 in Advanced Gamepad Settings. Steering Sensitivity,", "Steering Saturation, Throttle Saturation and Brake Saturation should be set to 100."],
     "buttons": {
         "A": {
-            "action": "button(Keys.BTN_GAMEPAD)", 
+            "action": "button(Keys.BTN_GAMEPAD)",
             "name": "Gear Up"
-        }, 
+        },
         "B": {
-            "action": "button(Keys.BTN_EAST)", 
+            "action": "button(Keys.BTN_EAST)",
             "name": "Handbreak"
-        }, 
+        },
         "BACK": {
-            "action": "resetgyro()", 
+            "action": "resetgyro()",
             "name": "Reset Gyro"
-        }, 
+        },
         "C": {
             "action": "hold(menu('Default.menu'), menu('Default.menu'))"
-        }, 
+        },
         "LB": {
-            "action": "button(Keys.BTN_TL)", 
+            "action": "button(Keys.BTN_TL)",
             "name": "Clutch"
-        }, 
+        },
         "LGRIP": {
-            "action": "button(Keys.BTN_NORTH)", 
+            "action": "button(Keys.BTN_NORTH)",
             "name": "Gear Down"
-        }, 
+        },
         "LPAD": {
-            "action": "button(Keys.BTN_EAST)", 
+            "action": "button(Keys.BTN_EAST)",
             "name": "Handbreak"
-        }, 
+        },
         "RB": {
-            "action": "button(Keys.BTN_TR)", 
+            "action": "button(Keys.BTN_TR)",
             "name": "Camera"
-        }, 
+        },
         "RGRIP": {
-            "action": "button(Keys.BTN_GAMEPAD)", 
+            "action": "button(Keys.BTN_GAMEPAD)",
             "name": "Gear Up"
-        }, 
+        },
         "RPAD": {
-            "action": "button(Keys.BTN_THUMBR)", 
+            "action": "button(Keys.BTN_THUMBR)",
             "name": "Look Back"
-        }, 
+        },
         "START": {
-            "action": "button(Keys.BTN_START)", 
+            "action": "button(Keys.BTN_START)",
             "name": "Pause"
-        }, 
+        },
         "X": {
-            "action": "button(Keys.BTN_NORTH)", 
+            "action": "button(Keys.BTN_NORTH)",
             "name": "Gear Down"
-        }, 
+        },
         "Y": {
-            "action": "button(Keys.BTN_WEST)", 
+            "action": "button(Keys.BTN_WEST)",
             "name": "Recover Vehicle"
         }
-    }, 
-    "cpad": {}, 
+    },
+    "cpad": {},
     "gyro": {
-        "action": "feedback(BOTH, gyroabs(None, Axes.ABS_X))", 
+        "action": "feedback(BOTH, gyroabs(None, Axes.ABS_X))",
         "name": "Steering"
-    }, 
-    "is_template": false, 
-    "menus": {}, 
-    "pad_left": {}, 
-    "pad_right": {}, 
+    },
+    "is_template": false,
+    "menus": {},
+    "pad_left": {},
+    "pad_right": {},
     "stick": {
-        "action": "dpad(hatup(Axes.ABS_HAT0Y), hatdown(Axes.ABS_HAT0Y), hatleft(Axes.ABS_HAT0X), hatright(Axes.ABS_HAT0X))", 
+        "action": "dpad(hatup(Axes.ABS_HAT0Y), hatdown(Axes.ABS_HAT0Y), hatleft(Axes.ABS_HAT0X), hatright(Axes.ABS_HAT0X))",
         "name": "Menu Navigation"
-    }, 
+    },
     "trigger_left": {
-        "action": "axis(Axes.ABS_Z)", 
+        "action": "axis(Axes.ABS_Z)",
         "name": "Break/Reverse"
-    }, 
+    },
     "trigger_right": {
-        "action": "axis(Axes.ABS_RZ)", 
+        "action": "axis(Axes.ABS_RZ)",
         "name": "Accelerate"
-    }, 
+    },
     "version": 1.4
 }
