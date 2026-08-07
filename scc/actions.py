@@ -891,11 +891,7 @@ class MouseAction(WholeHapticAction, Action):
 		# if what == STICK:
 		# mapper.mouse_move(x * self.speed[0] * 0.01, y * self.speed[1] * 0.01)
 		# mapper.force_event.add(FE_STICK)
-		if (
-			(what == STICK)
-			or (what == RSTICK)
-			or (what == RIGHT and mapper.controller_flags() & ControllerFlags.HAS_RSTICK)
-		):
+		if what in (STICK, RSTICK):
 			ratio_x = x / (STICK_PAD_MAX if x > 0 else STICK_PAD_MIN) * copysign(1, x)
 			ratio_y = y / (STICK_PAD_MAX if y > 0 else STICK_PAD_MIN) * copysign(1, y)
 			mouse_dx = ratio_x * (mapper.time_elapsed * BASE_STICK_MOUSE_SPEED) * self.speed[0]
@@ -2203,7 +2199,7 @@ class XYAction(WholeHapticAction, Action):
 			else:
 				self._old_pos = None
 
-		if mapper.controller_flags() & ControllerFlags.HAS_RSTICK and (what == RIGHT or what == RSTICK):
+		if what == RSTICK:
 			self.x.axis(mapper, x, what)
 			self.y.axis(mapper, y, what)
 			mapper.force_event.add(FE_PAD)

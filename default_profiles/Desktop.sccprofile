@@ -50,6 +50,9 @@
     "stick": {
         "action": "dpad(button(Keys.KEY_UP), button(Keys.KEY_DOWN), button(Keys.KEY_LEFT), button(Keys.KEY_RIGHT))"
     },
+    "rstick": {
+        "action": "smooth(8, 0.78, 2.0, ball(mouse()))"
+    },
     "trigger_left": {
         "action": "button(Keys.BTN_RIGHT)"
     },

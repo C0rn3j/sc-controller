@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """SC-Controller - Controller Registration Constants
 
 Just huge chunk of constants put aside to make impotant code more readable

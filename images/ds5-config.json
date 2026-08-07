@@ -4,7 +4,7 @@
 		"buttons": [
 			"CROSS", "CIRCLE", "SQUARE", "TRIANGLE", "ds5SELECT",
 			"C", "ds5START", "LB", "RB", "LT", "RT",
-			"STICK", "LPAD", "RPAD", "LG", "RG"
+			"STICK", "LPAD", "RSTICK", "LG", "RG"
 		]
 	},
 	

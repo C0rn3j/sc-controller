@@ -8,10 +8,10 @@
 			"STICK", "LPAD", "RPAD", "LG", "RG"
 		]
 	},
-	
+
 	"_ " : "Buttons defined here are not actually loaded by driver, but gui",
 	"__" : "uses list to determine what buttons and axes are available",
-	
+
 	"gyros": true,
 	"buttons": {
 		"288": "Y",

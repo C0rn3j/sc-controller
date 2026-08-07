@@ -34,8 +34,9 @@ class Profile:
 	RSTICK = RSTICK
 	GYRO = GYRO
 	X, Y, Z = "X", "Y", "Z"
-	STICK_AXES = {X: "lpad_x", Y: "lpad_y"}
-	LPAD_AXES = STICK_AXES
+	STICK_AXES = {X: "stick_x", Y: "stick_y"}
+	RSTICK_AXES = {X: "rstick_x", Y: "rstick_y"}
+	LPAD_AXES = {X: "lpad_x", Y: "lpad_y"}
 	RPAD_AXES = {X: "rpad_x", Y: "rpad_y"}
 	TRIGGERS = [LEFT, RIGHT]
 
@@ -118,16 +119,21 @@ class Profile:
 		self.buttons = {}
 		for x in SCButtons:
 			self.buttons[x] = self.parser.from_json_data(data["buttons"], x.name)
-		# Pressing stick is interpreted as STICKPRESS button,
-		# formely called just STICK
+		# Pressing stick is interpreted as STICKPRESS button, formerly called just STICK
 		if "STICK" in data["buttons"] and "STICKPRESS" not in data["buttons"]:
+			log.warning("Out of date profile: 'STICK' definition present instead of STICKPRESS!")
 			self.buttons[SCButtons.STICKPRESS] = self.parser.from_json_data(data["buttons"], "STICK")
+		# Right-stick clicks were historically stored as right-pad clicks.
+		if "RPAD" in data["buttons"] and "RSTICKPRESS" not in data["buttons"]:
+			log.warning("Out of date profile(?): 'RPAD' definition present but RSTICKPRESS isn't!")
+			self.buttons[SCButtons.RSTICKPRESS] = self.parser.from_json_data(data["buttons"], "RPAD")
 
 		# Stick & gyro
 		self.stick = self.parser.from_json_data(data, "stick")
 		self.gyro = self.parser.from_json_data(data, "gyro")
 
 		if "triggers" in data:
+			log.warning("Out of date profile: triggers present instead of trigger_left and trigger_right!")
 			# Old format
 			# Triggers
 			self.triggers = {x: self.parser.from_json_data(data["triggers"], x) for x in Profile.TRIGGERS}
@@ -140,7 +146,7 @@ class Profile:
 				Profile.DPAD: NoAction(),
 			}
 
-			# Rigth stick
+			# Right stick
 			self.rstick = NoAction()
 		else:
 			# New format
@@ -158,7 +164,7 @@ class Profile:
 				Profile.DPAD: self.parser.from_json_data(data, "dpad"),
 			}
 
-			# Rigth stick
+			# Right stick
 			self.rstick = self.parser.from_json_data(data, "rstick")
 
 		# Menus
@@ -167,7 +173,7 @@ class Profile:
 			for id in data["menus"]:
 				for invalid_char in ".:/":
 					if invalid_char in id:
-						raise ValueError("Invalid character '%s' in menu id '%s'" % (invalid_char, id))
+						raise ValueError(f"Invalid character '{invalid_char}' in menu id '{id}'")
 				self.menus[id] = MenuData.from_json_data(data["menus"][id], self.parser)
 
 		# Conversion

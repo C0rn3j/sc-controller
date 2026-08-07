@@ -100,7 +100,8 @@ class FirstPage(AEComponent):
 				"RB": _("Right Bumper"),
 				"LEFT": _("Left Trigger"),
 				"RIGHT": _("Right Trigger"),
-				"STICK": _("Stick"),
+				"STICK": _("Left Stick"),
+				"RSTICK": _("Right Stick"),
 			}
 
 			markup = markup % {
@@ -108,6 +109,7 @@ class FirstPage(AEComponent):
 			}
 			self.builder.get_object("lblMarkup").set_markup(markup.strip(" \r\n\t"))
 			return True
+		return None
 
 	def on_lblMarkup_activate_link(self, trash, link):
 		self.editor.on_link(link)

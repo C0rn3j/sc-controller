@@ -46,7 +46,7 @@ log = logging.getLogger("HID")
 DEV_CLASS_HID = 3
 TRANSFER_TYPE_INTERRUPT = 3
 LIBUSB_DT_REPORT = 0x22
-AXIS_COUNT = 20  # Must match number of axis fields in HIDControllerInput and values in AxisType
+AXIS_COUNT = 22  # Must match number of axis fields in HIDControllerInput and values in AxisType
 BUTTON_COUNT = 32  # Must match (or be less than) number of bits in HIDControllerInput.buttons
 ALLOWED_SIZES = [1, 2, 4, 8, 16, 32]
 SYS_DEVICES = "/sys/devices"
@@ -85,12 +85,14 @@ class HIDControllerInput(ctypes.Structure):
 	_fields_ = [
 		("buttons", ctypes.c_uint32),
 		# Note: Axis order is same as in AxisType enum
+		("stick_x", ctypes.c_int32),
+		("stick_y", ctypes.c_int32),
+		("rstick_x", ctypes.c_int32),
+		("rstick_y", ctypes.c_int32),
 		("lpad_x", ctypes.c_int32),
 		("lpad_y", ctypes.c_int32),
 		("rpad_x", ctypes.c_int32),
 		("rpad_y", ctypes.c_int32),
-		("stick_x", ctypes.c_int32),
-		("stick_y", ctypes.c_int32),
 		("ltrig", ctypes.c_int32),
 		("rtrig", ctypes.c_int32),
 		("accel_x", ctypes.c_int32),
@@ -109,26 +111,28 @@ class HIDControllerInput(ctypes.Structure):
 
 
 class AxisType(IntEnum):
-	AXIS_LPAD_X = 0
-	AXIS_LPAD_Y = 1
-	AXIS_RPAD_X = 2
-	AXIS_RPAD_Y = 3
-	AXIS_STICK_X = 4
-	AXIS_STICK_Y = 5
-	AXIS_LTRIG = 6
-	AXIS_RTRIG = 7
-	AXIS_ACCEL_X = 8
-	AXIS_ACCEL_Y = 9
-	AXIS_ACCEL_Z = 10
-	AXIS_GPITCH = 11
-	AXIS_GROLL = 12
-	AXIS_GYAW = 13
-	AXIS_Q1 = 14
-	AXIS_Q2 = 15
-	AXIS_Q3 = 16
-	AXIS_Q4 = 17
-	AXIS_CPAD_X = 18
-	AXIS_CPAD_Y = 19
+	AXIS_STICK_X = 0
+	AXIS_STICK_Y = 1
+	AXIS_RSTICK_X = 2
+	AXIS_RSTICK_Y = 3
+	AXIS_LPAD_X = 4
+	AXIS_LPAD_Y = 5
+	AXIS_RPAD_X = 6
+	AXIS_RPAD_Y = 7
+	AXIS_LTRIG = 8
+	AXIS_RTRIG = 9
+	AXIS_ACCEL_X = 10
+	AXIS_ACCEL_Y = 11
+	AXIS_ACCEL_Z = 12
+	AXIS_GPITCH = 13
+	AXIS_GROLL = 14
+	AXIS_GYAW = 15
+	AXIS_Q1 = 16
+	AXIS_Q2 = 17
+	AXIS_Q3 = 18
+	AXIS_Q4 = 19
+	AXIS_CPAD_X = 20
+	AXIS_CPAD_Y = 21
 
 
 class AxisMode(IntEnum):
@@ -366,7 +370,7 @@ class HIDController(SCUSBDevice, Controller):
 
 	def _build_hid_decoder(self, data, config: dict, max_size: int) -> None:
 		size, count, total, kind = 1, 0, 0, None
-		next_axis = AxisType.AXIS_LPAD_X
+		next_axis = AxisType.AXIS_STICK_X
 		self._decoder = HIDDecoder()
 		for x in parse_report_descriptor(data, True):
 			if x[0] == GlobalItem.ReportSize:

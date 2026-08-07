@@ -309,11 +309,11 @@
          x="229.14693"
          height="47.448864"
          width="47.448856"
-         id="AREA_RPAD_1"
+         id="AREA_RSTICK_1"
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
       <rect
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#00b400;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
-         id="AREA_RPADTEST"
+         id="AREA_RSTICKTEST"
          width="47.602852"
          height="0.25254059"
          x="229.06993"

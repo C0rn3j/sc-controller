@@ -5,10 +5,10 @@
 #include <limits.h>
 #define CLAMP(min, x, max) x
 
-#define HIDDRV_MODULE_VERSION 5
+#define HIDDRV_MODULE_VERSION 6
 PyObject* module;
 
-#define AXIS_COUNT 20
+#define AXIS_COUNT 22
 #define BUTTON_COUNT 32
 
 struct HIDControllerInput {
@@ -18,26 +18,28 @@ struct HIDControllerInput {
 
 
 enum AxisType {
-	AXIS_LPAD_X  = 0,
-	AXIS_LPAD_Y  = 1,
-	AXIS_RPAD_X  = 2,
-	AXIS_RPAD_Y  = 3,
-	AXIS_STICK_X = 4,
-	AXIS_STICK_Y = 5,
-	AXIS_LTRIG   = 6,
-	AXIS_RTRIG   = 7,
-	AXIS_ACCEL_X = 8,
-	AXIS_ACCEL_Y = 9,
-	AXIS_ACCEL_Z = 10,
-	AXIS_GPITCH  = 11,
-	AXIS_GROLL   = 12,
-	AXIS_GYAW    = 13,
-	AXIS_Q1      = 14,
-	AXIS_Q2      = 15,
-	AXIS_Q3      = 16,
-	AXIS_Q4      = 17,
-	AXIS_CPAD_X  = 18,
-	AXIS_CPAD_Y  = 19,
+	AXIS_STICK_X  = 0,
+	AXIS_STICK_Y  = 1,
+	AXIS_RSTICK_X = 2,
+	AXIS_RSTICK_Y = 3,
+	AXIS_LPAD_X   = 4,
+	AXIS_LPAD_Y   = 5,
+	AXIS_RPAD_X   = 6,
+	AXIS_RPAD_Y   = 7,
+	AXIS_LTRIG    = 8,
+	AXIS_RTRIG    = 9,
+	AXIS_ACCEL_X  = 10,
+	AXIS_ACCEL_Y  = 11,
+	AXIS_ACCEL_Z  = 12,
+	AXIS_GPITCH   = 13,
+	AXIS_GROLL    = 14,
+	AXIS_GYAW     = 15,
+	AXIS_Q1       = 16,
+	AXIS_Q2       = 17,
+	AXIS_Q3       = 18,
+	AXIS_Q4       = 19,
+	AXIS_CPAD_X   = 20,
+	AXIS_CPAD_Y   = 21,
 	_AxisType_force_int = INT_MAX
 };
 

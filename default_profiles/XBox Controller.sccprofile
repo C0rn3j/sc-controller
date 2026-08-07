@@ -34,6 +34,9 @@
         "STICKPRESS": {
             "action": "button(Keys.BTN_THUMBL)"
         },
+        "RSTICKPRESS": {
+            "action": "button(Keys.BTN_THUMBR)"
+        },
         "X": {
             "action": "button(Keys.BTN_NORTH)"
         },
@@ -55,6 +58,9 @@
     },
     "stick": {
         "action": "sens(1.2, 1.2, XY(axis(Axes.ABS_X), raxis(Axes.ABS_Y)))"
+    },
+    "rstick": {
+        "action": "XY( axis(Axes.ABS_RX), raxis(Axes.ABS_RY) )"
     },
     "trigger_left": {
         "action": "axis(Axes.ABS_Z)"
