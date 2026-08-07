@@ -250,12 +250,32 @@ class SVGWidget(Gtk.EventBox):
 
 
 class Area:
-	SPECIAL_CASES = ("LSTICK", "RSTICK", "DPAD", "ABS", "MOUSE", "MINUSHALF", "PLUSHALF", "KEY")
+	SPECIAL_CASES = (
+		"LSTICK_UP",
+		"LSTICK_DOWN",
+		"LSTICK_LEFT",
+		"LSTICK_RIGHT",
+		"RSTICK_UP",
+		"RSTICK_DOWN",
+		"RSTICK_LEFT",
+		"RSTICK_RIGHT",
+		"DPAD",
+		"ABS",
+		"MOUSE",
+		"MINUSHALF",
+		"PLUSHALF",
+		"KEY",
+	)
 
-	""" Basicaly just rectangle with name """
+	"""Basicaly just a rectangle with a name"""
 
-	def __init__(self, element, transform):
+	def __init__(self, element, transform) -> None:
 		self.name = element.attrib["id"].split("_")[1]
+		# Check if this is an area name that images/buttons.svg uses
+		#
+		# LSTICK and RSTICK are explicitly catching with all possible movements to allow them being used as
+		#  buttons throughout the code without conflicting with buttons.svg
+		# Hopefully this isn't used anywhere else
 		if self.name in Area.SPECIAL_CASES:
 			self.name = "_".join(element.attrib["id"].split("_")[1:3])
 		self.x, self.y = SVGEditor.get_translation(transform)
@@ -265,8 +285,8 @@ class Area:
 	def contains(self, x, y):
 		return x >= self.x and y >= self.y and x <= self.x + self.w and y <= self.y + self.h
 
-	def __str__(self):
-		return "<Area %s,%s %sx%s>" % (self.x, self.y, self.w, self.h)
+	def __str__(self) -> str:
+		return f"<Area {self.x},{self.y} {self.w}x{self.h}>"
 
 
 class SVGEditor:
