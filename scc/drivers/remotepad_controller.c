@@ -99,10 +99,10 @@ void remotepad_input(RemotePad* pad, struct remote_joypad_message* msg) {
 		case RETRO_DEVICE_INDEX_ANALOG_RIGHT:
 			switch (msg->id) {
 			case RETRO_DEVICE_ID_ANALOG_X:
-				pad->input.rpad_x = (AxisValue)msg->state;
+				pad->input.rstick_x = (AxisValue)msg->state;
 				break;
 			case RETRO_DEVICE_ID_ANALOG_Y:
-				pad->input.rpad_y = -(AxisValue)msg->state;
+				pad->input.rstick_y = -(AxisValue)msg->state;
 				break;
 			}
 			break;

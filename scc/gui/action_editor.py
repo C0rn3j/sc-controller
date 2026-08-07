@@ -1083,7 +1083,7 @@ class ActionEditor(Editor):
 			elif id == Profile.RSTICK:
 				self.set_title(_("Right Stick"))
 			elif id == Profile.STICK:
-				self.set_title(_("Stick"))
+				self.set_title(_("Left Stick"))
 			else:
 				raise ValueError(f"unknown id {id}")
 			self._set_mode(action, mode or Action.AC_STICK)

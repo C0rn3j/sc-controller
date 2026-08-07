@@ -11,7 +11,7 @@ from math import sqrt
 from gi.repository import Gdk, GdkPixbuf, GdkX11, Gio, GLib, Gtk
 
 from scc.config import Config
-from scc.constants import DEFAULT, LEFT, RIGHT, SAME, STICK, STICK_PAD_MAX, ControllerFlags, SCButtons
+from scc.constants import DEFAULT, LEFT, RIGHT, RSTICK, SAME, STICK, STICK_PAD_MAX, ControllerFlags, SCButtons
 from scc.gui.daemon_manager import DaemonManager
 from scc.lib import xwrappers as X
 from scc.menu_data import MenuData, Separator, Submenu
@@ -376,6 +376,8 @@ class Menu(OSDWindow):
 		elif self._confirm_with == SAME:
 			if self._control_with == RIGHT:
 				self._confirm_with = SCButtons.RPADTOUCH.name
+			elif self._control_with == RSTICK:
+				self._confirm_with = SCButtons.RSTICKPRESS.name
 			else:
 				self._confirm_with = SCButtons.LPADTOUCH.name
 
@@ -389,7 +391,7 @@ class Menu(OSDWindow):
 			side = "LEFT"
 			if self._control_with == "RIGHT":
 				side = "RIGHT"
-			elif self._control_with == "STICK":
+			elif self._control_with in ("STICK", "RSTICK"):
 				side = "BOTH"
 			self.feedback = side, int(self.args.feedback_amplitude)
 

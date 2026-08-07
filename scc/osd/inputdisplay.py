@@ -10,7 +10,7 @@ import sys
 
 from gi.repository import Gtk
 
-from scc.constants import LEFT, RIGHT, STICK, STICK_PAD_MAX, SCButtons
+from scc.constants import LEFT, RIGHT, RSTICK, STICK, STICK_PAD_MAX, SCButtons
 from scc.gui.daemon_manager import DaemonManager
 from scc.gui.svg_widget import SVGWidget
 from scc.osd import OSDWindow
@@ -37,6 +37,7 @@ class InputDisplay(OSDWindow):
 		self.background = SVGWidget(os.path.join(self.imagepath, self.IMAGE))
 		self.lpadTest = Gtk.Image.new_from_file(os.path.join(self.imagepath, "inputdisplay-cursor.svg"))
 		self.rpadTest = Gtk.Image.new_from_file(os.path.join(self.imagepath, "inputdisplay-cursor.svg"))
+		self.rstickTest = Gtk.Image.new_from_file(os.path.join(self.imagepath, "inputdisplay-cursor.svg"))
 		self.stickTest = Gtk.Image.new_from_file(os.path.join(self.imagepath, "inputdisplay-cursor.svg"))
 
 		self.main_area.set_property("margin-left", 10)
@@ -47,6 +48,7 @@ class InputDisplay(OSDWindow):
 		self.main_area.put(self.background, 0, 0)
 		self.main_area.put(self.lpadTest, 40, 40)
 		self.main_area.put(self.rpadTest, 290, 90)
+		self.main_area.put(self.rstickTest, 290, 90)
 		self.main_area.put(self.stickTest, 150, 40)
 
 		self.add(self.main_area)
@@ -54,6 +56,7 @@ class InputDisplay(OSDWindow):
 		OSDWindow.show(self)
 		self.lpadTest.hide()
 		self.rpadTest.hide()
+		self.rstickTest.hide()
 		self.stickTest.hide()
 
 	def run(self):
@@ -115,10 +118,11 @@ class InputDisplay(OSDWindow):
 		self.quit(3)
 
 	def on_daemon_event_observer(self, daemon, what, data):
-		if what in (LEFT, RIGHT, STICK):
+		if what in (LEFT, RIGHT, RSTICK, STICK):
 			widget, area = {
 				LEFT: (self.lpadTest, "LPADTEST"),
 				RIGHT: (self.rpadTest, "RPADTEST"),
+				RSTICK: (self.rstickTest, "RSTICKTEST"),
 				STICK: (self.stickTest, "STICKTEST"),
 			}[what]
 			# Check if stick or pad is released

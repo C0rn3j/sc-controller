@@ -34,13 +34,13 @@ from scc.constants import (
 	LEFT,
 	MINIMUM,
 	RIGHT,
+	RSTICK,
 	STICK,
 	STICK_PAD_MAX,
 	STICK_PAD_MAX_HALF,
 	STICK_PAD_MIN,
 	STICKTILT,
 	TRIGGER_MAX,
-	ControllerFlags,
 	HapticPos,
 	SCButtons,
 )
@@ -519,11 +519,7 @@ class BallModifier(Modifier, WholeHapticAction):
 				self._roll(mapper)
 
 	def whole(self, mapper, x, y, what):
-		if (
-			mapper.controller_flags() & ControllerFlags.HAS_RSTICK
-			and not mapper.controller_flags() & ControllerFlags.IS_DECK
-			and what == RIGHT
-		):
+		if what == RSTICK:
 			return self.action.whole(mapper, x, y, what)
 		if mapper.is_touched(what):
 			if mapper.is_touched(what) and not mapper.was_touched(what):

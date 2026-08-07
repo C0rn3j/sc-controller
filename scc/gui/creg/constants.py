@@ -3,7 +3,7 @@
 Just huge chunk of constants put aside to make impotant code more readable
 """
 
-from scc.constants import LEFT, RIGHT, STICK, SCButtons
+from scc.constants import LEFT, RIGHT, RSTICK, STICK, SCButtons
 
 X = 0
 Y = 1
@@ -11,8 +11,8 @@ Y = 1
 AXIS_ORDER = (
 	("stick_x", X),
 	("stick_y", Y),
-	("rpad_x", X),
-	("rpad_y", Y),
+	("rstick_x", X),
+	("rstick_y", Y),
 	("lpad_x", X),
 	("lpad_y", Y),
 	("ltrig", X),  # index 6
@@ -22,7 +22,7 @@ AXIS_ORDER = (
 STICK_PAD_AREAS = {
 	# Numbers here are indexes to AXIS_ORDER tuple
 	"STICK": (STICK, (0, 1)),
-	"RPAD": (RIGHT, (2, 3)),
+	"RSTICK": (RSTICK, (2, 3)),
 	"LPAD": (LEFT, (4, 5)),
 }
 
@@ -36,8 +36,8 @@ AXIS_TO_BUTTON = {
 	# Maps stick and dpad axes to their respective "pressed" button
 	"stick_x": SCButtons.STICKPRESS,
 	"stick_y": SCButtons.STICKPRESS,
-	"rpad_x": SCButtons.RPAD,
-	"rpad_y": SCButtons.RPAD,
+	"rstick_x": SCButtons.RSTICKPRESS,
+	"rstick_y": SCButtons.RSTICKPRESS,
 	"lpad_x": SCButtons.LPAD,
 	"lpad_y": SCButtons.LPAD,
 }
@@ -45,7 +45,7 @@ AXIS_TO_BUTTON = {
 SDL_TO_SCC_NAMES = {
 	"guide": "C",
 	"leftstick": "STICKPRESS",
-	"rightstick": "RPAD",
+	"rightstick": "RSTICKPRESS",
 	"leftshoulder": "LB",
 	"rightshoulder": "RB",
 }

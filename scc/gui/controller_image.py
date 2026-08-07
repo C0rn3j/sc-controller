@@ -34,12 +34,13 @@ class ControllerImage(SVGWidget):
 	)
 
 	DEFAULT_AXES = (
-		# Shared between DS4 and Steam Controller
 		"stick_x",
 		"stick_y",
+		"rstick_x",
+		"rstick_y",
 		"lpad_x",
-		"lpad_x",
-		"rpad_y",
+		"lpad_y",
+		"rpad_x",
 		"rpad_y",
 		"ltrig",
 		"rtrig",
@@ -52,6 +53,7 @@ class ControllerImage(SVGWidget):
 		nameof(SCButtons.LT),
 		nameof(SCButtons.RT),
 		nameof(SCButtons.STICKPRESS),
+		nameof(SCButtons.RSTICKPRESS),
 		nameof(SCButtons.RPAD),
 		nameof(SCButtons.LPAD),
 		nameof(SCButtons.LGRIP),
