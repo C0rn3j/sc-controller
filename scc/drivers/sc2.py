@@ -397,11 +397,16 @@ class SC2Controller(SCController):
 	def configure(
 		self, idle_timeout: int | None = None, enable_gyros: bool | None = None, led_level: int | None = None
 	) -> None:
-		# Replay the config blocks captured from Steam. These put the controller
-		# into gamepad mode; the exact gyro-enable register is still TODO.
+		# Replay the config blocks captured from Steam, which put the controller
+		# into gamepad mode. The blocks are (register, value16-LE) triplets, and
+			# register 0x30 is the IMU-stream bitmask -- the same one the v1 driver
+			# writes (see sc_dongle.configure, where it sits at the identical
+			# position, right after the 0x30 byte).
 		if led_level is not None:
 			self._led_level = led_level
-		# main config block: 87 0f 30 18 00 07 07 00 08 07 00 31 02 00 52 03
+		if enable_gyros is not None:
+			self._enable_gyros = enable_gyros
+		# main config block: 87 0f 30 <imu> 00 07 07 00 08 07 00 31 02 00 52 03
 		self._driver.overwrite_control(
 			self._ccidx,
 			bytes(
@@ -409,7 +414,7 @@ class SC2Controller(SCController):
 					SCPacketType.CONFIGURE,
 					0x0F,
 					0x30,
-					0x18,
+					self._imu_mask(),
 					0x00,
 					0x07,
 					0x07,
@@ -430,9 +435,36 @@ class SC2Controller(SCController):
 			self._ccidx, struct.pack(">BBBB", SCPacketType.CONFIGURE, 0x03, 0x2D, int(self._led_level))
 		)
 
+	# IMU-stream bits for CONFIGURE register 0x30, from the v1 protocol
+	IMU_GYRO = 0x10   # raw angular rates
+	IMU_ACCEL = 0x08  # accelerometer
+	IMU_QUAT = 0x04   # fused orientation quaternion
+
+	def _imu_mask(self) -> int:
+		"""IMU streams to turn on.
+
+		The block captured from Steam carried 0x18 -- rates and accel, but NOT
+		the fused quaternion. Since parse_input derives the euler angles this
+		controller reports through EUREL_GYROS from that quaternion, and an
+		all-zero quaternion converts to exactly zero (atan2(0,1) and asin(0)),
+		every orientation-based binding silently did nothing: absolute gyro,
+		lean-to-turn and tilt all sat at their neutral output while the
+		rate-based ones worked. Confirmed by a user's IMU-CALIB dump, whose
+		euler columns read 0.0 while the rates moved.
+
+		It only worked at all on controllers where Steam had already switched
+		the quaternion on, because nothing here ever wrote this register --
+		set_gyro_enabled was a no-op, so we inherited whatever state the pad
+		was left in. That is why the same build behaved differently on two
+		otherwise identical SC2s.
+
+		Rates and accel stay on unconditionally, exactly as before, so nothing
+		that works today can regress; only the quaternion bit is switched.
+		"""
+		return self.IMU_GYRO | self.IMU_ACCEL | (self.IMU_QUAT if self._enable_gyros else 0)
+
 	def set_gyro_enabled(self, enabled: bool) -> None:
-		self._enable_gyros = enabled
-		# TODO: which 0x87 CONFIGURE register enables the IMU?
+		self.configure(enable_gyros=enabled)
 
 	def get_gyro_enabled(self) -> bool:
 		return self._enable_gyros
