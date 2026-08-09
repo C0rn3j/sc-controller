@@ -51,6 +51,10 @@ class RadialMenu(Menu):
 				self.set_app_paintable(True)
 				self.connect("draw", self._on_draw_clip_circle)
 
+	def scroll_wrap(self, parent):
+		"""Radial menus draw items on an SVG - no scroll viewport - return unchanged"""
+		return parent
+
 	def create_parent(self) -> SVGWidget:
 		background = os.path.join(get_share_path(), "images", "radial-menu.svg")
 		self.b = SVGWidget(background)

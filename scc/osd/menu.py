@@ -36,6 +36,7 @@ class Menu(OSDWindow):
    3  - erorr, failed to lock input stick, pad or button(s)
 	"""
 	SUBMENU_OFFSET = 50
+	SCROLL_MARGIN = 8
 	PREFER_BW_ICONS = True
 
 	def __init__(self, cls="osd-menu", layer=None):
@@ -53,9 +54,9 @@ class Menu(OSDWindow):
 		self.cursor = Gtk.Image.new_from_file(cursor)
 		self.cursor.set_name("osd-menu-cursor")
 
-		self.parent = self.create_parent()
+		self.parent: Gtk.Box = self.create_parent()
 		self.f = Gtk.Fixed()
-		self.f.add(self.parent)
+		self.f.add(self.scroll_wrap(self.parent))
 		self.add(self.f)
 
 		self._submenu = None
@@ -77,10 +78,91 @@ class Menu(OSDWindow):
 		"""
 		self._is_submenu = True
 
-	def create_parent(self):
+	def create_parent(self) -> Gtk.Box:
 		v = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 		v.set_name("osd-menu")
 		return v
+
+	def scroll_wrap(self, parent) -> Gtk.ScrolledWindow:
+		"""Wrap the vertical item list in a scrolled viewport capped to the screen height
+
+		So very long menus (e.g. hundreds of profiles) don't run off-screen.
+		Overridden to a no-op by grid/radial/horizontal menus.
+		"""
+		sw = Gtk.ScrolledWindow()
+		sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+		try:
+			sw.set_shadow_type(Gtk.ShadowType.NONE)
+		except Exception:
+			log.exception("Unknown exception - Failed to set shadow type!")
+		sw.add(parent)
+		self._scrollwindow = sw
+		return sw
+
+	def _max_menu_height(self) -> int:
+		"""Largest the menu may grow before scrolling (monitor height minus margin)."""
+		try:
+			display = Gdk.Display.get_default()
+			monitor = display.get_primary_monitor() or display.get_monitor(0)
+			return max(240, monitor.get_geometry().height - 80)
+		except Exception:
+			log.exception("Unknown exception - Failed to get display/monitor!")
+			return 720
+
+	def _fit_scroll(self) -> None:
+		"""Size the scrolled viewport to the packed items, capped to the screen.
+
+		The item box is empty when scroll_wrap() runs and a GtkFixed won't expand
+		the viewport afterwards, so the size is set here once items are present.
+		"""
+		sw = getattr(self, "_scrollwindow", None)
+		if sw is None:
+			return
+		self.parent.show_all()
+		nath = self.parent.get_preferred_height()[1]
+		natw = self.parent.get_preferred_width()[1]
+		cap = self._max_menu_height()
+		if nath > cap:
+			sw.set_size_request(natw + 24, cap)
+		else:
+			sw.set_size_request(natw, nath)
+
+	def _ensure_visible(self, widget) -> None:
+		"""Scroll the viewport so the selected item and its section heading stay visible."""
+		sw = getattr(self, "_scrollwindow", None)
+		if sw is None or widget is None:
+			return
+		adj = sw.get_vadjustment()
+		if adj is None:
+			return
+		alloc = widget.get_allocation()
+		page = adj.get_page_size()
+		if alloc.height <= 0 or page <= 0:
+			return
+		top = alloc.y
+		section_starts_menu = False
+		try:
+			index = next(i for i, item in enumerate(self.items) if item.widget is widget)
+			# Separators/headings cannot be selected. When this is the first
+			# selectable item in a section, keep those rows visible as context.
+			while index > 0 and self.items[index - 1].id is None:
+				index -= 1
+				heading_alloc = self.items[index].widget.get_allocation()
+				if heading_alloc.height > 0:
+					top = min(top, heading_alloc.y)
+			section_starts_menu = index == 0
+		except StopIteration:
+			pass
+		lower = adj.get_lower()
+		upper = adj.get_upper()
+		top = lower if section_starts_menu else max(lower, top - self.SCROLL_MARGIN)
+		bottom = min(upper, alloc.y + alloc.height + self.SCROLL_MARGIN)
+		val = adj.get_value()
+		if top < val:
+			adj.set_value(top)
+		elif bottom > val + page:
+			# Prefer aligning the heading to the top when the complete group fits.
+			adj.set_value(top if bottom - top <= page else bottom - page)
 
 	def pack_items(self, parent, items):
 		for item in items:
@@ -284,7 +366,7 @@ class Menu(OSDWindow):
 
 		return widget
 
-	def select(self, index):
+	def select(self, index) -> bool:
 		if self._selected:
 			self._selected.widget.set_name(self._selected.widget.get_name().replace("-selected", ""))
 		if self.items[index].id:
@@ -293,6 +375,7 @@ class Menu(OSDWindow):
 					self.controller.feedback(*self.feedback)
 			self._selected = self.items[index]
 			self._selected.widget.set_name(self._selected.widget.get_name() + "-selected")
+			self._ensure_visible(self._selected.widget)
 			GLib.timeout_add(2, self._check_on_screen_position)
 			return True
 		return False
@@ -342,6 +425,7 @@ class Menu(OSDWindow):
 	def show(self, *a):
 		if not self.select(0):
 			self.next_item(1)
+		self._fit_scroll()
 		OSDWindow.show(self, *a)
 		GLib.timeout_add(1, self._check_on_screen_position, True)
 
