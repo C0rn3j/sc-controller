@@ -155,14 +155,16 @@ class GameListMenuGenerator(MenuGenerator):
 	def generate(self, menuhandler):
 		if GameListMenuGenerator._games is None:
 			GameListMenuGenerator._games = []
-			id = 0
-			for x in Gio.AppInfo.get_all():
-				if x.get_categories():
-					if "Game" in x.get_categories().split(";"):
-						menuitem = MenuItem(str(id), x.get_display_name(), icon=x.get_icon())
-						menuitem.callback = GameListMenuGenerator.callback
-						menuitem._desktop_file = x
-						GameListMenuGenerator._games.append(menuitem)
+			games = [
+				x
+				for x in Gio.AppInfo.get_all()
+				if x.get_categories() and "Game" in x.get_categories().split(";")
+			]
+			for item_id, game in enumerate(sorted(games, key=lambda x: x.get_display_name().casefold())):
+				menuitem = MenuItem(str(item_id), game.get_display_name(), icon=game.get_icon())
+				menuitem.callback = GameListMenuGenerator.callback
+				menuitem._desktop_file = game
+				GameListMenuGenerator._games.append(menuitem)
 		return GameListMenuGenerator._games
 
 
