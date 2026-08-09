@@ -2,9 +2,10 @@
 
 Allows to edit button or trigger action.
 """
+from __future__ import annotations
 
 import logging
-from collections import namedtuple
+from typing import NamedTuple
 
 from gi.repository import Gtk
 
@@ -28,9 +29,9 @@ class MacroEditor(Editor):
 		self.ac_callback = callback
 		self.added_widget = None
 		self.setup_widgets()
-		self.actions = []
+		self.actions: list[ActionData] = []
 
-	def update_action_field(self):
+	def update_action_field(self) -> None:
 		"""Updates field on bottom"""
 		entAction = self.builder.get_object("entAction")
 		cbMacroType = self.builder.get_object("cbMacroType")
@@ -80,7 +81,7 @@ class MacroEditor(Editor):
 			action.name = entName.get_text().strip()
 		return action
 
-	def _add_action(self, action):
+	def _add_action(self, action) -> None:
 		"""Adds widgets for new action"""
 		grActions = self.builder.get_object("grActions")
 		model = self.builder.get_object("lstPressClickOrHold")
@@ -193,7 +194,7 @@ class MacroEditor(Editor):
 		self.update_action_field()
 		grActions.show_all()
 
-	def on_moveb_clicked(self, trash, direction, action_data):
+	def on_moveb_clicked(self, trash, direction, action_data) -> None:
 		"""Handler for 'move action' buttons"""
 		action = action_data.action
 		readd = [x.action for x in self.actions]
@@ -209,7 +210,7 @@ class MacroEditor(Editor):
 		self._refill_grid(readd)
 		self.update_action_field()
 
-	def on_clearb_clicked(self, trash, action_data):
+	def on_clearb_clicked(self, trash, action_data) -> None:
 		"""Handler for 'delete action' button"""
 		self._clear_grid()
 		self.actions.remove(action_data)
@@ -217,10 +218,10 @@ class MacroEditor(Editor):
 		self._refill_grid(readd)
 		self.update_action_field()
 
-	def on_cbMacroType_changed(self, *a):
+	def on_cbMacroType_changed(self, *a) -> None:
 		self.update_action_field()
 
-	def on_buttonaction_type_change(self, cb, i, action_data):
+	def on_buttonaction_type_change(self, cb, i, action_data) -> None:
 		action = action_data.action
 		if isinstance(action, (PressAction, ReleaseAction)):
 			action = action.action
@@ -233,20 +234,20 @@ class MacroEditor(Editor):
 			self.actions[i] = action_data._replace(action=ReleaseAction(action))
 		self.update_action_field()
 
-	def _clear_grid(self):
+	def _clear_grid(self) -> None:
 		"""Removes everything from UI"""
 		grActions = self.builder.get_object("grActions")
 		for child in [] + grActions.get_children():
 			grActions.remove(child)
 
-	def _refill_grid(self, new_actions):
+	def _refill_grid(self, new_actions) -> None:
 		"""Removes everything from UI and then adds updated stuff back"""
 		self._clear_grid()
 		self.actions = []
 		for a in new_actions:
 			self._add_action(a)
 
-	def on_change_delay(self, scale, trash, value, action_data):
+	def on_change_delay(self, scale, trash, value, action_data) -> None:
 		"""Called when delay slider is moved"""
 		ms = int(value)
 		action = action_data.action
@@ -259,7 +260,7 @@ class MacroEditor(Editor):
 			label.set_markup(_("<b>Delay: %0.2fs</b>") % (s,))
 		self.update_action_field()
 
-	def on_actionb_clicked(self, button, i, action_data):
+	def on_actionb_clicked(self, button, i, action_data) -> None:
 		"""Handler clicking on action name"""
 
 		def on_chosen(id, action):
@@ -278,22 +279,22 @@ class MacroEditor(Editor):
 		ae.hide_name()
 		ae.show(self.window)
 
-	def on_btAddAction_clicked(self, *a):
+	def on_btAddAction_clicked(self, *a) -> None:
 		"""Handler for Add Action button"""
 		self._add_action(NoAction())
 
-	def on_btAddDelay_clicked(self, *a):
+	def on_btAddDelay_clicked(self, *a) -> None:
 		"""Handler for Add Delay button"""
 		self._add_action(SleepAction(0.5))
 
-	def on_btClear_clicked(self, *a):
+	def on_btClear_clicked(self, *a) -> None:
 		"""Handler for clear button"""
 		action = NoAction()
 		if self.ac_callback is not None:
 			self.ac_callback(self.id, action)
 		self.close()
 
-	def on_btCustomActionEditor_clicked(self, *a):
+	def on_btCustomActionEditor_clicked(self, *a) -> None:
 		"""Handler for 'Custom Editor' button"""
 		from scc.gui.action_editor import ActionEditor  # Can't be imported on top
 
@@ -307,16 +308,15 @@ class MacroEditor(Editor):
 		self.close()
 		e.show(self.get_transient_for())
 
-	def on_btOK_clicked(self, *a):
+	def on_btOK_clicked(self, *a) -> None:
 		"""Handler for OK button"""
 		a = self._make_action()
 		if self.ac_callback is not None:
 			self.ac_callback(self.id, a)
 		self.close()
 
-	def add_widget(self, label, widget):
-		"""See ActionEditor.add_widget
-		"""
+	def add_widget(self, label, widget) -> None:
+		"""See ActionEditor.add_widget"""
 		lblAddedWidget = self.builder.get_object("lblAddedWidget")
 		vbAddedWidget = self.builder.get_object("vbAddedWidget")
 		lblAddedWidget.set_label(label)
@@ -342,7 +342,7 @@ class MacroEditor(Editor):
 		cbMacroType = self.builder.get_object("cbMacroType")
 		self.id = id
 		self.mode = mode
-		self.set_title("Macro for %s" % (id.name if id in SCButtons.__members__.values() else str(id),))
+		self.set_title(f"Macro for {id.name if id in SCButtons.__members__.values() else str(id)}")
 		if isinstance(action, Cycle):
 			cbMacroType.set_active(2)
 		elif action.repeat:
@@ -354,13 +354,19 @@ class MacroEditor(Editor):
 		if action.name is not None:
 			entName.set_text(action.name)
 
-	def hide_name(self):
-		"""Hides (and clears) name field.
-		"""
+	def hide_name(self) -> None:
+		"""Hides (and clears) name field."""
 		self.builder.get_object("lblName").set_visible(False)
 		self.builder.get_object("entName").set_visible(False)
 		self.builder.get_object("entName").set_text("")
 
 
-ActionData = namedtuple("ActionData", "action, button_up, button_down, button_clear, button_action,combo, label, scale")
-ActionData.__new__.__defaults__ = (None,) * len(ActionData._fields)
+class ActionData(NamedTuple):
+	action: Action | None = None
+	button_up: Gtk.Button | None = None
+	button_down: Gtk.Button | None = None
+	button_clear: Gtk.Button | None = None
+	button_action: Gtk.Button | None = None
+	combo: Gtk.ComboBox | None = None
+	label: Gtk.Label | None = None
+	scale: Gtk.Scale | None = None

@@ -35,8 +35,7 @@ import json
 import logging
 import os
 import sys
-from collections import namedtuple
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NamedTuple
 
 if TYPE_CHECKING:
 	from scc.mapper import Mapper
@@ -47,15 +46,39 @@ log = logging.getLogger("evdev")
 TRIGGERS = "ltrig", "rtrig"
 FIRST_BUTTON = 288
 
-EvdevControllerInput = namedtuple(
-	"EvdevControllerInput",
-	"buttons ltrig rtrig stick_x stick_y rstick_x rstick_y lpad_x lpad_y rpad_x rpad_y "
-	"accel_x accel_y accel_z "
-	"gpitch groll gyaw q1 q2 q3 q4 "
-	"cpad_x cpad_y",
-)
+class EvdevControllerInput(NamedTuple):
+	buttons: int
+	ltrig: int
+	rtrig: int
+	stick_x: int
+	stick_y: int
+	rstick_x: int
+	rstick_y: int
+	lpad_x: int
+	lpad_y: int
+	rpad_x: int
+	rpad_y: int
+	accel_x: int
+	accel_y: int
+	accel_z: int
+	gpitch: int
+	groll: int
+	gyaw: int
+	q1: int
+	q2: int
+	q3: int
+	q4: int
+	cpad_x: int
+	cpad_y: int
 
-AxisCalibrationData = namedtuple("AxisCalibrationData", "scale offset center clamp_min clamp_max deadzone")
+
+class AxisCalibrationData(NamedTuple):
+	scale: float
+	offset: float
+	center: int | str
+	clamp_min: int
+	clamp_max: int
+	deadzone: float
 
 
 class EvdevController(Controller):

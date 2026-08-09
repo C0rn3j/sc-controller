@@ -8,11 +8,10 @@ from __future__ import annotations
 
 import logging
 import struct
-from collections import namedtuple
 from enum import IntEnum
 from math import cos, sin
 from math import pi as PI
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NamedTuple
 
 from scc.config import Config
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, SCButtons
@@ -27,6 +26,30 @@ if TYPE_CHECKING:
 	from scc.drivers.sc_by_cable import SCByCable
 	from scc.drivers.steamdeck import Deck
 	from scc.sccdaemon import SCCDaemon
+
+class ControllerInput(NamedTuple):
+	"""Based on INPUT_FORMAT except anything starting with "ukn_"""
+
+	type: int
+	status: int
+	seq: int
+	buttons: int
+	ltrig: int
+	rtrig: int
+	lpad_x: int
+	lpad_y: int
+	rpad_x: int
+	rpad_y: int
+	accel_x: int
+	accel_y: int
+	accel_z: int
+	gpitch: int
+	groll: int
+	gyaw: int
+	q1: int
+	q2: int
+	q3: int
+	q4: int
 
 VENDOR_ID = 0x28DE
 PRODUCT_ID = 0x1142
@@ -64,7 +87,6 @@ INPUT_FORMAT = [
 ]
 FORMATS, NAMES = zip(*INPUT_FORMAT)
 TUP_FORMAT = "<" + "".join(FORMATS)
-ControllerInput = namedtuple("ControllerInput", " ".join([x for x in NAMES if not x.startswith("ukn_")]))
 SCI_NULL = ControllerInput._make(struct.unpack("<" + "".join(FORMATS), b"\x00" * 64))
 STICKPRESS = 0b1000000000000000000000000000000
 
