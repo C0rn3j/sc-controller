@@ -108,8 +108,8 @@ class RemotePadController(Controller):
 			self.mapper.input(self, self._old_state, data.contents)
 			ctypes.memmove(byref(self._old_state), data, self._state_size)
 
-	def get_gui_config_file(self):
-		return "remotepad.json"
+	def get_gui_config_file(self) -> str:
+		return "remotepad-config.json"
 
 
 class Driver:

@@ -184,7 +184,7 @@ class Deck(SCUSBDevice, SCController):
 		return f"<Deck {self.get_id()}>"
 
 	def get_gui_config_file(self) -> str:
-		return "deck.config.json"
+		return "deck-config.json"
 
 	def configure(self, idle_timeout=None, enable_gyros=None, led_level=None) -> None:
 		FORMAT = b">BBBB60x"

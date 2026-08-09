@@ -7,7 +7,7 @@ RIGHT_STICK_CONTROLLERS = ("ds4", "ds5", "x360", "remotepad")
 
 def test_right_stick_controller_metadata_uses_rstick() -> None:
 	for name in RIGHT_STICK_CONTROLLERS:
-		config_name = f"{name}-config.json" if name != "remotepad" else "remotepad.json"
+		config_name = f"{name}-config.json"
 		config = json.loads(Path("images", config_name).read_text())
 		buttons = config["gui"]["buttons"]
 		assert "RSTICK" in buttons
