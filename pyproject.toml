@@ -32,6 +32,7 @@ dependencies = [
 [project.optional-dependencies]
 	dev = [
 		"pygobject-stubs", # needs PYGOBJECT_STUB_CONFIG=Gtk3 env var when being installed
+		"pytest",
 	]
 
 
