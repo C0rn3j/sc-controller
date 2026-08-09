@@ -64,17 +64,17 @@ cd "$(dirname "$0")"
 #export PYTHONPATH="${PWD}:${PWD}/env:${PYTHONPATH-}"
 export PYTHONPATH=".":"${PYTHONPATH-}"
 export SCC_SHARED="${PWD}"
-#export PATH="${PWD}/.env/bin:${PATH}"
+#export PATH="${PWD}/.venv/bin:${PATH}"
 
 rm -rf dist
-python -m venv .env
-source .env/bin/activate
+python -m venv .venv
+source .venv/bin/activate
 # To build the dev dependencies correctly
 export PYGOBJECT_STUB_CONFIG=Gtk3
 pip install ".[dev]" build
 python -m build --wheel
-#python -m installer --destdir=".env" dist/*.whl
-pip install --prefix ".env" dist/*.whl --force-reinstall
+#python -m installer --destdir=".venv" dist/*.whl
+pip install --prefix ".venv" dist/*.whl --force-reinstall
 
 # Start either the daemon in debug mode if first parameter is 'daemon', or the regular sc-controller app in debug mode
 if [[ ${1-} == 'daemon' ]]; then

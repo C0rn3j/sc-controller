@@ -78,5 +78,5 @@ docker build -o build-output --build-arg BASE_CODENAME=noble .
   - ~~Download and extract [latest release](https://github.com/C0rn3j/sc-controller/releases/latest)~~ .zip releases without .git directory are currently broken - tracked in [#50](https://github.com/C0rn3j/sc-controller/issues/50)
   - Clone the repository `git clone https://github.com/C0rn3j/sc-controller.git` and navigate into it: `cd sc-controller`
   - Optionally checkout a branch or a tag, like `main`(default) or `v0.6.2`
-  - Execute `./run.sh`, this automatically builds the project into a venv called `.env`, activates it and runs sc-controller, which in turn runs scc-daemon if one does not run already
+  - Execute `./run.sh`, this automatically builds the project into a venv called `.venv`, activates it and runs sc-controller, which in turn runs scc-daemon if one does not run already
   - If you are debugging an issue, running `./run.sh daemon` first will launch the daemon in debug mode, allowing you to launch sc-controller in another terminal with `./run.sh` - note that sc-controller launched via `run.sh` always runs in debug mode too.

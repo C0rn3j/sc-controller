@@ -37,8 +37,8 @@ RUN <<EOR
 	set -eu
 
 	python -m build --wheel
-	python -m venv .env
-	. .env/bin/activate
+	python -m venv .venv
+	. .venv/bin/activate
 	# TODO(Martin): Replace URL with just 'hidraw-pure' when https://github.com/vpelletier/python-hidraw/issues/7 is resolved
 	pip install evdev https://github.com/C0rn3j/python-hidraw/archive/modernize.zip ioctl-opt libusb1 pytest vdf
 	# Install into the active environment for tests - --no-deps to avoid building pygobject
@@ -52,8 +52,8 @@ RUN <<EOR
 	PYTHONPATH=$(find "${TARGET}" -type d -name site-packages) \
 	python -c "from scc.constants import DAEMON_VERSION; print('VERSION=' + DAEMON_VERSION)" >>/build/.build-metadata.env
 
-	# Fix shebangs of scripts from '#!/work/.env/bin/python' - note that AppImage builder will strip the leading /
-	find "${TARGET}/usr/bin" -type f | xargs sed -i 's:work/.env/bin/:usr/bin/env :'
+	# Fix shebangs of scripts from '#!/work/.venv/bin/python' - note that AppImage builder will strip the leading /
+	find "${TARGET}/usr/bin" -type f | xargs sed -i 's:work/.venv/bin/:usr/bin/env :'
 
 	# Provide input-event-codes.h as fallback for runtime systems without linux headers
 	cp -a \
