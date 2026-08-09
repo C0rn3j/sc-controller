@@ -95,7 +95,7 @@ class DS4Controller(Controller):
 		SCButtons.BACK,
 		SCButtons.START,
 		SCButtons.STICKPRESS,
-		SCButtons.RPAD,
+		SCButtons.RSTICKPRESS,
 		SCButtons.C,
 		SCButtons.CPADPRESS,
 	)
@@ -113,7 +113,7 @@ class DS4Controller(Controller):
 		self.daemon: SCCDaemon = daemon
 		Controller.__init__(self)
 
-	def _load_hid_descriptor(self, config, max_size, vid, pid, test_mode):
+	def _load_hid_descriptor(self, config, max_size, vid, pid, test_mode) -> None:
 		# Overrided and hardcoded
 		self._decoder = HIDDecoder()
 		self._decoder.axes[AxisType.AXIS_LPAD_X] = AxisData(
@@ -154,13 +154,12 @@ class DS4Controller(Controller):
 				),
 			),
 		)
-		self._decoder.axes[AxisType.AXIS_RPAD_X] = AxisData(
+		self._decoder.axes[AxisType.AXIS_RSTICK_X] = AxisData(
 			mode=AxisMode.AXIS,
 			byte_offset=3,
 			size=8,
 			data=AxisDataUnion(
 				axis=AxisModeData(
-					button=SCButtons.RPADTOUCH,
 					scale=1.0,
 					offset=-127.5,
 					clamp_max=257,
@@ -168,13 +167,12 @@ class DS4Controller(Controller):
 				),
 			),
 		)
-		self._decoder.axes[AxisType.AXIS_RPAD_Y] = AxisData(
+		self._decoder.axes[AxisType.AXIS_RSTICK_Y] = AxisData(
 			mode=AxisMode.AXIS,
 			byte_offset=4,
 			size=8,
 			data=AxisDataUnion(
 				axis=AxisModeData(
-					button=SCButtons.RPADTOUCH,
 					scale=-1.0,
 					offset=127.5,
 					clamp_max=257,
@@ -471,14 +469,14 @@ class DS4EvdevController(EvdevController):
 		315: "START",
 		316: "C",
 		317: "STICKPRESS",
-		318: "RPAD",
+		318: "RSTICKPRESS",
 		# 319: "CPAD",
 	}
 	AXIS_MAP = {
 		0: {"axis": "stick_x", "deadzone": 4, "max": 255, "min": 0},
 		1: {"axis": "stick_y", "deadzone": 4, "max": 0, "min": 255},
-		3: {"axis": "rpad_x", "deadzone": 4, "max": 255, "min": 0},
-		4: {"axis": "rpad_y", "deadzone": 8, "max": 0, "min": 255},
+		3: {"axis": "rstick_x", "deadzone": 4, "max": 255, "min": 0},
+		4: {"axis": "rstick_y", "deadzone": 8, "max": 0, "min": 255},
 		2: {"axis": "ltrig", "max": 255, "min": 0},
 		5: {"axis": "rtrig", "max": 255, "min": 0},
 		16: {"axis": "lpad_x", "deadzone": 0, "max": 1, "min": -1},

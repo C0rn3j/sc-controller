@@ -4,13 +4,19 @@
 		"buttons": [
 			"CROSS", "CIRCLE", "SQUARE", "TRIANGLE", "ds5SELECT",
 			"C", "ds5START", "LB", "RB", "LT", "RT",
-			"STICK", "LPAD", "RPAD", "LG", "RG"
+			"STICK", "LPAD", "RSTICK", "LG", "RG"
 		]
 	},
-	
+
+	"axes": [
+		"stick_x", "stick_y", "rstick_x", "rstick_y",
+		"dpad_x", "dpad_y", "cpad_x", "cpad_y",
+		"ltrig", "rtrig"
+	],
+
 	"_ " : "Buttons defined here are not actually loaded by driver, but gui",
 	"__" : "uses list to determine what buttons and axes are available",
-	
+
 	"gyros": true,
 	"buttons": {
 		"288": "Y",

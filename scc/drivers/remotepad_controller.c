@@ -28,7 +28,7 @@ inline static SCButton libretro_button_to_sc_button(int id) {
 	case RETRO_DEVICE_ID_JOYPAD_L2:			return B_LT;
 	case RETRO_DEVICE_ID_JOYPAD_R2:			return B_RT;
 	case RETRO_DEVICE_ID_JOYPAD_L3:			return B_STICKPRESS;
-	case RETRO_DEVICE_ID_JOYPAD_R3:			return B_RPADPRESS;
+	case RETRO_DEVICE_ID_JOYPAD_R3:			return B_RSTICKPRESS;
 	default:
 		return 0;
 	}
@@ -56,16 +56,16 @@ void remotepad_input(RemotePad* pad, struct remote_joypad_message* msg) {
 		
 		switch (msg->id) {
 		case RETRO_DEVICE_ID_JOYPAD_UP:
-			pad->input.lpad_y = (msg->state) ? STICK_PAD_MAX : 0;
+			pad->input.dpad_y = (msg->state) ? STICK_PAD_MAX : 0;
 			break;
 		case RETRO_DEVICE_ID_JOYPAD_DOWN:
-			pad->input.lpad_y = (msg->state) ? STICK_PAD_MIN : 0;
+			pad->input.dpad_y = (msg->state) ? STICK_PAD_MIN : 0;
 			break;
 		case RETRO_DEVICE_ID_JOYPAD_LEFT:
-			pad->input.lpad_x = (msg->state) ? STICK_PAD_MIN : 0;
+			pad->input.dpad_x = (msg->state) ? STICK_PAD_MIN : 0;
 			break;
 		case RETRO_DEVICE_ID_JOYPAD_RIGHT:
-			pad->input.lpad_x = (msg->state) ? STICK_PAD_MAX : 0;
+			pad->input.dpad_x = (msg->state) ? STICK_PAD_MAX : 0;
 			break;
 		case RETRO_DEVICE_ID_JOYPAD_L2:
 			pad->input.ltrig = (msg->state) ? TRIGGER_MAX : 0;
@@ -99,10 +99,10 @@ void remotepad_input(RemotePad* pad, struct remote_joypad_message* msg) {
 		case RETRO_DEVICE_INDEX_ANALOG_RIGHT:
 			switch (msg->id) {
 			case RETRO_DEVICE_ID_ANALOG_X:
-				pad->input.rpad_x = (AxisValue)msg->state;
+				pad->input.rstick_x = (AxisValue)msg->state;
 				break;
 			case RETRO_DEVICE_ID_ANALOG_Y:
-				pad->input.rpad_y = -(AxisValue)msg->state;
+				pad->input.rstick_y = -(AxisValue)msg->state;
 				break;
 			}
 			break;

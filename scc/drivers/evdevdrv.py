@@ -49,7 +49,7 @@ FIRST_BUTTON = 288
 
 EvdevControllerInput = namedtuple(
 	"EvdevControllerInput",
-	"buttons ltrig rtrig stick_x stick_y lpad_x lpad_y rpad_x rpad_y "
+	"buttons ltrig rtrig stick_x stick_y rstick_x rstick_y lpad_x lpad_y rpad_x rpad_y "
 	"accel_x accel_y accel_z "
 	"gpitch groll gyaw q1 q2 q3 q4 "
 	"cpad_x cpad_y",

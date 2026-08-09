@@ -44,7 +44,7 @@ FE_TRIGGER = 2
 FE_PAD     = 3
 FE_GYRO    = 4
 
-# Trigger names, pads, etc. These constants are used on multiple places
+# Trigger names, pads, etc. These constants are used in multiple places
 LEFT   = "LEFT"
 RIGHT  = "RIGHT"
 CPAD   = "CPAD"
@@ -133,7 +133,7 @@ class ControllerFlags(IntEnum):
 	EUREL_GYROS    = 1 << 2 # Gyro sensor values are provided as pitch, yaw
 	                                    # and roll instead of quaterion. 'q4' is unused
 	                                    # in such case.
-	HAS_CPAD       = 1 << 3 # Controller has DS4-like touchpad in center
+	HAS_CPAD       = 1 << 3 # Controller has DS4-like touchpad in the center
 	# TODO(Martin): Historically this assumed that it has dpad INSTEAD of touchpad - check if we have a problem with that
 	HAS_DPAD       = 1 << 4 # Controller has d-pad
 	NO_GRIPS       = 1 << 5 # Controller has no grips

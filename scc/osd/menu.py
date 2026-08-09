@@ -11,7 +11,7 @@ from math import sqrt
 from gi.repository import Gdk, GdkPixbuf, GdkX11, Gio, GLib, Gtk
 
 from scc.config import Config
-from scc.constants import DEFAULT, LEFT, RIGHT, SAME, STICK, STICK_PAD_MAX, ControllerFlags, SCButtons
+from scc.constants import DEFAULT, LEFT, RIGHT, RSTICK, SAME, STICK, STICK_PAD_MAX, ControllerFlags, SCButtons
 from scc.gui.daemon_manager import DaemonManager
 from scc.lib import xwrappers as X
 from scc.menu_data import MenuData, Separator, Submenu
@@ -121,7 +121,7 @@ class Menu(OSDWindow):
 			type=str,
 			metavar="option",
 			default=DEFAULT,
-			choices=(DEFAULT, LEFT, RIGHT, STICK),
+			choices=(DEFAULT, LEFT, RIGHT, STICK, RSTICK),
 			help="which pad or stick should be used to navigate menu",
 		)
 		self.argparser.add_argument(
@@ -376,6 +376,10 @@ class Menu(OSDWindow):
 		elif self._confirm_with == SAME:
 			if self._control_with == RIGHT:
 				self._confirm_with = SCButtons.RPADTOUCH.name
+			elif self._control_with == STICK:
+				self._confirm_with = SCButtons.STICKPRESS.name
+			elif self._control_with == RSTICK:
+				self._confirm_with = SCButtons.RSTICKPRESS.name
 			else:
 				self._confirm_with = SCButtons.LPADTOUCH.name
 
@@ -389,7 +393,7 @@ class Menu(OSDWindow):
 			side = "LEFT"
 			if self._control_with == "RIGHT":
 				side = "RIGHT"
-			elif self._control_with == "STICK":
+			elif self._control_with in ("STICK", "RSTICK"):
 				side = "BOTH"
 			self.feedback = side, int(self.args.feedback_amplitude)
 
@@ -515,9 +519,8 @@ class Menu(OSDWindow):
 		if what == self._control_with or (what == "LEFT" and self._control_with_dpad):
 			x, y = data
 			if self._use_cursor:
-				# Special case, both confirm_with and cancel_with
-				# can be set to STICK
-				if self._cancel_with == STICK and self._control_with == STICK:
+				# Special case, both confirm_with and cancel_with can be set to (L/R)STICK
+				if self._control_with in (STICK, RSTICK) and self._cancel_with == self._control_with:
 					if self._control_equals_cancel(daemon, x, y):
 						return None
 
@@ -547,6 +550,7 @@ class Menu(OSDWindow):
 		elif what == self._cancel_with:
 			if data[0] == 0:  # Button released
 				self.quit(-1)
+		return None
 
 
 class MenuIcon(Gtk.DrawingArea):

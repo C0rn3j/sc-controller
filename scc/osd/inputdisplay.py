@@ -1,5 +1,6 @@
-#!/usr/bin/env python3
 """SC-Controller - Input Display
+
+NOTE(Martin): Seems that this module was only meant to be called manually and the Input Mapper makes it seem redundant.
 """
 
 

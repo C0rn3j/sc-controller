@@ -2,6 +2,7 @@ import time
 from typing import NamedTuple
 
 from scc.constants import RSTICK, STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons
+from scc.drivers.evdevdrv import EvdevControllerInput
 from scc.drivers.fake import FakeController
 from scc.mapper import Mapper
 from scc.parser import ActionParser
@@ -134,6 +135,22 @@ class TestInputs:
 		mapper.profile.rstick = Recorder()
 		state = ZERO_STATE._replace(rstick_x=1234, rstick_y=-5678)
 		mapper.input(mapper.controller, ZERO_STATE, state)
+		assert events == [(1234, -5678, RSTICK)]
+
+	@input_test
+	def test_evdev_right_stick(self, mapper: Mapper) -> None:
+		"""Evdev controller states provide and dispatch separate right-stick axes."""
+		events = []
+
+		class Recorder:
+			def whole(self, mapper, x, y, what) -> None:
+				events.append((x, y, what))
+
+		mapper.controller.flags |= ControllerFlags.HAS_RSTICK
+		mapper.profile.rstick = Recorder()
+		zero_state = EvdevControllerInput(*[0] * len(EvdevControllerInput._fields))
+		state = zero_state._replace(rstick_x=1234, rstick_y=-5678)
+		mapper.input(mapper.controller, zero_state, state)
 		assert events == [(1234, -5678, RSTICK)]
 
 	@input_test

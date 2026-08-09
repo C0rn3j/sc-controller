@@ -264,7 +264,7 @@
        id="THUMBR"
        transform="matrix(-0.25631125,0,0,-0.25631125,185.04741,466.19596)">
       <path
-         id="RIGHT"
+         id="RSTICK"
          d="m 425.65443,717.63105 a 30.417901,30.037681 0 0 1 -30.41791,30.03767 30.417901,30.037681 0 0 1 -30.4179,-30.03767 30.417901,30.037681 0 0 1 30.4179,-30.03769 30.417901,30.037681 0 0 1 30.41791,30.03769 z"
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#000000;fill-opacity:0.182266;fill-rule:evenodd;stroke:#000000;stroke-width:1.05656791;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
          inkscape:connector-curvature="0"
@@ -273,7 +273,7 @@
          r="18.731649"
          cy="717.87646"
          cx="396.04147"
-         id="RPAD"
+         id="RSTICKPRESS"
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#000000;fill-opacity:0.21182269;fill-rule:evenodd;stroke:#000000;stroke-width:0.91912121;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
     </g>
   </g>

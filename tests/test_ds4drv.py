@@ -19,10 +19,23 @@ from scc.drivers.ds4drv import (
 	DS4_USB_OUTPUT_REPORT_ID,
 	DS4_USB_OUTPUT_REPORT_SIZE,
 	DS4_USB_OUTPUT_VALID_MOTOR,
+	DS4Controller,
+	DS4EvdevController,
 	DS4HIDController,
 	DS4HIDRawController,
-	DS4EvdevController,
 )
+from scc.drivers.hiddrv import AxisMode, AxisType, HIDControllerInput
+
+
+def test_hid_state_and_ds4_decoder_use_dedicated_right_stick() -> None:
+	controller = DS4Controller(Mock())
+	controller._load_hid_descriptor(None, None, None, None, None)
+
+	assert hasattr(HIDControllerInput(), "rstick_x")
+	assert controller._decoder.axes[AxisType.AXIS_RSTICK_X].mode == AxisMode.AXIS
+	assert controller._decoder.axes[AxisType.AXIS_RSTICK_Y].mode == AxisMode.AXIS
+	assert controller._decoder.axes[AxisType.AXIS_RPAD_X].mode == AxisMode.DISABLED
+	assert controller._decoder.axes[AxisType.AXIS_RPAD_Y].mode == AxisMode.DISABLED
 
 
 def make_controller() -> DS4HIDController:

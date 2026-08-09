@@ -1710,10 +1710,10 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 					log.error("Unknown file type: '%s'...", path)
 
 	def convert_old_profiles(self) -> None:
-		"""Checks all available profiles and automatically converts anything with version 1.3 or lower."""
+		"""Checks all available profiles and automatically converts outdated profiles."""
 		from scc.parser import ActionParser
 
-		to_convert = {}
+		to_convert: dict[str, Profile] = {}
 		for name in os.listdir(get_profiles_path()):
 			if name.endswith("~"):
 				# Ignore backups - https://github.com/kozec/sc-controller/issues/440
@@ -1725,28 +1725,31 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				log.debug("Failed loading old profile %s for conversion", name)
 				# Just ignore invalid profiles here
 				continue
-			if p.original_version < 1.4:
+			if p.original_version < Profile.VERSION:
 				to_convert[name] = p
 
 		if to_convert:
-			log.warning("Auto-converting old profile files to version 1.4. This should take only moment.")
+			log.warning(
+				"Auto-converting old profile files to version %s. This should take only moment.",
+				Profile.VERSION,
+			)
 			log.warning(
 				"All files are modified in-place, but backup files are created. Feel free to remove them later.",
 			)
 			for name in to_convert:
 				try:
-					to_convert[name].save("%s/%s.convert" % (get_profiles_path(), name))
-					os.rename("%s/%s" % (get_profiles_path(), name), "%s/%s~" % (get_profiles_path(), name))
-					os.rename("%s/%s.convert" % (get_profiles_path(), name), "%s/%s" % (get_profiles_path(), name))
+					to_convert[name].save(f"{get_profiles_path()}/{name}.convert")
+					os.rename(f"{get_profiles_path()}/{name}", f"{get_profiles_path()}/{name}~")
+					os.rename(f"{get_profiles_path()}/{name}.convert", f"{get_profiles_path()}/{name}")
 					log.warning("Converted %s (from v%s)", name, to_convert[name].original_version)
 				except Exception as e:
 					log.warning("Failed to convert %s: %s", name, e)
 
 
 class UndoRedo:
-	"""Just dummy container"""
+	"""Just a dummy container"""
 
-	def __init__(self, id, before, after):
+	def __init__(self, id, before, after) -> None:
 		self.id = id
 		self.before = before
 		self.after = after

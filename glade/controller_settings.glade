@@ -102,8 +102,12 @@
         <col id="1">x</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Stick Press</col>
+        <col id="0" translatable="yes">Left Stick Press</col>
         <col id="1">STICKPRESS</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Right Stick Press</col>
+        <col id="1">RSTICKPRESS</col>
       </row>
       <row>
         <col id="0" translatable="yes">Left Pad Press</col>
@@ -124,8 +128,12 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">Stick</col>
+        <col id="0" translatable="yes">Left Stick</col>
         <col id="1">STICK</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Right Stick</col>
+        <col id="1">RSTICK</col>
       </row>
       <row>
         <col id="0" translatable="yes">Left Pad</col>

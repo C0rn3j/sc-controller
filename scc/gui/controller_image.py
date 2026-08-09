@@ -21,6 +21,8 @@ log = logging.getLogger("ContImage")
 
 
 class ControllerImage(SVGWidget):
+	"""Default to Steam Controller (2015)"""
+
 	DEFAULT = "sc"
 	BUTTONS_WITH_IMAGES = (
 		SCButtons.A,
@@ -34,12 +36,11 @@ class ControllerImage(SVGWidget):
 	)
 
 	DEFAULT_AXES = (
-		# Shared between DS4 and Steam Controller
 		"stick_x",
 		"stick_y",
 		"lpad_x",
-		"lpad_x",
-		"rpad_y",
+		"lpad_y",
+		"rpad_x",
 		"rpad_y",
 		"ltrig",
 		"rtrig",

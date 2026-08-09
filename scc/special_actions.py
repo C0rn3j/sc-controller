@@ -20,7 +20,7 @@ from scc.actions import (
 	OSDEnabledAction,
 	SpecialAction,
 )
-from scc.constants import DEFAULT, LEFT, RIGHT, SAME, STICK, STICK_PAD_MAX, SCButtons
+from scc.constants import DEFAULT, LEFT, RIGHT, RSTICK, SAME, STICK, STICK_PAD_MAX, SCButtons
 from scc.modifiers import Modifier
 from scc.tools import clamp, nameof, strip_gesture
 
@@ -417,14 +417,15 @@ class MenuAction(Action, SpecialAction, HapticEnabledAction):
 					nameof(cancel_with),
 					*params,
 				)
-		if what == STICK:
-			# Special case, menu is displayed only if is moved enought
+		if what in (STICK, RSTICK):
+			# Special case, menu is displayed only if is moved enough
 			distance = sqrt(x * x + y * y)
 			if self._stick_distance < MenuAction.MIN_STICK_DISTANCE and distance > MenuAction.MIN_STICK_DISTANCE:
+				confirm_with = "STICKPRESS" if what == STICK else "RSTICKPRESS"
 				self.execute(
 					mapper,
 					"--control-with",
-					STICK,
+					what,
 					"-x",
 					str(self.x),
 					"-y",
@@ -433,9 +434,9 @@ class MenuAction(Action, SpecialAction, HapticEnabledAction):
 					"--size",
 					str(self.size),
 					"--confirm-with",
-					"STICKPRESS",
+					confirm_with,
 					"--cancel-with",
-					STICK,
+					what,
 					*params,
 				)
 			self._stick_distance = distance

@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING
 import cairo
 
 from scc.config import Config
-from scc.constants import STICK, STICK_PAD_MAX
+from scc.constants import RSTICK, STICK, STICK_PAD_MAX
 from scc.gui.svg_widget import SVGEditor, SVGWidget
 from scc.lib import xwrappers as X
 from scc.menu_data import Separator, Submenu
@@ -271,8 +271,8 @@ class RadialMenu(Menu):
 			return self._submenu.on_event(daemon, what, data)
 		if what == self._control_with:
 			x, y = data
-			# Special case, both confirm_with and cancel_with can be set to STICK
-			if self._cancel_with == STICK and self._control_with == STICK:
+				# Special case, both confirm_with and cancel_with can be set to (L/R)STICK
+			if self._control_with in (STICK, RSTICK) and self._cancel_with == self._control_with:
 				if self._control_equals_cancel(daemon, x, y):
 					return None
 

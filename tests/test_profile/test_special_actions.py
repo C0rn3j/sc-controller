@@ -1,5 +1,5 @@
 from scc.actions import ButtonAction
-from scc.constants import HapticPos, SCButtons
+from scc.constants import HapticPos, RSTICK, SCButtons
 from scc.special_actions import *
 
 from . import parser
@@ -8,6 +8,25 @@ MENU_CLASSES = (MenuAction, HorizontalMenuAction, GridMenuAction, RadialMenuActi
 
 
 class TestSpecialActions:
+	def test_menu_can_be_opened_and_controlled_with_right_stick(self):
+		calls = []
+
+		class Handler:
+			def on_sa_menu(self, mapper, action, *args):
+				calls.append(args)
+
+		class Mapper:
+			def get_special_actions_handler(self):
+				return Handler()
+
+		action = MenuAction("some.menu")
+		action.whole(Mapper(), MenuAction.MIN_STICK_DISTANCE + 1, 0, RSTICK)
+
+		args = calls[0]
+		assert args[args.index("--control-with") + 1] == RSTICK
+		assert args[args.index("--confirm-with") + 1] == SCButtons.RSTICKPRESS.name
+		assert args[args.index("--cancel-with") + 1] == RSTICK
+
 	# def test_tests(self):
 	# Tests if this class has test for each known SpecialAction defined.
 	# Removed: profile is not parsed this way anymore, so newly added actions

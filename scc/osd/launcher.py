@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """SC-Controller - OSD Launcher
 
 Display launcher with phone-like keyboard that user can use to select
@@ -13,7 +12,7 @@ import os
 from gi.repository import GdkX11, Gio, Gtk, Pango
 
 from scc.config import Config
-from scc.constants import DEFAULT, LEFT, RIGHT, STICK, STICK_PAD_MAX
+from scc.constants import DEFAULT, LEFT, RIGHT, RSTICK, STICK, STICK_PAD_MAX
 from scc.gui.daemon_manager import DaemonManager
 from scc.lib import xwrappers as X
 from scc.osd import OSDWindow, StickController
@@ -324,7 +323,18 @@ class Launcher(OSDWindow):
 			(self.controller, self.controller.connect("event", self.on_event)),
 			(self.controller, self.controller.connect("lost", self.on_controller_lost)),
 		]
-		locks = [LEFT, RIGHT, STICK, "LPAD", "RPAD", "LB", self._confirm_with, self._cancel_with]
+		locks = [
+			LEFT,
+			RIGHT,
+			RSTICK,
+			STICK,
+			"LPAD",
+			"RPAD",
+			"RSTICKPRESS",
+			"LB",
+			self._confirm_with,
+			self._cancel_with,
+		]
 		self.controller.lock(success, self.on_failed_to_lock, *locks)
 
 	def quit(self, code=-2):
@@ -403,9 +413,9 @@ class Launcher(OSDWindow):
 			if b:
 				self._string += b.get_label()[0]
 			self._update_items()
-		elif what == RIGHT:
+		elif what in (RIGHT, RSTICK):
 			self._move_cursor(self.cursors[1], *data)
-		elif what == "RPAD" and data[0] == 1:
+		elif what in ("RPAD", "RSTICKPRESS") and data[0] == 1:
 			b = self._get_under_cursor(self.cursors[1])
 			if b:
 				self._string += b.get_label()[0]
