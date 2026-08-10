@@ -1773,3 +1773,28 @@ HAPTIC_EFFECT_MODIFIERS = (
 	FeedbackSweepModifier,
 	FeedbackScriptModifier,
 )
+
+
+# Preset effects stored in the Steam Controller 2's firmware, played by
+# feedbackscript() / output report 0x85. Names are from iczero's reverse
+# engineering (collected in CouchTurtle/sc2-research) and are NOT verified
+# here -- what each actually feels like is still to be checked on hardware.
+# The list may be partial: nothing states that 0x10 is the last one.
+HAPTIC_SCRIPTS = (
+	(0x01, "Controller on"),
+	(0x02, "Controller very on"),
+	(0x03, "Trill up"),
+	(0x04, "Trill down"),
+	(0x05, "Controller off"),
+	(0x06, "Up five"),
+	(0x07, "Down five"),
+	(0x08, "Up six"),
+	(0x09, "Down six"),
+	(0x0A, "Whoop up"),
+	(0x0B, "Whoop down"),
+	(0x0C, "Phone ringing 1"),
+	(0x0D, "Ringback tone"),
+	(0x0E, "Phone ringing 2"),
+	(0x0F, "Phone ringing 3"),
+	(0x10, "Wilhelm scream"),
+)
