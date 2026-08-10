@@ -128,17 +128,23 @@ PAD_CLICK_RELEASE = 0x0400
 # the haptic notes in docs/steam-controller-v2-protocol.md.
 HAPTIC_GAIN_MIN_DB = -23
 HAPTIC_GAIN_MAX_DB = 24
-# HapticData's own default amplitude, mapped to 0 dB (nominal) so existing
-# profiles keep roughly the strength they had.
-HAPTIC_NOMINAL_AMPLITUDE = 512
+# The Strength slider's own bounds (glade adjFAmplitude). The gain range is
+# spread across exactly this, so every part of the slider does something:
+# anchoring 512 to 0 dB instead put +24 dB at amplitude 8192, leaving the top
+# three quarters of the travel clamped and indistinguishable on hardware.
+HAPTIC_AMPLITUDE_MIN = 16
+HAPTIC_AMPLITUDE_MAX = 32767
 
 
 def _gain_db(amplitude: int) -> int:
-    """HapticData amplitude -> report 0x82 gain, in dB relative to nominal."""
-    if amplitude <= 0:
-        return HAPTIC_GAIN_MIN_DB
-    db = 20.0 * math.log10(amplitude / HAPTIC_NOMINAL_AMPLITUDE)
-    return int(round(max(HAPTIC_GAIN_MIN_DB, min(HAPTIC_GAIN_MAX_DB, db))))
+    """HapticData amplitude -> report 0x82 gain in dB.
+
+    Logarithmic, because the slider is linear in amplitude while the device
+    takes decibels; this keeps the perceived step per pixel roughly even.
+    """
+    a = max(HAPTIC_AMPLITUDE_MIN, min(HAPTIC_AMPLITUDE_MAX, int(amplitude)))
+    t = math.log(a / HAPTIC_AMPLITUDE_MIN) / math.log(HAPTIC_AMPLITUDE_MAX / HAPTIC_AMPLITUDE_MIN)
+    return int(round(HAPTIC_GAIN_MIN_DB + t * (HAPTIC_GAIN_MAX_DB - HAPTIC_GAIN_MIN_DB)))
 
 TURNOFF_QUIET_PERIOD = 0.5
 
@@ -147,7 +153,7 @@ TURNOFF_QUIET_PERIOD = 0.5
 # Reach for the strong one past this gain, so strength still has an audible
 # range even if the firmware turns out to ignore the gain byte for a preset
 # effect -- which is the open question about it.
-HAPTIC_STRONG_CLICK_ABOVE_DB = 6
+HAPTIC_STRONG_CLICK_ABOVE_DB = 18
 HAPTIC_CLICK = 0x01
 HAPTIC_CLICK_STRONG = 0x02
 
@@ -427,36 +433,37 @@ class SC2Controller(SCController):
 			elif was and not now:
 				self.mapper.send_feedback(HapticData(pos, amplitude=PAD_CLICK_RELEASE))
 
-    def rumble(self, level: int, duration_ms: int) -> bool:
+	def rumble(self, strong: int, weak: int, duration_ms: int) -> bool:
 		"""Continuous game rumble via output report 0x80 (HAPTIC_RUMBLE).
 
-				Layout `80 <type u8> <intensity u16> <l_speed u16> <l_gain i8>
-				<r_speed u16> <r_gain i8>`, all little-endian. Valve's own SDL3 driver
-				for this controller passes SDL's two rumble magnitudes straight through
-				as the two speeds with both gains at 0 dB, so that is what we do; the
-				emulated pad reports a single magnitude, so both sides get it.
+		Layout `80 <type u8> <intensity u16> <l_speed u16> <l_gain i8>
+		<r_speed u16> <r_gain i8>`, all little-endian, both gains 0 dB -- which
+		is what Valve's own SDL3 driver for this controller sends.
 
-		This is the report the driver could not find before, which is why game
-		rumble was emulated as a train of pad clicks. The connect-time 0x80
-		traffic IS this report, sent with zero speeds -- so it was never felt,
-		and got recorded as "not haptic".
+		SDL calls its two magnitudes low_frequency_rumble and
+		high_frequency_rumble and puts them on left and right respectively;
+		those are the same two motors Linux calls strong (heavy) and weak
+		(light), so they map straight across. Sending one averaged value to
+		both sides instead -- which is what the uinput shim used to hand us --
+		made fftest's "strong rumble" and "weak rumble" feel identical.
 		"""
-		speed = max(0, min(0xFFFF, int(level)))
-		self._send_rumble(speed)
+		left = max(0, min(0xFFFF, int(strong)))
+		right = max(0, min(0xFFFF, int(weak)))
+		self._send_rumble(left, right)
 		# 0x80 carries no duration -- it runs until something changes it -- so
 		# the stop has to be scheduled here or a single effect rumbles forever.
 		if self._rumble_stop:
 			self.mapper.cancel_task(self._rumble_stop)
 			self._rumble_stop = None
-		if speed and duration_ms > 0:
+		if (left or right) and duration_ms > 0:
 			self._rumble_stop = self.mapper.schedule(
-				duration_ms / 1000.0, lambda *a: self._send_rumble(0))
+				duration_ms / 1000.0, lambda *a: self._send_rumble(0, 0))
 		return True
 
-	def _send_rumble(self, speed: int) -> None:
-		report = struct.pack("<BBHHbHb", 0x80, 0, 0, speed, 0, speed, 0)
+	def _send_rumble(self, left: int, right: int) -> None:
+		report = struct.pack("<BBHHbHb", 0x80, 0, 0, left, 0, right, 0)
 		if _HAPTIC_DEBUG:
-			log.info("RUMBLE  speed=%5d  report=%s", speed, report.hex(" "))
+			log.info("RUMBLE  left=%5d right=%5d  report=%s", left, right, report.hex(" "))
 		self._driver.send_haptic(self._out_ep, report)
 
 	def get_type(self) -> str:
@@ -573,7 +580,7 @@ class SC2Controller(SCController):
 		# it suits pad/scroll detents; sustained game rumble may need another
 		# report (not yet found). data.data = (position, amplitude, period, count).
 		pos = data.data[0]
-		amp = data.data[1] if len(data.data) > 1 else HAPTIC_NOMINAL_AMPLITUDE
+		amp = data.data[1] if len(data.data) > 1 else 512
 		if amp <= 0:
 			return
 		side = {HapticPos.LEFT: 0, HapticPos.RIGHT: 1, HapticPos.BOTH: 2}.get(pos, 1)
