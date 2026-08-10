@@ -39,6 +39,13 @@ if TYPE_CHECKING:
 
 log = logging.getLogger("Mapper")
 
+# SCC_HAPTIC_DEBUG=1 also dumps the raw force-feedback effect as the uinput
+# shim hands it over, which is the only way to tell a shim-side problem from a
+# driver-side one.
+_RUMBLE_DEBUG = bool(os.environ.get("SCC_HAPTIC_DEBUG"))
+if _RUMBLE_DEBUG:
+	log.setLevel(logging.INFO)
+
 
 class Mapper:
 	DEBUG = False
@@ -156,6 +163,9 @@ class Mapper:
 			# Controllers with real rumble motors take the magnitude directly;
 			# only fall through to the click-train emulation below if they
 			# cannot, which on a v1 is always, its "motors" being pad actuators.
+			if _RUMBLE_DEBUG:
+				log.info("FF-RAW  type=%d level=%d strong=%d weak=%d dur=%d reps=%d",
+					ef.type, ef.level, ef.strong, ef.weak, ef.duration, ef.repetitions)
 			strong, weak = ef.strong, ef.weak
 			if not strong and not weak and ef.level > 0:
 				# Only FF_RUMBLE carries the two magnitudes. Every other effect
