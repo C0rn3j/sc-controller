@@ -5,9 +5,10 @@ docs/steam-controller-v2-protocol.md. Validated end-to-end on real hardware
 via the wireless Puck (0x1304): lizard-mode disable plus button / stick / pad
 / trigger / gyro input through scc-daemon to uinput, and click haptics.
 Wired (0x1302) is supported too (single HID interface 0), and the GUI gets
-images/sc2-config.json. Still TODO: continuous variable rumble, the Bluetooth
-(0x1303) transport, real serial read-back, and a dedicated v2 GUI background
-image (currently reuses the Deck's).
+images/sc2-config.json. Continuous rumble uses output report 0x80. Still TODO:
+the Bluetooth (0x1303) transport, real serial read-back, the richer haptic
+effects (tone/sweep/script, reports 0x83-0x85), actuator audio streaming
+(0x86-0x89), and a dedicated v2 GUI background image (reuses the Deck's).
 
 Architecture mirrors the existing drivers:
   - the wireless "Controller Puck" (0x1304) is a multi-slot dongle, like
@@ -37,7 +38,6 @@ from scc.drivers.sc_dongle import SCController, SCPacketType
 from scc.drivers.usb import SCUSBDevice, register_hotplug_device
 
 if TYPE_CHECKING:
-	from scc.controller import HapticData
 	from scc.sccdaemon import SCCDaemon
 
 log = logging.getLogger("SC2")
@@ -391,6 +391,7 @@ class SC2Controller(SCController):
 		super().__init__(driver, ccidx, in_endpoint)
 		self._out_ep = out_endpoint  # interrupt-OUT endpoint for haptics
 		self._old_state = SC2_NULL
+		self._rumble_stop = None     # pending 'stop rumble' task, see rumble()
 
 	# pad-press button -> which actuator to pulse
 	_PAD_CLICK_SIDES = ((SCButtons.LPAD, HapticPos.LEFT), (SCButtons.RPAD, HapticPos.RIGHT))
@@ -411,6 +412,36 @@ class SC2Controller(SCController):
 				self.mapper.send_feedback(HapticData(pos, amplitude=PAD_CLICK_PRESS))
 			elif was and not now:
 				self.mapper.send_feedback(HapticData(pos, amplitude=PAD_CLICK_RELEASE))
+
+    def rumble(self, level: int, duration_ms: int) -> bool:
+		"""Continuous game rumble via output report 0x80 (HAPTIC_RUMBLE).
+
+				Layout `80 <type u8> <intensity u16> <l_speed u16> <l_gain i8>
+				<r_speed u16> <r_gain i8>`, all little-endian. Valve's own SDL3 driver
+				for this controller passes SDL's two rumble magnitudes straight through
+				as the two speeds with both gains at 0 dB, so that is what we do; the
+				emulated pad reports a single magnitude, so both sides get it.
+
+		This is the report the driver could not find before, which is why game
+		rumble was emulated as a train of pad clicks. The connect-time 0x80
+		traffic IS this report, sent with zero speeds -- so it was never felt,
+		and got recorded as "not haptic".
+		"""
+		speed = max(0, min(0xFFFF, int(level)))
+		self._send_rumble(speed)
+		# 0x80 carries no duration -- it runs until something changes it -- so
+		# the stop has to be scheduled here or a single effect rumbles forever.
+		if self._rumble_stop:
+			self.mapper.cancel_task(self._rumble_stop)
+			self._rumble_stop = None
+		if speed and duration_ms > 0:
+			self._rumble_stop = self.mapper.schedule(
+				duration_ms / 1000.0, lambda *a: self._send_rumble(0))
+		return True
+
+	def _send_rumble(self, speed: int) -> None:
+		self._driver.send_haptic(self._out_ep, struct.pack(
+			"<BBHHbHb", 0x80, 0, 0, speed, 0, speed, 0))
 
 	def get_type(self) -> str:
 		return "sc2"
