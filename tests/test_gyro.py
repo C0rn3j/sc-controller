@@ -193,6 +193,39 @@ class TestRangeOPHysteresis:
 		assert peak(m, Axes.ABS_X) > 0.15 * STICK_PAD_MAX
 
 
+class TestFeedbackEffects:
+	"""The action editor drives its effect chooser entirely off these classes.
+	A missing attribute on any one of them crashes the editor on construction,
+	as FeedbackModifier lacking PARAMS did -- so check every entry, not just
+	the ones that were interesting to write.
+	"""
+
+	def test_every_effect_is_complete(self):
+		import scc.actions  # noqa: F401  (import order: modifiers needs it first)
+		from scc.modifiers import HAPTIC_EFFECT_MODIFIERS
+
+		assert HAPTIC_EFFECT_MODIFIERS
+		seen = set()
+		for cls in HAPTIC_EFFECT_MODIFIERS:
+			for attr in ("EFFECT", "PARAMS", "LABEL", "COMMAND"):
+				assert hasattr(cls, attr), "%s has no %s" % (cls.__name__, attr)
+			assert cls.EFFECT not in seen, "duplicate effect on %s" % (cls.__name__,)
+			seen.add(cls.EFFECT)
+
+	def test_params_are_real_haptic_fields(self):
+		import scc.actions  # noqa: F401
+		from scc.constants import HapticPos
+		from scc.controller import HapticData
+		from scc.modifiers import HAPTIC_EFFECT_MODIFIERS
+
+		h = HapticData(HapticPos.LEFT)
+		for cls in HAPTIC_EFFECT_MODIFIERS:
+			for name in cls.PARAMS:
+				assert hasattr(h, name), (
+					"%s.PARAMS names %r, which HapticData does not carry"
+					% (cls.__name__, name))
+
+
 class TestFeedbackEffectSignatures:
 	"""The action editor builds each effect modifier positionally from its
 	PARAMS. If PARAMS and the signature drift apart the GUI silently writes
