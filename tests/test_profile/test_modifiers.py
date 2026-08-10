@@ -199,7 +199,7 @@ class TestModifiers:
 
 	def test_feedbackscript(self):
 		"""Tests if FeedbackScriptModifier is parsed correctly from json."""
-		a = parser.from_json_data({"action": "axis(ABS_X)", "feedbackscript": ["RIGHT", 3]})
+		a = parser.from_json_data({"action": "axis(ABS_X)", "feedbackscript": ["RIGHT", 512, 3]})
 		assert isinstance(a, FeedbackScriptModifier)
 		assert a.haptic.effect == HapticEffect.SCRIPT
 		assert a.haptic.script_id == 3

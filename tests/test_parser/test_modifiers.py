@@ -226,7 +226,7 @@ class TestModifiers:
 	def test_feedbackscript(self):
 		"""Tests if FeedbackScriptModifier survives a to_string/parse round trip."""
 		assert _parses_as_itself(FeedbackScriptModifier(HapticPos.BOTH, MouseAction()))
-		assert _parses_as_itself(FeedbackScriptModifier(HapticPos.RIGHT, 3, 512, MouseAction()))
+		assert _parses_as_itself(FeedbackScriptModifier(HapticPos.RIGHT, 512, 3, MouseAction()))
 
 	def test_rotate(self):
 		"""Tests if RotateInputModifier can be converted to string and parsed

@@ -30,6 +30,29 @@ PADDLE_NAMES = {
 }
 
 
+# Controllers whose actuators can synthesise waveforms, and so can play the
+# tone / sweep / firmware-script haptic effects rather than only a click.
+HAPTIC_EFFECT_TYPES = ("sc2",)
+
+
+def controller_type(app):
+	"""get_type() of the controller the GUI is currently editing, or None."""
+	try:
+		c = app.profile_switchers[0].get_controller() if app else None
+		return c.get_type() if c else None
+	except Exception:
+		return None
+
+
+def has_haptic_effects(app) -> bool:
+	"""True if the current controller can play more than a plain click.
+
+	Used to hide the effect chooser rather than offering options that would
+	silently degrade to a click on hardware that cannot synthesise them.
+	"""
+	return controller_type(app) in HAPTIC_EFFECT_TYPES
+
+
 def button_label(app, button, default):
 	"""Per-controller display name for a button: the rear paddles are
 	L4/L5/R4/R5 on paddle controllers (sc2/deck), the default (grip) name

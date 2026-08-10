@@ -219,13 +219,13 @@ Example:
 
 #### `feedbackscript`
 Like `feedback`, but plays an effect stored in the controller's own firmware.
-Value is `[side, script_id, amplitude]`, only the side being required.
+Value is `[side, amplitude, script_id]`, only the side being required.
 
 Example:
 
 	"pad_right": {
 	  "action": "trackball()",
-	  "feedbackscript": ["RIGHT", 3]
+	  "feedbackscript": ["RIGHT", 512, 3]
 	},
 
 Only hardware that can synthesise waveforms plays these three -- currently the
