@@ -95,13 +95,14 @@ class Controller:
 		'data' is HapticData instance.
 		"""
 
-	def rumble(self, level: int, duration_ms: int) -> bool:
+	def rumble(self, strong: int, weak: int, duration_ms: int) -> bool:
 		"""Plays continuous game rumble, if the hardware has real rumble motors.
 
-		'level' is 0..32767, 'duration_ms' how long it should run for. Returns
-		True if handled. The default returns False, which makes the mapper fall
-		back to emulating rumble as a train of haptic clicks -- the only option
-		on a Steam Controller v1, whose "motors" are the pad actuators.
+		'strong' and 'weak' are the two FF_RUMBLE magnitudes (0..65535): the
+		heavy low-frequency motor and the light high-frequency one. Returns True
+		if handled. The default returns False, which makes the mapper fall back
+		to emulating rumble as a train of haptic clicks -- the only option on a
+		Steam Controller v1, whose "motors" are the pad actuators.
 		"""
 		return False
 

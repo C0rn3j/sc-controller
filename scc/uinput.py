@@ -212,6 +212,8 @@ class FeedbackEvent(ctypes.Structure):
 		("repetitions", c_int32),
 		("type", c_uint16),
 		("level", c_int16),
+		("strong", c_uint16),   # FF_RUMBLE magnitudes, unmerged; see uinput.c
+		("weak", c_uint16),
 	]
 
 	def __init__(self):
