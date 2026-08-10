@@ -4,7 +4,7 @@ import logging
 import time
 from typing import TYPE_CHECKING
 
-from scc.constants import HapticPos
+from scc.constants import HapticEffect, HapticPos
 
 if TYPE_CHECKING:
 	from scc.drivers.hiddrv import HIDDecoder
@@ -154,10 +154,22 @@ class Controller:
 class HapticData:
 	"""Simple container to hold haptic feedback settings"""
 
-	def __init__(self, position: HapticPos, amplitude: int = 512, frequency: int = 4, period: int = 1024, count: int = 1) -> None:
+	def __init__(self, position: HapticPos, amplitude: int = 512, frequency: int = 4, period: int = 1024, count: int = 1,
+			effect=HapticEffect.CLICK, duration=200, tone_frequency=160,
+			end_frequency=40, lfo_frequency=0, lfo_depth=0, script_id=0) -> None:
 		"""'frequency' is used only when emulating touchpad
 
 		and describes how many pixels should mouse travel between two feedback ticks.
+
+		Everything from 'effect' on describes richer effects that only some
+		hardware can synthesise, and is ignored by drivers that cannot. They are
+		kept out of the 'data' tuple deliberately: that tuple is unpacked
+		positionally by existing drivers, so growing it would break them.
+
+		'duration' is in milliseconds; 'tone_frequency', 'end_frequency' and
+		'lfo_frequency' in Hz; 'lfo_depth' 0..255; 'script_id' selects a preset
+		stored in the controller's own firmware.
+
 		"""
 		data: tuple[int, int, int, int] = (int(position), int(amplitude), int(period), int(count))
 		if data[0] not in (HapticPos.LEFT, HapticPos.RIGHT, HapticPos.BOTH):
@@ -171,11 +183,26 @@ class HapticData:
 
 		self.data = data  # send to controller
 		self.frequency = frequency  # used internally
+		self.effect = HapticEffect(effect)
+		self.duration = int(duration)
+		self.tone_frequency = int(tone_frequency)
+		self.end_frequency = int(end_frequency)
+		self.lfo_frequency = int(lfo_frequency)
+		self.lfo_depth = max(0, min(255, int(lfo_depth)))
+		self.script_id = max(0, min(255, int(script_id)))
 
 	def with_position(self, position: HapticPos) -> HapticData:
 		"""Creates copy of HapticData with position value changed"""
 		trash, amplitude, period, count = self.data
-		return HapticData(position, amplitude, self.frequency, period, count)
+		rv = HapticData(position, amplitude, 1, period, count)
+		# self.frequency is already scaled by 1000, so it cannot be handed back
+		# to the constructor -- doing so multiplied it again on every copy, and
+		# send_feedback() copies for every HapticPos.BOTH effect.
+		rv.frequency = self.frequency
+		for attr in ("effect", "duration", "tone_frequency", "end_frequency",
+				"lfo_frequency", "lfo_depth", "script_id"):
+			setattr(rv, attr, getattr(self, attr))
+		return rv
 
 	def get_position(self) -> HapticPos:
 		return HapticPos(self.data[0])
