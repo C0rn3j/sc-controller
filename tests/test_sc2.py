@@ -6,8 +6,8 @@ or captured data is required. These lock the reverse-engineered byte/bit layout.
 
 import struct
 
-from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, SCButtons
-from scc.drivers.sc2 import TURNOFF_QUIET_PERIOD, SC2Controller, SC2Device, SCPacketType, parse_input
+from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, HapticPos, SCButtons
+from scc.drivers.sc2 import PAD_CLICK_PRESS, PAD_CLICK_RELEASE, SC2Controller, TURNOFF_QUIET_PERIOD, SC2Controller, SC2Device, SCPacketType, parse_input
 
 
 def _frame(
@@ -133,6 +133,54 @@ def test_rest_frame_is_neutral() -> None:
 	inp = parse_input(_frame())
 	assert inp.buttons == 0
 	assert (inp.dpad_x, inp.dpad_y, inp.lstick_x) == (0, 0, 0)
+
+
+class _FakeMapper:
+	def __init__(self) -> None:
+		self.sent: list[tuple[str, int]] = []
+
+	def send_feedback(self, hd) -> None:
+		self.sent.append((HapticPos(hd.data[0]).name, hd.data[1]))
+
+
+class _FakeState:
+	def __init__(self, buttons: int) -> None:
+		self.buttons = buttons
+
+
+def _click(old: int, new: int) -> list[tuple[str, int]]:
+	"""Runs queue_pad_click over a button transition, without touching USB."""
+	c = SC2Controller.__new__(SC2Controller)
+	c.mapper = _FakeMapper()
+	c._old_state = _FakeState(old)
+	c.queue_pad_click(_FakeState(new))
+	return c.mapper.sent
+
+
+class TestSimulatedPadClick:
+	"""The v2's pads have no dome switch, so the click is produced in software.
+	It has to fire on the edges only -- a pulse per frame while held would be a
+	continuous buzz.
+	"""
+
+	def test_press_pulses_that_side(self) -> None:
+		assert _click(0, SCButtons.LPAD) == [("LEFT", PAD_CLICK_PRESS)]
+		assert _click(0, SCButtons.RPAD) == [("RIGHT", PAD_CLICK_PRESS)]
+
+	def test_release_pulses_more_softly(self) -> None:
+		assert _click(SCButtons.LPAD, 0) == [("LEFT", PAD_CLICK_RELEASE)]
+		assert PAD_CLICK_RELEASE < PAD_CLICK_PRESS
+
+	def test_silent_while_held(self) -> None:
+		assert _click(SCButtons.LPAD, SCButtons.LPAD) == []
+
+	def test_sides_are_independent(self) -> None:
+		assert _click(SCButtons.LPAD, SCButtons.RPAD) == [
+			("LEFT", PAD_CLICK_RELEASE), ("RIGHT", PAD_CLICK_PRESS)]
+
+	def test_other_buttons_do_not_click(self) -> None:
+		assert _click(0, SCButtons.A) == []
+		assert _click(0, SCButtons.RPADTOUCH) == []
 
 
 class _Daemon:
