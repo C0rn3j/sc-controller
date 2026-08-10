@@ -182,13 +182,30 @@ at <https://github.com/CouchTurtle/sc2-research> (`docs/HAPTICS.md`):
 
 | report | name | payload |
 | --- | --- | --- |
-| `0x80` | `HAPTIC_RUMBLE` | `type u8, intensity u16, left{speed u16, gain i8}, right{speed u16, gain i8}` |
+| `0x80` | `HAPTIC_RUMBLE` | `type u8, intensity u16, left{speed u16, gain i8}, right{speed u16, gain i8}` — **verified live** |
 | `0x81` | `HAPTIC_PULSE` | `side u8, on_us u16, off_us u16, repeat u16` |
 | `0x82` | `HAPTIC_COMMAND` | `side u8, command u8 (0=stop all, 1=click, 2=strong click), gain i8 dB` |
 | `0x83` | `HAPTIC_LFO_TONE` | `side u8, gain i8, frequency u16 Hz, duration u16, lfo_freq u16 Hz, lfo_depth u8` |
 | `0x84` | `HAPTIC_LOG_SWEEP` | `side u8, gain i8, duration u16, start_freq u16, end_freq u16` |
 | `0x85` | `HAPTIC_SCRIPT` | `side u8, script_id u8, gain i8` |
 | `0x86`–`0x89` | audio stream | actuator PCM / u-law streaming |
+
+`0x80` is hardware-verified: `type`, `intensity` and both `gain` fields at 0,
+the two `speed` fields driving their own actuator independently. Confirmed with
+`fftest` on the emulated pad, whose "strong rumble (heavy motor)" and "weak
+rumble (light motor)" arrive as the two Linux FF_RUMBLE magnitudes and come out
+on the left and right actuators respectively:
+
+    strong=32768 weak=0      -> 80 00 00 00 00 80 00 00 00 00   (left only)
+    strong=0     weak=49152  -> 80 00 00 00 00 00 00 00 c0 00   (right only)
+
+**Open question:** the field is named `speed`, not amplitude, and `gain` is a
+separate i8 in dB. The second case above carries the LARGER number yet is
+clearly weaker in the hand, so `speed` is probably not linear amplitude -- more
+likely a motor speed, where higher means a lighter, higher-frequency buzz. Both
+gains are 0 dB here because that is what Valve's driver sends; exposing gain
+per side, and the `intensity` field, is untried and may be the better volume
+control.
 
 So **continuous variable rumble is `0x80`**, and the earlier note here that it was
 "not yet captured" was wrong -- the connect-time `0x80` traffic is that report,
