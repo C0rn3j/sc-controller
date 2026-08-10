@@ -1407,6 +1407,11 @@ class _EffectFeedbackModifier(FeedbackModifier):
 	"""
 
 	EFFECT = None
+	# Parameters after 'amplitude', in _mod_init order. The action editor builds
+	# these modifiers positionally from this, so it lives here rather than in
+	# the GUI -- kept in two places it drifts, and the drift is silent: values
+	# land in the wrong parameter.
+	PARAMS = ()
 
 	def _make_haptic(self, position, amplitude, **kw):
 		return HapticData(position, amplitude, effect=self.EFFECT, **kw)
@@ -1438,6 +1443,7 @@ class FeedbackToneModifier(_EffectFeedbackModifier):
 	COMMAND = "feedbacktone"
 	PROFILE_KEY_PRIORITY = -4
 	EFFECT = HapticEffect.TONE
+	PARAMS = ("tone_frequency", "duration", "lfo_frequency", "lfo_depth")
 
 	def _mod_init(self, position, amplitude=512, tone_frequency=160, duration=200,
 			lfo_frequency=0, lfo_depth=0):
@@ -1455,6 +1461,7 @@ class FeedbackSweepModifier(_EffectFeedbackModifier):
 	COMMAND = "feedbacksweep"
 	PROFILE_KEY_PRIORITY = -4
 	EFFECT = HapticEffect.SWEEP
+	PARAMS = ("tone_frequency", "end_frequency", "duration")
 
 	def _mod_init(self, position, amplitude=512, tone_frequency=160,
 			end_frequency=40, duration=200):
@@ -1472,8 +1479,11 @@ class FeedbackScriptModifier(_EffectFeedbackModifier):
 	COMMAND = "feedbackscript"
 	PROFILE_KEY_PRIORITY = -4
 	EFFECT = HapticEffect.SCRIPT
+	PARAMS = ("script_id",)
 
-	def _mod_init(self, position, script_id=0, amplitude=512):
+	def _mod_init(self, position, amplitude=512, script_id=0):
+		# amplitude second, matching feedback() and the other two effects, so
+		# every one of them serialises as (side, amplitude, ...)
 		self._attach(self._make_haptic(position, amplitude, script_id=script_id))
 
 	def __str__(self):
