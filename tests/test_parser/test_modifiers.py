@@ -210,6 +210,24 @@ class TestModifiers:
 		assert _parses_as_itself(FeedbackModifier(HapticPos.LEFT, MouseAction()))
 		assert _parses_as_itself(FeedbackModifier(HapticPos.RIGHT, MouseAction()))
 
+	def test_feedbacktone(self):
+		"""Tests if FeedbackToneModifier survives a to_string/parse round trip."""
+		assert _parses_as_itself(FeedbackToneModifier(HapticPos.BOTH, MouseAction()))
+		assert _parses_as_itself(FeedbackToneModifier(HapticPos.LEFT, 512, 220, MouseAction()))
+		assert _parses_as_itself(
+			FeedbackToneModifier(HapticPos.RIGHT, 512, 220, 300, 4, 128, MouseAction()))
+
+	def test_feedbacksweep(self):
+		"""Tests if FeedbackSweepModifier survives a to_string/parse round trip."""
+		assert _parses_as_itself(FeedbackSweepModifier(HapticPos.BOTH, MouseAction()))
+		assert _parses_as_itself(
+			FeedbackSweepModifier(HapticPos.LEFT, 512, 400, 80, 250, MouseAction()))
+
+	def test_feedbackscript(self):
+		"""Tests if FeedbackScriptModifier survives a to_string/parse round trip."""
+		assert _parses_as_itself(FeedbackScriptModifier(HapticPos.BOTH, MouseAction()))
+		assert _parses_as_itself(FeedbackScriptModifier(HapticPos.RIGHT, 3, 512, MouseAction()))
+
 	def test_rotate(self):
 		"""Tests if RotateInputModifier can be converted to string and parsed
 		back to same.
