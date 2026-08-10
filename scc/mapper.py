@@ -156,8 +156,15 @@ class Mapper:
 			# Controllers with real rumble motors take the magnitude directly;
 			# only fall through to the click-train emulation below if they
 			# cannot, which on a v1 is always, its "motors" being pad actuators.
+			strong, weak = ef.strong, ef.weak
+			if not strong and not weak and ef.level > 0:
+				# Only FF_RUMBLE carries the two magnitudes. Every other effect
+				# type -- and any older libuinput -- provides just the averaged
+				# level, so drive both motors from that instead of handing the
+				# controller a silent (0, 0) and returning as if it played.
+				strong = weak = ef.level
 			if self.controller and self.controller.rumble(
-					ef.strong, ef.weak, int(ef.duration * max(1, ef.repetitions))):
+					strong, weak, int(ef.duration * max(1, ef.repetitions))):
 				return
 			period_command = 0
 			amplitude = 0
