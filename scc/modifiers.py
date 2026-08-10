@@ -43,6 +43,8 @@ from scc.constants import (
 	STICK_PAD_MIN,
 	LSTICKTILT,
 	TRIGGER_MAX,
+	HapticEffect,
+	ControllerFlags,
 	HapticPos,
 	SCButtons, SCPads, SCSticks, SCTouchpads,
 )
@@ -1389,6 +1391,94 @@ class FeedbackModifier(Modifier):
 
 	def compress(self):
 		return self.action.compress()
+
+
+class _EffectFeedbackModifier(FeedbackModifier):
+	"""Shared base for the richer haptic effects.
+
+	These behave exactly like feedback() -- wrap an action, hand it a
+	HapticData -- and differ only in which effect that data describes. They
+	are separate commands rather than extra parameters on feedback() because
+	feedback() appears in every existing profile and its argument list is
+	positional; growing it would change the meaning of files already on disk.
+
+	Only hardware with a synthesising actuator can play them (currently the
+	Steam Controller 2). Drivers that cannot fall back to a plain click, so a
+	profile written for one controller still does something on another.
+	"""
+
+	EFFECT = None
+
+	def _make_haptic(self, position, amplitude, **kw):
+		return HapticData(position, amplitude, effect=self.EFFECT, **kw)
+
+	def _attach(self, haptic):
+		self.haptic = haptic
+		a = self.action
+		while a:
+			if hasattr(a, "set_haptic"):
+				a.set_haptic(self.haptic)
+				break
+			a = a.action if hasattr(a, "action") else None
+
+	@classmethod
+	def decode(cls, data, a, *b):
+		args = list(data[cls.COMMAND])
+		if hasattr(HapticPos, args[0]):
+			args[0] = getattr(HapticPos, args[0])
+		args.append(a)
+		return cls(*args)
+
+	def to_string(self, multiline=False, pad=0):
+		return self._mod_to_string(self.strip_defaults(), multiline, pad)
+
+
+class FeedbackToneModifier(_EffectFeedbackModifier):
+	"""Sine tone at a fixed frequency, optionally modulated by an LFO."""
+
+	COMMAND = "feedbacktone"
+	PROFILE_KEY_PRIORITY = -4
+	EFFECT = HapticEffect.TONE
+
+	def _mod_init(self, position, amplitude=512, tone_frequency=160, duration=200,
+			lfo_frequency=0, lfo_depth=0):
+		self._attach(self._make_haptic(position, amplitude,
+			tone_frequency=tone_frequency, duration=duration,
+			lfo_frequency=lfo_frequency, lfo_depth=lfo_depth))
+
+	def __str__(self):
+		return "<with Tone Feedback %s>" % (self.action,)
+
+
+class FeedbackSweepModifier(_EffectFeedbackModifier):
+	"""Logarithmic frequency sweep between two frequencies."""
+
+	COMMAND = "feedbacksweep"
+	PROFILE_KEY_PRIORITY = -4
+	EFFECT = HapticEffect.SWEEP
+
+	def _mod_init(self, position, amplitude=512, tone_frequency=160,
+			end_frequency=40, duration=200):
+		self._attach(self._make_haptic(position, amplitude,
+			tone_frequency=tone_frequency, end_frequency=end_frequency,
+			duration=duration))
+
+	def __str__(self):
+		return "<with Sweep Feedback %s>" % (self.action,)
+
+
+class FeedbackScriptModifier(_EffectFeedbackModifier):
+	"""Preset effect stored in the controller's own firmware."""
+
+	COMMAND = "feedbackscript"
+	PROFILE_KEY_PRIORITY = -4
+	EFFECT = HapticEffect.SCRIPT
+
+	def _mod_init(self, position, script_id=0, amplitude=512):
+		self._attach(self._make_haptic(position, amplitude, script_id=script_id))
+
+	def __str__(self):
+		return "<with Script Feedback %s>" % (self.action,)
 
 
 class RotateInputModifier(Modifier):
