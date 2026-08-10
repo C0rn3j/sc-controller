@@ -120,8 +120,25 @@ UNLIZARD_INTERVAL = 100
 # for one), so this cannot be expressed as a profile and has to be built in.
 # Emitted on press and, more softly, on release, because that is what a real
 # dome switch does: it clicks going down and again springing back.
-PAD_CLICK_PRESS = 0x6000
-PAD_CLICK_RELEASE = 0x3000
+PAD_CLICK_PRESS = 0x1000
+PAD_CLICK_RELEASE = 0x0400
+
+# Report 0x82's last byte is a SIGNED gain in decibels, clamped by the firmware
+# to this range -- not a 0..255 amplitude, which is what it was being fed. See
+# the haptic notes in docs/steam-controller-v2-protocol.md.
+HAPTIC_GAIN_MIN_DB = -23
+HAPTIC_GAIN_MAX_DB = 24
+# HapticData's own default amplitude, mapped to 0 dB (nominal) so existing
+# profiles keep roughly the strength they had.
+HAPTIC_NOMINAL_AMPLITUDE = 512
+
+
+def _gain_db(amplitude: int) -> int:
+    """HapticData amplitude -> report 0x82 gain, in dB relative to nominal."""
+    if amplitude <= 0:
+        return HAPTIC_GAIN_MIN_DB
+    db = 20.0 * math.log10(amplitude / HAPTIC_NOMINAL_AMPLITUDE)
+    return int(round(max(HAPTIC_GAIN_MIN_DB, min(HAPTIC_GAIN_MAX_DB, db))))
 
 TURNOFF_QUIET_PERIOD = 0.5
 
@@ -509,11 +526,15 @@ class SC2Controller(SCController):
 		# it suits pad/scroll detents; sustained game rumble may need another
 		# report (not yet found). data.data = (position, amplitude, period, count).
 		pos = data.data[0]
-		amp = data.data[1] if len(data.data) > 1 else 0x4000
+		amp = data.data[1] if len(data.data) > 1 else HAPTIC_NOMINAL_AMPLITUDE
 		if amp <= 0:
 			return
 		side = {HapticPos.LEFT: 0, HapticPos.RIGHT: 1, HapticPos.BOTH: 2}.get(pos, 1)
-		report = bytes([0x82, side, 0x01, min(255, amp >> 7)])
+		# "b" -- the gain is signed. Packing it as an unsigned 0..255 amplitude
+		# made the strength control non-monotonic: it rose over the bottom tenth
+		# of the slider, sat clamped at max through the middle, then wrapped
+		# negative so that turning it UP past halfway made the pad quieter.
+		report = struct.pack("<BBBb", 0x82, side, 0x01, _gain_db(amp))
 		self._driver.send_haptic(self._out_ep, report)
 
 
