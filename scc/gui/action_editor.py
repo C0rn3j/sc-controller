@@ -139,6 +139,8 @@ class ActionEditor(Editor):
 		self.deadzone = [0, 0]               # Deadzone slider values, set later
 		self.deadzone_mode = None            # None for 'disabled'
 		self.feedback_position = None        # None for 'disabled'
+		self.feedback_effect = HapticEffect.CLICK  # chosen haptic effect
+		self.feedback_params = {}            # effect parameter values by name
 		self.smoothing = None                # None for 'disabled'
 		self.friction = -1                   # -1 for 'disabled'
 		self.click = False                   # Click modifier value. None for disabled
@@ -611,6 +613,21 @@ class ActionEditor(Editor):
 			self.smoothing = smoothing
 			set_action = True
 
+		# Feedback effect and its parameters. These have to be diffed here like
+		# every other modifier setting: update_modifiers is what decides the
+		# action is dirty, and anything it does not track is dropped the next
+		# time some other change rebuilds the editor from state.
+		if getattr(self, "_feedback_effects_supported", False):
+			effect = self.get_feedback_effect()
+			if self.feedback_effect != effect:
+				self.feedback_effect = effect
+				set_action = True
+			for key, (trash, scl, trash2) in self.feedback_effect_rows.items():
+				value = int(scl.get_value())
+				if self.feedback_params.get(key) != value:
+					self.feedback_params[key] = value
+					set_action = True
+
 		# Rest
 		if self.click is not None and cbRequireClick.get_active() != self.click:
 			self.click = cbRequireClick.get_active()
@@ -672,7 +689,7 @@ class ActionEditor(Editor):
 				grFeedback = self.builder.get_object("grFeedback")
 				if from_custom or (cbFeedback.get_active() and grFeedback.get_sensitive()):
 					side = FEEDBACK_SIDES[cbFeedbackSide.get_active()]
-					effect = self.get_feedback_effect()
+					effect = self.feedback_effect
 					if effect == HapticEffect.CLICK:
 						action = FeedbackModifier(*([side] + feedback + [action]))
 					else:
@@ -680,7 +697,7 @@ class ActionEditor(Editor):
 						# order its modifier declares them
 						cls = next(c for c in HAPTIC_EFFECT_MODIFIERS if c.EFFECT == effect)
 						args = [side, self.feedback[0]]
-						args += [int(self.feedback_effect_rows[k][1].get_value())
+						args += [self.feedback_params.get(k, FEEDBACK_PARAMS[k][4])
 							for k in cls.PARAMS]
 						action = cls(*(args + [action]))
 
@@ -771,6 +788,7 @@ class ActionEditor(Editor):
 			grid.attach(lbl, 0, row, 1, 1)
 			grid.attach(scl, 1, row, 1, 1)
 			self.feedback_effect_rows[key] = (lbl, scl, default)
+			self.feedback_params[key] = default
 			row += 1
 
 		self._feedback_effects_supported = has_haptic_effects(self.app)
@@ -834,7 +852,9 @@ class ActionEditor(Editor):
 				self.feedback_position = action.haptic.get_position()
 				self.feedback[0] = action.haptic.get_amplitude()
 				effect = getattr(action.haptic, "effect", HapticEffect.CLICK)
+				self.feedback_effect = effect
 				if effect == HapticEffect.CLICK:
+					self._cbFeedbackEffect.set_active(0)
 					self.feedback[1] = action.haptic.get_frequency()
 					self.feedback[2] = action.haptic.get_period()
 				else:
@@ -842,7 +862,9 @@ class ActionEditor(Editor):
 						if c.EFFECT == effect:
 							self._cbFeedbackEffect.set_active(i)
 					for key, (trash, scl, trash2) in self.feedback_effect_rows.items():
-						scl.set_value(getattr(action.haptic, key, 0))
+						value = getattr(action.haptic, key, FEEDBACK_PARAMS[key][4])
+						self.feedback_params[key] = int(value)
+						scl.set_value(value)
 				self._update_feedback_effect_rows()
 				action = action.action
 			if isinstance(action, SmoothModifier):
