@@ -115,6 +115,38 @@ class HapticPos(IntEnum):
 	BOTH  = 2 # emulated
 
 
+class HapticEffect(IntEnum):
+	"""Which kind of haptic effect a HapticData describes.
+
+	CLICK is the only one every controller can do, and the only one a v1
+	understands at all; the rest need hardware with a synthesising actuator
+	(currently just the Steam Controller 2, output reports 0x83-0x85). A
+	driver that does not know an effect should fall back to CLICK rather than
+	going silent.
+	"""
+
+	CLICK  = 0  # a single tick -- what feedback() has always meant
+	TONE   = 1  # sine at a fixed frequency, optionally LFO-modulated
+	SWEEP  = 2  # logarithmic frequency sweep between two frequencies
+	SCRIPT = 3  # a preset effect stored in the controller firmware
+
+
+class HapticEffect(IntEnum):
+	"""Which kind of haptic effect a HapticData describes.
+
+	CLICK is the only one every controller can do, and the only one a v1
+	understands at all; the rest need hardware with a synthesising actuator
+	(currently just the Steam Controller 2, output reports 0x83-0x85). A
+	driver that does not know an effect should fall back to CLICK rather than
+	going silent.
+	"""
+
+	CLICK  = 0  # a single tick -- what feedback() has always meant
+	TONE   = 1  # sine at a fixed frequency, optionally LFO-modulated
+	SWEEP  = 2  # logarithmic frequency sweep between two frequencies
+	SCRIPT = 3  # a preset effect stored in the controller firmware
+
+
 class ControllerFlags(IntFlag):
 	"""Used by mapper to workaround some physical differences between Steam Controller and other pads."""
 

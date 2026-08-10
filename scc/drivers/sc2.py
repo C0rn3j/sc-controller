@@ -32,7 +32,14 @@ from typing import TYPE_CHECKING, NamedTuple
 
 import usb1
 
-from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, HapticPos, SCButtons
+from scc.constants import (
+    STICK_PAD_MAX,
+    STICK_PAD_MIN,
+    ControllerFlags,
+    HapticEffect,
+    HapticPos,
+    SCButtons,
+)
 from scc.controller import HapticData
 from scc.drivers.sc_dongle import SCController, SCPacketType
 from scc.drivers.usb import SCUSBDevice, register_hotplug_device
@@ -585,16 +592,31 @@ class SC2Controller(SCController):
 			return
 		side = {HapticPos.LEFT: 0, HapticPos.RIGHT: 1, HapticPos.BOTH: 2}.get(pos, 1)
 		gain = _gain_db(amp)
-		command = HAPTIC_CLICK_STRONG if gain > HAPTIC_STRONG_CLICK_ABOVE_DB else HAPTIC_CLICK
-		# "b" -- the gain is signed. Packing it as an unsigned 0..255 amplitude
-		# made the strength control non-monotonic: it rose over the bottom tenth
-		# of the slider, sat clamped at max through the middle, then wrapped
-		# negative so that turning it UP past halfway made the pad quieter.
-		report = struct.pack("<BBBb", 0x82, side, command, gain)
+		effect = getattr(data, "effect", HapticEffect.CLICK)
+		if effect == HapticEffect.TONE:
+			# 0x83 HAPTIC_LFO_TONE: side u8, gain i8, freq u16, duration u16,
+			# lfo_freq u16, lfo_depth u8
+			report = struct.pack("<BBbHHHB", 0x83, side, gain, data.tone_frequency,
+			                     data.duration, data.lfo_frequency, data.lfo_depth)
+		elif effect == HapticEffect.SWEEP:
+			# 0x84 HAPTIC_LOG_SWEEP: side u8, gain i8, duration u16,
+			# start_freq u16, end_freq u16
+			report = struct.pack("<BBbHHH", 0x84, side, gain, data.duration,
+			                     data.tone_frequency, data.end_frequency)
+		elif effect == HapticEffect.SCRIPT:
+			# 0x85 HAPTIC_SCRIPT: side u8, script_id u8, gain i8
+			report = struct.pack("<BBBb", 0x85, side, data.script_id, gain)
+		else:
+			# 0x82 HAPTIC_COMMAND. "b" -- the gain is signed. Packing it as an
+			# unsigned 0..255 amplitude made the strength control
+			# non-monotonic: it rose over the bottom tenth of the slider, sat
+			# clamped at max through the middle, then wrapped negative so that
+			# turning it UP past halfway made the pad quieter.
+			command = HAPTIC_CLICK_STRONG if gain > HAPTIC_STRONG_CLICK_ABOVE_DB else HAPTIC_CLICK
+			report = struct.pack("<BBBb", 0x82, side, command, gain)
 		if _HAPTIC_DEBUG:
-			log.info("HAPTIC  amplitude=%6d -> %s  gain=%+3d dB  report=%s",
-			         amp, "CLICK_STRONG" if command == HAPTIC_CLICK_STRONG else "CLICK",
-			         gain, report.hex(" "))
+			log.info("HAPTIC  %-6s amplitude=%6d  gain=%+3d dB  report=%s",
+			         HapticEffect(effect).name, amp, gain, report.hex(" "))
 		self._driver.send_haptic(self._out_ep, report)
 
 
