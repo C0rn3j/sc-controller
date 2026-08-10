@@ -411,7 +411,7 @@ Like feedback(), but sweeps logarithmically from 'tone_frequency' to
 requirement, and the same fallback, as feedbacktone().
 
 
-#### <a name="feedbackscript"></a> feedbackscript(side, [script_id=0 [, amplitude=512 ]], action)
+#### <a name="feedbackscript"></a> feedbackscript(side, [amplitude=512 [, script_id=0 ]], action)
 Like feedback(), but plays an effect stored in the controller's own firmware,
 selected by 'script_id'. Which ids exist and what each one feels like is
 hardware specific and not yet catalogued. Same hardware requirement, and the
