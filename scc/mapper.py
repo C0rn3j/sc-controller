@@ -176,7 +176,7 @@ class Mapper:
 			# only fall through to the click-train emulation below if they
 			# cannot, which on a v1 is always, its "motors" being pad actuators.
 			if self.controller and self.controller.rumble(
-					ef.level, int(ef.duration * max(1, ef.repetitions))):
+					ef.strong, ef.weak, int(ef.duration * max(1, ef.repetitions))):
 				return
 			period_command = 0
 			amplitude = 0
