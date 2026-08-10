@@ -187,7 +187,21 @@ at <https://github.com/CouchTurtle/sc2-research> (`docs/HAPTICS.md`):
 | `0x82` | `HAPTIC_COMMAND` | `side u8, command u8 (0=stop all, 1=click, 2=strong click), gain i8 dB` |
 | `0x83` | `HAPTIC_LFO_TONE` | `side u8, gain i8, frequency u16 Hz, duration u16, lfo_freq u16 Hz, lfo_depth u8` |
 | `0x84` | `HAPTIC_LOG_SWEEP` | `side u8, gain i8, duration u16, start_freq u16, end_freq u16` |
-| `0x85` | `HAPTIC_SCRIPT` | `side u8, script_id u8, gain i8` |
+| `0x85` | `HAPTIC_SCRIPT` | `side u8, script_id u8, gain i8` -- ids below |
+
+Firmware preset ids for `0x85`, from the same RE and unverified here (the list
+may be partial; nothing says `0x10` is the last):
+
+| id | name | id | name |
+| --- | --- | --- | --- |
+| `0x01` | CONTROLLER_ON | `0x09` | DOWN_SIX |
+| `0x02` | CONTROLLER_VERY_ON | `0x0a` | WHOOP_UP_3 |
+| `0x03` | TRILL_UP | `0x0b` | WHOOP_DOWN |
+| `0x04` | TRILL_DOWN | `0x0c` | PHONE_RINGING_1 |
+| `0x05` | CONTROLLER_OFF | `0x0d` | RINGBACK_TONE |
+| `0x06` | UP_FIVE | `0x0e` | PHONE_RINGING_2 |
+| `0x07` | DOWN_FIVE | `0x0f` | PHONE_RINGING_3 |
+| `0x08` | UP_SIX | `0x10` | WILHELM_SCREAM |
 | `0x86`–`0x89` | audio stream | actuator PCM / u-law streaming |
 
 `0x80` is hardware-verified: `type`, `intensity` and both `gain` fields at 0,
