@@ -191,3 +191,26 @@ class TestRangeOPHysteresis:
 			q = int(a * EUREL)
 			action.gyro(m, rate, rate, rate, q, q, q, 0)
 		assert peak(m, Axes.ABS_X) > 0.15 * STICK_PAD_MAX
+
+
+class TestFeedbackEffectSignatures:
+	"""The action editor builds each effect modifier positionally from its
+	PARAMS. If PARAMS and the signature drift apart the GUI silently writes
+	values into the wrong parameter -- which it did once, feeding amplitude
+	into script_id.
+	"""
+
+	def test_params_match_signatures(self):
+		import inspect
+
+		from scc.modifiers import (
+			FeedbackScriptModifier,
+			FeedbackSweepModifier,
+			FeedbackToneModifier,
+		)
+
+		for cls in (FeedbackToneModifier, FeedbackSweepModifier, FeedbackScriptModifier):
+			args = inspect.getfullargspec(cls._mod_init).args
+			assert args == ["self", "position", "amplitude", *cls.PARAMS], (
+				"%s signature %s does not match PARAMS %s"
+				% (cls.__name__, args, cls.PARAMS))
