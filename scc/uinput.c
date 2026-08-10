@@ -298,6 +298,11 @@ int uinput_ff_read(int fd, int ff_effects_max, struct feedback_effect** ff_effec
 							ff_effects[eid]->repetitions = 0;
 							ff_effects[eid]->type = upload.effect.type;
 							ff_effects[eid]->level = 0x4FFF;
+							// Only FF_RUMBLE fills these; default them so a slot
+							// reused from a previous rumble cannot leak its
+							// magnitudes into an effect of another type.
+							ff_effects[eid]->strong = 0;
+							ff_effects[eid]->weak = 0;
 							// This part converts all possible event types to one that
 							// SCC and controller really supports. Only output level is used.
 							switch (upload.effect.type) {
