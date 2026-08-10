@@ -193,3 +193,20 @@ store. Deferred until there is a reason to want it beyond completeness.
 Prerequisites: the simpler effects (0x83 tone / 0x84 sweep / 0x85 script) land
 first, since they settle how per-effect parameters are represented in
 HapticData and in the GUI.
+
+## Haptic feedback on button presses
+
+feedback() is offered by ten actions -- XY, ball, circular, circularabs, dpad,
+hipfire, menu, mouse, trackpad, trigger -- but NOT by button. Haptics were
+conceived upstream as continuous feedback tied to movement (pad-travel ticks,
+trackball detents) rather than a per-press buzz, so ButtonAction never grew
+set_haptic.
+
+On the v2 that reads as a gap: a button press producing a tick is exactly what
+the hardware is for, and it is what makes the pads feel like buttons already.
+
+Deferred deliberately. Adding MOD_FEEDBACK to ButtonAction changes which
+modifiers the editor offers for buttons on EVERY controller, so the GUI side
+is not a small change and it needs thinking about before it is worth doing --
+what a v1 user is offered, whether the feedback panel makes sense next to a
+button binding, and whether it should be per-press or press-and-release.

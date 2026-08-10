@@ -61,7 +61,7 @@ def test_effect_rows_follow_the_chosen_effect(editor):
 
 	for i, cls in enumerate(HAPTIC_EFFECT_MODIFIERS):
 		editor._cbFeedbackEffect.set_active(i)
-		shown = [k for k, (trash, scl, trash2) in editor.feedback_effect_rows.items() if scl.get_visible()]
+		shown = [k for k, (trash, w, trash2) in editor.feedback_effect_rows.items() if w.get_visible()]
 		assert shown == list(cls.PARAMS), (
 			"%s shows rows %s but declares %s" % (cls.LABEL, shown, cls.PARAMS))
 		assert editor.get_feedback_effect() == cls.EFFECT
@@ -81,7 +81,8 @@ def test_effect_survives_a_rebuild(editor):
 			continue
 		editor._cbFeedbackEffect.set_active(i)
 		for n, key in enumerate(cls.PARAMS):
-			editor.feedback_effect_rows[key][1].set_value(100 + n * 37)
+			# via the accessor: some rows are dropdowns, not scales
+			editor._set_row_value(key, 100 + n * 37)
 		editor.update_modifiers()
 		before = editor.generate_modifiers(MouseAction()).to_string()
 		editor.update_modifiers()          # a rebuild triggered by anything else
@@ -101,6 +102,29 @@ def test_loading_an_effect_restores_the_widgets(editor):
 
 	assert editor.get_feedback_effect() == HapticEffect.TONE
 	assert editor.feedback_effect == HapticEffect.TONE
-	assert editor.feedback_effect_rows["tone_frequency"][1].get_value() == 220
-	assert editor.feedback_effect_rows["duration"][1].get_value() == 300
+	assert editor._row_value("tone_frequency") == 220
+	assert editor._row_value("duration") == 300
 	assert editor.feedback_params["lfo_depth"] == 128
+
+
+def test_preset_row_is_a_named_dropdown(editor):
+	"""The firmware presets are an enumeration, not a magnitude, so they get
+	names rather than a 0-255 slider.
+	"""
+	import gi
+
+	gi.require_version("Gtk", "3.0")
+	from gi.repository import Gtk
+
+	from scc.modifiers import HAPTIC_SCRIPTS
+
+	trash, widget, trash2 = editor.feedback_effect_rows["script_id"]
+	assert isinstance(widget, Gtk.ComboBoxText)
+	for value, name in HAPTIC_SCRIPTS:
+		editor._set_row_value("script_id", value)
+		assert editor._row_value("script_id") == value
+
+	# an id the firmware may have that our list does not must survive, not be
+	# silently rewritten to something else
+	editor._set_row_value("script_id", 0x42)
+	assert editor._row_value("script_id") == 0x42
