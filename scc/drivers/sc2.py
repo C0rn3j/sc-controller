@@ -143,6 +143,20 @@ def _gain_db(amplitude: int) -> int:
 TURNOFF_QUIET_PERIOD = 0.5
 
 
+# Report 0x82 offers two click presets, and we only ever used the quiet one.
+# Reach for the strong one past this gain, so strength still has an audible
+# range even if the firmware turns out to ignore the gain byte for a preset
+# effect -- which is the open question about it.
+HAPTIC_STRONG_CLICK_ABOVE_DB = 6
+HAPTIC_CLICK = 0x01
+HAPTIC_CLICK_STRONG = 0x02
+
+# Set SCC_HAPTIC_DEBUG=1 to log every haptic report as it goes out.
+_HAPTIC_DEBUG = bool(os.environ.get("SCC_HAPTIC_DEBUG"))
+if _HAPTIC_DEBUG:
+    log.setLevel(logging.INFO)
+
+
 # --- report 0x42 layout (see docs/steam-controller-v2-protocol.md) ----------
 #  0      report id (0x42)
 #  1      packet counter
@@ -440,8 +454,10 @@ class SC2Controller(SCController):
 		return True
 
 	def _send_rumble(self, speed: int) -> None:
-		self._driver.send_haptic(self._out_ep, struct.pack(
-			"<BBHHbHb", 0x80, 0, 0, speed, 0, speed, 0))
+		report = struct.pack("<BBHHbHb", 0x80, 0, 0, speed, 0, speed, 0)
+		if _HAPTIC_DEBUG:
+			log.info("RUMBLE  speed=%5d  report=%s", speed, report.hex(" "))
+		self._driver.send_haptic(self._out_ep, report)
 
 	def get_type(self) -> str:
 		return "sc2"
@@ -561,11 +577,17 @@ class SC2Controller(SCController):
 		if amp <= 0:
 			return
 		side = {HapticPos.LEFT: 0, HapticPos.RIGHT: 1, HapticPos.BOTH: 2}.get(pos, 1)
+		gain = _gain_db(amp)
+		command = HAPTIC_CLICK_STRONG if gain > HAPTIC_STRONG_CLICK_ABOVE_DB else HAPTIC_CLICK
 		# "b" -- the gain is signed. Packing it as an unsigned 0..255 amplitude
 		# made the strength control non-monotonic: it rose over the bottom tenth
 		# of the slider, sat clamped at max through the middle, then wrapped
 		# negative so that turning it UP past halfway made the pad quieter.
-		report = struct.pack("<BBBb", 0x82, side, 0x01, _gain_db(amp))
+		report = struct.pack("<BBBb", 0x82, side, command, gain)
+		if _HAPTIC_DEBUG:
+			log.info("HAPTIC  amplitude=%6d -> %s  gain=%+3d dB  report=%s",
+			         amp, "CLICK_STRONG" if command == HAPTIC_CLICK_STRONG else "CLICK",
+			         gain, report.hex(" "))
 		self._driver.send_haptic(self._out_ep, report)
 
 
