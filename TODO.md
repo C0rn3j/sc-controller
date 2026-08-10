@@ -176,3 +176,20 @@ Very hard stuff:
 - DPAD that acts only when clicked
 - 8-way DPAD
 - Selector for media keys
+
+## SC2 actuator audio streaming (haptic reports 0x86-0x89)
+
+The v2's haptic actuators can be driven as speakers: reports 0x86-0x89 carry
+stream configuration plus PCM / u-law data (layouts from iczero's RE, collected
+in CouchTurtle/sc2-research; not verified here, and not present in SDL3).
+
+This is the one piece of the haptic family that needs design rather than just
+wiring, because nothing in sc-controller has a concept of a *stream*. Every
+haptic today is a fire-and-forget event attached to an action. Streaming needs
+a source (file? synthesised? routed from the system mixer?), buffering and
+timing against the USB endpoint, and some answer to what a *profile* would even
+store. Deferred until there is a reason to want it beyond completeness.
+
+Prerequisites: the simpler effects (0x83 tone / 0x84 sweep / 0x85 script) land
+first, since they settle how per-effect parameters are represented in
+HapticData and in the GUI.
