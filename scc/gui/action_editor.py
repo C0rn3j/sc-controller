@@ -27,10 +27,8 @@ from scc.modifiers import (
 	BallModifier,
 	ClickModifier,
 	DeadzoneModifier,
+	HAPTIC_EFFECT_MODIFIERS,
 	FeedbackModifier,
-	FeedbackScriptModifier,
-	FeedbackSweepModifier,
-	FeedbackToneModifier,
 	ModeModifier,
 	NameModifier,
 	RotateInputModifier,
@@ -85,14 +83,6 @@ FEEDBACK_PARAMS = {
 	"script_id":       (_("Preset"),             0,  255,  1, 0),
 }
 
-# effect -> label and the modifier that carries it. Which parameters each uses
-# comes from the modifier's own PARAMS, so the two cannot drift.
-FEEDBACK_EFFECTS = (
-	(HapticEffect.CLICK,  _("Click"),  FeedbackModifier),
-	(HapticEffect.TONE,   _("Tone"),   FeedbackToneModifier),
-	(HapticEffect.SWEEP,  _("Sweep"),  FeedbackSweepModifier),
-	(HapticEffect.SCRIPT, _("Preset"), FeedbackScriptModifier),
-)
 
 
 class ActionEditor(Editor):
@@ -688,7 +678,7 @@ class ActionEditor(Editor):
 					else:
 						# amplitude, then this effect's own parameters in the
 						# order its modifier declares them
-						cls = next(e[2] for e in FEEDBACK_EFFECTS if e[0] == effect)
+						cls = next(c for c in HAPTIC_EFFECT_MODIFIERS if c.EFFECT == effect)
 						args = [side, self.feedback[0]]
 						args += [int(self.feedback_effect_rows[k][1].get_value())
 							for k in cls.PARAMS]
@@ -758,8 +748,8 @@ class ActionEditor(Editor):
 		self.feedback_effect_rows = {}
 
 		self._cbFeedbackEffect = Gtk.ComboBoxText()
-		for trash, label, trash2 in FEEDBACK_EFFECTS:
-			self._cbFeedbackEffect.append_text(label)
+		for cls in HAPTIC_EFFECT_MODIFIERS:
+			self._cbFeedbackEffect.append_text(cls.LABEL)
 		self._cbFeedbackEffect.set_active(0)
 		self._cbFeedbackEffect.connect("changed", self.on_feedback_effect_changed)
 		self._lblFeedbackEffect = Gtk.Label(label=_("Effect"), xalign=0)
@@ -790,7 +780,7 @@ class ActionEditor(Editor):
 		"""Currently chosen HapticEffect (CLICK if the chooser is not shown)."""
 		if not getattr(self, "_feedback_effects_supported", False):
 			return HapticEffect.CLICK
-		return FEEDBACK_EFFECTS[self._cbFeedbackEffect.get_active()][0]
+		return HAPTIC_EFFECT_MODIFIERS[self._cbFeedbackEffect.get_active()].EFFECT
 
 	def _update_feedback_effect_rows(self):
 		"""Shows only the rows the chosen effect actually uses."""
@@ -799,7 +789,7 @@ class ActionEditor(Editor):
 		self._cbFeedbackEffect.set_visible(supported)
 
 		effect = self.get_feedback_effect()
-		used = next(e[2].PARAMS for e in FEEDBACK_EFFECTS if e[0] == effect)
+		used = next(c.PARAMS for c in HAPTIC_EFFECT_MODIFIERS if c.EFFECT == effect)
 		for key, (lbl, scl, trash) in self.feedback_effect_rows.items():
 			visible = supported and key in used
 			lbl.set_visible(visible)
@@ -848,8 +838,8 @@ class ActionEditor(Editor):
 					self.feedback[1] = action.haptic.get_frequency()
 					self.feedback[2] = action.haptic.get_period()
 				else:
-					for i, e in enumerate(FEEDBACK_EFFECTS):
-						if e[0] == effect:
+					for i, c in enumerate(HAPTIC_EFFECT_MODIFIERS):
+						if c.EFFECT == effect:
 							self._cbFeedbackEffect.set_active(i)
 					for key, (trash, scl, trash2) in self.feedback_effect_rows.items():
 						scl.set_value(getattr(action.haptic, key, 0))
