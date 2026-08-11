@@ -882,18 +882,12 @@ class ActionEditor(Editor):
 				effect = getattr(action.haptic, "effect", HapticEffect.CLICK)
 				self.feedback_effect = effect
 				if effect == HapticEffect.CLICK:
-					self._cbFeedbackEffect.set_active(0)
 					self.feedback[1] = action.haptic.get_frequency()
 					self.feedback[2] = action.haptic.get_period()
 				else:
-					for i, c in enumerate(HAPTIC_EFFECT_MODIFIERS):
-						if c.EFFECT == effect:
-							self._cbFeedbackEffect.set_active(i)
 					for key in self.feedback_effect_rows:
 						value = getattr(action.haptic, key, FEEDBACK_PARAMS[key][4])
 						self.feedback_params[key] = int(value)
-						self._set_row_value(key, value)
-				self._update_feedback_effect_rows()
 				action = action.action
 			if isinstance(action, SmoothModifier):
 				self.smoothing = (action.level, action.multiplier, action.filter)
@@ -930,6 +924,16 @@ class ActionEditor(Editor):
 			cbFeedback.set_active(True)
 			for i in range(len(self.feedback)):
 				self.feedback_widgets[i][0].set_value(self.feedback[i])
+		# The effect chooser and its rows are widgets like any other here: their
+		# 'changed' handlers call update_modifiers, so writing them any earlier --
+		# while the loop above is still parsing -- rebuilds the action from a
+		# half-loaded editor and discards everything not applied yet.
+		for i, c in enumerate(HAPTIC_EFFECT_MODIFIERS):
+			if c.EFFECT == self.feedback_effect:
+				self._cbFeedbackEffect.set_active(i)
+		for key in self.feedback_effect_rows:
+			self._set_row_value(key, self.feedback_params[key])
+		self._update_feedback_effect_rows()
 		for grp in self.feedback_widgets:
 			for w in grp[0:-1]:
 				w.set_sensitive(self.feedback_position is not None)
