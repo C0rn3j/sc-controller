@@ -185,12 +185,16 @@ at <https://github.com/CouchTurtle/sc2-research> (`docs/HAPTICS.md`):
 | `0x80` | `HAPTIC_RUMBLE` | `type u8, intensity u16, left{speed u16, gain i8}, right{speed u16, gain i8}` — **verified live** |
 | `0x81` | `HAPTIC_PULSE` | `side u8, on_us u16, off_us u16, repeat u16` |
 | `0x82` | `HAPTIC_COMMAND` | `side u8, command u8 (0=stop all, 1=click, 2=strong click), gain i8 dB` |
-| `0x83` | `HAPTIC_LFO_TONE` | `side u8, gain i8, frequency u16 Hz, duration u16, lfo_freq u16 Hz, lfo_depth u8` |
-| `0x84` | `HAPTIC_LOG_SWEEP` | `side u8, gain i8, duration u16, start_freq u16, end_freq u16` |
-| `0x85` | `HAPTIC_SCRIPT` | `side u8, script_id u8, gain i8` -- ids below |
+| `0x83` | `HAPTIC_LFO_TONE` | `side u8, gain i8, frequency u16 Hz, duration u16, lfo_freq u16 Hz, lfo_depth u8` — **verified live** |
+| `0x84` | `HAPTIC_LOG_SWEEP` | `side u8, gain i8, duration u16, start_freq u16, end_freq u16` — **verified live** |
+| `0x85` | `HAPTIC_SCRIPT` | `side u8, script_id u8, gain i8` — **verified live**, ids below |
 
-Firmware preset ids for `0x85`, from the same RE and unverified here (the list
-may be partial; nothing says `0x10` is the last):
+Firmware preset ids for `0x85`, names from the same RE (the list may be partial;
+nothing says `0x10` is the last). Played on hardware: the ids are real and the
+names broadly describe what you feel. CONTROLLER_VERY_ON, CONTROLLER_OFF and
+PHONE_RINGING_1 are strong and unmistakable; several others are subtle.
+WILHELM_SCREAM is barely perceptible even at maximum gain -- it is a long
+sample, so this is most likely the preset itself rather than anything we send:
 
 | id | name | id | name |
 | --- | --- | --- | --- |
@@ -203,6 +207,11 @@ may be partial; nothing says `0x10` is the last):
 | `0x07` | DOWN_FIVE | `0x0f` | PHONE_RINGING_3 |
 | `0x08` | UP_SIX | `0x10` | WILHELM_SCREAM |
 | `0x86`–`0x89` | audio stream | actuator PCM / u-law streaming |
+
+`0x83` and `0x84` are hardware-verified too. A sweep is clearly distinguishable
+from a flat tone, so `start_freq`/`end_freq` do what they say. The LFO fields
+work but are weak: at `lfo_freq` 4 / `lfo_depth` 128 the modulation is barely
+there, and only at 10 / 255 is it obvious. Depth may not be a percentage.
 
 `0x80` is hardware-verified: `type`, `intensity` and both `gain` fields at 0,
 the two `speed` fields driving their own actuator independently. Confirmed with
