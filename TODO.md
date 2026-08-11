@@ -210,3 +210,33 @@ modifiers the editor offers for buttons on EVERY controller, so the GUI side
 is not a small change and it needs thinking about before it is worth doing --
 what a v1 user is offered, whether the feedback panel makes sense next to a
 button binding, and whether it should be per-press or press-and-release.
+
+## Haptic feedback on the DS4
+
+The DualShock 4 has rumble motors and the daemon never uses them. No DS4 code
+path implements haptics at all: `DS4Controller` and `DS4HidRawController`
+inherit the no-op `Controller.feedback()`, and `DS4EvdevController` inherits
+`EvdevController.feedback`, whose entire body is a TODO docstring. So a profile
+with Feedback Enabled on a DS4 is silently doing nothing -- the GUI offers the
+setting, the modifier is stored, and the effect is dropped at the driver.
+
+This is a gap rather than a regression; it has never worked.
+
+The DS5 already does it (`ds5drv.feedback`), and the DS4's output report is the
+same shape -- a small motor pair, `motor_left` heavy / `motor_right` light, with
+a scheduled clear afterwards because the motors misbehave when shut off under
+50 ms. That method is close to a template.
+
+Two things to settle rather than copy blindly:
+
+  - The DS5 halves the left motor's amplitude ("the left motor is heavier, so
+    we must give it less oomph"). Whether the DS4's motors need the same
+    correction is a hardware question, not something to assume.
+  - The DS4 has three driver classes (HID, hidraw, evdev) and which one a pad
+    gets depends on how it is connected, so the fix has to land somewhere all
+    three reach, or be written three times.
+
+Also worth doing at the same time: `Controller.rumble()` is still unimplemented
+for the DS4 and DS5, so FF_RUMBLE's two magnitudes get averaged into one level
+before they arrive. The heavy and light effects consequently feel identical on
+both pads, where the hardware could tell them apart.
