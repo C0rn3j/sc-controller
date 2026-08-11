@@ -74,15 +74,18 @@ DEADZONE_MODES = [CUT, ROUND, LINEAR, MINIMUM]
 # by hand, and building them from this table keeps the rows, the show/hide rule
 # and the modifier arguments from drifting apart.
 #
-# (attribute, label, min, max, step, default, choices)
+# (attribute, label, min, max, page step, default, choices)
 # "choices" turns the row into a named dropdown instead of a slider, for
 # parameters that are an enumeration rather than a magnitude.
+# The step is how far Page Up/Down and a click on the trough move; the arrow
+# keys and the spin button always move by one, because these are values you
+# know rather than dial by feel -- 220 Hz, 300 ms.
 FEEDBACK_PARAMS = {
-	"tone_frequency":  (_("Frequency (Hz)"),     20, 1000, 1, 160, None),
-	"end_frequency":   (_("End frequency (Hz)"), 20, 1000, 1, 40, None),
-	"duration":        (_("Duration (ms)"),      10, 5000, 10, 200, None),
-	"lfo_frequency":   (_("LFO rate (Hz)"),      0,  50,   1, 0, None),
-	"lfo_depth":       (_("LFO depth"),          0,  255,  1, 0, None),
+	"tone_frequency":  (_("Frequency (Hz)"),     20, 1000, 10, 160, None),
+	"end_frequency":   (_("End frequency (Hz)"), 20, 1000, 10, 40, None),
+	"duration":        (_("Duration (ms)"),      10, 5000, 50, 200, None),
+	"lfo_frequency":   (_("LFO rate (Hz)"),      0,  50,   5, 0, None),
+	"lfo_depth":       (_("LFO depth"),          0,  255,  10, 0, None),
 	"script_id":       (_("Preset"),             0,  255,  1, HAPTIC_SCRIPTS[0][0], HAPTIC_SCRIPTS),
 }
 
@@ -788,16 +791,30 @@ class ActionEditor(Editor):
 					w.append(str(value), name)
 				w.set_active_id(str(default))
 				w.connect("changed", self.on_feedback_effect_changed)
+				w.set_hexpand(True)
+				field = w
 			else:
+				# Slider to explore the range by feel, spin button beside it to
+				# land on a value exactly. They share one adjustment, so neither
+				# can disagree with the other, and the signal is connected there
+				# rather than to either widget.
 				adj = Gtk.Adjustment(value=default, lower=lo, upper=hi,
-					step_increment=step, page_increment=step * 10)
+					step_increment=1, page_increment=step)
+				adj.connect("value-changed", self.on_feedback_effect_changed)
 				w = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL, adjustment=adj)
 				w.set_digits(0)
-				w.connect("value-changed", self.on_feedback_effect_changed)
-			w.set_hexpand(True)
+				w.set_draw_value(False)   # the spin button is showing the number
+				w.set_hexpand(True)
+				spin = Gtk.SpinButton(adjustment=adj, climb_rate=1, digits=0)
+				spin.set_numeric(True)
+				field = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=4)
+				field.pack_start(w, True, True, 0)
+				field.pack_start(spin, False, False, 0)
 			grid.attach(lbl, 0, row, 1, 1)
-			grid.attach(w, 1, row, 1, 1)
-			self.feedback_effect_rows[key] = (lbl, w, default)
+			grid.attach(field, 1, row, 1, 1)
+			lbl.show()
+			field.show_all()   # realise the children now; the row is hidden below
+			self.feedback_effect_rows[key] = (lbl, w, field, default)
 			self.feedback_params[key] = default
 			row += 1
 
@@ -806,13 +823,13 @@ class ActionEditor(Editor):
 
 	def _row_value(self, key):
 		"""Current value of a parameter row, whichever widget kind it uses."""
-		trash, w, default = self.feedback_effect_rows[key]
+		trash, w, trash2, default = self.feedback_effect_rows[key]
 		if isinstance(w, Gtk.ComboBoxText):
 			return int(w.get_active_id()) if w.get_active_id() else default
 		return int(w.get_value())
 
 	def _set_row_value(self, key, value):
-		trash, w, default = self.feedback_effect_rows[key]
+		trash, w, trash2, default = self.feedback_effect_rows[key]
 		if isinstance(w, Gtk.ComboBoxText):
 			# an id the firmware has but our list does not: keep it rather than
 			# silently rewriting the profile to something else
@@ -836,10 +853,12 @@ class ActionEditor(Editor):
 
 		effect = self.get_feedback_effect()
 		used = next(c.PARAMS for c in HAPTIC_EFFECT_MODIFIERS if c.EFFECT == effect)
-		for key, (lbl, w, trash) in self.feedback_effect_rows.items():
+		for key, (lbl, trash, field, trash2) in self.feedback_effect_rows.items():
 			visible = supported and key in used
-			lbl.set_visible(visible)
-			w.set_visible(visible)
+			for widget in (lbl, field):
+				widget.set_visible(visible)
+				# a show_all() further up would otherwise revive every hidden row
+				widget.set_no_show_all(not visible)
 		# the click-only sliders (pad-travel frequency, click period) mean
 		# nothing to a synthesised effect
 		click_only = effect == HapticEffect.CLICK
