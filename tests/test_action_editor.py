@@ -91,14 +91,37 @@ def test_effect_survives_a_rebuild(editor):
 		assert cls.COMMAND in after, "%s did not survive as %s" % (cls.LABEL, cls.COMMAND)
 
 
+def test_opening_the_editor_keeps_the_feedback(editor):
+	"""Open a saved binding the way the GUI does, and get back what was saved.
+
+	set_input() is the real entry point, and it is the one that broke: writing
+	the effect widgets while load_modifiers was still parsing fired their
+	'changed' handlers, and update_modifiers rebuilt the action from an editor
+	that had not applied the feedback yet -- so the dialog came up with no
+	action at all and feedback switched off.
+	"""
+	from scc.actions import MouseAction
+	from scc.constants import HapticPos
+	from scc.modifiers import FeedbackToneModifier
+	from scc.profile import Profile
+
+	action = FeedbackToneModifier(HapticPos.RIGHT, 512, 220, 300, 4, 128, MouseAction())
+	editor.set_input(Profile.RPAD, action)
+
+	assert editor.builder.get_object("entAction").get_text() == action.to_string()
+	assert editor.builder.get_object("cbFeedback").get_active()
+	assert editor.feedback_position == HapticPos.RIGHT
+	assert editor.generate_modifiers(editor._action).to_string() == action.to_string()
+
+
 def test_loading_an_effect_restores_the_widgets(editor):
 	from scc.actions import MouseAction
 	from scc.constants import HapticEffect, HapticPos
 	from scc.modifiers import FeedbackToneModifier
+	from scc.profile import Profile
 
-	editor._recursing = True
-	editor.load_modifiers(FeedbackToneModifier(HapticPos.RIGHT, 512, 220, 300, 4, 128, MouseAction()))
-	editor._recursing = False
+	editor.set_input(Profile.RPAD,
+		FeedbackToneModifier(HapticPos.RIGHT, 512, 220, 300, 4, 128, MouseAction()))
 
 	assert editor.get_feedback_effect() == HapticEffect.TONE
 	assert editor.feedback_effect == HapticEffect.TONE
