@@ -63,10 +63,18 @@ def test_effect_rows_follow_the_chosen_effect(editor):
 
 	for i, cls in enumerate(HAPTIC_EFFECT_MODIFIERS):
 		editor._cbFeedbackEffect.set_active(i)
-		shown = [k for k, (trash, w, trash2) in editor.feedback_effect_rows.items() if w.get_visible()]
+		shown = [k for k, (trash, trash2, field, trash3)
+			in editor.feedback_effect_rows.items() if field.get_visible()]
 		assert shown == list(cls.PARAMS), (
 			"%s shows rows %s but declares %s" % (cls.LABEL, shown, cls.PARAMS))
 		assert editor.get_feedback_effect() == cls.EFFECT
+
+		# Presenting the GTK4 window must preserve each row's visibility.
+		editor.window.present()
+		still_shown = [k for k, (trash, trash2, field, trash3)
+			in editor.feedback_effect_rows.items() if field.get_visible()]
+		assert still_shown == list(cls.PARAMS), (
+			"%s revived rows %s after present" % (cls.LABEL, still_shown))
 
 
 def test_effect_survives_a_rebuild(editor):
@@ -143,7 +151,7 @@ def test_preset_row_is_a_named_dropdown(editor):
 
 	from scc.modifiers import HAPTIC_SCRIPTS
 
-	trash, widget, trash2 = editor.feedback_effect_rows["script_id"]
+	trash, widget, trash2, trash3 = editor.feedback_effect_rows["script_id"]
 	assert isinstance(widget, Gtk.ComboBoxText)
 	for value, name in HAPTIC_SCRIPTS:
 		editor._set_row_value("script_id", value)
@@ -153,3 +161,34 @@ def test_preset_row_is_a_named_dropdown(editor):
 	# silently rewritten to something else
 	editor._set_row_value("script_id", 0x42)
 	assert editor._row_value("script_id") == 0x42
+
+
+def test_numeric_rows_pair_a_slider_with_a_spin_button(editor):
+	"""A slider alone cannot hit 220 Hz on a 20-1000 range: that is ~5 Hz per
+	pixel. The spin button is how you land on a value exactly, and it shares the
+	slider's adjustment so the two can never disagree.
+	"""
+	import gi
+
+	gi.require_version("Gtk", "4.0")
+	from gi.repository import Gtk
+
+	trash, scale, field, trash2 = editor.feedback_effect_rows["tone_frequency"]
+	spins = []
+	child = field.get_first_child()
+	while child is not None:
+		if isinstance(child, Gtk.SpinButton):
+			spins.append(child)
+		child = child.get_next_sibling()
+	assert len(spins) == 1
+	assert spins[0].get_adjustment() is scale.get_adjustment()
+
+	spins[0].set_value(223)
+	assert editor._row_value("tone_frequency") == 223
+	editor._set_row_value("tone_frequency", 447)
+	assert spins[0].get_value_as_int() == 447
+
+	# arrow keys and the spin button step by one; only Page Up/Down jumps
+	adj = scale.get_adjustment()
+	assert adj.get_step_increment() == 1
+	assert adj.get_page_increment() > 1
