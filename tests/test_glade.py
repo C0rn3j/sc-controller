@@ -63,6 +63,31 @@ class TestGlade:
 			root = ET.parse(filename).getroot()
 			_check_ids(root, filename, "<root element>")
 
+
+def _adjustment(filename, id_):
+	"""Returns a GtkAdjustment's properties as floats."""
+	root = ET.parse(filename).getroot()
+	for obj in root.iter("object"):
+		if obj.get("class") == "GtkAdjustment" and obj.get("id") == id_:
+			return {p.get("name"): float(p.text) for p in obj.iter("property")}
+	raise AssertionError("no adjustment %s in %s" % (id_, filename))
+
+
+def test_haptic_strength_slider_reaches_the_amplitude_the_driver_accepts():
+	"""A GtkAdjustment's usable maximum is upper - page_size, and page_size means
+	nothing for a slider. Left at 128 it stopped the haptic Strength slider at
+	32639, which reads to a user as an off-by-something rather than as a limit.
+
+	Some adjustments do use page-size deliberately (global_settings sets
+	upper 10.01 / page-size 0.01 to land on a round 10.00), so this pins the one
+	value that has to agree with the driver rather than banning the property.
+	"""
+	from scc.drivers.sc2 import HAPTIC_AMPLITUDE_MAX, HAPTIC_AMPLITUDE_MIN
+
+	adj = _adjustment("glade/action_editor.glade", "adjFAmplitude")
+	assert adj["lower"] == HAPTIC_AMPLITUDE_MIN
+	assert adj["upper"] - adj.get("page-size", 0) == HAPTIC_AMPLITUDE_MAX
+
 	# @pytest.mark.parametrize("filename", _get_files(), ids=lambda filename: filename)
 	# def test_no_gtk_deprecations(self, filename):
 	# 	"""Load each Glade file with fatal GTK diagnostics enabled."""

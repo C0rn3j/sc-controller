@@ -20,7 +20,6 @@
     <property name="value">512</property>
     <property name="step-increment">32</property>
     <property name="page-increment">128</property>
-    <property name="page-size">128</property>
   </object>
   <object class="GtkAdjustment" id="adjFFrequency">
     <property name="lower">1</property>
@@ -35,7 +34,6 @@
     <property name="value">1024</property>
     <property name="step-increment">32</property>
     <property name="page-increment">128</property>
-    <property name="page-size">128</property>
   </object>
   <object class="GtkAdjustment" id="adjFriction">
     <property name="upper">6</property>
