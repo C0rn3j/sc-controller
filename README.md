@@ -68,6 +68,31 @@ Turn this **on** when you regularly use more than one controller — especially
 two of the same model, such as two Steam Controllers — and want each to reliably
 keep its own profile.
 
+### PlayStation controllers: turn off Steam's controller support
+
+A DualShock 4 or DualSense **cannot be claimed exclusively over Bluetooth**, and
+this is worth knowing before you conclude something is broken.
+
+Steam Controllers are taken exclusively: SC Controller claims the USB interface,
+which detaches the kernel driver, and nothing else can reach the device. Over
+Bluetooth a DS4/DS5 is reached through `/dev/hidrawN` instead — and hidraw
+allows **several readers at once**. If Steam is running with PlayStation
+controller support enabled, Steam and SC Controller both receive every report
+and both act on it. There is no way for us to lock Steam out.
+
+What that looks like in practice, and it does not look like a conflict:
+
+- the touchpad moves the pointer with an acceleration and glide you never
+  configured, whatever the pad is actually bound to
+- clicking the touchpad produces a mouse button instead of your binding, and
+  rebinding it changes nothing
+- your own bindings *do* work — so the controller seems half-configured rather
+  than contested
+
+Fix it in **Steam → Settings → Controller** by turning off *PlayStation
+Controller Support*. Connecting the pad **by USB** also works, for a different
+reason: claiming the USB interface takes the device away from Steam too.
+
 ## Like what I'm doing?
 
 You can check out the ways to donate on [my website](https://rys.rs/donate), or just go straight to my [Ko-Fi](https://ko-fi.com/martinrys).
