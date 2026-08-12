@@ -784,11 +784,15 @@ class SCCDaemon(Daemon):
 			def handle(self):
 				instance._sshandler(self.connection, self.rfile, self.wfile)
 
-		self.sserver = ThreadingUnixStreamServer(self.socket_file, SSHandler)
+		old_umask = os.umask(0o077)
+		try:
+			self.sserver = ThreadingUnixStreamServer(self.socket_file, SSHandler)
+		finally:
+			os.umask(old_umask)
+		os.chmod(self.socket_file, stat.S_IRUSR | stat.S_IWUSR)
 		t = threading.Thread(target=self.sserver.serve_forever)
 		t.daemon = True
 		t.start()
-		os.chmod(self.socket_file, stat.S_IRUSR | stat.S_IWUSR)
 		log.debug("Created control socket %s", self.socket_file)
 
 	def _start_gesture(
