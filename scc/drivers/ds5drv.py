@@ -32,6 +32,7 @@ from scc.constants import (
 	STICK_PAD_MAX,
 	STICK_PAD_MIN,
 	STICK_PAD_RES,
+	TRIGGER_MAX,
 	ControllerFlags,
 	HapticPos,
 	SCButtons,
@@ -261,20 +262,20 @@ class DS5Controller(HIDController):
 			mode=AxisMode.AXIS,
 			byte_offset=1,
 			size=8,
-			data=AxisDataUnion(axis=AxisModeData(scale=1.0, offset=-127.5, clamp_max=257, deadzone=2)),
+			data=AxisDataUnion(axis=AxisModeData(scale=2.0/255, offset=-1.0, clamp_min=STICK_PAD_MIN, clamp_max=STICK_PAD_MAX, deadzone=2*2.0/255)),
 		)
 		self._decoder.axes[AxisType.AXIS_LSTICK_Y] = AxisData(
 			mode=AxisMode.AXIS,
 			byte_offset=2,
 			size=8,
-			data=AxisDataUnion(axis=AxisModeData(scale=-1.0, offset=127.5, clamp_max=257, deadzone=2)),
+			data=AxisDataUnion(axis=AxisModeData(scale=-2.0/255, offset=1.0, clamp_min=STICK_PAD_MIN, clamp_max=STICK_PAD_MAX, deadzone=2*2.0/255)),
 		)
 		self._decoder.axes[AxisType.AXIS_RSTICK_X] = AxisData(
 			mode=AxisMode.AXIS,
 			byte_offset=3,
 			size=8,
 			data=AxisDataUnion(
-				axis=AxisModeData(scale=1.0, offset=-127.5, clamp_max=257, deadzone=2),
+				axis=AxisModeData(scale=2.0/255, offset=-1.0, clamp_min=STICK_PAD_MIN, clamp_max=STICK_PAD_MAX, deadzone=2*2.0/255),
 			),
 		)
 		self._decoder.axes[AxisType.AXIS_RSTICK_Y] = AxisData(
@@ -282,7 +283,7 @@ class DS5Controller(HIDController):
 			byte_offset=4,
 			size=8,
 			data=AxisDataUnion(
-				axis=AxisModeData(scale=-1.0, offset=127.5, clamp_max=257, deadzone=2),
+				axis=AxisModeData(scale=-2.0/255, offset=1.0, clamp_min=STICK_PAD_MIN, clamp_max=STICK_PAD_MAX, deadzone=2*2.0/255),
 			),
 		)
 
@@ -290,14 +291,14 @@ class DS5Controller(HIDController):
 		self._decoder.axes[AxisType.AXIS_LTRIG] = AxisData(
 			mode=AxisMode.AXIS,
 			byte_offset=5,
-			size=8,  # Not sure about the size
-			data=AxisDataUnion(axis=AxisModeData(scale=1.0, clamp_max=1, deadzone=10)),
+			size=8,
+			data=AxisDataUnion(axis=AxisModeData(scale=1.0/255, clamp_max=TRIGGER_MAX, deadzone=10.0/255)),
 		)
 		self._decoder.axes[AxisType.AXIS_RTRIG] = AxisData(
 			mode=AxisMode.AXIS,
 			byte_offset=6,
-			size=8,  # Not sure about the size
-			data=AxisDataUnion(axis=AxisModeData(scale=1.0, clamp_max=1, deadzone=10)),
+			size=8,
+			data=AxisDataUnion(axis=AxisModeData(scale=1.0/255, clamp_max=TRIGGER_MAX, deadzone=10.0/255)),
 		)
 
 		# Gyro
@@ -336,6 +337,7 @@ class DS5Controller(HIDController):
 				self._decoder.buttons.button_map[x] = button_to_bit(sc)
 
 		self._packet_size = 64
+		self._decoder.packet_size = 64
 
 	def input(self, endpoint: int, data: bytearray) -> None:
 		# Special override for CPAD touch button
