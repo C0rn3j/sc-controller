@@ -47,6 +47,7 @@ from scc.lib.daemon import Daemon
 from scc.mapper import Mapper
 from scc.menu_data import MenuData
 from scc.parser import TalkingActionParser
+from scc.paths import get_default_menus_path, get_default_profiles_path, get_menus_path, get_profiles_path
 from scc.poller import Poller
 from scc.profile import Profile
 from scc.scheduler import Scheduler
@@ -80,6 +81,20 @@ if TYPE_CHECKING:
 	)
 
 log = logging.getLogger("SCCDaemon")
+
+
+class SafeTalkingActionParser(TalkingActionParser):
+	"""Parser that blocks dangerous actions (shell, profile, restart, etc.)
+	for use in IPC Replace: commands where the caller is not fully trusted."""
+	BLOCKED = frozenset(('shell', 'profile', 'restart', 'exit', 'turnoff'))
+
+	def _parse_action(self, frm=None):
+		if frm is None:
+			frm = Action.ALL
+		frm = {k: v for k, v in frm.items() if k not in self.BLOCKED}
+		return super()._parse_action(frm)
+
+
 tlog = logging.getLogger("Socket Thread")
 
 
@@ -940,7 +955,22 @@ class SCCDaemon(Daemon):
 			with self.lock:
 				try:
 					filename = message[8:].decode("utf-8").strip("\t ")
-					self._set_profile(client.mapper, filename)
+					if "/" in filename:
+						# abspath, not realpath: this has to reject '..' while
+						# still accepting a profile that is a symlink to
+						# somewhere else, which is how people keep them in a
+						# dotfiles repo. abspath collapses '..' lexically, so
+						# traversal cannot escape; symlinks are left alone.
+						path = os.path.abspath(filename)
+						allowed = (os.path.abspath(get_profiles_path()),
+							os.path.abspath(get_default_profiles_path()))
+						if not any(path.startswith(d + os.sep) for d in allowed):
+							raise ValueError("Profile path outside allowed directories")
+					else:
+						path = find_profile(filename)
+						if not path:
+							raise ValueError("Profile '%s' not found" % filename)
+					self._set_profile(client.mapper, path)
 					self._remember_controller_profile(client, filename)
 					log.info("Loaded profile '%s'", filename)
 					client.wfile.write(b"OK.\n")
@@ -1035,7 +1065,11 @@ class SCCDaemon(Daemon):
 		elif message.startswith(b"Replace:"):
 			try:
 				source, actionstr = message.split(b":", 1)[1].strip(b" \t\r").split(b" ", 1)
-				action = TalkingActionParser().restart(actionstr.decode()).parse().compress()
+				parsed = SafeTalkingActionParser().restart(actionstr.decode()).parse()
+				if parsed is None:
+					client.wfile.write(b"Fail: action rejected (blocked or parse error)\n")
+					return
+				action = parsed.compress()
 			except Exception as e:
 				log.exception("Failed handling Replace")
 				e = str(e).encode("utf-8").decode("unicode_escape").encode("latin1")
@@ -1171,9 +1205,18 @@ class SCCDaemon(Daemon):
 					if menu_id in (None, "None"):
 						menuaction = self.osd_ids[item_id]
 					elif "." in menu_id:
-						# TODO: Move this common place
-						with open(menu_id) as file:
-							data = json.loads(file.read())
+						if "/" in menu_id:
+							path = os.path.abspath(menu_id)   # see the Profile: handler
+							allowed = (os.path.abspath(get_menus_path()),
+								os.path.abspath(get_default_menus_path()))
+							if not any(path.startswith(d + os.sep) for d in allowed):
+								raise KeyError("Menu path outside allowed directories")
+						else:
+							path = find_menu(menu_id)
+							if not path:
+								raise KeyError("Menu '%s' not found" % menu_id)
+						with open(path) as f:
+							data = json.loads(f.read())
 						menudata = MenuData.from_json_data(data, TalkingActionParser())
 						menuaction = menudata.get_by_id(item_id).action
 					else:
