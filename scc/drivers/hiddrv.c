@@ -3,7 +3,8 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <limits.h>
-#define CLAMP(min, x, max) x
+#include <string.h>
+#define CLAMP(min, x, max) ((x) < (min) ? (min) : ((x) > (max) ? (max) : (x)))
 
 #define HIDDRV_MODULE_VERSION 8
 PyObject* module;
@@ -131,15 +132,25 @@ union Value {
 };
 
 
-static union Value grab_value(const char* data, const size_t byte_offset, uint8_t bit_offset) {
-	union Value val = *((union Value*)(data + byte_offset));
-	val.u64 = val.u64 >> bit_offset;
+static union Value grab_value(const char* data, size_t data_len, const size_t byte_offset, uint8_t bit_offset) {
+	union Value val;
+	val.u64 = 0;
+	if (byte_offset < data_len) {
+		size_t avail = data_len - byte_offset;
+		if (avail > sizeof(val))
+			avail = sizeof(val);
+		memcpy(&val, data + byte_offset, avail);
+	}
+	if (bit_offset < 64)
+		val.u64 = val.u64 >> bit_offset;
+	else
+		val.u64 = 0;
 	return val;
 }
 
 
-static int grab_with_size(const uint8_t size, const char* data, const size_t byte_offset, uint8_t bit_offset) {
-	union Value val = grab_value(data, byte_offset, bit_offset);
+static int grab_with_size(const uint8_t size, const char* data, size_t data_len, const size_t byte_offset, uint8_t bit_offset) {
+	union Value val = grab_value(data, data_len, byte_offset, bit_offset);
 	// if (size == 16)
 	// 	printf(" => %i\n", (int)val.u16);
 	switch (size) {
@@ -162,7 +173,7 @@ bool decode(struct HIDDecoder* dec, const char* data) {
 		switch (dec->axes[i].mode) {
 			case AXIS:
 				fval = ((grab_with_size(dec->axes[i].size,
-						data, dec->axes[i].byte_offset, dec->axes[i].bit_offset)
+						data, dec->packet_size, dec->axes[i].byte_offset, dec->axes[i].bit_offset)
 							* dec->axes[i].data.axis.scale)
 							+ dec->axes[i].data.axis.offset
 				);
@@ -179,10 +190,10 @@ bool decode(struct HIDDecoder* dec, const char* data) {
 				break;
 			case AXIS_NO_SCALE:
 				dec->state.axes[i] = grab_with_size(dec->axes[i].size,
-					data, dec->axes[i].byte_offset, dec->axes[i].bit_offset);
+					data, dec->packet_size, dec->axes[i].byte_offset, dec->axes[i].bit_offset);
 				break;
 			case DPAD:
-				value = grab_value(data, dec->axes[i].byte_offset,
+				value = grab_value(data, dec->packet_size, dec->axes[i].byte_offset,
 					dec->axes[i].bit_offset);
 				if ((value.u32 >> dec->axes[i].data.dpad.button1) & 1) {
 					dec->state.buttons |= dec->axes[i].data.dpad.button;
@@ -193,7 +204,9 @@ bool decode(struct HIDDecoder* dec, const char* data) {
 				}
 				break;
 			case HATSWITCH:
-				value = grab_value(data, dec->axes[i].byte_offset,
+				if (i + 1 >= AXIS_COUNT)
+					break;
+				value = grab_value(data, dec->packet_size, dec->axes[i].byte_offset,
 					dec->axes[i].bit_offset);
 				switch (value.u8 & 0b1111) {
 					case 0:	// up
@@ -243,17 +256,17 @@ bool decode(struct HIDDecoder* dec, const char* data) {
 				}
 				break;
 			case DS4ACCEL:
-				value = grab_value(data, dec->axes[i].byte_offset,
+				value = grab_value(data, dec->packet_size, dec->axes[i].byte_offset,
 					dec->axes[i].bit_offset);
 				dec->state.axes[i] = value.s16;
 				break;
 			case DS4GYRO:
-				value = grab_value(data, dec->axes[i].byte_offset,
+				value = grab_value(data, dec->packet_size, dec->axes[i].byte_offset,
 					dec->axes[i].bit_offset);
 				dec->state.axes[i] = -value.s16;
 				break;
 			case DS4TOUCHPAD:
-				value = grab_value(data, dec->axes[i].byte_offset,
+				value = grab_value(data, dec->packet_size, dec->axes[i].byte_offset,
 					dec->axes[i].bit_offset);
 				dec->state.axes[i] = ((value.u16 & 0x0FFF)
 					* dec->axes[i].data.axis.scale)
@@ -266,7 +279,7 @@ bool decode(struct HIDDecoder* dec, const char* data) {
 
 	// Buttons
 	if (dec->buttons.enabled) {
-		union Value value = grab_value(data, dec->buttons.byte_offset, dec->buttons.bit_offset);
+		union Value value = grab_value(data, dec->packet_size, dec->buttons.byte_offset, dec->buttons.bit_offset);
 		for (i=0; i<BUTTON_COUNT; i++) {
 			if (dec->buttons.button_map[i] < 33) {
 				uint32_t bit = (value.u32 >> i) & 1;
