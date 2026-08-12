@@ -211,6 +211,11 @@ def find_profile(name: str) -> str | None:
 
 	Returns None if profile cannot be found.
 	"""
+	# A plain filename and nothing else. basename() alone lets '..' through,
+	# since basename('..') == '..', and for menus that resolves to the
+	# directory itself.
+	if name in (os.curdir, os.pardir) or os.path.basename(name) != name:
+		return None
 	filename = f"{name}.sccprofile"
 	for p in (get_profiles_path(), get_default_profiles_path()):
 		path = os.path.join(p, filename)
@@ -293,6 +298,11 @@ def find_menu(name: str) -> str | None:
 
 	Returns None if menu cannot be found.
 	"""
+	# A plain filename and nothing else. basename() alone lets '..' through,
+	# since basename('..') == '..', and for menus that resolves to the
+	# directory itself.
+	if name in (os.curdir, os.pardir) or os.path.basename(name) != name:
+		return None
 	for p in (get_menus_path(), get_default_menus_path()):
 		path = os.path.join(p, name)
 		if os.path.exists(path):
