@@ -136,7 +136,13 @@ int read_input(SCByBtCPtr ptr) {
 		{
 			// Will grab 18 bytes from each partial input. Start idx
 			// offset from 20.
-			int offset = ((PACKET_SIZE - 2) * currentPacketNum) + 2;
+			size_t offset = ((PACKET_SIZE - 2) * (size_t)currentPacketNum) + 2;
+			// currentPacketNum is a 4-bit field taken straight from the
+			// packet, so it reaches 15 and the offset runs past the buffer
+			// from 14 upward. size_t throughout: an int here compares signed
+			// against sizeof and the bounds check itself trips -Wsign-compare.
+			if (offset + (PACKET_SIZE - 2) > sizeof(ptr->buffer))
+				return 2;
 			// Skip copying first two bytes in partial input
 			// (report ID and packet payload byte)
 			memcpy(ptr->buffer + offset, tmp_buffer + 2, PACKET_SIZE - 2);
