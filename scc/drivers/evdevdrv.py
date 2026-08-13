@@ -8,8 +8,6 @@ from __future__ import annotations
 
 import errno
 
-from evdev import InputDevice
-
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, TRIGGER_MAX, TRIGGER_MIN, ControllerFlags, SCButtons
 from scc.controller import Controller
 from scc.paths import get_config_path
@@ -23,7 +21,6 @@ try:
 
 	HAVE_EVDEV = True
 except ImportError:
-
 	class FakeECodes:
 		def __getattr__(self, key):
 			return key
@@ -97,7 +94,7 @@ class EvdevController(Controller):
 		| ControllerFlags.NO_GRIPS
 	)
 
-	def __init__(self, daemon: SCCDaemon, device: InputDevice[str], config_file: str, config: dict):
+	def __init__(self, daemon: SCCDaemon, device: evdev.InputDevice[str], config_file: str, config: dict):
 		try:
 			self._parse_config(config)
 		except Exception:
@@ -471,7 +468,7 @@ class EvdevDriver:
 			self.daemon.add_controller(controller)
 			log.debug("Evdev device added: %s", controller.get_device_name())
 
-	def make_new_device(self, factory, evdevdevice: InputDevice, *userdata):
+	def make_new_device(self, factory, evdevdevice: evdev.InputDevice[str], *userdata):
 		"""Similar to handle_new_device, but meant for use by other drivers.
 
 		See global make_new_device method for more info
@@ -517,7 +514,7 @@ def make_new_device(factory, evdevdevice, *userdata):
 	return _evdevdrv.make_new_device(factory, evdevdevice, *userdata)
 
 
-def get_evdev_devices_from_syspath(syspath: str) -> list[InputDevice[str]]:
+def get_evdev_devices_from_syspath(syspath: str) -> list[evdev.InputDevice[str]]:
 	"""For given syspath, returns all assotiated event devices."""
 	# Broken because sometimes it uses UHID which the HCI string does not point to for some reason - https://github.com/C0rn3j/sc-controller/issues/21
 	# /sys/devices/pci0000:00/0000:00:02.1/0000:03:00.0/0000:04:0c.0/0000:13:00.0/usb3/3-7/3-7:1.0/bluetooth/hci0/hci0:50
