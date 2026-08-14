@@ -281,7 +281,7 @@ bool decode(struct HIDDecoder* dec, const char* data) {
 	if (dec->buttons.enabled) {
 		union Value value = grab_value(data, dec->packet_size, dec->buttons.byte_offset, dec->buttons.bit_offset);
 		for (i=0; i<BUTTON_COUNT; i++) {
-			if (dec->buttons.button_map[i] < 33) {
+			if (dec->buttons.button_map[i] < 32) {
 				uint32_t bit = (value.u32 >> i) & 1;
 				dec->state.buttons |= bit << dec->buttons.button_map[i];
 			}
