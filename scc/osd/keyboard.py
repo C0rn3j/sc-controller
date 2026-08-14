@@ -286,6 +286,14 @@ class Keyboard(OSDWindow, TimerManager):
 		SCButtons.LGRIP.name: Keys.KEY_LEFTSHIFT,
 		SCButtons.RGRIP.name: Keys.KEY_RIGHTALT,
 	}
+	MODIFIER_MASKS = {
+		Keys.KEY_LEFTSHIFT: Gdk.ModifierType.SHIFT_MASK,
+		Keys.KEY_RIGHTSHIFT: Gdk.ModifierType.SHIFT_MASK,
+		Keys.KEY_LEFTCTRL: Gdk.ModifierType.CONTROL_MASK,
+		Keys.KEY_RIGHTCTRL: Gdk.ModifierType.CONTROL_MASK,
+		Keys.KEY_LEFTALT: Gdk.ModifierType.MOD1_MASK, # TODO(Martin): Change to ALT_MASK for Gdk4
+		Keys.KEY_RIGHTALT: Gdk.ModifierType.MOD1_MASK, # TODO(Martin): Change to ALT_MASK for Gdk4
+	}
 
 	def __init__(self, config=None) -> None:
 		self.kbimage = os.path.join(get_config_path(), "keyboard.svg")
@@ -436,14 +444,23 @@ class Keyboard(OSDWindow, TimerManager):
 
 		self.background.set_help(l_lines, r_lines)
 
-	def update_labels(self):
-		"""Updates keyboard labels based on active X keymap"""
+	def update_labels(self) -> None:
+		"""Updates keyboard labels
+
+		X11 - based on active X keymap
+		Wayland - based on internal modifier state
+		"""
 		labels = {}
 		# Get current layout group
 		if self.x11_dpy is not None:
 			self.group = X.get_xkb_state(self.x11_dpy).group
 		# Get state of shift/alt/ctrl key
 		mt = Gdk.ModifierType(self.keymap.get_modifier_state())
+		# On Wayland a client does not necessarily observe modifier state from the uinput keyboard it created.
+		# Include modifiers held by the OSK's own virtual keyboard so its labels still match the keys it will emit.
+		if self.x11_dpy is None and self.mapper is not None:
+			for key in self.mapper.keyboard._pressed:
+				mt |= self.MODIFIER_MASKS.get(key, Gdk.ModifierType(0)) # TODO(Martin): Change to GDK_NO_MODIFIER_MASK for Gdk4
 		for button in self.background.buttons:
 			if getattr(Keys, button.name, None) in KEY_TO_KEYCODE:
 				keycode = KEY_TO_KEYCODE[getattr(Keys, button.name)]
@@ -554,13 +571,24 @@ class Keyboard(OSDWindow, TimerManager):
 		self.timer("labels", 0.1, self.update_labels)
 
 	def on_event(self, daemon, what, data):
-		"""Called when button press, button release or stick / pad update is sent by daemon."""
+		"""Called when button press, button release or stick / pad update is sent by the daemon."""
+		# Controller events can already be queued when the OSK is closing and quit() has disposed of its mapper.
+		# Localize self.mapper to prevent race ceonditions
+		mapper = getattr(self, "mapper", None)
+		if mapper is None:
+			return
 		if self.x11_dpy is not None:
 			group = X.get_xkb_state(self.x11_dpy).group
 			if self.group != group:
 				self.group = group
 				self.timer("labels", 0.1, self.update_labels)
-		self.mapper.handle_event(daemon, what, data)
+		else:
+			old_modifiers = mapper.keyboard._pressed & self.MODIFIER_MASKS.keys()
+		mapper.handle_event(daemon, what, data)
+		if self.x11_dpy is None:
+			new_modifiers = mapper.keyboard._pressed & self.MODIFIER_MASKS.keys()
+			if old_modifiers != new_modifiers:
+				self.timer("labels", 0.01, self.update_labels)
 
 	def on_sa_close(self, *a):
 		"""Called by CloseOSDKeyboardAction"""
