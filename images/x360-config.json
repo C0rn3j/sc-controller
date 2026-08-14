@@ -7,7 +7,7 @@
 		"buttons": [
 			"A", "B", "X", "Y", "BACK",
 			"C", "START", "LB", "RB", "LT", "RT",
-			"STICK", "LPAD", "RSTICK", "LG", "RG"
+			"STICK", "DPAD", "RSTICK", "LG", "RG"
 		]
 	},
 

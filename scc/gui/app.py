@@ -1167,6 +1167,12 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				DPAD: (self.dpad_test, "DPADTEST"),
 				CPAD: (self.cpad_test, "CPAD"),
 			}[what]
+			if what == DPAD:
+				if data[0] or data[1]:
+					self.hilights[App.OBSERVE_COLOR].add(DPAD)
+				else:
+					self.hilights[App.OBSERVE_COLOR].discard(DPAD)
+				self._update_background()
 			# Check if stick or pad is released
 			if data[0] == data[1] == 0:
 				widget.hide()

@@ -67,6 +67,8 @@ class EvdevControllerInput(NamedTuple):
 	q4: int
 	cpad_x: int
 	cpad_y: int
+	dpad_x: int
+	dpad_y: int
 
 
 class AxisCalibrationData(NamedTuple):

@@ -116,13 +116,13 @@ class DS4Controller(Controller):
 	def _load_hid_descriptor(self, config, max_size, vid, pid, test_mode) -> None:
 		# Overrided and hardcoded
 		self._decoder = HIDDecoder()
-		self._decoder.axes[AxisType.AXIS_LPAD_X] = AxisData(
+		self._decoder.axes[AxisType.AXIS_DPAD_X] = AxisData(
 			mode=AxisMode.HATSWITCH,
 			byte_offset=5,
 			size=8,
 			data=AxisDataUnion(
 				hatswitch=HatswitchModeData(
-					button=SCButtons.LPAD | SCButtons.LPADTOUCH,
+					button=0,
 					min=STICK_PAD_MIN,
 					max=STICK_PAD_MAX,
 				),
@@ -479,8 +479,8 @@ class DS4EvdevController(EvdevController):
 		4: {"axis": "rstick_y", "deadzone": 8, "max": 0, "min": 255},
 		2: {"axis": "ltrig", "max": 255, "min": 0},
 		5: {"axis": "rtrig", "max": 255, "min": 0},
-		16: {"axis": "lpad_x", "deadzone": 0, "max": 1, "min": -1},
-		17: {"axis": "lpad_y", "deadzone": 0, "max": -1, "min": 1},
+		16: {"axis": "dpad_x", "deadzone": 0, "max": 1, "min": -1},
+		17: {"axis": "dpad_y", "deadzone": 0, "max": -1, "min": 1},
 	}
 	GYRO_MAP = {
 		EvdevController.ECODES.ABS_RX: ("gpitch", 0.01),

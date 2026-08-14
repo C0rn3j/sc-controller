@@ -3,7 +3,7 @@
 Just a huge chunk of constants put aside to make important code more readable
 """
 
-from scc.constants import LEFT, RSTICK, STICK, SCButtons
+from scc.constants import DPAD, RSTICK, STICK, SCButtons
 
 X = 0
 Y = 1
@@ -13,8 +13,8 @@ AXIS_ORDER = (
 	("stick_y", Y),
 	("rstick_x", X),
 	("rstick_y", Y),
-	("lpad_x", X),
-	("lpad_y", Y),
+	("dpad_x", X),
+	("dpad_y", Y),
 	("ltrig", X),  # index 6
 	("rtrig", X),
 )
@@ -23,7 +23,7 @@ STICK_PAD_AREAS = {
 	# Numbers here are indexes to AXIS_ORDER tuple
 	"STICK": (STICK, (0, 1)),
 	"RSTICK": (RSTICK, (2, 3)),
-	"LPAD": (LEFT, (4, 5)),
+	"DPAD": (DPAD, (4, 5)),
 }
 
 TRIGGER_AREAS = {
@@ -38,8 +38,6 @@ AXIS_TO_BUTTON = {
 	"stick_y": SCButtons.STICKPRESS,
 	"rstick_x": SCButtons.RSTICKPRESS,
 	"rstick_y": SCButtons.RSTICKPRESS,
-	"lpad_x": SCButtons.LPAD,
-	"lpad_y": SCButtons.LPAD,
 }
 
 SDL_TO_SCC_NAMES = {

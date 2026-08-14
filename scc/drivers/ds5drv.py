@@ -172,8 +172,8 @@ class DualSenseBTControllerInput(ctypes.Structure):
 		("stick_y", ctypes.c_int32),
 		("rstick_x", ctypes.c_int32),
 		("rstick_y", ctypes.c_int32),
-		("lpad_x", ctypes.c_int32),
-		("lpad_y", ctypes.c_int32),
+		("dpad_x", ctypes.c_int32),
+		("dpad_y", ctypes.c_int32),
 		("accel_x", ctypes.c_int32),
 		("accel_y", ctypes.c_int32),
 		("accel_z", ctypes.c_int32),
@@ -245,13 +245,13 @@ class DS5Controller(HIDController):
 		self._decoder = HIDDecoder()
 
 		# Dpad works on DualSense!
-		self._decoder.axes[AxisType.AXIS_LPAD_X] = AxisData(
+		self._decoder.axes[AxisType.AXIS_DPAD_X] = AxisData(
 			mode=AxisMode.HATSWITCH,
 			byte_offset=8,
 			size=8,
 			data=AxisDataUnion(
 				hatswitch=HatswitchModeData(
-					button=SCButtons.LPAD | SCButtons.LPADTOUCH, min=STICK_PAD_MIN, max=STICK_PAD_MAX,
+					button=0, min=STICK_PAD_MIN, max=STICK_PAD_MAX,
 				),
 			),
 		)
@@ -766,10 +766,9 @@ class DS5HidRawController(Controller):
 			state.buttons |= SCButtons.X
 		dpad_state = data[9] & 0x0F
 		if dpad_state != 8:
-			state.buttons |= SCButtons.LPAD | SCButtons.LPADTOUCH
 			tempDPad = DS5HidRawController.DPAD_STATE_TYPES.get(dpad_state, DS5HidRawController.DPAD_CENTERED_STATE)
-			state.lpad_x = tempDPad.x
-			state.lpad_y = tempDPad.y
+			state.dpad_x = tempDPad.x
+			state.dpad_y = tempDPad.y
 
 		tempbyte = data[10]
 		if (tempbyte & (1 << 7)) != 0:
@@ -1040,8 +1039,8 @@ class DS5EvdevController(EvdevController):
 		4: {"axis": "rstick_y", "deadzone": 8, "max": 0, "min": 255},
 		2: {"axis": "ltrig", "max": 255, "min": 0},
 		5: {"axis": "rtrig", "max": 255, "min": 0},
-		16: {"axis": "lpad_x", "deadzone": 0, "max": 1, "min": -1},
-		17: {"axis": "lpad_y", "deadzone": 0, "max": -1, "min": 1},
+		16: {"axis": "dpad_x", "deadzone": 0, "max": 1, "min": -1},
+		17: {"axis": "dpad_y", "deadzone": 0, "max": -1, "min": 1},
 	}
 	GYRO_MAP = {
 		EvdevController.ECODES.ABS_RX: ("gpitch", 0.01),

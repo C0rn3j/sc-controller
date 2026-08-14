@@ -3,6 +3,26 @@ from unittest.mock import Mock, call, patch
 from scc.constants import HapticPos
 from scc.controller import HapticData
 from scc.drivers import ds5drv
+from scc.drivers.hiddrv import AxisMode, AxisType
+
+
+def test_dualsense_decoders_use_dedicated_dpad_axes() -> None:
+	controller = object.__new__(ds5drv.DS5Controller)
+	controller._load_hid_descriptor(None, None, None, None, None)
+
+	assert controller._decoder.axes[AxisType.AXIS_DPAD_X].mode == AxisMode.HATSWITCH
+	assert controller._decoder.axes[AxisType.AXIS_DPAD_X].data.hatswitch.button == 0
+	assert controller._decoder.axes[AxisType.AXIS_LPAD_X].mode == AxisMode.DISABLED
+
+	hidraw = object.__new__(ds5drv.DS5HidRawController)
+	hidraw._delta_time = 0
+	hidraw._previous_quat = [1.0, 0.0, 0.0, 0.0]
+	data = bytearray(64)
+	data[9] = 2  # D-pad right
+	state = hidraw._convert_input_data(data)
+	assert not hasattr(state, "lpad_x")
+	assert state.dpad_x > 0
+	assert state.dpad_y == 0
 
 
 def test_hidraw_driver_registers_all_dualsense_products() -> None:

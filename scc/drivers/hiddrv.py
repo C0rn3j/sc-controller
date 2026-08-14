@@ -46,7 +46,7 @@ log = logging.getLogger("HID")
 DEV_CLASS_HID = 3
 TRANSFER_TYPE_INTERRUPT = 3
 LIBUSB_DT_REPORT = 0x22
-AXIS_COUNT = 22  # Must match number of axis fields in HIDControllerInput and values in AxisType
+AXIS_COUNT = 24  # Must match number of axis fields in HIDControllerInput and values in AxisType
 BUTTON_COUNT = 32  # Must match (or be less than) number of bits in HIDControllerInput.buttons
 ALLOWED_SIZES = [1, 2, 4, 8, 16, 32]
 SYS_DEVICES = "/sys/devices"
@@ -107,6 +107,8 @@ class HIDControllerInput(ctypes.Structure):
 		("q4", ctypes.c_int32),
 		("cpad_x", ctypes.c_int32),
 		("cpad_y", ctypes.c_int32),
+		("dpad_x", ctypes.c_int32),
+		("dpad_y", ctypes.c_int32),
 	]
 
 
@@ -133,6 +135,8 @@ class AxisType(IntEnum):
 	AXIS_Q4 = 19
 	AXIS_CPAD_X = 20
 	AXIS_CPAD_Y = 21
+	AXIS_DPAD_X = 22
+	AXIS_DPAD_Y = 23
 
 
 class AxisMode(IntEnum):

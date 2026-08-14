@@ -259,7 +259,10 @@ class Area:
 		"RSTICK_DOWN",
 		"RSTICK_LEFT",
 		"RSTICK_RIGHT",
-		"DPAD",
+		"DPAD_UP",
+		"DPAD_DOWN",
+		"DPAD_LEFT",
+		"DPAD_RIGHT",
 		"ABS",
 		"MOUSE",
 		"MINUSHALF",
@@ -273,7 +276,7 @@ class Area:
 		self.name = element.attrib["id"].split("_")[1]
 		# Check if this is an area name that images/buttons.svg uses
 		#
-		# LSTICK and RSTICK are explicitly catching with all possible movements to allow them being used as
+		# LSTICK, RSTICK and DPAD are explicitly catching with all possible movements to allow them being used as
 		#  buttons throughout the code without conflicting with buttons.svg
 		# Hopefully this isn't used anywhere else
 		if self.name in Area.SPECIAL_CASES:

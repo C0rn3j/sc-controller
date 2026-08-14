@@ -14,7 +14,7 @@ import evdev
 from gi.repository import GdkPixbuf, GLib, Gtk
 
 from scc.config import Config
-from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, SCButtons
+from scc.constants import DPAD, STICK_PAD_MAX, STICK_PAD_MIN, SCButtons
 from scc.gui import BUTTON_ORDER
 from scc.gui.app import App
 from scc.gui.controller_image import ControllerImage
@@ -219,7 +219,9 @@ class ControllerRegistration(Editor):
 		assigned_axes = set([x for x in self._mappings.values() if isinstance(x, AxisData)])
 		assigned_axes.update([x.axis_data for x in self._mappings.values() if isinstance(x, DPadEmuData)])
 		assigned_buttons = set([x for x in self._mappings.values() if x in SCButtons.__members__.values()])
-		assigned_buttons.update([x.button for x in self._mappings.values() if isinstance(x, DPadEmuData)])
+		assigned_buttons.update(
+			x.button for x in self._mappings.values() if isinstance(x, DPadEmuData) and x.button is not None
+		)
 		for a in BUTTON_ORDER:
 			if a not in assigned_buttons:
 				if a not in (SCButtons.RGRIP, SCButtons.LGRIP):
@@ -282,7 +284,8 @@ class ControllerRegistration(Editor):
 			elif isinstance(target, DPadEmuData):
 				config["dpads"][code] = axis_to_json(target.axis_data)
 				config["dpads"][code]["positive"] = target.positive
-				config["dpads"][code]["button"] = nameof(target.button)
+				if target.button is not None:
+					config["dpads"][code]["button"] = nameof(target.button)
 			elif isinstance(target, AxisData):
 				config["axes"][code] = axis_to_json(target)
 
@@ -564,13 +567,19 @@ class ControllerRegistration(Editor):
 				self.hilight_axis(what, STICK_PAD_MIN)
 		if isinstance(what, DPadEmuData):
 			if pressed:
-				self.hilight(nameof(what.button))
+				if what.button is not None:
+					self.hilight(nameof(what.button))
+				else:
+					self.hilight(what.axis_data.area)
 				if what.positive:
 					self.hilight_axis(what.axis_data, STICK_PAD_MAX)
 				else:
 					self.hilight_axis(what.axis_data, STICK_PAD_MIN)
 			else:
-				self.unhilight(nameof(what.button))
+				if what.button is not None:
+					self.unhilight(nameof(what.button))
+				else:
+					self.unhilight(what.axis_data.area)
 				self.hilight_axis(what.axis_data, 0)
 		elif what is not None:
 			if pressed:

@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 from gi.repository import Gdk, GdkPixbuf, GdkX11, Gio, GLib, Gtk
 
 from scc.config import Config
-from scc.constants import DEFAULT, LEFT, RIGHT, RSTICK, SAME, STICK, STICK_PAD_MAX, ControllerFlags, SCButtons
+from scc.constants import DEFAULT, DPAD, LEFT, RIGHT, RSTICK, SAME, STICK, STICK_PAD_MAX, ControllerFlags, SCButtons
 from scc.gui.daemon_manager import DaemonManager
 from scc.lib import xwrappers as X
 from scc.menu_data import MenuData, Separator, Submenu
@@ -476,9 +476,8 @@ class Menu(OSDWindow):
 				self._confirm_with = SCButtons.LPADTOUCH.name
 
 		if getattr(self.args, "use_cursor", False):
-			# As special case, using LEFT pad on controller with
-			# actual DPAD should not display cursor
-			if self._control_with != LEFT or (controller.get_flags() & ControllerFlags.HAS_DPAD) == 0:
+			# As a special case, using the DPAD should not display a cursor
+			if self._control_with != DPAD or (controller.get_flags() & ControllerFlags.HAS_DPAD) == 0:
 				self.enable_cursor()
 
 		if getattr(self.args, "feedback_amplitude", None):
@@ -495,7 +494,7 @@ class Menu(OSDWindow):
 
 		locks = [self._control_with, self._confirm_with, self._cancel_with]
 		if self._control_with_dpad:
-			locks += ["LEFT"]
+			locks += [DPAD]
 		self.controller.lock(success, self.on_failed_to_lock, *locks)
 
 	def quit(self, code=-2):
@@ -606,7 +605,7 @@ class Menu(OSDWindow):
 	def on_event(self, daemon, what, data):
 		if self._submenu:
 			return self._submenu.on_event(daemon, what, data)
-		if what == self._control_with or (what == "LEFT" and self._control_with_dpad):
+		if what == self._control_with or (what == DPAD and self._control_with_dpad):
 			x, y = data
 			if self._use_cursor:
 				# Special case, both confirm_with and cancel_with can be set to (L/R)STICK

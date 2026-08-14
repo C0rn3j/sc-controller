@@ -33,6 +33,17 @@ def test_hid_state_and_ds4_decoder_use_dedicated_right_stick() -> None:
 	assert controller._decoder.axes[AxisType.AXIS_RPAD_Y].mode == AxisMode.DISABLED
 
 
+def test_ds4_decoder_uses_dedicated_dpad_axes() -> None:
+	controller = DS4Controller(Mock())
+	controller._load_hid_descriptor(None, None, None, None, None)
+
+	assert hasattr(HIDControllerInput(), "dpad_x")
+	assert hasattr(HIDControllerInput(), "dpad_y")
+	assert controller._decoder.axes[AxisType.AXIS_DPAD_X].mode == AxisMode.HATSWITCH
+	assert controller._decoder.axes[AxisType.AXIS_DPAD_X].data.hatswitch.button == 0
+	assert controller._decoder.axes[AxisType.AXIS_LPAD_X].mode == AxisMode.DISABLED
+
+
 def make_controller() -> DS4HIDController:
 	controller = object.__new__(DS4HIDController)
 	controller.handle = Mock()

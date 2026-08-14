@@ -2,11 +2,17 @@
 
 Dummy container classes
 """
+from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN
 from scc.gui.creg.constants import AXIS_TO_BUTTON
+
+if TYPE_CHECKING:
+	from scc.constants import SCButtons
+
 
 log = logging.getLogger("CReg.data")
 
@@ -17,26 +23,26 @@ class AxisData:
 	Stores position, center and limits for single axis.
 	"""
 
-	def __init__(self, name, xy, min=STICK_PAD_MAX, max=STICK_PAD_MIN):
-		self.name = name
-		self.area = name.split("_")[0].upper()
+	def __init__(self, name: str, xy: int, min: int = STICK_PAD_MAX, max: int = STICK_PAD_MIN) -> None:
+		self.name: str = name
+		self.area: str = name.split("_")[0].upper()
 		if self.area.endswith("TRIG"):
 			self.area = self.area[0:-3]
-		self.xy = xy
-		self.pos = 0
-		self.center = 0
-		self.min = min
-		self.max = max
-		self.invert = False
+		self.xy: int = xy
+		self.pos : int = 0
+		self.center: int = 0
+		self.min: int = min
+		self.max: int = max
+		self.invert: bool = False
 		self.cursor = None
 
-	def reset(self):
+	def reset(self) -> None:
 		"""Reset min and max value so axis can (has to be) recalibrated again"""
 		self.min = STICK_PAD_MAX
 		self.max = STICK_PAD_MIN
 
-	def __repr__(self):
-		return "<Axis data '%s'>" % (self.name,)
+	def __repr__(self) -> str:
+		return f"<Axis data '{self.name}'>"
 
 	def set_position(self, value):
 		"""Return (changed, x), value determining if axis limits were changed and current position position.
@@ -70,7 +76,7 @@ class DPadEmuData:
 	This class stores mapping of one button to one half of axis.
 	"""
 
-	def __init__(self, axis_data, positive):
-		self.axis_data = axis_data
-		self.positive = positive
-		self.button = AXIS_TO_BUTTON[axis_data.name]
+	def __init__(self, axis_data: AxisData, positive: bool) -> None:
+		self.axis_data: AxisData = axis_data
+		self.positive: bool = positive
+		self.button: SCButtons | None = AXIS_TO_BUTTON.get(axis_data.name)

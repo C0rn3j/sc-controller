@@ -5,10 +5,10 @@
 #include <limits.h>
 #define CLAMP(min, x, max) x
 
-#define HIDDRV_MODULE_VERSION 6
+#define HIDDRV_MODULE_VERSION 7
 PyObject* module;
 
-#define AXIS_COUNT 22
+#define AXIS_COUNT 24
 #define BUTTON_COUNT 32
 
 struct HIDControllerInput {
@@ -40,6 +40,8 @@ enum AxisType {
 	AXIS_Q4       = 19,
 	AXIS_CPAD_X   = 20,
 	AXIS_CPAD_Y   = 21,
+	AXIS_DPAD_X   = 22,
+	AXIS_DPAD_Y   = 23,
 	_AxisType_force_int = INT_MAX
 };
 

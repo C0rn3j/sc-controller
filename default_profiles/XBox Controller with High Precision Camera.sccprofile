@@ -45,6 +45,9 @@
         }
     },
     "cpad": {},
+    "dpad": {
+        "action": "dpad(hatup(Axes.ABS_HAT0Y), hatdown(Axes.ABS_HAT0Y), hatleft(Axes.ABS_HAT0X), hatright(Axes.ABS_HAT0X))"
+    },
     "gyro": {},
     "is_template": false,
     "menus": {},
