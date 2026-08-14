@@ -406,8 +406,10 @@ class Keyboard(OSDWindow, TimerManager):
 				if a.side != CPAD:
 					return
 			if isinstance(a, ModeModifier):
-				for x in a.get_child_actions():
-					add_action(side, button, x)
+				mapper = getattr(self, "mapper", None)
+				# Before the mapper is created no modes can be held,
+				# so the default action is the accurate initial description.
+				add_action(side, button, a.select(mapper) if mapper is not None else a.default)
 				return
 			desc = a.describe(Action.AC_OSK)
 			if desc in used:
@@ -584,7 +586,12 @@ class Keyboard(OSDWindow, TimerManager):
 				self.timer("labels", 0.1, self.update_labels)
 		else:
 			old_modifiers = mapper.keyboard._pressed & self.MODIFIER_MASKS.keys()
+		old_buttons = mapper.buttons
 		mapper.handle_event(daemon, what, data)
+		if getattr(self, "mapper", None) is not mapper:
+			return
+		if old_buttons != mapper.buttons:
+			self.set_help()
 		if self.x11_dpy is None:
 			new_modifiers = mapper.keyboard._pressed & self.MODIFIER_MASKS.keys()
 			if old_modifiers != new_modifiers:
