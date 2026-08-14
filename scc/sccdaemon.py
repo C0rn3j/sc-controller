@@ -1556,6 +1556,7 @@ class Subprocess:
 		if debug:
 			self.args.append("debug")
 		self._killed: bool = False
+		self._lock = threading.Lock()
 		self.p = None
 		self.t: Thread = threading.Thread(target=self._threaded)
 		self.t.daemon = True
@@ -1563,13 +1564,19 @@ class Subprocess:
 
 	def _threaded(self, *a) -> None:
 		while not self._killed:
-			self.p = subprocess.Popen(self.args, stdin=None)
-			self.p.communicate()
-			if self.p and self.p.returncode == 8:
-				log.warning("%s exited with code 8; not restarting", self.binary_name)
+			with self._lock:
+				if self._killed:
+					return
+				self.p = subprocess.Popen(self.args, stdin=None)
+				p = self.p
+			p.communicate()
+			with self._lock:
+				p = self.p
+				if p and p.returncode == 8:
+					log.warning("%s exited with code 8; not restarting", self.binary_name)
+					self.p = None
+					return
 				self.p = None
-				return
-			self.p = None
 			if not self._killed:
 				log.warning("%s died; restarting after %ss", self.binary_name, self.restart_after)
 				time.sleep(self.restart_after)
@@ -1580,6 +1587,7 @@ class Subprocess:
 
 	def kill(self) -> None:
 		self.mark_killed()
-		if self.p:
-			self.p.kill()
-		self.p = None
+		with self._lock:
+			if self.p:
+				self.p.kill()
+			self.p = None
