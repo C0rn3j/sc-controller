@@ -49,8 +49,20 @@ def has_haptic_effects(app) -> bool:
 
 	Used to hide the effect chooser rather than offering options that would
 	silently degrade to a click on hardware that cannot synthesise them.
+
+	An UNKNOWN controller counts as capable. There are three states here, not
+	two: a controller that supports effects, one that does not, and no
+	controller at all -- daemon not running, or the pad simply switched off.
+	Treating the third like the second hid the chooser from anyone editing a
+	profile with their controller off, which is an ordinary thing to do and
+	says nothing about the hardware the profile is for. Offering an effect
+	that later degrades to a click is a far smaller harm than making a
+	feature vanish depending on whether a controller happened to be awake.
 	"""
-	return controller_type(app) in HAPTIC_EFFECT_TYPES
+	ctype = controller_type(app)
+	if ctype is None:
+		return True
+	return ctype in HAPTIC_EFFECT_TYPES
 
 
 def button_label(app, button, default):
