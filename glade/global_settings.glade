@@ -2209,7 +2209,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                       <object class="GtkLabel" id="label31">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Minimize to status icon instead closing</property>
+                        <property name="label" translatable="yes">Minimize to status icon instead of closing</property>
                         <property name="use-underline">True</property>
                         <property name="mnemonic-widget">cbShowOSD</property>
                       </object>
