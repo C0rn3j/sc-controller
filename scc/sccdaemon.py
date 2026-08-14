@@ -491,7 +491,9 @@ class SCCDaemon(Daemon):
 			return
 
 		if "DISPLAY" not in os.environ:
-			log.warning("DISPLAY env variable not set. Some functionality will be unavailable")
+			log.error(
+				"Neither DISPLAY nor WAYLAND_DISPLAY is set. Some functionality will be unavailable - are you launching SCC via an SSH session?",
+			)
 			self.xdisplay = None
 			return
 
