@@ -1452,6 +1452,11 @@ class ReplacedAction(LockedAction):
 		ReportingAction.__init__(self, what, client)
 		self.original_action = original_action
 		self.new_action = new_action.compress()
+		if what in SCButtons.__members__.values() and self.mapper and (self.mapper.buttons & what):
+			try:
+				original_action.button_release(self.mapper)
+			except Exception as e:
+				log.warning("Failed to release held action while replacing %s: %s", what, e)
 		original_action.cancel(self.mapper)
 		self._store_lock()
 		log.debug("%s replaced by %s", nameof(self.what), self.client)
@@ -1463,10 +1468,10 @@ class ReplacedAction(LockedAction):
 		self.new_action.trigger(mapper, position, old_position)
 
 	def button_press(self, mapper: Mapper, number=1) -> None:
-		self.new_action.button_press(mapper, mapper)
+		self.new_action.button_press(mapper)
 
 	def button_release(self, mapper: Mapper) -> None:
-		self.new_action.button_release(mapper, mapper)
+		self.new_action.button_release(mapper)
 
 	def whole(self, mapper: Mapper, x, y, what) -> None:
 		self.new_action.whole(mapper, x, y, what)
