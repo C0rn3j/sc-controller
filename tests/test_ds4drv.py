@@ -1,10 +1,5 @@
-import pytest
 import struct
 import zlib
-
-# BT disconnect needs it
-pytest.importorskip("gi", reason="PyGObject is required for GUI tests")
-
 from unittest.mock import Mock
 
 from scc.constants import HapticPos

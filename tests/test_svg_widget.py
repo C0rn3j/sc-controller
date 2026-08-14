@@ -1,7 +1,3 @@
-import pytest
-
-pytest.importorskip("gi", reason="PyGObject is required for GUI tests")
-
 import gi
 
 gi.require_version("Gdk", "3.0")

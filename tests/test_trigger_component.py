@@ -1,7 +1,3 @@
-import pytest
-
-pytest.importorskip("gi", reason="PyGObject is required for trigger GUI tests")
-
 from scc.actions import Action, ButtonAction, MultiAction, TriggerAction
 from scc.constants import TRIGGER_CLICK, TRIGGER_HALF, TRIGGER_MAX
 from scc.gui.ae.trigger import TriggerComponent
