@@ -31,7 +31,10 @@ dependencies = [
 
 [project.optional-dependencies]
 	dev = [
-		"pygobject-stubs", # needs PYGOBJECT_STUB_CONFIG=Gtk3 env var when being installed
+		# Needs PYGOBJECT_STUB_CONFIG=Gtk3,Gdk3 env var when being installed
+		# And also --no-cache-dir for pip install
+		# https://github.com/pygobject/pygobject-stubs#project-integration
+		"pygobject-stubs",
 		"pytest",
 	]
 

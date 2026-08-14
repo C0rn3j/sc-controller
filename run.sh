@@ -69,9 +69,9 @@ export SCC_SHARED="${PWD}"
 rm -rf dist
 python -m venv .venv
 source .venv/bin/activate
-# To build the dev dependencies correctly
-export PYGOBJECT_STUB_CONFIG=Gtk3
-pip install ".[dev]" build
+pip install . build
+# PYGOBJECT_STUB_CONFIG and --no-cache-dir is needed to build pygobject-stubs correctly
+PYGOBJECT_STUB_CONFIG=Gtk3,Gdk3 pip install --no-cache-dir ".[dev]"
 python -m build --wheel
 #python -m installer --destdir=".venv" dist/*.whl
 pip install --prefix ".venv" dist/*.whl --force-reinstall
