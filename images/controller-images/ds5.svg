@@ -69,8 +69,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.959798"
-     inkscape:cx="105.68721"
-     inkscape:cy="180.31223"
+     inkscape:cx="203.2932"
+     inkscape:cy="177.02923"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
@@ -422,7 +422,8 @@
     <g
        style="display:inline;fill:#00000a;fill-opacity:0.0431373"
        id="g4481"
-       transform="translate(-230.68013,-486.2488)">
+       transform="translate(-230.68013,-486.2488)"
+       inkscape:label="Left Trigger">
       <rect
          ry="0"
          y="514.47174"
@@ -435,7 +436,8 @@
     <g
        style="display:inline;fill:#00000a;fill-opacity:0.0431373"
        transform="translate(-218.97772,-522.36364)"
-       id="g4385">
+       id="g4385"
+       inkscape:label="Left Button">
       <rect
          ry="0"
          y="559.44287"
@@ -448,7 +450,8 @@
     <g
        transform="translate(-6.6000247,8.3581616)"
        style="display:inline;fill:#00000a;fill-opacity:0.0431373"
-       id="g4321">
+       id="g4321"
+       inkscape:label="The DPAD">
       <rect
          ry="0"
          y="75.738838"
@@ -469,7 +472,8 @@
     <g
        style="display:inline;fill:#00000a;fill-opacity:0.0431373"
        id="g67890"
-       transform="translate(213.45316,92.87623)">
+       transform="translate(213.45316,92.87623)"
+       inkscape:label="Right Stick">
       <rect
          ry="0"
          y="49.079266"
@@ -490,7 +494,8 @@
     <g
        transform="translate(-18.29848,-2.98212)"
        style="display:inline;fill:#00000a;fill-opacity:0.0431373"
-       id="g4464">
+       id="g4464"
+       inkscape:label="Left Stick">
       <rect
          ry="0"
          y="144.30809"
@@ -499,7 +504,7 @@
          width="60"
          id="AREA_STICK_1"
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.0431373;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
-         inkscape:label="#AREA_STICK" />
+         inkscape:label="AREA_STICK_1" />
       <rect
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.0431373;fill-rule:evenodd;stroke:#00b400;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
          id="AREA_STICKTEST"
@@ -512,7 +517,8 @@
     <g
        style="display:inline;fill:#00000a;fill-opacity:0.0431373"
        id="g4489"
-       transform="translate(29.94964,-486.24881)">
+       transform="translate(29.94964,-486.24881)"
+       inkscape:label="Right Trigger">
       <rect
          ry="0"
          y="514.10193"
@@ -525,7 +531,8 @@
     <g
        style="display:inline;fill:#00000a;fill-opacity:0.0431373"
        transform="translate(26.544905,-522.36365)"
-       id="g5385">
+       id="g5385"
+       inkscape:label="Right Button">
       <rect
          ry="0"
          y="561.21216"
