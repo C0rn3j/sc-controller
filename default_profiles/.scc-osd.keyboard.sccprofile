@@ -21,7 +21,7 @@
 
 	"lstick": {
 		"action": "dpad(button(Keys.KEY_UP), button(Keys.KEY_DOWN), button(Keys.KEY_LEFT), button(Keys.KEY_RIGHT))",
-		"modes": { "RGRIP": { "action": "OSK.move()" } }
+		"modes": { "LSTICKPRESS": { "action": "OSK.move()" } }
 	},
 
 	"gyro": {},

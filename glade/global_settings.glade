@@ -126,6 +126,11 @@
         <col id="2">False</col>
       </row>
       <row>
+        <col id="0" translatable="yes">Emulate Arrows, Move Keyboard when Left Stick is Pressed</col>
+        <col id="1">mode(LSTICKPRESS, OSK.move(), dpad(button(Keys.KEY_UP), button(Keys.KEY_DOWN), button(Keys.KEY_LEFT), button(Keys.KEY_RIGHT)))</col>
+        <col id="2">False</col>
+      </row>
+      <row>
         <col id="0" translatable="yes">Emulate Arrows, Move Keyboard when Left Grip is Pressed</col>
         <col id="1">mode(LGRIP, OSK.move(), dpad(button(Keys.KEY_UP), button(Keys.KEY_DOWN), button(Keys.KEY_LEFT), button(Keys.KEY_RIGHT)))</col>
         <col id="2">False</col>
@@ -307,7 +312,7 @@ or even crash.</property>
                     <property name="margin-left">20</property>
                     <property name="margin-right">10</property>
                     <property name="margin-top">5</property>
-                    <property name="label" translatable="yes">Stick</property>
+                    <property name="label" translatable="yes">Left Stick</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
