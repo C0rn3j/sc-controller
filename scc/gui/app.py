@@ -29,6 +29,7 @@ from scc.gui.ribar import RIBar
 from scc.gui.statusicon import get_status_icon
 from scc.gui.userdata_manager import UserDataManager
 from scc.modifiers import NameModifier
+from scc.osd import menu_generators
 from scc.paths import get_config_path, get_profiles_path
 from scc.profile import Profile
 from scc.tools import (
@@ -50,6 +51,7 @@ if TYPE_CHECKING:
 
 log = logging.getLogger("App")
 
+menu_generators.register_menu_generators()
 
 class App(Gtk.Application, UserDataManager, BindingEditor):
 	"""Main application / window."""
