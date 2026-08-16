@@ -522,7 +522,7 @@ class Keyboard(OSDWindow, TimerManager):
 			(c, c.connect("lost", self.on_controller_lost)),
 		]
 
-		# TODO: Single-handed mode for PS4 posponed
+		# TODO: Single-handed mode for PS4 postponed
 		locks = [LEFT, RIGHT, STICK, "STICKPRESS"] + [b.name for b in SCButtons]
 		if (c.get_flags() & ControllerFlags.HAS_CPAD) == 0:
 			# Two pads, two hands
@@ -560,7 +560,7 @@ class Keyboard(OSDWindow, TimerManager):
 		del self.mapper
 		OSDWindow.quit(self, code)
 
-	def show(self, *a):
+	def show(self, *a) -> None:
 		if self.background is None:
 			self._create_background()
 		OSDWindow.show(self, *a)
@@ -572,7 +572,7 @@ class Keyboard(OSDWindow, TimerManager):
 		self.set_cursor_position(0, 0, self.cursors[CPAD], self.limits[CPAD])
 		self.timer("labels", 0.1, self.update_labels)
 
-	def on_event(self, daemon, what, data):
+	def on_event(self, daemon, what, data) -> None:
 		"""Called when button press, button release or stick / pad update is sent by the daemon."""
 		# Controller events can already be queued when the OSK is closing and quit() has disposed of its mapper.
 		# Localize self.mapper to prevent race ceonditions

@@ -24,11 +24,11 @@ class ProfileListMenuGenerator(MenuGenerator):
 	GENERATOR_NAME = "profiles"
 
 	@staticmethod
-	def callback(menu, daemon, controller, menuitem):
+	def callback(menu, daemon, controller, menuitem) -> None:
 		controller.set_profile(menuitem.filename)
 		menu.hide()
 
-		def on_response(*a):
+		def on_response(*a) -> None:
 			menu.quit(-2)
 
 		daemon.request(b"OSD: " + menuitem.label.encode("utf-8") + b"\n", on_response, on_response)
@@ -36,7 +36,7 @@ class ProfileListMenuGenerator(MenuGenerator):
 	def describe(self):
 		return _("[ All Profiles ]")
 
-	def generate(self, menuhandler):
+	def generate(self, menuhandler) -> list[MenuItem]:
 		# TODO: Cannot load directory content asynchronously here and I'm
 		# TODO: not happy about it
 		rv, all_profiles = [], {}
@@ -57,26 +57,26 @@ class RecentListMenuGenerator(MenuGenerator):
 
 	GENERATOR_NAME = "recent"
 
-	def __init__(self, rows=5, **b):
+	def __init__(self, rows: int = 5, **b) -> None:
 		MenuGenerator.__init__(self)
 		self.rows = rows
 
 	def generate(self, menuhandler):
 		return _("[ %s Recent Profiles ]") % (self.rows,)
 
-	def encode(self):
+	def encode(self) -> dict[str, str | int]:
 		return {"generator": self.GENERATOR_NAME, "rows": self.rows}
 
-	def callback(self, menu, daemon, controller, menuitem):
+	def callback(self, menu, daemon, controller, menuitem) -> None:
 		controller.set_profile(menuitem.filename)
 		menu.hide()
 
-		def on_response(*a):
+		def on_response(*a) -> None:
 			menu.quit(-2)
 
 		daemon.request(b"OSD: " + menuitem.label.encode("utf-8") + b"\n", on_response, on_response)
 
-	def generate(self, menuhandler):
+	def generate(self, menuhandler) -> list[MenuItem]:
 		rv = []
 		for p in menuhandler.config["recent_profiles"]:
 			filename = find_profile(p)
@@ -91,7 +91,10 @@ class RecentListMenuGenerator(MenuGenerator):
 
 
 class WindowListMenuGenerator(MenuGenerator):
-	"""Generates list of all windows"""
+	"""Generates list of all windows for the Switch To feature
+
+	Switch To gives a list of application Windows and offers to focus them
+	"""
 
 	GENERATOR_NAME = "windowlist"
 	MAX_LENGHT = 50
@@ -99,11 +102,12 @@ class WindowListMenuGenerator(MenuGenerator):
 	# def generate(self, menuhandler):
 	# return _("[ Window Lists ]")
 
-	def encode(self):
+	def encode(self) -> dict[str, str]:
 		return {"generator": self.GENERATOR_NAME}
 
 	@staticmethod
-	def callback(menu, daemon, controller, menuitem):
+	def callback(menu, daemon, controller, menuitem) -> None:
+		# Below is X11 path
 		try:
 			xid = int(menuitem.id)
 			display = Gdk.Display.get_default()
@@ -114,27 +118,31 @@ class WindowListMenuGenerator(MenuGenerator):
 			log.error(traceback.format_exc())
 		menu.quit(-2)
 
-	def generate(self, menuhandler):
-		rv = []
-		dpy = X.Display(hash(GdkX11.x11_get_default_xdisplay()))  # Magic
-		root = X.get_default_root_window(dpy)
+	def generate(self, menuhandler) -> list[MenuItem]:
+		rv: list[MenuItem] = []
+		x11_dpy = None
+		if isinstance(Gdk.Display.get_default(), GdkX11.X11Display):
+			x11_dpy = X.Display(hash(GdkX11.x11_get_default_xdisplay()))
+		if x11_dpy is not None:
+			root = X.get_default_root_window(x11_dpy)
 
-		count, wlist = X.get_window_prop(dpy, root, b"_NET_CLIENT_LIST", 1024)
-		skip_taskbar = X.intern_atom(dpy, b"_NET_WM_STATE_SKIP_TASKBAR", True)
-		wlist = cast(wlist, POINTER(X.XID))[0:count]
-		for win in wlist:
-			if skip_taskbar not in X.get_wm_state(dpy, win):
-				title = X.get_window_title(dpy, win)[0 : self.MAX_LENGHT]
-				menuitem = MenuItem(str(win), title)
-				menuitem.callback = WindowListMenuGenerator.callback
-				rv.append(menuitem)
+			count, wlist = X.get_window_prop(x11_dpy, root, b"_NET_CLIENT_LIST", 1024)
+			skip_taskbar = X.intern_atom(x11_dpy, b"_NET_WM_STATE_SKIP_TASKBAR", True)
+			wlist = cast(wlist, POINTER(X.XID))[0:count]
+			for win in wlist:
+				if skip_taskbar not in X.get_wm_state(x11_dpy, win):
+					title = X.get_window_title(x11_dpy, win)[0 : self.MAX_LENGHT]
+					menuitem = MenuItem(str(win), title)
+					menuitem.callback = WindowListMenuGenerator.callback
+					rv.append(menuitem)
+			return rv
+		# Wayland generator - seems like it needs to be compositor specific - kwin has a scripting API we can use
+		rv.append(MenuItem(None, _("Switch To is not currently supported in Wayland")))
 		return rv
 
 
 class GameListMenuGenerator(MenuGenerator):
-	"""Generates list of applications known to XDG menu
-	and belonging to 'Game' category
-	"""
+	"""Generates list of applications known to XDG menu and belonging to 'Game' category"""
 
 	GENERATOR_NAME = "games"
 	MAX_LENGHT = 50
@@ -144,15 +152,15 @@ class GameListMenuGenerator(MenuGenerator):
 	# def generate(self, menuhandler):
 	# return _("[ Games ]")
 
-	def encode(self):
+	def encode(self) -> dict[str, str]:
 		return {"generator": self.GENERATOR_NAME}
 
 	@staticmethod
-	def callback(menu, daemon, controller, menuitem):
+	def callback(menu, daemon, controller, menuitem) -> None:
 		menuitem._desktop_file.launch()
 		menu.quit(-2)
 
-	def generate(self, menuhandler):
+	def generate(self, menuhandler) -> list[MenuItem]:
 		if GameListMenuGenerator._games is None:
 			GameListMenuGenerator._games = []
 			games = [
