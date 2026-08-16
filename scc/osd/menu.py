@@ -2,11 +2,13 @@
 
 Display menu that user can navigate through and prints chosen item id to stdout
 """
+from __future__ import annotations
 
 import logging
 import os
 import sys
 from math import sqrt
+from typing import TYPE_CHECKING
 
 from gi.repository import Gdk, GdkPixbuf, GdkX11, Gio, GLib, Gtk
 
@@ -19,6 +21,9 @@ from scc.osd import OSDWindow, StickController, menu_generators
 from scc.paths import get_share_path
 from scc.tools import _, circle_to_square, clamp, find_icon, find_menu
 from scc.x11 import autoswitcher
+
+if TYPE_CHECKING:
+	from scc.gui.daemon_manager import ControllerManager
 
 log = logging.getLogger("osd.menu")
 
@@ -68,7 +73,7 @@ class Menu(OSDWindow):
 		self._use_cursor = False
 		self._eh_ids = []
 		self._control_with = STICK
-		self._control_with_dpad = False
+		self._control_with_dpad: bool = False
 		self._confirm_with = "A"
 		self._cancel_with = "B"
 
@@ -429,7 +434,7 @@ class Menu(OSDWindow):
 		OSDWindow.show(self, *a)
 		GLib.timeout_add(1, self._check_on_screen_position, True)
 
-	def on_daemon_connected(self, *a):
+	def on_daemon_connected(self, *a) -> None:
 		if not self.config:
 			self.config = Config()
 		self.controller = self.choose_controller(self.daemon)
@@ -445,12 +450,15 @@ class Menu(OSDWindow):
 		]
 		self.lock_inputs()
 
-	def use_controller(self, controller):
+	def use_controller(self, controller: ControllerManager) -> None:
 		ccfg = self.config.get_controller_config(controller.get_id())
 		self._control_with = getattr(self.args, "control_with", DEFAULT)
 		self._cancel_with = getattr(self.args, "cancel_with", DEFAULT)
 		if self._control_with == DEFAULT:
 			self._control_with = ccfg["menu_control"]
+		self._control_with_dpad = self._control_with == "STICK" and bool(
+			controller.get_flags() & ControllerFlags.HAS_DPAD,
+		)
 		if self._cancel_with == DEFAULT:
 			self._cancel_with = ccfg["menu_cancel"]
 
@@ -481,15 +489,13 @@ class Menu(OSDWindow):
 				side = "BOTH"
 			self.feedback = side, int(self.args.feedback_amplitude)
 
-	def lock_inputs(self):
-		def success(*a):
-			log.error("Sucessfully locked input")
+	def lock_inputs(self) -> None:
+		def success(*a) -> None:
+			log.info("Successfully locked input")
 
 		locks = [self._control_with, self._confirm_with, self._cancel_with]
-		if self._control_with == "STICK":
-			if self.controller.get_flags() & ControllerFlags.HAS_DPAD != 0:
-				self._control_with_dpad = True
-				locks += ["LEFT"]
+		if self._control_with_dpad:
+			locks += ["LEFT"]
 		self.controller.lock(success, self.on_failed_to_lock, *locks)
 
 	def quit(self, code=-2):
