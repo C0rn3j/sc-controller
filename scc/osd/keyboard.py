@@ -663,8 +663,7 @@ class Keyboard(OSDWindow, TimerManager):
 		x, y = self._stick
 		x = x * 50.0 / STICK_PAD_MAX
 		y = y * -50.0 / STICK_PAD_MAX
-		rx, ry = self.get_position()
-		self.move(rx + x, ry + y)
+		self.move_relative(x, y)
 		if abs(self._stick[0]) > 100 or abs(self._stick[1]) > 100:
 			self.timer("lstick", 0.05, self._move_window)
 

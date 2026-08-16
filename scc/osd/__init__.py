@@ -71,6 +71,7 @@ class OSDWindow(Gtk.Window):
 		self.exit_code = -1
 		self.position = (20, -20)
 		self.mainloop = None
+		self._layer_position: list[float] | None = None
 		self._controller: ControllerManager | None = None
 		self.daemon: DaemonManager
 		self.set_name(wmclass)
@@ -90,7 +91,7 @@ class OSDWindow(Gtk.Window):
 				GtkLayerShell.set_layer(self, layer if layer is not None else GtkLayerShell.Layer.OVERLAY)
 				GtkLayerShell.set_anchor(self, self.x_layer_anchor, True)
 				GtkLayerShell.set_anchor(self, self.y_layer_anchor, True)
-				self.layer_shell = GtkLayerShell
+				self.layer_shell: GtkLayerShell = GtkLayerShell
 		except ImportError:
 			pass
 		if not self.using_wlroots:
@@ -246,6 +247,7 @@ class OSDWindow(Gtk.Window):
 				y = -y
 			self.layer_shell.set_margin(self, self.x_layer_anchor, x)
 			self.layer_shell.set_margin(self, self.y_layer_anchor, y)
+			self._layer_position = [float(x), float(y)]
 		else:  # X11
 			if x < 0:  # Negative X position is counted from right border
 				x = Gdk.Screen.width() - self.get_allocated_width() + x + 1
@@ -255,6 +257,39 @@ class OSDWindow(Gtk.Window):
 
 		Gtk.Window.show(self)
 		self.make_window_clicktrough()
+
+	def move_relative(self, dx: float, dy: float) -> None:
+		"""Move an OSD window by a relative amount on X11 or layer-shell."""
+		if self.using_wlroots:
+			x_direction = -1 if self.x_layer_anchor == self.layer_shell.Edge.RIGHT else 1
+			y_direction = -1 if self.y_layer_anchor == self.layer_shell.Edge.BOTTOM else 1
+			if self._layer_position is None:
+				self._layer_position = [
+					float(self.layer_shell.get_margin(self, self.x_layer_anchor)),
+					float(self.layer_shell.get_margin(self, self.y_layer_anchor)),
+				]
+			monitor = self.layer_shell.get_monitor(self)
+			if monitor is None:
+				monitor = self.get_window().get_display().get_monitor_at_window(self.get_window())
+			if monitor is not None:
+				geometry = monitor.get_workarea()
+				window_width, window_height = self.get_window_size()
+				max_x = max(0.0, float(geometry.width - window_width))
+				max_y = max(0.0, float(geometry.height - window_height))
+			else:
+				max_x = max_y = float("inf")
+
+			self._layer_position[0] = min(
+				max_x, max(0.0, self._layer_position[0] + dx * x_direction),
+			)
+			self._layer_position[1] = min(
+				max_y, max(0.0, self._layer_position[1] + dy * y_direction),
+			)
+			self.layer_shell.set_margin(self, self.x_layer_anchor, int(self._layer_position[0]))
+			self.layer_shell.set_margin(self, self.y_layer_anchor, int(self._layer_position[1]))
+		else:
+			x, y = self.get_position()
+			self.move(int(x + dx), int(y + dy))
 
 	def on_controller_lost(self, *a) -> None:
 		log.error("Controller lost")
