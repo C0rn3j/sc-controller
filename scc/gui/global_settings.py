@@ -202,9 +202,9 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		if not self.set_cb(cbTriggersAction, triggers, keyindex=1):
 			self.add_custom(cbTriggersAction, triggers)
 
-		# Load stick
-		if not self.set_cb(cbStickAction, profile.stick.to_string(), keyindex=1):
-			self.add_custom(cbStickAction, profile.stick.to_string())
+		# Load left stick
+		if not self.set_cb(cbStickAction, profile.lstick.to_string(), keyindex=1):
+			self.add_custom(cbStickAction, profile.lstick.to_string())
 
 		# Load sensitivity
 		s = profile.pads[LEFT].compress().speed
@@ -242,7 +242,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			return
 		key = cb.get_model().get_value(cb.get_active_iter(), 1)
 		profile = self._load_osk_profile()
-		profile.stick = GuiActionParser().restart(key).parse()
+		profile.lstick = GuiActionParser().restart(key).parse()
 		self._save_osk_profile(profile)
 
 	def on_cbTriggersAction_changed(self, cb):

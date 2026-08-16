@@ -59,7 +59,7 @@ def test_system_buttons() -> None:
 
 
 def test_stick_clicks() -> None:
-	assert parse_input(_frame({3: 0x80})).buttons & SCButtons.STICKPRESS
+	assert parse_input(_frame({3: 0x80})).buttons & SCButtons.LSTICKPRESS
 	assert parse_input(_frame({2: 0x20})).buttons & SCButtons.RSTICKPRESS
 
 
@@ -81,11 +81,11 @@ def test_triggers() -> None:
 
 
 def test_sticks_and_deadzone() -> None:
-	assert parse_input(_frame(i16={10: 30000})).stick_x == 30000
-	assert parse_input(_frame(i16={12: -30000})).stick_y == -30000
+	assert parse_input(_frame(i16={10: 30000})).lstick_x == 30000
+	assert parse_input(_frame(i16={12: -30000})).lstick_y == -30000
 	assert parse_input(_frame(i16={14: 20000})).rstick_x == 20000
 	assert parse_input(_frame(i16={16: -25000})).rstick_y == -25000
-	assert parse_input(_frame(i16={10: 100})).stick_x == 0  # within deadzone
+	assert parse_input(_frame(i16={10: 100})).lstick_x == 0  # within deadzone
 
 
 def test_pads() -> None:
@@ -132,4 +132,4 @@ def test_imu() -> None:
 def test_rest_frame_is_neutral() -> None:
 	inp = parse_input(_frame())
 	assert inp.buttons == 0
-	assert (inp.dpad_x, inp.dpad_y, inp.stick_x) == (0, 0, 0)
+	assert (inp.dpad_x, inp.dpad_y, inp.lstick_x) == (0, 0, 0)

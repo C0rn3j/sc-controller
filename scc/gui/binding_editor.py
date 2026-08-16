@@ -2,6 +2,9 @@
 
 Base class for main application window and OSD Keyboard bindings editor.
 """
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from scc.actions import NoAction
 from scc.constants import LEFT, RIGHT, SCButtons
@@ -29,6 +32,10 @@ from scc.modifiers import DoubleclickModifier, FeedbackModifier, HoldModifier, M
 from scc.profile import Profile
 from scc.tools import _
 
+if TYPE_CHECKING:
+	from scc.actions import Action
+	from scc.gui.editor import Editor
+
 
 class BindingEditor:
 	def __init__(self, app):
@@ -54,9 +61,9 @@ class BindingEditor:
 			if w:
 				e = False if b == Profile.DPAD else enable_press
 				self.button_widgets[b] = ControllerStick(self, b, use_icons, e, w)
-		w = self.builder.get_object("btSTICKPRESS")
+		w = self.builder.get_object("btLSTICKPRESS")
 		if w:
-			self.button_widgets[SCButtons.STICKPRESS] = ControllerButton(self, SCButtons.STICKPRESS, use_icons, w)
+			self.button_widgets[SCButtons.LSTICKPRESS] = ControllerButton(self, SCButtons.LSTICKPRESS, use_icons, w)
 		for b in GYROS:
 			w = self.builder.get_object("bt" + b)
 			if w:
@@ -73,9 +80,9 @@ class BindingEditor:
 		Returns formely stored action.
 		"""
 		before = NoAction()
-		if id == SCButtons.STICKPRESS and Profile.STICK in self.button_widgets:
+		if id == SCButtons.LSTICKPRESS and Profile.LSTICK in self.button_widgets:
 			before, profile.buttons[id] = profile.buttons[id], action
-			self.button_widgets[Profile.STICK].update()
+			self.button_widgets[Profile.LSTICK].update()
 		elif id == SCButtons.CPADPRESS and Profile.CPAD in self.button_widgets:
 			before, profile.buttons[id] = profile.buttons[id], action
 			self.button_widgets[Profile.CPAD].update()
@@ -94,8 +101,8 @@ class BindingEditor:
 			before, profile.gyro = profile.gyro, action
 			self.button_widgets[id].update()
 		elif id in STICKS + PADS:
-			if id == Profile.STICK:
-				before, profile.stick = profile.stick, action
+			if id == Profile.LSTICK:
+				before, profile.lstick = profile.lstick, action
 			elif id == Profile.RSTICK:
 				before, profile.rstick = profile.rstick, action
 			elif id == Profile.DPAD:
@@ -125,8 +132,8 @@ class BindingEditor:
 		if id in GYROS:
 			return profile.gyro
 		if id in STICKS + PADS:
-			if id == Profile.STICK:
-				return profile.stick
+			if id == Profile.LSTICK:
+				return profile.lstick
 			if id == Profile.RSTICK:
 				return profile.rstick
 			if id in Profile.DPAD:
@@ -140,7 +147,7 @@ class BindingEditor:
 			raise ValueError("unknown id %s" % (id,))
 		return None
 
-	def choose_editor(self, action, title, id=None):
+	def choose_editor(self, action: Action, title: str, id: str | None = None) -> Editor:
 		"""Chooses apropripate Editor instance for edited action"""
 		if isinstance(action, SensitivityModifier):
 			action = action.action

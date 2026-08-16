@@ -37,7 +37,7 @@ from scc.constants import (
 	RIGHT,
 	ROLL,
 	RSTICK,
-	STICK,
+	LSTICK,
 	STICK_PAD_MAX,
 	STICK_PAD_MAX_HALF,
 	STICK_PAD_MIN,
@@ -208,7 +208,7 @@ class Action:
 		return False
 
 	def __str__(self):
-		return "<Action '%s', %s>" % (self.COMMAND, self.parameters)
+		return f"<Action '{self.COMMAND}', {self.parameters}>"
 
 	__repr__ = __str__
 
@@ -278,7 +278,7 @@ class Action:
 		stick has different actions for different axes defined.
 
 		'position' contains current stick position on updated axis.
-		'what' is one of LEFT, RIGHT or STICK (from scc.constants),
+		'what' is one of LEFT, RIGHT or LSTICK (from scc.constants),
 		describing what is being updated
 		"""
 		log.warning("Action %s can't handle axis event", self.__class__.__name__)
@@ -306,7 +306,7 @@ class Action:
 		physical pad, when one action is defined for whole pad or stick.
 
 		'x' and 'y' contains current stick or finger position.
-		'what' is one of LEFT, RIGHT, STICK (from scc.constants), describing what is
+		'what' is one of LEFT, RIGHT, LSTICK (from scc.constants), describing what is
 		being updated
 		"""
 		log.warning("Action %s can't handle whole stick event", self.__class__.__name__)
@@ -421,9 +421,9 @@ class RangeOP:
 		elif what == SCButtons.Y:
 			self.axis_name = "lpad_y"
 			self.min, self.max = float(STICK_PAD_MIN), float(STICK_PAD_MAX)
-		elif what == STICK:
+		elif what == LSTICK:
 			# Most special case of all special cases
-			self.axis_name = STICK
+			self.axis_name = LSTICK
 			op = "ABS" + op.replace("=", "")
 			self.children = RangeOP(SCButtons.X, op, value), RangeOP(SCButtons.Y, op, value)
 			self.min, self.max = float(STICK_PAD_MIN), float(STICK_PAD_MAX)
@@ -888,10 +888,10 @@ class MouseAction(WholeHapticAction, Action):
 			mapper.mouse_wheel(dx, 0)
 
 	def whole(self, mapper: Mapper, x, y, what):
-		# if what == STICK:
+		# if what == LSTICK:
 		# mapper.mouse_move(x * self.speed[0] * 0.01, y * self.speed[1] * 0.01)
 		# mapper.force_event.add(FE_STICK)
-		if what in (STICK, RSTICK):
+		if what in (LSTICK, RSTICK):
 			ratio_x = x / (STICK_PAD_MAX if x > 0 else STICK_PAD_MIN) * copysign(1, x)
 			ratio_y = y / (STICK_PAD_MAX if y > 0 else STICK_PAD_MIN) * copysign(1, y)
 			mouse_dx = ratio_x * (mapper.time_elapsed * BASE_STICK_MOUSE_SPEED) * self.speed[0]
@@ -1552,7 +1552,7 @@ class ButtonAction(HapticEnabledAction, Action):
 		ButtonAction._button_release(mapper, self.button)
 
 	def whole(self, mapper: Mapper, x, y, what):
-		if what == STICK or what == RSTICK:
+		if what == LSTICK or what == RSTICK:
 			# Stick used used as one big button (probably as part of ring bindings)
 			if abs(x) < ButtonAction.STICK_DEADZONE and abs(y) < ButtonAction.STICK_DEADZONE:
 				if self._pressed_key == self.button:
@@ -2038,7 +2038,7 @@ class RingAction(MultichildAction):
 		return MultichildAction.to_string(self, multiline, pad)
 
 	def whole(self, mapper: Mapper, x, y, what):
-		if what == STICK or what == RSTICK or mapper.is_touched(what):
+		if what == LSTICK or what == RSTICK or mapper.is_touched(what):
 			angle = atan2(x, y)
 			distance = sqrt(x * x + y * y)
 			if distance < self._radius_m:
@@ -2053,7 +2053,7 @@ class RingAction(MultichildAction):
 
 			if action == self._active:
 				action.whole(mapper, x, y, what)
-			elif what == STICK or what == RSTICK:
+			elif what == LSTICK or what == RSTICK:
 				# Stck crossed radius border, so active action is changing.
 				# Simulate centering stick for former...
 				self._active.whole(mapper, 0, 0, what)
@@ -2076,7 +2076,7 @@ class RingAction(MultichildAction):
 			# Pad just released
 			self._active.whole(mapper, x, y, what)
 			self._active = NoAction()
-		elif self._active and (what == STICK or what == RSTICK) and x == 0 and y == 0:
+		elif self._active and (what == LSTICK or what == RSTICK) and x == 0 and y == 0:
 			# Stick is centered
 			self._active.whole(mapper, x, y, what)
 			self._active = NoAction()

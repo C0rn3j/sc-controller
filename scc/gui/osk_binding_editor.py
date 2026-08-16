@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """SC-Controller - On Screen Keyboard Binding Editor
 
 Edits '.scc-osd.keyboard.sccprofile', profile used by on screen keyboard
@@ -8,7 +7,7 @@ import logging
 import os
 
 from scc.actions import Action
-from scc.constants import STICK, SCButtons
+from scc.constants import LSTICK, SCButtons
 from scc.gui.binding_editor import BindingEditor
 from scc.gui.controller_widget import STICKS, TRIGGERS
 from scc.gui.editor import Editor
@@ -24,23 +23,25 @@ log = logging.getLogger("OSKEdit")
 class OSKBindingEditor(Editor, BindingEditor):
 	GLADE = "osk_binding_editor.glade"
 
-	def __init__(self, app):
+	def __init__(self, app) -> None:
 		BindingEditor.__init__(self, app)
 		self.app = app
 		self.gladepath = app.gladepath
 		self.imagepath = app.imagepath
-		self.current = Profile(GuiActionParser())
+		self.current: Profile = Profile(GuiActionParser())
 		self.current.load(find_profile(OSDKeyboard.OSK_PROF_NAME))
 		self.setup_widgets()
 
-	def setup_widgets(self):
+	def setup_widgets(self) -> None:
 		Editor.setup_widgets(self)
 		self.create_binding_buttons(use_icons=False, enable_press=False)
 
-	def show_editor(self, id):
+	def show_editor(self, id: str | SCButtons) -> None:
 		if id in STICKS:
-			ae = self.choose_editor(self.current.stick, _("Stick"))
-			ae.set_input(STICK, self.current.stick, mode=Action.AC_OSK)
+			# TODO(Martin): This seems wrong, we're only ever using left stick and not right?
+			log.warning("Suspicious code path triggered - may not work well for Right Stick? Report a bug if so")
+			ae = self.choose_editor(self.current.lstick, _("Left Stick"))
+			ae.set_input(LSTICK, self.current.lstick, mode=Action.AC_OSK)
 			ae.show(self.window)
 		elif id in SCButtons.__members__.values():
 			title = _("%s Button") % (id.name,)
@@ -52,12 +53,13 @@ class OSKBindingEditor(Editor, BindingEditor):
 			ae.set_input(id, self.current.triggers[id], mode=Action.AC_OSK)
 			ae.show(self.window)
 
-	def on_action_chosen(self, id, action, mark_changed=True):
+	def on_action_chosen(self, id, action, mark_changed=True) -> None:
 		self.set_action(self.current, id, action)
 		self.save_profile()
 
-	def save_profile(self, *a):
+	def save_profile(self, *a) -> None:
 		"""Saves osk profile from 'profile' object into 'giofile'.
+
 		Calls on_profile_saved when done
 		"""
 		self.current.save(os.path.join(get_profiles_path(), OSDKeyboard.OSK_PROF_NAME + ".sccprofile"))

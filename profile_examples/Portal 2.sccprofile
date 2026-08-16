@@ -72,7 +72,7 @@
     "pad_right": {
         "action": "feedback(RIGHT, 256, ball(mouse()))"
     },
-    "stick": {
+    "lstick": {
         "action": "dpad(button(Keys.KEY_UP) and button(Keys.KEY_W), button(Keys.KEY_DOWN) and button(Keys.KEY_S), button(Keys.KEY_LEFT) and button(Keys.KEY_A), button(Keys.KEY_RIGHT) and button(Keys.KEY_D))",
         "name": "Move"
     },
@@ -82,5 +82,5 @@
     "trigger_right": {
         "action": "trigger(50, button(Keys.BTN_RIGHT))"
     },
-    "version": 1.4
+    "version": 1.6
 }

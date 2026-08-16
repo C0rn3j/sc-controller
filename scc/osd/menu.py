@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 from gi.repository import Gdk, GdkPixbuf, GdkX11, Gio, GLib, Gtk
 
 from scc.config import Config
-from scc.constants import DEFAULT, DPAD, LEFT, RIGHT, RSTICK, SAME, STICK, STICK_PAD_MAX, ControllerFlags, SCButtons
+from scc.constants import DEFAULT, DPAD, LEFT, LSTICK, RIGHT, RSTICK, SAME, STICK_PAD_MAX, ControllerFlags, SCButtons
 from scc.gui.daemon_manager import DaemonManager
 from scc.lib import xwrappers as X
 from scc.menu_data import MenuData, Separator, Submenu
@@ -72,7 +72,7 @@ class Menu(OSDWindow):
 		self._menuid = None
 		self._use_cursor = False
 		self._eh_ids = []
-		self._control_with = STICK
+		self._control_with = LSTICK
 		self._control_with_dpad: bool = False
 		self._confirm_with = "A"
 		self._cancel_with = "B"
@@ -208,7 +208,7 @@ class Menu(OSDWindow):
 			type=str,
 			metavar="option",
 			default=DEFAULT,
-			choices=(DEFAULT, LEFT, RIGHT, STICK, RSTICK),
+			choices=(DEFAULT, LEFT, RIGHT, LSTICK, RSTICK),
 			help="which pad or stick should be used to navigate menu",
 		)
 		self.argparser.add_argument(
@@ -456,7 +456,7 @@ class Menu(OSDWindow):
 		self._cancel_with = getattr(self.args, "cancel_with", DEFAULT)
 		if self._control_with == DEFAULT:
 			self._control_with = ccfg["menu_control"]
-		self._control_with_dpad = self._control_with == "STICK" and bool(
+		self._control_with_dpad = self._control_with == LSTICK and bool(
 			controller.get_flags() & ControllerFlags.HAS_DPAD,
 		)
 		if self._cancel_with == DEFAULT:
@@ -468,8 +468,8 @@ class Menu(OSDWindow):
 		elif self._confirm_with == SAME:
 			if self._control_with == RIGHT:
 				self._confirm_with = SCButtons.RPADTOUCH.name
-			elif self._control_with == STICK:
-				self._confirm_with = SCButtons.STICKPRESS.name
+			elif self._control_with == LSTICK:
+				self._confirm_with = SCButtons.LSTICKPRESS.name
 			elif self._control_with == RSTICK:
 				self._confirm_with = SCButtons.RSTICKPRESS.name
 			else:
@@ -484,7 +484,7 @@ class Menu(OSDWindow):
 			side = "LEFT"
 			if self._control_with == "RIGHT":
 				side = "RIGHT"
-			elif self._control_with in ("STICK", "RSTICK"):
+			elif self._control_with in ("LSTICK", "RSTICK"):
 				side = "BOTH"
 			self.feedback = side, int(self.args.feedback_amplitude)
 
@@ -585,7 +585,7 @@ class Menu(OSDWindow):
 
 	def _control_equals_cancel(self, daemon, x, y):
 		"""Called by on_event in that very special case when both confirm_with
-		and cancel_with are set to STICK.
+		and cancel_with are set to LSTICK.
 
 		Separated because RadialMenu overrides on_event and still
 		needs to call this.
@@ -609,7 +609,7 @@ class Menu(OSDWindow):
 			x, y = data
 			if self._use_cursor:
 				# Special case, both confirm_with and cancel_with can be set to (L/R)STICK
-				if self._control_with in (STICK, RSTICK) and self._cancel_with == self._control_with:
+				if self._control_with in (LSTICK, RSTICK) and self._cancel_with == self._control_with:
 					if self._control_equals_cancel(daemon, x, y):
 						return None
 

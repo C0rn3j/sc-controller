@@ -50,7 +50,7 @@
     "pad_right": {
         "action": "feedback(RIGHT, 256, ball(mouse(None, 1.0)))"
     },
-    "stick": {
+    "lstick": {
         "action": "dpad(button(Keys.KEY_W), button(Keys.KEY_S), button(Keys.KEY_A), button(Keys.KEY_D))"
     },
     "trigger_left": {
@@ -59,5 +59,5 @@
     "trigger_right": {
         "action": "trigger(50, 50, button(Keys.BTN_LEFT))"
     },
-    "version": 1.4
+    "version": 1.6
 }

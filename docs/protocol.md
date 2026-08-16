@@ -55,9 +55,13 @@ Sent to client that requested locking of source (that is button, pad or axis).
 List of possible events:
 - `Event: B 1` - Sent when button is pressed. *B* is button, is one of *SCButtons.\** constants.
 - `Event: B 0` - Sent when button is released. *B* is button one of *SCButtons.\** constants.
-- `Event: STICK x y` - Sent when stick position is changed. *x* and *y* are new values.
+- `Event: LSTICK x y` - Sent when left stick position is changed. *x* and *y* are new values.
+- `Event: RSTICK x y` - Sent when right stick position is changed. *x* and *y* are new values.
 - `Event: LEFT x y` - Sent when finger on left pad is moved. *x* and *y* is new position.
 - `Event: RIGHT x y` - Sent when finger on right pad is moved. *x* and *y* is new position.
+
+For compatibility, the daemon accepts `STICK` and `STICKPRESS` in lock requests
+from older clients as aliases for `LSTICK` and `LSTICKPRESS`.
 
 #### `Error: message`
 Sent to every client when error is detected. May be sent repeatedly to indicate
@@ -210,7 +214,7 @@ Asks daemon to sent current state of controller. Format of response is device-sp
 but should be useful enough for single-purpose script or debugging.
 
 If observing is not enabled in configuration, daemon responds with `Fail: Sniffing disabled.`
-If there is no active controller, daemon responds with `Fail: no controller connected`. 
+If there is no active controller, daemon responds with `Fail: no controller connected`.
 Otherwise, daemon responds with `State: ...` message.
 
 #### `Gestured: gesture_string`

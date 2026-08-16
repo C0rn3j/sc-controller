@@ -42,7 +42,7 @@ class ModeshiftEditor(Editor):
 		("Soft LT", _("Left Trigger (soft)")),
 		("Soft RT", _("Right Trigger (soft)")),
 		(None, None),
-		(SCButtons.STICKPRESS, _("Left Stick Pressed")),
+		(SCButtons.LSTICKPRESS, _("Left Stick Pressed")),
 		(SCButtons.RSTICKPRESS, _("Right Stick Pressed")),
 		(SCButtons.LPAD, _("Left Pad Pressed")),
 		(SCButtons.RPAD, _("Right Pad Pressed")),
@@ -99,7 +99,7 @@ class ModeshiftEditor(Editor):
 					# Skip already added soft pulls
 					continue
 
-			if item == SCButtons.STICKPRESS:
+			if item == SCButtons.LSTICKPRESS:
 				if self.id == nameof(SCButtons.LPAD):
 					# Controller cannot handle pressing stick and lpad at once
 					continue

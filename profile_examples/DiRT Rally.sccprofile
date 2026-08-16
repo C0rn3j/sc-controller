@@ -62,7 +62,7 @@
     "menus": {},
     "pad_left": {},
     "pad_right": {},
-    "stick": {
+    "lstick": {
         "action": "dpad(hatup(Axes.ABS_HAT0Y), hatdown(Axes.ABS_HAT0Y), hatleft(Axes.ABS_HAT0X), hatright(Axes.ABS_HAT0X))",
         "name": "Menu Navigation"
     },
@@ -74,5 +74,5 @@
         "action": "axis(Axes.ABS_RZ)",
         "name": "Accelerate"
     },
-    "version": 1.4
+    "version": 1.6
 }

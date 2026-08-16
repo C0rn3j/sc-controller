@@ -31,7 +31,7 @@
         "START": {
             "action": "button(Keys.BTN_START)"
         },
-        "STICKPRESS": {
+        "LSTICKPRESS": {
             "action": "button(Keys.BTN_THUMBL)"
         },
         "RSTICKPRESS": {
@@ -57,7 +57,7 @@
     "pad_right": {
         "action": "smooth(8, 0.78, feedback(RIGHT, 256, ball(mouse())))"
     },
-    "stick": {
+    "lstick": {
         "action": "sens(1.2, 1.2, XY(axis(Axes.ABS_X), raxis(Axes.ABS_Y)))"
     },
     "rstick": {
@@ -69,5 +69,5 @@
     "trigger_right": {
         "action": "axis(Axes.ABS_RZ)"
     },
-    "version": 1.5
+    "version": 1.6
 }

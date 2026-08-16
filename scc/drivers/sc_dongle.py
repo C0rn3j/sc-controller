@@ -88,7 +88,7 @@ INPUT_FORMAT = [
 FORMATS, NAMES = zip(*INPUT_FORMAT)
 TUP_FORMAT = "<" + "".join(FORMATS)
 SCI_NULL = ControllerInput._make(struct.unpack("<" + "".join(FORMATS), b"\x00" * 64))
-STICKPRESS = 0b1000000000000000000000000000000
+LSTICKPRESS = 0b1000000000000000000000000000000
 
 
 log = logging.getLogger("SCDongle")
@@ -211,8 +211,8 @@ class SCController(Controller):
 		old_state, self._old_state = self._old_state, idata
 		if self.mapper:
 			# if idata.buttons & SCButtons.LPAD:
-			# # STICKPRESS button may signalize pressing stick instead
-			# if (idata.buttons & STICKPRESS) and not (idata.buttons & STICKTILT):
+			# # LSTICKPRESS button may signalize pressing stick instead
+			# if (idata.buttons & LSTICKPRESS) and not (idata.buttons & LSTICKTILT):
 			# idata = ControllerInput.replace(buttons=idata.buttons & ~SCButtons.LPAD)
 
 			if self._input_rotation_l or self._input_rotation_r:

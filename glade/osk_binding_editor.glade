@@ -343,7 +343,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="btSTICK">
+          <object class="GtkButton" id="btLSTICK">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
@@ -372,7 +372,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="btSTICKPRESS">
+          <object class="GtkButton" id="btLSTICKPRESS">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>

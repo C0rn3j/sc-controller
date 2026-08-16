@@ -122,7 +122,7 @@ class Config:
 		"osd_alignment": 0,  # not used yet
 		"input_rotation_l": 20,  # range -180 to 180
 		"input_rotation_r": -20,  # range -180 to 180
-		"menu_control": "STICK",
+		"menu_control": "LSTICK",
 		"menu_confirm": "A",
 		"menu_cancel": "B",
 	}
@@ -180,6 +180,9 @@ class Config:
 		if controller_id in self.values["controllers"]:
 			# Check values in existing config
 			rv = self.values["controllers"][controller_id]
+			if rv.get("menu_control") == "STICK":
+				log.debug("TODO: menu_control was STICK - maybe make it automigrate to LSTICK?")
+				rv["menu_control"] = "LSTICK"
 			for key in self.CONTROLLER_DEFAULTS:
 				if key not in rv:
 					if key in ("input_rotation_l", "input_rotation_r"):

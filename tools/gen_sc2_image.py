@@ -53,7 +53,7 @@ GRIP_SHIFT_X = 2.0  # source units (~1px at display scale) nudge right, for a ne
 
 KEEP = {
 	"dpad": "DPAD",
-	"lstick": "STICK",
+	"lstick": "LSTICK",
 	"rstick": "RSTICK",
 	"lpad": "LPAD",
 	"rpad": "RPAD",
@@ -62,7 +62,7 @@ KEEP = {
 	"LT": "LT",
 	"RT": "RT",
 	"steamcontrollerbody": "BODY",
-	"STICKPRESS": "STICKPRESS",
+	"LSTICKPRESS": "LSTICKPRESS",
 	"LSTICKTOUCH": "LSTICKTOUCH",
 	"RSTICKPRESS": "RSTICKPRESS",
 	"RSTICKTOUCH": "RSTICKTOUCH",
@@ -75,7 +75,7 @@ FACE = {"abxy": None, "steam": "C", "view": "BACK", "menu": "START", "dots": "DO
 
 # side-panel icon shrink factors (icons render at source-coord size otherwise)
 PANEL_FACTOR = {
-	"STICK": 2.5,
+	"LSTICK": 2.5,
 	"RSTICK": 2.5,
 	"LPAD": 3.0,
 	"RPAD": 3.0,
@@ -293,7 +293,7 @@ def main() -> None:
 
 	# ---- side-panel icons ----
 	PANEL = {
-		"STICK": "lstick",
+		"LSTICK": "lstick",
 		"RSTICK": "rstick",
 		"LPAD": "lpad",
 		"RPAD": "rpad",
@@ -328,7 +328,7 @@ def main() -> None:
 		scaler = ET.SubElement(svg, f"{{{SVG}}}g", {"id": "scaler", "transform": f"scale({SCALE:g})"})
 		art = ET.SubElement(scaler, f"{{{SVG}}}g", {"id": "art", "transform": g1.get("transform", "")})
 		overlays = {
-			"STICKPRESS",
+			"LSTICKPRESS",
 			"LSTICKTOUCH",
 			"RSTICKPRESS",
 			"RSTICKTOUCH",
@@ -393,7 +393,7 @@ def main() -> None:
 		REGION = {
 			"LB": (173.9, 6.5, 203.9, 68.2),
 			"RB": (999.5, 6.3, 204.2, 68.5),
-			"STICK": (386.3, 222.0, 194.3, 196.2),
+			"LSTICK": (386.3, 222.0, 194.3, 196.2),
 			"RSTICK": (795.8, 221.4, 195.7, 196.8),
 			"LPAD": (263.1, 423.0, 314.5, 321.4),
 			"RPAD": (798.6, 423.5, 313.6, 322.0),
@@ -409,7 +409,7 @@ def main() -> None:
 		for name, k in (
 			("LPADTEST", "LPAD"),
 			("RPADTEST", "RPAD"),
-			("STICKTEST", "STICK"),
+			("LSTICKTEST", "LSTICK"),
 			("RSTICKTEST", "RSTICK"),
 			("DPADTEST", "DPAD"),
 		):
@@ -442,7 +442,7 @@ def main() -> None:
 		"RB",
 		"LT",
 		"RT",
-		"STICK",
+		"LSTICK",
 		"TOUCHPAD",
 		"TOUCHPAD",
 		"RGRIP",

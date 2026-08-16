@@ -8,20 +8,26 @@ from __future__ import annotations
 import json
 import logging
 from json import JSONEncoder
-from typing import Self
+from typing import TYPE_CHECKING
 
 from scc.actions import NoAction
-from scc.constants import CPAD, DPAD, GYRO, LEFT, RIGHT, RSTICK, STICK, WHOLE, SCButtons
+from scc.constants import CPAD, DPAD, GYRO, LEFT, LSTICK, RIGHT, RSTICK, WHOLE, SCButtons
 from scc.menu_data import MenuData
 from scc.modifiers import HoldModifier
 from scc.special_actions import MenuAction
+
+if TYPE_CHECKING:
+	from typing import Self
+
+	from scc.actions import Action
+	from scc.parser import ActionParser
 
 log = logging.getLogger("profile")
 
 
 class Profile:
 	# Current profile version. When loading profile file with version lower than this, auto-conversion may happen
-	VERSION = 1.5
+	VERSION = 1.6
 
 	LEFT = LEFT
 	RIGHT = RIGHT
@@ -30,18 +36,23 @@ class Profile:
 	CPAD = CPAD
 	DPAD = DPAD
 	WHOLE = WHOLE
-	STICK = STICK
+	LSTICK = LSTICK
 	RSTICK = RSTICK
 	GYRO = GYRO
 	X, Y, Z = "X", "Y", "Z"
-	STICK_AXES = {X: "stick_x", Y: "stick_y"}
+	LSTICK_AXES = {X: "lstick_x", Y: "lstick_y"}
 	RSTICK_AXES = {X: "rstick_x", Y: "rstick_y"}
 	LPAD_AXES = {X: "lpad_x", Y: "lpad_y"}
 	RPAD_AXES = {X: "rpad_x", Y: "rpad_y"}
 	TRIGGERS = [LEFT, RIGHT]
 
-	def __init__(self, parser) -> None:
-		self.parser = parser
+	def __init__(self, parser: ActionParser) -> None:
+		self.lstick: Action
+		self.rstick: Action
+		self.gyro: Action
+		self.buttons: dict[int, Action]
+		self.triggers: dict[str, Action]
+		self.parser: ActionParser = parser
 		self.clear()
 		self.filename: str | None = None
 		# UI-only values
@@ -59,7 +70,7 @@ class Profile:
 		data = {
 			"_": (self.description if "\n" not in self.description else self.description.strip("\n").split("\n")),
 			"buttons": {},
-			"stick": self.stick,
+			"lstick": self.lstick,
 			"rstick": self.rstick,
 			"gyro": self.gyro,
 			"trigger_left": self.triggers[Profile.LEFT],
@@ -119,17 +130,26 @@ class Profile:
 		self.buttons = {}
 		for x in SCButtons:
 			self.buttons[x] = self.parser.from_json_data(data["buttons"], x.name)
-		# Pressing stick is interpreted as STICKPRESS button, formerly called just STICK
-		if "STICK" in data["buttons"] and "STICKPRESS" not in data["buttons"]:
-			log.warning("Out of date profile: 'STICK' definition present instead of STICKPRESS!")
-			self.buttons[SCButtons.STICKPRESS] = self.parser.from_json_data(data["buttons"], "STICK")
+		# Left-stick click was previously named STICKPRESS, and STICK before that.
+		if version < 1.6 and "LSTICKPRESS" not in data["buttons"]:
+			for legacy_name in ("STICKPRESS", "STICK"):
+				if legacy_name in data["buttons"]:
+					log.warning("Out of date profile: '%s' renamed to LSTICKPRESS", legacy_name)
+					self.buttons[SCButtons.LSTICKPRESS] = self.parser.from_json_data(data["buttons"], legacy_name)
+					break
 		# Right-stick clicks were historically stored as right-pad clicks.
 		if version < 1.5 and "RPAD" in data["buttons"] and "RSTICKPRESS" not in data["buttons"]:
 			log.warning("Out of date profile(?): 'RPAD' definition present but RSTICKPRESS isn't!")
 			self.buttons[SCButtons.RSTICKPRESS] = self.parser.from_json_data(data["buttons"], "RPAD")
 
 		# Stick & gyro
-		self.stick = self.parser.from_json_data(data, "stick")
+		if version < 1.6:
+			lstick_key = "lstick" if "lstick" in data else "stick"
+			if lstick_key == "stick":
+				log.warning("Out of date profile: 'stick' renamed to 'lstick'")
+			self.lstick = self.parser.from_json_data(data, lstick_key)
+		else:
+			self.lstick = self.parser.from_json_data(data, "lstick")
 		self.gyro = self.parser.from_json_data(data, "gyro")
 
 		if "triggers" in data:
@@ -188,7 +208,7 @@ class Profile:
 		self.buttons = {x: NoAction() for x in SCButtons}
 		self.buttons[SCButtons.C] = HoldModifier(MenuAction("Default.menu"), normalaction=MenuAction("Default.menu"))
 		self.menus = {}
-		self.stick = NoAction()
+		self.lstick = NoAction()
 		self.rstick = NoAction()
 		self.is_template = False
 		self.triggers = {Profile.LEFT: NoAction(), Profile.RIGHT: NoAction()}
@@ -223,7 +243,7 @@ class Profile:
 		for dct in (self.buttons, self.triggers, self.pads):
 			for k in dct:
 				yield dct[k]
-		for action in (self.stick, self.rstick, self.gyro):
+		for action in (self.lstick, self.rstick, self.gyro):
 			yield action
 
 	def get_filename(self):
@@ -239,12 +259,12 @@ class Profile:
 			for x in dct:
 				dct[x] = dct[x].compress()
 		self.rstick = self.rstick.compress()
-		self.stick = self.stick.compress()
+		self.lstick = self.lstick.compress()
 		self.gyro = self.gyro.compress()
 		for menu in self.menus.values():
 			menu.compress()
 
-	def _convert(self, from_version):
+	def _convert(self, from_version: float) -> None:
 		"""Performs conversion from older profile version"""
 		if from_version < 1:
 

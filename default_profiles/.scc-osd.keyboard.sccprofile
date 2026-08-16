@@ -16,10 +16,10 @@
 
 	"pad_left":			{ "action": "OSK.cursor(LEFT)" },
 	"pad_right":		{ "action": "OSK.cursor(RIGHT)" },
-	"trigger_left":		{ "action": "button(Keys.KEY_LEFTSHIFT)" },
-	"trigger_right":	{ "action": "button(Keys.KEY_LEFTCTRL)" },
+	"trigger_left":		{ "action": "trigger(50, button(Keys.KEY_LEFTSHIFT))" },
+	"trigger_right":	{ "action": "trigger(50, button(Keys.KEY_LEFTCTRL))" },
 
-	"stick": {
+	"lstick": {
 		"action": "dpad(button(Keys.KEY_UP), button(Keys.KEY_DOWN), button(Keys.KEY_LEFT), button(Keys.KEY_RIGHT))",
 		"modes": { "RGRIP": { "action": "OSK.move()" } }
 	},
@@ -27,5 +27,5 @@
 	"gyro": {},
 	"menus": {},
 
-	"version": 1
+	"version": 1.6
 }

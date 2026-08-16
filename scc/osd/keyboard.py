@@ -17,7 +17,7 @@ from scc.constants import (
 	CPAD,
 	LEFT,
 	RIGHT,
-	STICK,
+	LSTICK,
 	STICK_PAD_MAX,
 	ControllerFlags,
 	SCButtons,
@@ -442,7 +442,7 @@ class Keyboard(OSDWindow, TimerManager):
 				while len(lst) < 3:
 					lst.append((None, ""))
 			add_action(r_lines, CPAD, self.profile.pads[CPAD])
-		add_action(l_lines, SCButtons.STICKPRESS, self.profile.stick)
+		add_action(l_lines, SCButtons.LSTICKPRESS, self.profile.lstick)
 
 		self.background.set_help(l_lines, r_lines)
 
@@ -523,14 +523,14 @@ class Keyboard(OSDWindow, TimerManager):
 		]
 
 		# TODO: Single-handed mode for PS4 postponed
-		locks = [LEFT, RIGHT, STICK, "STICKPRESS"] + [b.name for b in SCButtons]
+		locks = [LEFT, RIGHT, LSTICK, "LSTICKPRESS"] + [b.name for b in SCButtons]
 		if (c.get_flags() & ControllerFlags.HAS_CPAD) == 0:
 			# Two pads, two hands
-			locks = [LEFT, RIGHT, STICK, "STICKPRESS"] + [b.name for b in SCButtons]
+			locks = [LEFT, RIGHT, LSTICK, "LSTICKPRESS"] + [b.name for b in SCButtons]
 			self.cursors[CPAD].hide()
 		else:
 			# Single-handed mode
-			locks = [CPAD, "CPADPRESS", STICK, "STICKPRESS"] + [b.name for b in SCButtons]
+			locks = [CPAD, "CPADPRESS", LSTICK, "LSTICKPRESS"] + [b.name for b in SCButtons]
 			self._hovers[self.cursors[RIGHT]] = None
 			self._hovers = {self.cursors[CPAD]: None}
 			self._pressed = {self.cursors[CPAD]: None}
@@ -608,8 +608,8 @@ class Keyboard(OSDWindow, TimerManager):
 
 	def on_sa_move(self, mapper, action, x, y):
 		self._stick = x, y
-		if not self.timer_active("stick"):
-			self.timer("stick", 0.05, self._move_window)
+		if not self.timer_active("lstick"):
+			self.timer("lstick", 0.05, self._move_window)
 
 	def on_sa_press(self, mapper, action, pressed):
 		self.key_from_cursor(self.cursors[action.side], pressed)
@@ -666,7 +666,7 @@ class Keyboard(OSDWindow, TimerManager):
 		rx, ry = self.get_position()
 		self.move(rx + x, ry + y)
 		if abs(self._stick[0]) > 100 or abs(self._stick[1]) > 100:
-			self.timer("stick", 0.05, self._move_window)
+			self.timer("lstick", 0.05, self._move_window)
 
 	def key_from_cursor(self, cursor, pressed):
 		"""Sends keypress/keyrelease event to emulated keyboard, based on

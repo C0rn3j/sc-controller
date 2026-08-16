@@ -16,7 +16,7 @@ from scc.actions import (
 	HatUpAction,
 	NoAction,
 )
-from scc.constants import DEFAULT, SAME, STICK, SCButtons
+from scc.constants import DEFAULT, LSTICK, SAME, SCButtons
 from scc.gui.ae import AEComponent, describe_action
 from scc.gui.ae.menu_action import MenuActionCofC
 from scc.gui.binding_editor import BindingEditor
@@ -197,16 +197,16 @@ class DPADComponent(AEComponent, MenuActionCofC, BindingEditor):
 		ae.show(self.editor.window)
 
 	def get_default_confirm(self):
-		"""Returns default confirm button for pads/stick - LPAD, RPAD or STICKPRESS
+		"""Returns default confirm button for pads/stick - LPAD, RPAD or LSTICKPRESS
 		"""
-		if self.editor.id == STICK:
-			return SCButtons.STICKPRESS
+		if self.editor.id == LSTICK:
+			return SCButtons.LSTICKPRESS
 		return getattr(SCButtons, self.editor.id)
 
 	def get_default_cancel(self):
 		"""Returns default cancel button for stick/pad - SAME or B
 		"""
-		if self.editor.id == STICK:
+		if self.editor.id == LSTICK:
 			return SCButtons.B
 		return SAME
 

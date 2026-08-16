@@ -20,7 +20,7 @@ from scc.actions import (
 	OSDEnabledAction,
 	SpecialAction,
 )
-from scc.constants import DEFAULT, LEFT, RIGHT, RSTICK, SAME, STICK, STICK_PAD_MAX, SCButtons
+from scc.constants import DEFAULT, LEFT, LSTICK, RIGHT, RSTICK, SAME, STICK_PAD_MAX, SCButtons
 from scc.modifiers import Modifier
 from scc.tools import clamp, nameof, strip_gesture
 
@@ -393,10 +393,10 @@ class MenuAction(Action, SpecialAction, HapticEnabledAction):
 					confirm_with = SCButtons.RPAD
 				if cancel_with == DEFAULT:
 					cancel_with = SCButtons.RPADTOUCH
-			else:
+			else: #TODO(Martin): This case never executes now after fixing the sticks and pads being mangled together
 				# Stick
 				if confirm_with == DEFAULT:
-					confirm_with = SCButtons.STICKPRESS
+					confirm_with = SCButtons.LSTICKPRESS
 				if cancel_with == DEFAULT:
 					cancel_with = SCButtons.B
 			if not mapper.was_pressed(cancel_with):
@@ -417,11 +417,11 @@ class MenuAction(Action, SpecialAction, HapticEnabledAction):
 					nameof(cancel_with),
 					*params,
 				)
-		if what in (STICK, RSTICK):
+		if what in (LSTICK, RSTICK):
 			# Special case, menu is displayed only if is moved enough
 			distance = sqrt(x * x + y * y)
 			if self._stick_distance < MenuAction.MIN_STICK_DISTANCE and distance > MenuAction.MIN_STICK_DISTANCE:
-				confirm_with = "STICKPRESS" if what == STICK else "RSTICKPRESS"
+				confirm_with = "LSTICKPRESS" if what == LSTICK else "RSTICKPRESS"
 				self.execute(
 					mapper,
 					"--control-with",

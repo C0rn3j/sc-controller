@@ -235,7 +235,7 @@ def cmd_lock_inputs(argv0: str, argv: list[str], lock: str = "Lock: ") -> int:
 	Usage: scc lock-inputs [button1] [stick1] [button2] ... [buttonN]
 
 	Available button, sticks and pads:
-		A X B Y START C BACK RGRIP LGRIP   LB RB LT RT STICK LPAD RPAD
+		A X B Y START C BACK RGRIP LGRIP   LB RB LT RT LSTICK LPAD RPAD
 
 	Return codes:
 		-1  - failed to connect to daemon
@@ -281,7 +281,7 @@ def cmd_print_inputs(argv0: str, argv: list[str], lock: str = "Lock: ") -> int:
 	Usage: scc lock-inputs [button1] [stick1] [button2] ... [buttonN]
 
 	Available button, sticks and pads:
-		A X B Y START C BACK RGRIP LGRIP   LB RB LT RT STICK LPAD RPAD
+		A X B Y START C BACK RGRIP LGRIP   LB RB LT RT LSTICK LPAD RPAD
 
 	Return codes:
 		-1  - failed to connect to daemon

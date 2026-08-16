@@ -16,7 +16,7 @@ from gi.repository import Gdk, Gio, GLib, Gtk
 
 from scc.actions import NoAction
 from scc.config import Config
-from scc.constants import CPAD, DAEMON_VERSION, DPAD, LEFT, RIGHT, RSTICK, STICK, STICK_PAD_MAX, SCButtons
+from scc.constants import CPAD, DAEMON_VERSION, DPAD, LEFT, RIGHT, RSTICK, LSTICK, STICK_PAD_MAX, SCButtons
 from scc.custom import load_custom_module
 from scc.gui.binding_editor import BindingEditor
 from scc.gui.controller_image import ControllerImage
@@ -156,13 +156,13 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		# Test markers (those blue circles over PADs and sticks)
 		self.lpad_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
 		self.rpad_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
-		self.stick_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
+		self.lstick_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
 		self.rstick_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
 		self.dpad_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
 		self.cpad_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
 		self.main_area.put(self.lpad_test, 40, 40)
 		self.main_area.put(self.rpad_test, 290, 90)
-		self.main_area.put(self.stick_test, 150, 40)
+		self.main_area.put(self.lstick_test, 150, 40)
 		self.main_area.put(self.rstick_test, 290, 40)
 		self.main_area.put(self.dpad_test, 40, 90)
 		self.main_area.put(self.cpad_test, 150, 90)
@@ -285,7 +285,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			vbC.pack_start(btGYRO, False, True, 0)
 			btGYRO.set_margin_top(30)
 			# Resize buttons at bottom
-			# for w in ['btSTICK', 'btRSTICK', 'btLPAD', 'btRPAD']:
+			# for w in ['btLSTICK', 'btRSTICK', 'btLPAD', 'btRPAD']:
 			# w.set_size_request(150, -1)
 			# Move 'DPAD' bellow 'LGRIP'
 			btLGRIP = self.builder.get_object("btLGRIP")
@@ -550,8 +550,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		"""Handler for 'Edit Pressed Action' context menu item.
 		"""
 		id = self.context_menu_for
-		if id == STICK:
-			id = nameof(SCButtons.STICKPRESS)
+		if id == LSTICK:
+			id = nameof(SCButtons.LSTICKPRESS)
 		self.show_editor(getattr(SCButtons, id))
 
 	def on_mnuGlobalSettings_activate(self, *a):
@@ -1026,8 +1026,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 					"RT",
 					"LEFT",
 					"RIGHT",
-					"STICK",
-					"STICKPRESS",
+					"LSTICK",
+					"LSTICKPRESS",
 					"DOTS",
 					"LGRIPTOUCH",
 					"RGRIPTOUCH",
@@ -1085,12 +1085,12 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			"LB",
 			"RB",
 			"C",
-			"STICK",
+			"LSTICK",
 			"LGRIP",
 			"RGRIP",
 			"LT",
 			"RT",
-			"STICKPRESS",
+			"LSTICKPRESS",
 		)
 
 		# Ask daemon to temporaly reconfigure pads for mouse emulation
@@ -1158,11 +1158,11 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 	def on_daemon_event_observer(self, daemon, c, what, data) -> None:
 		if self.osd_mode_mapper:
 			self.osd_mode_mapper.handle_event(daemon, what, data)
-		elif what in (LEFT, RIGHT, STICK, RSTICK, DPAD, CPAD):
+		elif what in (LEFT, RIGHT, LSTICK, RSTICK, DPAD, CPAD):
 			widget, area = {
 				LEFT: (self.lpad_test, "LPADTEST"),
 				RIGHT: (self.rpad_test, "RPADTEST"),
-				STICK: (self.stick_test, "STICKTEST"),
+				LSTICK: (self.lstick_test, "LSTICKTEST"),
 				RSTICK: (self.rstick_test, "RSTICKTEST"),
 				DPAD: (self.dpad_test, "DPADTEST"),
 				CPAD: (self.cpad_test, "CPAD"),
@@ -1189,7 +1189,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			y -= data[1] * aw / STICK_PAD_MAX * 0.5
 			# Move circle
 			self.main_area.move(widget, x, y)
-		elif what in ("LT", "RT", "STICKPRESS"):
+		elif what in ("LT", "RT", "LSTICKPRESS"):
 			if data[0]:
 				self.hilights[App.OBSERVE_COLOR].add(what)
 			else:

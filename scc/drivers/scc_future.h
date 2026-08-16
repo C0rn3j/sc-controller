@@ -31,7 +31,7 @@ typedef enum SCButton {
 	// CPADTOUCH and CPADPRESS is used only on DS4 pad
 	B_CPADTOUCH			= 0b000000000000000000000000000000100,
 	B_CPADPRESS			= 0b000000000000000000000000000000010,
-	B_STICKPRESS		= 0b001000000000000000000000000000000,
+	B_LSTICKPRESS		= 0b001000000000000000000000000000000,
 	B_RSTICKPRESS		= 0b010000000000000000000000000000000,
 	// SteamDeck only buttons
 	B_DOTS				= 0b000000000000000000000000000001000,
@@ -62,8 +62,8 @@ struct ControllerInput {
 	union {
 		AxisValue			axes[12];
 		struct {
-			AxisValue		stick_x;
-			AxisValue		stick_y;
+			AxisValue		lstick_x;
+			AxisValue		lstick_y;
 			AxisValue		lpad_x;
 			AxisValue		lpad_y;
 			AxisValue		rpad_x;

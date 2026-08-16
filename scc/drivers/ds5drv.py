@@ -168,8 +168,8 @@ class DualSenseBTControllerInput(ctypes.Structure):
 		("buttons", ctypes.c_uint32),
 		("ltrig", ctypes.c_uint8),
 		("rtrig", ctypes.c_uint8),
-		("stick_x", ctypes.c_int32),
-		("stick_y", ctypes.c_int32),
+		("lstick_x", ctypes.c_int32),
+		("lstick_y", ctypes.c_int32),
 		("rstick_x", ctypes.c_int32),
 		("rstick_y", ctypes.c_int32),
 		("dpad_x", ctypes.c_int32),
@@ -213,7 +213,7 @@ class DS5Controller(HIDController):
 		1 << 64,
 		SCButtons.BACK,
 		SCButtons.START,
-		SCButtons.STICKPRESS,
+		SCButtons.LSTICKPRESS,
 		SCButtons.RSTICKPRESS,
 		SCButtons.C,
 		SCButtons.CPADPRESS,
@@ -224,7 +224,7 @@ class DS5Controller(HIDController):
 		| ControllerFlags.HAS_RSTICK
 		| ControllerFlags.HAS_CPAD
 		| ControllerFlags.HAS_DPAD
-		| ControllerFlags.SEPARATE_STICK
+		| ControllerFlags.SEPARATE_LSTICK
 		| ControllerFlags.NO_GRIPS
 	)
 
@@ -257,13 +257,13 @@ class DS5Controller(HIDController):
 		)
 
 		# Sticks are the same as DS4
-		self._decoder.axes[AxisType.AXIS_STICK_X] = AxisData(
+		self._decoder.axes[AxisType.AXIS_LSTICK_X] = AxisData(
 			mode=AxisMode.AXIS,
 			byte_offset=1,
 			size=8,
 			data=AxisDataUnion(axis=AxisModeData(scale=1.0, offset=-127.5, clamp_max=257, deadzone=2)),
 		)
-		self._decoder.axes[AxisType.AXIS_STICK_Y] = AxisData(
+		self._decoder.axes[AxisType.AXIS_LSTICK_Y] = AxisData(
 			mode=AxisMode.AXIS,
 			byte_offset=2,
 			size=8,
@@ -520,7 +520,7 @@ class DS5HidRawController(Controller):
 		| ControllerFlags.HAS_RSTICK
 		| ControllerFlags.HAS_CPAD
 		| ControllerFlags.HAS_DPAD
-		| ControllerFlags.SEPARATE_STICK
+		| ControllerFlags.SEPARATE_LSTICK
 		| ControllerFlags.NO_GRIPS
 	)
 
@@ -749,8 +749,8 @@ class DS5HidRawController(Controller):
 
 	def _convert_input_data(self, data):
 		state = DualSenseBTControllerInput()
-		state.stick_x = self._stick_axis_scale(data[2], False)
-		state.stick_y = self._stick_axis_scale(data[3], True)
+		state.lstick_x = self._stick_axis_scale(data[2], False)
+		state.lstick_y = self._stick_axis_scale(data[3], True)
 		state.rstick_x = self._stick_axis_scale(data[4], False)
 		state.rstick_y = self._stick_axis_scale(data[5], True)
 		state.ltrig = data[6]
@@ -774,7 +774,7 @@ class DS5HidRawController(Controller):
 		if (tempbyte & (1 << 7)) != 0:
 			state.buttons |= SCButtons.RSTICKPRESS
 		if (tempbyte & (1 << 6)) != 0:
-			state.buttons |= SCButtons.STICKPRESS
+			state.buttons |= SCButtons.LSTICKPRESS
 		if (tempbyte & (1 << 5)) != 0:
 			state.buttons |= SCButtons.START
 		if (tempbyte & (1 << 4)) != 0:
@@ -1028,13 +1028,13 @@ class DS5EvdevController(EvdevController):
 		314: "BACK",
 		315: "START",
 		316: "C",
-		317: "STICKPRESS",
+		317: "LSTICKPRESS",
 		318: "RSTICKPRESS",
 		# 319: "CPAD",
 	}
 	AXIS_MAP = {
-		0: {"axis": "stick_x", "deadzone": 4, "max": 255, "min": 0},
-		1: {"axis": "stick_y", "deadzone": 4, "max": 0, "min": 255},
+		0: {"axis": "lstick_x", "deadzone": 4, "max": 255, "min": 0},
+		1: {"axis": "lstick_y", "deadzone": 4, "max": 0, "min": 255},
 		3: {"axis": "rstick_x", "deadzone": 4, "max": 255, "min": 0},
 		4: {"axis": "rstick_y", "deadzone": 8, "max": 0, "min": 255},
 		2: {"axis": "ltrig", "max": 255, "min": 0},
@@ -1055,7 +1055,7 @@ class DS5EvdevController(EvdevController):
 		| ControllerFlags.HAS_RSTICK
 		| ControllerFlags.HAS_CPAD
 		| ControllerFlags.HAS_DPAD
-		| ControllerFlags.SEPARATE_STICK
+		| ControllerFlags.SEPARATE_LSTICK
 		| ControllerFlags.NO_GRIPS
 	)
 

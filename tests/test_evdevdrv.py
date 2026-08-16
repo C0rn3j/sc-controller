@@ -33,7 +33,7 @@ def test_parse_signed_trigger_axis() -> None:
 
 
 def test_parse_stick_axis_remains_bipolar() -> None:
-	calibration = parse_axis({"axis": "stick_x", "min": 0, "max": 255})
+	calibration = parse_axis({"axis": "lstick_x", "min": 0, "max": 255})
 
 	assert calibration.clamp_min == STICK_PAD_MIN
 	assert calibration.clamp_max == STICK_PAD_MAX

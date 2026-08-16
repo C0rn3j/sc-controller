@@ -48,10 +48,10 @@ FE_GYRO    = 4
 LEFT   = "LEFT"
 RIGHT  = "RIGHT"
 CPAD   = "CPAD"
-RSTICK = "RSTICK"
 DPAD   = "DPAD"
+LSTICK = "LSTICK"
+RSTICK = "RSTICK"
 WHOLE  = "WHOLE"
-STICK  = "STICK"
 GYRO   = "GYRO"
 PITCH  = "PITCH"
 YAW    = "YAW"
@@ -73,7 +73,7 @@ HIPFIRE_NORMAL    = "NORMAL"
 HIPFIRE_SENSIBLE  = "SENSIBLE"
 HIPFIRE_EXCLUSIVE = "EXCLUSIVE"
 
-PARSER_CONSTANTS = ( LEFT, RIGHT, WHOLE, STICK, GYRO, PITCH,
+PARSER_CONSTANTS = ( LEFT, RIGHT, WHOLE, LSTICK, RSTICK, GYRO, PITCH,
 	YAW, ROLL, DEFAULT, SAME, CUT, ROUND, LINEAR, MINIMUM,
 	HIPFIRE_NORMAL, HIPFIRE_SENSIBLE, HIPFIRE_EXCLUSIVE )
 
@@ -103,7 +103,7 @@ class SCButtons(IntEnum):
 	RT          = 0b000000000000000000000000100000000
 	CPADTOUCH   = 0b000000000000000000000000000000100 # Available on DS4 pad
 	CPADPRESS   = 0b000000000000000000000000000000010 # Available on DS4 pad
-	STICKPRESS  = 0b001000000000000000000000000000000
+	LSTICKPRESS = 0b001000000000000000000000000000000
 	RSTICKPRESS = 0b010000000000000000000000000000000
 	DOTS        = 0b000000000000000000000000000001000 # Steam Controller (2026) & Deck
 	RGRIP2      = 0b000000000000000000000000000100000 # Steam Controller (2026) & Deck
@@ -113,11 +113,11 @@ class SCButtons(IntEnum):
 # If lpad and stick is used at once, this is sent as
 # button with every other packet to signalize that
 # value of lpad_x and lpad_y belongs to stick
-STICKTILT = 0b10000000000000000000000000000000
+LSTICKTILT = 0b10000000000000000000000000000000
 
 
 class HapticPos(IntEnum):
-	"""Specify witch pad or trig is used."""
+	"""Specify which touchpad or trigger is used."""
 
 	RIGHT = 0
 	LEFT  = 1
@@ -129,7 +129,7 @@ class ControllerFlags(IntEnum):
 
 	NONE           =      0 # No flags, default SC.
 	HAS_RSTICK     = 1 << 0 # Controller has right stick instead of touchpad
-	SEPARATE_STICK = 1 << 1 # Left stick and left pad are using separate axes
+	SEPARATE_LSTICK = 1 << 1 # Left stick and left pad are using separate axes
 	EUREL_GYROS    = 1 << 2 # Gyro sensor values are provided as pitch, yaw
 	                                    # and roll instead of quaterion. 'q4' is unused
 	                                    # in such case.

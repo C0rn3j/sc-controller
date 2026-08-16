@@ -241,13 +241,13 @@
        style="fill:#6c6c6c;fill-opacity:1;stroke:#1a1a1a;stroke-width:7.63892;stroke-dasharray:none;stroke-opacity:1"
        inkscape:label="RT" />
     <circle
-       id="STICKPRESS"
+       id="LSTICKPRESS"
        cx="241.87"
        cy="152.50999"
        r="31.247"
        style="fill:#6c6c6c;fill-opacity:1;stroke:#1a1a1a;stroke-width:1.80271;stroke-opacity:1"
        transform="matrix(2,0,0,2,33.75877,55.198977)"
-       inkscape:label="STICKPRESS" />
+       inkscape:label="LSTICKPRESS" />
     <circle
        id="LSTICKTOUCH"
        cx="241.87"

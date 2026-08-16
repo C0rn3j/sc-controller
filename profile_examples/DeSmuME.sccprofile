@@ -92,7 +92,7 @@
     "pad_right": {
         "action": "relwinarea(0.01, 0.5, 0.99, 0.99)"
     },
-    "stick": {
+    "lstick": {
         "action": "XY(axis(Axes.ABS_X), raxis(Axes.ABS_Y))"
     },
     "trigger_left": {
@@ -101,5 +101,5 @@
     "trigger_right": {
         "action": "trigger(50, button(Keys.BTN_START))"
     },
-    "version": 1.4
+    "version": 1.6
 }

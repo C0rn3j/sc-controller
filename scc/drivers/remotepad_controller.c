@@ -27,7 +27,7 @@ inline static SCButton libretro_button_to_sc_button(int id) {
 	case RETRO_DEVICE_ID_JOYPAD_R:			return B_RB;
 	case RETRO_DEVICE_ID_JOYPAD_L2:			return B_LT;
 	case RETRO_DEVICE_ID_JOYPAD_R2:			return B_RT;
-	case RETRO_DEVICE_ID_JOYPAD_L3:			return B_STICKPRESS;
+	case RETRO_DEVICE_ID_JOYPAD_L3:			return B_LSTICKPRESS;
 	case RETRO_DEVICE_ID_JOYPAD_R3:			return B_RSTICKPRESS;
 	default:
 		return 0;
@@ -38,12 +38,12 @@ inline static SCButton libretro_button_to_sc_button(int id) {
 void remotepad_input(RemotePad* pad, struct remote_joypad_message* msg) {
 	SCButton b;
 	// LOG("on_data_ready %i %i %i %i", msg->device, msg->index, msg->id, msg->state);
-	
+
 	if (sizeof(SCButton) != sizeof(uint32_t)) {
 		printf("sizeof(SCButton) != sizeof(uint32_t): %zu != %zu\n",
 				sizeof(SCButton), sizeof(uint32_t));
 	}
-	
+
 	switch (msg->device) {
 	case RETRO_DEVICE_JOYPAD:
 		b = libretro_button_to_sc_button(msg->id);
@@ -53,7 +53,7 @@ void remotepad_input(RemotePad* pad, struct remote_joypad_message* msg) {
 			else
 				pad->input.buttons &= ~b;
 		}
-		
+
 		switch (msg->id) {
 		case RETRO_DEVICE_ID_JOYPAD_UP:
 			pad->input.dpad_y = (msg->state) ? STICK_PAD_MAX : 0;
@@ -83,16 +83,16 @@ void remotepad_input(RemotePad* pad, struct remote_joypad_message* msg) {
 				pad->input.buttons &= ~B_C;
 			}
 		}
-	
+
 	case RETRO_DEVICE_ANALOG:
 		switch (msg->index) {
 		case RETRO_DEVICE_INDEX_ANALOG_LEFT:
 			switch (msg->id) {
 			case RETRO_DEVICE_ID_ANALOG_X:
-				pad->input.stick_x = (AxisValue)msg->state;
+				pad->input.lstick_x = (AxisValue)msg->state;
 				break;
 			case RETRO_DEVICE_ID_ANALOG_Y:
-				pad->input.stick_y = -(AxisValue)msg->state;
+				pad->input.lstick_y = -(AxisValue)msg->state;
 				break;
 			}
 			break;
@@ -108,7 +108,7 @@ void remotepad_input(RemotePad* pad, struct remote_joypad_message* msg) {
 			break;
 		}
 	}
-	
+
 	pad->mapper->input(pad->mapper, &pad->input);
 }
 

@@ -328,7 +328,7 @@ class ControllerManager(GObject.GObject):
 		"RB",
 		"LT",
 		"RT",
-		"STICK",
+		"LSTICK",
 		"LPAD",
 		"RPAD",
 		"RGRIP",

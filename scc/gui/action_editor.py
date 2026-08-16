@@ -1075,7 +1075,7 @@ class ActionEditor(Editor):
 				self.set_title(_("DPAD"))
 			elif id == Profile.RSTICK:
 				self.set_title(_("Right Stick"))
-			elif id == Profile.STICK:
+			elif id == Profile.LSTICK:
 				self.set_title(_("Left Stick"))
 			else:
 				raise ValueError(f"unknown id {id}")

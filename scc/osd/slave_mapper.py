@@ -9,7 +9,7 @@ Used by on-screen keyboard.
 
 import logging
 
-from scc.constants import CPAD, DPAD, LEFT, RIGHT, RSTICK, STICK, SCButtons
+from scc.constants import CPAD, DPAD, LEFT, RIGHT, RSTICK, LSTICK, SCButtons
 from scc.mapper import Mapper
 
 log = logging.getLogger("SlaveMapper")
@@ -50,17 +50,17 @@ class SlaveMapper(Mapper):
 		Without calling this, SlaveMapper basically does nothing.
 		"""
 		self.old_buttons = self.buttons
-		if what == STICK:
-			self.profile.stick.whole(self, data[0], data[1], what)
+		if what == LSTICK:
+			self.profile.lstick.whole(self, data[0], data[1], what)
 		elif what == RSTICK:
 			self.profile.rstick.whole(self, data[0], data[1], what)
 		elif what == SCButtons.LT.name:
 			self.profile.triggers[LEFT].trigger(self, *data)
 		elif what == SCButtons.RT.name:
 			self.profile.triggers[RIGHT].trigger(self, *data)
-		elif hasattr(SCButtons, what) or what == "STICKPRESS":
-			if what == "STICKPRESS":
-				x = SCButtons.STICKPRESS
+		elif hasattr(SCButtons, what) or what == "LSTICKPRESS":
+			if what == "LSTICKPRESS":
+				x = SCButtons.LSTICKPRESS
 			else:
 				x = getattr(SCButtons, what)
 			if data[0]:

@@ -5,12 +5,12 @@
 		"buttons": [
 			"A", "B", "X", "Y", "RECTANGLE",
 			"C", "RTRIANGLE", "LB", "RB", "LT", "RT",
-			"STICK", "DPAD", "RSTICK", "LG", "RG"
+			"LSTICK", "DPAD", "RSTICK", "LG", "RG"
 		]
 	},
 
 	"axes": [
-		"stick_x", "stick_y", "rstick_x", "rstick_y",
+		"lstick_x", "lstick_y", "rstick_x", "rstick_y",
 		"dpad_x", "dpad_y", "ltrig", "rtrig"
 	],
 

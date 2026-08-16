@@ -85,8 +85,8 @@ class HIDControllerInput(ctypes.Structure):
 	_fields_ = [
 		("buttons", ctypes.c_uint32),
 		# Note: Axis order is same as in AxisType enum
-		("stick_x", ctypes.c_int32),
-		("stick_y", ctypes.c_int32),
+		("lstick_x", ctypes.c_int32),
+		("lstick_y", ctypes.c_int32),
 		("rstick_x", ctypes.c_int32),
 		("rstick_y", ctypes.c_int32),
 		("lpad_x", ctypes.c_int32),
@@ -113,8 +113,8 @@ class HIDControllerInput(ctypes.Structure):
 
 
 class AxisType(IntEnum):
-	AXIS_STICK_X = 0
-	AXIS_STICK_Y = 1
+	AXIS_LSTICK_X = 0
+	AXIS_LSTICK_Y = 1
 	AXIS_RSTICK_X = 2
 	AXIS_RSTICK_Y = 3
 	AXIS_LPAD_X = 4
@@ -250,7 +250,7 @@ class HIDDrvFakeDaemon:
 class HIDController(SCUSBDevice, Controller):
 	flags = (
 		ControllerFlags.HAS_RSTICK
-		| ControllerFlags.SEPARATE_STICK
+		| ControllerFlags.SEPARATE_LSTICK
 		| ControllerFlags.HAS_DPAD
 		| ControllerFlags.NO_GRIPS
 	)
@@ -325,6 +325,8 @@ class HIDController(SCUSBDevice, Controller):
 			buttons = [BUTTON_COUNT - 1] * BUTTON_COUNT
 			for keycode, value in config.get("buttons", {}).items():
 				keycode = int(keycode) - FIRST_BUTTON
+				# TODO(Martin): Compat crutch for saved devices - autoconvert it to current standard instead
+				value = {"STICKPRESS": "LSTICKPRESS", "STICK": "LSTICKPRESS"}.get(value, value)
 				if keycode < 0 or keycode >= BUTTON_COUNT:
 					# Out of range
 					continue
@@ -343,7 +345,11 @@ class HIDController(SCUSBDevice, Controller):
 		axis_config = config.get("axes", {}).get(str(int(axis)))
 		if axis_config:
 			try:
-				target = [x for (x, y) in HIDControllerInput._fields_].index(axis_config.get("axis")) - 1
+				# TODO(Martin): The following is a compat crutch for saved devices - change it to autoconvert it to current standard instead
+				axis_name = {"stick_x": "lstick_x", "stick_y": "lstick_y"}.get(
+					axis_config.get("axis"), axis_config.get("axis"),
+				)
+				target = [x for (x, y) in HIDControllerInput._fields_].index(axis_name) - 1
 			except Exception:
 				# Maps to unknown axis
 				return None, None
@@ -374,7 +380,7 @@ class HIDController(SCUSBDevice, Controller):
 
 	def _build_hid_decoder(self, data, config: dict, max_size: int) -> None:
 		size, count, total, kind = 1, 0, 0, None
-		next_axis = AxisType.AXIS_STICK_X
+		next_axis = AxisType.AXIS_LSTICK_X
 		self._decoder = HIDDecoder()
 		for x in parse_report_descriptor(data, True):
 			if x[0] == GlobalItem.ReportSize:

@@ -7,12 +7,12 @@ Root dictonary has to contain following keys:
 - `buttons`			- contains subkey for controller buttons. See [buttons](#buttons).
 - `pad_left`		- sets action executed when finger is moved on left touchpad.
 - `pad_right`		- ... when finger is moved on right touchpad.
-- `stick`			- ... when stick angle is changed.
+- `lstick`			- ... when left-stick angle is changed.
 - `trigger_left`	- ... when left trigger value is changed.
 - `trigger_right`	- ... when right trigger value is changed.
 - `gyro`			- ... when gyroscope reading changes. Gyroscope in is activated only if this key is set to something else than `NoAction`
 - `menus`			- stores menus saved in profile. See [menus](#menus).
-- `version`			- profile file version. Current version is _1_. See If not pressent, _0_ is assumed. If profile file version is lower than expected, automatic conversion may happen. This conversion is in-memory only, but changing and saving such profile in GUI will save converted data.
+- `version`			- profile file version. Current version is _1.6_. If not present, _0_ is assumed. If profile file version is lower than expected, automatic conversion may happen. This conversion is in-memory only, but changing and saving such profile in GUI will save converted data.
 
 See [actions.md](actions.md) file for list of possible actions.
 
@@ -40,14 +40,14 @@ or stick axis. If either of keys is specified, `action` key is ignored.
 
 Example:
 
-	"stick" : {
+	"lstick" : {
 	  "X": { "action": "axis(Axes.ABS_RX)" },
 	  "Y": { "action": "raxis(Axes.ABS_RY)" }
 	},
 
 
 is same as
-`"stick" : { "action" : "XY(axis(Axes.ABS_RX), raxis(Axes.ABS_RY))" }`
+`"lstick" : { "action" : "XY(axis(Axes.ABS_RX), raxis(Axes.ABS_RY))" }`
 
 
 #### `levels`
@@ -132,7 +132,7 @@ Default sensitivity is 1.0
 
 Example:
 
-	"stick" : {
+	"lstick" : {
 	  "action": "trackball()",
 	  "sensitivity": [2.0, 0.5]
 	},
@@ -145,7 +145,7 @@ Rotates input pad or stick input by given angle.
 
 Example:
 
-	"stick" : {
+	"lstick" : {
 	  "action": "trackball()",
 	  "rotate": 15
 	},
@@ -320,7 +320,7 @@ Possible keys are:
 - `C` for Steam button in center
 - `SELECT` and `START` for small "( &lt; )" and "( &gt; )" buttons
 - `LB` and `RB` for left and right bumper
-- `LPAD`, `RPAD` and `STICK` for presing pads or stick.
+- `LPAD`, `RPAD`, `LSTICK`, `RSTICK` for presing pads or sticks
 
 All keys are optional. Value for each key is [action definition](#Action_definition)
 

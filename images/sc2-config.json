@@ -4,7 +4,7 @@
 		"background": "sc2",
 		"buttons": [
 			"sc2_A", "sc2_B", "sc2_X", "sc2_Y", "sc2_BACK", "sc2_C", "sc2_START",
-			"LB", "RB", "LT", "RT", "STICK", "TOUCHPAD", "TOUCHPAD", "RGRIP", "LGRIP", "sc2_DOTS"
+			"LB", "RB", "LT", "RT", "LSTICK", "TOUCHPAD", "TOUCHPAD", "RGRIP", "LGRIP", "sc2_DOTS"
 		]
 	},
 	"buttons": [
@@ -14,7 +14,7 @@
 		"A", "X", "B", "Y", "LB", "RB"
 	],
 	"axes": [
-		"stick_x", "stick_y", "rstick_x", "rstick_y",
+		"lstick_x", "lstick_y", "rstick_x", "rstick_y",
 		"lpad_x", "lpad_y", "rpad_x", "rpad_y",
 		"dpad_x", "dpad_y", "ltrig", "rtrig"
 	],

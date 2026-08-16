@@ -12,7 +12,7 @@ from tokenize import TokenError, generate_tokens
 from typing import NamedTuple, Self
 
 from scc.actions import Action, MultiAction, NoAction, RangeOP
-from scc.constants import PARSER_CONSTANTS, STICK, HapticPos, SCButtons
+from scc.constants import LSTICK, PARSER_CONSTANTS, HapticPos, SCButtons
 from scc.macros import Macro
 from scc.tools import nameof
 from scc.uinput import Axes, Keys, Rels
@@ -35,6 +35,9 @@ def build_action_constants() -> dict:
 	}
 	for c in PARSER_CONSTANTS:
 		rv[c] = c
+	# TODO(Martin): Convert this properly in profile.py once and remove the hack
+	# Profile action strings used STICK for the left stick before profile 1.6.
+	rv["STICK"] = LSTICK
 	for tpl in (Keys, Axes, Rels, SCButtons, HapticPos):
 		for x in tpl:
 			rv[x.name] = x
@@ -65,7 +68,7 @@ class ActionParser:
 		self.restart(string)
 		self.tokens: list[ActionParser.Token] | None
 
-	def from_json_data(self, data: dict, key: str | None = None):
+	def from_json_data(self, data: dict, key: str | None = None) -> Action:
 		"""Convert dict stored in profile file into action.
 
 		May throw ParseError.
@@ -177,7 +180,7 @@ class ActionParser:
 				if self._peek_token().value in RangeOP.OPS:
 					op = self._next_token().value
 					# TODO: Maybe other axes
-					if parameter not in (STICK, SCButtons.LT, SCButtons.RT, SCButtons.X, SCButtons.Y):
+					if parameter not in (LSTICK, SCButtons.LT, SCButtons.RT, SCButtons.X, SCButtons.Y):
 						raise ParseError("'%s' is not trigger nor axis" % (nameof(parameter),))
 					if not self._tokens_left():
 						raise ParseError("Excepted number after '%s'" % (op,))

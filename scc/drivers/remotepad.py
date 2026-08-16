@@ -22,8 +22,8 @@ class ControllerInput(ctypes.Structure):
 		("buttons", ctypes.c_uint32),
 		("ltrig", ctypes.c_uint8),
 		("rtrig", ctypes.c_uint8),
-		("stick_x", ctypes.c_int16),
-		("stick_y", ctypes.c_int16),
+		("lstick_x", ctypes.c_int16),
+		("lstick_y", ctypes.c_int16),
 		("lpad_x", ctypes.c_int16),
 		("lpad_y", ctypes.c_int16),
 		("rpad_x", ctypes.c_int16),
@@ -75,7 +75,7 @@ class RemotePadController(Controller):
 		ControllerFlags.HAS_DPAD
 		| ControllerFlags.NO_GRIPS
 		| ControllerFlags.HAS_RSTICK
-		| ControllerFlags.SEPARATE_STICK
+		| ControllerFlags.SEPARATE_LSTICK
 	)
 
 	def __init__(self, driver, address):

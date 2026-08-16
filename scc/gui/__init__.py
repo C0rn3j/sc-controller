@@ -12,7 +12,7 @@ BUTTON_ORDER = (
 	SCButtons.RB,
 	SCButtons.LT,
 	SCButtons.RT,
-	SCButtons.STICKPRESS,
+	SCButtons.LSTICKPRESS,
 	SCButtons.LPAD,
 	SCButtons.RPAD,
 	SCButtons.RGRIP,

@@ -94,7 +94,7 @@ class DS4Controller(Controller):
 		1 << 64,
 		SCButtons.BACK,
 		SCButtons.START,
-		SCButtons.STICKPRESS,
+		SCButtons.LSTICKPRESS,
 		SCButtons.RSTICKPRESS,
 		SCButtons.C,
 		SCButtons.CPADPRESS,
@@ -105,7 +105,7 @@ class DS4Controller(Controller):
 		| ControllerFlags.HAS_RSTICK
 		| ControllerFlags.HAS_CPAD
 		| ControllerFlags.HAS_DPAD
-		| ControllerFlags.SEPARATE_STICK
+		| ControllerFlags.SEPARATE_LSTICK
 		| ControllerFlags.NO_GRIPS
 	)
 
@@ -128,7 +128,7 @@ class DS4Controller(Controller):
 				),
 			),
 		)
-		self._decoder.axes[AxisType.AXIS_STICK_X] = AxisData(
+		self._decoder.axes[AxisType.AXIS_LSTICK_X] = AxisData(
 			mode=AxisMode.AXIS,
 			byte_offset=1,
 			size=8,
@@ -141,7 +141,7 @@ class DS4Controller(Controller):
 				),
 			),
 		)
-		self._decoder.axes[AxisType.AXIS_STICK_Y] = AxisData(
+		self._decoder.axes[AxisType.AXIS_LSTICK_Y] = AxisData(
 			mode=AxisMode.AXIS,
 			byte_offset=2,
 			size=8,
@@ -468,13 +468,13 @@ class DS4EvdevController(EvdevController):
 		314: "BACK",
 		315: "START",
 		316: "C",
-		317: "STICKPRESS",
+		317: "LSTICKPRESS",
 		318: "RSTICKPRESS",
 		# 319: "CPAD",
 	}
 	AXIS_MAP = {
-		0: {"axis": "stick_x", "deadzone": 4, "max": 255, "min": 0},
-		1: {"axis": "stick_y", "deadzone": 4, "max": 0, "min": 255},
+		0: {"axis": "lstick_x", "deadzone": 4, "max": 255, "min": 0},
+		1: {"axis": "lstick_y", "deadzone": 4, "max": 0, "min": 255},
 		3: {"axis": "rstick_x", "deadzone": 4, "max": 255, "min": 0},
 		4: {"axis": "rstick_y", "deadzone": 8, "max": 0, "min": 255},
 		2: {"axis": "ltrig", "max": 255, "min": 0},
@@ -495,7 +495,7 @@ class DS4EvdevController(EvdevController):
 		| ControllerFlags.HAS_RSTICK
 		| ControllerFlags.HAS_CPAD
 		| ControllerFlags.HAS_DPAD
-		| ControllerFlags.SEPARATE_STICK
+		| ControllerFlags.SEPARATE_LSTICK
 		| ControllerFlags.NO_GRIPS
 	)
 

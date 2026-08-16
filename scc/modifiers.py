@@ -35,11 +35,11 @@ from scc.constants import (
 	MINIMUM,
 	RIGHT,
 	RSTICK,
-	STICK,
+	LSTICK,
 	STICK_PAD_MAX,
 	STICK_PAD_MAX_HALF,
 	STICK_PAD_MIN,
-	STICKTILT,
+	LSTICKTILT,
 	TRIGGER_MAX,
 	HapticPos,
 	SCButtons,
@@ -204,11 +204,11 @@ class ClickModifier(Modifier):
 		return self.action.trigger(mapper, position, old_position)
 
 	def axis(self, mapper, position, what):
-		if what in (STICK, LEFT) and mapper.is_pressed(SCButtons.LPAD):
-			if what == STICK:
+		if what in (LSTICK, LEFT) and mapper.is_pressed(SCButtons.LPAD):
+			if what == LSTICK:
 				mapper.force_event.add(FE_STICK)
 			return self.action.axis(mapper, position, what)
-		if what in (STICK, LEFT) and mapper.was_pressed(SCButtons.LPAD):
+		if what in (LSTICK, LEFT) and mapper.was_pressed(SCButtons.LPAD):
 			# Just released
 			return self.action.axis(mapper, 0, what)
 		if what == CPAD and mapper.is_pressed(SCButtons.CPAD):
@@ -225,7 +225,7 @@ class ClickModifier(Modifier):
 
 	def pad(self, mapper, position, what):
 		if what == LEFT and mapper.is_pressed(SCButtons.LPAD):
-			if what == STICK:
+			if what == LSTICK:
 				mapper.force_event.add(FE_STICK)
 			return self.action.pad(mapper, position, what)
 		if what == LEFT and mapper.was_pressed(SCButtons.LPAD):
@@ -244,11 +244,11 @@ class ClickModifier(Modifier):
 			return self.action.pad(mapper, 0, what)
 
 	def whole(self, mapper, x, y, what):
-		if what in (STICK, LEFT) and mapper.is_pressed(SCButtons.LPAD):
-			if what == STICK:
+		if what in (LSTICK, LEFT) and mapper.is_pressed(SCButtons.LPAD):
+			if what == LSTICK:
 				mapper.force_event.add(FE_STICK)
 			return self.action.whole(mapper, x, y, what)
-		if what in (STICK, LEFT) and (mapper.was_pressed(SCButtons.LPAD) or mapper.was_pressed(STICKTILT)):
+		if what in (LSTICK, LEFT) and (mapper.was_pressed(SCButtons.LPAD) or mapper.was_pressed(LSTICKTILT)):
 			# Just released
 			return self.action.whole(mapper, 0, 0, what)
 		if what == RIGHT and mapper.is_pressed(SCButtons.RPAD):
@@ -500,7 +500,7 @@ class BallModifier(Modifier, WholeHapticAction):
 		self.whole(mapper, position, 0, what)
 
 	def change(self, mapper, dx, dy, what):
-		if what in (None, STICK, RSTICK):
+		if what in (None, LSTICK, RSTICK):
 			return self.action.change(mapper, dx, dy, what)
 		if mapper.is_touched(what):
 			if mapper.was_touched(what):
@@ -542,7 +542,7 @@ class BallModifier(Modifier, WholeHapticAction):
 			velocity = sqrt(self._xvel * self._xvel + self._yvel * self._yvel)
 			if velocity > BallModifier.MIN_LIFT_VELOCITY:
 				self._roll(mapper)
-		elif what == STICK:
+		elif what == LSTICK:
 			return self.action.whole(mapper, x, y, what)
 		return None
 
@@ -1007,7 +1007,7 @@ class ModeModifier(Modifier):
 		return self.select(mapper).pad(mapper, position, what)
 
 	def whole(self, mapper, x, y, what):
-		if what == STICK:
+		if what == LSTICK:
 			if abs(x) < ModeModifier.MIN_STICK and abs(y) < ModeModifier.MIN_STICK:
 				for check, action in self.held_sticks:
 					action.whole(mapper, 0, 0, what)
@@ -1429,7 +1429,7 @@ class SmoothModifier(Modifier):
 			if abs(x + y - self._last_pos) > self.filter:
 				self.action.whole(mapper, x, y, what)
 			self._last_pos = x + y
-		elif what == STICK:
+		elif what == LSTICK:
 			return self.action.whole(mapper, x, y, what)
 		else:
 			# Pad was just released

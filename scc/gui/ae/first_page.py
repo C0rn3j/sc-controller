@@ -100,7 +100,7 @@ class FirstPage(AEComponent):
 				"RB": _("Right Bumper"),
 				"LEFT": _("Left Trigger"),
 				"RIGHT": _("Right Trigger"),
-				"STICK": _("Left Stick"),
+				"LSTICK": _("Left Stick"),
 				"RSTICK": _("Right Stick"),
 			}
 

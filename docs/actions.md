@@ -33,11 +33,11 @@
 - For trigger, when trigger is pressed, but until it clicks, 'button2' is
   pressed. When trigger clicks 'button2' is released and replaced by 'button1'.
   If only 'button1' is set, trigger acts as big button.
-  
+
   Note that 'button2' is always optional.
 
 
-#### <a name="mouse"></a> mouse(axis)  
+#### <a name="mouse"></a> mouse(axis)
 
 - For stick, lets cursor or mouse wheel to be controlled by stick tilt.
 - For pad, acts as trackpad - sliding finger over pad moves the mouse.
@@ -150,9 +150,9 @@ Modes available:
 
  - NORMAL - if trigger is pressed beyond the "partialpress_level" and the timeout is reached, the "partialpress_action" is executed. If the "partialpress_action" was pressed it will only be released after the trigger return back beyond the "partialpress_level". The "fullpress_action" will be executed every time the "fullpress_level" is reached, but if this level is reached before the timeout the "partialpres_action" will not be triggered until releasing the trigger.
  - EXCLUSIVE - Acts similar to the previous mode, but the "fullpress_action" is only triggered if the "partialpres_action" was not triggered. Meaning it will only activate if the "fullpress_level" is reached before the timeout ends.
- - SENSIBLE - Acts similar to NORMAL, but after the "partialpress_action" is activated, releasing the trigger a little, will deactivate the action allowing it to be activated again more faster without needing to release the trigger back beyond the "partialpress_level". 
+ - SENSIBLE - Acts similar to NORMAL, but after the "partialpress_action" is activated, releasing the trigger a little, will deactivate the action allowing it to be activated again more faster without needing to release the trigger back beyond the "partialpress_level".
 
-The "delay" is time window used to determine if the "partialpress_action" should or not be activated. 
+The "delay" is time window used to determine if the "partialpress_action" should or not be activated.
 
 Examples:
 
@@ -357,7 +357,7 @@ recommended to use GUI to record them. Nevertheless, format is simple:
 #### <a name="doubleclick"></a> doubleclick(doubleclick_action [, normal_action [, timeout ]])
 Executes action if user double-clicks button.
 Optional normal_action parameter specifies action that is executed when user
-click button only once. Optional time arguments modifies maximum delay in 
+click button only once. Optional time arguments modifies maximum delay in
 doubleclick and in effect sets delay before normal action is executed.
 
 #### <a name="hold"></a> hold(hold_action [, normal_action [, timeout ]])
@@ -499,9 +499,9 @@ Works only on buttons.
 
 
 # <a name="examples2"></a>Examples for profile file
-Emulate key presses based on stick position
+Emulate key presses based on left stick position
 ```
-"stick" : {
+"lstick" : {
 	"X"		: { "action" : "pad(KEY_A, KEY_D)" },
 	"Y"		: { "action" : "key(KEY_W, KEY_S)" },
 ```

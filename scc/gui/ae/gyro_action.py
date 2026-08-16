@@ -5,7 +5,7 @@ import logging
 import re
 
 from scc.actions import Action, GyroAbsAction, GyroAction, MouseAbsAction, MouseAction, MultiAction, NoAction, RangeOP
-from scc.constants import ROLL, STICK, YAW, SCButtons
+from scc.constants import LSTICK, ROLL, YAW, SCButtons
 from scc.gui.ae import AEComponent
 from scc.gui.parser import GuiActionParser
 from scc.modifiers import ModeModifier, SensitivityModifier
@@ -40,7 +40,7 @@ class GyroActionComponent(AEComponent):
 		(None, None),
 		(SCButtons.LGRIP, _("Left Grip")),
 		(SCButtons.RGRIP, _("Right Grip")),
-		(STICK, _("Stick Tilted")),
+		(LSTICK, _("Left Stick Tilted")),
 		(None, None),
 		(SCButtons.A, _("A")),
 		(SCButtons.B, _("B")),
@@ -266,7 +266,7 @@ class GyroActionComponent(AEComponent):
 		if item and action:
 			if item in TRIGGERS:
 				what = RangeOP(getattr(SCButtons, item), ">=", sclSoftLevel.get_value())
-			elif item == STICK:
+			elif item == LSTICK:
 				what = RangeOP(item, ">=", sclSoftLevel.get_value())
 			else:
 				what = getattr(SCButtons, item)

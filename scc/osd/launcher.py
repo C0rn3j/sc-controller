@@ -12,7 +12,7 @@ import os
 from gi.repository import GdkX11, Gio, Gtk, Pango
 
 from scc.config import Config
-from scc.constants import DEFAULT, LEFT, RIGHT, RSTICK, STICK, STICK_PAD_MAX
+from scc.constants import DEFAULT, LEFT, LSTICK, RIGHT, RSTICK, STICK_PAD_MAX
 from scc.gui.daemon_manager import DaemonManager
 from scc.lib import xwrappers as X
 from scc.osd import OSDWindow, StickController
@@ -327,7 +327,7 @@ class Launcher(OSDWindow):
 			LEFT,
 			RIGHT,
 			RSTICK,
-			STICK,
+			LSTICK,
 			"LPAD",
 			"RPAD",
 			"RSTICKPRESS",
@@ -424,7 +424,7 @@ class Launcher(OSDWindow):
 			if len(self._string) > 0:
 				self._string = self._string[:-1]
 				self._update_items()
-		elif what == STICK:
+		elif what == LSTICK:
 			self._scon.set_stick(*data)
 		elif what == self._cancel_with:
 			if data[0] == 0:  # Button released

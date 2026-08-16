@@ -194,12 +194,7 @@ _BUTTON_MAP = (
 	(SC2Button.LB, SCButtons.LB),
 	(SC2Button.RT_FULL, SCButtons.RT),
 	(SC2Button.LT_FULL, SCButtons.LT),
-	# Stick-press: the generic, cross-driver SCButtons set keeps the Steam
-	# Controller v1 name STICKPRESS for the LEFT stick (v1 had a single, left
-	# stick) and RSTICKPRESS for the right - so the left maps to STICKPRESS and
-	# the right to RSTICKPRESS, exactly like the Steam Deck driver. (SC2Button
-	# itself has only LSTICKPRESS/RSTICKPRESS; there is no SC2Button.STICKPRESS.)
-	(SC2Button.LSTICKPRESS, SCButtons.STICKPRESS),
+	(SC2Button.LSTICKPRESS, SCButtons.LSTICKPRESS),
 	(SC2Button.RSTICKPRESS, SCButtons.RSTICKPRESS),
 	(SC2Button.LPADTOUCH, SCButtons.LPADTOUCH),
 	(SC2Button.RPADTOUCH, SCButtons.RPADTOUCH),
@@ -226,8 +221,8 @@ class SC2Input(NamedTuple):
 	buttons: int
 	ltrig: float
 	rtrig: float
-	stick_x: int
-	stick_y: int
+	lstick_x: int
+	lstick_y: int
 	rstick_x: int
 	rstick_y: int
 	lpad_x: float
@@ -314,8 +309,8 @@ def parse_input(data: bytes | bytearray) -> SC2Input | None:
 		# triggers are ~15-bit; scale to the 0..255 the mapper expects (cf. Deck >>7)
 		ltrig=ltrig >> 7,
 		rtrig=rtrig >> 7,
-		stick_x=_deadzone(lsx),
-		stick_y=_deadzone(lsy),
+		lstick_x=_deadzone(lsx),
+		lstick_y=_deadzone(lsy),
 		rstick_x=_deadzone(rsx),
 		rstick_y=_deadzone(rsy),
 		lpad_x=lpx,
@@ -356,7 +351,7 @@ class SC2Controller(SCController):
 		# EUREL_GYROS: parse_input converts the firmware quaternion to euler
 		# and hands the mapper 2**15/PI fixed-point angles in q1-q3.
 		ControllerFlags.EUREL_GYROS
-		| ControllerFlags.SEPARATE_STICK
+		| ControllerFlags.SEPARATE_LSTICK
 		| ControllerFlags.HAS_RSTICK
 		| ControllerFlags.HAS_DPAD
 	)

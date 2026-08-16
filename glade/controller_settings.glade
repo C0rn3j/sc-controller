@@ -103,7 +103,7 @@
       </row>
       <row>
         <col id="0" translatable="yes">Left Stick Press</col>
-        <col id="1">STICKPRESS</col>
+        <col id="1">LSTICKPRESS</col>
       </row>
       <row>
         <col id="0" translatable="yes">Right Stick Press</col>
@@ -129,7 +129,7 @@
     <data>
       <row>
         <col id="0" translatable="yes">Left Stick</col>
-        <col id="1">STICK</col>
+        <col id="1">LSTICK</col>
       </row>
       <row>
         <col id="0" translatable="yes">Right Stick</col>

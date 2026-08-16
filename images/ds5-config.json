@@ -4,12 +4,12 @@
 		"buttons": [
 			"CROSS", "CIRCLE", "SQUARE", "TRIANGLE", "ds5SELECT",
 			"C", "ds5START", "LB", "RB", "LT", "RT",
-			"STICK", "DPAD", "RSTICK", "LG", "RG"
+			"LSTICK", "DPAD", "RSTICK", "LG", "RG"
 		]
 	},
 
 	"axes": [
-		"stick_x", "stick_y", "rstick_x", "rstick_y",
+		"lstick_x", "lstick_y", "rstick_x", "rstick_y",
 		"dpad_x", "dpad_y", "cpad_x", "cpad_y",
 		"ltrig", "rtrig"
 	],

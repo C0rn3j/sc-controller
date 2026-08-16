@@ -18,9 +18,9 @@ from scc.constants import (
 	LEFT,
 	RIGHT,
 	RSTICK,
-	STICK,
+	LSTICK,
 	STICK_PAD_MAX,
-	STICKTILT,
+	LSTICKTILT,
 	ControllerFlags,
 	HapticPos,
 	SCButtons,
@@ -396,8 +396,8 @@ class Mapper:
 		controller.time_elapsed = self.time_elapsed = t - controller.lastTime
 		controller.lastTime = t
 
-		if self.buttons & SCButtons.LPAD and not self.buttons & (SCButtons.LPADTOUCH | STICKTILT):
-			self.buttons = (self.buttons & ~SCButtons.LPAD) | SCButtons.STICKPRESS
+		if self.buttons & SCButtons.LPAD and not self.buttons & (SCButtons.LPADTOUCH | LSTICKTILT):
+			self.buttons = (self.buttons & ~SCButtons.LPAD) | SCButtons.LSTICKPRESS
 
 		fe = self.force_event
 		self.force_event = set()
@@ -417,12 +417,12 @@ class Mapper:
 						self.profile.buttons[x].button_release(self)
 
 			# Check sticks
-			if self.controller.flags & ControllerFlags.SEPARATE_STICK:
-				if FE_STICK in fe or self.old_state.stick_x != state.stick_x or self.old_state.stick_y != state.stick_y:
-					self.profile.stick.whole(self, state.stick_x, state.stick_y, STICK)
+			if self.controller.flags & ControllerFlags.SEPARATE_LSTICK:
+				if FE_STICK in fe or self.old_state.lstick_x != state.lstick_x or self.old_state.lstick_y != state.lstick_y:
+					self.profile.lstick.whole(self, state.lstick_x, state.lstick_y, LSTICK)
 			elif not self.buttons & SCButtons.LPADTOUCH:
 				if FE_STICK in fe or self.old_state.lpad_x != state.lpad_x or self.old_state.lpad_y != state.lpad_y:
-					self.profile.stick.whole(self, state.lpad_x, state.lpad_y, STICK)
+					self.profile.lstick.whole(self, state.lpad_x, state.lpad_y, LSTICK)
 			if self.controller.flags & ControllerFlags.HAS_RSTICK:
 				if (
 					FE_STICK in fe
@@ -458,7 +458,7 @@ class Mapper:
 					self.profile.pads[DPAD].whole(self, state.dpad_x, state.dpad_y, DPAD)
 
 			# LPAD
-			if self.controller.flags & ControllerFlags.SEPARATE_STICK:
+			if self.controller.flags & ControllerFlags.SEPARATE_LSTICK:
 				if FE_PAD in fe or self.old_state.lpad_x != state.lpad_x or self.old_state.lpad_y != state.lpad_y:
 					self.profile.pads[LEFT].whole(self, state.lpad_x, state.lpad_y, LEFT)
 			elif self.buttons & SCButtons.LPADTOUCH:
@@ -466,11 +466,11 @@ class Mapper:
 				if not self.lpad_touched:
 					self.lpad_touched = True
 				self.profile.pads[LEFT].whole(self, state.lpad_x, state.lpad_y, LEFT)
-				if self.old_state.buttons & STICKTILT and not self.buttons & STICKTILT:
+				if self.old_state.buttons & LSTICKTILT and not self.buttons & LSTICKTILT:
 					# LPAD and stick share axes and so when they are used simultaneously (by someone with 3 hands or so :)
 					# this is how mapper can tell that stick was recentered
-					self.profile.stick.whole(self, 0, 0, STICK)
-			elif not self.buttons & STICKTILT:
+					self.profile.lstick.whole(self, 0, 0, LSTICK)
+			elif not self.buttons & LSTICKTILT:
 				# Pad is not being touched
 				if self.lpad_touched:
 					self.lpad_touched = False

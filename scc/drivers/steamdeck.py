@@ -59,8 +59,8 @@ class DeckInput(ctypes.Structure):
 		("q4", ctypes.c_uint16),
 		("ltrig", ctypes.c_uint16),
 		("rtrig", ctypes.c_uint16),
-		("stick_x", ctypes.c_int16),
-		("stick_y", ctypes.c_int16),
+		("lstick_x", ctypes.c_int16),
+		("lstick_y", ctypes.c_int16),
 		("rstick_x", ctypes.c_int16),
 		("rstick_y", ctypes.c_int16),
 		# Values above are readed directly from deck
@@ -145,7 +145,7 @@ def apply_deadzone(value: int, deadzone: int) -> int:
 class Deck(SCUSBDevice, SCController):
 	flags = (
 		0
-		| ControllerFlags.SEPARATE_STICK
+		| ControllerFlags.SEPARATE_LSTICK
 		| ControllerFlags.HAS_DPAD
 		| ControllerFlags.IS_DECK
 		| ControllerFlags.HAS_RSTICK
@@ -223,7 +223,7 @@ class Deck(SCUSBDevice, SCController):
 			| map_button(self._input, DeckButton.DOTS, SCButtons.DOTS)
 			# | map_button(self._input, DeckButton.RSTICKTOUCH, ....)	// not mapped
 			# | map_button(self._input, DeckButton.LSTICKTOUCH, ....) // not mapped
-			| map_button(self._input, DeckButton.LSTICKPRESS, SCButtons.STICKPRESS)
+			| map_button(self._input, DeckButton.LSTICKPRESS, SCButtons.LSTICKPRESS)
 			| map_button(self._input, DeckButton.RSTICKPRESS, SCButtons.RSTICKPRESS)
 			| map_button(self._input, DeckButton.LGRIP2, SCButtons.LGRIP2)
 			| map_button(self._input, DeckButton.RGRIP2, SCButtons.RGRIP2)
@@ -232,8 +232,8 @@ class Deck(SCUSBDevice, SCController):
 		self._input.ltrig >>= 7
 		self._input.rtrig >>= 7
 		# Apply deadzones
-		self._input.stick_x = apply_deadzone(self._input.stick_x, STICK_DEADZONE)
-		self._input.stick_y = apply_deadzone(self._input.stick_y, STICK_DEADZONE)
+		self._input.lstick_x = apply_deadzone(self._input.lstick_x, STICK_DEADZONE)
+		self._input.lstick_y = apply_deadzone(self._input.lstick_y, STICK_DEADZONE)
 		self._input.rstick_x = apply_deadzone(self._input.rstick_x, STICK_DEADZONE)
 		self._input.rstick_y = apply_deadzone(self._input.rstick_y, STICK_DEADZONE)
 

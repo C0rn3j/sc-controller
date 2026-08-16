@@ -7,12 +7,12 @@
 		"buttons": [
 			"A", "B", "X", "Y", "BACK",
 			"C", "START", "LB", "RB", "LT", "RT",
-			"STICK", "LPAD", "RPAD", "LG", "RG"
+			"LSTICK", "LPAD", "RPAD", "LG", "RG"
 		]
 	},
 
 	"axes": [
-		"stick_x", "stick_y",
+		"lstick_x", "lstick_y",
 		"lpad_x", "lpad_y", "rpad_x", "rpad_y",
 		"ltrig", "rtrig"
 	],

@@ -36,8 +36,8 @@ class ControllerImage(SVGWidget):
 	)
 
 	DEFAULT_AXES = (
-		"stick_x",
-		"stick_y",
+		"lstick_x",
+		"lstick_y",
 		"lpad_x",
 		"lpad_y",
 		"rpad_x",
@@ -52,7 +52,7 @@ class ControllerImage(SVGWidget):
 		nameof(SCButtons.RB),
 		nameof(SCButtons.LT),
 		nameof(SCButtons.RT),
-		nameof(SCButtons.STICKPRESS),
+		nameof(SCButtons.LSTICKPRESS),
 		nameof(SCButtons.RPAD),
 		nameof(SCButtons.LPAD),
 		nameof(SCButtons.LGRIP),

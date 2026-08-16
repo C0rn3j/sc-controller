@@ -3,7 +3,7 @@
 		"background": "deck",
 		"buttons": [
 			"A", "B", "X", "Y", "VIEW", "ELIPSE", "MENU", "LB", "RB", "LT", "RT",
-			"STICK", "TOUCHPAD", "TOUCHPAD", "RGRIP", "LGRIP", "DOTS"
+			"LSTICK", "TOUCHPAD", "TOUCHPAD", "RGRIP", "LGRIP", "DOTS"
 		]
 	},
 	"buttons": [
@@ -12,7 +12,7 @@
 		"RGRIP", "LGRIP", "START", "BACK", "A", "X", "B", "Y", "LB", "RB"
 	],
 	"axes": [
-		"stick_x", "stick_y", "rstick_x", "rstick_y",
+		"lstick_x", "lstick_y", "rstick_x", "rstick_y",
 		"lpad_x", "lpad_y", "rpad_x", "rpad_y",
 		"dpad_x", "dpad_y", "ltrig", "rtrig"
 	],

@@ -36,7 +36,7 @@
     "pad_right": {
         "action": "smooth(8, 0.78, 2.0, feedback(RIGHT, 256, ball(mouse())))"
     },
-    "stick": {
+    "lstick": {
         "action": "dpad(button(Keys.KEY_UP), button(Keys.KEY_DOWN), button(Keys.KEY_LEFT), button(Keys.KEY_RIGHT))"
     },
     "rstick": {
@@ -48,5 +48,5 @@
     "trigger_right": {
         "action": "trigger(50, 255, button(Keys.BTN_LEFT))"
     },
-    "version": 1.5
+    "version": 1.6
 }

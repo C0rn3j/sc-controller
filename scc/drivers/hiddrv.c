@@ -18,8 +18,8 @@ struct HIDControllerInput {
 
 
 enum AxisType {
-	AXIS_STICK_X  = 0,
-	AXIS_STICK_Y  = 1,
+	AXIS_LSTICK_X = 0,
+	AXIS_LSTICK_Y = 1,
 	AXIS_RSTICK_X = 2,
 	AXIS_RSTICK_Y = 3,
 	AXIS_LPAD_X   = 4,
@@ -97,7 +97,7 @@ struct AxisData {
 	size_t byte_offset;
 	uint8_t bit_offset;
 	uint8_t size;
-	
+
 	union AxisDataUnion data;
 };
 
@@ -116,7 +116,7 @@ struct HIDDecoder {
 	struct AxisData axes[AXIS_COUNT];
 	struct ButtonData buttons;
 	size_t packet_size;
-	
+
 	struct HIDControllerInput old_state;
 	struct HIDControllerInput state;
 };
@@ -261,7 +261,7 @@ bool decode(struct HIDDecoder* dec, const char* data) {
 				break;
 		}
 	}
-	
+
 	// Buttons
 	if (dec->buttons.enabled) {
 		union Value value = grab_value(data, dec->buttons.byte_offset, dec->buttons.bit_offset);

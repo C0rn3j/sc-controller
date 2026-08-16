@@ -6,7 +6,7 @@ import itertools
 import logging
 
 from scc.actions import Action, AxisAction, GyroAbsAction, GyroAction, MultiAction, NoAction, RangeOP
-from scc.constants import STICK, SCButtons
+from scc.constants import LSTICK, SCButtons
 from scc.gui.ae import AEComponent, describe_action
 from scc.gui.ae.gyro_action import TRIGGERS, fill_buttons, is_gyro_enable
 from scc.gui.simple_chooser import SimpleChooser
@@ -116,7 +116,7 @@ class GyroComponent(AEComponent):
 			button = nameof(item.what)
 			sclSoftLevel.set_value(item.value)
 			rvSoftLevel.set_reveal_child(True)
-			if item.what == STICK:
+			if item.what == LSTICK:
 				lblSoftLevel.set_label(_("Stick deadzone"))
 			else:
 				lblSoftLevel.set_label(_("Trigger Pull Level"))

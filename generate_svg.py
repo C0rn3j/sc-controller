@@ -279,9 +279,9 @@ class Generator:
 		box_abxy.add("Y", Action.AC_BUTTON, profile.buttons.get(SCButtons.Y))
 		boxes.append(box_abxy)
 
-		box_stick = Box(4 * self.PADDING, self.PADDING, Align.LEFT | Align.BOTTOM, "stick")
-		box_stick.add("STICK", Action.AC_STICK, profile.stick)
-		boxes.append(box_stick)
+		box_lstick = Box(4 * self.PADDING, self.PADDING, Align.LEFT | Align.BOTTOM, "lstick")
+		box_lstick.add("LSTICK", Action.AC_STICK, profile.lstick)
+		boxes.append(box_lstick)
 
 		w = int(float(background.attrib.get("width") or 800))
 		h = int(float(background.attrib.get("height") or 800))
@@ -290,11 +290,11 @@ class Generator:
 		for b in boxes:
 			b.calculate(self)
 
-		# Set ABXY and Stick size & position
-		box_abxy.height = box_stick.height = self.full_height * 0.25
-		box_abxy.width = box_stick.width = self.full_width * 0.3
+		# Set ABXY and Left Stick size & position
+		box_abxy.height = box_lstick.height = self.full_height * 0.25
+		box_abxy.width = box_lstick.width = self.full_width * 0.3
 		box_abxy.y = self.full_height - self.PADDING - box_abxy.height
-		box_stick.y = self.full_height - self.PADDING - box_stick.height
+		box_lstick.y = self.full_height - self.PADDING - box_lstick.height
 		box_abxy.x = self.full_width - self.PADDING - box_abxy.width
 
 		self.equal_width(box_left, box_right)

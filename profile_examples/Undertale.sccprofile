@@ -33,11 +33,11 @@
     "pad_right": {
         "action": "feedback(RIGHT, 256, ball(mouse(None, 1.0)))"
     }, 
-    "stick": {
+    "lstick": {
         "action": "dpad(button(Keys.KEY_UP), button(Keys.KEY_DOWN), button(Keys.KEY_LEFT), button(Keys.KEY_RIGHT))", 
         "name": "Movement"
     }, 
     "trigger_left": {}, 
     "trigger_right": {}, 
-    "version": 1.4
+    "version": 1.6
 }

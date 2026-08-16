@@ -246,7 +246,7 @@
        id="THUMBL"
        transform="matrix(0.24735513,0,0,0.24735513,-54.523594,104.00742)">
       <path
-         id="STICK"
+         id="LSTICK"
          d="m 428.96873,721.28306 a 31.740298,31.343549 0 0 1 -31.74031,31.34354 31.740298,31.343549 0 0 1 -31.7403,-31.34354 31.740298,31.343549 0 0 1 31.7403,-31.34355 31.740298,31.343549 0 0 1 31.74031,31.34355 z"
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#000000;fill-opacity:0.16256157;fill-rule:evenodd;stroke:#000000;stroke-width:1.10250139;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
          inkscape:connector-curvature="0"
@@ -254,9 +254,9 @@
       <circle
          cy="716.96082"
          cx="399.29227"
-         id="STICKPRESS"
+         id="LSTICKPRESS"
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#000000;fill-opacity:0.21176471;fill-rule:evenodd;stroke:#000000;stroke-width:0.77314407;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
-         inkscape:label="#STICK"
+         inkscape:label="#LSTICK"
          r="19.499788" />
     </g>
     <g

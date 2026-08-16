@@ -483,7 +483,7 @@ class VDFProfile(Profile):
 		elif binding.startswith("right_trigger"):
 			self.triggers[Profile.RIGHT] = action
 		elif binding.startswith("joystick"):
-			self.stick = action
+			self.lstick = action
 		elif binding.startswith("gyro"):
 			self.gyro = action
 		else:
@@ -513,7 +513,7 @@ class VDFProfile(Profile):
 		if binding.startswith("right_trigger"):
 			return self.triggers[Profile.RIGHT]
 		if binding.startswith("joystick"):
-			return self.stick
+			return self.lstick
 		if binding.startswith("gyro"):
 			return self.gyro
 		raise ParseError("Unknown group source binding: '%s'" % (binding,))

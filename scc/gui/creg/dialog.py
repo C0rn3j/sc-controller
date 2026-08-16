@@ -258,7 +258,7 @@ class ControllerRegistration(Editor):
 			dpads={},
 		)
 
-		def axis_to_json(axisdata):
+		def axis_to_json(axisdata: AxisData):
 			index = self._axis_data.index(axisdata)
 			target_axis, xy = AXIS_ORDER[index]
 			min, max = axisdata.min, axisdata.max
@@ -688,7 +688,7 @@ class ControllerRegistration(Editor):
 			if what in STICK_PAD_AREAS:
 				area_name, axes = STICK_PAD_AREAS[what]
 				mnuStick = self.builder.get_object("mnuStick")
-				mnuStick._what = "STICKPRESS" if what == "STICK" else what
+				mnuStick._what = "LSTICKPRESS" if what == "LSTICK" else what
 				mnuStick._axes = [self._axis_data[index] for index in axes]
 				mnuStick.popup(None, None, None, None, 1, Gtk.get_current_event_time())
 			elif what in TRIGGER_AREAS:

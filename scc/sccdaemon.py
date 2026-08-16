@@ -19,7 +19,7 @@ from scc import drivers
 from scc.actions import Action
 from scc.cemuhook_server import CemuhookServer
 from scc.config import Config
-from scc.constants import CPAD, DAEMON_VERSION, DPAD, LEFT, RIGHT, RSTICK, STICK, HapticPos, SCButtons
+from scc.constants import CPAD, DAEMON_VERSION, DPAD, LEFT, LSTICK, RIGHT, RSTICK, HapticPos, SCButtons
 from scc.controller import HapticData
 from scc.custom import load_custom_module
 from scc.device_monitor import create_device_monitor
@@ -1043,10 +1043,10 @@ class SCCDaemon(Daemon):
 			isinstance(a, ObservingAction) and isinstance(a.original_action, LockedAction)
 		)
 
-		if what == STICK:
-			if is_locked(mapper.profile.buttons[SCButtons.STICKPRESS]):
+		if what == LSTICK:
+			if is_locked(mapper.profile.buttons[SCButtons.LSTICKPRESS]):
 				return False
-			if is_locked(mapper.profile.stick):
+			if is_locked(mapper.profile.lstick):
 				return False
 			return True
 		if what == RSTICK:
@@ -1070,11 +1070,11 @@ class SCCDaemon(Daemon):
 
 		Raises ValueError if what is not known.
 
-		For example, if what == STICK, executes
-			mapper.profile.stick = callback(mapper.profile.stick, *args)
+		For example, if what == LSTICK, executes
+			mapper.profile.lstick = callback(mapper.profile.lstick, *args)
 		"""
-		if what == STICK:
-			mapper.profile.stick = callback(mapper.profile.stick, *args)
+		if what == LSTICK:
+			mapper.profile.lstick = callback(mapper.profile.lstick, *args)
 		elif what == RSTICK:
 			mapper.profile.rstick = callback(mapper.profile.rstick, *args)
 		elif what == SCButtons.LT:
@@ -1103,18 +1103,28 @@ class SCCDaemon(Daemon):
 	def source_to_constant(s: bytes):
 		"""Turns string as 'A', 'LEFT' or 'ABS_X' into one of:
 
-		SCButtons.*, LEFT, RIGHT or STICK constants.
+		SCButtons.*, LSTICK, RSTICK, LEFT, RIGHT, CPAD, DPAD constants.
 
 		Raises ValueError if passed string cannot be converted.
 
 		Used when parsing `Lock: ...` message
 		"""
 		s_dec = s.decode("utf-8").strip(" \t\r\n")
-		if s_dec in (STICK, RSTICK, LEFT, RIGHT, CPAD, DPAD):
+		# Protocol compatibility for clients predating the LSTICK rename.
+		if s_dec == "STICK":
+			log.warning("STICK detected, please migrate to LSTICK")
+			s_dec = LSTICK
+		elif s_dec == "STICKPRESS":
+			log.warning("STICKPRESS detected, please migrate to LSTICKPRESS")
+			s_dec = "LSTICKPRESS"
+		if s_dec in (LSTICK, RSTICK, LEFT, RIGHT, CPAD, DPAD):
 			return s_dec
-		if s_dec == "STICKPRESS":
-			# Special case, as that button is actually named STICK :(
-			return SCButtons.STICKPRESS
+		if s_dec == "LSTICKPRESS":
+			# TODO(Martin): Initial commit - https://github.com/C0rn3j/sc-controller/commit/d720dbae62b22ef496cf7aaa9b7e04345cb69126
+			#               This used to return SCButtons.STICK, then SCButtons.STICKPRESS, and now SCButtons.LSTICKPRESS
+			#               Maybe we can fix this proper without a weird exception like this?
+			log.warning("TODO(Martin): Weird legacy codepath - check it out")
+			return SCButtons.LSTICKPRESS
 		if hasattr(SCButtons, s_dec):
 			return getattr(SCButtons, s_dec)
 		raise ValueError(f"Unknown source: {s_dec}")
@@ -1257,8 +1267,8 @@ class ReportingAction(Action):
 
 	def button_press(self, mapper: Mapper, number: int = 1) -> None:
 		if mapper.get_controller():
-			if self.what == SCButtons.STICKPRESS:
-				self._report(f"Event: {mapper.get_controller().get_id()} STICKPRESS {number}\n")
+			if self.what == SCButtons.LSTICKPRESS:
+				self._report(f"Event: {mapper.get_controller().get_id()} LSTICKPRESS {number}\n")
 			else:
 				self._report(f"Event: {mapper.get_controller().get_id()} {nameof(self.what)} {number}\n")
 

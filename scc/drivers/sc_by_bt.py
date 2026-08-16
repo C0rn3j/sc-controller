@@ -50,8 +50,8 @@ class SCByBtControllerInput(ctypes.Structure):
 		("buttons", ctypes.c_uint32),
 		("ltrig", ctypes.c_uint8),
 		("rtrig", ctypes.c_uint8),
-		("stick_x", ctypes.c_int32),
-		("stick_y", ctypes.c_int32),
+		("lstick_x", ctypes.c_int32),
+		("lstick_y", ctypes.c_int32),
 		("lpad_x", ctypes.c_int32),
 		("lpad_y", ctypes.c_int32),
 		("rpad_x", ctypes.c_int32),
@@ -132,7 +132,7 @@ class Driver:
 
 
 class SCByBt(SCController):
-	flags = 0 | ControllerFlags.SEPARATE_STICK
+	flags = 0 | ControllerFlags.SEPARATE_LSTICK
 
 	def __init__(self, driver: Driver, syspath: str, hidrawdev: HIDRaw, device_file: BinaryIO) -> None:
 		self._serial: bytes

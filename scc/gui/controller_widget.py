@@ -14,7 +14,7 @@ import os
 from gi.repository import Gdk, Gtk, Pango
 
 from scc.actions import Action, MultiAction
-from scc.constants import GYRO, LEFT, RIGHT, STICK, SCButtons
+from scc.constants import GYRO, LEFT, LSTICK, RIGHT, SCButtons
 from scc.gui.ae.gyro_action import is_gyro_enable
 from scc.modifiers import DoubleclickModifier
 from scc.profile import Profile
@@ -24,9 +24,9 @@ log = logging.getLogger("ControllerWidget")
 
 TRIGGERS = ["LT", "RT"]
 PADS = [Profile.LPAD, Profile.RPAD, Profile.CPAD]
-STICKS = [STICK, Profile.RSTICK, Profile.DPAD]
+STICKS = [Profile.LSTICK, Profile.RSTICK, Profile.DPAD]
 GYROS = [GYRO]
-PRESSABLE = [SCButtons.LPAD, SCButtons.RPAD, SCButtons.STICKPRESS, SCButtons.CPADPRESS]
+PRESSABLE = [SCButtons.LPAD, SCButtons.RPAD, SCButtons.LSTICKPRESS, SCButtons.CPADPRESS]
 _NOT_BUTTONS = PADS + STICKS + GYROS + TRIGGERS
 _NOT_BUTTONS += [x + "TOUCH" for x in PADS]
 BUTTONS = [b for b in SCButtons if b.name not in _NOT_BUTTONS]
@@ -111,9 +111,9 @@ class ControllerButton(ControllerWidget):
 class ControllerStick(ControllerWidget):
 	ACTION_CONTEXT = Action.AC_STICK
 
-	def __init__(self, app, id, use_icon, enable_press, widget):
+	def __init__(self, app, id: str, use_icon, enable_press, widget) -> None:
 		self.pressed = Gtk.Label() if enable_press else None
-		self.click_button = SCButtons.STICKPRESS if id == STICK else SCButtons.RSTICKPRESS
+		self.click_button = SCButtons.LSTICKPRESS if id == LSTICK else SCButtons.RSTICKPRESS
 		ControllerWidget.__init__(self, app, id, use_icon, widget)
 
 		grid = Gtk.Grid()
@@ -159,7 +159,7 @@ class ControllerStick(ControllerWidget):
 				Profile.LPAD: LEFT,
 				Profile.RPAD: RIGHT,
 				Profile.CPAD: nameof(SCButtons.CPADPRESS),
-				Profile.STICK: nameof(SCButtons.STICKPRESS),
+				Profile.LSTICK: nameof(SCButtons.LSTICKPRESS),
 				Profile.RSTICK: nameof(SCButtons.RSTICKPRESS),
 				Profile.DPAD: None,
 			}.get(self.name)
@@ -174,8 +174,8 @@ class ControllerStick(ControllerWidget):
 		self.label.set_label(action.describe(self.ACTION_CONTEXT))
 
 	def update(self):
-		if self.id == Profile.STICK:
-			self._set_label(self.app.current.stick)
+		if self.id == Profile.LSTICK:
+			self._set_label(self.app.current.lstick)
 		elif self.id == Profile.RSTICK:
 			self._set_label(self.app.current.rstick)
 		elif self.id == Profile.DPAD:

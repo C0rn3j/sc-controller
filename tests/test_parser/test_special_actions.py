@@ -1,6 +1,6 @@
 import inspect
 
-from scc.constants import STICK, SCButtons
+from scc.constants import LSTICK, SCButtons
 from scc.modifiers import NameModifier
 from scc.special_actions import (
 	Action,
@@ -93,10 +93,10 @@ class TestSpecialActions:
 			# Simple
 			assert _parses_as_itself(cls("menu1"))
 			# With arguments
-			assert _parses_as_itself(cls("menu1", STICK))
-			assert _parses_as_itself(cls("menu1", STICK, SCButtons.X))
-			assert _parses_as_itself(cls("menu1", STICK, SCButtons.X, SCButtons.Y))
-			assert _parses_as_itself(cls("menu1", STICK, SCButtons.X, SCButtons.Y, True))
+			assert _parses_as_itself(cls("menu1", LSTICK))
+			assert _parses_as_itself(cls("menu1", LSTICK, SCButtons.X))
+			assert _parses_as_itself(cls("menu1", LSTICK, SCButtons.X, SCButtons.Y))
+			assert _parses_as_itself(cls("menu1", LSTICK, SCButtons.X, SCButtons.Y, True))
 
 	def test_dialog(self):
 		"""Tests if all Menu*Actions can be converted to string and parsed

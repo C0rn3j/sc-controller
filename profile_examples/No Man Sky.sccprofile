@@ -44,7 +44,7 @@
             "action": "button(Keys.KEY_ESC)",
             "name": "Menu"
         },
-        "STICKPRESS": {
+        "LSTICKPRESS": {
             "action": "button(Keys.KEY_C)",
             "name": "Scan"
         },
@@ -69,7 +69,7 @@
         "action": "feedback(RIGHT, 256, sens(0.5, 0.5, ball(mouse(None, 1.0))))",
         "name": "Mouse"
     },
-    "stick": {
+    "lstick": {
         "action": "dpad(button(Keys.KEY_W), button(Keys.KEY_S), button(Keys.KEY_A), button(Keys.KEY_D))"
     },
     "trigger_left": {
@@ -80,5 +80,5 @@
         "action": "trigger(50, 50, button(Keys.BTN_LEFT))",
         "name": "(LClick) Fire"
     },
-    "version": 1.4
+    "version": 1.6
 }

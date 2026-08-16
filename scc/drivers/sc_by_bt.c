@@ -9,7 +9,7 @@
 enum BtInPacketType {
 	BUTTON   = 0x0010,
 	TRIGGERS = 0x0020,
-	STICK    = 0x0080,
+	LSTICK   = 0x0080,
 	LPAD     = 0x0100,
 	RPAD     = 0x0200,
 	GYRO     = 0x1800,
@@ -26,7 +26,7 @@ enum SCButtons {
 	SCB_LPADTOUCH	= 0b01000000000000000000000000000,
 	SCB_RPAD		= 0b00100000000000000000000000000,
 	SCB_LPAD		= 0b00010000000000000000000000000, // # Same for stick but without LPadTouch
-	SCB_STICKPRESS	= 0b00000000000000000000000000001, // # generated internally, not sent by controller
+	SCB_LSTICKPRESS	= 0b00000000000000000000000000001, // # generated internally, not sent by controller
 	SCB_RGRIP	 	= 0b00001000000000000000000000000,
 	SCB_LGRIP	 	= 0b00000100000000000000000000000,
 	SCB_START	 	= 0b00000010000000000000000000000,
@@ -49,8 +49,8 @@ struct SCByBtControllerInput {
 	uint32_t buttons;
 	uint8_t ltrig;
 	uint8_t rtrig;
-	int32_t stick_x;
-	int32_t stick_y;
+	int32_t lstick_x;
+	int32_t lstick_y;
 	int32_t lpad_x;
 	int32_t lpad_y;
 	int32_t rpad_x;
@@ -103,7 +103,7 @@ static uint32_t BT_BUTTONS[] = {
 	SCB_LPADTOUCH,			// 19
 	SCB_RPADTOUCH,			// 20
 	0,						// 21 - nothing
-	SCB_STICKPRESS,			// 22
+	SCB_LSTICKPRESS,			// 22
 };
 
 static inline void debug_packet(char* buffer, size_t size) {
@@ -166,7 +166,7 @@ int read_input(SCByBtCPtr ptr) {
 
 	struct SCByBtControllerInput* state = &(ptr->state);
 	struct SCByBtControllerInput* old_state = &(ptr->old_state);
-	
+
 	int rv = 0;
 	int bit;
 	uint16_t type = *((uint16_t*)(ptr->buffer + 2));
@@ -189,7 +189,7 @@ int read_input(SCByBtCPtr ptr) {
 				sc_buttons |= BT_BUTTONS[bit];
 			bt_buttons >>= 1;
 		}
-		
+
 		if (rv == 0) { *old_state = *state; state->type = type; rv = 1; }
 		state->buttons = sc_buttons;
 		data += 3;
@@ -199,11 +199,11 @@ int read_input(SCByBtCPtr ptr) {
 		state->ltrig = *(((uint8_t*)data) + 0);
 		state->rtrig = *(((uint8_t*)data) + 1);
 		data += 2;
-	}	
-	if ((type & STICK) == STICK) {
+	}
+	if ((type & LSTICK) == LSTICK) {
 		if (rv == 0) { *old_state = *state; state->type = type; rv = 1; }
-		state->stick_x = *(((int16_t*)data) + 0);
-		state->stick_y = *(((int16_t*)data) + 1);
+		state->lstick_x = *(((int16_t*)data) + 0);
+		state->lstick_y = *(((int16_t*)data) + 1);
 		data += 4;
 	}
 	if ((type & LPAD) == LPAD) {
@@ -246,7 +246,7 @@ int read_input(SCByBtCPtr ptr) {
 	{
 		memset(ptr->buffer, 0, 256);
 	}
-	
+
 	return rv;
 }
 

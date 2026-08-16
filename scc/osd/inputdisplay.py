@@ -11,7 +11,7 @@ import sys
 
 from gi.repository import Gtk
 
-from scc.constants import LEFT, RIGHT, STICK, STICK_PAD_MAX, SCButtons
+from scc.constants import LEFT, LSTICK, RIGHT, STICK_PAD_MAX, SCButtons
 from scc.gui.daemon_manager import DaemonManager
 from scc.gui.svg_widget import SVGWidget
 from scc.osd import OSDWindow
@@ -38,7 +38,7 @@ class InputDisplay(OSDWindow):
 		self.background = SVGWidget(os.path.join(self.imagepath, self.IMAGE))
 		self.lpadTest = Gtk.Image.new_from_file(os.path.join(self.imagepath, "inputdisplay-cursor.svg"))
 		self.rpadTest = Gtk.Image.new_from_file(os.path.join(self.imagepath, "inputdisplay-cursor.svg"))
-		self.stickTest = Gtk.Image.new_from_file(os.path.join(self.imagepath, "inputdisplay-cursor.svg"))
+		self.lstickTest = Gtk.Image.new_from_file(os.path.join(self.imagepath, "inputdisplay-cursor.svg"))
 
 		self.main_area.set_property("margin-left", 10)
 		self.main_area.set_property("margin-right", 10)
@@ -48,14 +48,14 @@ class InputDisplay(OSDWindow):
 		self.main_area.put(self.background, 0, 0)
 		self.main_area.put(self.lpadTest, 40, 40)
 		self.main_area.put(self.rpadTest, 290, 90)
-		self.main_area.put(self.stickTest, 150, 40)
+		self.main_area.put(self.lstickTest, 150, 40)
 
 		self.add(self.main_area)
 
 		OSDWindow.show(self)
 		self.lpadTest.hide()
 		self.rpadTest.hide()
-		self.stickTest.hide()
+		self.lstickTest.hide()
 
 	def run(self):
 		self.daemon = DaemonManager()
@@ -100,8 +100,8 @@ class InputDisplay(OSDWindow):
 			"RT",
 			"LEFT",
 			"RIGHT",
-			"STICK",
-			"STICKPRESS",
+			"LSTICK",
+			"LSTICKPRESS",
 		)
 		c.connect("event", self.on_daemon_event_observer)
 		c.connect("lost", self.on_controller_lost)
@@ -116,11 +116,11 @@ class InputDisplay(OSDWindow):
 		self.quit(3)
 
 	def on_daemon_event_observer(self, daemon, what, data):
-		if what in (LEFT, RIGHT, STICK):
+		if what in (LEFT, RIGHT, LSTICK):
 			widget, area = {
 				LEFT: (self.lpadTest, "LPADTEST"),
 				RIGHT: (self.rpadTest, "RPADTEST"),
-				STICK: (self.stickTest, "STICKTEST"),
+				LSTICK: (self.lstickTest, "LSTICKTEST"),
 			}[what]
 			# Check if stick or pad is released
 			if data[0] == data[1] == 0:
@@ -138,8 +138,8 @@ class InputDisplay(OSDWindow):
 			y -= data[1] * aw / STICK_PAD_MAX * 0.5
 			# Move circle
 			self.main_area.move(widget, x, y)
-		elif what in ("LT", "RT", "STICKPRESS"):
-			what = {"LT": "LEFT", "RT": "RIGHT", "STICKPRESS": "STICK"}[what]
+		elif what in ("LT", "RT", "LSTICKPRESS"):
+			what = {"LT": "LEFT", "RT": "RIGHT", "LSTICKPRESS": "LSTICK"}[what]
 			if data[0]:
 				self.hilights[self.OBSERVE_COLOR].add(what)
 			else:

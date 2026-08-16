@@ -10,7 +10,7 @@ from typing import Self
 from gi.repository import Gtk
 
 from scc.actions import NoAction
-from scc.constants import DEFAULT, SAME, STICK, SCButtons
+from scc.constants import DEFAULT, LSTICK, SAME, SCButtons
 from scc.gui.menu_editor import MenuEditor
 from scc.gui.parser import GuiActionParser
 from scc.gui.userdata_manager import UserDataManager
@@ -449,11 +449,11 @@ class MenuActionCofC(UserDataManager):
 		return False
 
 	def get_control_with(self):
-		"""Returns value of "Control With" combo or STICK if there is none"""
+		"""Returns value of "Control With" combo or LSTICK if there is none"""
 		cbControlWith = self.builder.get_object("cbControlWith")
 		if cbControlWith:
 			return cbControlWith.get_model().get_value(cbControlWith.get_active_iter(), 1)
-		return STICK
+		return LSTICK
 
 	def on_spMenuSize_format_value(self, spinner):
 		val = int(spinner.get_adjustment().get_value())

@@ -20,8 +20,8 @@ class FakeControllerInput(NamedTuple):
 	buttons: int
 	ltrig: int
 	rtrig: int
-	stick_x: int
-	stick_y: int
+	lstick_x: int
+	lstick_y: int
 	rstick_x: int
 	rstick_y: int
 	lpad_x: int

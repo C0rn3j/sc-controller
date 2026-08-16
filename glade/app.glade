@@ -841,7 +841,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton" id="btSTICK">
+                      <object class="GtkButton" id="btLSTICK">
                         <property name="width-request">220</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
