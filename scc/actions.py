@@ -438,17 +438,19 @@ class RangeOP:
 			self.axis_name = "lpad_y"
 			self.min, self.max = float(STICK_PAD_MIN), float(STICK_PAD_MAX)
 		elif what == LSTICK:
-			# Most special case of all special cases
 			self.axis_name = LSTICK
 			op = "ABS" + op.replace("=", "")
 			self.children = RangeOP(SCButtons.X, op, value), RangeOP(SCButtons.Y, op, value)
+			self.children[0].axis_name = "lstick_x"
+			self.children[1].axis_name = "lstick_y"
 			self.min, self.max = float(STICK_PAD_MIN), float(STICK_PAD_MAX)
 			self.op_method = self.cmp_or
 		elif what == RSTICK:
-			# Most special case of all special cases
 			self.axis_name = RSTICK
 			op = "ABS" + op.replace("=", "")
 			self.children = RangeOP(SCButtons.X, op, value), RangeOP(SCButtons.Y, op, value)
+			self.children[0].axis_name = "rstick_x"
+			self.children[1].axis_name = "rstick_y"
 			self.min, self.max = float(STICK_PAD_MIN), float(STICK_PAD_MAX)
 			self.op_method = self.cmp_or
 		else:
@@ -469,7 +471,10 @@ class RangeOP:
 	def _state(self, mapper: Mapper):
 		if mapper.state is None:
 			return None
-		return float(getattr(mapper.state, self.axis_name)) / self.max
+		try:
+			return float(getattr(mapper.state, self.axis_name)) / self.max
+		except AttributeError:
+			return None
 
 	def cmp_gt(self, mapper: Mapper):
 		state = self._state(mapper)
