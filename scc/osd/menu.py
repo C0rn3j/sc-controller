@@ -716,7 +716,8 @@ class Menu(OSDWindow):
 				# if point_in_gtkrect(i.widget.get_allocation(), x, y):
 				# self.select(self.items.index(i))
 			else:
-				self._scon.set_stick(x, y)
+				# source: the menu accepts LSTICK, LEFT and DPAD together
+				self._scon.set_stick(x, y, source=what)
 		elif what == self._confirm_with:
 			if data[0] == 0:  # Button released
 				if self._selected and self._selected.callback:
