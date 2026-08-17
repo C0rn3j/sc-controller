@@ -179,17 +179,17 @@ class IconChooser(Editor, UserDataManager):
 
 
 class CellRendererMenuIcon(Gtk.CellRenderer):
-	icon = GObject.property(type=GdkPixbuf.Pixbuf)
-	has_colors = GObject.property(type=bool, default=False)
+	icon = GObject.Property(type=GdkPixbuf.Pixbuf)
+	has_colors = GObject.Property(type=bool, default=False)
 
-	def __init__(self, size):
+	def __init__(self, size: int) -> None:
 		Gtk.CellRenderer.__init__(self)
-		self.size = size
+		self.size: int = size
 
-	def do_get_size(self, *a):
+	def do_get_size(self, *a) -> tuple[int, int, int, int]:
 		return 0, 0, self.size, self.size
 
-	def do_render(self, cr, treeview, background_area, cell_area, flags):
+	def do_render(self, cr, treeview, background_area, cell_area, flags) -> None:
 		context = Gtk.Widget.get_style_context(treeview)
 		Gtk.render_background(
 			context, cr, cell_area.x, cell_area.y, cell_area.x + cell_area.width, cell_area.y + cell_area.height,
