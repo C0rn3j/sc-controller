@@ -48,6 +48,13 @@ TRANSFER_TYPE_INTERRUPT = 3
 LIBUSB_DT_REPORT = 0x22
 AXIS_COUNT = 24  # Must match number of axis fields in HIDControllerInput and values in AxisType
 BUTTON_COUNT = 32  # Must match (or be less than) number of bits in HIDControllerInput.buttons
+# "This input bit maps to no button". It has to be OUTSIDE 0..BUTTON_COUNT-1:
+# the decoder turns a mapping into `1 << button_map[i]`, so any in-range value
+# names a real button. This used to be BUTTON_COUNT - 1, which is bit 31 --
+# RSTICKPRESS -- so on a JSON-configured controller every unmapped input bit
+# pressed the right stick. 32 is only safe to use now that the C guard rejects
+# it (it would otherwise shift a uint32_t by 32, which is undefined).
+BUTTON_UNMAPPED = BUTTON_COUNT
 ALLOWED_SIZES = [1, 2, 4, 8, 16, 32]
 SYS_DEVICES = "/sys/devices"
 
@@ -67,7 +74,8 @@ def button_to_bit(sc) -> int:
 		bit += 1
 	if sc & 1 == 1:
 		return bit
-	return BUTTON_COUNT - 1
+	return BUTTON_UNMAPPED
+
 
 class HIDDrvError(Exception):
 	pass
@@ -321,8 +329,7 @@ class HIDController(SCUSBDevice, Controller):
 		Generates default if config is not available.
 		"""
 		if config:
-			# Last possible value is default "maps-to-nothing" mapping
-			buttons = [BUTTON_COUNT - 1] * BUTTON_COUNT
+			buttons = [BUTTON_UNMAPPED] * BUTTON_COUNT
 			for keycode, value in config.get("buttons", {}).items():
 				keycode = int(keycode) - FIRST_BUTTON
 				# TODO(Martin): Compat crutch for saved devices - autoconvert it to current standard instead
