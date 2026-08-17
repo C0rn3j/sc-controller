@@ -407,6 +407,7 @@ class BallModifier(Modifier, WholeHapticAction):
 		self, friction=DEFAULT_FRICTION, mass=80.0, mean_len=DEFAULT_MEAN_LEN, r=0.02, ampli=65536, degree=40.0,
 	):
 		self.speed = (1.0, 1.0)
+		self._speed_handed_over = False
 		self.friction = friction
 		self._xvel = 0.0
 		self._yvel = 0.0
@@ -434,6 +435,33 @@ class BallModifier(Modifier, WholeHapticAction):
 
 	def get_speed(self):
 		return self.speed
+
+	def _step_aside(self, mapper):
+		"""Hand this modifier's sensitivity to the child before bypassing.
+
+		SensitivityModifier walks down to the first action with set_speed() and
+		stops there, so on a trackball binding the speed lands on the ball --
+		which then applies it itself, in _add and _roll. Both are skipped when
+		the ball steps aside for a stick, so without this the sensitivity
+		sliders do nothing at all: the child is still at 1.0.
+
+		Multiplied into whatever the child already has, so it is right whichever
+		side of the ball the sens() ended up on, and guarded so it happens once,
+		because set_speed is absolute rather than cumulative.
+		"""
+		if self._speed_handed_over:
+			return
+		self._speed_handed_over = True
+		if self.speed == (1.0, 1.0):
+			return
+		a = self.action
+		while a is not None:
+			if hasattr(a, "set_speed"):
+				own = a.get_speed() if hasattr(a, "get_speed") else (1.0, 1.0)
+				a.set_speed(own[0] * self.speed[0], own[1] * self.speed[1],
+					own[2] if len(own) > 2 else 1.0)
+				return
+			a = getattr(a, "action", None)
 
 	def get_compatible_modifiers(self):
 		return (
@@ -542,6 +570,7 @@ class BallModifier(Modifier, WholeHapticAction):
 
 	def change(self, mapper, dx, dy, what):
 		if what in (None, LSTICK, RSTICK):
+			self._step_aside(mapper)
 			return self.action.change(mapper, dx, dy, what)
 		if mapper.is_touched(what):
 			if mapper.was_touched(what):
@@ -561,6 +590,7 @@ class BallModifier(Modifier, WholeHapticAction):
 
 	def whole(self, mapper, x, y, what):
 		if what == RSTICK:
+			self._step_aside(mapper)
 			return self.action.whole(mapper, x, y, what)
 		if mapper.is_touched(what):
 			if mapper.is_touched(what) and not mapper.was_touched(what):
@@ -599,6 +629,13 @@ class BallModifier(Modifier, WholeHapticAction):
 		return WholeHapticAction.get_haptic(self)
 
 	def compress(self) -> CircularModifier | Self:
+		# Modifier.compress does this for every other modifier; overriding it
+		# here dropped it, so a sens() written INSIDE a ball survived as a live
+		# SensitivityModifier -- which has no whole(), so the binding did
+		# nothing at all. The GUI always writes sens() outside, so this only
+		# ever bit hand-written profiles.
+		if self.action:
+			self.action = self.action.compress()
 		# ball(circular(...) has to be turned around
 		if isinstance(self.action, CircularModifier):
 			cm = self.action
