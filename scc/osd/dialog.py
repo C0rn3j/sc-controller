@@ -11,7 +11,7 @@ import sys
 from gi.repository import GdkX11, Gtk
 
 from scc.config import Config
-from scc.constants import DEFAULT
+from scc.constants import DEFAULT, DPAD, LSTICK, ControllerFlags
 from scc.gui.daemon_manager import DaemonManager
 from scc.lib import xwrappers as X
 from scc.menu_data import MenuData
@@ -38,6 +38,7 @@ class Dialog(OSDWindow):
 		self.config = None
 		self.feedback = None
 		self.controller = None
+		self._control_with_dpad: bool = False
 		self.xdisplay = X.Display(hash(GdkX11.x11_get_default_xdisplay()))  # Magic
 
 		self.parent = self.create_parent()
@@ -205,11 +206,16 @@ class Dialog(OSDWindow):
 
 		ccfg = self.config.get_controller_config(self.controller.get_id())
 		self._control_with = ccfg["menu_control"]
+		self._control_with_dpad = self._control_with == LSTICK and bool(
+			self.controller.get_flags() & ControllerFlags.HAS_DPAD,
+		)
 		self._confirm_with = ccfg["menu_confirm"] if self.args.confirm_with == DEFAULT else self.args.confirm_with
 		self._cancel_with = ccfg["menu_cancel"] if self.args.cancel_with == DEFAULT else self.args.cancel_with
 
 		self._eh_ids += [(self.controller, self.controller.connect("event", self.on_event))]
 		locks = [self._control_with, self._confirm_with, self._cancel_with]
+		if self._control_with_dpad:
+			locks.append(DPAD)
 		self.controller.lock(success, self.on_failed_to_lock, *locks)
 
 	def quit(self, code=-2):
@@ -249,7 +255,7 @@ class Dialog(OSDWindow):
 			self.next_item(x)
 
 	def on_event(self, daemon, what, data):
-		if what == self._control_with:
+		if what == self._control_with or (what == DPAD and self._control_with_dpad):
 			self._scon.set_stick(*data)
 		elif what == self._cancel_with:
 			if data[0] == 0:  # Button released
