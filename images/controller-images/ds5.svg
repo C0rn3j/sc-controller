@@ -72,7 +72,7 @@
      inkscape:cx="203.2932"
      inkscape:cy="177.02923"
      inkscape:document-units="px"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="g1981"
      showgrid="false"
      units="px"
      inkscape:window-width="2560"
@@ -160,9 +160,9 @@
     </g>
     <path
        inkscape:connector-curvature="0"
-       style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:none;fill-opacity:0.603352;fill-rule:evenodd;stroke:#000000;stroke-width:1.68002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.315175;marker:none;enable-background:accumulate"
+       style="color:#000000;display:none;overflow:visible;visibility:visible;opacity:1;fill:none;fill-opacity:0.603352;fill-rule:evenodd;stroke:#000000;stroke-width:1.68002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.315175;marker:none;enable-background:accumulate"
        d="M 32.847199,115.03307 A 48.366543,47.761967 0 0 1 81.213708,67.271109 48.366543,47.761967 0 0 1 129.58026,115.03307 48.366543,47.761967 0 0 1 81.213708,162.79504 48.366543,47.761967 0 0 1 32.847199,115.03307 Z"
-       id="DPAD"
+	       id="DPAD_CIRCLE"
        inkscape:label="#DPAD_CIRCLE" />
     <path
        style="display:inline;fill:#000000;fill-opacity:0.313725;fill-rule:evenodd;stroke:#000000;stroke-width:1.16148;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -267,7 +267,7 @@
        inkscape:label="#XYAB_CIRCLE"
        id="circle8"
        d="m 315.45381,114.78053 a 48.366543,47.761967 0 0 1 48.36651,-47.761959 48.366543,47.761967 0 0 1 48.36655,47.761959 48.366543,47.761967 0 0 1 -48.36655,47.76197 48.366543,47.761967 0 0 1 -48.36651,-47.76197 z"
-       style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:none;fill-opacity:0.603352;fill-rule:evenodd;stroke:#000000;stroke-width:1.68002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.315175;marker:none;enable-background:accumulate"
+       style="color:#000000;display:none;overflow:visible;visibility:visible;opacity:1;fill:none;fill-opacity:0.603352;fill-rule:evenodd;stroke:#000000;stroke-width:1.68002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.315175;marker:none;enable-background:accumulate"
        inkscape:connector-curvature="0" />
     <path
        style="display:inline;fill:#000000;fill-opacity:0.137255;fill-rule:evenodd;stroke:#000000;stroke-width:2.9;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -279,14 +279,16 @@
        inkscape:original-d="m 328.25198,225.75414 41.85596,87.29315 c 12.48912,26.04683 24.57006,18.88647 52.6686,-10.08309 6.7805,-6.99069 18.97014,-39.95403 13.56665,-106.35187 -4.8767,-52.07465 -14.25069,-106.330141 -49.89443,-148.755187 -15.53636,-5.703753 -73.27163,-9.434702 -73.46949,9.234591 -0.0156,1.470257 -5.84781,2.01652 -6.4093,0.657614 -2.91753,-7.060886 -10.13299,-10.884196 -19.73853,-12.146889 -24.0153,-3.661794 -50.05799,-4.156318 -66.77238,-4.132583 0,0 -36.51487,174.627304 -0.31377,172.809734 0,0 100.22532,1.48608 108.50669,11.47453 z"
        transform="translate(-284.91562,-86.577899)" />
     <g
-       id="g1981"
+       id="DPAD"
        transform="matrix(3.7795276,0,0,3.7795276,-18.958656,1.1732727)"
        inkscape:transform-center-x="12.879445"
        inkscape:transform-center-y="48.73986"
-       style="display:inline">
+       style="display:inline"
+       inkscape:label="DPAD">
       <g
          id="g1949"
-         transform="translate(0.05311253,0.01705402)">
+         transform="translate(0.05311253,0.01705402)"
+         inkscape:label="DOWN">
         <path
            id="path1925"
            style="opacity:1;fill:#000000;fill-opacity:0.32;stroke:none;stroke-width:0.4572;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.32"
@@ -302,7 +304,8 @@
       </g>
       <g
          id="g1955"
-         transform="matrix(1,0,0,-1,0.05311253,61.101348)">
+         transform="matrix(1,0,0,-1,0.05311253,61.101348)"
+         inkscape:label="UP">
         <path
            id="path1951"
            style="opacity:1;fill:#000000;fill-opacity:0.32;stroke:none;stroke-width:0.4572;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.32"
@@ -318,7 +321,8 @@
       </g>
       <g
          id="g1961"
-         transform="rotate(90,26.496258,30.57723)">
+         transform="rotate(90,26.496258,30.57723)"
+         inkscape:label="LEFT">
         <path
            id="path1957"
            style="opacity:1;fill:#000000;fill-opacity:0.32;stroke:none;stroke-width:0.4572;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.32"
@@ -334,7 +338,8 @@
       </g>
       <g
          id="g1967"
-         transform="matrix(0,1,1,0,-4.0108055,4.080972)">
+         transform="matrix(0,1,1,0,-4.0108055,4.080972)"
+         inkscape:label="RIGHT">
         <path
            id="path1963"
            style="opacity:1;fill:#000000;fill-opacity:0.32;stroke:none;stroke-width:0.4572;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.32"
@@ -451,7 +456,7 @@
        transform="translate(-6.6000247,8.3581616)"
        style="display:inline;fill:#00000a;fill-opacity:0.0431373"
        id="g4321"
-       inkscape:label="The DPAD">
+       inkscape:label="DPAD">
       <rect
          ry="0"
          y="75.738838"
