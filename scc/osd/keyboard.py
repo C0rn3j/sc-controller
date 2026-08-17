@@ -384,12 +384,13 @@ class Keyboard(OSDWindow, TimerManager):
 		if self.background is not None:
 			self.background.queue_draw()
 
-	def on_keymap_state_changed(self, x11keymap):
+	def on_keymap_state_changed(self, x11keymap) -> None:
 		if not self.timer_active("labels"):
 			self.timer("labels", 0.1, self.update_labels)
 
-	def set_help(self):
+	def set_help(self) -> None:
 		"""Updates help shown on keyboard image.
+
 		Keyboard bindings don't change on the fly, so this is done only
 		right after start or when daemon is reconfigured.
 		"""
@@ -399,7 +400,7 @@ class Keyboard(OSDWindow, TimerManager):
 		gui_config = self._controller.load_gui_config(os.path.join(get_share_path(), "images"))
 		l_lines, r_lines, used = [], [], set()
 
-		def add_action(side, button, a):
+		def add_action(side, button: int, a: Action) -> None:
 			if not a:
 				return
 			if isinstance(a, scc.osd.osk_actions.OSKCursorAction):
@@ -422,7 +423,7 @@ class Keyboard(OSDWindow, TimerManager):
 			side.append((icon, desc))
 			used.add(desc)
 
-		def add_button(side, b):
+		def add_button(side, b: int) -> None:
 			add_action(side, b, self.profile.buttons[b])
 
 		if self._controller.get_flags() & ControllerFlags.NO_GRIPS == 0:

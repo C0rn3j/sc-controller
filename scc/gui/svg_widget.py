@@ -3,7 +3,7 @@
 Changes SVG on the fly and uptates that magnificent image on background with it.
 Also supports clicking on areas defined in SVG image.
 """
-
+from __future__ import annotations
 
 import logging
 import re
@@ -11,10 +11,13 @@ from collections import OrderedDict
 from copy import deepcopy
 from math import cos, sin
 from math import pi as PI
-from typing import Self
+from typing import TYPE_CHECKING
 from xml.etree import ElementTree as ET
 
 import gi
+
+if TYPE_CHECKING:
+	from typing import Self
 
 gi.require_version("Rsvg", "2.0")
 from gi.repository import Gdk, GdkPixbuf, GObject, Gtk, Rsvg
@@ -40,19 +43,19 @@ class SVGWidget(Gtk.EventBox):
 		"click": (GObject.SignalFlags.RUN_FIRST, None, (object,)),
 	}
 
-	def __init__(self, filename, init_hilighted=True) -> None:
+	def __init__(self, filename: str, init_hilighted: bool = True) -> None:
 		Gtk.EventBox.__init__(self)
 		self.cache = OrderedDict()
-		self.areas = []
+		self.areas: list[Area] = []
 		self.current_svg: str | bytes
 
 		self.connect("motion-notify-event", self.on_mouse_moved)
 		self.connect("button-press-event", self.on_mouse_click)
 		self.set_events(Gdk.EventMask.POINTER_MOTION_MASK | Gdk.EventMask.BUTTON_PRESS_MASK)
 
-		self.size_override = None
-		self.image_width = 1
-		self.image_height = 1
+		self.size_override: tuple[int, int] | None = None
+		self.image_width: int = 1
+		self.image_height: int = 1
 		self.set_image(filename)
 		self.image = Gtk.Image()
 		if init_hilighted:
@@ -60,38 +63,37 @@ class SVGWidget(Gtk.EventBox):
 		self.add(self.image)
 		self.show_all()
 
-	def set_image(self, filename):
+	def set_image(self, filename: str) -> None:
 		with open(filename) as file:
 			self.current_svg = file.read()
 		self.cache = OrderedDict()
 		self.areas = []
 		self.parse_image()
 
-	def parse_image(self):
-		"""Goes trought SVG image, searches for all rects named
-		'AREA_SOMETHING' and generates area list from it.
-		This area list is later used to determine over which button is mouse
-		hovering.
+	def parse_image(self) -> None:
+		"""Goes trough SVG image, searches for all rects named 'AREA_SOMETHING' and generates area list from it.
+
+		This area list is later used to determine over which button is mouse hovering.
 		"""
 		tree = ET.fromstring(self.current_svg.encode("utf-8"))
 		SVGWidget.find_areas(tree, None, self.areas)
 		self.image_width = float(tree.attrib["width"])
 		self.image_height = float(tree.attrib["height"])
 
-	def resize(self, width, height):
+	def resize(self, width: int, height: int) -> None:
 		"""Overrides image size.
-		Doesn't keep aspect ratio and causes cache to be flushed,
-		so this may be slow and nasty.
+
+		Doesn't keep aspect ratio and causes cache to be flushed, so this may be slow and nasty.
 		"""
 		self.size_override = width, height
 		self.cache = OrderedDict()
 
-	def on_mouse_click(self, trash, event):
+	def on_mouse_click(self, trash, event) -> None:
 		area = self.on_mouse_moved(trash, event)
 		if area is not None:
 			self.emit("click", area)
 
-	def on_mouse_moved(self, trash, event):
+	def on_mouse_moved(self, trash, event) -> str | None:
 		"""Not actual signal handler, just called from App."""
 		x_offset = (self.get_allocation().width - self.image_width) / 2
 		x = event.x - x_offset
@@ -109,14 +111,15 @@ class SVGWidget(Gtk.EventBox):
 		self.emit("leave")
 		return None
 
-	def get_area(self, id):
+	def get_area(self, id: str) -> Area | None:
 		for a in self.areas:
 			if a.name == id:
 				return a
 		return None
 
-	def get_all_by_prefix(self, prefix):
+	def get_all_by_prefix(self, prefix: str):
 		"""Searchs for areas using specific prefix.
+
 		For prefix "AREA_", returns self.areas arrray. For anything else,
 		re-parses current image and searchs recursivelly for anything that matches, so it
 		may be good idea to not call this too often.
@@ -130,6 +133,7 @@ class SVGWidget(Gtk.EventBox):
 
 	def get_area_position(self, area_id):
 		"""Computes and returns area position on image as (x, y, width, height).
+
 		Raises ValueError if such area is not found.
 		"""
 		# TODO: Maybe cache this?
@@ -158,9 +162,8 @@ class SVGWidget(Gtk.EventBox):
 		return (0.0, 0.0, 0.0, 0.0)
 
 	@staticmethod
-	def find_areas(xml, parent_transform, areas, get_colors=False, prefix="AREA_"):
-		"""Recursively searches through XML for anything with ID of 'AREA_SOMETHING'
-		"""
+	def find_areas(xml: ET.Element[str], parent_transform, areas: list[Area], get_colors: bool = False, prefix: str = "AREA_") -> None:
+		"""Recursively searches through XML for anything with ID of 'AREA_SOMETHING'"""
 		for child in xml:
 			child_transform = SVGEditor.matrixmul(
 				parent_transform or SVGEditor.IDENTITY, SVGEditor.parse_transform(child),
@@ -197,9 +200,12 @@ class SVGWidget(Gtk.EventBox):
 		return x, y, width, height
 
 	@staticmethod
-	def color_to_float(colorstr):
-		"""Parses color expressed as RRGGBB (as in config) and returns
-		three floats of r, g, b, a (range 0 to 1)
+	def color_to_float(colorstr: str) -> tuple[float, float, float, float]:
+		"""Parses color expressed as RRGGBB (as in config)
+
+		Each RGBA color part is a float of range 0 to 1
+
+		NOTE(Martin): Why are we defining sRGB colors as 0-1 float instead of 0-255 int...
 		"""
 		b, color = Gdk.Color.parse("#" + colorstr.strip("#"))
 		if b:
@@ -272,7 +278,8 @@ class Area:
 
 	"""Basicaly just a rectangle with a name"""
 
-	def __init__(self, element, transform) -> None:
+	def __init__(self, element: ET.Element, transform) -> None:
+		self.color: tuple[float, float, float, float] | None
 		self.name = element.attrib["id"].split("_")[1]
 		# Check if this is an area name that images/buttons.svg uses
 		#
@@ -293,11 +300,9 @@ class Area:
 
 
 class SVGEditor:
-	"""Allows some basic edit operations by parsing SVG into dom tree and doing
-	unholly mess on that.
+	"""Allows some basic edit operations by parsing SVG into dom tree and doing unholy mess on that.
 
-	Constructed by SVGWidget.edit(), updates original SVGWidget when commit()
-	is called.
+	Constructed by SVGWidget.edit(), updates original SVGWidget when commit() is called.
 	"""
 
 	RE_PARSE_TRANSFORM = re.compile(r"([a-z]+)\(([-0-9\.,]+)\)(.*)")
@@ -332,9 +337,10 @@ class SVGEditor:
 		"""Returns modivied SVG as string"""
 		return ET.tostring(self._tree)
 
-	def clone_element(self, id):
-		"""Grabs element with specified ID, duplicates it and returns created
-		element. Returned element may get invalidated when commit() is called.
+	def clone_element(self, id) -> ET.Element | None:
+		"""Grabs element with specified ID, duplicates it and returns created element.
+
+		Returned element may get invalidated when commit() is called.
 
 		Returns None if element cannot be found
 		"""
@@ -490,22 +496,14 @@ class SVGEditor:
 			SVGEditor._recolor(child, s_from, s_to)
 
 	def recolor_background(self, change_from, change_to) -> Self:
-		"""Recursively travels entire DOM tree and changes every matching
-		background color into specified color.
-
-		Returns self.
-		"""
+		"""Recursively travels entire DOM tree and changes every matching background color into specified color."""
 		s_from = "fill:#%s" % (change_from,)
 		s_to = "fill:#%s" % (change_to,)
 		SVGEditor._recolor(self._tree, s_from, s_to)
 		return self
 
 	def recolor_strokes(self, change_from, change_to) -> Self:
-		"""Recursively travels entire DOM tree and changes every matching
-		line (stroke) color into specified color.
-
-		Returns self.
-		"""
+		"""Recursively travels entire DOM tree and changes every matching line (stroke) color into specified color."""
 		s_from = "stroke:#%s" % (change_from,)
 		s_to = "stroke:#%s" % (change_to,)
 		SVGEditor._recolor(self._tree, s_from, s_to)
@@ -520,6 +518,7 @@ class SVGEditor:
 	@staticmethod
 	def scale(xml, sx, sy=None) -> None:
 		"""Changes element scale.
+
 		Creates or updates 'transform' attribute.
 		"""
 		sy = sy or sx
@@ -534,6 +533,7 @@ class SVGEditor:
 	@staticmethod
 	def rotate(xml, a, x, y) -> None:
 		"""Changes element rotation.
+
 		Creates or updates 'transform' attribute.
 		"""
 		a = a * PI / 180.0
@@ -550,6 +550,7 @@ class SVGEditor:
 	@staticmethod
 	def translate(xml, x, y) -> None:
 		"""Changes element translation.
+
 		Creates or updates 'transform' attribute.
 		"""
 		SVGEditor.set_transform(
@@ -562,19 +563,11 @@ class SVGEditor:
 
 	@staticmethod
 	def set_transform(xml, matrix) -> None:
-		"""Sets element transformation matrix
-		"""
-		xml.attrib["transform"] = "matrix(%s,%s,%s,%s,%s,%s)" % (
-			matrix[0][0],
-			matrix[1][0],
-			matrix[0][1],
-			matrix[1][1],
-			matrix[0][2],
-			matrix[1][2],
-		)
+		"""Sets element transformation matrix"""
+		xml.attrib["transform"] = f"matrix({matrix[0][0]},{matrix[1][0]},{matrix[0][1]},{matrix[1][1]},{matrix[0][2]},{matrix[1][2]})"
 
 	@staticmethod
-	def get_translation(elm_or_matrix, absolute=False):
+	def get_translation(elm_or_matrix: ET.Element | str, absolute: bool = False):
 		if isinstance(elm_or_matrix, ET.Element):
 			elm = elm_or_matrix
 			matrix = SVGEditor.parse_transform(elm)
@@ -657,11 +650,7 @@ class SVGEditor:
 			xml.text = text
 
 	def set_labels(self, labels: dict) -> Self:
-		"""Replaces text on every element named LABEL_something with coresponding
-		value from 'labels' dict.
-
-		Returns self.
-		"""
+		"""Replaces text on every element named LABEL_something with coresponding value from 'labels' dict."""
 
 		def walk(xml):
 			for child in xml:
@@ -676,9 +665,8 @@ class SVGEditor:
 		return self
 
 	@staticmethod
-	def add_element(parent, e, **attributes):
-		"""Creates new element as child of specified parent or, if 1st argument
-		is ET.Element, adds that element.
+	def add_element(parent, e, **attributes) -> ET.Element:
+		"""Creates new element as child of specified parent or, if 1st argument is ET.Element, adds that element.
 
 		Returns created or passed element.
 		"""

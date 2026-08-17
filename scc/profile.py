@@ -47,6 +47,7 @@ class Profile:
 	TRIGGERS = [LEFT, RIGHT]
 
 	def __init__(self, parser: ActionParser) -> None:
+		self.buttons: dict[int, Action]
 		self.lstick: Action
 		self.rstick: Action
 		self.gyro: Action

@@ -48,6 +48,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from gi.repository.Gio import ApplicationCommandLine
 	from typing import Never
+	from scc.gui.osd_mode import OSDModeMapper
 
 log = logging.getLogger("App")
 
@@ -95,7 +96,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.context_menu_for = None
 		self.daemon_changed_profile = False
 		self.osd_mode = False  # In OSD mode, only active profile can be editted
-		self.osd_mode_mapper = None
+		self.osd_mode_mapper: OSDModeMapper | None = None
 		self.background = None
 		self.outdated_version = None
 		self.profile_switchers: list[ProfileSwitcher] = []
@@ -107,7 +108,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.current = Profile(GuiActionParser())
 		self.just_started = True
 		self.button_widgets = {}
-		self.hilights = {App.HILIGHT_COLOR: set(), App.OBSERVE_COLOR: set()}
+		self.hilights: dict[str, set[str]] = {App.HILIGHT_COLOR: set(), App.OBSERVE_COLOR: set()}
 		self.undo = []
 		self.redo = []
 
@@ -1155,7 +1156,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.show_error(msg)
 		self.set_daemon_status("error", True)
 
-	def on_daemon_event_observer(self, daemon, c, what, data) -> None:
+	def on_daemon_event_observer(self, daemon, c, what: str, data: list[int]) -> None:
 		if self.osd_mode_mapper:
 			self.osd_mode_mapper.handle_event(daemon, what, data)
 		elif what in (LEFT, RIGHT, LSTICK, RSTICK, DPAD, CPAD):

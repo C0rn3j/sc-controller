@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """SC-Controller - Slave Mapper
 
 Mapper that is hooked to scc-daemon instance through socket instead of
@@ -6,11 +5,16 @@ using libusb directly. Relies to Observe or Lock message being sent by client.
 
 Used by on-screen keyboard.
 """
+from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 from scc.constants import CPAD, DPAD, LEFT, RIGHT, RSTICK, LSTICK, SCButtons
 from scc.mapper import Mapper
+
+if TYPE_CHECKING:
+	from typing import Never
 
 log = logging.getLogger("SlaveMapper")
 
@@ -20,15 +24,15 @@ class SlaveMapper(Mapper):
 		Mapper.__init__(self, profile, scheduler, keyboard, mouse, None)
 		self._feedback_cb = None
 
-	def set_controller(self, c):
+	def set_controller(self, c) -> Never:
 		"""Sets controller device, used by some (one so far) actions"""
 		raise TypeError("SlaveMapper doesn't connect to controller device")
 
-	def get_controller(self):
+	def get_controller(self) -> Never:
 		"""Returns assigned controller device or None if no controller is set"""
 		raise TypeError("SlaveMapper doesn't connect to controller device")
 
-	def set_feedback_callback(self, cb):
+	def set_feedback_callback(self, cb) -> None:
 		"""Sets callback called to process haptic feedback effects.
 
 		If callback is set, it's called as callback(hapticdata) every time
@@ -39,14 +43,14 @@ class SlaveMapper(Mapper):
 		"""
 		self._feedback_cb = cb
 
-	def send_feedback(self, hapticdata):
-		"""Simply calls self._feedback_cb, if set. See docstring above.
-		"""
+	def send_feedback(self, hapticdata) -> None:
+		"""Simply calls self._feedback_cb, if set. See docstring above."""
 		if self._feedback_cb:
 			self._feedback_cb(hapticdata)
 
-	def handle_event(self, daemon, what, data):
+	def handle_event(self, daemon, what: str, data) -> None:
 		"""Handles event sent by scc-daemon.
+
 		Without calling this, SlaveMapper basically does nothing.
 		"""
 		self.old_buttons = self.buttons
