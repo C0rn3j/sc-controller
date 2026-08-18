@@ -54,6 +54,10 @@ function testDeps() {
 		echo -e "${Red}x86_64-pc-linux-gnu-gcc not found, install it. ${Yellow}The package is usually named gcc!${NoColor}"
 		exit 1
 	fi
+	if ! command -v uv >/dev/null; then
+		echo -e "${Red}uv not found, install it.${NoColor}"
+		exit 1
+	fi
 }
 
 testDeps
@@ -69,12 +73,12 @@ export SCC_SHARED="${PWD}"
 rm -rf dist
 python -m venv .venv
 source .venv/bin/activate
-pip install . build
+uv pip install . build
 # PYGOBJECT_STUB_CONFIG and --no-cache-dir is needed to build pygobject-stubs correctly
-PYGOBJECT_STUB_CONFIG=Gtk3,Gdk3 pip install --no-cache-dir ".[dev]"
-python -m build --wheel
+PYGOBJECT_STUB_CONFIG=Gtk3,Gdk3 uv pip install --no-cache-dir ".[dev]"
+uv build --wheel
 #python -m installer --destdir=".venv" dist/*.whl
-pip install --prefix ".venv" dist/*.whl --force-reinstall
+uv pip install --prefix ".venv" dist/*.whl --force-reinstall
 
 # Start either the daemon in debug mode if first parameter is 'daemon', or the regular sc-controller app in debug mode
 if [[ ${1-} == 'daemon' ]]; then
