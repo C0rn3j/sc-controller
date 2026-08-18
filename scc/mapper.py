@@ -330,32 +330,50 @@ class Mapper:
 				return x
 		return None
 
-	def set_button(self, button, state):
+	def set_button(self, button: str | int, state: bool) -> None:
 		"""Sets button state on input.
-		Set value will stay only for durration of one event loop iteration.
 
-		Used _temporarely_ by RingAction to emulate finger lifting from pad.
+		Set value will stay only for duration of one event loop iteration.
+
+		Used _temporarily_ by RingAction to emulate finger lifting from a pad or a stick.
 		"""
 		if button == LEFT:
 			button = SCButtons.LPADTOUCH
 		elif button == RIGHT:
 			button = SCButtons.RPADTOUCH
+		elif button == RSTICK:
+			button = SCButtons.RSTICKTOUCH
+		elif button == LSTICK:
+			button = SCButtons.LSTICKTOUCH
+		elif button == CPAD:
+			button = SCButtons.CPADTOUCH
+		elif isinstance(button, str):
+			log.debug("set_button() received %s, ignoring", button)
+			return
 
 		if state:
 			self.buttons |= button
 		else:
 			self.buttons &= ~button
 
-	def set_was_pressed(self, button, state):
-		"""As set_button, but changes value remembered
-		from loop iteration before current.
+	def set_was_pressed(self, button: str | int, state: bool) -> None:
+		"""As set_button, but changes value remembered from loop iteration before current.
 
-		Used _temporarely_ by RingAction to emulate finger lifting from pad.
+		Used _temporarily_ by RingAction to emulate finger lifting from a pad or a stick.
 		"""
 		if button == LEFT:
 			button = SCButtons.LPADTOUCH
 		elif button == RIGHT:
 			button = SCButtons.RPADTOUCH
+		elif button == RSTICK:
+			button = SCButtons.RSTICKTOUCH
+		elif button == LSTICK:
+			button = SCButtons.LSTICKTOUCH
+		elif button == CPAD:
+			button = SCButtons.CPADTOUCH
+		elif isinstance(button, str):
+			log.debug("set_was_pressed() received %s, ignoring", button)
+			return
 
 		if state:
 			self.old_buttons |= button
