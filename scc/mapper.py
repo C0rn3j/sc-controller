@@ -16,11 +16,11 @@ from scc.constants import (
 	FE_STICK,
 	FE_TRIGGER,
 	LEFT,
+	LSTICK,
+	LSTICKTILT,
 	RIGHT,
 	RSTICK,
-	LSTICK,
 	STICK_PAD_MAX,
-	LSTICKTILT,
 	ControllerFlags,
 	HapticPos,
 	SCButtons,
@@ -30,6 +30,8 @@ from scc.lib import xwrappers as X
 from scc.uinput import Dummy, Keyboard, Mouse, UInput
 
 if TYPE_CHECKING:
+	from typing import Literal
+
 	from scc.controller import Controller
 	from scc.poller import Poller
 	from scc.profile import Profile
@@ -48,7 +50,7 @@ class Mapper:
 		keyboard: bytes = b"SCController Keyboard",
 		mouse: bytes = b"SCController Mouse",
 		gamepad: bool = True,
-		poller: Poller | None =None,
+		poller: Poller | None = None,
 	) -> None:
 		"""If any of keyboard, mouse or gamepad is set to None, that device will not be emulated.
 
@@ -80,7 +82,8 @@ class Mapper:
 		self.feedbacks = [None, None]  # left, right
 		self.pressed = {}  # for ButtonAction, holds number of times virtual button was pressed without releasing it first
 		self.syn_list = set()
-		self.buttons, self.old_buttons = 0, 0
+		self.buttons: int = 0
+		self.old_buttons: int = 0
 		self.lpad_touched = False
 		self.state, self.old_state = None, None
 		self.force_event = set()
@@ -255,7 +258,7 @@ class Mapper:
 		self.mouse_movements[4] += dx
 		self.mouse_movements[5] += dy
 
-	def send_feedback(self, hapticdata) -> None:
+	def send_feedback(self, hapticdata: HapticData) -> None:
 		"""Schedules haptic feedback to be sent at end of processing callback.
 
 		Called from actions while callback is being processed.
@@ -272,59 +275,54 @@ class Mapper:
 		"""Returns controller flags or, if there is no controller set to this mapper, sc_by_cable driver matching defaults."""
 		return 0 if self.controller is None else self.controller.flags
 
-	def is_touched(self, what) -> bool:
+	def is_touched(self, what: Literal["LEFT", "RIGHT", "CPAD"]) -> bool:
 		"""Returns True if specified pad is being touched.
 
 		May randomly return False for aphephobic pads.
 
-		'what' should be LEFT or RIGHT (from scc.constants)
+		'what' should be LEFT, RIGHT or CPAD - if anything else is passed(how), return False
 		"""
 		if what == LEFT:
-			return self.buttons & SCButtons.LPADTOUCH
+			return bool(self.buttons & SCButtons.LPADTOUCH)
 		if what == RIGHT:
-			return self.buttons & SCButtons.RPADTOUCH
+			return bool(self.buttons & SCButtons.RPADTOUCH)
 		if what == CPAD:
-			return self.buttons & SCButtons.CPADTOUCH
+			return bool(self.buttons & SCButtons.CPADTOUCH)
 		return False
 
-	def was_touched(self, what):
-		"""As is_touched, but returns True if pad *was* touched
-		in previous known state.
+	def was_touched(self, what: str) -> bool:
+		"""As is_touched, but returns True if pad *was* touched in previous known state.
 
 		This is used as:
 		is_touched() and not was_touched() -> pad was just pressed
 		not is_touched() and was_touched() -> pad was just released
 		"""
 		if what == LEFT:
-			return self.old_buttons & SCButtons.LPADTOUCH
+			return bool(self.old_buttons & SCButtons.LPADTOUCH)
 		if what == RIGHT:
-			return self.old_buttons & SCButtons.RPADTOUCH
+			return bool(self.old_buttons & SCButtons.RPADTOUCH)
 		if what == CPAD:
-			return self.old_buttons & SCButtons.CPADTOUCH
+			return bool(self.old_buttons & SCButtons.CPADTOUCH)
 		return False
 
-	def is_pressed(self, button):
-		"""Returns True if button is pressed
-		"""
+	def is_pressed(self, button: Literal["LEFT", "RIGHT"] | int) -> bool:
+		"""Returns True if button is pressed"""
 		if button == LEFT:
 			button = SCButtons.LPAD
 		elif button == RIGHT:
 			button = SCButtons.RPAD
-		return self.buttons & button
+		return bool(self.buttons & button)
 
-	def was_pressed(self, button):
-		"""Returns True if button was pressed in previous known state
-		"""
+	def was_pressed(self, button: Literal["LEFT", "RIGHT"] | int) -> bool:
+		"""Returns True if button was pressed in previous known state"""
 		if button == LEFT:
 			button = SCButtons.LPAD
 		elif button == RIGHT:
 			button = SCButtons.RPAD
-		return self.old_buttons & button
+		return bool(self.old_buttons & button)
 
-	def get_pressed_button(self):
-		"""Gets button that was pressed by very last handled event or None,
-		if last event doesn't involved button pressing.
-		"""
+	def get_pressed_button(self) -> SCButtons | None:
+		"""Gets button that was pressed by very last handled event or None, if last event doesn't involved button pressing."""
 		for x in SCButtons:
 			if x & self.buttons & ~self.old_buttons:
 				return x
@@ -380,23 +378,21 @@ class Mapper:
 		else:
 			self.old_buttons &= ~button
 
-	def release_virtual_buttons(self):
+	def release_virtual_buttons(self) -> None:
 		"""Called when daemon is killed or USB dongle is disconnected.
-		Sends button release event for every virtual button that is still being
-		pressed.
+
+		Sends button release event for every virtual button that is still being pressed.
 		"""
 		to_release, self.pressed = self.pressed, {}
 		for x in to_release:
 			ButtonAction._button_release(self, x, True)
 
-	def cancel_all(self):
-		"""Called when profile is changed to let all actions to cancel
-		long-running effects they may have created
-		"""
+	def cancel_all(self) -> None:
+		"""Called when profile is changed to let all actions to cancel long-running effects they may have created"""
 		for a in self.profile.get_actions():
 			a.cancel(self)
 
-	def reset_gyros(self):
+	def reset_gyros(self) -> None:
 		for a in self.profile.get_all_actions():
 			if isinstance(a, GyroAbsAction):
 				a.reset()
@@ -494,7 +490,7 @@ class Mapper:
 					self.lpad_touched = False
 					self.profile.pads[LEFT].whole(self, 0, 0, LEFT)
 
-			# CPAD (touchpad on DS4 controller)
+			# CPAD (touchpad on DS4/DualSense controller)
 			if controller.flags & ControllerFlags.HAS_CPAD:
 				if (
 					(FE_PAD in fe)

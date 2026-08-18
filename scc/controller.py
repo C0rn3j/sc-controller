@@ -1,13 +1,14 @@
 from __future__ import annotations
 
+import logging
+import time
 from typing import TYPE_CHECKING
 
 from scc.constants import HapticPos
 
 if TYPE_CHECKING:
+	from scc.drivers.hiddrv import HIDDecoder
 	from scc.mapper import Mapper
-import logging
-import time
 
 log = logging.getLogger("SCController")
 
@@ -20,10 +21,11 @@ class Controller:
 	Derived class should implement every method from here.
 	"""
 
-	flags = 0
+	flags: int = 0
 
 	def __init__(self) -> None:
 		global next_id
+		self._decoder: HIDDecoder
 		self.mapper: Mapper | None = None
 		self._id: int | str = next_id
 		next_id += 1
@@ -103,12 +105,12 @@ class Controller:
 class HapticData:
 	"""Simple container to hold haptic feedback settings"""
 
-	def __init__(self, position, amplitude=512, frequency=4, period=1024, count=1):
+	def __init__(self, position: HapticPos, amplitude: int = 512, frequency: int = 4, period: int = 1024, count: int = 1) -> None:
 		"""'frequency' is used only when emulating touchpad
 
 		and describes how many pixels should mouse travel between two feedback ticks.
 		"""
-		data = tuple([int(x) for x in (position, amplitude, period, count)])
+		data: tuple[int, int, int, int] = (int(position), int(amplitude), int(period), int(count))
 		if data[0] not in (HapticPos.LEFT, HapticPos.RIGHT, HapticPos.BOTH):
 			raise ValueError("Invalid position")
 		for i in (1, 2, 3):
@@ -121,7 +123,7 @@ class HapticData:
 		self.data = data  # send to controller
 		self.frequency = frequency  # used internally
 
-	def with_position(self, position) -> HapticData:
+	def with_position(self, position: HapticPos) -> HapticData:
 		"""Creates copy of HapticData with position value changed"""
 		trash, amplitude, period, count = self.data
 		return HapticData(position, amplitude, self.frequency, period, count)

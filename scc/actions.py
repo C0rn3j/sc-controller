@@ -2037,8 +2037,8 @@ class RingAction(MultichildAction):
 			return MultichildAction.to_string(self, multiline, pad, "%s, " % (self.radius,))
 		return MultichildAction.to_string(self, multiline, pad)
 
-	def whole(self, mapper: Mapper, x, y, what):
-		if what == LSTICK or what == RSTICK or mapper.is_touched(what):
+	def whole(self, mapper: Mapper, x, y, what: str) -> None:
+		if what in (LSTICK, RSTICK) or mapper.is_touched(what):
 			angle = atan2(x, y)
 			distance = sqrt(x * x + y * y)
 			if distance < self._radius_m:
@@ -2053,7 +2053,7 @@ class RingAction(MultichildAction):
 
 			if action == self._active:
 				action.whole(mapper, x, y, what)
-			elif what == LSTICK or what == RSTICK:
+			elif what in (LSTICK, RSTICK):
 				# Stck crossed radius border, so active action is changing.
 				# Simulate centering stick for former...
 				self._active.whole(mapper, 0, 0, what)
@@ -2076,7 +2076,7 @@ class RingAction(MultichildAction):
 			# Pad just released
 			self._active.whole(mapper, x, y, what)
 			self._active = NoAction()
-		elif self._active and (what == LSTICK or what == RSTICK) and x == 0 and y == 0:
+		elif self._active and (what in (LSTICK, RSTICK)) and x == 0 and y == 0:
 			# Stick is centered
 			self._active.whole(mapper, x, y, what)
 			self._active = NoAction()
