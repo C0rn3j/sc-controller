@@ -132,7 +132,7 @@ class Driver:
 
 
 class SCByBt(SCController):
-	flags: int = ControllerFlags.LPAD_RPAD_IS_CIRCLE | ControllerFlags.SEPARATE_LSTICK
+	flags: int = ControllerFlags.LPAD_RPAD_IS_CIRCLE | ControllerFlags.LSTICK_LPAD_SHARE_AXES
 
 	def __init__(self, driver: Driver, syspath: str, hidrawdev: HIDRaw, device_file: BinaryIO) -> None:
 		self._serial: bytes

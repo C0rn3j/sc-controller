@@ -228,7 +228,6 @@ class DS5USBController(USBHIDController):
 		| ControllerFlags.HAS_RSTICK
 		| ControllerFlags.HAS_CPAD
 		| ControllerFlags.HAS_DPAD
-		| ControllerFlags.SEPARATE_LSTICK
 		| ControllerFlags.NO_GRIPS
 	)
 
@@ -535,7 +534,6 @@ class DS5BluetoothHIDRawController(Controller):
 		| ControllerFlags.HAS_RSTICK
 		| ControllerFlags.HAS_CPAD
 		| ControllerFlags.HAS_DPAD
-		| ControllerFlags.SEPARATE_LSTICK
 		| ControllerFlags.NO_GRIPS
 	)
 
@@ -1084,7 +1082,6 @@ class DS5EvdevController(EvdevController):
 		| ControllerFlags.HAS_RSTICK
 		| ControllerFlags.HAS_CPAD
 		| ControllerFlags.HAS_DPAD
-		| ControllerFlags.SEPARATE_LSTICK
 		| ControllerFlags.NO_GRIPS
 	)
 
