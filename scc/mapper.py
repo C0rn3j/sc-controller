@@ -504,12 +504,13 @@ class Mapper:
 						self.profile.buttons[x].button_release(self)
 
 			# Check sticks
-			if controller.flags & ControllerFlags.SEPARATE_LSTICK:
+			if controller.flags & ControllerFlags.LSTICK_LPAD_SHARE_AXES:
+				if not self.buttons & SCButtons.LPADTOUCH:
+					if FE_STICK in fe or self.old_state.lpad_x != state.lpad_x or self.old_state.lpad_y != state.lpad_y:
+						self.profile.lstick.whole(self, state.lpad_x, state.lpad_y, LSTICK)
+			else:
 				if FE_STICK in fe or self.old_state.lstick_x != state.lstick_x or self.old_state.lstick_y != state.lstick_y:
 					self.profile.lstick.whole(self, state.lstick_x, state.lstick_y, LSTICK)
-			elif not self.buttons & SCButtons.LPADTOUCH:
-				if FE_STICK in fe or self.old_state.lpad_x != state.lpad_x or self.old_state.lpad_y != state.lpad_y:
-					self.profile.lstick.whole(self, state.lpad_x, state.lpad_y, LSTICK)
 			if controller.flags & ControllerFlags.HAS_RSTICK:
 				if (
 					FE_STICK in fe
@@ -545,10 +546,10 @@ class Mapper:
 					self.profile.pads[DPAD].whole(self, state.dpad_x, state.dpad_y, SCPads.DPAD)
 
 			# LPAD
-			if controller.flags & ControllerFlags.SEPARATE_LSTICK and hasattr(state, "lpad_x"):
+			if not controller.flags & ControllerFlags.LSTICK_LPAD_SHARE_AXES and hasattr(state, "lpad_x"):
 				if FE_PAD in fe or self.old_state.lpad_x != state.lpad_x or self.old_state.lpad_y != state.lpad_y:
 					self.profile.pads[SCPads.LPAD].whole(self, state.lpad_x, state.lpad_y, SCPads.LPAD)
-			elif self.buttons & SCButtons.LPADTOUCH:
+			elif controller.flags & ControllerFlags.LSTICK_LPAD_SHARE_AXES and self.buttons & SCButtons.LPADTOUCH:
 				# Pad is being touched now
 				if not self.lpad_touched:
 					self.lpad_touched = True
@@ -557,7 +558,7 @@ class Mapper:
 					# LPAD and stick share axes and so when they are used simultaneously (by someone with 3 hands or so :)
 					# this is how mapper can tell that stick was recentered
 					self.profile.lstick.whole(self, 0, 0, LSTICK)
-			elif not self.buttons & LSTICKTILT:
+			elif controller.flags & ControllerFlags.LSTICK_LPAD_SHARE_AXES and not self.buttons & LSTICKTILT:
 				# Pad is not being touched
 				if self.lpad_touched:
 					self.lpad_touched = False

@@ -120,10 +120,10 @@ class ControllerFlags(IntFlag):
 
 	# No flags
 	NONE           =      0
-	# Controller has right stick
+	# Controller has right stick instead of touchpad - unique to Steam Controller (2015)
 	HAS_RSTICK     = 1 << 0
-	# Left stick and left touchpad are using separate axes - should be anything but SC(2015)
-	SEPARATE_LSTICK = 1 << 1
+	# Left stick and left touchpad share lpad_x/lpad_y axes - unique to Steam Controller (2015)
+	LSTICK_LPAD_SHARE_AXES = 1 << 1
 	# Gyro sensor values are provided as pitch, yaw and roll instead of quaterion.
 	# 'q4' is unused in such case.
 	EUREL_GYROS    = 1 << 2

@@ -250,7 +250,6 @@ class HIDDrvFakeDaemon:
 class USBHIDController(SCUSBDevice, Controller):
 	flags = (
 		ControllerFlags.HAS_RSTICK
-		| ControllerFlags.SEPARATE_LSTICK
 		| ControllerFlags.HAS_DPAD
 		| ControllerFlags.NO_GRIPS
 	)

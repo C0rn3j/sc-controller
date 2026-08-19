@@ -75,7 +75,6 @@ class RemotePadController(Controller):
 		ControllerFlags.HAS_DPAD
 		| ControllerFlags.NO_GRIPS
 		| ControllerFlags.HAS_RSTICK
-		| ControllerFlags.SEPARATE_LSTICK
 	)
 
 	def __init__(self, driver, address) -> None:
