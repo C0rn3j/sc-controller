@@ -186,7 +186,7 @@ class SCConfigType(IntEnum):
 
 
 class SCController(Controller):
-	flags: int = ControllerFlags.LPAD_RPAD_IS_CIRCLE
+	flags: int = ControllerFlags.LPAD_RPAD_IS_CIRCLE | ControllerFlags.LSTICK_LPAD_SHARE_AXES
 
 	def __init__(self, driver: Deck | Dongle | SCByBt | SCByCable | SC2Device, ccidx: int, endpoint: int) -> None:
 		Controller.__init__(self)
