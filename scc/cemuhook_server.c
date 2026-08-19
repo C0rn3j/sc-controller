@@ -136,10 +136,10 @@ static void send_msg(int fd, struct sockaddr_in* target, struct Message* msg, Me
 	msg->message_type = type;
 	msg->msg_id = next_id ++;
 	msg->crc = 0;
-	
+
 	uLong crc = crc32(0, (const Bytef*)msg, size);
 	msg->crc = crc;
-	
+
 	ssize_t r = sendto(fd, (char*)msg, size, 0, (struct sockaddr*)target, sizeof(struct sockaddr_in));
 	if (r < 0) LERROR("sendto failed: " SOCKETERROR);
 }
@@ -183,81 +183,81 @@ static void parse_message(int fd, const char* buffer, size_t size, struct sockad
 		WARN("Received invalid message: Invalid size (expected %i, got %zu)", msg->packet_size + 20 - 4, size);
 		return;
 	}
-	
+
 	switch (msg->message_type) {
-	case DSUC_VERSIONREQ:
-		out.version_info.min_version = 0;
-		out.version_info.max_version = MAX_PROTO_VERSION;
-		send_msg(fd, source, &out, DSUS_VERSIONRSP, 4);
-		break;
-	case DSUC_LISTPORTS:
-		if ((msg->list_ports.count > 0) && (msg->list_ports.count <= 4)) {
-			for (i=0; i<msg->list_ports.count; i++) {
-				fill_port_info(&out.port_info, msg->list_ports.ids[i], 0);
-				send_msg(fd, source, &out, DSUS_PORTINFO, 12);
+		case DSUC_VERSIONREQ:
+			out.version_info.min_version = 0;
+			out.version_info.max_version = MAX_PROTO_VERSION;
+			send_msg(fd, source, &out, DSUS_VERSIONRSP, 4);
+			break;
+		case DSUC_LISTPORTS:
+			if ((msg->list_ports.count > 0) && (msg->list_ports.count <= 4)) {
+				for (i=0; i<msg->list_ports.count; i++) {
+					fill_port_info(&out.port_info, msg->list_ports.ids[i], 0);
+					send_msg(fd, source, &out, DSUS_PORTINFO, 12);
+				}
 			}
-		}
-		break;
-	case DSUC_PADDATAREQ: {
-		if (!((msg->pad_data_req.flags == 0)
-			|| (((msg->pad_data_req.flags & 0x01) != 0) && (msg->pad_data_req.id == 0)))) {
-				// Only querying by ID and querying for 1st controller is supported
-				WARN("Refusing request: flags=%x id=%x mac=%x:%x:%x:%x:%x:%x",
-						msg->pad_data_req.flags, msg->pad_data_req.id,
-						msg->pad_data_req.mac[0],
-						msg->pad_data_req.mac[1],
-						msg->pad_data_req.mac[2],
-						msg->pad_data_req.mac[3],
-						msg->pad_data_req.mac[4],
-						msg->pad_data_req.mac[5]
-				);
-				break;
-		}
-		CEHClient* c = NULL;
-#ifdef PYTHON
-		for (x=0; x<CLIENT_LIMIT; x++) {
-			if (clients[x].address.sin_port == 0)
-				continue;
-			CEHClient* i = &clients[x];
-#else
-		FOREACH_IN(CEHClient*, i, clients) {
-#endif
-			if (i->address.sin_port == source->sin_port) {
-				// Server listens only on localhost, so it should be safe to assume IP matches
-				c = i;
-				break;
+			break;
+		case DSUC_PADDATAREQ: {
+			if (!((msg->pad_data_req.flags == 0)
+				|| (((msg->pad_data_req.flags & 0x01) != 0) && (msg->pad_data_req.id == 0)))) {
+					// Only querying by ID and querying for 1st controller is supported
+					WARN("Refusing request: flags=%x id=%x mac=%x:%x:%x:%x:%x:%x",
+							msg->pad_data_req.flags, msg->pad_data_req.id,
+							msg->pad_data_req.mac[0],
+							msg->pad_data_req.mac[1],
+							msg->pad_data_req.mac[2],
+							msg->pad_data_req.mac[3],
+							msg->pad_data_req.mac[4],
+							msg->pad_data_req.mac[5]
+					);
+					break;
 			}
-		}
-		if (c == NULL) {
+			CEHClient* c = NULL;
 #ifdef PYTHON
 			for (x=0; x<CLIENT_LIMIT; x++) {
-				if (clients[x].address.sin_port == 0) {
-					c = &clients[x];
+				if (clients[x].address.sin_port == 0)
+					continue;
+				CEHClient* i = &clients[x];
+#else
+			FOREACH_IN(CEHClient*, i, clients) {
+#endif
+				if (i->address.sin_port == source->sin_port) {
+					// Server listens only on localhost, so it should be safe to assume IP matches
+					c = i;
+					break;
 				}
 			}
 			if (c == NULL) {
-				WARN("Client limit reached");
-				break;
-			}
+#ifdef PYTHON
+				for (x=0; x<CLIENT_LIMIT; x++) {
+					if (clients[x].address.sin_port == 0) {
+						c = &clients[x];
+					}
+				}
+				if (c == NULL) {
+					WARN("Client limit reached");
+					break;
+				}
 #else
-			c = malloc(sizeof(CEHClient));
-			if ((c == NULL) || (!list_allocate(clients, 1))) {
-				WARN("Out of memory");
-				free(c);
-				break;
-			}
-			list_add(clients, c);
+				c = malloc(sizeof(CEHClient));
+				if ((c == NULL) || (!list_allocate(clients, 1))) {
+					WARN("Out of memory");
+					free(c);
+					break;
+				}
+				list_add(clients, c);
 #endif
-			memcpy(&c->address, source, sizeof(struct sockaddr_in));
-			c->next_packet_no = mono_time_ms() & 0xFFFFFFFF;
-			DEBUG("New client (0x%x) added", c->address.sin_port);
+				memcpy(&c->address, source, sizeof(struct sockaddr_in));
+				c->next_packet_no = mono_time_ms() & 0xFFFFFFFF;
+				DEBUG("New client (0x%x) added", c->address.sin_port);
+			}
+			c->last_seen = mono_time_ms();
+			break;
 		}
-		c->last_seen = mono_time_ms();
-		break;
-	}
-	default:
-		// WARN("Received invalid message: Unknown message type");
-		return;
+		default:
+			// WARN("Received invalid message: Unknown message type");
+			return;
 	}
 }
 
@@ -307,7 +307,7 @@ void cemuhook_data_received(int fd, const char* ip, int port, const char* buffer
 	source.sin_family = AF_INET;
 	source.sin_addr.s_addr = inet_addr(ip);
 	source.sin_port = htons(port);
-	
+
 	parse_message(fd, buffer, size, &source);
 }
 
@@ -326,12 +326,12 @@ static void on_data_received(Daemon* d, int fd, void* userdata) {
 	struct sockaddr_in source;
 	socklen_t len = sizeof(struct sockaddr_in);
 	ssize_t n = recvfrom(fd, buffer, BUFFER_SIZE, 0, (struct sockaddr*)&source, &len);
-	
+
 	if (n < 0) {
 		LERROR("recvfrom: " SOCKETERROR);
 		return;
 	}
-	
+
 	parse_message(sock, buffer, n, &source);
 }
 
@@ -341,7 +341,7 @@ bool sccd_cemuhook_socket_enable() {
 	if (clients == NULL)
 		// This may be enabled at random time, so I can't just crash here
 		return false;
-	
+
 	struct sockaddr_in server_addr;
 	memset(&server_addr, 0, sizeof(struct sockaddr_in));
 	server_addr.sin_family = AF_INET;
@@ -369,7 +369,7 @@ bool sccd_cemuhook_socket_enable() {
 		LERROR("Failed to open control socket" SOCKETERROR);
 		return false;
 	}
-	
+
 	/*
 #ifndef _WIN32
 	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &(int){ 1 }, sizeof(int)) < 0) {
@@ -384,12 +384,12 @@ bool sccd_cemuhook_socket_enable() {
 		LERROR("Bind failed" SOCKETERROR);
 		return false;
 	}
-	
+
 	if (!sccd_poller_add(sock, &on_data_received, NULL)) {
 		LERROR("sccd_poller_add failed to add listening socket");
 		return false;
 	}
-	
+
 	LOG("Created CemuHookUDP Motion Provider");
 	return true;
 }
@@ -401,4 +401,3 @@ __attribute__((constructor)) void check_stuff() {
 }
 
 #endif
-
