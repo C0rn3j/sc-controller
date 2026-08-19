@@ -224,7 +224,6 @@ class DS5Controller(HIDController):
 		| ControllerFlags.HAS_RSTICK
 		| ControllerFlags.HAS_CPAD
 		| ControllerFlags.HAS_DPAD
-		| ControllerFlags.SEPARATE_LSTICK
 		| ControllerFlags.NO_GRIPS
 	)
 
@@ -520,7 +519,6 @@ class DS5HidRawController(Controller):
 		| ControllerFlags.HAS_RSTICK
 		| ControllerFlags.HAS_CPAD
 		| ControllerFlags.HAS_DPAD
-		| ControllerFlags.SEPARATE_LSTICK
 		| ControllerFlags.NO_GRIPS
 	)
 
@@ -1055,7 +1053,6 @@ class DS5EvdevController(EvdevController):
 		| ControllerFlags.HAS_RSTICK
 		| ControllerFlags.HAS_CPAD
 		| ControllerFlags.HAS_DPAD
-		| ControllerFlags.SEPARATE_LSTICK
 		| ControllerFlags.NO_GRIPS
 	)
 

@@ -132,7 +132,7 @@ class Driver:
 
 
 class SCByBt(SCController):
-	flags = 0 | ControllerFlags.SEPARATE_LSTICK
+	flags: int = ControllerFlags.NONE
 
 	def __init__(self, driver: Driver, syspath: str, hidrawdev: HIDRaw, device_file: BinaryIO) -> None:
 		self._serial: bytes

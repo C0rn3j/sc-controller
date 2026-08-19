@@ -353,7 +353,6 @@ class SC2Controller(SCController):
 		# EUREL_GYROS: parse_input converts the firmware quaternion to euler
 		# and hands the mapper 2**15/PI fixed-point angles in q1-q3.
 		ControllerFlags.EUREL_GYROS
-		| ControllerFlags.SEPARATE_LSTICK
 		| ControllerFlags.HAS_RSTICK
 		| ControllerFlags.HAS_DPAD
 	)
