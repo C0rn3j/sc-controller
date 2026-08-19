@@ -108,7 +108,6 @@ class DS4Controller(Controller):
 		| ControllerFlags.HAS_RSTICK
 		| ControllerFlags.HAS_CPAD
 		| ControllerFlags.HAS_DPAD
-		| ControllerFlags.SEPARATE_LSTICK
 		| ControllerFlags.NO_GRIPS
 	)
 
@@ -552,7 +551,6 @@ class DS4EvdevController(EvdevController):
 		| ControllerFlags.HAS_RSTICK
 		| ControllerFlags.HAS_CPAD
 		| ControllerFlags.HAS_DPAD
-		| ControllerFlags.SEPARATE_LSTICK
 		| ControllerFlags.NO_GRIPS
 	)
 

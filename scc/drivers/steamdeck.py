@@ -145,7 +145,6 @@ def apply_deadzone(value: int, deadzone: int) -> int:
 class Deck(SCUSBDevice, SCController):
 	flags = (
 		0
-		| ControllerFlags.SEPARATE_LSTICK
 		| ControllerFlags.HAS_DPAD
 		| ControllerFlags.IS_DECK
 		| ControllerFlags.HAS_RSTICK
