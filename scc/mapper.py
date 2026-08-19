@@ -431,13 +431,13 @@ class Mapper:
 						self.profile.buttons[x].button_release(self)
 
 			# Check sticks
-			if self.controller.flags & ControllerFlags.SEPARATE_LSTICK:
+			if controller.flags & ControllerFlags.SEPARATE_LSTICK:
 				if FE_STICK in fe or self.old_state.lstick_x != state.lstick_x or self.old_state.lstick_y != state.lstick_y:
 					self.profile.lstick.whole(self, state.lstick_x, state.lstick_y, LSTICK)
 			elif not self.buttons & SCButtons.LPADTOUCH:
 				if FE_STICK in fe or self.old_state.lpad_x != state.lpad_x or self.old_state.lpad_y != state.lpad_y:
 					self.profile.lstick.whole(self, state.lpad_x, state.lpad_y, LSTICK)
-			if self.controller.flags & ControllerFlags.HAS_RSTICK:
+			if controller.flags & ControllerFlags.HAS_RSTICK:
 				if (
 					FE_STICK in fe
 					or self.old_state.rstick_x != state.rstick_x
@@ -472,7 +472,7 @@ class Mapper:
 					self.profile.pads[DPAD].whole(self, state.dpad_x, state.dpad_y, DPAD)
 
 			# LPAD
-			if self.controller.flags & ControllerFlags.SEPARATE_LSTICK:
+			if controller.flags & ControllerFlags.SEPARATE_LSTICK:
 				if FE_PAD in fe or self.old_state.lpad_x != state.lpad_x or self.old_state.lpad_y != state.lpad_y:
 					self.profile.pads[LEFT].whole(self, state.lpad_x, state.lpad_y, LEFT)
 			elif self.buttons & SCButtons.LPADTOUCH:
