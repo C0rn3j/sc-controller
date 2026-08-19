@@ -13,7 +13,7 @@ import time
 from collections import OrderedDict, deque
 from math import atan2, copysign, cos, sin, sqrt
 from math import pi as PI
-from typing import Self
+from typing import TYPE_CHECKING
 
 from scc.actions import (
 	Action,
@@ -47,6 +47,10 @@ from scc.constants import (
 from scc.controller import HapticData
 from scc.tools import clamp, nameof
 from scc.uinput import Axes, Rels
+
+if TYPE_CHECKING:
+	from typing import Self
+	from scc.mapper import Mapper
 
 log = logging.getLogger("Modifiers")
 _ = lambda x: x
@@ -211,9 +215,9 @@ class ClickModifier(Modifier):
 		if what in (LSTICK, LEFT) and mapper.was_pressed(SCButtons.LPAD):
 			# Just released
 			return self.action.axis(mapper, 0, what)
-		if what == CPAD and mapper.is_pressed(SCButtons.CPAD):
+		if what == CPAD and mapper.is_pressed(SCButtons.CPADPRESS):
 			return self.action.axis(mapper, position, what)
-		if what == CPAD and mapper.was_pressed(SCButtons.CPAD):
+		if what == CPAD and mapper.was_pressed(SCButtons.CPADPRESS):
 			# Just released
 			return self.action.axis(mapper, 0, what)
 		if mapper.is_pressed(SCButtons.RPAD):
@@ -231,9 +235,9 @@ class ClickModifier(Modifier):
 		if what == LEFT and mapper.was_pressed(SCButtons.LPAD):
 			# Just released
 			return self.action.pad(mapper, 0, what)
-		if what == CPAD and mapper.is_pressed(SCButtons.CPAD):
+		if what == CPAD and mapper.is_pressed(SCButtons.CPADPRESS):
 			return self.action.pad(mapper, position, what)
-		if what == CPAD and mapper.was_pressed(SCButtons.CPAD):
+		if what == CPAD and mapper.was_pressed(SCButtons.CPADPRESS):
 			# Just released
 			return self.action.pad(mapper, 0, what)
 		if mapper.is_pressed(SCButtons.RPAD):
@@ -256,9 +260,9 @@ class ClickModifier(Modifier):
 		if what == RIGHT and mapper.was_pressed(SCButtons.RPAD):
 			# Just released
 			return self.action.whole(mapper, 0, 0, what)
-		if what == CPAD and mapper.is_pressed(SCButtons.CPAD):
+		if what == CPAD and mapper.is_pressed(SCButtons.CPADPRESS):
 			return self.action.whole(mapper, x, y, what)
-		if what == CPAD and mapper.was_pressed(SCButtons.CPAD):
+		if what == CPAD and mapper.was_pressed(SCButtons.CPADPRESS):
 			# Just released
 			return self.action.whole(mapper, 0, 0, what)
 		# Nothing is pressed, but finger moves over pad
@@ -1487,7 +1491,7 @@ class CircularModifier(Modifier, HapticEnabledAction):
 	def get_compatible_modifiers(self):
 		return Action.MOD_FEEDBACK | Action.MOD_SENSITIVITY | Modifier.get_compatible_modifiers(self)
 
-	def whole(self, mapper, x, y, what):
+	def whole(self, mapper: Mapper, x, y, what: str) -> None:
 		distance = sqrt(x * x + y * y)
 		if distance < STICK_PAD_MAX_HALF:
 			# Finger lifted or too close to middle
