@@ -86,7 +86,7 @@ class Mapper:
 		self.old_buttons: int = 0
 		self.lpad_touched = False
 		self.state, self.old_state = None, None
-		self.force_event = set()
+		self.force_event: set[int] = set() # FE_STICK, FE_TRIGGER, FE_PAD or FE_GYRO
 		self.time_elapsed = 0.0
 
 	def create_gamepad(self, enabled: bool, poller: Poller | None) -> UInput | None:

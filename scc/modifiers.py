@@ -1443,7 +1443,8 @@ class SmoothModifier(Modifier):
 
 
 class CircularModifier(Modifier, HapticEnabledAction):
-	"""Designed to translate rotating finger over pad to mouse wheel movement.
+	"""Designed to translate rotating finger over stick/pad to mouse wheel movement.
+
 	Can also be used to translate same thing into movement of Axis.
 	"""
 
@@ -1458,23 +1459,23 @@ class CircularModifier(Modifier, HapticEnabledAction):
 		Modifier.__init__(self, *params)
 		HapticEnabledAction.__init__(self)
 
-	def _mod_init(self):
+	def _mod_init(self) -> None:
 		self.angle = None  # Last known finger position
 		self.speed = 1.0
 
-	def set_haptic(self, hd):
+	def set_haptic(self, hd) -> None:
 		if isinstance(self.action, HapticEnabledAction):
 			self.action.set_haptic(hd)
 		else:
 			HapticEnabledAction.set_haptic(self, hd)
 
-	def get_haptic(self):
+	def get_haptic(self) -> HapticData | None:
 		if isinstance(self.action, HapticEnabledAction):
 			return self.action.get_haptic()
 		return HapticEnabledAction.get_haptic(self)
 
 	@staticmethod
-	def decode(data, a, *b):
+	def decode(data, a, *b) -> CircularModifier:
 		return CircularModifier(a)
 
 	def describe(self, context):
@@ -1482,7 +1483,7 @@ class CircularModifier(Modifier, HapticEnabledAction):
 			return self.name
 		return _("Circular %s") % (self.action.describe(context))
 
-	def set_speed(self, x, *a):
+	def set_speed(self, x, *a) -> None:
 		self.speed = x
 
 	def get_speed(self):
@@ -1542,16 +1543,16 @@ class CircularAbsModifier(Modifier, WholeHapticAction):
 	COMMAND = "circularabs"
 	PROFILE_KEY_PRIORITY = -6
 
-	def __init__(self, *params):
+	def __init__(self, *params) -> None:
 		Modifier.__init__(self, *params)
 		WholeHapticAction.__init__(self)
 
-	def _mod_init(self):
+	def _mod_init(self) -> None:
 		self.angle = None  # Last known finger position
 		self.speed = 1.0
 
 	@staticmethod
-	def decode(data, a, *b):
+	def decode(data, a, *b) -> CircularAbsModifier:
 		return CircularAbsModifier(a)
 
 	def describe(self, context):
@@ -1570,7 +1571,7 @@ class CircularAbsModifier(Modifier, WholeHapticAction):
 			Action.MOD_FEEDBACK | Action.MOD_SENSITIVITY | Action.MOD_ROTATE | Modifier.get_compatible_modifiers(self)
 		)
 
-	def whole(self, mapper, x, y, what):
+	def whole(self, mapper, x, y, what) -> None:
 		distance = sqrt(x * x + y * y)
 		if distance < STICK_PAD_MAX_HALF:
 			# Finger lifted or too close to middle

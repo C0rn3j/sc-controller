@@ -19,7 +19,20 @@ from scc import drivers
 from scc.actions import Action
 from scc.cemuhook_server import CemuhookServer
 from scc.config import Config
-from scc.constants import CPAD, DAEMON_VERSION, DPAD, LEFT, LSTICK, RIGHT, RSTICK, HapticPos, SCButtons
+from scc.constants import (
+	CPAD,
+	DAEMON_VERSION,
+	DPAD,
+	LEFT,
+	LSTICK,
+	RIGHT,
+	RSTICK,
+	HapticPos,
+	SCButtons,
+	SCLeftRight,
+	SCPads,
+	SCSticks,
+)
 from scc.controller import HapticData
 from scc.custom import load_custom_module
 from scc.device_monitor import create_device_monitor
@@ -313,7 +326,7 @@ class SCCDaemon(Daemon):
 		"""Called when 'shell' action is used"""
 		return subprocess.Popen(action.command, shell=True)
 
-	def on_sa_gestures(self, mapper: Mapper, action: GesturesAction, x, y, what) -> None:
+	def on_sa_gestures(self, mapper: Mapper, action: GesturesAction, x, y, what: str) -> None:
 		"""Called when 'gestures' action is used"""
 		# TODO: Take up_direction from action
 		gd = None
@@ -709,23 +722,23 @@ class SCCDaemon(Daemon):
 		os.chmod(self.socket_file, stat.S_IRUSR | stat.S_IWUSR)
 		log.debug("Created control socket %s", self.socket_file)
 
-	def _start_gesture(self, mapper: Mapper, what, up_angle, callback) -> GestureDetector:
+	def _start_gesture(self, mapper: Mapper, what: bytes, up_angle: int, callback: Callable[[str], None]) -> GestureDetector:
 		"""Starts gesture detection on specified pad.
 
 		Calls callback with gesture string when finished.
 
 		Should be called with lock held.
 		"""
-		gd = None
+		gd: GestureDetector | None = None
 
-		def cb(detector, gesture) -> None:
+		def cb(detector: GestureDetector, gesture) -> None:
 			# This callback is expected to be called with lock held
 			with self.lock:
 				self._apply(mapper, what, lambda a: a.original_action)
 			log.debug("Gesture detected on %s: %s", what, gesture)
 			callback(gesture)
 
-		def set(action):
+		def set(action: Action) -> ObservingAction | GestureDetector:
 			# ObservingAction should be above GestureDetector
 			if isinstance(action, ObservingAction):
 				gd.original_action = action.original_action
@@ -844,17 +857,17 @@ class SCCDaemon(Daemon):
 				client.mapper.get_controller().set_led_level(number)
 		elif message.startswith(b"Observe:"):
 			if Config()["enable_sniffing"]:
-				to_observe = [x for x in message.split(b":", 1)[1].strip(b" \t\r").split(b" ")]
+				to_observe = list(message.split(b":", 1)[1].strip(b" \t\r").split(b" "))
 				with self.lock:
-					for l in to_observe:
-						client.observe_action(self, SCCDaemon.source_to_constant(l))
+					for source in to_observe:
+						client.observe_action(self, SCCDaemon.source_to_constant(s=source))
 					client.wfile.write(b"OK.\n")
 			else:
 				log.warning("Refused 'Observe' request: Sniffing disabled")
 				client.wfile.write(b"Fail: Sniffing disabled.\n")
 		elif message.startswith(b"Replace:"):
 			try:
-				l, actionstr = message.split(b":", 1)[1].strip(b" \t\r").split(b" ", 1)
+				source, actionstr = message.split(b":", 1)[1].strip(b" \t\r").split(b" ", 1)
 				action = TalkingActionParser().restart(actionstr.decode()).parse().compress()
 			except Exception as e:
 				e = str(e).encode("utf-8").decode("unicode_escape").encode("latin1")
@@ -862,29 +875,29 @@ class SCCDaemon(Daemon):
 				return
 			with self.lock:
 				try:
-					if not self._can_lock_action(client.mapper, SCCDaemon.source_to_constant(l)):
-						client.wfile.write(b"Fail: Cannot lock " + l + b"\n")
+					if not self._can_lock_action(client.mapper, SCCDaemon.source_to_constant(source)):
+						client.wfile.write(b"Fail: Cannot lock " + source + b"\n")
 						return
 				except ValueError:
 					tb = str(traceback.format_exc()).encode("utf-8").decode("unicode_escape").encode("latin1")
 					client.wfile.write(b"Fail: " + tb + b"\n")
 					return
-				client.replace_action(self, SCCDaemon.source_to_constant(l), action)
+				client.replace_action(self, SCCDaemon.source_to_constant(source), action)
 				client.wfile.write(b"OK.\n")
 		elif message.startswith(b"Lock:"):
-			to_lock = [x for x in message.split(b":", 1)[1].strip(b" \t\r").split(b" ")]
+			to_lock = list(message.split(b":", 1)[1].strip(b" \t\r").split(b" "))
 			with self.lock:
 				try:
-					for l in to_lock:
-						if not self._can_lock_action(client.mapper, SCCDaemon.source_to_constant(l)):
-							client.wfile.write(b"Fail: Cannot lock " + l + b"\n")
+					for source in to_lock:
+						if not self._can_lock_action(client.mapper, SCCDaemon.source_to_constant(source)):
+							client.wfile.write(b"Fail: Cannot lock " + source + b"\n")
 							return
 				except ValueError:
 					tb = str(traceback.format_exc()).encode("utf-8").decode("unicode_escape").encode("latin1")
 					client.wfile.write(b"Fail: " + tb + b"\n")
 					return
-				for l in to_lock:
-					client.lock_action(self, SCCDaemon.source_to_constant(l))
+				for source in to_lock:
+					client.lock_action(self, SCCDaemon.source_to_constant(source))
 				client.wfile.write(b"OK.\n")
 		elif message.startswith(b"Unlock."):
 			with self.lock:
@@ -933,7 +946,6 @@ class SCCDaemon(Daemon):
 				self.dev_monitor.rescan()
 			except Exception as e:
 				log.exception(e)
-
 		elif message.startswith(b"Turnoff."):
 			to_turn_off = []
 			with self.lock:
@@ -1056,16 +1068,16 @@ class SCCDaemon(Daemon):
 				return False
 			return True
 		if what == SCButtons.LT:
-			return not is_locked(mapper.profile.triggers[LEFT])
+			return not is_locked(mapper.profile.triggers[SCLeftRight.LEFT])
 		if what == SCButtons.RT:
-			return not is_locked(mapper.profile.triggers[RIGHT])
+			return not is_locked(mapper.profile.triggers[SCLeftRight.RIGHT])
 		if what in SCButtons.__members__.values():
 			return not is_locked(mapper.profile.buttons[what])
-		if what in (LEFT, RIGHT, CPAD, DPAD):
+		if what in (SCPads.LEFT, SCPads.RIGHT, SCPads.CPAD, SCPads.DPAD):
 			return not is_locked(mapper.profile.pads[what])
 		return False
 
-	def _apply(self, mapper: Mapper, what, callback, *args) -> None:
+	def _apply(self, mapper: Mapper, what: SCButtons | SCSticks | SCPads, callback: Callable[[Action], ObservingAction | GestureDetector], *args) -> None:
 		"""Applies callback on action that is currently set to input specified by 'what'.
 
 		Raises ValueError if what is not known.
@@ -1084,8 +1096,8 @@ class SCCDaemon(Daemon):
 		elif what in SCButtons.__members__.values():
 			r = callback(mapper.profile.buttons[what], *args)
 			mapper.profile.buttons[what] = r
-		elif what in (LEFT, RIGHT):
-			if what == LEFT:
+		elif what in (SCPads.LEFT, SCPads.RIGHT):
+			if what == SCPads.LEFT:
 				mapper.buttons &= ~SCButtons.LPADTOUCH
 			else:
 				mapper.buttons &= ~SCButtons.RPADTOUCH
@@ -1100,8 +1112,8 @@ class SCCDaemon(Daemon):
 			raise ValueError(f"Unknown source: {what}")
 
 	@staticmethod
-	def source_to_constant(s: bytes):
-		"""Turns string as 'A', 'LEFT' or 'ABS_X' into one of:
+	def source_to_constant(s: bytes) -> SCButtons | SCSticks | SCPads:
+		"""Turns byte string as 'A', 'LEFT' or 'ABS_X' into one of:
 
 		SCButtons.*, LSTICK, RSTICK, LEFT, RIGHT, CPAD, DPAD constants.
 
@@ -1113,11 +1125,11 @@ class SCCDaemon(Daemon):
 		# Protocol compatibility for clients predating the LSTICK rename.
 		if s_dec == "STICK":
 			log.warning("STICK detected, please migrate to LSTICK")
-			s_dec = LSTICK
+			s_dec = SCSticks.LSTICK
 		elif s_dec == "STICKPRESS":
 			log.warning("STICKPRESS detected, please migrate to LSTICKPRESS")
 			s_dec = "LSTICKPRESS"
-		if s_dec in (LSTICK, RSTICK, LEFT, RIGHT, CPAD, DPAD):
+		if s_dec in (SCSticks.LSTICK, SCSticks.RSTICK, SCPads.LEFT, SCPads.RIGHT, SCPads.CPAD, SCPads.DPAD):
 			return s_dec
 		if s_dec == "LSTICKPRESS":
 			# TODO(Martin): Initial commit - https://github.com/C0rn3j/sc-controller/commit/d720dbae62b22ef496cf7aaa9b7e04345cb69126
@@ -1162,7 +1174,7 @@ class Client:
 		except Exception:
 			pass
 
-	def request_gesture(self, daemon: SCCDaemon, what, up_angle) -> None:
+	def request_gesture(self, daemon: SCCDaemon, what: bytes, up_angle: int) -> None:
 		"""Handler used when client requested gesture detection with "Gesture:" message.
 
 		Should be called while daemon.lock is acquired.
@@ -1179,13 +1191,13 @@ class Client:
 		gd.enable()
 		log.debug("Gesture detection requested on %s", what)
 
-	def lock_action(self, daemon: SCCDaemon, what) -> None:
+	def lock_action(self, daemon: SCCDaemon, what: SCButtons | SCSticks | SCPads) -> None:
 		"""Locks action so event can be send to client instead of handling it.
 
 		Should be called while daemon.lock is acquired.
 		"""
 
-		def lock(action, what) -> ObservingAction | LockedAction:
+		def lock(action: Action, what: str) -> ObservingAction | LockedAction:
 			# ObservingAction should be above LockedAction
 			if isinstance(action, ObservingAction):
 				action.original_action = LockedAction(what, self, action.original_action)
@@ -1299,7 +1311,7 @@ class LockedAction(ReportingAction):
 		client.lock_action(daemon, self.what)
 
 	def unlock(self, daemon: SCCDaemon) -> None:
-		def _unlock(a):
+		def _unlock(a: Action) -> Action:
 			if isinstance(a, ObservingAction):
 				# Needs to be handled specifically
 				a.original_action = _unlock(a.original_action)
@@ -1353,7 +1365,7 @@ class ObservingAction(ReportingAction):
 		self.original_action.cancel(mapper)
 
 	def unlock(self, daemon: SCCDaemon) -> None:
-		def _unobserve(a):
+		def _unobserve(a: LockedAction | ObservingAction | ReplacedAction):
 			if isinstance(a, ObservingAction):
 				if a.client == self.client:
 					return a.original_action

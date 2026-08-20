@@ -25,58 +25,44 @@ daemon will differ from the one expected by the UI, and daemon will be forcefull
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from enum import IntEnum
+from enum import IntEnum, StrEnum
 from importlib.metadata import packages_distributions, version
 
 distribution_name: str = "N/A"
 if __package__ is not None:
 	distribution_name = packages_distributions()[__package__][0]
 
-DAEMON_VERSION = version(distribution_name)
+class SCLeftRight(StrEnum):
+	"""Simply LEFT or RIGHT
 
-HPERIOD  = 0.02
-LPERIOD  = 0.5
-DURATION = 1.0
+	"LEFT" can mean LPAD or LT, depending on context
+	"RIGHT" can mean RPAD or RT, depending on context
+	"""
 
-# Constants used when forcing gamepad to read some type of event is needed
-FE_STICK   = 1
-FE_TRIGGER = 2
-FE_PAD     = 3
-FE_GYRO    = 4
+	LEFT = "LEFT"
+	RIGHT = "RIGHT"
 
-# Trigger names, pads, etc. These constants are used in multiple places
-LEFT   = "LEFT"
-RIGHT  = "RIGHT"
-CPAD   = "CPAD"
-DPAD   = "DPAD"
-LSTICK = "LSTICK"
-RSTICK = "RSTICK"
-WHOLE  = "WHOLE"
-GYRO   = "GYRO"
-PITCH  = "PITCH"
-YAW    = "YAW"
-ROLL   = "ROLL"
+#class SCTriggers(StrEnum):
+#	"""This implementation sure triggers."""  # noqa: D404
+#
+#	LEFT = "LEFT"
+#	RIGHT = "RIGHT"
 
-# Special constants currently used only by menus
-SAME    = "SAME"    # Menu is canceled by releasing same button that intiated it
-DEFAULT = "DEFAULT" # Default confirm/cancel button. A/B for menus initiated by
-                    # button, pad clicking / releasing for menus on pads
 
-# Deadzone modes
-CUT     = "CUT"
-ROUND   = "ROUND"
-LINEAR  = "LINEAR"
-MINIMUM = "MINIMUM"
+class SCPads(StrEnum):
+	"""Touchpads and DPAD"""
 
-# Hipfire modes
-HIPFIRE_NORMAL    = "NORMAL"
-HIPFIRE_SENSIBLE  = "SENSIBLE"
-HIPFIRE_EXCLUSIVE = "EXCLUSIVE"
+	# TODO(Martin): Change this to LPAD and RPAD to maintain sanity
+	LEFT = "LEFT"
+	RIGHT = "RIGHT"
+	CPAD = "CPAD"
+	DPAD = "DPAD"
 
-PARSER_CONSTANTS = ( LEFT, RIGHT, WHOLE, LSTICK, RSTICK, GYRO, PITCH,
-	YAW, ROLL, DEFAULT, SAME, CUT, ROUND, LINEAR, MINIMUM,
-	HIPFIRE_NORMAL, HIPFIRE_SENSIBLE, HIPFIRE_EXCLUSIVE )
+class SCSticks(StrEnum):
+	"""Joysticks"""
 
+	LSTICK = "LSTICK"
+	RSTICK = "RSTICK"
 
 
 class SCButtons(IntEnum):
@@ -101,19 +87,13 @@ class SCButtons(IntEnum):
 	RB          = 0b000000000000000000000010000000000
 	LT          = 0b000000000000000000000001000000000
 	RT          = 0b000000000000000000000000100000000
-	CPADTOUCH   = 0b000000000000000000000000000000100 # Available on DS4 pad
-	CPADPRESS   = 0b000000000000000000000000000000010 # Available on DS4 pad
+	CPADTOUCH   = 0b000000000000000000000000000000100 # Available on DS4 & DualSeanse & DualSense Edge
+	CPADPRESS   = 0b000000000000000000000000000000010 # Available on DS4 & DualSeanse & DualSense Edge
 	LSTICKPRESS = 0b001000000000000000000000000000000
 	RSTICKPRESS = 0b010000000000000000000000000000000
 	DOTS        = 0b000000000000000000000000000001000 # Steam Controller (2026) & Deck
 	RGRIP2      = 0b000000000000000000000000000100000 # Steam Controller (2026) & Deck
 	LGRIP2      = 0b000000000000000000000000000010000 # Steam Controller (2026) & Deck
-
-
-# If lpad and stick is used at once, this is sent as
-# button with every other packet to signalize that
-# value of lpad_x and lpad_y belongs to stick
-LSTICKTILT = 0b10000000000000000000000000000000
 
 
 class HapticPos(IntEnum):
@@ -139,6 +119,58 @@ class ControllerFlags(IntEnum):
 	NO_GRIPS       = 1 << 5 # Controller has no grips
 	IS_DECK        = 1 << 6 # Very special case
 
+DAEMON_VERSION = version(distribution_name)
+
+HPERIOD  = 0.02
+LPERIOD  = 0.5
+DURATION = 1.0
+
+# Constants used when forcing gamepad to read some type of event is needed
+FE_STICK   = 1
+FE_TRIGGER = 2
+FE_PAD     = 3
+FE_GYRO    = 4
+
+# Trigger names, pads, etc. These constants are used in multiple places
+LEFT   = "LEFT"  # DEPRECATED
+RIGHT  = "RIGHT" # DEPRECATED
+CPAD   = SCPads.CPAD   # DEPRECATED
+DPAD   = SCPads.DPAD   # DEPRECATED
+LSTICK = SCSticks.LSTICK # DEPRECATED
+RSTICK = SCSticks.RSTICK # DEPRECATED
+WHOLE  = "WHOLE"
+GYRO   = "GYRO"
+PITCH  = "PITCH"
+YAW    = "YAW"
+ROLL   = "ROLL"
+
+# Special constants currently used only by menus
+SAME    = "SAME"    # Menu is canceled by releasing same button that intiated it
+DEFAULT = "DEFAULT" # Default confirm/cancel button. A/B for menus initiated by
+                    # button, pad clicking / releasing for menus on pads
+
+# Deadzone modes
+CUT     = "CUT"
+ROUND   = "ROUND"
+LINEAR  = "LINEAR"
+MINIMUM = "MINIMUM"
+
+# Hipfire modes
+HIPFIRE_NORMAL    = "NORMAL"
+HIPFIRE_SENSIBLE  = "SENSIBLE"
+HIPFIRE_EXCLUSIVE = "EXCLUSIVE"
+
+PARSER_CONSTANTS = (
+	LEFT, RIGHT, WHOLE, LSTICK, RSTICK, GYRO, PITCH,
+	YAW, ROLL, DEFAULT, SAME, CUT, ROUND, LINEAR, MINIMUM,
+	HIPFIRE_NORMAL, HIPFIRE_SENSIBLE, HIPFIRE_EXCLUSIVE,
+)
+
+# Steam Controller (2015) specific
+# If lpad and lstick is used at once, this is sent as
+# a button with every other packet to signalize that
+# the values of lpad_x and lpad_y belong to lstick
+LSTICKTILT = 0b10000000000000000000000000000000
 
 STICK_PAD_MIN      = -32768
 STICK_PAD_MAX      = 32767

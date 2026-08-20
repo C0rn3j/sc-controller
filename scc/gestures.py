@@ -28,7 +28,7 @@ class GestureDetector(Action):
 	LEFT = "L"
 	RIGHT = "R"
 
-	def __init__(self, up_direction, on_finished):
+	def __init__(self, up_direction, on_finished) -> None:
 		Action.__init__(self)
 		# TODO: Configurable resolution
 		self._resolution = 3

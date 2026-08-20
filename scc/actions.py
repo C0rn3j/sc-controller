@@ -7,12 +7,11 @@ trigger should be pressed.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Self
+from scc.controller import HapticData
+from typing import TYPE_CHECKING
 
 from scc.tools import _
 
-if TYPE_CHECKING:
-	from scc.mapper import Mapper
 import inspect
 import logging
 import sys
@@ -53,6 +52,11 @@ from scc.constants import (
 from scc.lib import xwrappers as X
 from scc.tools import anglediff, circle_to_square, clamp, ensure_size, nameof, quat2euler
 from scc.uinput import Axes, Keys, Rels
+
+if TYPE_CHECKING:
+	from typing import Self
+	from scc.mapper import Mapper
+	from scc.controller import HapticData
 
 log = logging.getLogger("Actions")
 
@@ -116,9 +120,9 @@ class Action:
 	MOD_SMOOTH = 1 << 8
 	MOD_BALL = 1 << 9
 
-	def __init__(self, *parameters):
-		self.parameters = parameters
-		self.name: str = None
+	def __init__(self, *parameters: float | Keys | Axes | Action) -> None:
+		self.parameters: tuple[float | Keys | Axes | Action, ...] = parameters
+		self.name: str | None = None
 		self.delay_after = DEFAULT_DELAY
 		# internal, insignificant and never saved value used only by editor.
 		# Has to be set to iterable of callbacks to do something usefull;
@@ -194,20 +198,21 @@ class Action:
 				yield cc
 
 	def get_compatible_modifiers(self) -> int:
-		"""Returns bit combination of MOD_* constants to indicate which modifier
-		can be used with this action.
+		"""Returns bit combination of MOD_* constants to indicate which modifier can be used with this action.
+
 		Used by GUI.
 		"""
 		return 0
 
 	def get_previewable(self) -> bool:
 		"""Returns True if action can be saved immediately to preview user changes.
+
 		Used by editor.
 		"""
 		# Not for most of actions
 		return False
 
-	def __str__(self):
+	def __str__(self) -> str:
 		return f"<Action '{self.COMMAND}', {self.parameters}>"
 
 	__repr__ = __str__
@@ -337,8 +342,8 @@ class Action:
 		"""
 
 	def strip_defaults(self):
-		"""Returns self.parameters list with all default values stripped from right
-		side.
+		"""Returns self.parameters list with all default values stripped from right side.
+
 		That means, if last parameter is default, it's removed from list; if
 		before-last parameter is default, it's removed as well; et cetera et
 		cetera until first non-default parameter is reached.
@@ -487,16 +492,16 @@ class RangeOP:
 class HapticEnabledAction:
 	"""Action that can generate haptic feedback"""
 
-	def __init__(self):
-		self.haptic = None
+	def __init__(self) -> None:
+		self.haptic: HapticData | None = None
 
 	def get_compatible_modifiers(self) -> int:
 		return Action.MOD_FEEDBACK
 
-	def set_haptic(self, hd: Action):
+	def set_haptic(self, hd: HapticData) -> None:
 		self.haptic = hd
 
-	def get_haptic(self):
+	def get_haptic(self) -> HapticData | None:
 		return self.haptic
 
 
@@ -574,7 +579,7 @@ class AxisAction(Action):
 	def __init__(self, id, min=None, max=None):
 		Action.__init__(self, id, *strip_none(min, max))
 		self.id = id
-		self.speed = 1.0
+		self.speed: float = 1.0
 		if self.id not in AxisAction.old_positions:
 			AxisAction.old_positions[self.id] = 0
 		if self.id in TRIGGERS:
@@ -584,10 +589,10 @@ class AxisAction(Action):
 			self.min = STICK_PAD_MIN if min is None else min
 			self.max = STICK_PAD_MAX if max is None else max
 
-	def set_speed(self, x, y, z):
+	def set_speed(self, x: float, y, z) -> None:
 		self.speed = x
 
-	def get_speed(self):
+	def get_speed(self) -> tuple[float]:
 		return (self.speed,)
 
 	def get_previewable(self):
@@ -635,14 +640,14 @@ class AxisAction(Action):
 			for x in self.parameters:
 				if type(x) in (int, float):
 					if x > 0:
-						return "%s %s" % (axis, pos)
+						return f"{axis} {pos}"
 					if x < 0:
-						return "%s %s" % (axis, neg)
+						return f"{axis} {neg}"
 		if context in (Action.AC_TRIGGER, Action.AC_STICK, Action.AC_PAD):
 			if self.id in AxisAction.Z:  # Trigger
 				return axis
 			xy = "X" if self.id in AxisAction.X else "Y"
-			return "%s %s" % (axis, xy)
+			return f"{axis} {xy}"
 		return axis
 
 	def button_press(self, mapper: Mapper):
@@ -794,15 +799,15 @@ class MouseAction(WholeHapticAction, Action):
 	ALIASES = ("trackpad",)
 	HAPTIC_FACTOR = 75.0  # Just magic number
 
-	def __init__(self, axis=None, speed=None):
+	def __init__(self, axis=None, speed: float | None = None) -> None:
 		Action.__init__(self, *strip_none(axis, speed))
 		WholeHapticAction.__init__(self)
 		self._mouse_axis = axis or None
 		self._old_pos = None
 		if speed:
-			self.speed = (speed, speed)
+			self.speed: tuple[float, float] = (speed, speed)
 		else:
-			self.speed = (1.0, 1.0)
+			self.speed: tuple[float, float] = (1.0, 1.0)
 
 	def get_compatible_modifiers(self):
 		return (
@@ -821,10 +826,10 @@ class MouseAction(WholeHapticAction, Action):
 	def get_axis(self):
 		return self._mouse_axis
 
-	def set_speed(self, x, y, z):
+	def set_speed(self, x: float, y: float, z) -> None:
 		self.speed = (x, y)
 
-	def get_speed(self):
+	def get_speed(self) -> tuple[float, float]:
 		return self.speed
 
 	def describe(self, context):
@@ -934,7 +939,7 @@ class MouseAbsAction(Action):
 		Action.__init__(self, *strip_none(axis))
 		self._mouse_axis = axis
 		self._old_pos = None
-		self.speed = 1.0, 1.0
+		self.speed: tuple[float, float] = 1.0, 1.0
 
 	def get_compatible_modifiers(self):
 		return Action.MOD_SENSITIVITY | Action.MOD_SENS_Z | Action.MOD_DEADZONE
@@ -945,10 +950,10 @@ class MouseAbsAction(Action):
 	def get_axis(self):
 		return self._mouse_axis
 
-	def set_speed(self, x, y, *a):
+	def set_speed(self, x: float, y: float, *a) -> None:
 		self.speed = x, y
 
-	def get_speed(self):
+	def get_speed(self) -> tuple[float, float]:
 		return self.speed
 
 	def describe(self, context):
@@ -1161,15 +1166,15 @@ class GyroAction(Action):
 	def __init__(self, axis1, axis2=None, axis3=None):
 		Action.__init__(self, axis1, *strip_none(axis2, axis3))
 		self.axes = [axis1, axis2, axis3]
-		self.speed = (1.0, 1.0, 1.0)
+		self.speed: tuple[float, float, float] = (1.0, 1.0, 1.0)
 
 	def get_compatible_modifiers(self):
 		return Action.MOD_SENSITIVITY | Action.MOD_SENS_Z
 
-	def set_speed(self, x: float, y: float, z: float):
+	def set_speed(self, x: float, y: float, z: float) -> None:
 		self.speed = (x, y, z)
 
-	def get_speed(self):
+	def get_speed(self) -> tuple[float, float, float]:
 		return self.speed
 
 	def gyro(self, mapper: Mapper, *pyr):
@@ -1326,6 +1331,7 @@ class TiltAction(MultichildAction):
 
 	def __init__(self, *actions):
 		"""Order of actions:
+
 		- Front faces down
 		- Front faces up
 		- Tilted left
@@ -1336,12 +1342,12 @@ class TiltAction(MultichildAction):
 		MultichildAction.__init__(self, *strip_none(*actions))
 		self.actions = ensure_size(6, actions, NoAction())
 		self.states = [None, None, None, None, None, None]
-		self.speed = (1.0, 1.0, 1.0)
+		self.speed: tuple[float, float, float] = (1.0, 1.0, 1.0)
 
-	def set_speed(self, x, y, z):
-		self.speed = (x, y, z)
+	def set_speed(self, x: float, y: float, z: float):
+		self.speed: tuple[float, float, float] = (x, y, z)
 
-	def get_speed(self):
+	def get_speed(self) -> tuple[float, float, float]:
 		return self.speed
 
 	def get_compatible_modifiers(self):

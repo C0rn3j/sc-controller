@@ -100,7 +100,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.background = None
 		self.outdated_version = None
 		self.profile_switchers: list[ProfileSwitcher] = []
-		self.test_mode_controller = None
+		self.test_mode_controller: ControllerManager | None = None
 		self.current_ui_layout = "default"  # only "default" and "deck" are supported
 		self.current_file = None  # Currently edited file
 		self.controller_count: int = 0

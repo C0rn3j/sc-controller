@@ -346,7 +346,7 @@ class ControllerManager(GObject.GObject):
 		self._connected: bool = False
 		self._profile = None
 		self._type: str | None = None
-		self._flags = 0
+		self._flags: int = 0
 
 	def __repr__(self) -> str:
 		return f"<ControllerManager for ID '{self._controller_id}'>"
@@ -473,8 +473,9 @@ class ControllerManager(GObject.GObject):
 		self._send_id()
 		self._dm.request("Feedback: %s %s" % (position, amplitude), DaemonManager.nocallback, DaemonManager.nocallback)
 
-	def observe(self, success_cb, error_cb, *what_to_lock):
+	def observe(self, success_cb, error_cb, *what_to_lock) -> None:
 		"""Enables observing on physical button, axis or pad.
+
 		Events from observed sources are sent to this client and processed
 		using 'event' singal, until unlock_all() is called.
 
@@ -484,16 +485,15 @@ class ControllerManager(GObject.GObject):
 		self._send_id()
 		self._dm.request("Observe: %s" % (what,), success_cb, error_cb)
 
-	def replace(self, success_cb, error_cb, what, action):
-		"""Temporally replaces action on physical button, axis or pad,
-		until unlock_all() is called.
+	def replace(self, success_cb, error_cb, what, action) -> None:
+		"""Temporally replaces action on physical button, axis or pad, until unlock_all() is called.
 
 		Calls success_cb() on success or error_cb(error) on failure.
 		"""
 		actionstr = action.to_string().replace("\n", " ")
 		self._dm.request("Replace: %s %s" % (what, actionstr), success_cb, error_cb)
 
-	def unlock_all(self):
+	def unlock_all(self) -> None:
 		if self._dm.alive:
 			self._send_id()
 			self._dm.request("Unlock.", lambda *a: False, lambda *a: False)

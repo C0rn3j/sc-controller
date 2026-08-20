@@ -11,7 +11,7 @@ from json import JSONEncoder
 from typing import TYPE_CHECKING
 
 from scc.actions import NoAction
-from scc.constants import CPAD, DPAD, GYRO, LEFT, LSTICK, RIGHT, RSTICK, WHOLE, SCButtons
+from scc.constants import GYRO, WHOLE, SCButtons, SCLeftRight, SCPads, SCSticks
 from scc.menu_data import MenuData
 from scc.modifiers import HoldModifier
 from scc.special_actions import MenuAction
@@ -29,30 +29,31 @@ class Profile:
 	# Current profile version. When loading profile file with version lower than this, auto-conversion may happen
 	VERSION = 1.6
 
-	LEFT = LEFT
-	RIGHT = RIGHT
+	LEFT = SCLeftRight.LEFT
+	RIGHT = SCLeftRight.RIGHT
 	LPAD = SCButtons.LPAD.name
 	RPAD = SCButtons.RPAD.name
-	CPAD = CPAD
-	DPAD = DPAD
+	CPAD = SCPads.CPAD
+	DPAD = SCPads.DPAD
+	LSTICK = SCSticks.LSTICK
+	RSTICK = SCSticks.RSTICK
 	WHOLE = WHOLE
-	LSTICK = LSTICK
-	RSTICK = RSTICK
 	GYRO = GYRO
 	X, Y, Z = "X", "Y", "Z"
 	LSTICK_AXES = {X: "lstick_x", Y: "lstick_y"}
 	RSTICK_AXES = {X: "rstick_x", Y: "rstick_y"}
 	LPAD_AXES = {X: "lpad_x", Y: "lpad_y"}
 	RPAD_AXES = {X: "rpad_x", Y: "rpad_y"}
-	TRIGGERS = [LEFT, RIGHT]
+	TRIGGERS = [SCLeftRight.LEFT, SCLeftRight.RIGHT]
 
 	def __init__(self, parser: ActionParser) -> None:
-		self.buttons: dict[int, Action]
+		self.original_version : float
 		self.lstick: Action
 		self.rstick: Action
 		self.gyro: Action
-		self.buttons: dict[int, Action]
-		self.triggers: dict[str, Action]
+		self.buttons: dict[SCButtons, Action]
+		self.triggers: dict[SCLeftRight, Action]
+		self.pads: dict[SCPads, Action]
 		self.parser: ActionParser = parser
 		self.clear()
 		self.filename: str | None = None
@@ -61,25 +62,25 @@ class Profile:
 		self.description: str = ""
 
 	def save(self, filename: str) -> Self:
-		"""Saves profile into file. Returns self"""
+		"""Saves profile into file."""
 		with open(filename, "w") as fileobj:
 			self.save_fileobj(fileobj)
 		return self
 
 	def save_fileobj(self, fileobj) -> Self:
-		"""Saves profile into file-like object. Returns self"""
+		"""Saves profile into file-like object."""
 		data = {
 			"_": (self.description if "\n" not in self.description else self.description.strip("\n").split("\n")),
 			"buttons": {},
 			"lstick": self.lstick,
 			"rstick": self.rstick,
 			"gyro": self.gyro,
-			"trigger_left": self.triggers[Profile.LEFT],
-			"trigger_right": self.triggers[Profile.RIGHT],
-			"pad_left": self.pads[Profile.LEFT],
-			"pad_right": self.pads[Profile.RIGHT],
-			"cpad": self.pads[Profile.CPAD],
-			"dpad": self.pads[Profile.DPAD],
+			"trigger_left": self.triggers[SCLeftRight.LEFT],
+			"trigger_right": self.triggers[SCLeftRight.RIGHT],
+			"pad_left": self.pads[SCPads.LEFT],
+			"pad_right": self.pads[SCPads.RIGHT],
+			"cpad": self.pads[SCPads.CPAD],
+			"dpad": self.pads[SCPads.DPAD],
 			"menus": {id: self.menus[id].encode() for id in self.menus},
 			"is_template": self.is_template,
 			"version": Profile.VERSION,
@@ -95,7 +96,7 @@ class Profile:
 		return self
 
 	def load(self, filename: str) -> Self:
-		"""Loads profile from file. Returns self"""
+		"""Loads profile from file."""
 		with open(filename) as fileobj:
 			self.load_fileobj(fileobj)
 		self.filename = filename
@@ -105,8 +106,6 @@ class Profile:
 		"""Loads profile from file-like object.
 
 		Filename attribute is not set, what may cause some trouble if used in GUI.
-
-		Returns self.
 		"""
 		data = json.loads(fileobj.read())
 		# Version
@@ -161,10 +160,10 @@ class Profile:
 
 			# Pads
 			self.pads = {
-				Profile.LEFT: self.parser.from_json_data(data, "left_pad"),
-				Profile.RIGHT: self.parser.from_json_data(data, "right_pad"),
-				Profile.CPAD: NoAction(),
-				Profile.DPAD: NoAction(),
+				SCPads.LEFT: self.parser.from_json_data(data, "left_pad"),
+				SCPads.RIGHT: self.parser.from_json_data(data, "right_pad"),
+				SCPads.CPAD: NoAction(),
+				SCPads.DPAD: NoAction(),
 			}
 
 			# Right stick
@@ -173,16 +172,16 @@ class Profile:
 			# New format
 			# Triggers
 			self.triggers = {
-				Profile.LEFT: self.parser.from_json_data(data, "trigger_left"),
-				Profile.RIGHT: self.parser.from_json_data(data, "trigger_right"),
+				SCLeftRight.LEFT: self.parser.from_json_data(data, "trigger_left"),
+				SCLeftRight.RIGHT: self.parser.from_json_data(data, "trigger_right"),
 			}
 
 			# Pads
 			self.pads = {
-				Profile.LEFT: self.parser.from_json_data(data, "pad_left"),
-				Profile.RIGHT: self.parser.from_json_data(data, "pad_right"),
-				Profile.CPAD: self.parser.from_json_data(data, "cpad"),
-				Profile.DPAD: self.parser.from_json_data(data, "dpad"),
+				SCPads.LEFT: self.parser.from_json_data(data, "pad_left"),
+				SCPads.RIGHT: self.parser.from_json_data(data, "pad_right"),
+				SCPads.CPAD: self.parser.from_json_data(data, "cpad"),
+				SCPads.DPAD: self.parser.from_json_data(data, "dpad"),
 			}
 
 			# Right stick
@@ -212,12 +211,12 @@ class Profile:
 		self.lstick = NoAction()
 		self.rstick = NoAction()
 		self.is_template = False
-		self.triggers = {Profile.LEFT: NoAction(), Profile.RIGHT: NoAction()}
+		self.triggers = {SCLeftRight.LEFT: NoAction(), SCLeftRight.RIGHT: NoAction()}
 		self.pads = {
-			Profile.LEFT: NoAction(),
-			Profile.RIGHT: NoAction(),
-			Profile.CPAD: NoAction(),
-			Profile.DPAD: NoAction(),
+			SCPads.LEFT: NoAction(),
+			SCPads.RIGHT: NoAction(),
+			SCPads.CPAD: NoAction(),
+			SCPads.DPAD: NoAction(),
 		}
 		self.gyro = NoAction()
 
@@ -247,7 +246,7 @@ class Profile:
 		for action in (self.lstick, self.rstick, self.gyro):
 			yield action
 
-	def get_filename(self):
+	def get_filename(self) -> str | None:
 		"""Returns filename of last loaded file or None."""
 		return self.filename
 
@@ -315,9 +314,10 @@ class Profile:
 			from scc.constants import TRIGGER_CLICK, TRIGGER_HALF, TRIGGER_MAX
 			from scc.uinput import Keys
 
-			for p in (Profile.LEFT, Profile.RIGHT):
+			for p in (SCLeftRight.LEFT, SCLeftRight.RIGHT):
 				if isinstance(self.triggers[p], ButtonAction):
-					buttons, numbers = [], []
+					buttons: list[Keys] = []
+					numbers = []
 					n = None
 					# There were one or two keys and zero to two numeric
 					# parameters for old button action
