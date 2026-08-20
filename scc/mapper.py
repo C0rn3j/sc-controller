@@ -410,6 +410,8 @@ class Mapper:
 			button = SCButtons.LPADTOUCH
 		elif button == SCPads.RPAD:
 			button = SCButtons.RPADTOUCH
+			import traceback
+			log.error("set_button RIGHT:\n%s", "".join(traceback.format_stack()))
 		elif button == SCSticks.RSTICK:
 			button = SCButtons.RSTICKTOUCH
 		elif button == SCSticks.LSTICK:
@@ -539,6 +541,14 @@ class Mapper:
 				if FE_PAD in fe or self.old_state.rpad_x != state.rpad_x or self.old_state.rpad_y != state.rpad_y:
 					self.profile.pads[SCPads.RPAD].whole(self, state.rpad_x, state.rpad_y, SCPads.RPAD)
 			elif FE_PAD in fe or self.buttons & SCButtons.RPADTOUCH or SCButtons.RPADTOUCH & btn_rem:
+				log.error(
+					"RPAD decision: fe=%r, buttons=%#x, force_pad=%s, touch=%s, removed=%s",
+					fe,
+					int(self.buttons),
+					FE_PAD in fe,
+					bool(self.buttons & SCButtons.RPADTOUCH),
+					bool(SCButtons.RPADTOUCH & btn_rem),
+				)
 				self.profile.pads[SCPads.RPAD].whole(self, state.rpad_x, state.rpad_y, SCPads.RPAD)
 			# DPAD
 			if controller.flags & ControllerFlags.HAS_DPAD and hasattr(state, "dpad_x"):
@@ -546,7 +556,7 @@ class Mapper:
 					self.profile.pads[DPAD].whole(self, state.dpad_x, state.dpad_y, SCPads.DPAD)
 
 			# LPAD
-			if not controller.flags & ControllerFlags.LSTICK_LPAD_SHARE_AXES and hasattr(state, "lpad_x"):
+			if not controller.flags & ControllerFlags.LSTICK_LPAD_SHARE_AXES and hasattr(state, "lpad_x") and hasattr(state, "lpad_x"):
 				if FE_PAD in fe or self.old_state.lpad_x != state.lpad_x or self.old_state.lpad_y != state.lpad_y:
 					self.profile.pads[SCPads.LPAD].whole(self, state.lpad_x, state.lpad_y, SCPads.LPAD)
 			elif controller.flags & ControllerFlags.LSTICK_LPAD_SHARE_AXES and self.buttons & SCButtons.LPADTOUCH:

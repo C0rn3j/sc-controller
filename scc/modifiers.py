@@ -1539,7 +1539,11 @@ class CircularModifier(Modifier, HapticEnabledAction):
 			# Keep event from activating if no angle change
 			if angle != 0.0:
 				self.action.change(mapper, -angle * self.speed, 0, what)
-				mapper.force_event.add(FE_PAD)
+				if what in (LSTICK, RSTICK):
+					mapper.force_event.add(FE_STICK)
+				else:
+					log.error(what)
+					mapper.force_event.add(FE_PAD)
 
 
 class CircularAbsModifier(Modifier, WholeHapticAction):
@@ -1605,4 +1609,8 @@ class CircularAbsModifier(Modifier, WholeHapticAction):
 			angle *= STICK_PAD_MAX / PI
 			# Set axis on child action
 			self.action.axis(mapper, angle * self.speed, 0)
-			mapper.force_event.add(FE_PAD)
+			if what in (LSTICK, RSTICK):
+				mapper.force_event.add(FE_STICK)
+			else:
+				log.error(what)
+				mapper.force_event.add(FE_PAD)
