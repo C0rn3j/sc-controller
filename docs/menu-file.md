@@ -16,15 +16,17 @@ displayed on screen. If `name` is not specified, title is auto-generated.
 
 Example:
 
-	[{
-	  "id": "item1",
-	  "action": "profile('Desktop')",
-	  "name": "Switch to Desktop profile",
-	}, {
-	  "id": "item2",
-	  "action": "turnoff()",
-	  "name": "Turn controller OFF",
-	}]
+```json
+[{
+  "id": "item1",
+  "action": "profile('Desktop')",
+  "name": "Switch to Desktop profile",
+}, {
+  "id": "item2",
+  "action": "turnoff()",
+  "name": "Turn controller OFF",
+}]
+```
 
 specifies menu with two items.
 
@@ -40,10 +42,12 @@ that order.
 
 Example:
 
-	[{
-	  "submenu": "profiles.menu",
-	  "name": "All Profiles"
-	}]
+```json
+[{
+  "submenu": "profiles.menu",
+  "name": "All Profiles"
+}]
+```
 
 specifies menu with sumbmenu called "All Profiles" defined in *profiles.menu*
 
@@ -60,13 +64,15 @@ by dict with `generator` key, where value is type of generator to use.
 
 Example:
 
-	[{
-	  "generator": "profiles"
-	}, {
-	  "id": "item2",
-	  "action": "turnoff()",
-	  "name": "Turn controller OFF",
-	}]
+```json
+[{
+  "generator": "profiles"
+}, {
+  "id": "item2",
+  "action": "turnoff()",
+  "name": "Turn controller OFF",
+}]
+```
 
 specifies menu with list of all profiles, followed by one normal menu item.
 

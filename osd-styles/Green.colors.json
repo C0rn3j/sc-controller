@@ -1,6 +1,6 @@
 {
 	"####" : "This is default color scheme",
-	
+
 	"###" : "Colors used by OSD",
 	"osd_colors": {
 		"background": "101010",
@@ -12,7 +12,7 @@
 		"menuitem_hilight_border": "00FF00",
 		"menuseparator": "109010"
 	},
-	
+
 	"###" : "Colors used by on-screen keyboard",
 	"osk_colors": {
 		"hilight" : "00688D",

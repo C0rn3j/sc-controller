@@ -16,14 +16,14 @@
     "icon": "system/autoswitch",
     "name": "Autoswitch Options"
 }, {
-    "action": "turnoff()", 
-    "id": "item4", 
+    "action": "turnoff()",
+    "id": "item4",
     "icon": "system/turn-off",
-    "name": "Turn Controller OFF", 
+    "name": "Turn Controller OFF",
     "osd": true
 }, {
-    "action": "keyboard()", 
-    "id": "item5", 
+    "action": "keyboard()",
+    "id": "item5",
     "icon": "system/keyboard",
     "name": "Display Keyboard"
 }]

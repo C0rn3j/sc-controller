@@ -500,30 +500,33 @@ Works only on buttons.
 
 # <a name="examples2"></a>Examples for profile file
 Emulate key presses based on left stick position
-```
-"lstick" : {
-	"X"		: { "action" : "pad(KEY_A, KEY_D)" },
-	"Y"		: { "action" : "key(KEY_W, KEY_S)" },
+```json
+"lstick": {
+  "X": { "action": "pad(KEY_A, KEY_D)" },
+  "Y": { "action": "key(KEY_W, KEY_S)" },
+}
 ```
 
 
 Emulate left/right stick movement with X and B buttons
-```
-"buttons" : {
-	"B"      : { "action" : "axis(ABS_X, 0, 32767)" },
-	"X"      : { "action" : "axis(ABS_X, 0, -32767)" },
+```json
+"buttons": {
+  "B": { "action": "axis(ABS_X, 0, 32767)" },
+  "X": { "action": "axis(ABS_X, 0, -32767)" },
+}
 ```
 
 Emulate dpad on left touchpad, but act only when dpad is pressed
-```
-"left_pad" : {
-	"action" : "click( dpad('hatup(ABS_HAT0Y)', 'hatdown(ABS_HAT0Y)', 'hatleft(ABS_HAT0X)', 'hatright(ABS_HAT0X)' ) )"
+```json
+"left_pad": {
+  "action": "click( dpad('hatup(ABS_HAT0Y)', 'hatdown(ABS_HAT0Y)', 'hatleft(ABS_HAT0X)', 'hatright(ABS_HAT0X)' ) )"
 }
 ```
 
 Emulate button A when left trigger is half-pressed and button B when
 it is pressed fully
-```
-"triggers" : {
-	"LEFT"  : { "action" : "pad(BTN_A, BTN_B)" },
+```json
+"trigger_left": {
+    "action": "pad(BTN_A, BTN_B)"
+},
 ```

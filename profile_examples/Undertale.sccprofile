@@ -1,43 +1,43 @@
 {
-    "_": "", 
+    "_": "",
     "buttons": {
         "A": {
-            "action": "button(Keys.KEY_ENTER)", 
+            "action": "button(Keys.KEY_ENTER)",
             "name": "Confirm"
-        }, 
+        },
         "B": {
-            "action": "button(Keys.KEY_LEFTSHIFT)", 
+            "action": "button(Keys.KEY_LEFTSHIFT)",
             "name": "Cancel"
-        }, 
+        },
         "BACK": {
-            "action": "button(Keys.KEY_ESC)", 
+            "action": "button(Keys.KEY_ESC)",
             "name": "Quit"
-        }, 
+        },
         "C": {
             "action": "menu('Default.menu')"
-        }, 
+        },
         "START": {
-            "action": "button(Keys.KEY_F4)", 
+            "action": "button(Keys.KEY_F4)",
             "name": "Fullscreen"
-        }, 
+        },
         "Y": {
-            "action": "button(Keys.KEY_LEFTCTRL)", 
+            "action": "button(Keys.KEY_LEFTCTRL)",
             "name": "In-Game Menu"
         }
-    }, 
-    "cpad": {}, 
-    "gyro": {}, 
-    "is_template": false, 
-    "menus": {}, 
-    "pad_left": {}, 
+    },
+    "cpad": {},
+    "gyro": {},
+    "is_template": false,
+    "menus": {},
+    "pad_left": {},
     "pad_right": {
         "action": "feedback(RIGHT, 256, ball(mouse(None, 1.0)))"
-    }, 
+    },
     "lstick": {
-        "action": "dpad(button(Keys.KEY_UP), button(Keys.KEY_DOWN), button(Keys.KEY_LEFT), button(Keys.KEY_RIGHT))", 
+        "action": "dpad(button(Keys.KEY_UP), button(Keys.KEY_DOWN), button(Keys.KEY_LEFT), button(Keys.KEY_RIGHT))",
         "name": "Movement"
-    }, 
-    "trigger_left": {}, 
-    "trigger_right": {}, 
+    },
+    "trigger_left": {},
+    "trigger_right": {},
     "version": 1.6
 }

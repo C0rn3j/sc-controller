@@ -37,7 +37,7 @@ def merge(file_from: str, file_to: str, from_: str, to: str) -> None:
 def main() -> None:
 	"""Clone our wiki and merge actions.md into Custom-Action-Examples-and-Explanations.md."""
 	if not os.path.exists("sc-controller.wiki/.git"):
-		try_run("git clone 'https://github.com/C0rn3j/sc-controller.wiki.git'")
+		try_run("git clone git@github.com:C0rn3j/sc-controller.wiki.git")
 
 	os.chdir("sc-controller.wiki")
 	try_run("git pull")

@@ -10,7 +10,7 @@
 		"menuitem_hilight_border": "FF0000",
 		"menuseparator": "905050"
 	},
-	
+
 	"###" : "Colors used by on-screen keyboard",
 	"osk_colors": {
 		"hilight" : "00688D",

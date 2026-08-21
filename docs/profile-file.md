@@ -4,15 +4,16 @@ SC Controller profile file specification
 Profile file contains json-encoded dictonary with specific keys. Missing keys are substituted with defaults, unknown keys are ignored. See [Desktop.sccprofile](../default_profiles/Desktop.sccprofile) for example.
 
 Root dictonary has to contain following keys:
-- `buttons`			- contains subkey for controller buttons. See [buttons](#buttons).
-- `pad_left`		- sets action executed when finger is moved on left touchpad.
-- `pad_right`		- ... when finger is moved on right touchpad.
-- `lstick`			- ... when left-stick angle is changed.
-- `trigger_left`	- ... when left trigger value is changed.
-- `trigger_right`	- ... when right trigger value is changed.
-- `gyro`			- ... when gyroscope reading changes. Gyroscope in is activated only if this key is set to something else than `NoAction`
-- `menus`			- stores menus saved in profile. See [menus](#menus).
-- `version`			- profile file version. Current version is _1.6_. If not present, _0_ is assumed. If profile file version is lower than expected, automatic conversion may happen. This conversion is in-memory only, but changing and saving such profile in GUI will save converted data.
+- `buttons`       - contains subkey for controller buttons. See [buttons](#buttons).
+- `pad_left`      - sets action executed when finger is moved on left touchpad.
+- `pad_right`     - ... when finger is moved on right touchpad.
+- `lstick`        - ... when left stick angle is changed.
+- `rstick`        - ... when right stick angle is changed.
+- `trigger_left`  - ... when left trigger value is changed.
+- `trigger_right` - ... when right trigger value is changed.
+- `gyro`          - ... when gyroscope reading changes. Gyroscope in is activated only if this key is set to something else than `NoAction`
+- `menus`         - stores menus saved in profile. See [menus](#menus).
+- `version`       - profile file version. Current version is _1.6_. If not present, _0_ is assumed. If profile file version is lower than expected, automatic conversion may happen. This conversion is in-memory only, but changing and saving such profile in GUI will save converted data.
 
 See [actions.md](actions.md) file for list of possible actions.
 
@@ -24,11 +25,12 @@ Action definition is dictionary containing `action` key and optional `name` key.
 
 For example,
 
-	{
-	  "trigger_left": {
-	    "action": "axis(Axes.ABS_Z)",
-	    "name": "Aim",
-	}}
+```json
+"trigger_left": {
+  "action": "axis(Axes.ABS_Z)",
+  "name": "Aim",
+},
+```
 
 assigns `axis` action with *Axes.ABS_Z* parameter to left trigger.
 
@@ -40,14 +42,19 @@ or stick axis. If either of keys is specified, `action` key is ignored.
 
 Example:
 
-	"lstick" : {
-	  "X": { "action": "axis(Axes.ABS_RX)" },
-	  "Y": { "action": "raxis(Axes.ABS_RY)" }
-	},
+```json
+"lstick": {
+  "X": { "action": "axis(Axes.ABS_RX)" },
+  "Y": { "action": "raxis(Axes.ABS_RY)" }
+},
+```
 
-
-is same as
-`"lstick" : { "action" : "XY(axis(Axes.ABS_RX), raxis(Axes.ABS_RY))" }`
+is the same as
+```json
+"lstick": {
+  "action": "XY(axis(Axes.ABS_RX), raxis(Axes.ABS_RY))"
+}
+```
 
 
 #### `levels`
@@ -56,10 +63,12 @@ levels among which is action executed.
 
 Example:
 
-	"trigger_left": {
-	  "action": "button(BTN_LEFT)",
-	  "levels": [127, 255]
-	},
+```json
+"trigger_left": {
+  "action": "button(BTN_LEFT)",
+  "levels": [127, 255]
+},
+```
 
 Sets action that presses left mouse button, but only if trigger
 is roughly half-pressed.
@@ -71,12 +80,14 @@ side of pad or stick alignment.
 
 Example:
 
-	"dpad" : [
-	  { "action": "button(Keys.KEY_UP)" },
-	  { "action": "button(Keys.KEY_DOWN)" },
-	  { "action": "button(Keys.KEY_LEFT)" },
-	  { "action": "button(Keys.KEY_RIGHT)" }
-	],
+```json
+"dpad": [
+  { "action": "button(Keys.KEY_UP)" },
+  { "action": "button(Keys.KEY_DOWN)" },
+  { "action": "button(Keys.KEY_LEFT)" },
+  { "action": "button(Keys.KEY_RIGHT)" }
+],
+```
 
 
 #### `ring`
@@ -85,13 +96,15 @@ actions and 'radius' as float value, but all keys are optional.
 
 Example:
 
-	"pad_left": {
-	  "ring": {
-	    "inner": { "action": "XY(axis(Axes.ABS_X), raxis(Axes.ABS_Y))" },
-	    "outer": { "action": "XY(axis(Axes.ABS_RX), raxis(Axes.ABS_RY))" },
-	    "radius": 0.4
-	  }
-	},
+```json
+"pad_left": {
+  "ring": {
+    "inner": { "action": "XY(axis(Axes.ABS_X), raxis(Axes.ABS_Y))" },
+    "outer": { "action": "XY(axis(Axes.ABS_RX), raxis(Axes.ABS_RY))" },
+    "radius": 0.4
+  }
+},
+```
 
 defines inner ring binding controlling left stick and outer ring right stick
 of emulated gamepad.
@@ -102,12 +115,14 @@ dpad. Works pretty-much as `dpad` on gyro.
 
 Example:
 
-	"tilt" : [
-	  { "action": "button(Keys.KEY_UP)" },
-	  { "action": "button(Keys.KEY_DOWN)" },
-	  { "action": "button(Keys.KEY_LEFT)" },
-	  { "action": "button(Keys.KEY_RIGHT)" }
-	],
+```json
+"tilt": [
+  { "action": "button(Keys.KEY_UP)" },
+  { "action": "button(Keys.KEY_DOWN)" },
+  { "action": "button(Keys.KEY_LEFT)" },
+  { "action": "button(Keys.KEY_RIGHT)" }
+],
+```
 
 #### `deadzone`
 Specifies deadzone. Allows for `lower` and `upper` subkeys defaulting to
@@ -116,13 +131,16 @@ See see [deadzone modifier](actions.md#deadzone) for list of modes.
 
 Example:
 
-	"trigger_left": {
-		"mode" : "linear",
- 	  "action": "axis(Axes.ABS_Z)",
- 	  "deadzone": {
-	    "lower": 100,
-	    "upper": 200
-  	}},
+```json
+"trigger_left": {
+  "mode": "linear",
+  "action": "axis(Axes.ABS_Z)",
+  "deadzone": {
+    "lower": 100,
+    "upper": 200
+  }
+},
+```
 
 
 #### `sensitivity`
@@ -132,10 +150,12 @@ Default sensitivity is 1.0
 
 Example:
 
-	"lstick" : {
-	  "action": "trackball()",
-	  "sensitivity": [2.0, 0.5]
-	},
+```json
+"lstick": {
+  "action": "trackball()",
+  "sensitivity": [2.0, 0.5]
+},
+```
 
 doubles sensitivity over X and halves over Y axis.
 
@@ -145,10 +165,12 @@ Rotates input pad or stick input by given angle.
 
 Example:
 
-	"lstick" : {
-	  "action": "trackball()",
-	  "rotate": 15
-	},
+```json
+"lstick": {
+  "action": "trackball()",
+  "rotate": 15
+},
+```
 
 
 
@@ -159,12 +181,14 @@ amplitude and frequency.
 
 Example:
 
-	"pad_left": {
-	  "action": "trackball()",
-	  "feedback": ["LEFT", 512.0, 5.0]
-	},
+```json
+"pad_left": {
+  "action": "trackball()",
+  "feedback": ["LEFT", 512.0, 5.0]
+},
+```
 
-specifies feedback with amplitude of 512 (default vlaue)
+specifies feedback with amplitude of 512 (default value)
 and frequency of 5 generated by left motor.
 
 
@@ -173,10 +197,12 @@ Enables input smoothing (see [smooth modifier](actions.md#smooth))
 
 Example:
 
-	"pad_left": {
-	  "action": "trackball()",
-	  "smooth": [ 8, 0.7, 2.0 ]
-	},
+```json
+"pad_left": {
+  "action": "trackball()",
+  "smooth": [8, 0.7, 2.0]
+},
+```
 
 enables smoothing with buffer of 8 and modifier set to 0.7.
 
@@ -186,10 +212,12 @@ If set to True, enables OSD for action.
 
 Example:
 
-	"X": {
-	  "action": "button(Keys.BTN_EAST)",
-	  "osd": true
-	},
+```json
+"X": {
+  "action": "button(Keys.BTN_EAST)",
+  "osd": true
+},
+```
 
 enables OSD feedback for X button.
 
@@ -199,11 +227,12 @@ pad or stick is pressed.
 
 Example:
 
-	"pad_left": {
-	  "action": "mouse()",
-	  "click": True
-	},
-
+```json
+"pad_left": {
+  "action": "mouse()",
+  "click": True
+},
+```
 
 #### `ball`
 If set to value, enables trackball mode. Value is list with zero to two values
@@ -212,11 +241,12 @@ See [ball modifier](actions.md#ball) for more info.
 
 Example:
 
-	"pad_left": {
-	  "action": "mouse()",
-	  "ball": [ 10.0 ]
-	},
-
+```json
+"pad_left": {
+  "action": "mouse()",
+  "ball": [10.0]
+},
+```
 
 #### `circular`
 Designed to controls scroll wheel by scrolling finger around pad, but can
@@ -224,10 +254,12 @@ be used with any axis.
 
 Example:
 
-	"pad_left": {
-	  "action": "mouse(Rels.REL_WHEEL)",
-	  "circular": true
-	},
+```json
+"pad_left": {
+  "action": "mouse(Rels.REL_WHEEL)",
+  "circular": true
+},
+```
 
 
 #### `circularabs`
@@ -236,10 +268,12 @@ translates exact position on dpad to axis value.
 
 Example:
 
-	"pad_left": {
-	  "action": "circularabs(Rels.REL_WHEEL)",
-	  "circular": true
-	},
+```json
+"pad_left": {
+  "action": "circularabs(Rels.REL_WHEEL)",
+  "circular": true
+},
+```
 
 
 #### `modes`
@@ -251,10 +285,12 @@ action.
 
 Example:
 
-	"modes": {
-	  "A": { "action": "mouse()" },
-	  "B": { "action": "XY( axis(Axes.ABS_X), raxis(Axes.ABS_Y) )" }
-	},
+```json
+"modes": {
+  "A": { "action": "mouse()" },
+  "B": { "action": "XY( axis(Axes.ABS_X), raxis(Axes.ABS_Y) )" }
+},
+```
 
 defines pad or stick that controls mouse while button A is pressed
 and left virtual stick while button B is pressed.
@@ -268,9 +304,11 @@ for each gesture as values.
 
 Example:
 
-	"gestures": {
-	  "UD": { "action": "button(Key.R)" }
-	},
+```json
+"gestures": {
+  "UD": { "action": "button(Key.R)" }
+},
+```
 
 enables gesture recognition with single gesture activated when user does short stroke up followed by short stroke down.
 
@@ -281,13 +319,15 @@ double-click time.
 
 Example:
 
-	"buttons": {
-	  "A": {
-	    "action": "button(KEY_X)",
-	    "doubleclick": { "action": "button(KEY_Z)" },
-		"time": 5
-	  }
-	}
+```json
+"buttons": {
+  "A": {
+    "action": "button(KEY_X)",
+    "doubleclick": { "action": "button(KEY_Z)" },
+    "time": 5
+  }
+}
+```
 
 defines button that emulates pressing X key when pressed normally and
 pressing Z key when doubleclicked.
@@ -300,13 +340,15 @@ double-click time.
 
 Example:
 
-	"buttons": {
-	  "A": {
-	    "action": "button(KEY_X)",
-	    "hold": { "action": "button(KEY_Z)" },
-		"time": 5
-	  }
-	}
+```json
+"buttons": {
+  "A": {
+    "action": "button(KEY_X)",
+    "hold": { "action": "button(KEY_Z)" },
+    "time": 5
+  }
+}
+```
 
 defines button that emulates pressing X key when pressed normally and
 pressing Z key when held for 5 seconds.
@@ -326,11 +368,13 @@ All keys are optional. Value for each key is [action definition](#Action_definit
 
 Example:
 
-	"buttons": {
-	  "A":    { "action": "button(Keys.BTN_WEST)",  },
-	  "B":    { "action": "osd('Hello world!')" },
-	  "BACK": { "action": "button(Keys.KEY_LEFTCTRL) and button(Keys.KEY_A)" },
-	}
+```json
+"buttons": {
+  "A":    { "action": "button(Keys.BTN_WEST)" },
+  "B":    { "action": "osd('Hello world!')" },
+  "BACK": { "action": "button(Keys.KEY_LEFTCTRL) and button(Keys.KEY_A)" },
+}
+```
 
 
 ## <a name="menus"></a>Menus

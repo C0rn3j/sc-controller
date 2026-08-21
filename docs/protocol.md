@@ -60,9 +60,6 @@ List of possible events:
 - `Event: LEFT x y` - Sent when finger on left pad is moved. *x* and *y* is new position.
 - `Event: RIGHT x y` - Sent when finger on right pad is moved. *x* and *y* is new position.
 
-For compatibility, the daemon accepts `STICK` and `STICKPRESS` in lock requests
-from older clients as aliases for `LSTICK` and `LSTICKPRESS`.
-
 #### `Error: message`
 Sent to every client when error is detected. May be sent repeatedly to indicate
 multiple errors.
