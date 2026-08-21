@@ -25,11 +25,11 @@ jobs:
             codename: resolute
             pubkey: 871920D1991BC93C
             recipe: AppImageBuilder.yml
-          - os: debian
-            codename: bookworm
-            pubkey: 54404762BBB6E853
-            pubkey_security: 6ED0E7B82643E131
-            recipe: AppImageBuilder.debian.yml
+          # - os: debian
+          #   codename: bookworm
+          #   pubkey: 54404762BBB6E853
+          #   pubkey_security: 6ED0E7B82643E131
+          #   recipe: AppImageBuilder.debian.yml
           - os: debian
             codename: trixie
             pubkey: BDE6D2B9216EC7A8
@@ -126,8 +126,8 @@ jobs:
             codename: noble
           - os: ubuntu
             codename: resolute
-          - os: debian
-            codename: bookworm
+          # - os: debian
+          #   codename: bookworm
           - os: debian
             codename: trixie
           - os: fedora

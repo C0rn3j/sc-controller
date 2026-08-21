@@ -16,7 +16,9 @@ classifiers = [
 	"Operating System :: POSIX :: Linux",
 	"Typing :: Typed",
 ]
-requires-python = ">=3.11"
+# Target non-EOL releases at minimum, or later if needed
+# https://devguide.python.org/versions/
+requires-python = ">=3.12"
 dependencies = [
 	"evdev",
 	# Vendored, dep check disabled until a rename happens in v1.3+ to avoid failing a `pip check` run
@@ -72,9 +74,6 @@ packages = [
 [tool.setuptools_scm]
 
 [tool.ruff]
-# Target non-EOL releases at minimum, or later if needed
-# https://devguide.python.org/versions/
-target-version = "py311"
 # Project uses 80 sporadically, so just do soft 80 and hard break at 120
 line-length = 120
 
