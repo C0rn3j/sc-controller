@@ -120,11 +120,11 @@
       </row>
       <row>
         <col id="0" translatable="yes">Left Pad Press</col>
-        <col id="1">LPAD</col>
+        <col id="1">LPADPRESS</col>
       </row>
       <row>
         <col id="0" translatable="yes">Right Pad Press</col>
-        <col id="1">RPAD</col>
+        <col id="1">RPADPRESS</col>
       </row>
     </data>
   </object>

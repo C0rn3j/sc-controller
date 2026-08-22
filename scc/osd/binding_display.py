@@ -17,7 +17,7 @@ from gi.repository import Gtk
 
 from scc.actions import Action, AxisAction, DPadAction, MouseAction, MultiAction, XYAction
 from scc.config import Config
-from scc.constants import SCButtons
+from scc.constants import SCButtons, SCTriggers, SCPads
 from scc.gui.daemon_manager import DaemonManager
 from scc.gui.svg_widget import SVGEditor, SVGWidget
 from scc.modifiers import DoubleclickModifier, ModeModifier
@@ -185,7 +185,7 @@ class Line:
 class LineCollection:
 	"""Allows calling add_icon on multiple lines at once"""
 
-	def __init__(self, *lines):
+	def __init__(self, *lines) -> None:
 		self.lines = lines
 
 	def add_icon(self, icon) -> Self:
@@ -212,9 +212,9 @@ class Box:
 		self.min_height = min_height
 
 	def to_string(self):
-		return "--- %s ---\n%s\n" % (self.name, "\n".join([x.to_string() for x in self.lines]))
+		return "--- {} ---\n{}\n".format(self.name, "\n".join([x.to_string() for x in self.lines]))
 
-	def add(self, icon, context, action):
+	def add(self, icon, context, action: Action):
 		if not action:
 			return LineCollection()
 		if isinstance(action, MultiAction):
@@ -383,7 +383,7 @@ class Box:
 class Generator:
 	PADDING = 10
 
-	def __init__(self, editor, profile):
+	def __init__(self, editor, profile: Profile):
 		background = SVGEditor.get_element(editor, "background")
 		self.label_template = SVGEditor.get_element(editor, "label_template")
 		self.line_height = int(float(self.label_template.attrib.get("height") or 8))
@@ -407,10 +407,10 @@ class Generator:
 			min_width=self.full_width * 0.2,
 			max_width=self.full_width * 0.275,
 		)
-		box_left.add("LEFT", Action.AC_TRIGGER, profile.triggers.get(profile.LEFT))
+		box_left.add("LT", Action.AC_TRIGGER, profile.triggers.get(SCTriggers.LT))
 		box_left.add("LB", Action.AC_BUTTON, profile.buttons.get(SCButtons.LB))
 		box_left.add("LGRIP", Action.AC_BUTTON, profile.buttons.get(SCButtons.LGRIP))
-		box_left.add("LPAD", Action.AC_PAD, profile.pads.get(profile.LEFT))
+		box_left.add("LPAD", Action.AC_PAD, profile.pads.get(SCPads.LPAD))
 		boxes.append(box_left)
 
 		box_right = Box(
@@ -422,10 +422,10 @@ class Generator:
 			min_width=self.full_width * 0.2,
 			max_width=self.full_width * 0.275,
 		)
-		box_right.add("RIGHT", Action.AC_TRIGGER, profile.triggers.get(profile.RIGHT))
+		box_right.add("RT", Action.AC_TRIGGER, profile.triggers.get(SCTriggers.RT))
 		box_right.add("RB", Action.AC_BUTTON, profile.buttons.get(SCButtons.RB))
 		box_right.add("RGRIP", Action.AC_BUTTON, profile.buttons.get(SCButtons.RGRIP))
-		box_right.add("RPAD", Action.AC_PAD, profile.pads.get(profile.RIGHT))
+		box_right.add("RPAD", Action.AC_PAD, profile.pads.get(SCPads.RPAD))
 		boxes.append(box_right)
 
 		box_abxy = Box(
@@ -467,7 +467,7 @@ class Generator:
 
 		editor.commit()
 
-	def equal_width(self, *boxes):
+	def equal_width(self, *boxes) -> None:
 		"""Sets width of all passed boxes to width of widest box"""
 		width = 0
 		for b in boxes:
@@ -477,7 +477,7 @@ class Generator:
 			if b.align & Align.RIGHT:
 				b.x = self.full_width - b.width - self.PADDING
 
-	def equal_height(self, *boxes):
+	def equal_height(self, *boxes) -> None:
 		"""Sets height of all passed boxes to height of tallest box"""
 		height = 0
 		for b in boxes:

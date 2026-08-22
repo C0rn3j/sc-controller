@@ -1,4 +1,5 @@
 """SC Controller - Daemon class."""
+
 from __future__ import annotations
 
 import json
@@ -23,15 +24,11 @@ from scc.constants import (
 	CPAD,
 	DAEMON_VERSION,
 	DPAD,
-	LEFT,
-	LSTICK,
-	RIGHT,
-	RSTICK,
 	HapticPos,
 	SCButtons,
-	SCLeftRight,
 	SCPads,
 	SCSticks,
+	SCTriggers,
 )
 from scc.controller import HapticData
 from scc.custom import load_custom_module
@@ -104,7 +101,7 @@ class SCCDaemon(Daemon):
 		self.default_profile: str | None = None
 		self.autoswitch_daemon: Client | None = None
 		# TODO: Use osd_ids for all menus
-		self.osd_ids: dict [str, Action] = {}
+		self.osd_ids: dict[str, Action] = {}
 		self.controllers: list[Controller] = []
 		self.mainloops: list[Callable[[], None]] = [self.poller.poll, self.scheduler.run]
 		self.rescan_cbs: list[Callable[[], None]] = []
@@ -218,9 +215,9 @@ class SCCDaemon(Daemon):
 			s(self)
 		del self._to_start
 
-	#def stop_drivers(self) -> None:
-	#	for s in self.drivers_to_stop:
-	#		s(self)
+	# def stop_drivers(self) -> None:
+	# 	for s in self.drivers_to_stop:
+	# 		s(self)
 
 	def get_poller(self) -> Poller:
 		"""Returns poller that can be used for polling file descriptors"""
@@ -341,7 +338,10 @@ class SCCDaemon(Daemon):
 				# Otherwise it is handled internally
 				up_direction = 0
 				gd = self._start_gesture(
-					mapper, what, up_direction, lambda gesture_string: action.gesture(mapper, gesture_string),
+					mapper,
+					what,
+					up_direction,
+					lambda gesture_string: action.gesture(mapper, gesture_string),
 				)
 		if gd:
 			gd.enable()
@@ -460,11 +460,11 @@ class SCCDaemon(Daemon):
 	def on_start(self) -> None:
 		os.chdir(self.cwd)
 
-	#def on_controller_status(self, sc: SCController, onoff: bool) -> None:
-	#	if onoff:
-	#		log.debug("Controller turned ON")
-	#	else:
-	#		log.debug("Controller turned OFF")
+	# def on_controller_status(self, sc: SCController, onoff: bool) -> None:
+	# 	if onoff:
+	# 		log.debug("Controller turned ON")
+	# 	else:
+	# 		log.debug("Controller turned OFF")
 
 	def sigterm(self, *a) -> Never:
 		self.exiting = True
@@ -499,7 +499,9 @@ class SCCDaemon(Daemon):
 			except (ImportError, ValueError):
 				pass
 
-			log.warning("Wayland without zwlr_layer_shell_v1 support detected! Disabling X11 support, some functionality, including OSD, will be unavailable")
+			log.warning(
+				"Wayland without zwlr_layer_shell_v1 support detected! Disabling X11 support, some functionality, including OSD, will be unavailable"
+			)
 			self.xdisplay = None
 			return
 
@@ -722,7 +724,9 @@ class SCCDaemon(Daemon):
 		os.chmod(self.socket_file, stat.S_IRUSR | stat.S_IWUSR)
 		log.debug("Created control socket %s", self.socket_file)
 
-	def _start_gesture(self, mapper: Mapper, what: bytes, up_angle: int, callback: Callable[[str], None]) -> GestureDetector:
+	def _start_gesture(
+		self, mapper: Mapper, what: bytes, up_angle: int, callback: Callable[[str], None],
+	) -> GestureDetector:
 		"""Starts gesture detection on specified pad.
 
 		Calls callback with gesture string when finished.
@@ -1051,33 +1055,40 @@ class SCCDaemon(Daemon):
 		Should be called while self.lock is acquired.
 		"""
 		# TODO: Probably move to mapper
-		is_locked = lambda a: isinstance(a, LockedAction) or (
-			isinstance(a, ObservingAction) and isinstance(a.original_action, LockedAction)
+		is_locked = lambda a: (
+			isinstance(a, LockedAction)
+			or (isinstance(a, ObservingAction) and isinstance(a.original_action, LockedAction))
 		)
 
-		if what == LSTICK:
+		if what == SCSticks.LSTICK:
 			if is_locked(mapper.profile.buttons[SCButtons.LSTICKPRESS]):
 				return False
 			if is_locked(mapper.profile.lstick):
 				return False
 			return True
-		if what == RSTICK:
+		if what == SCSticks.RSTICK:
 			if is_locked(mapper.profile.buttons[SCButtons.RSTICKPRESS]):
 				return False
 			if is_locked(mapper.profile.rstick):
 				return False
 			return True
 		if what == SCButtons.LT:
-			return not is_locked(mapper.profile.triggers[SCLeftRight.LEFT])
+			return not is_locked(mapper.profile.triggers[SCTriggers.LT])
 		if what == SCButtons.RT:
-			return not is_locked(mapper.profile.triggers[SCLeftRight.RIGHT])
+			return not is_locked(mapper.profile.triggers[SCTriggers.RT])
 		if what in SCButtons.__members__.values():
 			return not is_locked(mapper.profile.buttons[what])
-		if what in (SCPads.LEFT, SCPads.RIGHT, SCPads.CPAD, SCPads.DPAD):
+		if what in (SCPads.LPAD, SCPads.RPAD, SCPads.CPAD, SCPads.DPAD):
 			return not is_locked(mapper.profile.pads[what])
 		return False
 
-	def _apply(self, mapper: Mapper, what: SCButtons | SCSticks | SCPads, callback: Callable[[Action], ObservingAction | GestureDetector], *args) -> None:
+	def _apply(
+		self,
+		mapper: Mapper,
+		what: SCButtons | SCSticks | SCPads,
+		callback: Callable[[Action], ObservingAction | GestureDetector],
+		*args,
+	) -> None:
 		"""Applies callback on action that is currently set to input specified by 'what'.
 
 		Raises ValueError if what is not known.
@@ -1085,19 +1096,19 @@ class SCCDaemon(Daemon):
 		For example, if what == LSTICK, executes
 			mapper.profile.lstick = callback(mapper.profile.lstick, *args)
 		"""
-		if what == LSTICK:
+		if what == SCSticks.LSTICK:
 			mapper.profile.lstick = callback(mapper.profile.lstick, *args)
-		elif what == RSTICK:
+		elif what == SCSticks.RSTICK:
 			mapper.profile.rstick = callback(mapper.profile.rstick, *args)
 		elif what == SCButtons.LT:
-			mapper.profile.triggers[LEFT] = callback(mapper.profile.triggers[LEFT], *args)
+			mapper.profile.triggers[SCTriggers.LT] = callback(mapper.profile.triggers[SCTriggers.LT], *args)
 		elif what == SCButtons.RT:
-			mapper.profile.triggers[RIGHT] = callback(mapper.profile.triggers[RIGHT], *args)
+			mapper.profile.triggers[SCTriggers.RT] = callback(mapper.profile.triggers[SCTriggers.RT], *args)
 		elif what in SCButtons.__members__.values():
 			r = callback(mapper.profile.buttons[what], *args)
 			mapper.profile.buttons[what] = r
-		elif what in (SCPads.LEFT, SCPads.RIGHT):
-			if what == SCPads.LEFT:
+		elif what in (SCPads.LPAD, SCPads.RPAD):
+			if what == SCPads.LPAD:
 				mapper.buttons &= ~SCButtons.LPADTOUCH
 			else:
 				mapper.buttons &= ~SCButtons.RPADTOUCH
@@ -1115,13 +1126,17 @@ class SCCDaemon(Daemon):
 	def source_to_constant(s: bytes) -> SCButtons | SCSticks | SCPads:
 		"""Turns byte string as 'A', 'LEFT' or 'ABS_X' into one of:
 
-		SCButtons.*, LSTICK, RSTICK, LEFT, RIGHT, CPAD, DPAD constants.
+		SCButtons.*, SCSticks.*, SCPads.* constants.
 
 		Raises ValueError if passed string cannot be converted.
 
 		Used when parsing `Lock: ...` message
 		"""
 		s_dec = s.decode("utf-8").strip(" \t\r\n")
+		if s_dec == "LPADPRESS":
+			return SCButtons.LPAD
+		if s_dec == "RPADPRESS":
+			return SCButtons.RPAD
 		# Protocol compatibility for clients predating the LSTICK rename.
 		if s_dec == "STICK":
 			log.warning("STICK detected, please migrate to LSTICK")
@@ -1129,14 +1144,8 @@ class SCCDaemon(Daemon):
 		elif s_dec == "STICKPRESS":
 			log.warning("STICKPRESS detected, please migrate to LSTICKPRESS")
 			s_dec = "LSTICKPRESS"
-		if s_dec in (SCSticks.LSTICK, SCSticks.RSTICK, SCPads.LEFT, SCPads.RIGHT, SCPads.CPAD, SCPads.DPAD):
+		if s_dec in (SCSticks.LSTICK, SCSticks.RSTICK, SCPads.LPAD, SCPads.RPAD, SCPads.CPAD, SCPads.DPAD):
 			return s_dec
-		if s_dec == "LSTICKPRESS":
-			# TODO(Martin): Initial commit - https://github.com/C0rn3j/sc-controller/commit/d720dbae62b22ef496cf7aaa9b7e04345cb69126
-			#               This used to return SCButtons.STICK, then SCButtons.STICKPRESS, and now SCButtons.LSTICKPRESS
-			#               Maybe we can fix this proper without a weird exception like this?
-			log.warning("TODO(Martin): Weird legacy codepath - check it out")
-			return SCButtons.LSTICKPRESS
 		if hasattr(SCButtons, s_dec):
 			return getattr(SCButtons, s_dec)
 		raise ValueError(f"Unknown source: {s_dec}")
@@ -1279,10 +1288,14 @@ class ReportingAction(Action):
 
 	def button_press(self, mapper: Mapper, number: int = 1) -> None:
 		if mapper.get_controller():
-			if self.what == SCButtons.LSTICKPRESS:
-				self._report(f"Event: {mapper.get_controller().get_id()} LSTICKPRESS {number}\n")
+			protocol_name = {
+				SCButtons.LPAD: "LPADPRESS",
+				SCButtons.RPAD: "RPADPRESS",
+			}.get(self.what, nameof(self.what))
+			if protocol_name:
+				self._report(f"Event: {mapper.get_controller().get_id()} {protocol_name} {number}\n")
 			else:
-				self._report(f"Event: {mapper.get_controller().get_id()} {nameof(self.what)} {number}\n")
+				log.warning("Cannot report unnamed button %r", self.what)
 
 	def button_release(self, mapper: Mapper) -> None:
 		ReportingAction.button_press(self, mapper, 0)
@@ -1377,7 +1390,9 @@ class ObservingAction(ReportingAction):
 			return a
 
 		daemon._apply(self.mapper, self.what, _unobserve)
-		log.debug("%s on %s no longer observed by %x", nameof(self.what), self.mapper.get_controller(), hash(self.client))
+		log.debug(
+			"%s on %s no longer observed by %x", nameof(self.what), self.mapper.get_controller(), hash(self.client)
+		)
 
 	def trigger(self, mapper: Mapper, position, old_position) -> None:
 		ReportingAction.trigger(self, mapper, position, old_position)

@@ -42,7 +42,7 @@ from scc.constants import (
 	LSTICKTILT,
 	TRIGGER_MAX,
 	HapticPos,
-	SCButtons,
+	SCButtons, SCPads, SCSticks, SCTouchpads,
 )
 from scc.controller import HapticData
 from scc.tools import clamp, nameof
@@ -57,7 +57,7 @@ _ = lambda x: x
 
 
 class Modifier(Action):
-	def __init__(self, *params):
+	def __init__(self, *params) -> None:
 		Action.__init__(self, *params)
 		params = list(params)
 		for p in params:
@@ -72,13 +72,13 @@ class Modifier(Action):
 	def get_compatible_modifiers(self):
 		return self.action.get_compatible_modifiers()
 
-	def cancel(self, mapper):
+	def cancel(self, mapper) -> None:
 		self.action.cancel(mapper)
 
 	def get_child_actions(self):
 		return (self.action,)
 
-	def _mod_init(self):
+	def _mod_init(self) -> None:
 		"""Initializes modifier with rest of parameters, after action parameter
 		was taken from it and stored in self.action
 		"""
@@ -123,7 +123,7 @@ class Modifier(Action):
 			self.action = self.action.compress()
 		return self
 
-	def __str__(self):
+	def __str__(self) -> str:
 		return "<Modifier '%s', %s>" % (self.COMMAND, self.action)
 
 	__repr__ = __str__
@@ -175,7 +175,7 @@ class ClickModifier(Modifier):
 	COMMAND = "click"
 
 	@staticmethod
-	def decode(data, a, *b):
+	def decode(data, a, *b) -> ClickModifier:
 		return ClickModifier(a)
 
 	def describe(self, context):
@@ -198,21 +198,21 @@ class ClickModifier(Modifier):
 		return self
 
 	# For button press & co it's safe to assume that they are being pressed...
-	def button_press(self, mapper):
+	def button_press(self, mapper) -> None:
 		return self.action.button_press(mapper)
 
-	def button_release(self, mapper):
+	def button_release(self, mapper) -> None:
 		return self.action.button_release(mapper)
 
-	def trigger(self, mapper, position, old_position):
+	def trigger(self, mapper, position, old_position) -> None:
 		return self.action.trigger(mapper, position, old_position)
 
-	def axis(self, mapper, position, what):
-		if what in (LSTICK, LEFT) and mapper.is_pressed(SCButtons.LPAD):
+	def axis(self, mapper, position, what: SCSticks | SCTouchpads) -> None:
+		if what in (LSTICK, SCPads.LPAD) and mapper.is_pressed(SCButtons.LPAD):
 			if what == LSTICK:
 				mapper.force_event.add(FE_STICK)
 			return self.action.axis(mapper, position, what)
-		if what in (LSTICK, LEFT) and mapper.was_pressed(SCButtons.LPAD):
+		if what in (LSTICK, SCPads.LPAD) and mapper.was_pressed(SCButtons.LPAD):
 			# Just released
 			return self.action.axis(mapper, 0, what)
 		if what == CPAD and mapper.is_pressed(SCButtons.CPADPRESS):
@@ -227,17 +227,17 @@ class ClickModifier(Modifier):
 			# what == RIGHT, last option, Just released
 			return self.action.axis(mapper, 0, what)
 
-	def pad(self, mapper, position, what):
-		if what == LEFT and mapper.is_pressed(SCButtons.LPAD):
-			if what == LSTICK:
+	def pad(self, mapper, position, what: SCTouchpads) -> None:
+		if what == SCPads.LPAD and mapper.is_pressed(SCButtons.LPAD):
+			if what == SCSticks.LSTICK:
 				mapper.force_event.add(FE_STICK)
 			return self.action.pad(mapper, position, what)
-		if what == LEFT and mapper.was_pressed(SCButtons.LPAD):
+		if what == SCPads.LPAD and mapper.was_pressed(SCButtons.LPAD):
 			# Just released
 			return self.action.pad(mapper, 0, what)
-		if what == CPAD and mapper.is_pressed(SCButtons.CPADPRESS):
+		if what == SCPads.CPAD and mapper.is_pressed(SCButtons.CPADPRESS):
 			return self.action.pad(mapper, position, what)
-		if what == CPAD and mapper.was_pressed(SCButtons.CPADPRESS):
+		if what == SCPads.CPAD and mapper.was_pressed(SCButtons.CPADPRESS):
 			# Just released
 			return self.action.pad(mapper, 0, what)
 		if mapper.is_pressed(SCButtons.RPAD):
@@ -248,25 +248,26 @@ class ClickModifier(Modifier):
 			return self.action.pad(mapper, 0, what)
 
 	def whole(self, mapper, x, y, what):
-		if what in (LSTICK, LEFT) and mapper.is_pressed(SCButtons.LPAD):
-			if what == LSTICK:
+		if what in (SCSticks.LSTICK, SCPads.LPAD) and mapper.is_pressed(SCButtons.LPAD):
+			if what == SCSticks.LSTICK:
 				mapper.force_event.add(FE_STICK)
 			return self.action.whole(mapper, x, y, what)
-		if what in (LSTICK, LEFT) and (mapper.was_pressed(SCButtons.LPAD) or mapper.was_pressed(LSTICKTILT)):
+		if what in (SCSticks.LSTICK, SCPads.LPAD) and (mapper.was_pressed(SCButtons.LPAD) or mapper.was_pressed(LSTICKTILT)):
 			# Just released
 			return self.action.whole(mapper, 0, 0, what)
-		if what == RIGHT and mapper.is_pressed(SCButtons.RPAD):
+		if what == SCPads.RPAD and mapper.is_pressed(SCButtons.RPAD):
 			return self.action.whole(mapper, x, y, what)
-		if what == RIGHT and mapper.was_pressed(SCButtons.RPAD):
+		if what == SCPads.RPAD and mapper.was_pressed(SCButtons.RPAD):
 			# Just released
 			return self.action.whole(mapper, 0, 0, what)
-		if what == CPAD and mapper.is_pressed(SCButtons.CPADPRESS):
+		if what == SCPads.CPAD and mapper.is_pressed(SCButtons.CPADPRESS):
 			return self.action.whole(mapper, x, y, what)
-		if what == CPAD and mapper.was_pressed(SCButtons.CPADPRESS):
+		if what == SCPads.CPAD and mapper.was_pressed(SCButtons.CPADPRESS):
 			# Just released
 			return self.action.whole(mapper, 0, 0, what)
 		# Nothing is pressed, but finger moves over pad
 		self.action.whole_blocked(mapper, x, y, what)
+		return None
 
 
 class TouchedModifier(Modifier):
@@ -317,14 +318,14 @@ class PressedModifier(Modifier):
 		self.action = self.action.compress()
 		return self
 
-	def button_press(self, mapper):
+	def button_press(self, mapper) -> None:
 		self.action.button_press(mapper)
 		mapper.schedule(0.02, self._release)
 
-	def _release(self, mapper):
+	def _release(self, mapper) -> None:
 		return self.action.button_release(mapper)
 
-	def button_release(self, mapper):
+	def button_release(self, mapper) -> None:
 		pass
 
 
@@ -336,10 +337,10 @@ class ReleasedModifier(PressedModifier):
 			return _("(when released)") + "\n" + self.action.describe(context)
 		return _("(when released)") + " " + self.action.describe(context)
 
-	def button_press(self, mapper):
+	def button_press(self, mapper) -> None:
 		pass
 
-	def button_release(self, mapper):
+	def button_release(self, mapper) -> None:
 		self.action.button_press(mapper)
 		mapper.schedule(0.02, self._release)
 
@@ -362,7 +363,7 @@ class BallModifier(Modifier, WholeHapticAction):
 	MIN_LIFT_VELOCITY = 0.2  # If finger is lifter after movement slower than
 	# this, roll doesn't happens
 
-	def __init__(self, *params):
+	def __init__(self, *params) -> None:
 		Modifier.__init__(self, *params)
 		WholeHapticAction.__init__(self)
 
@@ -386,7 +387,7 @@ class BallModifier(Modifier, WholeHapticAction):
 		self._lastTime = time.time()
 		self._old_pos = None
 
-	def set_speed(self, x, y, *a):
+	def set_speed(self, x, y, *a) -> None:
 		self.speed = (x, y)
 		if self.action and (isinstance(self.action, CircularModifier) and hasattr(self.action, "set_speed")):
 			self.action.set_speed(x, y, *a)
@@ -980,7 +981,7 @@ class ModeModifier(Modifier):
 				pass
 			c.__proc = None
 
-	def button_release(self, mapper):
+	def button_release(self, mapper) -> None:
 		# Releases all held buttons, not just button that matches
 		# currently pressed modifier
 		for b in self.held_buttons:
@@ -1140,7 +1141,7 @@ class DoubleclickModifier(Modifier, HapticEnabledAction):
 			return "doubleclick(None, %s%s)" % (NameModifier.unstrip(self.action).to_string(multiline, pad), timeout)
 		return NameModifier.unstrip(self.action or self.normalaction or self.holdaction).to_string(multiline, pad)
 
-	def button_press(self, mapper):
+	def button_press(self, mapper) -> None:
 		self.pressed = True
 		if self.waiting_task:
 			# Double-click happened
@@ -1152,7 +1153,7 @@ class DoubleclickModifier(Modifier, HapticEnabledAction):
 			# First click, start the timer
 			self.waiting_task = mapper.schedule(self.timeout, self.on_timeout)
 
-	def button_release(self, mapper):
+	def button_release(self, mapper) -> None:
 		self.pressed = False
 		if self.waiting_task and self.active is None and not self.action:
 			# In HoldModifier, button released before timeout

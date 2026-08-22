@@ -11,7 +11,7 @@ from json import JSONEncoder
 from typing import TYPE_CHECKING
 
 from scc.actions import NoAction
-from scc.constants import GYRO, WHOLE, SCButtons, SCLeftRight, SCPads, SCSticks
+from scc.constants import GYRO, WHOLE, SCButtons, SCLeftRight, SCPads, SCSticks, SCTriggers
 from scc.menu_data import MenuData
 from scc.modifiers import HoldModifier
 from scc.special_actions import MenuAction
@@ -52,7 +52,7 @@ class Profile:
 		self.rstick: Action
 		self.gyro: Action
 		self.buttons: dict[SCButtons, Action]
-		self.triggers: dict[SCLeftRight, Action]
+		self.triggers: dict[SCTriggers, Action]
 		self.pads: dict[SCPads, Action]
 		self.parser: ActionParser = parser
 		self.clear()
@@ -75,10 +75,10 @@ class Profile:
 			"lstick": self.lstick,
 			"rstick": self.rstick,
 			"gyro": self.gyro,
-			"trigger_left": self.triggers[SCLeftRight.LEFT],
-			"trigger_right": self.triggers[SCLeftRight.RIGHT],
-			"pad_left": self.pads[SCPads.LEFT],
-			"pad_right": self.pads[SCPads.RIGHT],
+			"trigger_left": self.triggers[SCTriggers.LT],
+			"trigger_right": self.triggers[SCTriggers.RT],
+			"pad_left": self.pads[SCPads.LPAD],
+			"pad_right": self.pads[SCPads.RPAD],
 			"cpad": self.pads[SCPads.CPAD],
 			"dpad": self.pads[SCPads.DPAD],
 			"menus": {id: self.menus[id].encode() for id in self.menus},
@@ -111,8 +111,11 @@ class Profile:
 		# Version
 		try:
 			version = float(data["version"])
+		except KeyError:
+			log.warning("Failed to find 'version' definition, assuming version=0")
+			version = 0
 		except Exception:
-			logging.exception("Failed to load file-like object")
+			log.exception("Unknown exception trying to load version, assuming version=0")
 			version = 0
 
 		# Settings - Description
@@ -156,12 +159,15 @@ class Profile:
 			log.warning("Out of date profile: triggers present instead of trigger_left and trigger_right!")
 			# Old format
 			# Triggers
-			self.triggers = {x: self.parser.from_json_data(data["triggers"], x) for x in Profile.TRIGGERS}
+			self.triggers = {
+				SCTriggers.LT: self.parser.from_json_data(data["triggers"], SCLeftRight.LEFT),
+				SCTriggers.RT: self.parser.from_json_data(data["triggers"], SCLeftRight.RIGHT),
+			}
 
 			# Pads
 			self.pads = {
-				SCPads.LEFT: self.parser.from_json_data(data, "left_pad"),
-				SCPads.RIGHT: self.parser.from_json_data(data, "right_pad"),
+				SCPads.LPAD: self.parser.from_json_data(data, "left_pad"),
+				SCPads.RPAD: self.parser.from_json_data(data, "right_pad"),
 				SCPads.CPAD: NoAction(),
 				SCPads.DPAD: NoAction(),
 			}
@@ -172,14 +178,14 @@ class Profile:
 			# New format
 			# Triggers
 			self.triggers = {
-				SCLeftRight.LEFT: self.parser.from_json_data(data, "trigger_left"),
-				SCLeftRight.RIGHT: self.parser.from_json_data(data, "trigger_right"),
+				SCTriggers.LT: self.parser.from_json_data(data, "trigger_left"),
+				SCTriggers.RT: self.parser.from_json_data(data, "trigger_right"),
 			}
 
 			# Pads
 			self.pads = {
-				SCPads.LEFT: self.parser.from_json_data(data, "pad_left"),
-				SCPads.RIGHT: self.parser.from_json_data(data, "pad_right"),
+				SCPads.LPAD: self.parser.from_json_data(data, "pad_left"),
+				SCPads.RPAD: self.parser.from_json_data(data, "pad_right"),
 				SCPads.CPAD: self.parser.from_json_data(data, "cpad"),
 				SCPads.DPAD: self.parser.from_json_data(data, "dpad"),
 			}
@@ -211,10 +217,10 @@ class Profile:
 		self.lstick = NoAction()
 		self.rstick = NoAction()
 		self.is_template = False
-		self.triggers = {SCLeftRight.LEFT: NoAction(), SCLeftRight.RIGHT: NoAction()}
+		self.triggers = {SCTriggers.LT: NoAction(), SCTriggers.RT: NoAction()}
 		self.pads = {
-			SCPads.LEFT: NoAction(),
-			SCPads.RIGHT: NoAction(),
+			SCPads.LPAD: NoAction(),
+			SCPads.RPAD: NoAction(),
 			SCPads.CPAD: NoAction(),
 			SCPads.DPAD: NoAction(),
 		}
@@ -295,7 +301,7 @@ class Profile:
 				Rels.REL_HWHEEL,
 				Rels.REL_WHEEL,
 			)
-			for p in (Profile.LEFT, Profile.RIGHT):
+			for p in (SCPads.LPAD, SCPads.RPAD):
 				a, feedback = self.pads[p], None
 				if isinstance(a, FeedbackModifier):
 					feedback = a.haptic.get_position()
@@ -314,13 +320,12 @@ class Profile:
 			from scc.constants import TRIGGER_CLICK, TRIGGER_HALF, TRIGGER_MAX
 			from scc.uinput import Keys
 
-			for p in (SCLeftRight.LEFT, SCLeftRight.RIGHT):
+			for p in (SCTriggers.LT, SCTriggers.RT):
 				if isinstance(self.triggers[p], ButtonAction):
 					buttons: list[Keys] = []
 					numbers = []
 					n = None
-					# There were one or two keys and zero to two numeric
-					# parameters for old button action
+					# There were one or two keys and zero to two numeric parameters for old button action
 					for param in self.triggers[p].parameters:
 						if param in Keys:
 							buttons.append(param)

@@ -100,7 +100,7 @@ class Macro(Action):
 				return a.get_speed()
 		return (1.0,)
 
-	def button_release(self, mapper):
+	def button_release(self, mapper) -> None:
 		self._active = False
 
 	def describe(self, context):
@@ -167,22 +167,23 @@ class Type(Macro):
 
 class Cycle(Macro):
 	"""Multiple actions cycling on same button.
+
 	When button is pressed 1st time, 1st action is executed. 2nd action is
 	executed for 2nd press et cetera et cetera.
 	"""
 
 	COMMAND = "cycle"
 
-	def __init__(self, *parameters):
+	def __init__(self, *parameters) -> None:
 		Action.__init__(self, *parameters)
 		self.actions = parameters
 		self._current = 0
 
-	def button_press(self, mapper):
+	def button_press(self, mapper) -> None:
 		if len(self.actions) > 0:
 			self.actions[self._current].button_press(mapper)
 
-	def button_release(self, mapper):
+	def button_release(self, mapper) -> None:
 		if len(self.actions) > 0:
 			self.actions[self._current].button_release(mapper)
 			self._current += 1
@@ -241,10 +242,10 @@ class SleepAction(Action):
 	def to_string(self, multiline=False, pad=0):
 		return (" " * pad) + "%s(%0.3f)" % (self.COMMAND, self.delay)
 
-	def button_press(self, mapper):
+	def button_press(self, mapper) -> None:
 		pass
 
-	def button_release(self, mapper):
+	def button_release(self, mapper) -> None:
 		pass
 
 
@@ -273,10 +274,10 @@ class PressAction(Action):
 			return self.name
 		return self.PR + " " + self.describe_short()
 
-	def button_press(self, mapper):
+	def button_press(self, mapper) -> None:
 		self.action.button_press(mapper)
 
-	def button_release(self, mapper):
+	def button_release(self, mapper) -> None:
 		# This is activated only when button is pressed
 		pass
 
@@ -371,7 +372,7 @@ class TapAction(PressAction):
 			mapper.pressed[self.button] = self.COUNTER_VAL
 			mapper.schedule(self.PAUSE, self._rel_tap_press)
 
-	def button_release(self, mapper):
+	def button_release(self, mapper) -> None:
 		if self._keep_pressed:
 			self._keep_pressed = False
 			if len(self._lst) > 0:

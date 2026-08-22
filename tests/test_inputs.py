@@ -1,7 +1,7 @@
 import time
 from typing import NamedTuple
 
-from scc.constants import RSTICK, STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons
+from scc.constants import RSTICK, STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons, SCPads
 from scc.drivers.evdevdrv import EvdevControllerInput
 from scc.drivers.fake import FakeController
 from scc.mapper import Mapper
@@ -166,7 +166,7 @@ class TestInputs:
 	@input_test
 	def test_trackball(self, mapper: Mapper):
 		"""Test trackball emulation."""
-		mapper.profile.pads[Profile.LEFT] = (
+		mapper.profile.pads[SCPads.LPAD] = (
 			parser.restart(
 				"ball(XY(	mouse(Rels.REL_HWHEEL, 1.0), 	mouse(Rels.REL_WHEEL, 1.0)))",
 			)
@@ -189,7 +189,7 @@ class TestInputs:
 	@input_test
 	def test_dpad(self, mapper: Mapper):
 		"""Test WSAD."""
-		mapper.profile.pads[Profile.LEFT] = (
+		mapper.profile.pads[SCPads.LPAD] = (
 			parser.restart(
 				"dpad(	button(Keys.KEY_W), button(Keys.KEY_S),	button(Keys.KEY_A), button(Keys.KEY_D))",
 			)
@@ -215,7 +215,7 @@ class TestInputs:
 	@input_test
 	def test_joystick_camera(self, mapper: Mapper):
 		"""Test joystick camera, mapping trackball to right joystick."""
-		mapper.profile.pads[Profile.RIGHT] = (
+		mapper.profile.pads[SCPads.RPAD] = (
 			parser.restart(
 				"ball(XY(	axis(Axes.ABS_RX),	axis(Axes.ABS_RY)))",
 			)

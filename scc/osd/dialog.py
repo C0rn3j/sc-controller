@@ -11,7 +11,7 @@ import sys
 from gi.repository import GdkX11, Gtk
 
 from scc.config import Config
-from scc.constants import DEFAULT, DPAD, LSTICK, ControllerFlags
+from scc.constants import DEFAULT, DPAD, LSTICK, ControllerFlags, HapticPos
 from scc.gui.daemon_manager import DaemonManager
 from scc.lib import xwrappers as X
 from scc.menu_data import MenuData
@@ -126,7 +126,7 @@ class Dialog(OSDWindow):
 		self._text.set_label(self.args.text)
 
 		if self.args.feedback_amplitude:
-			side = "LEFT"
+			side = HapticPos.LEFT
 			self.feedback = side, int(self.args.feedback_amplitude)
 
 		# Create buttons that are displayed on screen

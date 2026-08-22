@@ -11,7 +11,7 @@ syntax.
 import logging
 
 from scc.actions import Action, SpecialAction
-from scc.constants import LEFT, RIGHT, TRIGGER_HALF
+from scc.constants import LEFT, RIGHT, TRIGGER_HALF, SCLeftRight
 
 log = logging.getLogger("OSDKeyActs")
 _ = lambda x: x
@@ -45,10 +45,10 @@ class CloseOSKAction(OSKAction):
 	def to_string(self, multiline=False, pad=0):
 		return (" " * pad) + "OSK.%s()" % (self.COMMAND,)
 
-	def button_press(self, mapper):
+	def button_press(self, mapper) -> None:
 		self.execute(mapper)
 
-	def button_release(self, mapper):
+	def button_release(self, mapper) -> None:
 		pass
 
 
@@ -56,14 +56,14 @@ class OSKCursorAction(Action, SpecialAction):
 	SA: str = "cursor"
 	COMMAND: str = SA
 
-	def __init__(self, side):
+	def __init__(self, side: SCLeftRight | Action) -> None:
 		Action.__init__(self, side)
 		if hasattr(side, "name"):
 			side = side.name
-		self.speed = (1.0, 1.0)
-		self.side = side
+		self.speed: tuple[float, float] = (1.0, 1.0)
+		self.side: SCLeftRight = side
 
-	def set_speed(self, x, y, z):
+	def set_speed(self, x, y, z) -> bool:
 		self.speed = (x, y)
 		return True
 
@@ -77,29 +77,29 @@ class OSKCursorAction(Action, SpecialAction):
 			return _("Move RIGHT Cursor")
 		return _("Move Cursor")
 
-	def to_string(self, multiline=False, pad=0):
-		return (" " * pad) + "OSK.%s(%s)" % (self.COMMAND, self.side)
+	def to_string(self, multiline=False, pad=0) -> str:
+		return (" " * pad) + f"OSK.{self.COMMAND}({self.side})"
 
 
 class MoveOSKAction(OSKAction):
 	SA: str = "move"
 	COMMAND: str = SA
 
-	def whole(self, mapper, x, y, what):
+	def whole(self, mapper, x, y, what) -> None:
 		self.execute(mapper, x, y)
 
 	def describe(self, context):
 		return _("Move Keyboard")
 
-	def to_string(self, multiline=False, pad=0):
-		return (" " * pad) + "OSK.%s()" % (self.COMMAND,)
+	def to_string(self, multiline: bool = False, pad: int = 0) -> str:
+		return (" " * pad) + f"OSK.{self.COMMAND}()"
 
 
 class OSKPressAction(OSKAction):
 	SA: str = "press"
 	COMMAND: str = SA
 
-	def __init__(self, side):
+	def __init__(self, side) -> None:
 		OSKAction.__init__(self, side)
 		if hasattr(side, "name"):
 			side = side.name

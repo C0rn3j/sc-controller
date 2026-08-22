@@ -5,12 +5,13 @@ using libusb directly. Relies to Observe or Lock message being sent by client.
 
 Used by on-screen keyboard.
 """
+
 from __future__ import annotations
 
 import logging
 from typing import TYPE_CHECKING
 
-from scc.constants import CPAD, DPAD, LEFT, RIGHT, RSTICK, LSTICK, SCButtons
+from scc.constants import SCButtons, SCPads, SCPadsLR, SCSticks, SCTriggers
 from scc.mapper import Mapper
 
 if TYPE_CHECKING:
@@ -48,25 +49,28 @@ class SlaveMapper(Mapper):
 		if self._feedback_cb:
 			self._feedback_cb(hapticdata)
 
-	def handle_event(self, daemon, what: str, data) -> None:
+	# TODO(Martin): Fix up the LSTICKPRESS/LPADTOUCH/RPADTOUCH literals
+	def handle_event(self, daemon, what: SCSticks | SCPadsLR | str, data) -> None:
 		"""Handles event sent by scc-daemon.
 
 		Without calling this, SlaveMapper basically does nothing.
 		"""
 		self.old_buttons = self.buttons
-		if what == LSTICK:
+		if what == SCSticks.LSTICK:
 			self.profile.lstick.whole(self, data[0], data[1], what)
-		elif what == RSTICK:
+		elif what == SCSticks.RSTICK:
 			self.profile.rstick.whole(self, data[0], data[1], what)
 		elif what == SCButtons.LT.name:
-			self.profile.triggers[LEFT].trigger(self, *data)
+			self.profile.triggers[SCTriggers.LT].trigger(self, *data)
 		elif what == SCButtons.RT.name:
-			self.profile.triggers[RIGHT].trigger(self, *data)
-		elif hasattr(SCButtons, what) or what == "LSTICKPRESS":
-			if what == "LSTICKPRESS":
-				x = SCButtons.LSTICKPRESS
-			else:
-				x = getattr(SCButtons, what)
+			self.profile.triggers[SCTriggers.RT].trigger(self, *data)
+		elif hasattr(SCButtons, what) or what in ("LPADPRESS", "RPADPRESS"):
+			x = {
+				"LPADPRESS": SCButtons.LPAD,
+				"RPADPRESS": SCButtons.RPAD,
+			}.get(what, getattr(SCButtons, what, None))
+			if x is None:
+				raise ValueError(f"Unknown button {what}")
 			if data[0]:
 				# Pressed
 				self.buttons = self.buttons | x
@@ -75,10 +79,10 @@ class SlaveMapper(Mapper):
 				self.buttons = self.buttons & ~x
 				self.profile.buttons[x].button_release(self)
 				if what == "LPADTOUCH":
-					self.profile.pads[LEFT].whole(self, 0, 0, LEFT)
+					self.profile.pads[SCPads.LPAD].whole(self, 0, 0, SCPads.LPAD)
 				elif what == "RPADTOUCH":
-					self.profile.pads[RIGHT].whole(self, 0, 0, RIGHT)
-		elif what in (LEFT, RIGHT, CPAD, DPAD):
+					self.profile.pads[SCPads.RPAD].whole(self, 0, 0, SCPads.RPAD)
+		elif what in SCPads:
 			# print what, self.profile.pads[what]
 			self.profile.pads[what].whole(self, data[0], data[1], what)
 		else:

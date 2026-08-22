@@ -13,7 +13,7 @@ import traceback
 from gi.repository import Gdk, GdkPixbuf, GLib, GObject, Gtk
 
 from scc.actions import Action, NoAction
-from scc.constants import LEFT, RIGHT
+from scc.constants import LEFT, RIGHT, SCPads, SCTriggers
 from scc.gui.dwsnc import IS_UNITY
 from scc.gui.editor import ComboSetter, Editor
 from scc.gui.osk_binding_editor import OSKBindingEditor
@@ -82,25 +82,25 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			return self._gamepad_icons[drv]
 		try:
 			p = GdkPixbuf.Pixbuf.new_from_file(os.path.join(self.app.imagepath, "controller-icons", drv + "-4.svg"))
-		except:
+		except Exception:
 			log.warning("Failed to load gamepad icon for driver '%s'", drv)
 			p = self._gamepad_icons["unknown"]
 		self._gamepad_icons[drv] = p
 		return p
 
-	def on_daemon_reconfigured(self, *a):
+	def on_daemon_reconfigured(self, *a) -> None:
 		# config is reloaded in main window 'reconfigured' handler.
 		# Using GLib.idle_add here ensures that main window hanlder will run
 		# *before* self.load_conditions
 		GLib.idle_add(self.load_settings)
 
-	def on_Dialog_destroy(self, *a):
+	def on_Dialog_destroy(self, *a) -> None:
 		for x in self._eh_ids:
 			self.app.dm.disconnect(x)
 		self._eh_ids = ()
 		Action.unregister_prefix("OSK")
 
-	def load_settings(self):
+	def load_settings(self) -> None:
 		self.load_autoswitch()
 		self.load_osk()
 		self.load_colors()
@@ -145,13 +145,13 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 				self.builder.get_object(w).set_sensitive(False)
 			self.builder.get_object("txEvdevMissing").set_visible(True)
 
-	def load_drivers(self):
+	def load_drivers(self) -> None:
 		for key, value in self.app.config["drivers"].items():
 			w = self.builder.get_object("cbEnableDriver_%s" % (key,))
 			if w:
 				w.set_active(value)
 
-	def _load_color(self, w, dct, key):
+	def _load_color(self, w, dct, key) -> None:
 		"""Common part of load_colors"""
 		if w:
 			success, color = Gdk.Color.parse("#%s" % (self.app.config[dct][key],))
@@ -159,7 +159,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 				success, color = Gdk.Color.parse("#%s" % (self.app.config[dct][key],))
 			w.set_color(color)
 
-	def load_colors(self):
+	def load_colors(self) -> None:
 		cbOSDStyle = self.builder.get_object("cbOSDStyle")
 		cbOSDColorPreset = self.builder.get_object("cbOSDColorPreset")
 		for k in self.app.config["osd_colors"]:
@@ -172,7 +172,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		self.set_cb(cbOSDColorPreset, theme)
 		self.set_cb(cbOSDStyle, self.app.config.get("osd_style"))
 
-	def load_autoswitch(self):
+	def load_autoswitch(self) -> None:
 		"""Transfers autoswitch settings from config to UI"""
 		tvItems = self.builder.get_object("tvItems")
 		cbShowOSD = self.builder.get_object("cbShowOSD")
@@ -190,7 +190,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		cbShowOSD.set_active(bool(self.app.config["autoswitch_osd"]))
 		self._recursing = False
 
-	def load_osk(self):
+	def load_osk(self) -> None:
 		cbStickAction = self.builder.get_object("cbStickAction")
 		cbTriggersAction = self.builder.get_object("cbTriggersAction")
 		profile = Profile(GuiActionParser())
@@ -198,7 +198,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		self._recursing = True
 
 		# Load triggers
-		triggers = "%s|%s" % (profile.triggers[LEFT].to_string(), profile.triggers[RIGHT].to_string())
+		triggers = "%s|%s" % (profile.triggers[SCTriggers.LT].to_string(), profile.triggers[SCTriggers.RT].to_string())
 		if not self.set_cb(cbTriggersAction, triggers, keyindex=1):
 			self.add_custom(cbTriggersAction, triggers)
 
@@ -207,13 +207,13 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			self.add_custom(cbStickAction, profile.lstick.to_string())
 
 		# Load sensitivity
-		s = profile.pads[LEFT].compress().speed
+		s = profile.pads[SCPads.LPAD].compress().speed
 		self.builder.get_object("sclSensX").set_value(s[0])
 		self.builder.get_object("sclSensY").set_value(s[1])
 
 		self._recursing = False
 
-	def add_custom(self, cb, key):
+	def add_custom(self, cb, key) -> None:
 		for k in cb.get_model():
 			if k[2]:
 				k[1] = key
@@ -222,22 +222,24 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		cb.get_model().append((_("(customized)"), key, True))
 		self.set_cb(cb, key, keyindex=1)
 
-	def _load_osk_profile(self):
+	def _load_osk_profile(self) -> Profile:
 		"""Loads and returns on-screen keyboard profile.
+
 		Used by methods that are changing it.
 		"""
 		profile = Profile(GuiActionParser())
 		profile.load(find_profile(OSDKeyboard.OSK_PROF_NAME))
 		return profile
 
-	def _save_osk_profile(self, profile):
+	def _save_osk_profile(self, profile) -> None:
 		"""Saves on-screen keyboard profile and calls daemon.reconfigure()
+
 		Used by methods that are changing it.
 		"""
 		profile.save(os.path.join(get_profiles_path(), OSDKeyboard.OSK_PROF_NAME + ".sccprofile"))
 		self.app.dm.reconfigure()
 
-	def on_cbStickAction_changed(self, cb):
+	def on_cbStickAction_changed(self, cb) -> None:
 		if self._recursing:
 			return
 		key = cb.get_model().get_value(cb.get_active_iter(), 1)
@@ -245,14 +247,14 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		profile.lstick = GuiActionParser().restart(key).parse()
 		self._save_osk_profile(profile)
 
-	def on_cbTriggersAction_changed(self, cb):
+	def on_cbTriggersAction_changed(self, cb) -> None:
 		if self._recursing:
 			return
 		key = cb.get_model().get_value(cb.get_active_iter(), 1)
 		l, r = key.split("|")
 		profile = self._load_osk_profile()
-		profile.triggers[LEFT] = GuiActionParser().restart(l).parse()
-		profile.triggers[RIGHT] = GuiActionParser().restart(r).parse()
+		profile.triggers[SCTriggers.LT] = GuiActionParser().restart(l).parse()
+		profile.triggers[SCTriggers.RT] = GuiActionParser().restart(r).parse()
 		self._save_osk_profile(profile)
 
 	def on_osd_color_set(self, *a):
@@ -582,14 +584,14 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 
 		profile = self._load_osk_profile()
 		if s == (1.0, 1.0):
-			profile.pads[LEFT] = OSKCursorAction(LEFT)
-			profile.pads[RIGHT] = OSKCursorAction(RIGHT)
+			profile.pads[SCPads.LPAD] = OSKCursorAction(LEFT)
+			profile.pads[SCPads.RPAD] = OSKCursorAction(RIGHT)
 		else:
-			profile.pads[LEFT] = SensitivityModifier(s[0], s[1], OSKCursorAction(LEFT))
-			profile.pads[RIGHT] = SensitivityModifier(s[0], s[1], OSKCursorAction(RIGHT))
+			profile.pads[SCPads.LPAD] = SensitivityModifier(s[0], s[1], OSKCursorAction(LEFT))
+			profile.pads[SCPads.RPAD] = SensitivityModifier(s[0], s[1], OSKCursorAction(RIGHT))
 		self._save_osk_profile(profile)
 
-	def on_entTitle_changed(self, ent):
+	def on_entTitle_changed(self, ent) -> None:
 		cbRegExp = self.builder.get_object("cbRegExp")
 		btSave = self.builder.get_object("btSave")
 		cbMatchTitle = self.builder.get_object("cbMatchTitle")
@@ -607,7 +609,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 				return
 		btSave.set_sensitive(True)
 
-	def on_cbOSDColorPreset_changed(self, cb):
+	def on_cbOSDColorPreset_changed(self, cb) -> None:
 		theme = cb.get_model().get_value(cb.get_active_iter(), 0)
 		if theme in (None, "None"):
 			return
@@ -625,7 +627,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		self.app.config["osd_color_theme"] = theme
 		self.app.save_config()
 
-	def on_cbOSDStyle_changed(self, cb):
+	def on_cbOSDStyle_changed(self, cb) -> None:
 		color_keys = self.app.config["osk_colors"].keys() + self.app.config["osd_colors"].keys()
 		osd_style = cb.get_model().get_value(cb.get_active_iter(), 0)
 		css_file = os.path.join(get_share_path(), "osd-styles", osd_style)

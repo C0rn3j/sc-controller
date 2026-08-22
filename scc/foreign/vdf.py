@@ -19,7 +19,7 @@ from scc.actions import (
 	TriggerAction,
 	XYAction,
 )
-from scc.constants import ROLL, TRIGGER_CLICK, YAW, HapticPos, SCButtons
+from scc.constants import ROLL, TRIGGER_CLICK, YAW, HapticPos, SCButtons, SCLeftRight, SCPads, SCTriggers
 from scc.lib.vdf import ensure_list, parse_vdf
 from scc.menu_data import MenuData, MenuItem
 from scc.modifiers import (
@@ -172,8 +172,7 @@ class VDFProfile(Profile):
 
 	@staticmethod
 	def parse_modifiers(group, action, side):
-		"""If passed group or activator has 'settings' key, converts known
-		settings to one or more Modifier.
+		"""If passed group or activator has 'settings' key, converts known settings to one or more Modifier.
 
 		Returns resulting Action
 		"""
@@ -185,7 +184,7 @@ class VDFProfile(Profile):
 				sens = s, s, s
 			if "haptic_intensity" in settings:
 				action = FeedbackModifier(
-					HapticPos.LEFT if side == Profile.LEFT else HapticPos.RIGHT,
+					HapticPos.LEFT if side == SCLeftRight.LEFT else HapticPos.RIGHT,
 					512 * int(settings["haptic_intensity"]),
 					8,
 					action,
@@ -252,7 +251,7 @@ class VDFProfile(Profile):
 					# TODO: Handle multiple bindings
 					bindings = ensure_list(bdef["activators"][k])[0]
 					a = self.parse_action(bindings["bindings"]["binding"], button)
-					a = VDFProfile.parse_modifiers(bindings, a, Profile.RIGHT)
+					a = VDFProfile.parse_modifiers(bindings, a, SCLeftRight.RIGHT)
 					# holly...
 				act_actions.append(a)
 			normal, double, hold = act_actions
@@ -284,8 +283,9 @@ class VDFProfile(Profile):
 				return g
 		return None
 
-	def parse_group(self, group, side):
+	def parse_group(self, group, side: SCLeftRight):
 		"""Parses output (group) from vdf profile.
+
 		Returns Action.
 		"""
 		if "mode" not in group:
@@ -297,9 +297,9 @@ class VDFProfile(Profile):
 		for o in ("output_trigger", "output_joystick"):
 			if o in settings:
 				if int(settings[o]) <= 1:
-					side = Profile.LEFT
+					side = SCLeftRight.LEFT
 				else:
-					side = Profile.RIGHT
+					side = SCLeftRight.RIGHT
 
 		if mode == "dpad":
 			keys = []
@@ -318,7 +318,7 @@ class VDFProfile(Profile):
 					keys.append(NoAction())
 			action = DPadAction(*keys)
 		elif mode == "joystick_move":
-			if side == Profile.LEFT:
+			if side == SCLeftRight.LEFT:
 				# Left
 				action = XYAction(AxisAction(Axes.ABS_X), AxisAction(Axes.ABS_Y))
 			else:
@@ -347,42 +347,42 @@ class VDFProfile(Profile):
 				action = self.parse_button(inputs[k])
 				items.append(
 					MenuItem(
-						"item_%s" % (next_item_id,),
+						f"item_{next_item_id}",
 						action.describe(Action.AC_BUTTON),
 						action,
 					),
 				)
 				next_item_id += 1
 			# Menu is stored in profile, with generated ID
-			menu_id = "menu_%s" % (self.next_menu_id,)
+			menu_id = f"menu_{self.next_menu_id}"
 			self.next_menu_id += 1
 			self.menus[menu_id] = MenuData(*items)
 
 			action = GridMenuAction(
 				menu_id,
-				"LEFT" if side == Profile.LEFT else "RIGHT",
-				SCButtons.LPAD if side == Profile.LEFT else SCButtons.RPAD,
+				"LEFT" if side == SCLeftRight.LEFT else "RIGHT",
+				SCButtons.LPAD if side == SCLeftRight.LEFT else SCButtons.RPAD,
 			)
 		elif mode == "radial_menu":
 			items = []
 			next_item_id = 1
 			for k in inputs:
 				action = self.parse_button(inputs[k])
-				items.append(MenuItem("item_%s" % (next_item_id,), action.describe(Action.AC_BUTTON), action))
+				items.append(MenuItem(f"item_{next_item_id}", action.describe(Action.AC_BUTTON), action))
 				next_item_id += 1
 			# Menu is stored in profile, with generated ID
-			menu_id = "menu_%s" % (self.next_menu_id,)
+			menu_id = f"menu_{self.next_menu_id}"
 			self.next_menu_id += 1
 			self.menus[menu_id] = MenuData(*items)
 
 			action = RadialMenuAction(
 				menu_id,
-				"LEFT" if side == Profile.LEFT else "RIGHT",
-				SCButtons.LPAD if side == Profile.LEFT else SCButtons.RPAD,
+				"LEFT" if side == SCLeftRight.LEFT else "RIGHT",
+				SCButtons.LPAD if side == SCLeftRight.LEFT else SCButtons.RPAD,
 			)
 		elif mode == "absolute_mouse":
 			if "click" in inputs:
-				if side == Profile.LEFT:
+				if side == SCLeftRight.LEFT:
 					self.add_by_binding(SCButtons.LPAD, self.parse_button(inputs["click"]))
 				else:
 					self.add_by_binding(SCButtons.RPAD, self.parse_button(inputs["click"]))
@@ -400,7 +400,7 @@ class VDFProfile(Profile):
 			if "click" in inputs:
 				actions.append(TriggerAction(TRIGGER_CLICK, self.parse_button(inputs["click"])))
 
-			if side == Profile.LEFT:
+			if side == SCLeftRight.LEFT:
 				actions.append(AxisAction(Axes.ABS_Z))
 			else:
 				actions.append(AxisAction(Axes.ABS_RZ))
@@ -458,9 +458,9 @@ class VDFProfile(Profile):
 				self.parse_switches(group)
 			else:
 				if binding.startswith("right_"):
-					action = self.parse_group(group, Profile.RIGHT)
+					action = self.parse_group(group, SCLeftRight.RIGHT)
 				else:
-					action = self.parse_group(group, Profile.LEFT)
+					action = self.parse_group(group, SCLeftRight.LEFT)
 				if binding.endswith("modeshift"):
 					modeshift_id = (group_id, binding.split(" ")[0])
 					self.modeshifts[modeshift_id] = action
@@ -475,13 +475,13 @@ class VDFProfile(Profile):
 		if binding in SCButtons.__members__.values():
 			self.buttons[binding] = action
 		elif binding.startswith("left_trackpad"):
-			self.pads[Profile.LEFT] = action
+			self.pads[SCPads.LPAD] = action
 		elif binding.startswith("right_trackpad"):
-			self.pads[Profile.RIGHT] = action
+			self.pads[SCPads.RPAD] = action
 		elif binding.startswith("left_trigger"):
-			self.triggers[Profile.LEFT] = action
+			self.triggers[SCTriggers.LT] = action
 		elif binding.startswith("right_trigger"):
-			self.triggers[Profile.RIGHT] = action
+			self.triggers[SCTriggers.RT] = action
 		elif binding.startswith("joystick"):
 			self.lstick = action
 		elif binding.startswith("gyro"):
@@ -505,21 +505,21 @@ class VDFProfile(Profile):
 		if binding in SCButtons.__members__.values():
 			return self.buttons[binding]
 		if binding.startswith("left_trackpad"):
-			return self.pads[Profile.LEFT]
+			return self.pads[SCPads.LPAD]
 		if binding.startswith("right_trackpad"):
-			return self.pads[Profile.RIGHT]
+			return self.pads[SCPads.RPAD]
 		if binding.startswith("left_trigger"):
-			return self.triggers[Profile.LEFT]
+			return self.triggers[SCTriggers.LT]
 		if binding.startswith("right_trigger"):
-			return self.triggers[Profile.RIGHT]
+			return self.triggers[SCTriggers.RT]
 		if binding.startswith("joystick"):
 			return self.lstick
 		if binding.startswith("gyro"):
 			return self.gyro
-		raise ParseError("Unknown group source binding: '%s'" % (binding,))
+		raise ParseError(f"Unknown group source binding: '{binding}'")
 
 	@staticmethod
-	def _load_preset(data, profile, preset):
+	def _load_preset(data, profile, preset) -> None:
 		profile.modeshifts = {}
 		profile.modeshift_buttons = {}
 		if "group_source_bindings" not in preset:
