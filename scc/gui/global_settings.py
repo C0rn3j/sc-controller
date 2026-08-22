@@ -13,7 +13,7 @@ import traceback
 from gi.repository import Gdk, GdkPixbuf, GLib, GObject, Gtk
 
 from scc.actions import Action, NoAction
-from scc.constants import LEFT, RIGHT, SCPads, SCTriggers
+from scc.constants import SCLeftRight, SCPads, SCTriggers
 from scc.gui.dwsnc import IS_UNITY
 from scc.gui.editor import ComboSetter, Editor
 from scc.gui.osk_binding_editor import OSKBindingEditor
@@ -584,11 +584,11 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 
 		profile = self._load_osk_profile()
 		if s == (1.0, 1.0):
-			profile.pads[SCPads.LPAD] = OSKCursorAction(LEFT)
-			profile.pads[SCPads.RPAD] = OSKCursorAction(RIGHT)
+			profile.pads[SCPads.LPAD] = OSKCursorAction(SCLeftRight.LEFT)
+			profile.pads[SCPads.RPAD] = OSKCursorAction(SCLeftRight.RIGHT)
 		else:
-			profile.pads[SCPads.LPAD] = SensitivityModifier(s[0], s[1], OSKCursorAction(LEFT))
-			profile.pads[SCPads.RPAD] = SensitivityModifier(s[0], s[1], OSKCursorAction(RIGHT))
+			profile.pads[SCPads.LPAD] = SensitivityModifier(s[0], s[1], OSKCursorAction(SCLeftRight.LEFT))
+			profile.pads[SCPads.RPAD] = SensitivityModifier(s[0], s[1], OSKCursorAction(SCLeftRight.RIGHT))
 		self._save_osk_profile(profile)
 
 	def on_entTitle_changed(self, ent) -> None:

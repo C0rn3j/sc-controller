@@ -1833,7 +1833,7 @@ class DPadAction(MultichildAction, HapticEnabledAction):
 		(None, 1),  # Index 8, same as 0
 	)
 
-	def __init__(self, *actions):
+	def __init__(self, *actions) -> None:
 		MultichildAction.__init__(self, *actions)
 		HapticEnabledAction.__init__(self)
 		self.diagonal_rage = DPadAction.DEFAULT_DIAGONAL_RANGE
@@ -1856,7 +1856,7 @@ class DPadAction(MultichildAction, HapticEnabledAction):
 		return ensure_size(4, actions, NoAction())
 
 	@staticmethod
-	def decode(data, a, parser, *b):
+	def decode(data, a, parser, *b) -> DPad8Action | DPadAction:
 		"""Called when decoding profile from json"""
 		args = [parser.from_json_data(x) for x in data[DPadAction.COMMAND]]
 		if len(args) > 4:

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """SC-Controller - Action Editor - On Screen Keyboard Action Component
 
 Assigns actions from scc.osd.osk_actions
@@ -7,7 +6,7 @@ Assigns actions from scc.osd.osk_actions
 import logging
 
 from scc.actions import Action, ButtonAction, NoAction
-from scc.constants import LEFT
+from scc.constants import SCLeftRight
 from scc.gui.ae import AEComponent
 from scc.gui.parser import GuiActionParser
 from scc.osd.osk_actions import CloseOSKAction, MoveOSKAction, OSKAction, OSKCursorAction, OSKPressAction
@@ -25,21 +24,21 @@ class OSKActionComponent(AEComponent):
 	CTXS = Action.AC_OSK
 	PRIORITY = 2
 
-	def __init__(self, app, editor):
+	def __init__(self, app, editor) -> None:
 		AEComponent.__init__(self, app, editor)
 		self._recursing = False
 
-	def set_action(self, mode, action):
+	def set_action(self, mode, action) -> None:
 		cb = self.builder.get_object("cbActionType")
 		if isinstance(action, CloseOSKAction):
 			self.set_cb(cb, "OSK.close()")
-		elif isinstance(action, OSKCursorAction) and action.side == LEFT:
+		elif isinstance(action, OSKCursorAction) and action.side == SCLeftRight.LEFT:
 			self.set_cb(cb, "OSK.cursor(LEFT)")
-		elif isinstance(action, OSKCursorAction):  # and action.side == RIGHT:
+		elif isinstance(action, OSKCursorAction):  # and action.side == SCLeftRight.RIGHT:
 			self.set_cb(cb, "OSK.cursor(RIGHT)")
-		elif isinstance(action, OSKPressAction) and action.side == LEFT:
+		elif isinstance(action, OSKPressAction) and action.side == SCLeftRight.LEFT:
 			self.set_cb(cb, "OSK.press(LEFT)")
-		elif isinstance(action, OSKPressAction):  # and action.side == RIGHT:
+		elif isinstance(action, OSKPressAction):  # and action.side == SCLeftRight.RIGHT:
 			self.set_cb(cb, "OSK.press(RIGHT)")
 		elif isinstance(action, MoveOSKAction):
 			self.set_cb(cb, "OSK.move()")
@@ -54,12 +53,12 @@ class OSKActionComponent(AEComponent):
 	def get_button_title(self):
 		return _("On-Screen Keyboard")
 
-	def handles(self, mode, action):
+	def handles(self, mode, action) -> bool:
 		if isinstance(action, ButtonAction):
 			return action.button in (Keys.BTN_LEFT, Keys.BTN_RIGHT)
 		return isinstance(action, (NoAction, OSKAction, OSKCursorAction))
 
-	def on_cbActionType_changed(self, *a):
+	def on_cbActionType_changed(self, *a) -> None:
 		cbActionType = self.builder.get_object("cbActionType")
 		key = cbActionType.get_model().get_value(cbActionType.get_active_iter(), 0)
 		self.editor.set_action(GuiActionParser().restart(key).parse())

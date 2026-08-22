@@ -21,7 +21,7 @@ log = logging.getLogger("SlaveMapper")
 
 
 class SlaveMapper(Mapper):
-	def __init__(self, profile, scheduler, keyboard=b"SCController Keyboard", mouse=None):
+	def __init__(self, profile, scheduler, keyboard: bytes = b"SCController Keyboard", mouse=None) -> None:
 		Mapper.__init__(self, profile, scheduler, keyboard, mouse, None)
 		self._feedback_cb = None
 
@@ -50,7 +50,7 @@ class SlaveMapper(Mapper):
 			self._feedback_cb(hapticdata)
 
 	# TODO(Martin): Fix up the LSTICKPRESS/LPADTOUCH/RPADTOUCH literals
-	def handle_event(self, daemon, what: SCSticks | SCPadsLR | str, data) -> None:
+	def handle_event(self, daemon, what: SCSticks | SCPads | str, data) -> None:
 		"""Handles event sent by scc-daemon.
 
 		Without calling this, SlaveMapper basically does nothing.
@@ -64,6 +64,8 @@ class SlaveMapper(Mapper):
 			self.profile.triggers[SCTriggers.LT].trigger(self, *data)
 		elif what == SCButtons.RT.name:
 			self.profile.triggers[SCTriggers.RT].trigger(self, *data)
+		elif what in SCPads:
+			self.profile.pads[what].whole(self, data[0], data[1], what)
 		elif hasattr(SCButtons, what) or what in ("LPADPRESS", "RPADPRESS"):
 			x = {
 				"LPADPRESS": SCButtons.LPAD,
@@ -82,9 +84,6 @@ class SlaveMapper(Mapper):
 					self.profile.pads[SCPads.LPAD].whole(self, 0, 0, SCPads.LPAD)
 				elif what == "RPADTOUCH":
 					self.profile.pads[SCPads.RPAD].whole(self, 0, 0, SCPads.RPAD)
-		elif what in SCPads:
-			# print what, self.profile.pads[what]
-			self.profile.pads[what].whole(self, data[0], data[1], what)
 		else:
-			print(">>>", what, data)
+			log.error(">>> %s %s", what, data)
 		self.generate_events()

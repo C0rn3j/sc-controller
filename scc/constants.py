@@ -63,6 +63,10 @@ class SCPads(StrEnum):
 type SCPadsLR = Literal[SCPads.LPAD, SCPads.RPAD]
 type SCTouchpads = SCPadsLR | Literal[SCPads.CPAD]
 
+# OSD Keyboard has this weird "sides" concept within an Action where:
+#   LPAD is "LEFT", RPAD is "RIGHT" and CPAD is "CPAD"
+type SCSidesOSD = SCLeftRight | Literal[SCPads.CPAD]
+
 
 class SCSticks(StrEnum):
 	"""Joysticks"""
