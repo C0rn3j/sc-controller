@@ -903,7 +903,7 @@ class MouseAction(WholeHapticAction, Action):
 			mouse_dy = ratio_y * (mapper.time_elapsed * BASE_STICK_MOUSE_SPEED) * self.speed[1]
 			# mapper.mouse_move_stick(x * self.speed[0] * 0.01, y * self.speed[1] * 0.01)
 			mapper.mouse_move_stick(mouse_dx, mouse_dy)
-			mapper.force_event.add(FE_PAD)
+			mapper.force_event.add(FE_STICK)
 		elif mapper.is_touched(what):  # left or right pad
 			if self._old_pos and mapper.was_touched(what):
 				dx, dy = x - self._old_pos[0], self._old_pos[1] - y
