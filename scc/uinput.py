@@ -38,13 +38,39 @@ if TYPE_CHECKING:
 
 UNPUT_MODULE_VERSION = 9
 
+def _find_event_codes_header(exists=os.path.exists) -> tuple[str, str]:
+	"""Locate the header the input-event constants are parsed out of.
+
+	In preference order: the system's own copy, then the one packaged next to
+	this module (installs put it there so the package does not depend on the
+	host having kernel headers -- SteamOS ships none), then linux/input.h,
+	which is where these constants lived before kernel 3.14 split them out.
+
+	The last branch used to be an unguarded `else`, so a machine with no
+	kernel headers and no bundled copy did not get a diagnosis: it got
+	FileNotFoundError on a path nobody asked for, raised from an import three
+	levels down. `exists` is injectable so this is testable without a machine
+	in that state.
+	"""
+	here = os.path.dirname(__file__)
+	candidates = (
+		("/usr/include", "linux/input-event-codes.h"),
+		(here, "input-event-codes.h"),
+		("/usr/include", "linux/input.h"),
+	)
+	for directory, header in candidates:
+		if exists(os.path.join(directory, header)):
+			return directory, header
+	raise ImportError(
+		"cannot find the Linux input-event definitions; looked for %s. "
+		"Install your distribution's kernel headers (linux-api-headers, "
+		"linux-libc-dev or kernel-headers), or run from an installed "
+		"sc-controller-cc, which bundles a copy." % (
+			", ".join(os.path.join(d, h) for d, h in candidates)))
+
+
 # Get All defines from linux headers
-if os.path.exists("/usr/include/linux/input-event-codes.h"):
-	CHEAD = defines("/usr/include", "linux/input-event-codes.h")
-elif os.path.exists(os.path.split(__file__)[0] + "/input-event-codes.h"):
-	CHEAD = defines(os.path.split(__file__)[0], "input-event-codes.h")
-else:
-	CHEAD = defines("/usr/include", "linux/input.h")
+CHEAD = defines(*_find_event_codes_header())
 
 MAX_FEEDBACK_EFFECTS = 4
 
@@ -212,6 +238,8 @@ class FeedbackEvent(ctypes.Structure):
 		("repetitions", c_int32),
 		("type", c_uint16),
 		("level", c_int16),
+		("strong", c_uint16),   # FF_RUMBLE magnitudes, unmerged; see uinput.c
+		("weak", c_uint16),
 	]
 
 	def __init__(self):

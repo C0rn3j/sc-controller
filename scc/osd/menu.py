@@ -18,6 +18,7 @@ from scc.gui.daemon_manager import DaemonManager
 from scc.lib import xwrappers as X
 from scc.menu_data import MenuData, Separator, Submenu
 from scc.osd import OSDWindow, StickController, menu_generators
+from scc.parser import TalkingActionParser
 from scc.paths import get_share_path
 from scc.tools import _, circle_to_square, clamp, find_icon, find_menu
 from scc.x11 import autoswitcher
@@ -72,6 +73,14 @@ class Menu(OSDWindow):
 		self._menuid = None
 		self._use_cursor = False
 		self._eh_ids = []
+		# Reveal-after-lock state: the menu is not made visible until inputs are
+		# locked, so a button press can't reach the normal mapping before the
+		# (asynchronous) lock lands. A fallback reveals anyway if the lock is
+		# slow, so the menu can never get stuck invisible.
+		self._inputs_locked = False
+		self._show_pending = False
+		self._reveal_timer = None
+		self._quit_done = False
 		self._control_with = LSTICK
 		self._control_with_dpad: bool = False
 		self._confirm_with = "A"
@@ -88,7 +97,7 @@ class Menu(OSDWindow):
 		v.set_name("osd-menu")
 		return v
 
-	def scroll_wrap(self, parent) -> Gtk.ScrolledWindow:
+	def scroll_wrap(self, parent: Gtk.Widget) -> Gtk.ScrolledWindow:
 		"""Wrap the vertical item list in a scrolled viewport capped to the screen height
 
 		So very long menus (e.g. hundreds of profiles) don't run off-screen.
@@ -132,7 +141,7 @@ class Menu(OSDWindow):
 		else:
 			sw.set_size_request(natw, nath)
 
-	def _ensure_visible(self, widget) -> None:
+	def _ensure_visible(self, widget: Gtk.Widget) -> None:
 		"""Scroll the viewport so the selected item and its section heading stay visible."""
 		sw = getattr(self, "_scrollwindow", None)
 		if sw is None or widget is None:
@@ -181,6 +190,14 @@ class Menu(OSDWindow):
 		if not self._is_submenu:
 			self._connect_handlers()
 			self.on_daemon_connected(self.daemon)
+		else:
+			# A submenu reuses the parent menu's input lock (the parent forwards
+			# events to it), so it never requests its own lock and
+			# _on_inputs_locked() is never called. Treat its inputs as already
+			# locked; otherwise the reveal-when-locked gate added for the
+			# dead-menu fix keeps the submenu window permanently hidden (it is
+			# navigable via forwarded input but never shown).
+			self._inputs_locked = True
 
 	def use_config(self, c):
 		"""Allows reusing already existin Config instance in same process.
@@ -254,10 +271,15 @@ class Menu(OSDWindow):
 		return a.x, a.y
 
 	def parse_menu(self):
+		# Parse actions only when we may need to filter items by what they do
+		# (dropping "Turn Controller OFF" on the Steam Deck). Other controllers
+		# keep the lighter no-parse load: the daemon runs a menu action by id, so
+		# the OSD menu itself never needs the parsed action.
+		parser = TalkingActionParser() if getattr(self.args, "controller_type", None) == "deck" else None
 		if self.args.from_profile:
 			try:
 				self._menuid = self.args.items[0]
-				self.items = MenuData.from_profile(self.args.from_profile, self._menuid)
+				self.items = MenuData.from_profile(self.args.from_profile, self._menuid, parser)
 			except OSError:
 				print("%s: error: profile file not found" % (sys.argv[0]), file=sys.stderr)
 				return False
@@ -267,7 +289,7 @@ class Menu(OSDWindow):
 		elif self.args.from_file:
 			try:
 				self._menuid = self.args.from_file
-				self.items = MenuData.from_file(self.args.from_file)
+				self.items = MenuData.from_file(self.args.from_file, parser)
 			except:
 				print("%s: error: failed to load menu file" % (sys.argv[0]), file=sys.stderr)
 				return False
@@ -279,6 +301,24 @@ class Menu(OSDWindow):
 				print("%s: error: invalid number of arguments" % (sys.argv[0]), file=sys.stderr)
 				return False
 		return True
+
+	def _drop_inapplicable_items(self, items):
+		"""Removes generated menu items that don't apply to the connected
+		controller - currently "Turn Controller OFF" for the Steam Deck's
+		built-in controls, which can't be powered off. The live controller
+		isn't known when items are built (that happens before we connect to
+		the daemon), so the daemon passes its type via --controller-type.
+		"""
+		if getattr(self.args, "controller_type", None) != "deck":
+			return items
+		def is_turnoff(action):
+			# turnoff() directly, or wrapped e.g. as osd(turnoff()) - unwrap .action
+			while action is not None:
+				if getattr(action, "SA", "") == "turnoff":
+					return True
+				action = getattr(action, "action", None)
+			return False
+		return [i for i in items if not is_turnoff(getattr(i, "action", None))]
 
 	def parse_arguments(self, argv):
 		if not OSDWindow.parse_arguments(self, argv):
@@ -292,7 +332,7 @@ class Menu(OSDWindow):
 		self._size = self.args.size
 
 		# Create buttons that are displayed on screen
-		items = self.items.generate(self)
+		items = self._drop_inapplicable_items(self.items.generate(self))
 		self.items = []
 		for item in items:
 			item.widget = self.generate_widget(item)
@@ -431,8 +471,43 @@ class Menu(OSDWindow):
 		if not self.select(0):
 			self.next_item(1)
 		self._fit_scroll()
-		OSDWindow.show(self, *a)
+		# Reveal only once inputs are locked, so a button press can never reach
+		# the normal mapping before the lock lands. That matters for more than a
+		# stray keystroke: if the press is handled by the old action (e.g. a key
+		# goes DOWN) and the release is then captured by the menu, the key never
+		# goes UP and gets stuck. So we must never show the menu while unlocked:
+		# if the lock does not land within the timeout, give up and CLOSE the
+		# menu rather than revealing it.
+		self._show_pending = True
+		if self._reveal_timer is None:
+			self._reveal_timer = GLib.timeout_add(2000, self._lock_timed_out)
+		self._reveal_if_locked()
+
+	def _on_inputs_locked(self, *a: object) -> None:
+		"""Called from the lock-success callback, once inputs are diverted to
+		this menu and it is safe to reveal it."""
+		self._inputs_locked = True
+		self._reveal_if_locked()
+
+	def _reveal_if_locked(self) -> None:
+		"""Reveal the menu, but only once it is both requested and locked."""
+		if not (self._show_pending and self._inputs_locked):
+			return
+		self._show_pending = False
+		if self._reveal_timer is not None:
+			GLib.source_remove(self._reveal_timer)
+			self._reveal_timer = None
+		OSDWindow.show(self)
 		GLib.timeout_add(1, self._check_on_screen_position, True)
+
+	def _lock_timed_out(self, *a: object) -> None:
+		"""The lock never landed; close the menu instead of revealing it while
+		unlocked (which could leak input or strand a key)."""
+		self._reveal_timer = None
+		if self._show_pending:
+			self._show_pending = False
+			self.quit(3)
+		return False
 
 	def on_daemon_connected(self, *a) -> None:
 		if not self.config:
@@ -490,6 +565,7 @@ class Menu(OSDWindow):
 
 	def lock_inputs(self) -> None:
 		def success(*a) -> None:
+			self._on_inputs_locked()
 			log.info("Successfully locked input")
 
 		locks = [self._control_with, self._confirm_with, self._cancel_with]
@@ -498,6 +574,19 @@ class Menu(OSDWindow):
 		self.controller.lock(success, self.on_failed_to_lock, *locks)
 
 	def quit(self, code=-2):
+		# A menu must unlock exactly once. quit() can be re-entered — most
+		# importantly by a *previous* menu's leftover timeout firing after this
+		# object should be gone — and unlock_all() is per-CLIENT: it clears every
+		# lock the OSD daemon holds, not just this menu's. Re-running it would
+		# strip the locks of whatever menu is open *now*, leaving it visible but
+		# dead (it stops responding and leaks input to the normal mapping). So
+		# make quit idempotent: a menu that already quit never unlocks again.
+		if self._quit_done:
+			return
+		self._quit_done = True
+		if self._reveal_timer is not None:
+			GLib.source_remove(self._reveal_timer)
+			self._reveal_timer = None
 		if not self._is_submenu:
 			if self.get_controller():
 				self.get_controller().unlock_all()
@@ -627,7 +716,8 @@ class Menu(OSDWindow):
 				# if point_in_gtkrect(i.widget.get_allocation(), x, y):
 				# self.select(self.items.index(i))
 			else:
-				self._scon.set_stick(x, y)
+				# source: the menu accepts LSTICK, LEFT and DPAD together
+				self._scon.set_stick(x, y, source=what)
 		elif what == self._confirm_with:
 			if data[0] == 0:  # Button released
 				if self._selected and self._selected.callback:

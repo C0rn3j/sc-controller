@@ -12,7 +12,7 @@ import math
 from gi.repository import GLib, Gtk
 
 from scc.actions import Action, NoAction, RingAction, TriggerAction
-from scc.constants import CUT, LINEAR, MINIMUM, ROUND, TRIGGER_CLICK, HapticPos, SCButtons
+from scc.constants import CUT, LINEAR, MINIMUM, ROUND, TRIGGER_CLICK, HapticEffect, HapticPos, SCButtons
 from scc.gui.ae import AEComponent
 from scc.gui.controller_widget import GYROS, PADS, PRESSABLE, STICKS, TRIGGERS
 from scc.gui.dwsnc import headerbar
@@ -27,6 +27,8 @@ from scc.modifiers import (
 	BallModifier,
 	ClickModifier,
 	DeadzoneModifier,
+	HAPTIC_EFFECT_MODIFIERS,
+	HAPTIC_SCRIPTS,
 	FeedbackModifier,
 	ModeModifier,
 	NameModifier,
@@ -64,6 +66,29 @@ SMT = ("Level", "Weight", "Filter")  # Smoothing setting keys
 DZN = ("Lower", "Upper")  # Deadzone settings key
 FEEDBACK_SIDES = [HapticPos.LEFT, HapticPos.RIGHT, HapticPos.BOTH]
 DEADZONE_MODES = [CUT, ROUND, LINEAR, MINIMUM]
+
+
+# Feedback effects and the parameters each one uses, in display order. The
+# widgets for these are built at runtime rather than in the .glade: six rows of
+# label+scale that are mostly hidden at any moment is a lot of XML to maintain
+# by hand, and building them from this table keeps the rows, the show/hide rule
+# and the modifier arguments from drifting apart.
+#
+# (attribute, label, min, max, page step, default, choices)
+# "choices" turns the row into a named dropdown instead of a slider, for
+# parameters that are an enumeration rather than a magnitude.
+# The step is how far Page Up/Down and a click on the trough move; the arrow
+# keys and the spin button always move by one, because these are values you
+# know rather than dial by feel -- 220 Hz, 300 ms.
+FEEDBACK_PARAMS = {
+	"tone_frequency":  (_("Frequency (Hz)"),     20, 1000, 10, 160, None),
+	"end_frequency":   (_("End frequency (Hz)"), 20, 1000, 10, 40, None),
+	"duration":        (_("Duration (ms)"),      10, 5000, 50, 200, None),
+	"lfo_frequency":   (_("LFO rate (Hz)"),      0,  50,   5, 0, None),
+	"lfo_depth":       (_("LFO depth"),          0,  255,  10, 0, None),
+	"script_id":       (_("Preset"),             0,  255,  1, HAPTIC_SCRIPTS[0][0], HAPTIC_SCRIPTS),
+}
+
 
 
 class ActionEditor(Editor):
@@ -120,6 +145,8 @@ class ActionEditor(Editor):
 		self.deadzone = [0, 0]               # Deadzone slider values, set later
 		self.deadzone_mode = None            # None for 'disabled'
 		self.feedback_position = None        # None for 'disabled'
+		self.feedback_effect = HapticEffect.CLICK  # chosen haptic effect
+		self.feedback_params = {}            # effect parameter values by name
 		self.smoothing = None                # None for 'disabled'
 		self.friction = -1                   # -1 for 'disabled'
 		self.click = False                   # Click modifier value. None for disabled
@@ -161,6 +188,7 @@ class ActionEditor(Editor):
 					self.feedback[i],  # default value
 				),
 			)
+		self._build_feedback_effects()
 		for key in SMT:
 			i = SMT.index(key)
 			self.smoothing_widgets.append(
@@ -182,9 +210,6 @@ class ActionEditor(Editor):
 					self.deadzone[i],  # default value
 				),
 			)
-
-		if self.app.osd_mode:
-			self.builder.get_object("entName").set_sensitive(False)
 
 	def load_components(self):
 		"""Loads list of editor components"""
@@ -216,10 +241,6 @@ class ActionEditor(Editor):
 		self.remove_added_widget()
 		if self._selected_component is not None:
 			self._selected_component.hidden()
-
-	def on_Dialog_key_press_event(self, window, event):
-		if self.app.osd_mode and event.keyval == 65471:
-			self.on_btOK_clicked()
 
 	def set_osd_enabled(self, value):
 		"""Sets value of OSD modifier checkbox, without firing any more events."""
@@ -598,6 +619,21 @@ class ActionEditor(Editor):
 			self.smoothing = smoothing
 			set_action = True
 
+		# Feedback effect and its parameters. These have to be diffed here like
+		# every other modifier setting: update_modifiers is what decides the
+		# action is dirty, and anything it does not track is dropped the next
+		# time some other change rebuilds the editor from state.
+		if getattr(self, "_feedback_effects_supported", False):
+			effect = self.get_feedback_effect()
+			if self.feedback_effect != effect:
+				self.feedback_effect = effect
+				set_action = True
+			for key in self.feedback_effect_rows:
+				value = self._row_value(key)
+				if self.feedback_params.get(key) != value:
+					self.feedback_params[key] = value
+					set_action = True
+
 		# Rest
 		if self.click is not None and cbRequireClick.get_active() != self.click:
 			self.click = cbRequireClick.get_active()
@@ -658,11 +694,18 @@ class ActionEditor(Editor):
 				cbFeedback = self.builder.get_object("cbFeedback")
 				grFeedback = self.builder.get_object("grFeedback")
 				if from_custom or (cbFeedback.get_active() and grFeedback.get_sensitive()):
-					# Build FeedbackModifier arguments
-					feedback = [FEEDBACK_SIDES[cbFeedbackSide.get_active()]] + feedback
-					feedback += [action]
-					# Create modifier
-					action = FeedbackModifier(*feedback)
+					side = FEEDBACK_SIDES[cbFeedbackSide.get_active()]
+					effect = self.feedback_effect
+					if effect == HapticEffect.CLICK:
+						action = FeedbackModifier(*([side] + feedback + [action]))
+					else:
+						# amplitude, then this effect's own parameters in the
+						# order its modifier declares them
+						cls = next(c for c in HAPTIC_EFFECT_MODIFIERS if c.EFFECT == effect)
+						args = [side, self.feedback[0]]
+						args += [self.feedback_params.get(k, FEEDBACK_PARAMS[k][4])
+							for k in cls.PARAMS]
+						action = cls(*(args + [action]))
 
 		if (cm & Action.MOD_SMOOTH) != 0:
 			if self.smoothing != None:
@@ -717,6 +760,120 @@ class ActionEditor(Editor):
 				return action
 		return action
 
+	def _build_feedback_effects(self):
+		"""Adds the effect chooser and its parameter rows to the feedback grid.
+
+		Hidden entirely on controllers that can only do a click, so nobody is
+		offered an effect that would silently degrade on their hardware.
+		"""
+		from scc.gui.ae import has_haptic_effects
+		grid = self.builder.get_object("grFeedback")
+		self.feedback_effect_rows = {}
+
+		self._cbFeedbackEffect = Gtk.ComboBoxText()
+		for cls in HAPTIC_EFFECT_MODIFIERS:
+			self._cbFeedbackEffect.append_text(cls.LABEL)
+		self._cbFeedbackEffect.set_active(0)
+		self._cbFeedbackEffect.connect("changed", self.on_feedback_effect_changed)
+		self._lblFeedbackEffect = Gtk.Label(label=_("Effect"), xalign=0)
+		# row 1 is the side chooser; the effect belongs above it, since it
+		# decides what the rest of the panel even means
+		grid.insert_row(1)
+		grid.attach(self._lblFeedbackEffect, 0, 1, 1, 1)
+		grid.attach(self._cbFeedbackEffect, 1, 1, 1, 1)
+
+		row = 16   # well past the glade-defined rows
+		for key, (label, lo, hi, step, default, choices) in FEEDBACK_PARAMS.items():
+			lbl = Gtk.Label(label=label, xalign=0)
+			if choices:
+				w = Gtk.ComboBoxText()
+				for value, name in choices:
+					w.append(str(value), name)
+				w.set_active_id(str(default))
+				w.connect("changed", self.on_feedback_effect_changed)
+				w.set_hexpand(True)
+				field = w
+			else:
+				# Slider to explore the range by feel, spin button beside it to
+				# land on a value exactly. They share one adjustment, so neither
+				# can disagree with the other, and the signal is connected there
+				# rather than to either widget.
+				adj = Gtk.Adjustment(value=default, lower=lo, upper=hi,
+					step_increment=1, page_increment=step)
+				adj.connect("value-changed", self.on_feedback_effect_changed)
+				w = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL, adjustment=adj)
+				w.set_digits(0)
+				w.set_draw_value(False)   # the spin button is showing the number
+				w.set_hexpand(True)
+				spin = Gtk.SpinButton(adjustment=adj, climb_rate=1, digits=0)
+				spin.set_numeric(True)
+				field = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=4)
+				field.pack_start(w, True, True, 0)
+				field.pack_start(spin, False, False, 0)
+			grid.attach(lbl, 0, row, 1, 1)
+			grid.attach(field, 1, row, 1, 1)
+			lbl.show()
+			field.show_all()   # realise the children now; the row is hidden below
+			self.feedback_effect_rows[key] = (lbl, w, field, default)
+			self.feedback_params[key] = default
+			row += 1
+
+		self._feedback_effects_supported = has_haptic_effects(self.app)
+		self._update_feedback_effect_rows()
+
+	def _row_value(self, key):
+		"""Current value of a parameter row, whichever widget kind it uses."""
+		trash, w, trash2, default = self.feedback_effect_rows[key]
+		if isinstance(w, Gtk.ComboBoxText):
+			return int(w.get_active_id()) if w.get_active_id() else default
+		return int(w.get_value())
+
+	def _set_row_value(self, key, value):
+		trash, w, trash2, default = self.feedback_effect_rows[key]
+		if isinstance(w, Gtk.ComboBoxText):
+			# an id the firmware has but our list does not: keep it rather than
+			# silently rewriting the profile to something else
+			if w.set_active_id(str(int(value))) is False:
+				w.append(str(int(value)), _("Preset %s") % (int(value),))
+				w.set_active_id(str(int(value)))
+		else:
+			w.set_value(value)
+
+	def get_feedback_effect(self):
+		"""Currently chosen HapticEffect (CLICK if the chooser is not shown)."""
+		if not getattr(self, "_feedback_effects_supported", False):
+			return HapticEffect.CLICK
+		return HAPTIC_EFFECT_MODIFIERS[self._cbFeedbackEffect.get_active()].EFFECT
+
+	def _update_feedback_effect_rows(self):
+		"""Shows only the rows the chosen effect actually uses."""
+		supported = getattr(self, "_feedback_effects_supported", False)
+		self._lblFeedbackEffect.set_visible(supported)
+		self._cbFeedbackEffect.set_visible(supported)
+
+		effect = self.get_feedback_effect()
+		used = next(c.PARAMS for c in HAPTIC_EFFECT_MODIFIERS if c.EFFECT == effect)
+		for key, (lbl, trash, field, trash2) in self.feedback_effect_rows.items():
+			visible = supported and key in used
+			for widget in (lbl, field):
+				widget.set_visible(visible)
+				# a show_all() further up would otherwise revive every hidden row
+				widget.set_no_show_all(not visible)
+		# the click-only sliders (pad-travel frequency, click period) mean
+		# nothing to a synthesised effect
+		click_only = effect == HapticEffect.CLICK
+		for name in ("Frequency", "Period"):
+			for prefix in ("lblF", "sclF", "btClearF"):
+				w = self.builder.get_object(prefix + name)
+				if w:
+					w.set_visible(click_only)
+
+	def on_feedback_effect_changed(self, *a):
+		if self._recursing:
+			return
+		self._update_feedback_effect_rows()
+		self.update_modifiers()
+
 	def load_modifiers(self, action, index: int = -1):
 		"""Parse action for modifiers and update UI accordingly.
 
@@ -737,10 +894,19 @@ class ActionEditor(Editor):
 				self.click = True
 				action = action.action
 			if isinstance(action, FeedbackModifier):
+				# the effect subclasses are FeedbackModifiers too, so this one
+				# branch covers all four; only CLICK uses frequency/period
 				self.feedback_position = action.haptic.get_position()
 				self.feedback[0] = action.haptic.get_amplitude()
-				self.feedback[1] = action.haptic.get_frequency()
-				self.feedback[2] = action.haptic.get_period()
+				effect = getattr(action.haptic, "effect", HapticEffect.CLICK)
+				self.feedback_effect = effect
+				if effect == HapticEffect.CLICK:
+					self.feedback[1] = action.haptic.get_frequency()
+					self.feedback[2] = action.haptic.get_period()
+				else:
+					for key in self.feedback_effect_rows:
+						value = getattr(action.haptic, key, FEEDBACK_PARAMS[key][4])
+						self.feedback_params[key] = int(value)
 				action = action.action
 			if isinstance(action, SmoothModifier):
 				self.smoothing = (action.level, action.multiplier, action.filter)
@@ -777,6 +943,16 @@ class ActionEditor(Editor):
 			cbFeedback.set_active(True)
 			for i in range(len(self.feedback)):
 				self.feedback_widgets[i][0].set_value(self.feedback[i])
+		# The effect chooser and its rows are widgets like any other here: their
+		# 'changed' handlers call update_modifiers, so writing them any earlier --
+		# while the loop above is still parsing -- rebuilds the action from a
+		# half-loaded editor and discards everything not applied yet.
+		for i, c in enumerate(HAPTIC_EFFECT_MODIFIERS):
+			if c.EFFECT == self.feedback_effect:
+				self._cbFeedbackEffect.set_active(i)
+		for key in self.feedback_effect_rows:
+			self._set_row_value(key, self.feedback_params[key])
+		self._update_feedback_effect_rows()
 		for grp in self.feedback_widgets:
 			for w in grp[0:-1]:
 				w.set_sensitive(self.feedback_position is not None)

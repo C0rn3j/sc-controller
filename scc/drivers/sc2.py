@@ -5,9 +5,10 @@ docs/steam-controller-v2-protocol.md. Validated end-to-end on real hardware
 via the wireless Puck (0x1304): lizard-mode disable plus button / stick / pad
 / trigger / gyro input through scc-daemon to uinput, and click haptics.
 Wired (0x1302) is supported too (single HID interface 0), and the GUI gets
-images/sc2-config.json. Still TODO: continuous variable rumble, the Bluetooth
-(0x1303) transport, real serial read-back, and a dedicated v2 GUI background
-image (currently reuses the Deck's).
+images/sc2-config.json. Continuous rumble uses output report 0x80. Still TODO:
+the Bluetooth (0x1303) transport, real serial read-back, the richer haptic
+effects (tone/sweep/script, reports 0x83-0x85), actuator audio streaming
+(0x86-0x89), and a dedicated v2 GUI background image (reuses the Deck's).
 
 Architecture mirrors the existing drivers:
   - the wireless "Controller Puck" (0x1304) is a multi-slot dongle, like
@@ -31,12 +32,19 @@ from typing import TYPE_CHECKING, NamedTuple
 
 import usb1
 
-from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, HapticPos, SCButtons
+from scc.constants import (
+    STICK_PAD_MAX,
+    STICK_PAD_MIN,
+    ControllerFlags,
+    HapticEffect,
+    HapticPos,
+    SCButtons,
+)
+from scc.controller import HapticData
 from scc.drivers.sc_dongle import SCController, SCPacketType
 from scc.drivers.usb import SCUSBDevice, register_hotplug_device
 
 if TYPE_CHECKING:
-	from scc.controller import HapticData
 	from scc.sccdaemon import SCCDaemon
 
 log = logging.getLogger("SC2")
@@ -111,7 +119,55 @@ STICK_DEADZONE = 3000
 # lizard (mouse/keyboard) mode, exactly as steamdeck.py does.
 UNLIZARD_INTERVAL = 100
 
+# Simulated pad click. The v2's touchpads have no dome switch under them -- the
+# click is purely haptic, the way Steam does it -- so pressing one feels like
+# nothing at all unless the driver produces the pulse itself. Every other haptic
+# in sc-controller comes from a feedback() modifier the user attaches to an
+# action, and there is no binding for "the pad was pressed" (nor any GUI control
+# for one), so this cannot be expressed as a profile and has to be built in.
+# Emitted on press and, more softly, on release, because that is what a real
+# dome switch does: it clicks going down and again springing back.
+PAD_CLICK_PRESS = 0x1000
+PAD_CLICK_RELEASE = 0x0400
+
+# Report 0x82's last byte is a SIGNED gain in decibels, clamped by the firmware
+# to this range -- not a 0..255 amplitude, which is what it was being fed. See
+# the haptic notes in docs/steam-controller-v2-protocol.md.
+HAPTIC_GAIN_MIN_DB = -23
+HAPTIC_GAIN_MAX_DB = 24
+# The Strength slider's own bounds (glade adjFAmplitude). The gain range is
+# spread across exactly this, so every part of the slider does something:
+# anchoring 512 to 0 dB instead put +24 dB at amplitude 8192, leaving the top
+# three quarters of the travel clamped and indistinguishable on hardware.
+HAPTIC_AMPLITUDE_MIN = 16
+HAPTIC_AMPLITUDE_MAX = 32767
+
+
+def _gain_db(amplitude: int) -> int:
+    """HapticData amplitude -> report 0x82 gain in dB.
+
+    Logarithmic, because the slider is linear in amplitude while the device
+    takes decibels; this keeps the perceived step per pixel roughly even.
+    """
+    a = max(HAPTIC_AMPLITUDE_MIN, min(HAPTIC_AMPLITUDE_MAX, int(amplitude)))
+    t = math.log(a / HAPTIC_AMPLITUDE_MIN) / math.log(HAPTIC_AMPLITUDE_MAX / HAPTIC_AMPLITUDE_MIN)
+    return int(round(HAPTIC_GAIN_MIN_DB + t * (HAPTIC_GAIN_MAX_DB - HAPTIC_GAIN_MIN_DB)))
+
 TURNOFF_QUIET_PERIOD = 0.5
+
+
+# Report 0x82 offers two click presets, and we only ever used the quiet one.
+# Reach for the strong one past this gain, so strength still has an audible
+# range even if the firmware turns out to ignore the gain byte for a preset
+# effect -- which is the open question about it.
+HAPTIC_STRONG_CLICK_ABOVE_DB = 18
+HAPTIC_CLICK = 0x01
+HAPTIC_CLICK_STRONG = 0x02
+
+# Set SCC_HAPTIC_DEBUG=1 to log every haptic report as it goes out.
+_HAPTIC_DEBUG = bool(os.environ.get("SCC_HAPTIC_DEBUG"))
+if _HAPTIC_DEBUG:
+    log.setLevel(logging.INFO)
 
 
 # --- report 0x42 layout (see docs/steam-controller-v2-protocol.md) ----------
@@ -362,6 +418,60 @@ class SC2Controller(SCController):
 		super().__init__(driver, ccidx, in_endpoint)
 		self._out_ep = out_endpoint  # interrupt-OUT endpoint for haptics
 		self._old_state = SC2_NULL
+		self._rumble_stop = None     # pending 'stop rumble' task, see rumble()
+
+	# pad-press button -> which actuator to pulse
+	_PAD_CLICK_SIDES = ((SCButtons.LPAD, HapticPos.LEFT), (SCButtons.RPAD, HapticPos.RIGHT))
+
+	def queue_pad_click(self, idata) -> None:
+		"""Queues the simulated dome-switch click for any pad pressed or released
+		in this report. See PAD_CLICK_PRESS.
+
+		Queued through the mapper rather than written straight to the endpoint so
+		it coalesces with whatever else that frame produces, and so an explicit
+		feedback() the user bound to the same pad still wins -- the mapper keeps
+		one pending pulse per side, and this runs before the actions do.
+		"""
+		old, new = self._old_state.buttons, idata.buttons
+		for button, pos in self._PAD_CLICK_SIDES:
+			was, now = old & button, new & button
+			if now and not was:
+				self.mapper.send_feedback(HapticData(pos, amplitude=PAD_CLICK_PRESS))
+			elif was and not now:
+				self.mapper.send_feedback(HapticData(pos, amplitude=PAD_CLICK_RELEASE))
+
+	def rumble(self, strong: int, weak: int, duration_ms: int) -> bool:
+		"""Continuous game rumble via output report 0x80 (HAPTIC_RUMBLE).
+
+		Layout `80 <type u8> <intensity u16> <l_speed u16> <l_gain i8>
+		<r_speed u16> <r_gain i8>`, all little-endian, both gains 0 dB -- which
+		is what Valve's own SDL3 driver for this controller sends.
+
+		SDL calls its two magnitudes low_frequency_rumble and
+		high_frequency_rumble and puts them on left and right respectively;
+		those are the same two motors Linux calls strong (heavy) and weak
+		(light), so they map straight across. Sending one averaged value to
+		both sides instead -- which is what the uinput shim used to hand us --
+		made fftest's "strong rumble" and "weak rumble" feel identical.
+		"""
+		left = max(0, min(0xFFFF, int(strong)))
+		right = max(0, min(0xFFFF, int(weak)))
+		self._send_rumble(left, right)
+		# 0x80 carries no duration -- it runs until something changes it -- so
+		# the stop has to be scheduled here or a single effect rumbles forever.
+		if self._rumble_stop:
+			self.mapper.cancel_task(self._rumble_stop)
+			self._rumble_stop = None
+		if (left or right) and duration_ms > 0:
+			self._rumble_stop = self.mapper.schedule(
+				duration_ms / 1000.0, lambda *a: self._send_rumble(0, 0))
+		return True
+
+	def _send_rumble(self, left: int, right: int) -> None:
+		report = struct.pack("<BBHHbHb", 0x80, 0, 0, left, 0, right, 0)
+		if _HAPTIC_DEBUG:
+			log.info("RUMBLE  left=%5d right=%5d  report=%s", left, right, report.hex(" "))
+		self._driver.send_haptic(self._out_ep, report)
 
 	def get_type(self) -> str:
 		return "sc2"
@@ -397,11 +507,16 @@ class SC2Controller(SCController):
 	def configure(
 		self, idle_timeout: int | None = None, enable_gyros: bool | None = None, led_level: int | None = None
 	) -> None:
-		# Replay the config blocks captured from Steam. These put the controller
-		# into gamepad mode; the exact gyro-enable register is still TODO.
+		# Replay the config blocks captured from Steam, which put the controller
+		# into gamepad mode. The blocks are (register, value16-LE) triplets, and
+			# register 0x30 is the IMU-stream bitmask -- the same one the v1 driver
+			# writes (see sc_dongle.configure, where it sits at the identical
+			# position, right after the 0x30 byte).
 		if led_level is not None:
 			self._led_level = led_level
-		# main config block: 87 0f 30 18 00 07 07 00 08 07 00 31 02 00 52 03
+		if enable_gyros is not None:
+			self._enable_gyros = enable_gyros
+		# main config block: 87 0f 30 <imu> 00 07 07 00 08 07 00 31 02 00 52 03
 		self._driver.overwrite_control(
 			self._ccidx,
 			bytes(
@@ -409,7 +524,7 @@ class SC2Controller(SCController):
 					SCPacketType.CONFIGURE,
 					0x0F,
 					0x30,
-					0x18,
+					self._imu_mask(),
 					0x00,
 					0x07,
 					0x07,
@@ -430,9 +545,36 @@ class SC2Controller(SCController):
 			self._ccidx, struct.pack(">BBBB", SCPacketType.CONFIGURE, 0x03, 0x2D, int(self._led_level))
 		)
 
+	# IMU-stream bits for CONFIGURE register 0x30, from the v1 protocol
+	IMU_GYRO = 0x10   # raw angular rates
+	IMU_ACCEL = 0x08  # accelerometer
+	IMU_QUAT = 0x04   # fused orientation quaternion
+
+	def _imu_mask(self) -> int:
+		"""IMU streams to turn on.
+
+		The block captured from Steam carried 0x18 -- rates and accel, but NOT
+		the fused quaternion. Since parse_input derives the euler angles this
+		controller reports through EUREL_GYROS from that quaternion, and an
+		all-zero quaternion converts to exactly zero (atan2(0,1) and asin(0)),
+		every orientation-based binding silently did nothing: absolute gyro,
+		lean-to-turn and tilt all sat at their neutral output while the
+		rate-based ones worked. Confirmed by a user's IMU-CALIB dump, whose
+		euler columns read 0.0 while the rates moved.
+
+		It only worked at all on controllers where Steam had already switched
+		the quaternion on, because nothing here ever wrote this register --
+		set_gyro_enabled was a no-op, so we inherited whatever state the pad
+		was left in. That is why the same build behaved differently on two
+		otherwise identical SC2s.
+
+		Rates and accel stay on unconditionally, exactly as before, so nothing
+		that works today can regress; only the quaternion bit is switched.
+		"""
+		return self.IMU_GYRO | self.IMU_ACCEL | (self.IMU_QUAT if self._enable_gyros else 0)
+
 	def set_gyro_enabled(self, enabled: bool) -> None:
-		self._enable_gyros = enabled
-		# TODO: which 0x87 CONFIGURE register enables the IMU?
+		self.configure(enable_gyros=enabled)
 
 	def get_gyro_enabled(self) -> bool:
 		return self._enable_gyros
@@ -445,11 +587,36 @@ class SC2Controller(SCController):
 		# it suits pad/scroll detents; sustained game rumble may need another
 		# report (not yet found). data.data = (position, amplitude, period, count).
 		pos = data.data[0]
-		amp = data.data[1] if len(data.data) > 1 else 0x4000
+		amp = data.data[1] if len(data.data) > 1 else 512
 		if amp <= 0:
 			return
 		side = {HapticPos.LEFT: 0, HapticPos.RIGHT: 1, HapticPos.BOTH: 2}.get(pos, 1)
-		report = bytes([0x82, side, 0x01, min(255, amp >> 7)])
+		gain = _gain_db(amp)
+		effect = getattr(data, "effect", HapticEffect.CLICK)
+		if effect == HapticEffect.TONE:
+			# 0x83 HAPTIC_LFO_TONE: side u8, gain i8, freq u16, duration u16,
+			# lfo_freq u16, lfo_depth u8
+			report = struct.pack("<BBbHHHB", 0x83, side, gain, data.tone_frequency,
+			                     data.duration, data.lfo_frequency, data.lfo_depth)
+		elif effect == HapticEffect.SWEEP:
+			# 0x84 HAPTIC_LOG_SWEEP: side u8, gain i8, duration u16,
+			# start_freq u16, end_freq u16
+			report = struct.pack("<BBbHHH", 0x84, side, gain, data.duration,
+			                     data.tone_frequency, data.end_frequency)
+		elif effect == HapticEffect.SCRIPT:
+			# 0x85 HAPTIC_SCRIPT: side u8, script_id u8, gain i8
+			report = struct.pack("<BBBb", 0x85, side, data.script_id, gain)
+		else:
+			# 0x82 HAPTIC_COMMAND. "b" -- the gain is signed. Packing it as an
+			# unsigned 0..255 amplitude made the strength control
+			# non-monotonic: it rose over the bottom tenth of the slider, sat
+			# clamped at max through the middle, then wrapped negative so that
+			# turning it UP past halfway made the pad quieter.
+			command = HAPTIC_CLICK_STRONG if gain > HAPTIC_STRONG_CLICK_ABOVE_DB else HAPTIC_CLICK
+			report = struct.pack("<BBBb", 0x82, side, command, gain)
+		if _HAPTIC_DEBUG:
+			log.info("HAPTIC  %-6s amplitude=%6d  gain=%+3d dB  report=%s",
+			         HapticEffect(effect).name, amp, gain, report.hex(" "))
 		self._driver.send_haptic(self._out_ep, report)
 
 
@@ -574,6 +741,7 @@ class SC2Device(SCUSBDevice):
 		if idata.seq % UNLIZARD_INTERVAL == 0:
 			c.clear_mappings()  # keep lizard mode from creeping back
 		if c.mapper:
+			c.queue_pad_click(idata)
 			c.mapper.input(c, c._old_state, idata)
 		c._old_state = idata
 

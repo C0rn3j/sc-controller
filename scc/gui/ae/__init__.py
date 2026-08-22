@@ -10,10 +10,102 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gdk, GLib, Gtk
 
 from scc.actions import Action, NoAction, XYAction
+from scc.constants import SCButtons
 from scc.gui.editor import ComboSetter
 from scc.tools import _, ensure_size
 
 log = logging.getLogger("AE")
+
+# Rear-paddle display names. On controllers whose four rear paddles are
+# physically labeled L4/L5/R4/R5 (Steam Controller 2, Steam Deck) the generic
+# "Left Grip (2)" naming is confusing -- especially on the SC2, where "grip"
+# reads as the capacitive handle sensor instead. The Steam Controller v1's
+# LGRIP/RGRIP are its squeeze grips and keep the "Left/Right Grip" naming.
+PADDLE_TYPES = ("sc2", "deck")
+PADDLE_NAMES = {
+	SCButtons.LGRIP: "L4",
+	SCButtons.RGRIP: "R4",
+	SCButtons.LGRIP2: "L5",
+	SCButtons.RGRIP2: "R5",
+}
+
+
+# Controllers whose actuators can synthesise waveforms, and so can play the
+# tone / sweep / firmware-script haptic effects rather than only a click.
+HAPTIC_EFFECT_TYPES = ("sc2",)
+
+
+def controller_type(app):
+	"""get_type() of the controller the GUI is currently editing, or None."""
+	try:
+		c = app.profile_switchers[0].get_controller() if app else None
+		return c.get_type() if c else None
+	except Exception:
+		return None
+
+
+def has_haptic_effects(app) -> bool:
+	"""True if the current controller can play more than a plain click.
+
+	Used to hide the effect chooser rather than offering options that would
+	silently degrade to a click on hardware that cannot synthesise them.
+
+	An UNKNOWN controller counts as capable. There are three states here, not
+	two: a controller that supports effects, one that does not, and no
+	controller at all -- daemon not running, or the pad simply switched off.
+	Treating the third like the second hid the chooser from anyone editing a
+	profile with their controller off, which is an ordinary thing to do and
+	says nothing about the hardware the profile is for. Offering an effect
+	that later degrades to a click is a far smaller harm than making a
+	feature vanish depending on whether a controller happened to be awake.
+	"""
+	ctype = controller_type(app)
+	if ctype is None:
+		return True
+	return ctype in HAPTIC_EFFECT_TYPES
+
+
+def button_label(app, button, default):
+	"""Per-controller display name for a button: the rear paddles are
+	L4/L5/R4/R5 on paddle controllers (sc2/deck), the default (grip) name
+	elsewhere. `app` may be None (falls back to the default label)."""
+	ctype = None
+	try:
+		c = app.profile_switchers[0].get_controller() if app else None
+		ctype = c.get_type() if c else None
+	except Exception:
+		pass
+	if ctype in PADDLE_TYPES and button in PADDLE_NAMES:
+		return PADDLE_NAMES[button]
+	return default
+
+
+# Buttons that only SOME controllers have and whose presence is reliably
+# recorded in the controller's gui config "buttons" capability list (sc2 and
+# deck ship configs; everything else falls back to DEFAULT_BUTTONS, which
+# correctly lacks these). Only these are ever filtered out of button lists --
+# filtering arbitrary buttons against the capability list would wrongly hide
+# valid entries on configless controllers (e.g. the DS4's stick presses).
+OPTIONAL_BUTTONS = {
+	SCButtons.LGRIP2, SCButtons.RGRIP2,
+	SCButtons.LGRIPTOUCH, SCButtons.RGRIPTOUCH,
+	SCButtons.LSTICKTOUCH, SCButtons.RSTICKTOUCH,
+}
+
+
+def button_available(app, button) -> bool:
+	"""True unless `button` is an optional extra (OPTIONAL_BUTTONS) that the
+	currently displayed controller's capability list does not include."""
+	if button not in OPTIONAL_BUTTONS:
+		return True
+	try:
+		available = app.background.get_config()["buttons"] if app else None
+	except Exception:
+		available = None
+	if not available:
+		return True
+	from scc.tools import nameof
+	return nameof(button) in available
 
 
 class AEComponent(ComboSetter):

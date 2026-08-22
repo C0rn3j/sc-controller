@@ -43,10 +43,11 @@ from scc.lib.daemon import Daemon
 from scc.mapper import Mapper
 from scc.menu_data import MenuData
 from scc.parser import TalkingActionParser
+from scc.paths import get_default_menus_path, get_default_profiles_path, get_menus_path, get_profiles_path
 from scc.poller import Poller
 from scc.profile import Profile
 from scc.scheduler import Scheduler
-from scc.tools import clamp, find_binary, find_menu, find_profile, nameof, set_logging_level, shjoin, shsplit
+from scc.tools import clamp, find_binary, find_menu, find_profile, get_profile_name, nameof, set_logging_level, shjoin, shsplit
 from scc.uinput import CannotCreateUInputException
 
 if TYPE_CHECKING:
@@ -76,6 +77,20 @@ if TYPE_CHECKING:
 	)
 
 log = logging.getLogger("SCCDaemon")
+
+
+class SafeTalkingActionParser(TalkingActionParser):
+	"""Parser that blocks dangerous actions (shell, profile, restart, etc.)
+	for use in IPC Replace: commands where the caller is not fully trusted."""
+	BLOCKED = frozenset(('shell', 'profile', 'restart', 'exit', 'turnoff'))
+
+	def _parse_action(self, frm=None):
+		if frm is None:
+			frm = Action.ALL
+		frm = {k: v for k, v in frm.items() if k not in self.BLOCKED}
+		return super()._parse_action(frm)
+
+
 tlog = logging.getLogger("Socket Thread")
 
 
@@ -293,6 +308,31 @@ class SCCDaemon(Daemon):
 		else:
 			self.send_profile_info(None, self._send_to_all, mapper=mapper)
 
+	def _remember_controller_profile(self, client: "Client", filename: str) -> None:
+		"""Persists a controller's profile so it is restored on (re)connect.
+
+		Only explicit, user-initiated selections are remembered: the autoswitch
+		daemon's contextual per-window switches and transient live-edit (.mod)
+		profiles are skipped. Stored by name under
+		config["controllers"][<id>]["profile"]; with "Use Serial Numbers" on
+		that id is the physical device, otherwise it is the connection slot.
+		"""
+		if client is self.autoswitch_daemon:
+			# Autoswitcher changes are contextual, not the controller's choice
+			return
+		if filename.endswith(".mod"):
+			# Transient profile produced while live-editing in the GUI
+			return
+		c = client.mapper.get_controller() if client.mapper else None
+		if c is None:
+			return
+		name = get_profile_name(filename)
+		config = Config()
+		cc = config.get_controller_config(c.get_id())
+		if cc.get("profile") != name:
+			cc["profile"] = name
+			config.save()
+
 	def _send_to_all(self, message_str: bytes) -> None:
 		"""Sends message to all connect clients.
 
@@ -315,7 +355,8 @@ class SCCDaemon(Daemon):
 		with self.lock:
 			for c in self.clients:
 				c.close()
-		os.system(f"{sys.executable} {sys.argv[0]} None restart &")
+		subprocess.Popen([find_python(), sys.argv[0], "None", "restart"],
+			start_new_session=True)
 
 	def on_sa_led(self, mapper: Mapper, action: LedAction) -> None:
 		"""Called when 'led' action is used"""
@@ -324,6 +365,25 @@ class SCCDaemon(Daemon):
 
 	def on_sa_shell(self, mapper: Mapper, action: ShellCommandAction) -> Popen[bytes]:
 		"""Called when 'shell' action is used"""
+		cmd = shsplit(action.command)
+		# scc's own helpers (scc-osd-launcher, scc-osd-show-bindings, sc-controller
+		# ...) are Python entry points whose shebang and PATH can't be relied on in
+		# every environment - notably inside the AppImage, where a bare shell spawn
+		# silently fails (the same reason the daemon launches its other helpers via
+		# find_python() + find_binary()). Launch these the same way, bypassing the
+		# shebang; arbitrary user commands still go through the shell unchanged.
+		if cmd and (cmd[0].startswith("scc-") or cmd[0] == "sc-controller"):
+			args = cmd[1:]
+			# scc-osd-show-bindings renders, and locks input on, one specific
+			# controller. Without --controller it falls back to the first
+			# connected controller (OSDWindow.choose_controller), so with several
+			# controllers it shows the wrong one's bindings AND its cancel button
+			# is locked on that other controller, so the window can't be
+			# dismissed. Target the controller that actually invoked the action.
+			c = mapper.get_controller()
+			if c and cmd[0] == "scc-osd-show-bindings" and "--controller" not in args:
+				args = ["--controller", c.get_id(), *args]
+			return subprocess.Popen([find_python(), find_binary(cmd[0]), *args])
 		return subprocess.Popen(action.command, shell=True)
 
 	def on_sa_gestures(self, mapper: Mapper, action: GesturesAction, x, y, what: str) -> None:
@@ -407,8 +467,9 @@ class SCCDaemon(Daemon):
 	def on_sa_menu(self, mapper: Mapper, action: MenuAction, *pars) -> None:
 		"""Called when 'menu' action is used"""
 		p = [action.MENU_TYPE]
-		if mapper.get_controller():
-			p += ["--controller", mapper.get_controller().get_id()]
+		c = mapper.get_controller()
+		if c:
+			p += ["--controller", c.get_id(), "--controller-type", c.get_type()]
 		if "." in action.menu_id:
 			path = find_menu(action.menu_id)
 			if not path:
@@ -583,9 +644,27 @@ class SCCDaemon(Daemon):
 		else:
 			# New controller, but no mapper created
 			mapper = self.init_mapper()
-			self.load_default_profile(mapper)
 		mapper.set_controller(c)
 		c.set_mapper(mapper)
+
+		# Load this controller's remembered profile if it has a valid one,
+		# otherwise fall back to the global default. Done explicitly (rather
+		# than relying on the mapper's existing profile) so a reused/pooled
+		# mapper never carries over the profile of a previously-bound
+		# controller. With a single controller and no remembered profile this
+		# is exactly the old behavior (the global default is loaded).
+		remembered = Config().get_controller_config(c.get_id()).get("profile")
+		path = find_profile(remembered) if remembered else None
+		if path:
+			try:
+				mapper.profile.load(path).compress()
+				log.debug("Loaded remembered profile '%s' for %s", remembered, c.get_id())
+			except Exception as e:
+				log.warning("Failed to load remembered profile '%s' for %s: %s", remembered, c.get_id(), e)
+				self.load_default_profile(mapper)
+		else:
+			self.load_default_profile(mapper)
+
 		if mapper == self.default_mapper:
 			log.debug("Assigned default_mapper to %s", c)
 		if mapper.profile.gyro:
@@ -715,11 +794,15 @@ class SCCDaemon(Daemon):
 			def handle(self):
 				instance._sshandler(self.connection, self.rfile, self.wfile)
 
-		self.sserver = ThreadingUnixStreamServer(self.socket_file, SSHandler)
+		old_umask = os.umask(0o077)
+		try:
+			self.sserver = ThreadingUnixStreamServer(self.socket_file, SSHandler)
+		finally:
+			os.umask(old_umask)
+		os.chmod(self.socket_file, stat.S_IRUSR | stat.S_IWUSR)
 		t = threading.Thread(target=self.sserver.serve_forever)
 		t.daemon = True
 		t.start()
-		os.chmod(self.socket_file, stat.S_IRUSR | stat.S_IWUSR)
 		log.debug("Created control socket %s", self.socket_file)
 
 	def _start_gesture(self, mapper: Mapper, what: bytes, up_angle: int, callback: Callable[[str], None]) -> GestureDetector:
@@ -793,7 +876,23 @@ class SCCDaemon(Daemon):
 			with self.lock:
 				try:
 					filename = message[8:].decode("utf-8").strip("\t ")
-					self._set_profile(client.mapper, filename)
+					if "/" in filename:
+						# abspath, not realpath: this has to reject '..' while
+						# still accepting a profile that is a symlink to
+						# somewhere else, which is how people keep them in a
+						# dotfiles repo. abspath collapses '..' lexically, so
+						# traversal cannot escape; symlinks are left alone.
+						path = os.path.abspath(filename)
+						allowed = (os.path.abspath(get_profiles_path()),
+							os.path.abspath(get_default_profiles_path()))
+						if not any(path.startswith(d + os.sep) for d in allowed):
+							raise ValueError("Profile path outside allowed directories")
+					else:
+						path = find_profile(filename)
+						if not path:
+							raise ValueError("Profile '%s' not found" % filename)
+					self._set_profile(client.mapper, path)
+					self._remember_controller_profile(client, filename)
 					log.info("Loaded profile '%s'", filename)
 					client.wfile.write(b"OK.\n")
 				except Exception as e:
@@ -868,7 +967,11 @@ class SCCDaemon(Daemon):
 		elif message.startswith(b"Replace:"):
 			try:
 				source, actionstr = message.split(b":", 1)[1].strip(b" \t\r").split(b" ", 1)
-				action = TalkingActionParser().restart(actionstr.decode()).parse().compress()
+				parsed = SafeTalkingActionParser().restart(actionstr.decode()).parse()
+				if parsed is None:
+					client.wfile.write(b"Fail: action rejected (blocked or parse error)\n")
+					return
+				action = parsed.compress()
 			except Exception as e:
 				e = str(e).encode("utf-8").decode("unicode_escape").encode("latin1")
 				client.wfile.write(b"Fail: failed to parse: " + e + b"\n")
@@ -1002,15 +1105,25 @@ class SCCDaemon(Daemon):
 					if menu_id in (None, "None"):
 						menuaction = self.osd_ids[item_id]
 					elif "." in menu_id:
-						# TODO: Move this common place
-						data = json.loads(open(menu_id).read())
+						if "/" in menu_id:
+							path = os.path.abspath(menu_id)   # see the Profile: handler
+							allowed = (os.path.abspath(get_menus_path()),
+								os.path.abspath(get_default_menus_path()))
+							if not any(path.startswith(d + os.sep) for d in allowed):
+								raise KeyError("Menu path outside allowed directories")
+						else:
+							path = find_menu(menu_id)
+							if not path:
+								raise KeyError("Menu '%s' not found" % menu_id)
+						with open(path) as f:
+							data = json.loads(f.read())
 						menudata = MenuData.from_json_data(data, TalkingActionParser())
 						menuaction = menudata.get_by_id(item_id).action
 					else:
 						menuaction = client.mapper.profile.menus[menu_id].get_by_id(item_id).action
 					client.wfile.write(b"OK.\n")
-				except Exception:
-					log.warning("Selected menu item is no longer valid.")
+				except Exception as e:
+					log.warning("Selected menu item is no longer valid: %s", e)
 					client.wfile.write(b"Fail: Selected menu item is no longer valid\n")
 				if menuaction:
 					client.mapper.schedule(0, press)
@@ -1303,6 +1416,16 @@ class LockedAction(ReportingAction):
 	def __init__(self, what, client: Client, original_action) -> None:
 		ReportingAction.__init__(self, what, client)
 		self.original_action = original_action
+		# If the button being locked is currently held, the original action's
+		# press already ran (a key it bound may be DOWN). Its release will now be
+		# captured by this lock instead of the original action, leaving the key
+		# stuck down (it has locked people's keyboards). Release the original
+		# action here so the matching key-UP is sent.
+		if what in SCButtons.__members__.values() and self.mapper and (self.mapper.buttons & what):
+			try:
+				original_action.button_release(self.mapper)
+			except Exception as e:
+				log.warning("Failed to release held action while locking %s: %s", what, e)
 		original_action.cancel(self.mapper)
 		self._store_lock()
 		log.debug("%s locked by %s", nameof(self.what), self.client)
@@ -1329,6 +1452,11 @@ class ReplacedAction(LockedAction):
 		ReportingAction.__init__(self, what, client)
 		self.original_action = original_action
 		self.new_action = new_action.compress()
+		if what in SCButtons.__members__.values() and self.mapper and (self.mapper.buttons & what):
+			try:
+				original_action.button_release(self.mapper)
+			except Exception as e:
+				log.warning("Failed to release held action while replacing %s: %s", what, e)
 		original_action.cancel(self.mapper)
 		self._store_lock()
 		log.debug("%s replaced by %s", nameof(self.what), self.client)
@@ -1340,10 +1468,10 @@ class ReplacedAction(LockedAction):
 		self.new_action.trigger(mapper, position, old_position)
 
 	def button_press(self, mapper: Mapper, number=1) -> None:
-		self.new_action.button_press(mapper, mapper)
+		self.new_action.button_press(mapper)
 
 	def button_release(self, mapper: Mapper) -> None:
-		self.new_action.button_release(mapper, mapper)
+		self.new_action.button_release(mapper)
 
 	def whole(self, mapper: Mapper, x, y, what) -> None:
 		self.new_action.whole(mapper, x, y, what)
@@ -1409,6 +1537,7 @@ class Subprocess:
 		if debug:
 			self.args.append("debug")
 		self._killed: bool = False
+		self._lock = threading.Lock()
 		self.p = None
 		self.t: Thread = threading.Thread(target=self._threaded)
 		self.t.daemon = True
@@ -1416,13 +1545,19 @@ class Subprocess:
 
 	def _threaded(self, *a) -> None:
 		while not self._killed:
-			self.p = subprocess.Popen(self.args, stdin=None)
-			self.p.communicate()
-			if self.p and self.p.returncode == 8:
-				log.warning("%s exited with code 8; not restarting", self.binary_name)
+			with self._lock:
+				if self._killed:
+					return
+				self.p = subprocess.Popen(self.args, stdin=None)
+				p = self.p
+			p.communicate()
+			with self._lock:
+				p = self.p
+				if p and p.returncode == 8:
+					log.warning("%s exited with code 8; not restarting", self.binary_name)
+					self.p = None
+					return
 				self.p = None
-				return
-			self.p = None
 			if not self._killed:
 				log.warning("%s died; restarting after %ss", self.binary_name, self.restart_after)
 				time.sleep(self.restart_after)
@@ -1433,6 +1568,7 @@ class Subprocess:
 
 	def kill(self) -> None:
 		self.mark_killed()
-		if self.p:
-			self.p.kill()
-		self.p = None
+		with self._lock:
+			if self.p:
+				self.p.kill()
+			self.p = None

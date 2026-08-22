@@ -14,6 +14,25 @@ from scc.special_actions import ChangeProfileAction
 log = logging.getLogger("Config")
 
 
+def _is_steam_deck() -> bool:
+	"""Return True when running on Steam Deck hardware (LCD reports DMI product
+	name 'Jupiter', OLED 'Galileo').
+
+	Used to flip the 'autokill_daemon' default on: the Deck has no built-in
+	keyboard, so a daemon left running after the GUI closes keeps emulating and
+	locks the user out of the device's own controls (only the touchscreen still
+	works). Desktop machines are unaffected.
+	"""
+	for path in ("/sys/class/dmi/id/product_name", "/sys/class/dmi/id/board_name"):
+		try:
+			with open(path) as f:
+				if f.read().strip() in ("Jupiter", "Galileo"):
+					return True
+		except OSError:
+			pass
+	return False
+
+
 class Config:
 	DEFAULTS = {
 		"autoswitch_osd": True,  # True to show OSD message when profile is autoswitched
@@ -33,6 +52,7 @@ class Config:
 			"sc_by_cable": True,
 			"sc_by_bt": True,
 			"steamdeck": True,
+			"sc2": True,  # new Steam Controller (2026)
 			"fake": False,  # Used for developement
 			"hiddrv": True,
 			"evdevdrv": True,
@@ -46,7 +66,7 @@ class Config:
 			"enable_status_icon": False,
 			"minimize_to_status_icon": True,
 			"minimize_on_start": False,
-			"autokill_daemon": False,
+			"autokill_daemon": _is_steam_deck(),  # default ON on the Steam Deck (no built-in keyboard)
 			"news": {
 				# Controls "new in this version" message
 				"enabled": True,  # if disabled, no querying is done
@@ -125,6 +145,10 @@ class Config:
 		"menu_control": "LSTICK",
 		"menu_confirm": "A",
 		"menu_cancel": "B",
+		# Remembered profile name, restored when this controller (re)connects.
+		# None means "use the global default". See SCCDaemon.add_controller and
+		# SCCDaemon._remember_controller_profile.
+		"profile": None,
 	}
 
 	def __init__(self) -> None:
@@ -135,12 +159,41 @@ class Config:
 		"""(Re)loads configuration. Works as load(), but handles exceptions"""
 		try:
 			self.load()
+		except FileNotFoundError:
+			# First run. Nothing to preserve, nothing to warn about.
+			self.create()
 		except Exception as e:
-			log.warning("Failed to load configuration; Creating new one.")
-			log.warning("Reason: %s", (e,))
+			# Keep the unreadable file. Everything the user ever configured is
+			# in it, and create() below overwrites it with defaults -- so
+			# without this, one bad parse silently discards the lot. It has
+			# happened: an interrupted save used to leave truncated JSON, and
+			# the next start "recovered" by wiping it.
+			backup = self._keep_broken_config()
+			log.error("Failed to load configuration: %s", e)
+			if backup:
+				log.error("Kept the unreadable file as %s; starting from defaults.", backup)
+			else:
+				log.error("Could not preserve the unreadable file; starting from defaults.")
 			self.create()
 		if self.check_values():
 			self.save()
+
+	def _keep_broken_config(self):
+		"""Move an unreadable config aside and return where it went, or None.
+
+		Numbered rather than a single .broken, so a second failure cannot
+		overwrite the copy taken during the first one -- which would be the
+		only surviving record of the user's settings.
+		"""
+		try:
+			for i in range(1, 100):
+				backup = "%s.broken.%d" % (self.filename, i)
+				if not os.path.exists(backup):
+					os.replace(self.filename, backup)
+					return backup
+		except Exception as e:
+			log.warning("Could not preserve %s: %s", self.filename, e)
+		return None
 
 	def _check_dict(self, values, defaults):
 		"""Recursively checks if 'config' contains all keys in 'defaults'.
@@ -208,14 +261,37 @@ class Config:
 		self.save()
 
 	def save(self):
-		"""Saves configuration file"""
+		"""Saves configuration file.
+
+		Atomically: a truncated config.json is not merely a bad save, it is
+		unreadable at the next start, and recovery from that means falling
+		back to defaults. Writing in place left exactly that window open --
+		anything killing the process mid-write (Ctrl-C on the daemon, a
+		reboot) cost the user every setting they had.
+		"""
 		# Check & create directory
 		if not os.path.exists(get_config_path()):
 			os.makedirs(get_config_path())
 		# Save
 		data = {k: self.values[k] for k in self.values}
 		jstr = Encoder(sort_keys=True, indent=4).encode(data)
-		open(self.filename, "w").write(jstr)
+		# Same directory, so the replace below is a rename within one
+		# filesystem and therefore atomic.
+		tmp = "%s.tmp.%d" % (self.filename, os.getpid())
+		try:
+			with open(tmp, "w") as f:
+				f.write(jstr)
+				f.flush()
+				# The rename can otherwise land before the contents do, which
+				# on a crash leaves a config.json that is present but empty.
+				os.fsync(f.fileno())
+			os.replace(tmp, self.filename)
+		except Exception:
+			try:
+				os.unlink(tmp)
+			except OSError:
+				pass
+			raise
 		log.debug("Configuration saved")
 
 	def __iter__(self):

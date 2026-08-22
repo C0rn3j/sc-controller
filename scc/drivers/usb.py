@@ -20,12 +20,19 @@ from typing import TYPE_CHECKING
 import usb1
 
 if TYPE_CHECKING:
+	from collections.abc import Callable
+
 	from usb1 import USBContext, USBDevice, USBDeviceHandle, USBTransfer
 
 	from scc.drivers.hiddrv import HIDDrvFakeDaemon
 	from scc.sccdaemon import SCCDaemon
 
 log = logging.getLogger("USB")
+
+# How many times to retry a stalling control request (notably the flaky Steam
+# Controller v1 GET_SERIAL) on successive flushes before giving up, instead of
+# letting the stall propagate and tear down the whole device.
+REQUEST_MAX_ATTEMPTS = 20
 
 
 class SCUSBDevice:
@@ -34,6 +41,7 @@ class SCUSBDevice:
 	def __init__(self, device: USBDevice, handle: USBDeviceHandle) -> None:
 		self.device: USBDevice = device
 		self.handle: USBDeviceHandle = handle
+		self.syspath = None
 		self._claimed: list[int] = []
 		self._cmsg = []  # controll messages
 		self._rmsg = []  # requests (excepts response)
@@ -97,10 +105,13 @@ class SCUSBDevice:
 				break
 		self.send_control(index, data)
 
-	def make_request(self, index, callback, data, size=64) -> None:
+	def make_request(self, index: int, callback: Callable[[bytes], None], data: bytes,
+	                 size: int = 64, on_giveup: Callable[[], None] | None = None) -> None:
 		"""Schedule a synchronous request that requires response.
 
 		Request is done ASAP and provided callback is called with received data.
+		If the control transfer keeps stalling it is retried on later flushes,
+		and 'on_giveup' (if given) is called once the retries are exhausted.
 		"""
 		self._rmsg.append(
 			(
@@ -114,26 +125,53 @@ class SCUSBDevice:
 				index,
 				size,
 				callback,
+				on_giveup,
+				0,  # stall-retry attempts so far
 			),
 		)
 
 	def flush(self) -> None:
-		"""Flush all prepared control messages to the device."""
+		"""Flush all prepared control messages to the device.
+
+		A control-endpoint stall (USBErrorPipe) is recovered from rather than
+		propagated: letting it reach the mainloop would tear down the whole
+		device and drop its controllers. Notably the Steam Controller v1
+		GET_SERIAL request is flaky and can stall (more so with several dongles
+		connected at once); such a request is retried on a later flush.
+		"""
 		while len(self._cmsg):
 			msg = self._cmsg.pop()
-			self.handle.controlWrite(*msg)
+			try:
+				self.handle.controlWrite(*msg)
+			except usb1.USBErrorPipe:
+				# Config command stalled; drop it (it is re-sent on the next
+				# configure) instead of tearing the whole device down.
+				pass
 
+		requeue = []
 		while len(self._rmsg):
-			msg, index, size, callback = self._rmsg.pop()
-			self.handle.controlWrite(*msg)
-			data = self.handle.controlRead(
-				0xA1,  # request_type
-				0x01,  # request
-				0x0300,  # value
-				index,
-				size,
-			)
+			msg, index, size, callback, on_giveup, attempts = self._rmsg.pop()
+			try:
+				self.handle.controlWrite(*msg)
+				data = self.handle.controlRead(
+					0xA1,  # request_type
+					0x01,  # request
+					0x0300,  # value
+					index,
+					size,
+				)
+			except usb1.USBErrorPipe:
+				# Control protocol stall; it clears on the next SETUP, so retry on
+				# a later flush rather than letting it close the whole device.
+				if attempts + 1 < REQUEST_MAX_ATTEMPTS:
+					requeue.append((msg, index, size, callback, on_giveup, attempts + 1))
+				else:
+					log.warning("Control request to %s kept stalling; giving up after %d tries", self, attempts + 1)
+					if on_giveup:
+						on_giveup()
+				continue
 			callback(data)
+		self._rmsg.extend(requeue)
 
 	def force_restart(self) -> None:
 		"""Restart device, close handle and try to re-grab it again.
@@ -141,8 +179,12 @@ class SCUSBDevice:
 		Don't use unless absolutely necessary.
 		"""
 		tp = self.device.getVendorID(), self.device.getProductID()
+		syspath = self.syspath
 		self.close()
-		_usb._retry_devices.append(tp)
+		if syspath:
+			_usb._retry_devices.append((syspath, tp))
+		else:
+			log.warning("force_restart: no syspath for %.4x:%.4x, cannot queue for retry", *tp)
 
 	def claim(self, number: int) -> None:
 		"""Remember list of claimed interfaces and allow to unclaim them all at once using unclaim() method
@@ -278,6 +320,7 @@ class USBDriver:
 			device.close()
 			return True
 		if handled_device:
+			handled_device.syspath = syspath
 			self._devices[device] = handled_device
 			self._syspaths[syspath] = device
 			log.debug("USB device added: %.4x:%.4x", *tp)

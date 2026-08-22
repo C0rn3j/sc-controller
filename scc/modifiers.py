@@ -6,6 +6,8 @@ For example, click() modifier executes action only if pad is pressed.
 """
 from __future__ import annotations
 
+from __future__ import annotations
+
 import inspect
 import itertools
 import logging
@@ -41,6 +43,8 @@ from scc.constants import (
 	STICK_PAD_MIN,
 	LSTICKTILT,
 	TRIGGER_MAX,
+	HapticEffect,
+	ControllerFlags,
 	HapticPos,
 	SCButtons,
 )
@@ -344,6 +348,39 @@ class ReleasedModifier(PressedModifier):
 		mapper.schedule(0.02, self._release)
 
 
+class InvertedButtonModifier(Modifier):
+	"""Acts on button release instead of press ("Act on release").
+
+	Swaps press and release, so the wrapped action is held while the physical
+	button is NOT pressed. Meant for always-on sensors such as the Steam
+	Controller's capacitive handle grips, which read "on" the whole time the
+	controller is held - inverting them lets the action fire when you let go.
+	Unlike PressedModifier/ReleasedModifier (which emit a momentary tap), this
+	is a true held inversion of the button state.
+	"""
+	COMMAND = "inverted"
+
+	def describe(self, context: int) -> str:
+		if context in (Action.AC_STICK, Action.AC_PAD):
+			return _("(act on release)") + "\n" + self.action.describe(context)
+		return _("(act on release)") + " " + self.action.describe(context)
+
+	def strip(self) -> Action:
+		return self.action.strip()
+
+	def compress(self) -> Action:
+		self.action = self.action.compress()
+		return self
+
+	def button_press(self, mapper: Mapper) -> None:
+		# Physical press -> the wrapped action is released
+		self.action.button_release(mapper)
+
+	def button_release(self, mapper: Mapper) -> None:
+		# Physical release -> the wrapped action is pressed
+		self.action.button_press(mapper)
+
+
 class BallModifier(Modifier, WholeHapticAction):
 	"""Emulates ball-like movement with inertia and friction.
 
@@ -370,6 +407,7 @@ class BallModifier(Modifier, WholeHapticAction):
 		self, friction=DEFAULT_FRICTION, mass=80.0, mean_len=DEFAULT_MEAN_LEN, r=0.02, ampli=65536, degree=40.0,
 	):
 		self.speed = (1.0, 1.0)
+		self._speed_handed_over = False
 		self.friction = friction
 		self._xvel = 0.0
 		self._yvel = 0.0
@@ -397,6 +435,33 @@ class BallModifier(Modifier, WholeHapticAction):
 
 	def get_speed(self):
 		return self.speed
+
+	def _step_aside(self, mapper):
+		"""Hand this modifier's sensitivity to the child before bypassing.
+
+		SensitivityModifier walks down to the first action with set_speed() and
+		stops there, so on a trackball binding the speed lands on the ball --
+		which then applies it itself, in _add and _roll. Both are skipped when
+		the ball steps aside for a stick, so without this the sensitivity
+		sliders do nothing at all: the child is still at 1.0.
+
+		Multiplied into whatever the child already has, so it is right whichever
+		side of the ball the sens() ended up on, and guarded so it happens once,
+		because set_speed is absolute rather than cumulative.
+		"""
+		if self._speed_handed_over:
+			return
+		self._speed_handed_over = True
+		if self.speed == (1.0, 1.0):
+			return
+		a = self.action
+		while a is not None:
+			if hasattr(a, "set_speed"):
+				own = a.get_speed() if hasattr(a, "get_speed") else (1.0, 1.0)
+				a.set_speed(own[0] * self.speed[0], own[1] * self.speed[1],
+					own[2] if len(own) > 2 else 1.0)
+				return
+			a = getattr(a, "action", None)
 
 	def get_compatible_modifiers(self):
 		return (
@@ -505,6 +570,7 @@ class BallModifier(Modifier, WholeHapticAction):
 
 	def change(self, mapper, dx, dy, what):
 		if what in (None, LSTICK, RSTICK):
+			self._step_aside(mapper)
 			return self.action.change(mapper, dx, dy, what)
 		if mapper.is_touched(what):
 			if mapper.was_touched(what):
@@ -524,6 +590,7 @@ class BallModifier(Modifier, WholeHapticAction):
 
 	def whole(self, mapper, x, y, what):
 		if what == RSTICK:
+			self._step_aside(mapper)
 			return self.action.whole(mapper, x, y, what)
 		if mapper.is_touched(what):
 			if mapper.is_touched(what) and not mapper.was_touched(what):
@@ -562,6 +629,13 @@ class BallModifier(Modifier, WholeHapticAction):
 		return WholeHapticAction.get_haptic(self)
 
 	def compress(self) -> CircularModifier | Self:
+		# Modifier.compress does this for every other modifier; overriding it
+		# here dropped it, so a sens() written INSIDE a ball survived as a live
+		# SensitivityModifier -- which has no whole(), so the binding did
+		# nothing at all. The GUI always writes sens() outside, so this only
+		# ever bit hand-written profiles.
+		if self.action:
+			self.action = self.action.compress()
 		# ball(circular(...) has to be turned around
 		if isinstance(self.action, CircularModifier):
 			cm = self.action
@@ -1003,7 +1077,24 @@ class ModeModifier(Modifier):
 		sel = self.select(mapper)
 		if sel is not self.old_action:
 			if self.old_action:
+				# Neutralize the outgoing gyro action so its output axis doesn't stay
+				# stuck when the enable button is released. Relative GyroAction zeroes
+				# on (0,0,0), but GyroAbsAction ignores pitch/yaw/roll (it tracks
+				# q1-q4), so it would emit its last orientation and leave the axis
+				# deflected. Reset the reference first so the neutralizing call below
+				# emits 0. Covers MultiAction (mixed relative+absolute) via .actions.
+				for a in getattr(self.old_action, "actions", None) or (self.old_action,):
+					if hasattr(a, "reset"):
+						a.reset()
 				self.old_action.gyro(mapper, 0, 0, 0, *q)
+				# That neutralizing call just re-captured the reference at the
+				# RELEASE pose (reset -> first-event capture). Reset once more so
+				# the next activation captures ITS OWN pose: the gyro re-centers
+				# on every engage (Steam-like), instead of carrying a stale
+				# offset accumulated while deactivated.
+				for a in getattr(self.old_action, "actions", None) or (self.old_action,):
+					if hasattr(a, "reset"):
+						a.reset()
 			self.old_action = sel
 		return sel.gyro(mapper, pitch, yaw, roll, *q)
 
@@ -1298,6 +1389,12 @@ class FeedbackModifier(Modifier):
 
 	COMMAND = "feedback"
 	PROFILE_KEY_PRIORITY = -4
+	# See HAPTIC_EFFECT_MODIFIERS. Click uses none of the extra parameter rows
+	# -- its knobs are this modifier's own frequency and period -- but it still
+	# has to declare that, or anything iterating the effects trips over it.
+	EFFECT = HapticEffect.CLICK
+	PARAMS = ()
+	LABEL = _("Click")
 
 	def _mod_init(self, position, amplitude=512, frequency=4, period=1024, count=1):
 		self.haptic = HapticData(position, amplitude, frequency, period, count)
@@ -1336,6 +1433,107 @@ class FeedbackModifier(Modifier):
 
 	def compress(self):
 		return self.action.compress()
+
+
+class _EffectFeedbackModifier(FeedbackModifier):
+	"""Shared base for the richer haptic effects.
+
+	These behave exactly like feedback() -- wrap an action, hand it a
+	HapticData -- and differ only in which effect that data describes. They
+	are separate commands rather than extra parameters on feedback() because
+	feedback() appears in every existing profile and its argument list is
+	positional; growing it would change the meaning of files already on disk.
+
+	Only hardware with a synthesising actuator can play them (currently the
+	Steam Controller 2). Drivers that cannot fall back to a plain click, so a
+	profile written for one controller still does something on another.
+	"""
+
+	EFFECT = None
+	# Parameters after 'amplitude', in _mod_init order. The action editor builds
+	# these modifiers positionally from this, so it lives here rather than in
+	# the GUI -- kept in two places it drifts, and the drift is silent: values
+	# land in the wrong parameter.
+	PARAMS = ()
+
+	def _make_haptic(self, position, amplitude, **kw):
+		return HapticData(position, amplitude, effect=self.EFFECT, **kw)
+
+	def _attach(self, haptic):
+		self.haptic = haptic
+		a = self.action
+		while a:
+			if hasattr(a, "set_haptic"):
+				a.set_haptic(self.haptic)
+				break
+			a = a.action if hasattr(a, "action") else None
+
+	@classmethod
+	def decode(cls, data, a, *b):
+		args = list(data[cls.COMMAND])
+		if hasattr(HapticPos, args[0]):
+			args[0] = getattr(HapticPos, args[0])
+		args.append(a)
+		return cls(*args)
+
+	def to_string(self, multiline=False, pad=0):
+		return self._mod_to_string(self.strip_defaults(), multiline, pad)
+
+
+class FeedbackToneModifier(_EffectFeedbackModifier):
+	"""Sine tone at a fixed frequency, optionally modulated by an LFO."""
+
+	COMMAND = "feedbacktone"
+	PROFILE_KEY_PRIORITY = -4
+	EFFECT = HapticEffect.TONE
+	PARAMS = ("tone_frequency", "duration", "lfo_frequency", "lfo_depth")
+	LABEL = _("Tone")
+
+	def _mod_init(self, position, amplitude=512, tone_frequency=160, duration=200,
+			lfo_frequency=0, lfo_depth=0):
+		self._attach(self._make_haptic(position, amplitude,
+			tone_frequency=tone_frequency, duration=duration,
+			lfo_frequency=lfo_frequency, lfo_depth=lfo_depth))
+
+	def __str__(self):
+		return "<with Tone Feedback %s>" % (self.action,)
+
+
+class FeedbackSweepModifier(_EffectFeedbackModifier):
+	"""Logarithmic frequency sweep between two frequencies."""
+
+	COMMAND = "feedbacksweep"
+	PROFILE_KEY_PRIORITY = -4
+	EFFECT = HapticEffect.SWEEP
+	PARAMS = ("tone_frequency", "end_frequency", "duration")
+	LABEL = _("Sweep")
+
+	def _mod_init(self, position, amplitude=512, tone_frequency=160,
+			end_frequency=40, duration=200):
+		self._attach(self._make_haptic(position, amplitude,
+			tone_frequency=tone_frequency, end_frequency=end_frequency,
+			duration=duration))
+
+	def __str__(self):
+		return "<with Sweep Feedback %s>" % (self.action,)
+
+
+class FeedbackScriptModifier(_EffectFeedbackModifier):
+	"""Preset effect stored in the controller's own firmware."""
+
+	COMMAND = "feedbackscript"
+	PROFILE_KEY_PRIORITY = -4
+	EFFECT = HapticEffect.SCRIPT
+	PARAMS = ("script_id",)
+	LABEL = _("Preset")
+
+	def _mod_init(self, position, amplitude=512, script_id=0):
+		# amplitude second, matching feedback() and the other two effects, so
+		# every one of them serialises as (side, amplitude, ...)
+		self._attach(self._make_haptic(position, amplitude, script_id=script_id))
+
+	def __str__(self):
+		return "<with Script Feedback %s>" % (self.action,)
 
 
 class RotateInputModifier(Modifier):
@@ -1599,3 +1797,40 @@ class CircularAbsModifier(Modifier, WholeHapticAction):
 			# Set axis on child action
 			self.action.axis(mapper, angle * self.speed, 0)
 			mapper.force_event.add(FE_PAD)
+
+
+# Every haptic effect the action editor can offer, in display order. Kept here
+# rather than in the GUI so it can be tested without importing Gtk -- when it
+# lived in action_editor.py a missing attribute on one entry crashed the editor
+# on construction and no test could see it.
+HAPTIC_EFFECT_MODIFIERS = (
+	FeedbackModifier,
+	FeedbackToneModifier,
+	FeedbackSweepModifier,
+	FeedbackScriptModifier,
+)
+
+
+# Preset effects stored in the Steam Controller 2's firmware, played by
+# feedbackscript() / output report 0x85. Names are from iczero's reverse
+# engineering (collected in CouchTurtle/sc2-research) and are NOT verified
+# here -- what each actually feels like is still to be checked on hardware.
+# The list may be partial: nothing states that 0x10 is the last one.
+HAPTIC_SCRIPTS = (
+	(0x01, "Controller on"),
+	(0x02, "Controller very on"),
+	(0x03, "Trill up"),
+	(0x04, "Trill down"),
+	(0x05, "Controller off"),
+	(0x06, "Up five"),
+	(0x07, "Down five"),
+	(0x08, "Up six"),
+	(0x09, "Down six"),
+	(0x0A, "Whoop up"),
+	(0x0B, "Whoop down"),
+	(0x0C, "Phone ringing 1"),
+	(0x0D, "Ringback tone"),
+	(0x0E, "Phone ringing 2"),
+	(0x0F, "Phone ringing 3"),
+	(0x10, "Wilhelm scream"),
+)
