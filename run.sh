@@ -70,6 +70,9 @@ export PYTHONPATH=".":"${PYTHONPATH-}"
 export SCC_SHARED="${PWD}"
 #export PATH="${PWD}/.venv/bin:${PATH}"
 
+# Wipe .so libraries in the root dir in case there are any, find_library() would shadow the .venv built ones
+rm -f ./lib*.so
+
 rm -rf dist
 python -m venv .venv
 source .venv/bin/activate
