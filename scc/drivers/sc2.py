@@ -111,6 +111,8 @@ STICK_DEADZONE = 3000
 # lizard (mouse/keyboard) mode, exactly as steamdeck.py does.
 UNLIZARD_INTERVAL = 100
 
+TURNOFF_QUIET_PERIOD = 0.5
+
 
 # --- report 0x42 layout (see docs/steam-controller-v2-protocol.md) ----------
 #  0      report id (0x42)
@@ -380,6 +382,10 @@ class SC2Controller(SCController):
 		# override SCController.disconnected: the puck keeps no serial pool
 		pass
 
+	def turnoff(self) -> None:
+		super().turnoff()
+		self._driver._slot_gone(self._ccidx, intentional=True)
+
 	# --- v2 command channel -------------------------------------------------
 	# All commands are CLEAR_MAPPINGS / CONFIGURE etc. (SCPacketType), but sent
 	# to feature report 0x01 (handled by the puck's send_control override).
@@ -458,6 +464,7 @@ class SC2Device(SCUSBDevice):
 		SCUSBDevice.__init__(self, device, handle)
 		self._controllers: dict[int, SC2Controller] = {}  # keyed by IN endpoint
 		self._out_transfers = set()  # in-flight interrupt-OUT (haptic) transfers
+		self._suppressed_endpoints: dict[int, float] = {}
 
 	def send_haptic(self, endpoint: int, report: bytes) -> None:
 		"""Fire-and-forget interrupt-OUT transfer (haptics). The device stalls
@@ -537,6 +544,15 @@ class SC2Device(SCUSBDevice):
 		raise NotImplementedError
 
 	def _on_input(self, endpoint: int, data: bytearray) -> None:
+		if endpoint in self._suppressed_endpoints:
+			now = time.monotonic()
+			if now - self._suppressed_endpoints[endpoint] < TURNOFF_QUIET_PERIOD:
+				# Reports already queued by libusb can arrive just after a successful
+				# OFF command. Do not let them immediately recreate the controller;
+				# require a quiet gap that indicates it was powered on again.
+				self._suppressed_endpoints[endpoint] = now
+				return
+			del self._suppressed_endpoints[endpoint]
 		idata = parse_input(data)
 		if idata is None:
 			# Firmware watchdog (cheap, once): some SC2 firmware switched the
@@ -583,12 +599,14 @@ class SC2Device(SCUSBDevice):
 			except usb1.USBErrorPipe:
 				self._slot_gone(index)
 
-	def _slot_gone(self, interface: int) -> None:
+	def _slot_gone(self, interface: int, intentional: bool = False) -> None:
 		"""Remove the controller on the given interface (slot) but keep the
 		dongle open, so a controller turned off then on is picked up again."""
 		for ep, c in list(self._controllers.items()):
 			if c._ccidx == interface:
 				log.debug("SC2 slot (interface %d) gone; keeping dongle alive", interface)
+				if intentional:
+					self._suppressed_endpoints[ep] = time.monotonic()
 				self.daemon.remove_controller(c)
 				del self._controllers[ep]
 				return

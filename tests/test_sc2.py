@@ -7,7 +7,7 @@ or captured data is required. These lock the reverse-engineered byte/bit layout.
 import struct
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, SCButtons
-from scc.drivers.sc2 import parse_input
+from scc.drivers.sc2 import TURNOFF_QUIET_PERIOD, SC2Controller, SC2Device, SCPacketType, parse_input
 
 
 def _frame(
@@ -133,3 +133,50 @@ def test_rest_frame_is_neutral() -> None:
 	inp = parse_input(_frame())
 	assert inp.buttons == 0
 	assert (inp.dpad_x, inp.dpad_y, inp.lstick_x) == (0, 0, 0)
+
+
+class _Daemon:
+	def __init__(self) -> None:
+		self.removed = []
+
+	def remove_controller(self, controller) -> None:
+		self.removed.append(controller)
+
+
+def _turnoff_device():
+	device = SC2Device.__new__(SC2Device)
+	device._cmsg = []
+	device._suppressed_endpoints = {}
+	device.daemon = _Daemon()
+
+	controller = SC2Controller.__new__(SC2Controller)
+	controller._driver = device
+	controller._ccidx = 2
+	device._controllers = {3: controller}
+	return device, controller
+
+
+def test_turnoff_removes_controller_and_ignores_residual_input() -> None:
+	device, controller = _turnoff_device()
+	added = []
+
+	class ReconnectedController:
+		mapper = None
+
+	device._add_controller = lambda endpoint: added.append(endpoint) or ReconnectedController()
+
+	controller.turnoff()
+
+	assert device._cmsg[0][4][1] == SCPacketType.OFF
+	assert device.daemon.removed == [controller]
+	assert device._controllers == {}
+	assert 3 in device._suppressed_endpoints
+
+	device._on_input(3, _frame({1: 1}))
+	assert added == []
+
+	device._suppressed_endpoints[3] -= TURNOFF_QUIET_PERIOD
+	device._on_input(3, _frame({1: 1}))
+
+	assert added == [3]
+	assert 3 not in device._suppressed_endpoints

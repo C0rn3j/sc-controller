@@ -262,8 +262,7 @@ class SCByBt(SCController):
 
 	def turnoff(self) -> None:
 		super().turnoff()
-		# Need to call flush to make sure packet
-		# is sent to controller
+		# Need to call flush to make sure packet is sent to controller
 		self.flush()
 
 	def close(self, *a) -> None:
