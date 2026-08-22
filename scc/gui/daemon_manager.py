@@ -430,10 +430,7 @@ class ControllerManager(GObject.GObject):
 			if type(button) is str:
 				button = SCButtons.__members__[button]
 			index = BUTTON_ORDER.index(button)
-			name = ControllerManager.DEFAULT_ICONS[index]
-			btn_index = config["gui"]["buttons"].index(name)
-			if btn_index != -1:
-				name = config["gui"]["buttons"][btn_index]
+			name = config["gui"]["buttons"][index]
 		except Exception:
 			log.debug(f"Failed to get_button_name() for: {button}")
 		return name
