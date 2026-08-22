@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """SC-Controller - Controller Widget
 
 Button that user can click to choose emulated action for physical button, axis
@@ -14,7 +13,7 @@ import os
 from gi.repository import Gdk, Gtk, Pango
 
 from scc.actions import Action, MultiAction
-from scc.constants import GYRO, LEFT, LSTICK, RIGHT, SCButtons
+from scc.constants import GYRO, LEFT, LSTICK, RIGHT, SCButtons, SCPads, SCSticks, SCTriggers
 from scc.gui.ae.gyro_action import is_gyro_enable
 from scc.modifiers import DoubleclickModifier
 from scc.profile import Profile
@@ -22,9 +21,9 @@ from scc.tools import _, nameof
 
 log = logging.getLogger("ControllerWidget")
 
-TRIGGERS = ["LT", "RT"]
-PADS = [Profile.LPAD, Profile.RPAD, Profile.CPAD]
-STICKS = [Profile.LSTICK, Profile.RSTICK, Profile.DPAD]
+TRIGGERS = [SCTriggers.LT, SCTriggers.RT]
+PADS = [SCPads.LPAD, SCPads.RPAD, SCPads.CPAD]
+STICKS = [SCSticks.LSTICK, SCSticks.RSTICK, SCPads.DPAD] # TODO(Martin): WHY IS DPAD NOT A PAD
 GYROS = [GYRO]
 PRESSABLE = [SCButtons.LPAD, SCButtons.RPAD, SCButtons.LSTICKPRESS, SCButtons.CPADPRESS]
 _NOT_BUTTONS = PADS + STICKS + GYROS + TRIGGERS
@@ -170,34 +169,34 @@ class ControllerStick(ControllerWidget):
 			self.app.hilight(self.name)
 			self.over_icon = False
 
-	def _set_label(self, action):
+	def _set_label(self, action) -> None:
 		self.label.set_label(action.describe(self.ACTION_CONTEXT))
 
 	def update(self):
-		if self.id == Profile.LSTICK:
+		if self.id == SCSticks.LSTICK:
 			self._set_label(self.app.current.lstick)
-		elif self.id == Profile.RSTICK:
+		elif self.id == SCSticks.RSTICK:
 			self._set_label(self.app.current.rstick)
-		elif self.id == Profile.DPAD:
-			self._set_label(self.app.current.pads[Profile.DPAD])
+		elif self.id == SCPads.DPAD:
+			self._set_label(self.app.current.pads[SCPads.DPAD])
 		if self.click_button and self.pressed:
 			action = self.app.current.buttons[self.click_button]
 			self._update_pressed(action)
 
-	def _update_pressed(self, action):
+	def _update_pressed(self, action) -> None:
 		escape = lambda t: t.replace("<", "&lt;").replace(">", "&gt;")
 		if isinstance(action, DoubleclickModifier):
 			lines = []
 			if action.normalaction:
 				txt = action.normalaction.describe(self.ACTION_CONTEXT)
-				lines.append("Pressed: %s" % (escape(txt),))
+				lines.append(f"Pressed: {escape(txt)}")
 			if action.holdaction:
 				txt = action.holdaction.describe(self.ACTION_CONTEXT)
-				lines.append("Hold: %s" % (escape(txt),))
-			self.pressed.set_markup("<small>%s</small>" % ("\n".join(lines),))
+				lines.append(f"Hold: {escape(txt)}")
+			self.pressed.set_markup("<small>{}</small>".format("\n".join(lines)))
 		else:
 			txt = escape(action.describe(self.ACTION_CONTEXT))
-			self.pressed.set_markup("<small>Pressed: %s</small>" % (txt,))
+			self.pressed.set_markup(f"<small>Pressed: {txt}</small>")
 
 
 class ControllerTrigger(ControllerButton):
@@ -215,22 +214,22 @@ class ControllerTrigger(ControllerButton):
 class ControllerPad(ControllerStick):
 	ACTION_CONTEXT = Action.AC_PAD
 
-	def __init__(self, app, name, use_icon, enable_press, widget):
+	def __init__(self, app, name, use_icon, enable_press, widget) -> None:
 		ControllerStick.__init__(self, app, name, use_icon, enable_press, widget)
-		if name in (Profile.LPAD, Profile.RPAD):
+		if name in (SCPads.LPAD, SCPads.RPAD):
 			self.click_button = getattr(SCButtons, name)
-		elif name == Profile.CPAD:
+		elif name == SCPads.CPAD:
 			self.click_button = SCButtons.CPADPRESS
 
-	def update(self):
-		if self.id == Profile.LPAD:
-			action = self.app.current.pads[Profile.LEFT]
+	def update(self) -> None:
+		if self.id == SCPads.LPAD:
+			action = self.app.current.pads[SCPads.LPAD]
 			pressed = self.app.current.buttons[SCButtons.LPAD]
-		elif self.id == Profile.RPAD:
-			action = self.app.current.pads[Profile.RIGHT]
+		elif self.id == SCPads.RPAD:
+			action = self.app.current.pads[SCPads.RPAD]
 			pressed = self.app.current.buttons[SCButtons.RPAD]
 		else:
-			action = self.app.current.pads[Profile.CPAD]
+			action = self.app.current.pads[SCPads.CPAD]
 			pressed = self.app.current.buttons[SCButtons.CPADPRESS]
 
 		self._set_label(action)
@@ -241,7 +240,7 @@ class ControllerPad(ControllerStick):
 class ControllerGyro(ControllerWidget):
 	ACTION_CONTEXT = Action.AC_GYRO
 
-	def __init__(self, app, name, use_icon, widget):
+	def __init__(self, app, name, use_icon, widget) -> None:
 		self.pressed = Gtk.Label()
 		ControllerWidget.__init__(self, app, name, use_icon, widget)
 
@@ -259,10 +258,10 @@ class ControllerGyro(ControllerWidget):
 		self.widget.add(grid)
 		self.widget.show_all()
 
-	def on_click(self, *a):
+	def on_click(self, *a) -> None:
 		self.app.show_editor(self.id)
 
-	def _set_label(self, action):
+	def _set_label(self, action) -> None:
 		if is_gyro_enable(action):
 			action = next(itertools.islice(action.mods.values(), 0, 1)) or action.default
 		if isinstance(action, MultiAction):
@@ -275,5 +274,5 @@ class ControllerGyro(ControllerWidget):
 			return
 		self.label.set_label(action.describe(self.ACTION_CONTEXT))
 
-	def update(self):
+	def update(self) -> None:
 		self._set_label(self.app.current.gyro)

@@ -13,7 +13,18 @@ from typing import TYPE_CHECKING
 from gi.repository import Gdk, GdkPixbuf, GdkX11, Gio, GLib, Gtk
 
 from scc.config import Config
-from scc.constants import DEFAULT, DPAD, LEFT, LSTICK, RIGHT, RSTICK, SAME, STICK_PAD_MAX, ControllerFlags, SCButtons
+from scc.constants import (
+	DEFAULT,
+	LSTICK,
+	RSTICK,
+	SAME,
+	STICK_PAD_MAX,
+	ControllerFlags,
+	HapticPos,
+	SCButtons,
+	SCPads,
+	SCSticks,
+)
 from scc.gui.daemon_manager import DaemonManager
 from scc.lib import xwrappers as X
 from scc.menu_data import MenuData, Separator, Submenu
@@ -48,7 +59,7 @@ class Menu(OSDWindow):
 		OSDWindow.__init__(self, cls, layer)
 		self.daemon = None
 		self.config = None
-		self.feedback = None
+		self.feedback: tuple[HapticPos, int] | None = None
 		self.controller = None
 		if isinstance(Gdk.Display.get_default(), GdkX11.X11Display):
 			self.xdisplay = X.Display(hash(GdkX11.x11_get_default_xdisplay()))  # Magic
@@ -72,7 +83,7 @@ class Menu(OSDWindow):
 		self._menuid = None
 		self._use_cursor = False
 		self._eh_ids = []
-		self._control_with = LSTICK
+		self._control_with = SCSticks.LSTICK
 		self._control_with_dpad: bool = False
 		self._confirm_with = "A"
 		self._cancel_with = "B"
@@ -194,13 +205,12 @@ class Menu(OSDWindow):
 		return self._menuid
 
 	def get_selected_item_id(self):
-		"""Returns ID of selected item or None if nothing is selected.
-		"""
+		"""Returns ID of selected item or None if nothing is selected."""
 		if self._selected:
 			return self._selected.id
 		return None
 
-	def _add_arguments(self):
+	def _add_arguments(self) -> None:
 		OSDWindow._add_arguments(self)
 		self.argparser.add_argument(
 			"--control-with",
@@ -208,7 +218,7 @@ class Menu(OSDWindow):
 			type=str,
 			metavar="option",
 			default=DEFAULT,
-			choices=(DEFAULT, LEFT, RIGHT, LSTICK, RSTICK),
+			choices=(DEFAULT, SCPads.LPAD, SCPads.RPAD, SCSticks.LSTICK, SCSticks.RSTICK),
 			help="which pad or stick should be used to navigate menu",
 		)
 		self.argparser.add_argument(
@@ -456,7 +466,7 @@ class Menu(OSDWindow):
 		self._cancel_with = getattr(self.args, "cancel_with", DEFAULT)
 		if self._control_with == DEFAULT:
 			self._control_with = ccfg["menu_control"]
-		self._control_with_dpad = self._control_with == LSTICK and bool(
+		self._control_with_dpad = self._control_with == SCSticks.LSTICK and bool(
 			controller.get_flags() & ControllerFlags.HAS_DPAD,
 		)
 		if self._cancel_with == DEFAULT:
@@ -466,26 +476,26 @@ class Menu(OSDWindow):
 		if self._confirm_with == DEFAULT:
 			self._confirm_with = ccfg["menu_confirm"]
 		elif self._confirm_with == SAME:
-			if self._control_with == RIGHT:
+			if self._control_with == SCPads.RPAD:
 				self._confirm_with = SCButtons.RPADTOUCH.name
-			elif self._control_with == LSTICK:
+			elif self._control_with == SCSticks.LSTICK:
 				self._confirm_with = SCButtons.LSTICKPRESS.name
-			elif self._control_with == RSTICK:
+			elif self._control_with == SCSticks.RSTICK:
 				self._confirm_with = SCButtons.RSTICKPRESS.name
 			else:
 				self._confirm_with = SCButtons.LPADTOUCH.name
 
 		if getattr(self.args, "use_cursor", False):
 			# As a special case, using the DPAD should not display a cursor
-			if self._control_with != DPAD or (controller.get_flags() & ControllerFlags.HAS_DPAD) == 0:
+			if self._control_with != SCPads.DPAD or (controller.get_flags() & ControllerFlags.HAS_DPAD) == 0:
 				self.enable_cursor()
 
 		if getattr(self.args, "feedback_amplitude", None):
-			side = "LEFT"
-			if self._control_with == "RIGHT":
-				side = "RIGHT"
-			elif self._control_with in ("LSTICK", "RSTICK"):
-				side = "BOTH"
+			side = HapticPos.LEFT
+			if self._control_with == SCPads.RPAD:
+				side = HapticPos.RIGHT
+			elif self._control_with in SCSticks:
+				side = HapticPos.BOTH
 			self.feedback = side, int(self.args.feedback_amplitude)
 
 	def lock_inputs(self) -> None:
@@ -494,10 +504,10 @@ class Menu(OSDWindow):
 
 		locks = [self._control_with, self._confirm_with, self._cancel_with]
 		if self._control_with_dpad:
-			locks += [DPAD]
+			locks += [SCPads.DPAD]
 		self.controller.lock(success, self.on_failed_to_lock, *locks)
 
-	def quit(self, code=-2):
+	def quit(self, code=-2) -> None:
 		if not self._is_submenu:
 			if self.get_controller():
 				self.get_controller().unlock_all()
@@ -605,7 +615,7 @@ class Menu(OSDWindow):
 	def on_event(self, daemon, what, data):
 		if self._submenu:
 			return self._submenu.on_event(daemon, what, data)
-		if what == self._control_with or (what == DPAD and self._control_with_dpad):
+		if what == self._control_with or (what == SCPads.DPAD and self._control_with_dpad):
 			x, y = data
 			if self._use_cursor:
 				# Special case, both confirm_with and cancel_with can be set to (L/R)STICK

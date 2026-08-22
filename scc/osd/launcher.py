@@ -12,7 +12,7 @@ import os
 from gi.repository import GdkX11, Gio, Gtk, Pango
 
 from scc.config import Config
-from scc.constants import DEFAULT, LEFT, LSTICK, RIGHT, RSTICK, STICK_PAD_MAX
+from scc.constants import DEFAULT, STICK_PAD_MAX, HapticPos, SCPads, SCSticks
 from scc.gui.daemon_manager import DaemonManager
 from scc.lib import xwrappers as X
 from scc.osd import OSDWindow, StickController
@@ -40,14 +40,14 @@ class Launcher(OSDWindow):
 
 	_app_db = None  # Static list of all know applications
 
-	def __init__(self, cls="osd-menu"):
+	def __init__(self, cls="osd-menu") -> None:
 		self._buttons = None
 		self._string = ""
 
 		OSDWindow.__init__(self, cls)
-		self.daemon = None
-		self.config = None
-		self.feedback = None
+		self.daemon: DaemonManager | None = None
+		self.config: Config | None = None
+		self.feedback: tuple[HapticPos, int] | None = None
 		self.controller = None
 		self.xdisplay = X.Display(hash(GdkX11.x11_get_default_xdisplay()))  # Magic
 
@@ -135,7 +135,7 @@ class Launcher(OSDWindow):
 
 		self.grid.set_name("osd-dialog-buttons")
 
-	def pack_items(self, parent, items):
+	def pack_items(self, parent, items) -> None:
 		for item in items:
 			if hasattr(item.widget, "set_alignment"):
 				item.widget.set_alignment(0.5, 0.5)
@@ -143,38 +143,46 @@ class Launcher(OSDWindow):
 
 	def use_daemon(self, d):
 		"""Allows (re)using already existing DaemonManager instance in same process.
+
 		use_config() should be be called before parse_arguments() if this is used.
 		"""
 		self.daemon = d
 		self._connect_handlers()
 		self.on_daemon_connected(self.daemon)
 
-	def use_config(self, c):
-		"""Allows reusing already existin Config instance in same process.
+	def use_config(self, c: Config) -> None:
+		"""Allows reusing already existing Config instance in same process.
+
 		Has to be called before parse_arguments()
 		"""
 		self.config = c
 
 	def get_menuid(self):
-		"""Returns ID of used menu.
-		"""
+		"""Returns ID of used menu."""
 		return
 
 	def get_selected_item_id(self):
-		"""Returns ID of selected item or None if nothing is selected.
-		"""
+		"""Returns ID of selected item or None if nothing is selected."""
 		return
 
-	def _launch(self):
+	def _launch(self) -> None:
 		self._selected.launcher.launch()
 
 	def _add_arguments(self):
 		OSDWindow._add_arguments(self)
 		self.argparser.add_argument(
-			"--confirm-with", type=str, metavar="button", default=DEFAULT, help="button used to confirm choice",
+			"--confirm-with",
+			type=str,
+			metavar="button",
+			default=DEFAULT,
+			help="button used to confirm choice",
 		)
 		self.argparser.add_argument(
-			"--cancel-with", type=str, metavar="button", default=DEFAULT, help="button used to cancel dialog",
+			"--cancel-with",
+			type=str,
+			metavar="button",
+			default=DEFAULT,
+			help="button used to cancel dialog",
 		)
 		self.argparser.add_argument(
 			"--feedback-amplitude",
@@ -182,20 +190,20 @@ class Launcher(OSDWindow):
 			help="enables and sets power of feedback effect generated when active menu option is changed",
 		)
 
-	def parse_arguments(self, argv):
+	def parse_arguments(self, argv) -> bool:
 		if not OSDWindow.parse_arguments(self, argv):
 			return False
 		if not self.config:
 			self.config = Config()
 
 		if self.args.feedback_amplitude:
-			side = "LEFT"
+			side = HapticPos.LEFT
 			self.feedback = side, int(self.args.feedback_amplitude)
 
 		# Create buttons that are displayed on screen
 		return True
 
-	def _set_launchers(self, launchers):
+	def _set_launchers(self, launchers) -> None:
 		launchers = launchers[0 : self.MAX_ROWS]
 		for x in self.items:
 			x.set_label("")
@@ -210,13 +218,13 @@ class Launcher(OSDWindow):
 			label.set_ellipsize(Pango.EllipsizeMode.MIDDLE)
 			label.set_xalign(0)
 
-	def _format_label_markup(self, label):
+	def _format_label_markup(self, label) -> str:
 		if hasattr(label, "get_display_name"):
 			label = label.get_display_name()
 		else:
 			label = str(label)
 
-		def _check(substr):
+		def _check(substr) -> int:
 			i, ch = 0, self._string
 			while len(substr) > 0 and substr[0] == ch[0]:
 				ch = ch[1:]
@@ -247,7 +255,7 @@ class Launcher(OSDWindow):
 		)
 		return label
 
-	def _update_items(self):
+	def _update_items(self) -> None:
 		if len(self._string) > 0:
 			gen = (item for (keys, item) in self._app_db if self._string in keys)
 			launchers = []
@@ -274,7 +282,7 @@ class Launcher(OSDWindow):
 
 		return widget
 
-	def select(self, index):
+	def select(self, index) -> bool:
 		if self._selected:
 			self._selected.set_name(self._selected.get_name().replace("-selected", ""))
 			self._selected = None
@@ -284,26 +292,26 @@ class Launcher(OSDWindow):
 			return True
 		return False
 
-	def _connect_handlers(self):
+	def _connect_handlers(self) -> None:
 		self._eh_ids += [
 			(self.daemon, self.daemon.connect("dead", self.on_daemon_died)),
 			(self.daemon, self.daemon.connect("error", self.on_daemon_died)),
 			(self.daemon, self.daemon.connect("alive", self.on_daemon_connected)),
 		]
 
-	def run(self):
+	def run(self) -> None:
 		self.daemon = DaemonManager()
 		self._connect_handlers()
 		OSDWindow.run(self)
 
-	def show(self, *a):
+	def show(self, *a) -> None:
 		if not self.select(0):
 			self.next_item(1)
 		OSDWindow.show(self, *a)
 		for c in self.cursors:
 			c.set_visible(False)
 
-	def on_daemon_connected(self, *a):
+	def on_daemon_connected(self, *a) -> None:
 		def success(*a):
 			log.error("Sucessfully locked input")
 
@@ -324,20 +332,20 @@ class Launcher(OSDWindow):
 			(self.controller, self.controller.connect("lost", self.on_controller_lost)),
 		]
 		locks = [
-			LEFT,
-			RIGHT,
-			RSTICK,
-			LSTICK,
-			"LPAD",
-			"RPAD",
+			SCSticks.RSTICK,
 			"RSTICKPRESS",
+			SCSticks.LSTICK,
+			SCPads.LPAD,
+			"LPADPRESS",
+			SCPads.RPAD,
+			"RPADPRESS",
 			"LB",
 			self._confirm_with,
 			self._cancel_with,
 		]
 		self.controller.lock(success, self.on_failed_to_lock, *locks)
 
-	def quit(self, code=-2):
+	def quit(self, code=-2) -> None:
 		if self.get_controller():
 			self.get_controller().unlock_all()
 		for source, eid in self._eh_ids:
@@ -345,7 +353,7 @@ class Launcher(OSDWindow):
 		self._eh_ids = []
 		OSDWindow.quit(self, code)
 
-	def next_item(self, direction):
+	def next_item(self, direction) -> None:
 		"""Selects next menu item, based on self._direction"""
 		start, i = -1, 0
 		try:
@@ -369,11 +377,11 @@ class Launcher(OSDWindow):
 			i += direction
 			start = max(start, 0)
 
-	def on_stick_direction(self, trash, x, y):
+	def on_stick_direction(self, trash, x, y) -> None:
 		if y != 0:
 			self.next_item(y)
 
-	def _move_cursor(self, cursor, x, y):
+	def _move_cursor(self, cursor, x, y) -> None:
 		if (x, y) == (0, 0):
 			cursor.set_visible(False)
 			return
@@ -405,17 +413,17 @@ class Launcher(OSDWindow):
 				return i
 		return None
 
-	def on_event(self, daemon, what, data):
-		if what == LEFT:
+	def on_event(self, daemon, what, data) -> None:
+		if what == SCPads.LPAD:
 			self._move_cursor(self.cursors[0], *data)
-		elif what == "LPAD" and data[0] == 1:
+		elif what == "LPADPRESS" and data[0] == 1:
 			b = self._get_under_cursor(self.cursors[0])
 			if b:
 				self._string += b.get_label()[0]
 			self._update_items()
-		elif what in (RIGHT, RSTICK):
+		elif what in (SCPads.RPAD, SCSticks.RSTICK):
 			self._move_cursor(self.cursors[1], *data)
-		elif what in ("RPAD", "RSTICKPRESS") and data[0] == 1:
+		elif what in ("RPADPRESS", "RSTICKPRESS") and data[0] == 1:
 			b = self._get_under_cursor(self.cursors[1])
 			if b:
 				self._string += b.get_label()[0]
@@ -424,7 +432,7 @@ class Launcher(OSDWindow):
 			if len(self._string) > 0:
 				self._string = self._string[:-1]
 				self._update_items()
-		elif what == LSTICK:
+		elif what == SCSticks.LSTICK:
 			self._scon.set_stick(*data)
 		elif what == self._cancel_with:
 			if data[0] == 0:  # Button released

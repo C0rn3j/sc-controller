@@ -2,6 +2,7 @@
 
 Main application window
 """
+
 from __future__ import annotations
 
 import json
@@ -16,7 +17,7 @@ from gi.repository import Gdk, Gio, GLib, Gtk
 
 from scc.actions import NoAction
 from scc.config import Config
-from scc.constants import CPAD, DAEMON_VERSION, DPAD, LEFT, RIGHT, RSTICK, LSTICK, STICK_PAD_MAX, SCButtons
+from scc.constants import DAEMON_VERSION, DPAD, STICK_PAD_MAX, SCButtons, SCPads, SCSticks
 from scc.custom import load_custom_module
 from scc.gui.binding_editor import BindingEditor
 from scc.gui.controller_image import ControllerImage
@@ -53,6 +54,7 @@ if TYPE_CHECKING:
 log = logging.getLogger("App")
 
 menu_generators.register_menu_generators()
+
 
 class App(Gtk.Application, UserDataManager, BindingEditor):
 	"""Main application / window."""
@@ -547,15 +549,14 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			if not isinstance(a, InvalidAction):
 				self.on_action_chosen(self.context_menu_for, a)
 
-	def on_mnuEditPress_activate(self, *a):
-		"""Handler for 'Edit Pressed Action' context menu item.
-		"""
+	def on_mnuEditPress_activate(self, *a) -> None:
+		"""Handler for 'Edit Pressed Action' context menu item."""
 		id = self.context_menu_for
-		if id == LSTICK:
+		if id == SCSticks.LSTICK:
 			id = nameof(SCButtons.LSTICKPRESS)
 		self.show_editor(getattr(SCButtons, id))
 
-	def on_mnuGlobalSettings_activate(self, *a):
+	def on_mnuGlobalSettings_activate(self, *a) -> None:
 		from scc.gui.global_settings import GlobalSettings
 
 		gs = GlobalSettings(self)
@@ -563,6 +564,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 	def on_mnuImport_activate(self, *a):
 		"""Handler for 'Import Steam Profile' context menu item.
+
 		Displays apropriate dialog.
 		"""
 		from scc.gui.importexport.dialog import Dialog
@@ -833,6 +835,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 	def on_c_size_allocate(self, *a):
 		"""Called when size of 'Button C' or CPAD is changed.
+
 		Centers buttons on background image
 		"""
 		main_area = self.builder.get_object("mainArea")
@@ -1015,30 +1018,30 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 					"Y",
 					"START",
 					"BACK",
-					"LB",
-					"RB",
 					"LPAD",
+					"LPADPRESS",
 					"RPAD",
+					"RPADPRESS",
 					"CPAD",
 					"CPADPRESS",
-					"LGRIP",
-					"RGRIP",
+					"DPAD",
+					"LB",
+					"RB",
 					"LT",
 					"RT",
-					"LEFT",
-					"RIGHT",
 					"LSTICK",
 					"LSTICKPRESS",
 					"DOTS",
+					"LGRIP",
 					"LGRIPTOUCH",
+					"RGRIP",
 					"RGRIPTOUCH",
 					"LGRIP2",
 					"RGRIP2",
-					"RSTICKPRESS",
 					"LSTICKTOUCH",
-					"RSTICKTOUCH",
 					"RSTICK",
-					"DPAD",
+					"RSTICKPRESS",
+					"RSTICKTOUCH",
 				)
 				self.test_mode_controller = c
 
@@ -1095,19 +1098,21 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		)
 
 		# Ask daemon to temporaly reconfigure pads for mouse emulation
-		c.replace(DaemonManager.nocallback, on_lock_failed, LEFT, osd_mode_profile.pads[LEFT])
-		c.replace(DaemonManager.nocallback, on_lock_failed, RIGHT, osd_mode_profile.pads[RIGHT])
+		c.replace(DaemonManager.nocallback, on_lock_failed, SCPads.LPAD, osd_mode_profile.pads[SCPads.LPAD])
+		c.replace(DaemonManager.nocallback, on_lock_failed, SCPads.RPAD, osd_mode_profile.pads[SCPads.RPAD])
 
-	def on_observe_failed(self, error):
+	def on_observe_failed(self, error) -> None:
 		log.debug("Failed to enable test mode: %s", error)
 
-	def on_daemon_version(self, daemon, version):
+	def on_daemon_version(self, daemon, version) -> None:
 		"""Checks if reported version matches expected one.
 		If not, daemon is restarted.
 		"""
 		if version != DAEMON_VERSION and self.outdated_version != version:
 			log.warning(
-				"Running daemon instance is too old (version %s, expected %s). Restarting...", version, DAEMON_VERSION,
+				"Running daemon instance is too old (version %s, expected %s). Restarting...",
+				version,
+				DAEMON_VERSION,
 			)
 			self.outdated_version = version
 			self.set_daemon_status("unknown", False)
@@ -1159,16 +1164,16 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 	def on_daemon_event_observer(self, daemon, c, what: str, data: list[int]) -> None:
 		if self.osd_mode_mapper:
 			self.osd_mode_mapper.handle_event(daemon, what, data)
-		elif what in (LEFT, RIGHT, LSTICK, RSTICK, DPAD, CPAD):
+		elif what in (*SCPads, *SCSticks):
 			widget, area = {
-				LEFT: (self.lpad_test, "LPADTEST"),
-				RIGHT: (self.rpad_test, "RPADTEST"),
-				LSTICK: (self.lstick_test, "LSTICKTEST"),
-				RSTICK: (self.rstick_test, "RSTICKTEST"),
-				DPAD: (self.dpad_test, "DPADTEST"),
-				CPAD: (self.cpad_test, "CPAD"),
+				SCPads.LPAD: (self.lpad_test, "LPADTEST"),
+				SCPads.RPAD: (self.rpad_test, "RPADTEST"),
+				SCSticks.LSTICK: (self.lstick_test, "LSTICKTEST"),
+				SCSticks.RSTICK: (self.rstick_test, "RSTICKTEST"),
+				SCPads.DPAD: (self.dpad_test, "DPADTEST"),
+				SCPads.CPAD: (self.cpad_test, "CPAD"),
 			}[what]
-			if what == DPAD:
+			if what == SCPads.DPAD:
 				if data[0] or data[1]:
 					self.hilights[App.OBSERVE_COLOR].add(DPAD)
 				else:
@@ -1190,11 +1195,15 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			y -= data[1] * aw / STICK_PAD_MAX * 0.5
 			# Move circle
 			self.main_area.move(widget, x, y)
-		elif what in ("LT", "RT", "LSTICKPRESS"):
+		elif what in ("LT", "RT", "LPADPRESS", "RPADPRESS", "LSTICKPRESS"):
+			area = {
+				"LPADPRESS": "LPAD",
+				"RPADPRESS": "RPAD",
+			}.get(what, what)
 			if data[0]:
-				self.hilights[App.OBSERVE_COLOR].add(what)
+				self.hilights[App.OBSERVE_COLOR].add(area)
 			else:
-				self.hilights[App.OBSERVE_COLOR].remove(what)
+				self.hilights[App.OBSERVE_COLOR].remove(area)
 			self._update_background()
 		elif hasattr(SCButtons, what):
 			try:
@@ -1207,7 +1216,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				# Non fatal
 				pass
 		else:
-			print("event", what)
+			log.debug("Unprocessed event in on_daemon_event_observer(): %s", what)
 
 	def on_profile_right_clicked(self, ps) -> None:
 		for name in ("mnuConfigureController", "mnuTurnoffController"):
@@ -1671,7 +1680,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				except Exception:
 					log.exception("Dropped text could not be decoded")
 					return
-			else: # Should be string
+			else:  # Should be string
 				text = text_data
 
 			lines: list[str] = str(text).split("\n")

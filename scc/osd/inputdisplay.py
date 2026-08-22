@@ -3,7 +3,6 @@
 NOTE(Martin): Seems that this module was only meant to be called manually and the Input Mapper makes it seem redundant.
 """
 
-
 import logging
 import os
 import signal
@@ -11,7 +10,7 @@ import sys
 
 from gi.repository import Gtk
 
-from scc.constants import LEFT, LSTICK, RIGHT, STICK_PAD_MAX, SCButtons
+from scc.constants import STICK_PAD_MAX, SCButtons, SCPads, SCSticks
 from scc.gui.daemon_manager import DaemonManager
 from scc.gui.svg_widget import SVGWidget
 from scc.osd import OSDWindow
@@ -24,7 +23,7 @@ class InputDisplay(OSDWindow):
 	HILIGHT_COLOR = "#FF00FF00"  # ARGB
 	OBSERVE_COLOR = "#00007FFF"  # ARGB
 
-	def __init__(self, imagepath="/usr/share/scc/images"):
+	def __init__(self, imagepath="/usr/share/scc/images") -> None:
 		OSDWindow.__init__(self, "osd-menu")
 		self.daemon = None
 		self.config = None
@@ -33,7 +32,7 @@ class InputDisplay(OSDWindow):
 
 		self._eh_ids = []
 
-	def show(self):
+	def show(self) -> None:
 		self.main_area = Gtk.Fixed()
 		self.background = SVGWidget(os.path.join(self.imagepath, self.IMAGE))
 		self.lpadTest = Gtk.Image.new_from_file(os.path.join(self.imagepath, "inputdisplay-cursor.svg"))
@@ -62,22 +61,23 @@ class InputDisplay(OSDWindow):
 		self._connect_handlers()
 		OSDWindow.run(self)
 
-	def use_daemon(self, d):
+	def use_daemon(self, d) -> None:
 		"""Allows (re)using already existing DaemonManager instance in same process.
+
 		use_config() should be be called before parse_arguments() if this is used.
 		"""
 		self.daemon = d
 		self._connect_handlers()
 		self.on_daemon_connected(self.daemon)
 
-	def _connect_handlers(self):
+	def _connect_handlers(self) -> None:
 		self._eh_ids += [
 			(self.daemon, self.daemon.connect("dead", self.on_daemon_died)),
 			(self.daemon, self.daemon.connect("error", self.on_daemon_died)),
 			(self.daemon, self.daemon.connect("alive", self.on_daemon_connected)),
 		]
 
-	def on_daemon_connected(self, *a):
+	def on_daemon_connected(self, *a) -> None:
 		c = self.daemon.get_controllers()[0]
 		c.unlock_all()
 		c.observe(
@@ -93,20 +93,20 @@ class InputDisplay(OSDWindow):
 			"LB",
 			"RB",
 			"LPAD",
+			"LPADPRESS",
 			"RPAD",
+			"RPADPRESS",
 			"LGRIP",
 			"RGRIP",
 			"LT",
 			"RT",
-			"LEFT",
-			"RIGHT",
 			"LSTICK",
 			"LSTICKPRESS",
 		)
 		c.connect("event", self.on_daemon_event_observer)
 		c.connect("lost", self.on_controller_lost)
 
-	def on_observe_failed(self, error):
+	def on_observe_failed(self, error) -> None:
 		log.error("Failed to enable test mode: %s", error)
 		if "Sniffing" in error:
 			log.error("")
@@ -115,12 +115,12 @@ class InputDisplay(OSDWindow):
 			log.error("=================================================================================")
 		self.quit(3)
 
-	def on_daemon_event_observer(self, daemon, what, data):
-		if what in (LEFT, RIGHT, LSTICK):
+	def on_daemon_event_observer(self, daemon, what, data) -> None:
+		if what in (SCPads.LPAD, SCPads.RPAD, SCSticks.LSTICK):
 			widget, area = {
-				LEFT: (self.lpadTest, "LPADTEST"),
-				RIGHT: (self.rpadTest, "RPADTEST"),
-				LSTICK: (self.lstickTest, "LSTICKTEST"),
+				SCPads.LPAD: (self.lpadTest, "LPADTEST"),
+				SCPads.RPAD: (self.rpadTest, "RPADTEST"),
+				SCSticks.LSTICK: (self.lstickTest, "LSTICKTEST"),
 			}[what]
 			# Check if stick or pad is released
 			if data[0] == data[1] == 0:
@@ -138,8 +138,11 @@ class InputDisplay(OSDWindow):
 			y -= data[1] * aw / STICK_PAD_MAX * 0.5
 			# Move circle
 			self.main_area.move(widget, x, y)
-		elif what in ("LT", "RT", "LSTICKPRESS"):
-			what = {"LT": "LEFT", "RT": "RIGHT", "LSTICKPRESS": "LSTICK"}[what]
+		elif what in ("LPADPRESS", "RPADPRESS"):
+			what = {
+				"LPADPRESS": "LPAD",
+				"RPADPRESS": "RPAD",
+			}[what]
 			if data[0]:
 				self.hilights[self.OBSERVE_COLOR].add(what)
 			else:
@@ -156,7 +159,7 @@ class InputDisplay(OSDWindow):
 				# Non fatal
 				pass
 		else:
-			print("event", what)
+			log.debug("Unprocessed event in on_daemon_event_observer(): %s", what)
 
 	def _update_background(self):
 		h = {}

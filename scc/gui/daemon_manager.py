@@ -407,13 +407,14 @@ class ControllerManager(GObject.GObject):
 			try:
 				data = json.loads(open(filename).read()) or None
 				return data
-			except Exception as e:
-				log.exception(e)
+			except Exception:
+				log.exception("Failed to load_gui_config()")
 		return None
 
 	@staticmethod
 	def get_button_icon(config, button, prefer_bw=False):
 		"""For config returned by load_gui_config() and SCButton constant,
+
 		returns icon filename assigned to that button in controller config or
 		default if config is invalid or button unassigned.
 		"""
@@ -421,8 +422,7 @@ class ControllerManager(GObject.GObject):
 
 	@staticmethod
 	def get_button_name(config, button):
-		"""As get_button_icon, but returns icon name instead of filename.
-		"""
+		"""As get_button_icon, but returns icon name instead of filename."""
 		name = nameof(button)
 		index = -1
 		try:
@@ -433,45 +433,44 @@ class ControllerManager(GObject.GObject):
 			btn_index = config["gui"]["buttons"].index(name)
 			if btn_index != -1:
 				name = config["gui"]["buttons"][btn_index]
-		except:
-			pass
+		except Exception:
+			log.debug(f"Failed to get_button_name() for: {button}")
 		return name
 
 	def get_profile(self):
 		"""Returns profile set for this controller. Value is cached locally."""
 		return self._profile
 
-	def lock(self, success_cb, error_cb, *what_to_lock):
-		"""Locks physical button, axis or pad. Events from locked sources are
-		sent to this client and processed using 'event' singal, until
-		unlock_all() is called.
+	def lock(self, success_cb, error_cb, *what_to_lock) -> None:
+		"""Locks physical button, axis or pad.
+
+		Events from locked sources are sent to this client and processed using 'event' singal, until unlock_all() is called.
 
 		Calls success_cb() on success or error_cb(error) on failure.
 		"""
 		what = " ".join(what_to_lock)
 		self._send_id()
-		self._dm.request("Lock: %s" % (what,), success_cb, error_cb)
+		self._dm.request(f"Lock: {what}", success_cb, error_cb)
 
-	def set_led_level(self, value):
-		"""Sets brightness of controller led.
-		"""
+	def set_led_level(self, value) -> None:
+		"""Sets brightness of controller led."""
 		self._send_id()
-		self._dm.request("Led: %s" % (int(value),), DaemonManager.nocallback, DaemonManager.nocallback)
+		self._dm.request(f"Led: {int(value)}", DaemonManager.nocallback, DaemonManager.nocallback)
 
-	def set_profile(self, filename):
+	def set_profile(self, filename) -> None:
 		"""Asks daemon to change this controller profile"""
 		self._send_id()
-		self._dm.request("Profile: %s" % (filename,), DaemonManager.nocallback, DaemonManager.nocallback)
+		self._dm.request(f"Profile: {filename}", DaemonManager.nocallback, DaemonManager.nocallback)
 
-	def turnoff(self):
+	def turnoff(self) -> None:
 		"""Asks daemon to turn off this controller"""
 		self._send_id()
 		self._dm.request("Turnoff.", DaemonManager.nocallback, DaemonManager.nocallback)
 
-	def feedback(self, position, amplitude):
+	def feedback(self, position, amplitude) -> None:
 		"""Generates feedback effect on controller"""
 		self._send_id()
-		self._dm.request("Feedback: %s %s" % (position, amplitude), DaemonManager.nocallback, DaemonManager.nocallback)
+		self._dm.request(f"Feedback: {position} {amplitude}", DaemonManager.nocallback, DaemonManager.nocallback)
 
 	def observe(self, success_cb, error_cb, *what_to_lock) -> None:
 		"""Enables observing on physical button, axis or pad.
@@ -483,7 +482,7 @@ class ControllerManager(GObject.GObject):
 		"""
 		what = " ".join(what_to_lock)
 		self._send_id()
-		self._dm.request("Observe: %s" % (what,), success_cb, error_cb)
+		self._dm.request(f"Observe: {what}", success_cb, error_cb)
 
 	def replace(self, success_cb, error_cb, what, action) -> None:
 		"""Temporally replaces action on physical button, axis or pad, until unlock_all() is called.
@@ -491,7 +490,7 @@ class ControllerManager(GObject.GObject):
 		Calls success_cb() on success or error_cb(error) on failure.
 		"""
 		actionstr = action.to_string().replace("\n", " ")
-		self._dm.request("Replace: %s %s" % (what, actionstr), success_cb, error_cb)
+		self._dm.request(f"Replace: {what} {actionstr}", success_cb, error_cb)
 
 	def unlock_all(self) -> None:
 		if self._dm.alive:

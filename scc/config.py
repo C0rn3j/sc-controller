@@ -174,15 +174,10 @@ class Config:
 		return rv
 
 	def get_controller_config(self, controller_id):
-		"""Returns self['controllers'][controller_id], creating new node populated
-		with defaults if there is none.
-		"""
+		"""Returns self['controllers'][controller_id], creating new node populated with defaults if there is none."""
 		if controller_id in self.values["controllers"]:
 			# Check values in existing config
 			rv = self.values["controllers"][controller_id]
-			if rv.get("menu_control") == "STICK":
-				log.debug("TODO: menu_control was STICK - maybe make it automigrate to LSTICK?")
-				rv["menu_control"] = "LSTICK"
 			for key in self.CONTROLLER_DEFAULTS:
 				if key not in rv:
 					if key in ("input_rotation_l", "input_rotation_r"):
@@ -190,6 +185,17 @@ class Config:
 						rv[key] = 0
 					else:
 						rv[key] = self.CONTROLLER_DEFAULTS[key]
+			# Conversions needed for historical reasons - maybe fix these at profile level during a migration?
+			rv["menu_control"] = {
+				"STICK": "LSTICK",
+				"LEFT": "LPAD",
+				"RIGHT": "RPAD",
+			}.get(rv["menu_control"], rv["menu_control"])
+			for key in ("menu_confirm", "menu_cancel"):
+				rv[key] = {
+					"LPAD": "LPADPRESS",
+					"RPAD": "RPADPRESS",
+				}.get(rv[key], rv[key])
 			return rv
 		# Create new config
 		rv = self.values["controllers"][controller_id] = {

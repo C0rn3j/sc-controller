@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 import os
 from enum import IntEnum
+from typing import TYPE_CHECKING
 
 from scc.actions import Action, DPadAction, MouseAction, XYAction
-from scc.constants import SCButtons
+from scc.constants import SCButtons, SCPads, SCTriggers
 from scc.gui.svg_widget import SVGEditor
 from scc.modifiers import DoubleclickModifier, ModeModifier
 from scc.parser import TalkingActionParser
@@ -12,6 +15,8 @@ from scc.special_actions import MenuAction
 from scc.tools import _, nameof
 from scc.uinput import Rels
 
+if TYPE_CHECKING:
+	from typing import Self
 
 class Align(IntEnum):
 	TOP = 1 << 0
@@ -29,7 +34,7 @@ def find_image(name):
 
 
 class Line:
-	def __init__(self, icon, text):
+	def __init__(self, icon, text) -> None:
 		self.icons = [icon]
 		self.text = text
 
@@ -37,7 +42,7 @@ class Line:
 		# TODO: This
 		return gen.char_width * len(self.text), gen.line_height
 
-	def add_icon(self, icon):
+	def add_icon(self, icon) -> Self:
 		self.icons.append(icon)
 		return self
 
@@ -48,10 +53,10 @@ class Line:
 class LineCollection:
 	"""Allows calling add_icon on multiple lines at once"""
 
-	def __init__(self, *lines):
+	def __init__(self, *lines) -> None:
 		self.lines = lines
 
-	def add_icon(self, icon):
+	def add_icon(self, icon) -> Self:
 		for line in self.lines:
 			line.add_icon(icon)
 		return self
@@ -63,7 +68,7 @@ class Box:
 	MIN_WIDTH = 100
 	MIN_HEIGHT = 50
 
-	def __init__(self, anchor_x, anchor_y, align, name, min_width=MIN_WIDTH, min_height=MIN_HEIGHT):
+	def __init__(self, anchor_x, anchor_y, align, name, min_width=MIN_WIDTH, min_height=MIN_HEIGHT) -> None:
 		self.name = name
 		self.lines = []
 		self.anchor = anchor_x, anchor_y
@@ -74,7 +79,7 @@ class Box:
 		self.min_height = min_height
 
 	def to_string(self):
-		return "--- %s ---\n%s\n" % (self.name, "\n".join([x.to_string() for x in self.lines]))
+		return "--- {} ---\n{}\n".format(self.name, "\n".join([x.to_string() for x in self.lines]))
 
 	def add(self, icon, context, action):
 		if not action:
@@ -226,7 +231,7 @@ class Box:
 class Generator:
 	PADDING = 10
 
-	def __init__(self):
+	def __init__(self) -> None:
 		svg = SVGEditor(file("images/binding-display.svg").read())
 		background = SVGEditor.get_element(svg, "background")
 		self.label_template = SVGEditor.get_element(svg, "label_template")
@@ -252,10 +257,10 @@ class Generator:
 			min_height=self.full_height * 0.5,
 			min_width=self.full_width * 0.2,
 		)
-		box_left.add("LEFT", Action.AC_TRIGGER, profile.triggers.get(profile.LEFT))
+		box_left.add("LT", Action.AC_TRIGGER, profile.triggers.get(SCTriggers.LT))
 		box_left.add("LB", Action.AC_BUTTON, profile.buttons.get(SCButtons.LB))
 		box_left.add("LGRIP", Action.AC_BUTTON, profile.buttons.get(SCButtons.LGRIP))
-		box_left.add("LPAD", Action.AC_PAD, profile.pads.get(profile.LEFT))
+		box_left.add("LPAD", Action.AC_PAD, profile.pads.get(SCPads.LPAD))
 		boxes.append(box_left)
 
 		box_right = Box(
@@ -266,10 +271,10 @@ class Generator:
 			min_height=self.full_height * 0.5,
 			min_width=self.full_width * 0.2,
 		)
-		box_right.add("RIGHT", Action.AC_TRIGGER, profile.triggers.get(profile.RIGHT))
+		box_right.add("RT", Action.AC_TRIGGER, profile.triggers.get(SCTriggers.RT))
 		box_right.add("RB", Action.AC_BUTTON, profile.buttons.get(SCButtons.RB))
 		box_right.add("RGRIP", Action.AC_BUTTON, profile.buttons.get(SCButtons.RGRIP))
-		box_right.add("RPAD", Action.AC_PAD, profile.pads.get(profile.RIGHT))
+		box_right.add("RPAD", Action.AC_PAD, profile.pads.get(SCPads.RPAD))
 		boxes.append(box_right)
 
 		box_abxy = Box(4 * self.PADDING, self.PADDING, Align.RIGHT | Align.BOTTOM, "abxy")

@@ -2,6 +2,8 @@
 
 If SC Controller is updated while daemon is running, DAEMON_VERSION sent by
 daemon will differ from the one expected by the UI, and daemon will be forcefully restarted.
+
+TODO(Martin): Remove constants from profile.py and controller_widget.py and move them here
 """
 # The MIT License (MIT)
 #
@@ -27,6 +29,7 @@ daemon will differ from the one expected by the UI, and daemon will be forcefull
 
 from enum import IntEnum, StrEnum
 from importlib.metadata import packages_distributions, version
+from typing import Literal
 
 distribution_name: str = "N/A"
 if __package__ is not None:
@@ -35,28 +38,31 @@ if __package__ is not None:
 class SCLeftRight(StrEnum):
 	"""Simply LEFT or RIGHT
 
-	"LEFT" can mean LPAD or LT, depending on context
-	"RIGHT" can mean RPAD or RT, depending on context
+	"LEFT" can be for LPAD, LT, or something else, depending on context
+	"RIGHT" can be for RPAD, RT, or something else, depending on context
 	"""
 
 	LEFT = "LEFT"
 	RIGHT = "RIGHT"
 
-#class SCTriggers(StrEnum):
-#	"""This implementation sure triggers."""  # noqa: D404
-#
-#	LEFT = "LEFT"
-#	RIGHT = "RIGHT"
+class SCTriggers(StrEnum):
+	"""LT (L2) or RT (R2)."""
+
+	LT = "LT"
+	RT = "RT"
 
 
 class SCPads(StrEnum):
 	"""Touchpads and DPAD"""
 
-	# TODO(Martin): Change this to LPAD and RPAD to maintain sanity
-	LEFT = "LEFT"
-	RIGHT = "RIGHT"
+	LPAD = "LPAD"
+	RPAD = "RPAD"
 	CPAD = "CPAD"
 	DPAD = "DPAD"
+
+type SCPadsLR = Literal[SCPads.LPAD, SCPads.RPAD]
+type SCTouchpads = SCPadsLR | Literal[SCPads.CPAD]
+
 
 class SCSticks(StrEnum):
 	"""Joysticks"""
@@ -72,6 +78,7 @@ class SCButtons(IntEnum):
 	RGRIPTOUCH  = 1 << 19 # capacitive right handle grip - Steam Controller (2026)
 	RPADTOUCH   = 0b000010000000000000000000000000000
 	LPADTOUCH   = 0b000001000000000000000000000000000
+	# TODO(Martin): Rename to RPADPRESS and LPADPRESS
 	RPAD        = 0b000000100000000000000000000000000
 	LPAD        = 0b000000010000000000000000000000000 # Same for stick but without LPadTouch
 	RGRIP       = 0b000000001000000000000000000000000
@@ -97,7 +104,7 @@ class SCButtons(IntEnum):
 
 
 class HapticPos(IntEnum):
-	"""Specify which touchpad or trigger is used."""
+	"""Specify which touchpad or motor is used for haptic/rumble feedback."""
 
 	RIGHT = 0
 	LEFT  = 1

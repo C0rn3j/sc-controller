@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """SC-Controller - Grid OSD Menu
 
 Works as OSD menu, but displays item in (as rectangluar as possible - and
@@ -6,18 +5,16 @@ that's usually not very much) grid.
 """
 
 
+import logging
+
 from gi.repository import GObject, Gtk
 
 from scc.config import Config
-from scc.constants import CPAD, LEFT, RIGHT
+from scc.constants import SCPads
 from scc.gestures import GestureDetector
 from scc.gui.daemon_manager import DaemonManager
 from scc.gui.gestures import GestureDraw
 from scc.osd import OSDWindow
-
-BOTH = "BOTH"
-
-import logging
 
 log = logging.getLogger("osd.gesture")
 
@@ -41,14 +38,14 @@ class GestureDisplay(OSDWindow):
 		"gesture-updated": (GObject.SignalFlags.RUN_FIRST, None, (str,)),
 	}
 
-	SIZE = 128  # times two horizontaly + borders
+	SIZE = 128  # times two horizontally + borders
 
-	def __init__(self, config=None):
+	def __init__(self, config=None) -> None:
 		OSDWindow.__init__(self, "osd-gesture")
 		self.daemon = None
 		self._left_detector = GestureDetector(0, self._on_gesture_finished)
 		# self._right_detector = GestureDetector(0, self._on_gesture_finished)
-		self._control_with = LEFT
+		self._control_with = SCPads.LPAD
 		self._eh_ids = []
 		self._gesture = None
 
@@ -79,6 +76,7 @@ class GestureDisplay(OSDWindow):
 
 	def use_config(self, c):
 		"""Allows reusing already existin Config instance in same process.
+
 		Has to be called before parse_arguments()
 		"""
 		self.config = c
@@ -86,19 +84,19 @@ class GestureDisplay(OSDWindow):
 		for x in (self._left_draw,):
 			x.set_colors(**self.config["gesture_colors"])
 
-	def _add_arguments(self):
+	def _add_arguments(self) -> None:
 		OSDWindow._add_arguments(self)
 		self.argparser.add_argument(
 			"--control-with",
 			"-c",
 			type=str,
 			metavar="option",
-			default=LEFT,
-			choices=(LEFT, RIGHT, CPAD),
-			help="which pad should be used to generate gesture menu (default: %s)" % (LEFT,),
+			default=SCPads.LPAD,
+			choices=(SCPads.LPAD, SCPads.RPAD, SCPads.CPAD),
+			help=f"which pad should be used to generate gesture menu (default: {SCPads.LPAD})",
 		)
 
-	def parse_arguments(self, argv):
+	def parse_arguments(self, argv) -> bool:
 		if not OSDWindow.parse_arguments(self, argv):
 			return False
 		if not self.config:
@@ -126,7 +124,7 @@ class GestureDisplay(OSDWindow):
 
 	def on_daemon_connected(self, *a):
 		def success(*a):
-			log.error("Sucessfully locked %s pad", self._control_with)
+			log.error("Sucessfully locked %s", self._control_with)
 			self._left_detector.enable()
 			# self._right_detector.enable()
 
@@ -153,7 +151,7 @@ class GestureDisplay(OSDWindow):
 		self._eh_ids = []
 		OSDWindow.quit(self, code)
 
-	def on_event(self, daemon, what, data):
+	def on_event(self, daemon, what, data) -> None:
 		if what == self._control_with:
 			x, y = data
 			self._left_draw.add(x, y)

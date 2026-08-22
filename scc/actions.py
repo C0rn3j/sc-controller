@@ -28,7 +28,6 @@ from scc.constants import (
 	HIPFIRE_EXCLUSIVE,
 	HIPFIRE_NORMAL,
 	HIPFIRE_SENSIBLE,
-	LEFT,
 	OUTPUT_360_STICK_MAX,
 	OUTPUT_360_STICK_MIN,
 	PARSER_CONSTANTS,
@@ -47,7 +46,7 @@ from scc.constants import (
 	TRIGGER_MIN,
 	YAW,
 	ControllerFlags,
-	SCButtons,
+	SCButtons, SCPads, SCPadsLR, SCSticks, SCTouchpads,
 )
 from scc.lib import xwrappers as X
 from scc.tools import anglediff, circle_to_square, clamp, ensure_size, nameof, quat2euler
@@ -266,34 +265,30 @@ class Action:
 		"""
 		return self
 
-	def button_press(self, mapper: Mapper):
+	def button_press(self, mapper: Mapper) -> None:
 		"""Called when action is executed by pressing physical gamepad button.
+
 		'button_release' will be called later.
 		"""
 		log.warning("Action %s can't handle button press event", self.__class__.__name__)
 
-	def button_release(self, mapper: Mapper):
-		"""Called when action executed by pressing physical gamepad button is
-		expected to stop.
-		"""
+	def button_release(self, mapper: Mapper) -> None:
+		"""Called when action executed by pressing physical gamepad button is expected to stop."""
 		log.warning("Action %s can't handle button release event", self.__class__.__name__)
 
-	def axis(self, mapper: Mapper, position, what):
-		"""Called when action is executed by moving physical stickm when
-		stick has different actions for different axes defined.
+	def axis(self, mapper: Mapper, position, what: SCTouchpads | SCSticks) -> None:
+		"""Called when action is executed by moving physical stick when stick has different actions for different axes defined.
 
 		'position' contains current stick position on updated axis.
-		'what' is one of LEFT, RIGHT or LSTICK (from scc.constants),
-		describing what is being updated
+		'what' is describing what is being updated
 		"""
 		log.warning("Action %s can't handle axis event", self.__class__.__name__)
 
-	def pad(self, mapper: Mapper, position, what):
-		"""Called when action is executed by touching physical pad,
-		when pad has different actions for different axes defined.
+	def pad(self, mapper: Mapper, position, what: SCTouchpads) -> None:
+		"""Called when action is executed by touching physical pad, when pad has different actions for different axes defined.
 
 		'position' contains current finger position on updated axis.
-		'what' is either LEFT or RIGHT (from scc.constants), describing which pad is updated
+		'what' is describing which pad is updated
 
 		'pad' calls 'axis' by default
 		"""
@@ -306,22 +301,18 @@ class Action:
 		'q1' to 'q4' represents current rotations expressed as quaterion.
 		"""
 
-	def whole(self, mapper: Mapper, x, y, what) -> None:
-		"""Called when action is executed by moving physical stick or touching
-		physical pad, when one action is defined for whole pad or stick.
+	def whole(self, mapper: Mapper, x, y, what: SCPads | SCSticks) -> None:
+		"""Called when action is executed by moving physical stick or touching physical pad, when one action is defined for whole pad or stick.
 
 		'x' and 'y' contains current stick or finger position.
-		'what' is one of LEFT, RIGHT, LSTICK (from scc.constants), describing what is
-		being updated
+		'what' is describing what is being updated
 		"""
 		log.warning("Action %s can't handle whole stick event", self.__class__.__name__)
 
 	def whole_blocked(self, mapper: Mapper, x, y, what) -> None:
-		"""Special case called when ClickModifier is used and prevents 'whole'
-		to be called because finger moves over non-pressed pad.
-		"""
+		"""Special case called when ClickModifier is used and prevents 'whole' to be called because finger moves over non-pressed pad."""
 
-	def add(self, mapper: Mapper, dx, dy):
+	def add(self, mapper: Mapper, dx, dy) -> None:
 		"""Called from BallModifier while virtual "ball" is rolling.
 
 		Passed to 'whole' by default.
@@ -329,17 +320,14 @@ class Action:
 		self.whole(mapper, dx, dy, None)
 
 	def change(self, mapper: Mapper, dx, dy, what) -> None:
-		"""Called from CircularModifier to indicate incremental (or decremental)
-		change in value.
+		"""Called from CircularModifier to indicate incremental (or decremental) change in value.
 
 		'what' can be None.
 		"""
 		log.warning("Action %s can't handle incremental changes", self.__class__.__name__)
 
 	def cancel(self, mapper: Mapper) -> None:
-		"""Called when profile is changed to give action chance to cancel
-		long-running effects it may have created.
-		"""
+		"""Called when profile is changed to give action chance to cancel long-running effects it may have created."""
 
 	def strip_defaults(self):
 		"""Returns self.parameters list with all default values stripped from right side.
@@ -362,6 +350,7 @@ class Action:
 	@staticmethod
 	def encode_parameters(parameters):
 		"""Returns list with parameters encoded to strings in following way:
+
 		- x.name for enums
 		- str(x) numbers
 		- '%s' % (x.encode('unicode_escape'),) for strings
@@ -374,12 +363,11 @@ class Action:
 		if parameter in PARSER_CONSTANTS:
 			return parameter
 		if type(parameter) is str:
-			return "'%s'" % (str(parameter),)
+			return f"'{parameter!s}'"
 		return nameof(parameter)
 
-	def trigger(self, mapper: Mapper, position, old_position):
-		"""Called when action is executed by pressing (or releasing) physical
-		trigger.
+	def trigger(self, mapper: Mapper, position, old_position) -> None:
+		"""Called when action is executed by pressing (or releasing) a physical trigger.
 
 		'position' contains current trigger position.
 		'old_position' contains last known trigger position.
@@ -413,7 +401,7 @@ class RangeOP:
 		elif op == "ABS>":
 			self.op_method = self.cmp_gabs
 		else:
-			raise ValueError("Unknown operator: '%s'" % (op,))
+			raise ValueError(f"Unknown operator: '{op}'")
 
 		if what == SCButtons.LT:
 			# TODO: Somehow unify names here, LT button is related to ltrig axis and so on
@@ -441,52 +429,52 @@ class RangeOP:
 			self.min, self.max = float(STICK_PAD_MIN), float(STICK_PAD_MAX)
 			self.op_method = self.cmp_or
 		else:
-			raise ValueError("'%s' is not trigger nor axis" % (nameof(what),))
+			raise ValueError(f"'{nameof(what)}' is not trigger nor axis")
 
-	def cmp_or(self, mapper: Mapper):
-		return any([x(mapper) for x in self.children])
+	def cmp_or(self, mapper: Mapper) -> bool:
+		return any(x(mapper) for x in self.children)
 
-	def cmp_gt(self, mapper: Mapper):
+	def cmp_gt(self, mapper: Mapper) -> bool:
 		if mapper.state is None:
 			return False
 		state = float(getattr(mapper.state, self.axis_name)) / self.max
 		return state > self.value
 
-	def cmp_lt(self, mapper: Mapper):
+	def cmp_lt(self, mapper: Mapper) -> bool:
 		if mapper.state is None:
 			return False
 		state = float(getattr(mapper.state, self.axis_name)) / self.max
 		return state < self.value
 
-	def cmp_ge(self, mapper: Mapper):
+	def cmp_ge(self, mapper: Mapper) -> bool:
 		if mapper.state is None:
 			return False
 		state = float(getattr(mapper.state, self.axis_name)) / self.max
 		return state >= self.value
 
-	def cmp_le(self, mapper: Mapper):
+	def cmp_le(self, mapper: Mapper) -> bool:
 		if mapper.state is None:
 			return False
 		state = float(getattr(mapper.state, self.axis_name)) / self.max
 		return state <= self.value
 
-	def cmp_labs(self, mapper: Mapper):
+	def cmp_labs(self, mapper: Mapper) -> bool:
 		if mapper.state is None:
 			return False
 		state = float(getattr(mapper.state, self.axis_name)) / self.max
 		return abs(state) < self.value
 
-	def cmp_gabs(self, mapper: Mapper):
+	def cmp_gabs(self, mapper: Mapper) -> bool:
 		if mapper.state is None:
 			return False
 		state = float(getattr(mapper.state, self.axis_name)) / self.max
 		return abs(state) > self.value
 
-	def __call__(self, mapper: Mapper):
+	def __call__(self, mapper: Mapper) -> bool:
 		return self.op_method(mapper)
 
-	def __str__(self):
-		return "%s %s %s" % (nameof(self.what), self.op, self.value)
+	def __str__(self) -> str:
+		return f"{nameof(self.what)} {self.op} {self.value}"
 
 
 class HapticEnabledAction:
@@ -508,49 +496,46 @@ class HapticEnabledAction:
 class OSDEnabledAction:
 	"""Action that displays some sort of OSD when executed"""
 
-	def __init__(self):
-		self.osd_enabled = False
+	def __init__(self) -> None:
+		self.osd_enabled: bool = False
 
 	def get_compatible_modifiers(self):
 		return Action.MOD_OSD
 
-	def enable_osd(self, timeout):
+	def enable_osd(self, timeout) -> None:
 		# timeout not used by anything so far
 		self.osd_enabled = True
 
 
 class SpecialAction:
-	"""Action that needs to call special_actions_handler (aka sccdaemon instance)
-	to actually do something.
-	"""
+	"""Action that needs to call special_actions_handler (aka sccdaemon instance) to actually do something."""
 
 	SA = ""
 
 	def execute_named(self, name, mapper: Mapper, *a):
 		sa = mapper.get_special_actions_handler()
-		h_name = "on_sa_%s" % (name,)
+		h_name = f"on_sa_{name}"
 		if sa is None:
 			log.warning("Mapper can't handle special actions (set_special_actions_handler never called)")
 		elif hasattr(sa, h_name):
 			return getattr(sa, h_name)(mapper, self, *a)
 		else:
-			log.warning("Mapper can't handle '%s' action" % (name,))
+			log.warning(f"Mapper can't handle '{name}' action")
+		return None
 
 	def execute(self, mapper: Mapper, *a):
 		return self.execute_named(self.SA, mapper, *a)
 
 	# Prevent warnings when special action is bound to button
-	def button_press(self, mapper: Mapper):
+	def button_press(self, mapper: Mapper) -> None:
 		pass
 
-	def button_release(self, mapper: Mapper):
+	def button_release(self, mapper: Mapper) -> None:
 		pass
 
 
 class AxisAction(Action):
-	"""Action used to controll one output axis, such as one trigger
-	or one axis of stick.
-	"""
+	"""Action used to controll one output axis, such as one trigger or one axis of stick."""
 
 	COMMAND = "axis"
 
@@ -576,7 +561,7 @@ class AxisAction(Action):
 	# See https://github.com/kozec/sc-controller/issues/213
 	old_positions = {}
 
-	def __init__(self, id, min=None, max=None):
+	def __init__(self, id, min=None, max=None) -> None:
 		Action.__init__(self, id, *strip_none(min, max))
 		self.id = id
 		self.speed: float = 1.0
@@ -650,11 +635,11 @@ class AxisAction(Action):
 			return f"{axis} {xy}"
 		return axis
 
-	def button_press(self, mapper: Mapper):
+	def button_press(self, mapper: Mapper) -> None:
 		mapper.gamepad.axisEvent(self.id, AxisAction.clamp_axis(self.id, self.max))
 		mapper.syn_list.add(mapper.gamepad)
 
-	def button_release(self, mapper: Mapper):
+	def button_release(self, mapper: Mapper) -> None:
 		mapper.gamepad.axisEvent(self.id, AxisAction.clamp_axis(self.id, self.min))
 		mapper.syn_list.add(mapper.gamepad)
 
@@ -729,11 +714,11 @@ class HatAction(AxisAction):
 			return self.name
 		axis, neg, pos = AxisAction.get_axis_description(self.id)
 		if "up" in self.COMMAND or "left" in self.COMMAND:
-			return "%s %s" % (axis, neg)
-		return "%s %s" % (axis, pos)
+			return f"{axis} {neg}"
+		return f"{axis} {pos}"
 
-	def to_string(self, multiline=False, pad=0):
-		return (" " * pad) + "%s(%s)" % (self.COMMAND, self.id)
+	def to_string(self, multiline=False, pad=0) -> str:
+		return (" " * pad) + f"{self.COMMAND}({self.id})"
 
 
 class HatUpAction(HatAction):
@@ -843,14 +828,14 @@ class MouseAction(WholeHapticAction, Action):
 			return _("Mouse")
 		return _("Mouse %s") % (self._mouse_axis.name.split("_", 1)[-1],)
 
-	def button_press(self, mapper: Mapper):
+	def button_press(self, mapper: Mapper) -> None:
 		# This is generaly bad idea...
 		if self._mouse_axis in (Rels.REL_WHEEL, Rels.REL_HWHEEL):
 			self.change(mapper, 100000, 0, None)
 		else:
 			self.change(mapper, 100, 0, None)
 
-	def button_release(self, mapper: Mapper):
+	def button_release(self, mapper: Mapper) -> None:
 		# Nothing
 		pass
 
@@ -1554,11 +1539,11 @@ class ButtonAction(HapticEnabledAction, Action):
 	def button_press(self, mapper: Mapper) -> None:
 		ButtonAction._button_press(mapper, self.button, haptic=self.haptic)
 
-	def button_release(self, mapper: Mapper):
+	def button_release(self, mapper: Mapper) -> None:
 		ButtonAction._button_release(mapper, self.button)
 
-	def whole(self, mapper: Mapper, x, y, what):
-		if what == LSTICK or what == RSTICK:
+	def whole(self, mapper: Mapper, x, y, what) -> None:
+		if what in (LSTICK, RSTICK):
 			# Stick used used as one big button (probably as part of ring bindings)
 			if abs(x) < ButtonAction.STICK_DEADZONE and abs(y) < ButtonAction.STICK_DEADZONE:
 				if self._pressed_key == self.button:
@@ -1568,7 +1553,7 @@ class ButtonAction(HapticEnabledAction, Action):
 				self.button_press(mapper)
 				self._pressed_key = self.button
 			return None
-		if what in (LEFT, RIGHT):
+		if what in (SCPads.LPAD, SCPads.RPAD):
 			# Possibly special case, pressing with click() on entire pad
 			if mapper.is_pressed(what) and not mapper.was_pressed(what):
 				return self.button_press(mapper)
@@ -1779,11 +1764,11 @@ class MultiAction(MultichildAction):
 			rv = a.execute(event)
 		return rv
 
-	def button_press(self, *p):
+	def button_press(self, *p) -> None:
 		for a in self.actions:
 			a.button_press(*p)
 
-	def button_release(self, *p):
+	def button_release(self, *p) -> None:
 		for a in self.actions:
 			a.button_release(*p)
 
@@ -2189,7 +2174,7 @@ class XYAction(WholeHapticAction, Action):
 		if self.haptic:
 			WholeHapticAction.add(self, mapper, x, y)
 
-	def whole(self, mapper: Mapper, x, y, what):
+	def whole(self, mapper: Mapper, x, y, what) -> None:
 		if self.haptic:
 			distance = sqrt(x * x + y * y)
 			is_close = distance > STICK_PAD_MAX * 2 / 3
@@ -2205,7 +2190,7 @@ class XYAction(WholeHapticAction, Action):
 			else:
 				self._old_pos = None
 
-		if what in (LEFT, RIGHT, CPAD):
+		if what in (SCPads.LPAD, SCPads.RPAD, SCPads.CPAD):
 			self.x.pad(mapper, x, what)
 			self.y.pad(mapper, y, what)
 		else:
@@ -2257,7 +2242,7 @@ class RelXYAction(XYAction):
 
 	COMMAND = "relXY"
 
-	def __init__(self, *a, **b):
+	def __init__(self, *a, **b) -> None:
 		XYAction.__init__(self, *a, **b)
 		self.origin_x, self.origin_y = 0, 0
 
@@ -2266,8 +2251,8 @@ class RelXYAction(XYAction):
 			return self.name
 		return _("Joystick Camera")
 
-	def whole(self, mapper: Mapper, x, y, what):
-		if what in (LEFT, RIGHT, CPAD):
+	def whole(self, mapper: Mapper, x, y, what) -> None:
+		if what in (SCPads.LPAD, SCPads.RPAD, SCPads.CPAD):
 			if not mapper.is_touched(what):
 				return XYAction.whole(self, mapper, 0, 0, what)
 			if not mapper.was_touched(what):
@@ -2591,7 +2576,7 @@ class NoAction(Action):
 			cls._singleton = object.__new__(cls)
 		return cls._singleton
 
-	def __bool__(self):
+	def __bool__(self) -> Bool:
 		return False
 
 	__nonzero__ = __bool__
@@ -2599,19 +2584,19 @@ class NoAction(Action):
 	def encode(self):
 		return {}
 
-	def button_press(self, *a):
+	def button_press(self, *a) -> None:
 		pass
 
-	def button_release(self, *a):
+	def button_release(self, *a) -> None:
 		pass
 
-	def axis(self, *a):
+	def axis(self, *a) -> None:
 		pass
 
-	def whole(self, *a):
+	def whole(self, *a) -> None:
 		pass
 
-	def trigger(self, *a):
+	def trigger(self, *a) -> None:
 		pass
 
 	def describe(self, context):
