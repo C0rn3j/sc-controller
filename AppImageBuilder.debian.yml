@@ -204,6 +204,10 @@ AppDir:
       - usr/share/thumbnailers
 
   runtime:
+    preserve:
+      - usr/lib/python*/site-packages/scc/input-event-codes.h
+      - usr/lib/python*/dist-packages/scc/input-event-codes.h
+
     env:
       # `usr/lib/python3.*/site-packages` is required in $PYTHONPATH,
       # but the python version and hence the actual location is unknown here.

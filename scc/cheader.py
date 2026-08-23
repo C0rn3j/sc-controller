@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # The MIT License (MIT)
 #
 # Copyright (c) 2015 Stany MARCEL <stanypub@gmail.com>
@@ -73,7 +71,7 @@ def eval_expr(expr):
 	return _eval(ast.parse(expr, mode="eval").body)
 
 
-def defines(base, include):
+def defines(base: str, include: str):
 	"""Extract #define from base/include following #includes"""
 	parsed = set()
 	fname = os.path.normpath(os.path.abspath(os.path.join(base, include)))
@@ -88,7 +86,7 @@ def defines(base, include):
 
 		out = OrderedDict()
 
-		def parse_c_comments(lexer, tok, ntok):
+		def parse_c_comments(lexer, tok, ntok) -> bool:
 			if tok != "/" or ntok != "*":
 				return False
 			quotes = lexer.quotes
@@ -102,7 +100,7 @@ def defines(base, include):
 				lexer.push_token(ntok)
 			return True
 
-		def parse_cpp_comments(lexer, tok, ntok):
+		def parse_cpp_comments(lexer, tok, ntok) -> bool:
 			if tok != "/" or ntok != "/":
 				return False
 			quotes = lexer.quotes

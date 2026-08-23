@@ -22,6 +22,7 @@
 from __future__ import annotations
 
 import ctypes
+import logging
 import os
 from ctypes import POINTER, byref, c_bool, c_int16, c_int32, c_uint16
 from enum import IntEnum
@@ -36,24 +37,26 @@ from scc.tools import find_library
 if TYPE_CHECKING:
 	from ctypes import CDLL, Array, _Pointer
 
+log = logging.getLogger("uinput.py")
 UNPUT_MODULE_VERSION = 9
+MAX_FEEDBACK_EFFECTS = 4
 
 # Get All defines from linux headers
 if os.path.exists("/usr/include/linux/input-event-codes.h"):
 	CHEAD = defines("/usr/include", "linux/input-event-codes.h")
 elif os.path.exists(os.path.split(__file__)[0] + "/input-event-codes.h"):
 	CHEAD = defines(os.path.split(__file__)[0], "input-event-codes.h")
-else:
+elif os.path.exists("/usr/include/linux/input.h"):
 	CHEAD = defines("/usr/include", "linux/input.h")
+else:
+	CHEAD = None
+	log.warning("Unable to find input-event-codes.h or input.h! Will use a fallback.")
 
-MAX_FEEDBACK_EFFECTS = 4
-
-
-if TYPE_CHECKING:
+if TYPE_CHECKING or CHEAD is None:
 	# Static analyzers cannot see enum members added through locals().update().
-	# Regenerate this stub with scripts/generate-uinput-stubs.py when the
-	# canonical Linux input header changes.
-	from scc._uinput_codes import Axes, Keys, KeysOnly, Rels
+	# We also use this as a fallback if kernel headers are missing.
+	# Regenerate this stub with scripts/generate-uinput-fallback.py when the canonical Linux input header changes.
+	from scc.uinput_codes import Axes, Keys, KeysOnly, Rels
 else:
 	class Keys(IntEnum):
 		"""Keys enum contains all keys and button from linux/uinput.h (KEY_* BTN_*)."""
@@ -304,7 +307,7 @@ class UInput:
 	def getDescriptor(self):
 		return self._fd
 
-	def keyEvent(self, key: int, val: int):
+	def keyEvent(self, key: int, val: int) -> None:
 		"""Generate a key or btn event.
 
 		@param int axis		 key or btn event (KEY_* or BTN_*)
@@ -312,7 +315,7 @@ class UInput:
 		"""
 		self._lib.uinput_key(self._fd, ctypes.c_uint16(key), ctypes.c_int32(val))
 
-	def axisEvent(self, axis: int, val: int):
+	def axisEvent(self, axis: int, val: int) -> None:
 		"""Generate a abs event (joystick/pad axes).
 
 		@param int axis		 abs event (ABS_*)
@@ -320,7 +323,7 @@ class UInput:
 		"""
 		self._lib.uinput_abs(self._fd, ctypes.c_uint16(axis), ctypes.c_int32(val))
 
-	def relEvent(self, rel: int, val: int):
+	def relEvent(self, rel: int, val: int) -> None:
 		"""Generate a rel event (move move).
 
 		@param int rel		  rel event (REL_*)
@@ -470,7 +473,7 @@ class Mouse(UInput):
 		self._scr_xscale = xscale
 		self._scr_yscale = yscale
 
-	def moveEvent(self, dx: int = 0, dy: int = 0, time_elapsed: float = 0.0):
+	def moveEvent(self, dx: int = 0, dy: int = 0, time_elapsed: float = 0.0) -> None:
 		"""Generate move events from parametters and displacement.
 
 		@param int dx		   delta movement from last call on x axis
@@ -506,7 +509,7 @@ class Mouse(UInput):
 		if _syn:
 			self.synEvent()
 
-	def moveStickEvent(self, dx: float = 0.0, dy: float = 0.0, time_elapsed: float = 0.0):
+	def moveStickEvent(self, dx: float = 0.0, dy: float = 0.0, time_elapsed: float = 0.0) -> None:
 		"""Generate move events from parametters and displacement.
 
 		@param float dx		   delta movement from last call on x axis
@@ -539,11 +542,11 @@ class Mouse(UInput):
 		if _syn:
 			self.synEvent()
 
-	def clearRemainders(self):
+	def clearRemainders(self) -> None:
 		self._dx = 0
 		self._dy = 0
 
-	def _factorDeadzone(self, dx: int, dy: int, time_elapsed: float):
+	def _factorDeadzone(self, dx: int, dy: int, time_elapsed: float) -> None:
 		"""Take raw event and adjust based on assigned dead zone setting.
 
 		@param int dx				delta movement from last call on x axis
@@ -621,7 +624,7 @@ class Mouse(UInput):
 		else:
 			self._dy = 0
 
-	def scrollEvent(self, dx: int = 0, dy: int = 0):
+	def scrollEvent(self, dx: int = 0, dy: int = 0) -> None:
 		"""Generate scroll events from parametters and displacement.
 
 		@param int dx		   delta movement from last call on x axis
@@ -655,7 +658,7 @@ class Keyboard(UInput):
 	setDelayPeriod permits to update these values
 	"""
 
-	def __init__(self, name):
+	def __init__(self, name) -> None:
 		super().__init__(
 			vendor=0x28DE, product=0x1142, version=1, name=name, keys=Scans.keys(), axes=[], rels=[], keyboard=True,
 		)
@@ -663,7 +666,7 @@ class Keyboard(UInput):
 		self._dx = 0.0
 		self._pressed = set()
 
-	def pressEvent(self, keys: list):
+	def pressEvent(self, keys: list) -> None:
 		"""Generate key press event with corresponding scan codes.
 
 		Events are generated only for new keys.
@@ -678,7 +681,7 @@ class Keyboard(UInput):
 			self.synEvent()
 			self._pressed |= set(new)
 
-	def releaseEvent(self, keys: list | None = None):
+	def releaseEvent(self, keys: list | None = None) -> None:
 		"""Generate key release event with corresponding scan codes.
 
 		Events are generated only for keys that was pressed
