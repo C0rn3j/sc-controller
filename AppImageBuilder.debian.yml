@@ -30,6 +30,13 @@ AppDir:
     # TODO(Martin): Replace URL with just 'hidraw-pure' when https://github.com/vpelletier/python-hidraw/issues/7 is resolved
     pip install --target "${TARGET_APPDIR}/usr/lib/python3/dist-packages/" https://github.com/vpelletier/python-hidraw/archive/master.zip ioctl-opt
 
+    # The wheel is installed under a versioned site-packages directory. Give
+    # the runtime a stable path to it without adding the executable $PATH to
+    # $PYTHONPATH (which makes gi/types.py shadow the stdlib types module).
+    scc_site_packages=$(find "${TARGET_APPDIR}/usr/lib" -type d -path '*/python*/site-packages' -exec test -d '{}/scc' ';' -print -quit)
+    test -n "${scc_site_packages}"
+    ln -sfr "${scc_site_packages}" "${TARGET_APPDIR}/usr/lib/scc-site-packages"
+
     # appimage-builder expects .desktop file to start with appinfo-id
     desktop="$(find "${TARGET_APPDIR}/usr" -name sc-controller.desktop)"
     sed -i "s:Exec=.*:Exec=./usr/bin/scc gui:g" "${desktop}"
@@ -209,11 +216,7 @@ AppDir:
       - usr/lib/python*/dist-packages/scc/input-event-codes.h
 
     env:
-      # `usr/lib/python3.*/site-packages` is required in $PYTHONPATH,
-      # but the python version and hence the actual location is unknown here.
-      # Fortunately the site-packages directory is on the $PATH, so we add $PATH instead.
-      # It must precede an existing $PYTHONPATH to work.
-      PYTHONPATH: "${APPDIR}/usr/lib/python3/dist-packages:${PATH}:${PYTHONPATH}"
+      PYTHONPATH: "${APPDIR}/usr/lib/scc-site-packages:${APPDIR}/usr/lib/python3/dist-packages:${PYTHONPATH}"
       SCC_SHARED: "${APPDIR}/usr/share/scc"
 
 AppImage:
