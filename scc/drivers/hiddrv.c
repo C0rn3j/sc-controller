@@ -5,7 +5,7 @@
 #include <limits.h>
 #define CLAMP(min, x, max) x
 
-#define HIDDRV_MODULE_VERSION 7
+#define HIDDRV_MODULE_VERSION 8
 PyObject* module;
 
 #define AXIS_COUNT 24
@@ -255,7 +255,9 @@ bool decode(struct HIDDecoder* dec, const char* data) {
 			case DS4TOUCHPAD:
 				value = grab_value(data, dec->axes[i].byte_offset,
 					dec->axes[i].bit_offset);
-				dec->state.axes[i] = (value.u16 & 0x0FFF);
+				dec->state.axes[i] = ((value.u16 & 0x0FFF)
+					* dec->axes[i].data.axis.scale)
+					+ dec->axes[i].data.axis.offset;
 				break;
 			default:
 				break;

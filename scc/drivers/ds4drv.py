@@ -211,8 +211,21 @@ class DS4Controller(Controller):
 		self._decoder.axes[AxisType.AXIS_Q2] = AxisData(mode=AxisMode.DS4GYRO, byte_offset=19)
 		self._decoder.axes[AxisType.AXIS_Q3] = AxisData(mode=AxisMode.DS4GYRO, byte_offset=21)
 
-		self._decoder.axes[AxisType.AXIS_CPAD_X] = AxisData(mode=AxisMode.DS4TOUCHPAD, byte_offset=36)
-		self._decoder.axes[AxisType.AXIS_CPAD_Y] = AxisData(mode=AxisMode.DS4TOUCHPAD, byte_offset=37, bit_offset=4)
+		self._decoder.axes[AxisType.AXIS_CPAD_X] = AxisData(
+			mode=AxisMode.DS4TOUCHPAD,
+			byte_offset=36,
+			data=AxisDataUnion(
+				axis=AxisModeData(scale=DS4EvdevController.TOUCH_FACTOR_X, offset=STICK_PAD_MIN),
+			),
+		)
+		self._decoder.axes[AxisType.AXIS_CPAD_Y] = AxisData(
+			mode=AxisMode.DS4TOUCHPAD,
+			byte_offset=37,
+			bit_offset=4,
+			data=AxisDataUnion(
+				axis=AxisModeData(scale=-DS4EvdevController.TOUCH_FACTOR_Y, offset=STICK_PAD_MAX),
+			),
+		)
 		self._decoder.buttons = ButtonData(
 			enabled=True,
 			byte_offset=5,

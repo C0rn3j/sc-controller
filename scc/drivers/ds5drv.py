@@ -310,9 +310,20 @@ class DS5Controller(HIDController):
 		self._decoder.axes[AxisType.AXIS_Q3] = AxisData(mode=AxisMode.DS4GYRO, byte_offset=24)
 
 		# Touchpad
-		self._decoder.axes[AxisType.AXIS_CPAD_X] = AxisData(mode=AxisMode.DS4TOUCHPAD, byte_offset=34)  # DualSense X
+		self._decoder.axes[AxisType.AXIS_CPAD_X] = AxisData(
+			mode=AxisMode.DS4TOUCHPAD,
+			byte_offset=34,
+			data=AxisDataUnion(
+				axis=AxisModeData(scale=DS5EvdevController.TOUCH_FACTOR_X, offset=STICK_PAD_MIN),
+			),
+		)  # DualSense X
 		self._decoder.axes[AxisType.AXIS_CPAD_Y] = AxisData(
-			mode=AxisMode.DS4TOUCHPAD, byte_offset=35, bit_offset=4,
+			mode=AxisMode.DS4TOUCHPAD,
+			byte_offset=35,
+			bit_offset=4,
+			data=AxisDataUnion(
+				axis=AxisModeData(scale=-DS5EvdevController.TOUCH_FACTOR_Y, offset=STICK_PAD_MAX),
+			),
 		)  # DualSense Y
 
 		# Button maps seem to work for standard arrangement (matching Xbox360)
