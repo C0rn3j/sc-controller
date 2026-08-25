@@ -2,20 +2,20 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="446"
    height="345"
    viewBox="0 0 445.99998 345"
    id="svg2"
    version="1.1"
-   inkscape:version="0.92.2 5c3e80d, 2017-08-06"
-   sodipodi:docname="ds4.svg">
+   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
+   sodipodi:docname="ds4.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -26,22 +26,25 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.8"
-     inkscape:cx="202.73177"
-     inkscape:cy="137.49096"
+     inkscape:cx="202.85714"
+     inkscape:cy="137.5"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
      units="px"
-     inkscape:window-width="1315"
-     inkscape:window-height="1042"
-     inkscape:window-x="1378"
-     inkscape:window-y="1"
+     inkscape:window-width="1900"
+     inkscape:window-height="1181"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      inkscape:window-maximized="0"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     showguides="false" />
+     showguides="false"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -232,9 +235,9 @@
        id="CPAD"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccsscc"
-       inkscape:label="#rect4581" />
+       inkscape:label="CPAD" />
     <path
-       inkscape:label="#rect4581"
+       inkscape:label="CPADPRESS"
        sodipodi:nodetypes="cccsscc"
        inkscape:connector-curvature="0"
        id="CPADPRESS"
@@ -289,43 +292,18 @@
      inkscape:label="Areas"
      style="display:none">
     <g
-       style="display:inline;fill:#00000a;fill-opacity:0.04313725"
-       id="g4481"
-       transform="translate(-230.68013,-486.2488)">
-      <rect
-         ry="0"
-         y="514.47174"
-         x="295.48422"
-         height="8.730463"
-         width="51.838043"
-         id="AREA_LT_1"
-         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
-    </g>
-    <g
-       style="display:inline;fill:#00000a;fill-opacity:0.04313725"
-       transform="translate(-218.97772,-522.36364)"
-       id="g4385">
-      <rect
-         ry="0"
-         y="559.44287"
-         x="278.24295"
-         height="12.437766"
-         width="60.046257"
-         id="AREA_LB_1"
-         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
-    </g>
-    <g
        transform="translate(-4.96777,5.10227)"
        style="display:inline;fill:#00000a;fill-opacity:0.04313725"
-       id="g4321">
+       id="g4321"
+       inkscape:label="DPAD">
       <rect
          ry="0"
          y="72.54705"
          x="56.870647"
          height="65.071426"
-         width="65.071419"
+         width="65.070999"
          id="AREA_DPAD_1"
-         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
+         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.0431373;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
       <rect
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#00b400;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
          id="AREA_DPADTEST"
@@ -338,7 +316,8 @@
     <g
        style="display:inline;fill:#00000a;fill-opacity:0.04313725"
        id="g67890"
-       transform="translate(213.45316,92.87623)">
+       transform="translate(213.45316,92.87623)"
+       inkscape:label="RSTICK">
       <rect
          ry="0"
          y="49.079266"
@@ -359,7 +338,8 @@
     <g
        transform="translate(-18.29848,-2.98212)"
        style="display:inline;fill:#00000a;fill-opacity:0.04313725"
-       id="g4464">
+       id="g4464"
+       inkscape:label="LSTICK">
       <rect
          ry="0"
          y="144.30809"
@@ -368,7 +348,7 @@
          width="60"
          id="AREA_LSTICK_1"
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
-         inkscape:label="#AREA_LSTICK" />
+         inkscape:label="AREA_LSTICK_1" />
       <rect
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#00b400;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
          id="AREA_LSTICKTEST"
@@ -377,32 +357,6 @@
          x="140.56197"
          y="174.07738"
          ry="0" />
-    </g>
-    <g
-       style="display:inline;fill:#00000a;fill-opacity:0.04313725"
-       id="g4489"
-       transform="translate(29.94964,-486.24881)">
-      <rect
-         ry="0"
-         y="514.10193"
-         x="301.58682"
-         height="11.063005"
-         width="47.918438"
-         id="AREA_RT_1"
-         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
-    </g>
-    <g
-       style="display:inline;fill:#00000a;fill-opacity:0.04313725"
-       transform="translate(26.544905,-522.36365)"
-       id="g5385">
-      <rect
-         ry="0"
-         y="561.21216"
-         x="292.8385"
-         height="10.611459"
-         width="65.707367"
-         id="AREA_RB_4"
-         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
     </g>
     <rect
        style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#ed00b4;stroke-width:0.90909094;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
@@ -468,24 +422,62 @@
     <g
        transform="translate(213.45316,92.87623)"
        id="g880"
-       style="display:inline;fill:#00000a;fill-opacity:0.04313725">
-      <rect
-         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
-         id="AREA_CPAD"
-         width="148.4718"
-         height="75.253418"
-         x="-62.70134"
-         y="-45.976227"
-         ry="0"
-         inkscape:label="#rect876" />
-      <rect
-         ry="0"
-         y="79.079262"
-         x="46.561966"
-         height="0.25254059"
-         width="63.352852"
-         id="rect878"
-         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#00b400;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
-    </g>
+       style="display:inline;fill:#00000a;fill-opacity:0.04313725" />
+    <rect
+       ry="0"
+       y="561.21216"
+       x="292.8385"
+       height="10.611459"
+       width="65.707367"
+       id="AREA_RB_4"
+       style="display:inline;fill:#00000a;fill-opacity:0.04313725;color:#000000;overflow:visible;visibility:visible;opacity:1;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+       transform="translate(26.544905,-522.36365)" />
+    <rect
+       ry="0"
+       y="514.10193"
+       x="301.58682"
+       height="11.063005"
+       width="47.918438"
+       id="AREA_RT_1"
+       style="display:inline;fill:#00000a;fill-opacity:0.04313725;color:#000000;overflow:visible;visibility:visible;opacity:1;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+       transform="translate(29.94964,-486.24881)" />
+    <rect
+       ry="0"
+       y="514.47174"
+       x="295.48422"
+       height="8.730463"
+       width="51.838043"
+       id="AREA_LT_1"
+       style="display:inline;fill:#00000a;fill-opacity:0.04313725;color:#000000;overflow:visible;visibility:visible;opacity:1;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+       transform="translate(-230.68013,-486.2488)" />
+    <rect
+       ry="0"
+       y="559.44287"
+       x="278.24295"
+       height="12.437766"
+       width="60.046257"
+       id="AREA_LB_1"
+       style="display:inline;fill:#00000a;fill-opacity:0.04313725;color:#000000;overflow:visible;visibility:visible;opacity:1;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+       transform="translate(-218.97772,-522.36364)" />
+    <rect
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.0431373;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+       id="AREA_CPADTEST"
+       width="148.472"
+       height="75.253418"
+       x="-62.70134"
+       y="-45.976227"
+       ry="0"
+       inkscape:label="AREA_CPADTEST"
+       transform="translate(213.45316,92.87623)" />
+    <rect
+       style="display:inline;fill:#00000a;fill-opacity:0.0431373;color:#000000;overflow:visible;visibility:visible;opacity:1;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+       id="rect1"
+       width="148.472"
+       height="75.253418"
+       x="-62.70134"
+       y="-45.976227"
+       ry="0"
+       inkscape:label="AREA_CPAD"
+       transform="translate(213.45316,92.87623)" />
   </g>
 </svg>

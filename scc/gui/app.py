@@ -50,6 +50,7 @@ if TYPE_CHECKING:
 	from gi.repository.Gio import ApplicationCommandLine
 	from typing import Never
 	from scc.gui.osd_mode import OSDModeMapper
+	from gi.repository.Gtk import Image
 
 log = logging.getLogger("App")
 
@@ -157,12 +158,12 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.main_area.put(vbc, 0, 0)  # (self.IMAGE_SIZE[0] / 2) - 90, self.IMAGE_SIZE[1] - 100)
 
 		# Test markers (those blue circles over PADs and sticks)
-		self.lpad_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
-		self.rpad_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
-		self.lstick_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
-		self.rstick_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
-		self.dpad_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
-		self.cpad_test = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
+		self.lpad_test: Image = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
+		self.rpad_test: Image = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
+		self.lstick_test: Image = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
+		self.rstick_test: Image = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
+		self.dpad_test: Image = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
+		self.cpad_test: Image = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
 		self.main_area.put(self.lpad_test, 40, 40)
 		self.main_area.put(self.rpad_test, 290, 90)
 		self.main_area.put(self.lstick_test, 150, 40)
@@ -311,10 +312,10 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.builder.get_object("mnuShowWindowTray").set_visible(True)
 		GLib.idle_add(self.statusicon.set, f"scc-{self.status}", _("SC Controller"))
 
-	def destroy_statusicon(self):
+	def destroy_statusicon(self) -> None:
 		self.statusicon.hide()
 
-	def check(self):
+	def check(self) -> bool:
 		"""Performs various (three) checks and reports possible problems"""
 		# TODO: Maybe not best place to do this
 		try:
@@ -380,7 +381,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			return True
 		return False
 
-	def apply_temporary_fix(self, trash, shell_command, message):
+	def apply_temporary_fix(self, trash, shell_command, message) -> None:
 		"""Display MessageBox with confirmation, try to run passed shell command and restart daemon.
 
 		Doing this allows user to teporary fix some uinput-related problems
@@ -394,7 +395,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			message_format=_("sudo fix-my-pc"),
 		)
 
-		def on_response(dialog, response_id):
+		def on_response(dialog, response_id) -> None:
 			if response_id == -5:  # OK button, not defined anywhere
 				sudo = Gio.Subprocess.new(shell_command, 0)
 				sudo.communicate(None, None)
@@ -1166,12 +1167,12 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			self.osd_mode_mapper.handle_event(daemon, what, data)
 		elif what in (*SCPads, *SCSticks):
 			widget, area = {
+				SCPads.CPAD: (self.cpad_test, "CPADTEST"),
+				SCPads.DPAD: (self.dpad_test, "DPADTEST"),
 				SCPads.LPAD: (self.lpad_test, "LPADTEST"),
 				SCPads.RPAD: (self.rpad_test, "RPADTEST"),
 				SCSticks.LSTICK: (self.lstick_test, "LSTICKTEST"),
 				SCSticks.RSTICK: (self.rstick_test, "RSTICKTEST"),
-				SCPads.DPAD: (self.dpad_test, "DPADTEST"),
-				SCPads.CPAD: (self.cpad_test, "CPAD"),
 			}[what]
 			if what == SCPads.DPAD:
 				if data[0] or data[1]:
