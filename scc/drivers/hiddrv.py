@@ -209,6 +209,12 @@ class ButtonData(ctypes.Structure):
 
 
 class HIDDecoder(ctypes.Structure):
+	axes: ctypes.Array[AxisData]
+	buttons: ButtonData
+	packet_size: int
+	old_state: HIDControllerInput
+	state: HIDControllerInput
+
 	_fields_ = [
 		("axes", AxisData * AXIS_COUNT),
 		("buttons", ButtonData),
