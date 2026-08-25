@@ -6,7 +6,13 @@ devices is read from config file.
 """
 from __future__ import annotations
 
+import binascii
 import errno
+import json
+import logging
+import os
+import sys
+from typing import TYPE_CHECKING, NamedTuple
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, TRIGGER_MAX, TRIGGER_MIN, ControllerFlags, SCButtons
 from scc.controller import Controller
@@ -27,13 +33,6 @@ except ImportError:
 
 	ecodes = FakeECodes()
 
-import binascii
-import json
-import logging
-import os
-import sys
-from typing import TYPE_CHECKING, NamedTuple
-
 if TYPE_CHECKING:
 	from scc.mapper import Mapper
 	from scc.sccdaemon import SCCDaemon
@@ -44,31 +43,31 @@ TRIGGERS = "ltrig", "rtrig"
 FIRST_BUTTON = 288
 
 class EvdevControllerInput(NamedTuple):
-	buttons: int
-	ltrig: int
-	rtrig: int
-	lstick_x: int
-	lstick_y: int
-	rstick_x: int
-	rstick_y: int
-	lpad_x: int
-	lpad_y: int
-	rpad_x: int
-	rpad_y: int
-	accel_x: int
-	accel_y: int
-	accel_z: int
-	gpitch: int
-	groll: int
-	gyaw: int
-	q1: int
-	q2: int
-	q3: int
-	q4: int
-	cpad_x: int
-	cpad_y: int
-	dpad_x: int
-	dpad_y: int
+	buttons: SCButtons = SCButtons(0)
+	ltrig: int = 0
+	rtrig: int = 0
+	lstick_x: int = 0
+	lstick_y: int = 0
+	rstick_x: int = 0
+	rstick_y: int = 0
+	lpad_x: int = 0
+	lpad_y: int = 0
+	rpad_x: int = 0
+	rpad_y: int = 0
+	accel_x: int = 0
+	accel_y: int = 0
+	accel_z: int = 0
+	gpitch: int = 0
+	groll: int = 0
+	gyaw: int = 0
+	q1: int = 0
+	q2: int = 0
+	q3: int = 0
+	q4: int = 0
+	cpad_x: int = 0
+	cpad_y: int = 0
+	dpad_x: int = 0
+	dpad_y: int = 0
 
 
 class AxisCalibrationData(NamedTuple):
@@ -113,7 +112,7 @@ class EvdevController(Controller):
 			self.poller.register(self.device.fd, self.poller.POLLIN, self.input)
 			self.device.grab()
 			self._id = self._generate_id()
-		self._state = EvdevControllerInput(*[0] * len(EvdevControllerInput._fields))
+		self._state = EvdevControllerInput()
 		self._padpressemu_task = None
 
 	def _parse_config(self, config: dict):

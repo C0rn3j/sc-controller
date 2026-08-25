@@ -3,6 +3,7 @@
 Changes SVG on the fly and uptates that magnificent image on background with it.
 Also supports clicking on areas defined in SVG image.
 """
+
 from __future__ import annotations
 
 import logging
@@ -19,8 +20,18 @@ import gi
 if TYPE_CHECKING:
 	from typing import Self
 
-gi.require_version("Rsvg", "2.0")
-from gi.repository import Gdk, GdkPixbuf, GObject, Gtk, Rsvg
+	import gi.repository._Gdk3 as Gdk
+	import gi.repository._Gtk3 as Gtk
+	from gi.repository import GObject, Rsvg
+else:
+	gi.require_version("Rsvg", "2.0")
+	gi.require_version("Gdk", "3.0")
+	gi.require_version("Gtk", "3.0")
+	from gi.repository import Gdk, GdkPixbuf, GObject, Gtk, Rsvg
+#gi.require_version("Rsvg", "2.0")
+#gi.require_version("Gdk", "3.0")
+#gi.require_version("Gtk", "3.0")
+#from gi.repository import Gdk, GdkPixbuf, GObject, Gtk, Rsvg
 
 # sys.modules.pop('xml.etree.ElementTree', None)
 # sys.modules['_elementtree'] = None
@@ -54,10 +65,10 @@ class SVGWidget(Gtk.EventBox):
 		self.set_events(Gdk.EventMask.POINTER_MOTION_MASK | Gdk.EventMask.BUTTON_PRESS_MASK)
 
 		self.size_override: tuple[int, int] | None = None
-		self.image_width: int = 1
-		self.image_height: int = 1
+		self.image_width: float = 1
+		self.image_height: float = 1
 		self.set_image(filename)
-		self.image = Gtk.Image()
+		self.image: Gtk.Image = Gtk.Image()
 		if init_hilighted:
 			self.hilight({})
 		self.add(self.image)
@@ -117,21 +128,21 @@ class SVGWidget(Gtk.EventBox):
 				return a
 		return None
 
-	def get_all_by_prefix(self, prefix: str):
+	def get_all_by_prefix(self, prefix: str) -> list[Area]:
 		"""Searchs for areas using specific prefix.
 
 		For prefix "AREA_", returns self.areas arrray. For anything else,
-		re-parses current image and searchs recursivelly for anything that matches, so it
-		may be good idea to not call this too often.
+		re-parses current image and searches recursively for anything that matches, so it
+		may be a good idea to not call this too often.
 		"""
 		if prefix == "AREA_":
 			return self.areas
-		lst = []
+		lst: list[Area] = []
 		tree = ET.fromstring(self.current_svg.encode("utf-8"))
 		SVGWidget.find_areas(tree, None, lst, prefix=prefix)
 		return lst
 
-	def get_area_position(self, area_id):
+	def get_area_position(self, area_id: str) -> tuple[float, float, float, float]:
 		"""Computes and returns area position on image as (x, y, width, height).
 
 		Raises ValueError if such area is not found.
@@ -140,7 +151,7 @@ class SVGWidget(Gtk.EventBox):
 		a = self.get_area(area_id)
 		if a:
 			return a.x, a.y, a.w, a.h
-		raise ValueError("Area '%s' not found" % (area_id,))
+		raise ValueError(f"Area '{area_id}' not found")
 
 	def get_viewbox(self) -> tuple[float, float, float, float]:
 		"""Returns the SVG viewBox as (min_x, min_y, width, height).
@@ -162,11 +173,17 @@ class SVGWidget(Gtk.EventBox):
 		return (0.0, 0.0, 0.0, 0.0)
 
 	@staticmethod
-	def find_areas(xml: ET.Element[str], parent_transform, areas: list[Area], get_colors: bool = False, prefix: str = "AREA_") -> None:
-		"""Recursively searches through XML for anything with ID of 'AREA_SOMETHING'"""
+	def find_areas(
+		xml: ET.Element[str], parent_transform, areas: list[Area], get_colors: bool = False, prefix: str = "AREA_"
+	) -> None:
+		"""Recursively searches through XML for anything with ID of 'AREA_SOMETHING'
+
+		Mutates passed `area` list by appending the results.
+		"""
 		for child in xml:
 			child_transform = SVGEditor.matrixmul(
-				parent_transform or SVGEditor.IDENTITY, SVGEditor.parse_transform(child),
+				parent_transform or SVGEditor.IDENTITY,
+				SVGEditor.parse_transform(child),
 			)
 			if str(child.attrib.get("id")).startswith(prefix):
 				# log.debug("Found SVG area %s", child.attrib['id'][5:])
@@ -212,7 +229,7 @@ class SVGWidget(Gtk.EventBox):
 			return color.red_float, color.green_float, color.blue_float, 1
 		return 1, 0, 1, 1  # uggly purple
 
-	def hilight(self, buttons):
+	def hilight(self, buttons) -> None:
 		"""Hilights specified button, if same ID is found in svg"""
 		cache_id = "|".join(["%s:%s" % (x, buttons[x]) for x in buttons])
 		if cache_id not in self.cache:
@@ -280,7 +297,7 @@ class Area:
 
 	def __init__(self, element: ET.Element, transform) -> None:
 		self.color: tuple[float, float, float, float] | None
-		self.name = element.attrib["id"].split("_")[1]
+		self.name: str = element.attrib["id"].split("_")[1]
 		# Check if this is an area name that images/buttons.svg uses
 		#
 		# LSTICK, RSTICK and DPAD are explicitly catching with all possible movements to allow them being used as
@@ -288,9 +305,11 @@ class Area:
 		# Hopefully this isn't used anywhere else
 		if self.name in Area.SPECIAL_CASES:
 			self.name = "_".join(element.attrib["id"].split("_")[1:3])
+		self.x: float
+		self.y: float
 		self.x, self.y = SVGEditor.get_translation(transform)
-		self.w = float(element.attrib.get("width", 0))
-		self.h = float(element.attrib.get("height", 0))
+		self.w: float = float(element.attrib.get("width", 0))
+		self.h: float = float(element.attrib.get("height", 0))
 
 	def contains(self, x, y):
 		return x >= self.x and y >= self.y and x <= self.x + self.w and y <= self.y + self.h
@@ -510,13 +529,19 @@ class SVGEditor:
 		return self
 
 	@staticmethod
-	def matrixmul(X, Y, *a):
+	def matrixmul(
+		X: list[list[float]]
+		| tuple[tuple[float, float, float], tuple[float, float, float], tuple[float, float, float]],
+		Y: list[list[float]]
+		| tuple[tuple[float, float, float], tuple[float, float, float], tuple[float, float, float]],
+		*a,
+	) -> list[list[float]]:
 		if len(a) > 0:
 			return SVGEditor.matrixmul(SVGEditor.matrixmul(X, Y), a[0], *a[1:])
 		return [[sum(a * b for a, b in zip(x, y)) for y in zip(*Y)] for x in X]
 
 	@staticmethod
-	def scale(xml, sx, sy=None) -> None:
+	def scale(xml, sx: float, sy: float | None = None) -> None:
 		"""Changes element scale.
 
 		Creates or updates 'transform' attribute.
@@ -531,7 +556,7 @@ class SVGEditor:
 		)
 
 	@staticmethod
-	def rotate(xml, a, x, y) -> None:
+	def rotate(xml, a: float, x: float, y: float) -> None:
 		"""Changes element rotation.
 
 		Creates or updates 'transform' attribute.
@@ -548,7 +573,7 @@ class SVGEditor:
 		)
 
 	@staticmethod
-	def translate(xml, x, y) -> None:
+	def translate(xml, x: float, y: float) -> None:
 		"""Changes element translation.
 
 		Creates or updates 'transform' attribute.
@@ -562,12 +587,20 @@ class SVGEditor:
 		)
 
 	@staticmethod
-	def set_transform(xml, matrix) -> None:
+	def set_transform(
+		xml,
+		matrix: list[list[float]],
+	) -> None:
 		"""Sets element transformation matrix"""
-		xml.attrib["transform"] = f"matrix({matrix[0][0]},{matrix[1][0]},{matrix[0][1]},{matrix[1][1]},{matrix[0][2]},{matrix[1][2]})"
+		xml.attrib["transform"] = (
+			f"matrix({matrix[0][0]},{matrix[1][0]},{matrix[0][1]},{matrix[1][1]},{matrix[0][2]},{matrix[1][2]})"
+		)
 
 	@staticmethod
-	def get_translation(elm_or_matrix: ET.Element | str, absolute: bool = False):
+	def get_translation(
+		elm_or_matrix: ET.Element | list[list[float]],
+		absolute: bool = False,
+	) -> tuple[float, float]:
 		if isinstance(elm_or_matrix, ET.Element):
 			elm = elm_or_matrix
 			matrix = SVGEditor.parse_transform(elm)
@@ -590,7 +623,9 @@ class SVGEditor:
 		return width, height
 
 	@staticmethod
-	def parse_transform(xml):
+	def parse_transform(
+		xml,
+	) -> tuple[tuple[float, float, float], tuple[float, float, float], tuple[float, float, float]] | list[list[float]]:
 		"""Returns element transform data in transformation matrix,"""
 		matrix = SVGEditor.IDENTITY
 		if "x" in xml.attrib or "y" in xml.attrib:

@@ -15,10 +15,8 @@ from scc.constants import (
 	FE_PAD,
 	FE_STICK,
 	FE_TRIGGER,
-	LEFT,
 	LSTICK,
 	LSTICKTILT,
-	RIGHT,
 	RSTICK,
 	STICK_PAD_MAX,
 	ControllerFlags,
@@ -36,9 +34,14 @@ from scc.uinput import Dummy, Keyboard, Mouse, UInput
 
 if TYPE_CHECKING:
 	from scc.controller import Controller
+	from scc.drivers.ds5drv import DualSenseBTControllerInput
+	from scc.drivers.evdevdrv import EvdevControllerInput
+	from scc.drivers.hiddrv import HIDControllerInput
+	from scc.drivers.sc_dongle import ControllerInput
 	from scc.poller import Poller
 	from scc.profile import Profile
 	from scc.scheduler import Scheduler, Task
+	type CInput = DualSenseBTControllerInput | ControllerInput | HIDControllerInput | EvdevControllerInput
 
 log = logging.getLogger("Mapper")
 
@@ -81,14 +84,15 @@ class Mapper:
 		# Setup emulation
 		self.keypress_list = []
 		self.keyrelease_list = []
-		self.mouse_movements = [0,0,0,0,0,0]  # mouse x, y, wheel vertical, horisontal, stick mouse x, stick mouse y
+		self.mouse_movements = [0,0,0,0,0,0]  # mouse x, y, wheel vertical, horizontal, stick mouse x, stick mouse y
 		self.feedbacks: list[HapticData | None] = [None, None]  # left, right
 		self.pressed = {}  # for ButtonAction, holds number of times virtual button was pressed without releasing it first
 		self.syn_list = set()
-		self.buttons: int = 0
-		self.old_buttons: int = 0
+		self.buttons: SCButtons = SCButtons(0)
+		self.old_buttons: SCButtons = SCButtons(0)
 		self.lpad_touched = False
-		self.state, self.old_state = None, None
+		self.state: CInput | None = None
+		self.old_state: CInput | None = None
 		self.force_event: set[int] = set() # FE_STICK, FE_TRIGGER, FE_PAD or FE_GYRO
 		self.time_elapsed = 0.0
 
@@ -398,7 +402,7 @@ class Mapper:
 			if isinstance(a, GyroAbsAction):
 				a.reset()
 
-	def input(self, controller: Controller, old_state, state) -> None:
+	def input(self, controller: Controller, old_state: CInput, state: CInput) -> None:
 		# print(type(controller), type(old_state), type(state))
 		# Store states
 		self.old_state = old_state

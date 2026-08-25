@@ -524,8 +524,8 @@ class DS4EvdevController(EvdevController):
 			"buttons": DS4EvdevController.BUTTON_MAP,
 			"dpads": {},
 		}
-		self._gyro = gyro
-		self._touchpad = touchpad
+		self._gyro: InputDevice[str] = gyro
+		self._touchpad: InputDevice[str] = touchpad
 		self._feedback_effect_id: int | None = None
 		for device in (self._gyro, self._touchpad):
 			if device:

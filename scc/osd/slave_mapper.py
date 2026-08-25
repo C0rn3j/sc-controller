@@ -11,7 +11,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from scc.constants import SCButtons, SCPads, SCPadsLR, SCSticks, SCTriggers
+from scc.constants import SCButtons, SCPads, SCSticks, SCTriggers
 from scc.mapper import Mapper
 
 if TYPE_CHECKING:
@@ -21,7 +21,7 @@ log = logging.getLogger("SlaveMapper")
 
 
 class SlaveMapper(Mapper):
-	def __init__(self, profile, scheduler, keyboard: bytes = b"SCController Keyboard", mouse=None) -> None:
+	def __init__(self, profile, scheduler, keyboard: bytes = b"SCController Keyboard", mouse: bytes | None = None) -> None:
 		Mapper.__init__(self, profile, scheduler, keyboard, mouse, None)
 		self._feedback_cb = None
 

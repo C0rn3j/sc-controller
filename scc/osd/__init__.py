@@ -366,7 +366,7 @@ class StickController(GObject.GObject, TimerManager):
 	"""Simple utility class that gets fed by with position and emits 'direction' signal that can be used as input for menu navigation.
 
 	Signals:
-		direction(horisontal, vertical)
+		direction(horizontal, vertical)
 
 		Both values are one of -1, 0, 1 for left/none/right.
 	"""

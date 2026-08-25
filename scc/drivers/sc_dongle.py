@@ -33,7 +33,7 @@ class ControllerInput(NamedTuple):
 	type: int
 	status: int
 	seq: int
-	buttons: int
+	buttons: SCButtons
 	ltrig: int
 	rtrig: int
 	lpad_x: int
@@ -244,26 +244,26 @@ class SCController(Controller):
 
 				# TODO: This is awful :(
 				idata = ControllerInput(
-					idata.type,
-					idata.status,
-					idata.seq,
-					idata.buttons,
-					idata.ltrig,
-					idata.rtrig,
-					lx,
-					ly,
-					rx,
-					ry,
-					idata.accel_x,
-					idata.accel_y,
-					idata.accel_z,
-					idata.gpitch,
-					idata.groll,
-					idata.gyaw,
-					idata.q1,
-					idata.q2,
-					idata.q3,
-					idata.q4,
+					type=idata.type,
+					status=idata.status,
+					seq=idata.seq,
+					buttons=idata.buttons,
+					ltrig=idata.ltrig,
+					rtrig=idata.rtrig,
+					lpad_x=lx,
+					lpad_y=ly,
+					rpad_x=rx,
+					rpad_y=ry,
+					accel_x=idata.accel_x,
+					accel_y=idata.accel_y,
+					accel_z=idata.accel_z,
+					gpitch=idata.gpitch,
+					groll=idata.groll,
+					gyaw=idata.gyaw,
+					q1=idata.q1,
+					q2=idata.q2,
+					q3=idata.q3,
+					q4=idata.q4,
 				)
 
 			self.mapper.input(self, old_state, idata)

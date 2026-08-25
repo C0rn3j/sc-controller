@@ -148,7 +148,7 @@ class TestInputs:
 
 		mapper.controller.flags |= ControllerFlags.HAS_RSTICK
 		mapper.profile.rstick = Recorder()
-		zero_state = EvdevControllerInput(*[0] * len(EvdevControllerInput._fields))
+		zero_state = EvdevControllerInput()
 		state = zero_state._replace(rstick_x=1234, rstick_y=-5678)
 		mapper.input(mapper.controller, zero_state, state)
 		assert events == [(1234, -5678, RSTICK)]

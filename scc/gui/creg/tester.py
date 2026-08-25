@@ -38,7 +38,7 @@ class Tester(GObject.GObject):
 	def __init__(self, driver, device_id):
 		GObject.GObject.__init__(self)
 		self.buffer = b""
-		self.buttons = []
+		self.buttons: list[int] = []
 		self.axes = []
 		self.subprocess = None
 		self.driver = driver

@@ -27,7 +27,7 @@ TODO(Martin): Remove constants from profile.py and controller_widget.py and move
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from enum import IntEnum, StrEnum
+from enum import IntEnum, IntFlag, StrEnum
 from importlib.metadata import packages_distributions, version
 from typing import Literal
 
@@ -75,7 +75,7 @@ class SCSticks(StrEnum):
 	RSTICK = "RSTICK"
 
 
-class SCButtons(IntEnum):
+class SCButtons(IntFlag):
 	LSTICKTOUCH = 1 << 16 # capacitive left-stick touch - Steam Controller (2026) & Deck
 	RSTICKTOUCH = 1 << 17 # capacitive right-stick touch - Steam Controller (2026) & Deck
 	LGRIPTOUCH  = 1 << 18 # capacitive left handle grip - Steam Controller (2026)
@@ -115,7 +115,7 @@ class HapticPos(IntEnum):
 	BOTH  = 2 # emulated
 
 
-class ControllerFlags(IntEnum):
+class ControllerFlags(IntFlag):
 	"""Used by mapper to workaround some physical differences between Steam Controller and other pads."""
 
 	# No flags

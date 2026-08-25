@@ -264,6 +264,7 @@ class HIDController(SCUSBDevice, Controller):
 		config: dict,
 		test_mode: bool = False,
 	) -> None:
+		self._decoder: HIDDecoder
 		SCUSBDevice.__init__(self, device, handle)
 		self._ready: bool = False
 		self.daemon: SCCDaemon = daemon
