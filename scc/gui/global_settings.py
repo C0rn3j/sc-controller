@@ -151,13 +151,13 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			if w:
 				w.set_active(value)
 
-	def _load_color(self, w, dct, key) -> None:
+	def _load_color(self, w: Gtk.ColorButton | None, dct: str, key: str) -> None:
 		"""Common part of load_colors"""
 		if w:
-			success, color = Gdk.Color.parse("#%s" % (self.app.config[dct][key],))
-			if not success:
-				success, color = Gdk.Color.parse("#%s" % (self.app.config[dct][key],))
-			w.set_color(color)
+			color = Gdk.RGBA()
+			if not color.parse(f"#{self.app.config[dct][key]}"):
+				color = Gdk.RGBA(1, 0, 1, 1)
+			w.set_rgba(color)
 
 	def load_colors(self) -> None:
 		cbOSDStyle = self.builder.get_object("cbOSDStyle")
@@ -258,22 +258,18 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		self._save_osk_profile(profile)
 
 	def on_osd_color_set(self, *a):
-		"""Called when user selects color.
-		"""
-		# Following lambdas converts Gdk.Color into #rrggbb notation.
-		# Gdk.Color can do similar, except it uses #rrrrggggbbbb notation that
-		# is not understood by Gdk css parser....
+		"""Called when user selects color."""
+		# Convert Gdk.RGBA into the RRGGBB notation used by the config.
 		cbOSDColorPreset = self.builder.get_object("cbOSDColorPreset")
-		striphex = lambda a: hex(a).strip("0x").zfill(2)
-		tohex = lambda a: "".join([striphex(int(x * 0xFF)) for x in a.to_floats()])
+		tohex = lambda a: "".join(f"{int(x * 0xFF):02x}" for x in (a.red, a.green, a.blue))
 		for k in self.app.config["osd_colors"]:
-			w = self.builder.get_object("cb%s" % (k,))
+			w = self.builder.get_object(f"cb{k}")
 			if w:
-				self.app.config["osd_colors"][k] = tohex(w.get_color())
+				self.app.config["osd_colors"][k] = tohex(w.get_rgba())
 		for k in self.app.config["osk_colors"]:
-			w = self.builder.get_object("cbosk_%s" % (k,))
+			w = self.builder.get_object(f"cbosk_{k}")
 			if w:
-				self.app.config["osk_colors"][k] = tohex(w.get_color())
+				self.app.config["osk_colors"][k] = tohex(a=w.get_rgba())
 		self.app.config["osd_color_theme"] = None
 		self.set_cb(cbOSDColorPreset, "None")
 		self.app.save_config()

@@ -221,13 +221,11 @@ class SVGWidget(Gtk.EventBox):
 		"""Parses color expressed as RRGGBB (as in config)
 
 		Each RGBA color part is a float of range 0 to 1
-
-		NOTE(Martin): Why are we defining sRGB colors as 0-1 float instead of 0-255 int...
 		"""
-		b, color = Gdk.Color.parse("#" + colorstr.strip("#"))
-		if b:
-			return color.red_float, color.green_float, color.blue_float, 1
-		return 1, 0, 1, 1  # uggly purple
+		color = Gdk.RGBA()
+		if color.parse("#" + colorstr.strip("#")):
+			return color.red, color.green, color.blue, color.alpha
+		return 1, 0, 1, 1  # ugly purple
 
 	def hilight(self, buttons) -> None:
 		"""Hilights specified button, if same ID is found in svg"""
