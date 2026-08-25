@@ -1187,13 +1187,15 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			if not widget.is_visible():
 				widget.show()
 			# Grab values
-			ax, ay, aw, trash = self.background.get_area_position(area)
+			ax, ay, aw, ah = self.background.get_area_position(area)
 			cw = widget.get_allocation().width
+			ch = widget.get_allocation().height
 			# Compute center
-			x, y = ax + aw * 0.5 - cw * 0.5, ay + 1.0 - cw * 0.5
+			x = ax + aw * 0.5 - cw * 0.5
+			y = ay + ah * 0.5 - ch * 0.5
 			# Add pad position
 			x += data[0] * aw / STICK_PAD_MAX * 0.5
-			y -= data[1] * aw / STICK_PAD_MAX * 0.5
+			y -= data[1] * ah / STICK_PAD_MAX * 0.5
 			# Move circle
 			self.main_area.move(widget, x, y)
 		elif what in ("LT", "RT", "LPADPRESS", "RPADPRESS", "LSTICKPRESS"):

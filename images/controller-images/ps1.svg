@@ -2,20 +2,20 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="446"
    height="345"
    viewBox="0 0 445.99998 345"
    id="svg2"
    version="1.1"
-   inkscape:version="0.92.1 r"
-   sodipodi:docname="ps1.svg">
+   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
+   sodipodi:docname="ps1.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -25,23 +25,26 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6"
-     inkscape:cx="40.429954"
-     inkscape:cy="218.5963"
+     inkscape:zoom="1.979899"
+     inkscape:cx="204.05081"
+     inkscape:cy="143.94674"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
      units="px"
      inkscape:window-width="1464"
      inkscape:window-height="835"
-     inkscape:window-x="991"
-     inkscape:window-y="40"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      inkscape:window-maximized="0"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     showguides="false" />
+     showguides="false"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -207,7 +210,8 @@
     <g
        style="display:inline;fill:#00000a;fill-opacity:0.04313725"
        id="g4481"
-       transform="translate(-226.68013,-480.2488)">
+       transform="translate(-226.68013,-480.2488)"
+       inkscape:label="LT">
       <rect
          ry="0"
          y="514.47174"
@@ -218,17 +222,18 @@
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
     </g>
     <rect
-       style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#00b400;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.0431373;fill-rule:evenodd;stroke:#00b400;stroke-width:8.413;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
        id="AREA_RSTICKTEST"
-       width="84.958206"
-       height="1"
-       x="310.10251"
-       y="137.22441"
+       width="77.544998"
+       height="77.544998"
+       x="313.80902"
+       y="98.930504"
        ry="0" />
     <g
        style="display:inline;fill:#00000a;fill-opacity:0.04313725"
        transform="translate(-214.97772,-516.36364)"
-       id="g4385">
+       id="g4385"
+       inkscape:label="LB">
       <rect
          ry="0"
          y="559.44287"
@@ -241,7 +246,8 @@
     <g
        transform="translate(3.03223,31.10227)"
        style="display:inline;fill:#00000a;fill-opacity:0.04313725"
-       id="g4321">
+       id="g4321"
+       inkscape:label="LSTICK">
       <rect
          ry="0"
          y="58.79705"
@@ -251,26 +257,19 @@
          id="AREA_LSTICK_1"
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
       <rect
-         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#00b400;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.0431373;fill-rule:evenodd;stroke:#00b400;stroke-width:10.0881;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
          id="AREA_LSTICKTEST"
-         width="84.958206"
-         height="1"
-         x="47.070255"
-         y="106.12214"
+         width="93.042686"
+         height="92.927147"
+         x="43.028015"
+         y="60.158569"
          ry="0" />
-      <rect
-         ry="0"
-         y="106.12008"
-         x="39.558929"
-         height="1.0834405"
-         width="99.979279"
-         id="rect36"
-         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#00b400;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
     </g>
     <g
        style="display:inline;fill:#00000a;fill-opacity:0.04313725"
        id="g4489"
-       transform="translate(22.842495,-480.24881)">
+       transform="translate(22.842495,-480.24881)"
+       inkscape:label="RT">
       <rect
          ry="0"
          y="514.10193"
@@ -283,7 +282,8 @@
     <g
        style="display:inline;fill:#00000a;fill-opacity:0.04313725"
        transform="translate(26.544905,-516.36365)"
-       id="g5385">
+       id="g5385"
+       inkscape:label="RB">
       <rect
          ry="0"
          y="561.21216"

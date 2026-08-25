@@ -2,20 +2,20 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="446"
    height="345"
    viewBox="0 0 445.99998 345"
    id="svg2"
    version="1.1"
-   inkscape:version="0.92.2 2405546, 2018-03-11"
-   sodipodi:docname="remotepad.svg">
+   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
+   sodipodi:docname="remotepad.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -25,23 +25,26 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="291.80112"
-     inkscape:cy="-2.4114189"
+     inkscape:zoom="5.6568542"
+     inkscape:cx="137.70905"
+     inkscape:cy="185.61553"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer2"
      showgrid="false"
      units="px"
      inkscape:window-width="1530"
      inkscape:window-height="931"
-     inkscape:window-x="972"
-     inkscape:window-y="-26"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      inkscape:window-maximized="0"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     showguides="false" />
+     showguides="false"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -256,7 +259,8 @@
     <g
        style="display:inline;fill:#00000a;fill-opacity:0.04313725"
        id="g4481"
-       transform="translate(-209.08274,-426.91698)">
+       transform="translate(-209.08274,-426.91698)"
+       inkscape:label="LT">
       <rect
          ry="0"
          y="514.47174"
@@ -269,7 +273,8 @@
     <g
        style="display:inline;fill:#00000a;fill-opacity:0.04313725"
        transform="translate(-197.38033,-463.03182)"
-       id="g4385">
+       id="g4385"
+       inkscape:label="LB">
       <rect
          ry="0"
          y="559.44287"
@@ -282,7 +287,8 @@
     <g
        transform="translate(25.03223,44.294661)"
        style="display:inline;fill:#00000a;fill-opacity:0.04313725"
-       id="g4321">
+       id="g4321"
+       inkscape:label="DPAD">
       <rect
          ry="0"
          y="72.54705"
@@ -292,17 +298,18 @@
          id="AREA_DPAD_1"
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
       <rect
-         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#00b400;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.0431373;fill-rule:evenodd;stroke:#00b400;stroke-width:6.33904;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
          id="AREA_DPADTEST"
-         width="90.008965"
-         height="1"
-         x="46"
-         y="105"
+         width="60.451519"
+         height="59.830902"
+         x="59.452896"
+         y="76.910378"
          ry="0" />
     </g>
     <g
        id="g1374"
-       transform="translate(-4.1e-8,9.1923884)">
+       transform="translate(-4.1e-8,9.1923884)"
+       inkscape:label="RSTICK">
       <rect
          ry="0"
          y="164.83398"
@@ -312,17 +319,18 @@
          id="AREA_RSTICK_1"
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
       <rect
-         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#00b400;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.0431373;fill-rule:evenodd;stroke:#00b400;stroke-width:10.5262;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
          id="AREA_RSTICKTEST"
-         width="47.602852"
-         height="0.25254059"
-         x="229.06993"
-         y="188.43214"
+         width="36.839153"
+         height="36.157887"
+         x="233.83307"
+         y="170.74464"
          ry="0" />
     </g>
     <g
        id="g1380"
-       transform="translate(-4.1e-8,9.1923884)">
+       transform="translate(-4.1e-8,9.1923884)"
+       inkscape:label="LSTICK">
       <rect
          ry="0"
          y="166.82597"
@@ -333,18 +341,19 @@
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
          inkscape:label="#AREA_LSTICK" />
       <rect
-         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#00b400;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.0431373;fill-rule:evenodd;stroke:#00b400;stroke-width:7.02758;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
          id="AREA_LSTICKTEST"
-         width="45.298004"
-         height="0.67563069"
-         x="139.03049"
-         y="188.23816"
+         width="39.270435"
+         height="38.488682"
+         x="142.04427"
+         y="170.21552"
          ry="0" />
     </g>
     <g
        style="display:inline;fill:#00000a;fill-opacity:0.04313725"
        id="g4489"
-       transform="translate(-26.361303,-427.5955)">
+       transform="translate(-26.361303,-427.5955)"
+       inkscape:label="RT">
       <rect
          ry="0"
          y="514.10193"
@@ -357,7 +366,8 @@
     <g
        style="display:inline;fill:#00000a;fill-opacity:0.04313725"
        transform="translate(-29.766038,-463.71034)"
-       id="g5385">
+       id="g5385"
+       inkscape:label="RB">
       <rect
          ry="0"
          y="561.21216"
