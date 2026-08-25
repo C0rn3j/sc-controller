@@ -186,7 +186,6 @@ class AxisActionComponent(AEComponent, TimerManager):
 		self._recursing = True
 		if isinstance(action, MouseAction):
 			if self.editor.get_id() in STICKS:
-				self.set_cb(cbMouseOutput, "mouse_stick", 1)
 				self.set_cb(cbAxisOutput, "mouse_stick", 2)
 			else:
 				self.set_cb(cbMouseOutput, "mouse", 1)
