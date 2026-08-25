@@ -25,15 +25,15 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="7.4166585"
-     inkscape:cx="99.236065"
-     inkscape:cy="102.40461"
+     inkscape:zoom="3.7083293"
+     inkscape:cx="210.87664"
+     inkscape:cy="142.65184"
      inkscape:document-units="px"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="g21419"
      showgrid="false"
      units="px"
      inkscape:window-width="2560"
-     inkscape:window-height="1332"
+     inkscape:window-height="1492"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -168,7 +168,7 @@
       <rect
          style="color:#000000;overflow:visible;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:none;stroke-width:1.30956;stroke-miterlimit:4;stroke-dasharray:none;stop-color:#000000"
          id="RPAD_press"
-         width="58.256023"
+         width="58.256001"
          height="58.256023"
          x="563.73297"
          y="761.01093"
@@ -178,57 +178,55 @@
        id="g4384"
        transform="translate(-45.625046,-65.960461)"
        inkscape:label="Left Stick">
-      <g
-         id="g4365">
-        <g
-           id="LSTICK">
-          <path
-             id="path4168-1"
-             d="m 432.93006,718.94788 a 35.701633,35.255367 0 0 1 -35.70164,35.25536 35.701633,35.255367 0 0 1 -35.70163,-35.25536 35.701633,35.255367 0 0 1 35.70163,-35.25537 35.701633,35.255367 0 0 1 35.70164,35.25537 z"
-             style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#000000;fill-opacity:0.603352;fill-rule:evenodd;stroke:#000000;stroke-width:1.24;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
-             inkscape:connector-curvature="0" />
-        </g>
-        <ellipse
-           ry="6.3001885"
-           rx="6.3000059"
-           cy="718.50153"
-           cx="397.22791"
-           id="path4231-3-6-5"
-           style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#001789;fill-opacity:1;fill-rule:evenodd;stroke:#28bac1;stroke-width:0.896988;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
-        <circle
-           style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#000000;fill-opacity:0.603922;fill-rule:evenodd;stroke:#000000;stroke-width:0.919;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
-           id="LSTICKPRESS"
-           cx="397.22791"
-           cy="718.50159"
-           r="19.915501" />
-      </g>
+      <path
+         id="path4168-1"
+         d="m 432.93006,718.94788 a 35.701633,35.255367 0 0 1 -35.70164,35.25536 35.701633,35.255367 0 0 1 -35.70163,-35.25536 35.701633,35.255367 0 0 1 35.70163,-35.25537 35.701633,35.255367 0 0 1 35.70164,35.25537 z"
+         style="display:inline;opacity:1;color:#000000;overflow:visible;visibility:visible;fill:#000000;fill-opacity:0.603352;fill-rule:evenodd;stroke:#000000;stroke-width:1.24;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+         inkscape:connector-curvature="0"
+         inkscape:label="Outer ring"
+         transform="translate(-4e-6)" />
+      <circle
+         style="display:inline;opacity:1;color:#000000;clip-rule:nonzero;overflow:visible;visibility:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#000000;fill-opacity:0.603922;fill-rule:evenodd;stroke:#000000;stroke-width:0.919;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+         id="LSTICKPRESS"
+         cx="397.22791"
+         cy="718.50159"
+         r="19.915501"
+         transform="translate(-4e-6)" />
+      <ellipse
+         ry="6.3001885"
+         rx="6.3000002"
+         cy="718.50153"
+         cx="397.22791"
+         id="LSTICKTOUCH"
+         style="display:inline;opacity:0;color:#000000;clip-rule:nonzero;overflow:visible;visibility:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#001789;fill-opacity:1;fill-rule:evenodd;stroke:#28bac1;stroke-width:0.896988;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+         inkscape:label="LSTICKTOUCH"
+         transform="translate(-4e-6)" />
     </g>
-    <ellipse
-       ry="6.3001885"
-       rx="6.3000059"
-       cy="644.54108"
-       cx="569.60284"
-       id="path4231-3-6-5-6"
-       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#001789;fill-opacity:1;fill-rule:evenodd;stroke:#28bac1;stroke-width:0.896988;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
     <g
        id="g21419"
        transform="translate(-22.00028,26.000191)"
        inkscape:label="Right Stick">
-      <g
-         id="RSTICK"
-         transform="translate(172.37495,-91.960461)">
-        <path
-           id="path4168-1-0"
-           d="m 432.93006,718.94788 a 35.701633,35.255367 0 0 1 -35.70164,35.25536 35.701633,35.255367 0 0 1 -35.70163,-35.25536 35.701633,35.255367 0 0 1 35.70163,-35.25537 35.701633,35.255367 0 0 1 35.70164,35.25537 z"
-           style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#000000;fill-opacity:0.603352;fill-rule:evenodd;stroke:#000000;stroke-width:1.2401;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
-           inkscape:connector-curvature="0" />
-      </g>
+      <path
+         id="path4168-1-0"
+         d="m 432.93006,718.94788 a 35.701633,35.255367 0 0 1 -35.70164,35.25536 35.701633,35.255367 0 0 1 -35.70163,-35.25536 35.701633,35.255367 0 0 1 35.70163,-35.25537 35.701633,35.255367 0 0 1 35.70164,35.25537 z"
+         style="display:inline;opacity:1;color:#000000;overflow:visible;visibility:visible;fill:#000000;fill-opacity:0.603352;fill-rule:evenodd;stroke:#000000;stroke-width:1.2401;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+         inkscape:connector-curvature="0"
+         transform="translate(172.37495,-91.960461)"
+         inkscape:label="Outer ring" />
       <circle
          style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#000000;fill-opacity:0.603922;fill-rule:evenodd;stroke:#000000;stroke-width:0.919;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
          id="RSTICKPRESS"
          cx="569.60284"
          cy="626.54114"
          r="19.915501" />
+      <ellipse
+         ry="6.3001885"
+         rx="6.3000002"
+         cy="626.54089"
+         cx="569.71118"
+         id="RSTICKTOUCH"
+         style="display:inline;opacity:0;color:#000000;clip-rule:nonzero;overflow:visible;visibility:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#001789;fill-opacity:1;fill-rule:evenodd;stroke:#28bac1;stroke-width:0.896988;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+         inkscape:label="RSTICKTOUCH" />
     </g>
     <g
        transform="matrix(1.9005358,0,0,1.9005358,-518.91343,-994.0747)"
@@ -720,12 +718,12 @@
          id="AREA_RSTICK_6"
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
       <rect
-         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.12084;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
          id="AREA_RSTICKTEST"
-         width="65.299599"
-         height="65.696823"
-         x="138.94389"
-         y="142.62236"
+         width="73.716202"
+         height="73.11039"
+         x="134.59984"
+         y="138.77829"
          ry="0" />
     </g>
     <rect
@@ -743,14 +741,6 @@
        height="19.272095"
        x="288.27472"
        y="246.36395"
-       ry="0" />
-    <rect
-       style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
-       id="rect1064"
-       width="31.258959"
-       height="18.786123"
-       x="91.767929"
-       y="46.830849"
        ry="0" />
     <g
        id="g7"
