@@ -8,7 +8,7 @@ from __future__ import annotations
 import logging
 import os
 import sys
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 from xml.etree import ElementTree as ET
 
 from gi.repository import Gdk, GdkPixbuf, GdkX11, Gtk
@@ -21,10 +21,11 @@ from scc.constants import (
 	LSTICK,
 	STICK_PAD_MAX,
 	ControllerFlags,
-	SCLeftRight,
 	SCButtons,
+	SCLeftRight,
 	SCPads,
-	SCTriggers, SCSidesOSD,
+	SCSidesOSD,
+	SCTriggers,
 )
 from scc.gui.daemon_manager import DaemonManager
 from scc.gui.keycode_to_key import KEY_TO_KEYCODE
@@ -42,7 +43,10 @@ from scc.uinput import Keys
 
 if TYPE_CHECKING:
 	from typing import Any
+
 	from gi.repository.Gtk import Image
+
+	from scc.gui.daemon_manager import ControllerManager
 
 log = logging.getLogger("osd.keyboard")
 
@@ -344,7 +348,7 @@ class Keyboard(OSDWindow, TimerManager):
 		self.cursors[SCPads.CPAD].set_name("osd-keyboard-cursor")
 
 		self._eh_ids = []
-		self._controller = None
+		self._controller: ControllerManager | None = None
 		self._stick = 0, 0
 		self._hovers = {self.cursors[SCLeftRight.LEFT]: None, self.cursors[SCLeftRight.RIGHT]: None}
 		self._pressed = {self.cursors[SCLeftRight.LEFT]: None, self.cursors[SCLeftRight.RIGHT]: None}
@@ -640,14 +644,15 @@ class Keyboard(OSDWindow, TimerManager):
 
 	def set_cursor_position(self, x, y, cursor, limit) -> None:
 		"""Moves cursor image."""
-		if cursor not in self._hovers:
+		if cursor not in self._hovers or self._controller is None:
 			return
 		w = limit[2] - (cursor.get_allocation().width * 0.5)
 		h = limit[3] - (cursor.get_allocation().height * 0.5)
 		x = x / float(STICK_PAD_MAX)
 		y = y / float(STICK_PAD_MAX) * -1.0
 
-		x, y = circle_to_square(x, y)
+		if self._controller.get_flags() & ControllerFlags.LPAD_RPAD_IS_CIRCLE:
+			x, y = circle_to_square(x, y)
 
 		x = clamp(
 			cursor.get_allocation().width * 0.5,

@@ -118,17 +118,25 @@ class HapticPos(IntEnum):
 class ControllerFlags(IntEnum):
 	"""Used by mapper to workaround some physical differences between Steam Controller and other pads."""
 
-	NONE           =      0 # No flags, default SC.
-	HAS_RSTICK     = 1 << 0 # Controller has right stick instead of touchpad
-	SEPARATE_LSTICK = 1 << 1 # Left stick and left pad are using separate axes
-	EUREL_GYROS    = 1 << 2 # Gyro sensor values are provided as pitch, yaw
-	                                    # and roll instead of quaterion. 'q4' is unused
-	                                    # in such case.
-	HAS_CPAD       = 1 << 3 # Controller has DS4-like touchpad in the center
-	# TODO(Martin): Historically this assumed that it has dpad INSTEAD of touchpad - check if we have a problem with that
-	HAS_DPAD       = 1 << 4 # Controller has d-pad
-	NO_GRIPS       = 1 << 5 # Controller has no grips
-	IS_DECK        = 1 << 6 # Very special case
+	# No flags
+	NONE           =      0
+	# Controller has right stick
+	HAS_RSTICK     = 1 << 0
+	# Left stick and left touchpad are using separate axes - should be anything but SC(2015)
+	SEPARATE_LSTICK = 1 << 1
+	# Gyro sensor values are provided as pitch, yaw and roll instead of quaterion.
+	# 'q4' is unused in such case.
+	EUREL_GYROS    = 1 << 2
+	# Controller has DS4/DualSense-like touchpad in the center
+	HAS_CPAD       = 1 << 3
+	# Controller has d-pad
+	HAS_DPAD       = 1 << 4
+	# Controller has no grips
+	NO_GRIPS       = 1 << 5
+	# Special case - is Steam Deck
+	IS_DECK        = 1 << 6
+	# Left and right touchpads have circular input areas
+	LPAD_RPAD_IS_CIRCLE = 1 << 7
 
 DAEMON_VERSION = version(distribution_name)
 

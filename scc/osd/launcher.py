@@ -12,7 +12,7 @@ import os
 from gi.repository import GdkX11, Gio, Gtk, Pango
 
 from scc.config import Config
-from scc.constants import DEFAULT, STICK_PAD_MAX, HapticPos, SCPads, SCSticks
+from scc.constants import DEFAULT, STICK_PAD_MAX, ControllerFlags, HapticPos, SCPads, SCSticks
 from scc.gui.daemon_manager import DaemonManager
 from scc.lib import xwrappers as X
 from scc.osd import OSDWindow, StickController
@@ -391,7 +391,9 @@ class Launcher(OSDWindow):
 		max_w = self.grid.get_allocation().width - 2 * pad_w
 		max_h = self.grid.get_allocation().height - 2 * pad_h
 
-		x, y = circle_to_square(x / (STICK_PAD_MAX * 2.0), y / (STICK_PAD_MAX * 2.0))
+		x, y = x / (STICK_PAD_MAX * 2.0), y / (STICK_PAD_MAX * 2.0)
+		if self.controller.get_flags() & ControllerFlags.LPAD_RPAD_IS_CIRCLE:
+			x, y = circle_to_square(x, y)
 		x = clamp(pad_w, (pad_w + max_w) * 0.5 + x * max_w, max_w - pad_w)
 		y = clamp(pad_h, (pad_h + max_h) * 0.5 + y * max_h * -1, max_h - pad_h)
 		x += self.grid.get_allocation().x

@@ -1059,7 +1059,8 @@ class AreaAction(Action, SpecialAction, OSDEnabledAction):
 			# Transform position on circne to position on rectangle
 			x = x / float(STICK_PAD_MAX)
 			y = y / float(STICK_PAD_MAX)
-			x, y = circle_to_square(x, y)
+			if mapper.controller_flags() & ControllerFlags.LPAD_RPAD_IS_CIRCLE:
+				x, y = circle_to_square(x, y)
 			# Perform magic
 			x = max(0, (x + 1.0) * 0.5)
 			y = max(0, (1.0 - y) * 0.5)

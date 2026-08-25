@@ -14,7 +14,7 @@ from math import pi as PI
 from typing import TYPE_CHECKING, NamedTuple
 
 from scc.config import Config
-from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, SCButtons
+from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons
 from scc.controller import Controller
 from scc.drivers.usb import SCUSBDevice, register_hotplug_device
 
@@ -186,6 +186,8 @@ class SCConfigType(IntEnum):
 
 
 class SCController(Controller):
+	flags: int = ControllerFlags.LPAD_RPAD_IS_CIRCLE
+
 	def __init__(self, driver: Deck | Dongle | SCByBt | SCByCable | SC2Device, ccidx: int, endpoint: int) -> None:
 		Controller.__init__(self)
 		self._driver: Deck | Dongle | SCByBt | SCByCable | SC2Device = driver

@@ -628,7 +628,9 @@ class Menu(OSDWindow):
 				max_w = self.get_allocation().width - 2 * pad_w
 				max_h = self.get_allocation().height - 2 * pad_h
 
-				x, y = circle_to_square(x / (STICK_PAD_MAX * 2.0), y / (STICK_PAD_MAX * 2.0))
+				x, y = x / (STICK_PAD_MAX * 2.0), y / (STICK_PAD_MAX * 2.0)
+				if self.controller.get_flags() & ControllerFlags.LPAD_RPAD_IS_CIRCLE:
+					x, y = circle_to_square(x, y)
 				x = clamp(pad_w, (pad_w + max_w) * 0.5 + x * max_w, max_w - pad_w)
 				y = clamp(pad_h, (pad_h + max_h) * 0.5 + y * max_h * -1, max_h - pad_h)
 				self.f.move(self.cursor, int(x), int(y))
