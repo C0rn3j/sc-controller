@@ -38,16 +38,16 @@ class Message(OSDWindow):
 			self._timeout_id = GLib.timeout_add_seconds(self.timeout, self.quit)
 
 	def extend(self):
-		self.set_state(Gtk.StateType.ACTIVE)
-		self.l.set_state(Gtk.StateType.ACTIVE)
+		self.set_state_flags(Gtk.StateFlags.ACTIVE, clear=False)
+		self.l.set_state_flags(Gtk.StateFlags.ACTIVE, clear=False)
 		GLib.timeout_add_seconds(0.5, self.cancel_active_state)
 		if self._timeout_id:
 			GLib.source_remove(self._timeout_id)
 			self._timeout_id = GLib.timeout_add_seconds(self.timeout, self.quit)
 
 	def cancel_active_state(self):
-		self.set_state(Gtk.StateType.NORMAL)
-		self.l.set_state(Gtk.StateType.NORMAL)
+		self.unset_state_flags(Gtk.StateFlags.ACTIVE)
+		self.l.unset_state_flags(Gtk.StateFlags.ACTIVE)
 
 	def hash(self):
 		return hash(self.text) + self.timeout - (self.size * 5)

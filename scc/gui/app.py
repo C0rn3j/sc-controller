@@ -444,12 +444,12 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		active = None
 		for b in self.button_widgets.values():
 			if b.widget.get_sensitive():
-				b.widget.set_state(Gtk.StateType.NORMAL)
+				b.widget.unset_state_flags(Gtk.StateFlags.ACTIVE)
 				if b.name == button:
 					active = b.widget
 
 		if active is not None:
-			active.set_state(Gtk.StateType.ACTIVE)
+			active.set_state_flags(Gtk.StateFlags.ACTIVE, clear=False)
 
 		self.hilight(button)
 
