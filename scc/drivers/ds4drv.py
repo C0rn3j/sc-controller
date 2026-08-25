@@ -581,7 +581,7 @@ class DS4EvdevController(EvdevController):
 						new_state = new_state._replace(buttons=b)
 					else:
 						b = new_state.buttons & ~SCButtons.CPADTOUCH
-						new_state = new_state._replace(buttons=b, cpad_x=0, cpad_y=0)
+						new_state = new_state._replace(buttons=b)
 		except OSError:
 			# Errors here are not even reported, evdev class handles important ones
 			return
