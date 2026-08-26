@@ -720,11 +720,10 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		log.debug("Wrote menu file %s", path)
 
 	def load_cbMIs(self):
-		"""See above. This method just parses Default menu and checks
-		boxes for present menu items.
-		"""
+		"""See above. This method just parses Default menu and checks boxes for present menu items."""
 		try:
-			data = MenuData.from_fileobj(open(find_menu("Default.menu")))
+			with open(find_menu("Default.menu")) as fileobj:
+				data = MenuData.from_fileobj(fileobj)
 		except Exception:
 			# Shouldn't really happen
 			log.error(traceback.format_exc())

@@ -93,7 +93,11 @@ class ImportSccprofile:
 					files.append((True, name, name, _("(profile)"), o))
 				elif x.name.endswith(".menu"):
 					o = GObject.GObject()
-					o.obj = MenuData.from_fileobj(tar.extractfile(x), parser)
+					fileobj = tar.extractfile(x)
+					if fileobj is None:
+						raise ValueError(f"Archive member {x.name!r} is not a regular file")
+					with fileobj:
+						o.obj = MenuData.from_fileobj(fileobj, parser)
 					files.append((True, name, name, _("(menu)"), o))
 		except Exception as e:
 			# Either entire tar or some profile cannot be parsed.

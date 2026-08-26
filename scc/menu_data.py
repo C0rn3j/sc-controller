@@ -2,12 +2,19 @@
 
 Container for list of menu items + required parsers
 """
+from __future__ import annotations
 
 import json
 import os
+from typing import TYPE_CHECKING
 
 from scc.actions import Action
 from scc.tools import _
+
+if TYPE_CHECKING:
+	from typing import IO, BinaryIO, TextIO
+
+	from scc.parser import ActionParser
 
 
 class MenuData:
@@ -16,9 +23,8 @@ class MenuData:
 	def __init__(self, *items):
 		self.__items = list(items)
 
-	def generate(self, menuhandler):
-		"""Converts all generators into MenuItems (by calling .generate() on them)
-		and returns generated MenuData.
+	def generate(self, menuhandler) -> MenuData:
+		"""Converts all generators into MenuItems (by calling .generate() on them) and returns generated MenuData.
 
 		Returns new MenuData instance.
 		"""
@@ -30,12 +36,12 @@ class MenuData:
 				items.append(i)
 		return MenuData(*items)
 
-	def compress(self):
+	def compress(self) -> None:
 		for i in self.__items:
 			if i.action:
 				i.action = i.action.compress()
 
-	def __len__(self):
+	def __len__(self) -> int:
 		return len(self.__items)
 
 	def __getitem__(self, index):
@@ -45,9 +51,7 @@ class MenuData:
 		return iter(self.__items)
 
 	def get_all_actions(self):
-		"""Returns generator with every action defined in this menu, including
-		child actions.
-		"""
+		"""Returns generator with every action defined in this menu, including child actions."""
 		for item in self:
 			if hasattr(item, "action") and item.action:
 				for i in item.action.get_all_actions():
@@ -55,6 +59,7 @@ class MenuData:
 
 	def get_by_id(self, id):
 		"""Returns item with specified ID.
+
 		Throws KeyError if there is no such item.
 		"""
 		for a in self:
@@ -75,6 +80,7 @@ class MenuData:
 	@staticmethod
 	def from_args(data):
 		"""Parses list of arguments in [id1, label1, id2, label2 ...] format.
+
 		Throws ValueError if number of items in 'data' is odd.
 		"""
 		if len(data) % 2 != 0:
@@ -92,8 +98,9 @@ class MenuData:
 		return m
 
 	@staticmethod
-	def from_json_data(data, action_parser=None):
+	def from_json_data(data, action_parser: ActionParser | None = None) -> MenuData:
 		"""Loads menu from parsed JSON dict.
+
 		Actions are parsed only if action_parser is set to ActionParser instance.
 		"""
 		m = MenuData()
@@ -135,22 +142,25 @@ class MenuData:
 		return m
 
 	@staticmethod
-	def from_fileobj(fileobj, action_parser=None):
+	def from_fileobj(fileobj: IO[bytes] | BinaryIO | TextIO, action_parser: ActionParser | None = None) -> MenuData:
 		"""Loads menu from file-like object.
+
 		Actions are parsed only if action_parser is set to ActionParser instance.
 		"""
 		data = json.loads(fileobj.read())
 		return MenuData.from_json_data(data, action_parser)
 
 	@staticmethod
-	def from_file(filename, action_parser=None):
+	def from_file(filename: str, action_parser: ActionParser | None = None) -> MenuData:
 		"""Loads menu from file.
+
 		Actions are parsed only if action_parser is set to ActionParser instance.
 		"""
-		return MenuData.from_fileobj(open(filename), action_parser)
+		with open(filename) as fileobj:
+			return MenuData.from_fileobj(fileobj, action_parser)
 
 	@staticmethod
-	def from_profile(filename, menuname, action_parser=None):
+	def from_profile(filename, menuname, action_parser: ActionParser | None = None) -> MenuData:
 		"""Loads menu from JSON profile file.
 
 		Actions are parsed only if action_parser is set to ActionParser instance.

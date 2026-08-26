@@ -208,13 +208,13 @@ class Config:
 		with open(self.filename) as file:
 			self.values = json.loads(file.read())
 
-	def create(self):
+	def create(self) -> None:
 		"""Creates new, empty configuration"""
 		self.values = {}
 		self.check_values()
 		self.save()
 
-	def save(self):
+	def save(self) -> None:
 		"""Saves configuration file"""
 		# Check & create directory
 		if not os.path.exists(get_config_path()):
@@ -222,7 +222,8 @@ class Config:
 		# Save
 		data = {k: self.values[k] for k in self.values}
 		jstr = Encoder(sort_keys=True, indent=4).encode(data)
-		open(self.filename, "w").write(jstr)
+		with open(self.filename, "w") as file:
+			file.write(jstr)
 		log.debug("Configuration saved")
 
 	def __iter__(self):

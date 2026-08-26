@@ -63,14 +63,15 @@ class ImportVdf:
 					self._lock.release()
 		GLib.idle_add(self._load_finished)
 
-	def _parse_profile_list(self, filename: str, userid: str) -> None | int:
+	def _parse_profile_list(self, filename: str, userid: str) -> int | None:
 		"""Parse localconfig.vdf and load game and profile IDs. That is later decoded into name of game and profile name.
 
 		Called from _load_profiles, in thread. Exceptions are catched and logged from there.
 		Calls GLib.idle_add to send loaded data into UI.
 		"""
 		# VDF file is a ISO-8859-1 encoded file. Not UTF-8
-		data = parse_vdf(open(filename, encoding="ISO-8859-1"))
+		with open(filename, encoding="ISO-8859-1") as file:
+			data = parse_vdf(file)
 		# Sanity check
 		if "UserLocalConfigStore" not in data:
 			return None
