@@ -75,7 +75,7 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 		self._icon = Gtk.Image()
 		self._model = Gtk.ListStore(str, object, str)
 		self._combo = Gtk.ComboBox.new_with_model(self._model)
-		self._box = Gtk.Box(Gtk.Orientation.HORIZONTAL, 0)
+		self._box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
 		self._savebutton = None
 		self._switch_to_button = None
 

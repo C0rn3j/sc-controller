@@ -34,9 +34,7 @@ class QuickMenu(Menu):
 		self._timer = None
 
 	def generate_widget(self, item):
-		"""In QuickMenu, everything but submenus and simple
-		menuitems is ignored.
-		"""
+		"""In QuickMenu, everything but submenus and simple menuitems is ignored."""
 		if self._button_index >= len(self.BUTTONS):
 			return None
 		if isinstance(item, (MenuItem, Submenu)):
@@ -51,7 +49,7 @@ class QuickMenu(Menu):
 				label1 = widget.get_children()[0]
 				label2 = Gtk.Label(_(">>"))
 				label2.set_property("margin-left", 30)
-				box = Gtk.Box(Gtk.Orientation.HORIZONTAL)
+				box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 				widget.remove(label1)
 				box.pack_start(label1, True, True, 1)
 				box.pack_start(label2, False, True, 1)
@@ -66,7 +64,7 @@ class QuickMenu(Menu):
 			item.button = self.BUTTONS[self._button_index]
 			self._button_index += 1
 
-			icon_file, has_colors = find_icon("buttons/%s" % item.button, False)
+			icon_file, has_colors = find_icon(f"buttons/{item.button}", False)
 			icon = MenuIcon(icon_file, has_colors)
 			label = widget.get_children()[0]
 			for c in [] + widget.get_children():

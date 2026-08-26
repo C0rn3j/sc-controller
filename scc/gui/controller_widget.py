@@ -79,7 +79,7 @@ class ControllerButton(ControllerWidget):
 		ControllerWidget.__init__(self, app, name, use_icon, widget)
 
 		if use_icon:
-			vbox = Gtk.Box(Gtk.Orientation.HORIZONTAL)
+			vbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 			vbox.set_spacing(6)
 			separator = Gtk.Separator(orientation=Gtk.Orientation.VERTICAL)
 			vbox.pack_start(self.icon, False, False, 1)
