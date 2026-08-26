@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 	import gi.repository._Gdk3 as Gdk
 	import gi.repository._Gtk3 as Gtk
-	from gi.repository import GObject, Rsvg
+	from gi.repository import GdkPixbuf, GObject, Rsvg
 else:
 	gi.require_version("Rsvg", "2.0")
 	gi.require_version("Gdk", "3.0")
@@ -253,11 +253,14 @@ class SVGWidget(Gtk.EventBox):
 				svg = Rsvg.Handle.new_from_data(xml)
 			while len(self.cache) >= self.CACHE_SIZE:
 				self.cache.popitem(False)
+			pixbuf = svg.get_pixbuf_and_error()
+			if pixbuf is None:
+				raise ValueError("Failed to render SVG to a pixbuf")
 			if self.size_override:
 				w, h = self.size_override
-				self.cache[cache_id] = svg.get_pixbuf().scale_simple(w, h, GdkPixbuf.InterpType.BILINEAR)
+				self.cache[cache_id] = pixbuf.scale_simple(w, h, GdkPixbuf.InterpType.BILINEAR)
 			else:
-				self.cache[cache_id] = svg.get_pixbuf()
+				self.cache[cache_id] = pixbuf
 
 		self.image.set_from_pixbuf(self.cache[cache_id])
 
