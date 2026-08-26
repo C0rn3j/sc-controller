@@ -471,6 +471,7 @@ class Mapper:
 
 	def input(self, controller: Controller, old_state: CInput, state: CInput) -> None:
 		# print(type(controller), type(old_state), type(state))
+		#controller.record_mapper_input()
 		# Store states
 		self.old_state = old_state
 		self.old_buttons = self.buttons

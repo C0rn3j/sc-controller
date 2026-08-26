@@ -31,6 +31,11 @@ class Controller:
 		next_id += 1
 		self.lastTime: float = time.time()
 		self.time_elapsed: float = 0.0
+		# Mapper rate debug
+		self._input_rate_window_started: float = time.monotonic()
+		self._input_rate_event_count: int = 0
+		self._input_rate_last_event: float | None = None
+		self._input_rate_max_gap: float = 0.0
 
 	def get_type(self) -> str:
 		"""Has to return type identifier
@@ -55,6 +60,35 @@ class Controller:
 	def is_bluetooth(self) -> bool:
 		"""Return whether this controller is connected through Bluetooth."""
 		return False
+
+	def record_mapper_input(self, now: float | None = None) -> None:
+		"""Log the Hz rate and max response time at which decoded controller updates reach the mapper.
+
+		DS4 clone over BT 40Hz~100Hz
+		DualSense over BT was 240Hz~
+		SC(2015) over dongle 110Hz~, over USB 0~110Hz depending on input packets
+		SC(2026) over Puck 265Hz~ (are we/is it even running it straight over USB at any point?)
+		"""
+		now = time.monotonic() if now is None else now
+		if self._input_rate_last_event is not None:
+			self._input_rate_max_gap = max(self._input_rate_max_gap, now - self._input_rate_last_event)
+		self._input_rate_last_event = now
+		self._input_rate_event_count += 1
+
+		elapsed = now - self._input_rate_window_started
+		if elapsed < 1.0:
+			return
+		log.debug(
+			"%s %s mapper input rate: %.1f Hz (%d updates, max gap %.1f ms)",
+			self.get_type(),
+			self.get_id(),
+			self._input_rate_event_count / elapsed,
+			self._input_rate_event_count,
+			self._input_rate_max_gap * 1000.0,
+		)
+		self._input_rate_window_started = now
+		self._input_rate_event_count = 0
+		self._input_rate_max_gap = 0.0
 
 	def get_gui_config_file(self) -> str | None:
 		"""Returns file name of json file that GUI can use to load more data about controller
