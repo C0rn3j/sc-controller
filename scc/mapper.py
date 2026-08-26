@@ -6,7 +6,7 @@ import time
 import traceback
 from typing import TYPE_CHECKING
 
-from scc.actions import ButtonAction, GyroAbsAction
+from scc.actions import Action, ButtonAction, GyroAbsAction
 from scc.aliases import ALL_AXES, ALL_BUTTONS
 from scc.config import Config
 from scc.constants import (
@@ -47,7 +47,15 @@ log = logging.getLogger("Mapper")
 
 
 class Mapper:
-	DEBUG = False
+	DEBUG: bool = False
+	# We always output mouse movement at this 4ms/250Hz interval
+	# Maybe we should make this configurable in case some madman with a 300Hz+ screen wishes to have a smoother movement
+	BT_STICK_MOUSE_INTERVAL: float = 1.0 / 250
+	# Max delta time between ticks that can be used for movement calculation
+	# This shouldn't trigger in the first place and is a safety measure
+	# Prevents cursor jumping all over the place in case SCC daemon stalls for some reason
+	# Extra explanation: That would mean that an interval of less than 40Hz would start losing total movement
+	BT_STICK_MOUSE_MAX_DT: float = 0.025
 
 	def __init__(
 		self,
@@ -95,6 +103,10 @@ class Mapper:
 		self.old_state: CInput | None = None
 		self.force_event: set[int] = set() # FE_STICK, FE_TRIGGER, FE_PAD or FE_GYRO
 		self.time_elapsed = 0.0
+		self._bt_stick_mouse_velocities: dict[tuple[Action, SCSticks], tuple[float, float]] = {}
+		self._bt_stick_mouse_task: Task | None = None
+		self._bt_stick_mouse_last_tick: float = 0.0
+		self._bt_stick_mouse_logged: bool = False
 
 	def create_gamepad(self, enabled: bool, poller: Poller | None) -> UInput | None:
 		"""Parses gamepad configuration and creates apropriate unput device"""
@@ -263,6 +275,60 @@ class Mapper:
 		self.mouse_movements[4] += dx
 		self.mouse_movements[5] += dy
 
+	def set_bt_stick_mouse_velocity(self, source: Action, what: SCSticks, vx: float, vy: float) -> bool:
+		"""Hold and emit Bluetooth stick mouse velocity at the Hz rate defined in BT_STICK_MOUSE_INTERVAL.
+
+		It might be useful to expand this past BT, as a wireless proprietary 2.4GHz dongle may not
+		have the best of input rates either.
+
+		It might actually make sense to do this for wired devices too, in case we run into a controller
+		with funny-low input rate like 125Hz.
+		"""
+		if self.controller is None or not self.controller.is_bluetooth():
+			return False
+
+		key = (source, what)
+		if vx or vy:
+			self._bt_stick_mouse_velocities[key] = (vx, vy)
+		else:
+			self._bt_stick_mouse_velocities.pop(key, None)
+			if not self._bt_stick_mouse_velocities and self._bt_stick_mouse_task is not None:
+				self._bt_stick_mouse_task.cancel()
+				self._bt_stick_mouse_task = None
+
+		if self._bt_stick_mouse_velocities and self._bt_stick_mouse_task is None:
+			self._bt_stick_mouse_last_tick = time.monotonic()
+			self._bt_stick_mouse_task = self.schedule(self.BT_STICK_MOUSE_INTERVAL, self._tick_bt_stick_mouse)
+			if not self._bt_stick_mouse_logged:
+				log.debug("Bluetooth stick mouse output resampling enabled")
+				self._bt_stick_mouse_logged = True
+		return True
+
+	def clear_bt_stick_mouse_velocity(self, source: Action | None = None) -> None:
+		if source is None:
+			self._bt_stick_mouse_velocities.clear()
+		else:
+			for key in tuple(self._bt_stick_mouse_velocities):
+				if key[0] is source:
+					del self._bt_stick_mouse_velocities[key]
+
+		if not self._bt_stick_mouse_velocities and self._bt_stick_mouse_task is not None:
+			self._bt_stick_mouse_task.cancel()
+			self._bt_stick_mouse_task = None
+
+	def _tick_bt_stick_mouse(self, mapper: Mapper) -> None:
+		self._bt_stick_mouse_task = None
+		if not self._bt_stick_mouse_velocities:
+			return
+
+		now = time.monotonic()
+		dt = min(max(now - self._bt_stick_mouse_last_tick, 0.0), self.BT_STICK_MOUSE_MAX_DT)
+		self._bt_stick_mouse_last_tick = now
+		vx = sum(velocity[0] for velocity in self._bt_stick_mouse_velocities.values())
+		vy = sum(velocity[1] for velocity in self._bt_stick_mouse_velocities.values())
+		self.mouse.moveStickEvent(vx * dt, vy * -dt, dt)
+		self._bt_stick_mouse_task = self.schedule(self.BT_STICK_MOUSE_INTERVAL, self._tick_bt_stick_mouse)
+
 	def send_feedback(self, hapticdata: HapticData) -> None:
 		"""Schedules haptic feedback to be sent at end of processing callback.
 
@@ -396,6 +462,7 @@ class Mapper:
 		"""Called when profile is changed to let all actions to cancel long-running effects they may have created"""
 		for a in self.profile.get_actions():
 			a.cancel(self)
+		self.clear_bt_stick_mouse_velocity()
 
 	def reset_gyros(self) -> None:
 		for a in self.profile.get_all_actions():

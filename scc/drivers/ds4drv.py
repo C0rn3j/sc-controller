@@ -370,6 +370,9 @@ class DS4BluetoothHIDRawController(DS4Controller):
 		self.daemon.add_controller(self)
 		log.debug("DS4 %s using Bluetooth/hidraw (%s)", self.get_id(), self.syspath)
 
+	def is_bluetooth(self) -> bool:
+		return True
+
 	def read_serial(self) -> None:
 		self._serial = (self._hidrawdev.getPhysicalAddress().replace(b":", b""))
 

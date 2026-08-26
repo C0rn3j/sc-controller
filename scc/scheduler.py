@@ -68,6 +68,12 @@ class Scheduler:
 			self._next = None if self._scheduled.empty() else self._scheduled.get()
 			callback(*data)
 
+	def get_poll_timeout(self, maximum: float = 0.01) -> float:
+		"""Return a poll timeout that wakes the main loop for the next task."""
+		if self._next is None:
+			return maximum
+		return max(0.0, min(maximum, self._next.time - time.time()))
+
 
 class Task:
 	def __init__(self, time, callback, data) -> None:

@@ -169,6 +169,9 @@ class EvdevController(Controller):
 	def get_device_name(self) -> str:
 		return self.device.name
 
+	def is_bluetooth(self) -> bool:
+		return self.device.info.bustype == ecodes.BUS_BLUETOOTH
+
 	def _generate_id(self):
 		"""ID is generated as 'ev' + upper_case(hex(crc32(device name + X)))
 		where 'X' starts as 0 and increases as controllers with same name are

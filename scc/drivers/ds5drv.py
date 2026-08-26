@@ -577,6 +577,9 @@ class DS5BluetoothHIDRawController(Controller):
 		self.daemon.get_device_monitor().add_remove_callback(syspath, self.close)
 		self.daemon.add_controller(self)
 
+	def is_bluetooth(self) -> bool:
+		return True
+
 	def get_device_name(self) -> str:
 		return "DualSense over Bluetooth HIDRaw"
 

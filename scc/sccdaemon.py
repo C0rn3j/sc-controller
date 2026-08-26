@@ -103,7 +103,7 @@ class SCCDaemon(Daemon):
 		# TODO: Use osd_ids for all menus
 		self.osd_ids: dict[str, Action] = {}
 		self.controllers: list[Controller] = []
-		self.mainloops: list[Callable[[], None]] = [self.poller.poll, self.scheduler.run]
+		self.mainloops: list[Callable[[], None]] = [self._poll, self.scheduler.run]
 		self.rescan_cbs: list[Callable[[], None]] = []
 		self.on_exit_cbs: list[Callable[..., None]] = []
 		self.subprocs: list[Subprocess] = []
@@ -116,6 +116,9 @@ class SCCDaemon(Daemon):
 		self._system_bus: Gio.DBusConnection | None = None
 		self._prepare_for_sleep_subscription: int | None = None
 		self._glib_context: GLib.MainContext | None = None
+
+	def _poll(self) -> None:
+		self.poller.poll(self.scheduler.get_poll_timeout())
 
 	def init_sleep_monitor(self) -> None:
 		"""Listen for systemd-logind suspend notifications."""
@@ -604,6 +607,7 @@ class SCCDaemon(Daemon):
 	def remove_controller(self, c: Controller) -> None:
 		mapper = c.mapper
 		if mapper:
+			mapper.clear_bt_stick_mouse_velocity()
 			mapper.release_virtual_buttons()
 		c.disconnected()
 

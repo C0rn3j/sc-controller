@@ -817,6 +817,9 @@ class MouseAction(WholeHapticAction, Action):
 	def get_speed(self) -> tuple[float, float]:
 		return self.speed
 
+	def cancel(self, mapper: Mapper) -> None:
+		mapper.clear_bt_stick_mouse_velocity(self)
+
 	def describe(self, context):
 		if self.name:
 			return self.name
@@ -877,13 +880,21 @@ class MouseAction(WholeHapticAction, Action):
 		elif self._mouse_axis == Rels.REL_HWHEEL:
 			mapper.mouse_wheel(dx, 0)
 
-	def whole(self, mapper: Mapper, x, y, what):
+	def whole(self, mapper: Mapper, x, y, what) -> None:
 		# if what == LSTICK:
 		# mapper.mouse_move(x * self.speed[0] * 0.01, y * self.speed[1] * 0.01)
 		# mapper.force_event.add(FE_STICK)
 		if what in (LSTICK, RSTICK):
 			ratio_x = x / (STICK_PAD_MAX if x > 0 else STICK_PAD_MIN) * copysign(1, x)
 			ratio_y = y / (STICK_PAD_MAX if y > 0 else STICK_PAD_MIN) * copysign(1, y)
+			if mapper.set_bt_stick_mouse_velocity(
+				self,
+				what,
+				ratio_x * BASE_STICK_MOUSE_SPEED * self.speed[0],
+				ratio_y * BASE_STICK_MOUSE_SPEED * self.speed[1],
+			):
+				mapper.force_event.add(FE_STICK)
+				return
 			mouse_dx = ratio_x * (mapper.time_elapsed * BASE_STICK_MOUSE_SPEED) * self.speed[0]
 			mouse_dy = ratio_y * (mapper.time_elapsed * BASE_STICK_MOUSE_SPEED) * self.speed[1]
 			# mapper.mouse_move_stick(x * self.speed[0] * 0.01, y * self.speed[1] * 0.01)

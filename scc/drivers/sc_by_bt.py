@@ -160,6 +160,9 @@ class SCByBt(SCController):
 		self.flush()
 		self.daemon.add_controller(self)
 
+	def is_bluetooth(self) -> bool:
+		return True
+
 	def get_device_name(self) -> str:
 		# Method needed by evdev driver
 		# return self._device_name

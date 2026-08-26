@@ -52,6 +52,10 @@ class Controller:
 		"""
 		return self._id
 
+	def is_bluetooth(self) -> bool:
+		"""Return whether this controller is connected through Bluetooth."""
+		return False
+
 	def get_gui_config_file(self) -> str | None:
 		"""Returns file name of json file that GUI can use to load more data about controller
 
