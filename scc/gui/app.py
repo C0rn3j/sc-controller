@@ -272,18 +272,18 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		stckEditor.set_visible_child(grEditor)
 		GLib.idle_add(self.on_c_size_allocate)
 
-	def apply_ui_layout(self, layout) -> None:
+	def apply_ui_layout(self, layout: str) -> None:
 		"""Changes layout of ui elements to fit additional buttons needed for Deck"""
 		if layout == "deck":
 			# Move 'C' button bellow LGRIP
-			btRGRIP = self.builder.get_object("btRGRIP")
-			btC = self.builder.get_object("btC")
+			btRGRIP: Gtk.Button | None = self.builder.get_object("btRGRIP")
+			btC: Gtk.Button | None = self.builder.get_object("btC")
 			btC.get_parent().remove(btC)
-			btC.set_margin_right(0)
+			btC.set_margin_end(0)
 			btRGRIP.get_parent().pack_start(btC, False, True, 0)
 			btRGRIP.get_parent().reorder_child(btC, 5)
 			# Move 'GYRO' button to middle of image (where C was)
-			btGYRO = self.builder.get_object("btGYRO")
+			btGYRO: Gtk.Button | None = self.builder.get_object("btGYRO")
 			btGYRO.get_parent().remove(btGYRO)
 			vbC = self.builder.get_object("vbC")
 			vbC.pack_start(btGYRO, False, True, 0)
@@ -292,8 +292,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			# for w in ['btLSTICK', 'btRSTICK', 'btLPAD', 'btRPAD']:
 			# w.set_size_request(150, -1)
 			# Move 'DPAD' bellow 'LGRIP'
-			btLGRIP = self.builder.get_object("btLGRIP")
-			btDPAD = self.builder.get_object("btDPAD")
+			btLGRIP: Gtk.Button | None = self.builder.get_object("btLGRIP")
+			btDPAD: Gtk.Button | None = self.builder.get_object("btDPAD")
 			btDPAD.get_parent().remove(btDPAD)
 			btLGRIP.get_parent().pack_start(btDPAD, False, True, 6)
 			btLGRIP.get_parent().reorder_child(btDPAD, 5)
@@ -947,7 +947,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			self.dm.set_profile(filename)
 		self.profile_switchers[0].set_profile(name, create=True)
 
-	def add_switcher(self, margin_left=24, margin_right=24) -> ProfileSwitcher:
+	def add_switcher(self, margin_start: int = 24, margin_end: int = 24) -> ProfileSwitcher:
 		"""Adds new profile switcher widgets on top of window. Called when new controller is connected to daemon.
 
 		Returns generated ProfileSwitcher instance.
@@ -956,8 +956,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		sepSwitchers = self.builder.get_object("sepSwitchers")
 
 		ps = ProfileSwitcher(self.imagepath, self.config)
-		ps.set_margin_left(margin_left)
-		ps.set_margin_right(margin_right)
+		ps.set_margin_start(margin_start)
+		ps.set_margin_end(margin_end)
 		ps.connect("right-clicked", self.on_profile_right_clicked)
 		ps.connect("switch-to-clicked", self.on_switch_to_clicked)
 
