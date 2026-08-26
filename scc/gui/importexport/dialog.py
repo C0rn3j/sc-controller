@@ -139,7 +139,6 @@ class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 		assert not enabled or callback
 		btNext = self.builder.get_object("btNext")
 		btNext.set_visible(enabled)
-		btNext.set_use_stock(False)
 		btNext.set_sensitive(True)
 		btNext.set_label(_("Next"))
 		self._next_callback = callback

@@ -275,8 +275,7 @@ class ImportVdf:
 		lblASetList = self.builder.get_object("lblASetList")
 
 		btNext = self.enable_next(True, self.vdf_import_confirmed)
-		btNext.set_label("Apply")
-		btNext.set_use_stock(True)
+		btNext.set_label(_("Apply"))
 		if len(self._profile.action_sets) > 1:
 			lblASetsNotice.set_visible(True)
 			lblASetList.set_visible(True)

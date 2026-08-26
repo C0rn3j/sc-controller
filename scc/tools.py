@@ -40,7 +40,8 @@ except ImportError:
 	pass
 
 log = logging.getLogger("tools.py")
-_ = lambda x: x
+def _(x: str) -> str:
+	return x
 
 LOG_FORMAT = "%(asctime)s.%(msecs)03d %(levelname)s %(name)-13s %(message)s"
 LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
