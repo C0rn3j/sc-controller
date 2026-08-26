@@ -45,8 +45,8 @@ from scc.drivers.hiddrv import (
 	AxisType,
 	ButtonData,
 	HatswitchModeData,
-	HIDController,
 	HIDDecoder,
+	USBHIDController,
 	_lib,
 	button_to_bit,
 	hiddrv_test,
@@ -277,7 +277,7 @@ class DS4Controller(Controller):
 		return id
 
 
-class DS4HIDController(DS4Controller, HIDController):
+class DS4USBController(DS4Controller, USBHIDController):
 	def __init__(self, device: USBDevice, daemon: SCCDaemon, handle: usb1.USBDeviceHandle, config_file: str, config: dict, test_mode: bool = False) -> None:
 		self._feedback_endpoint: int = self._find_feedback_endpoint(device)
 		self._feedback_output: bytearray = bytearray(DS4_USB_OUTPUT_REPORT_SIZE)
@@ -285,7 +285,7 @@ class DS4HIDController(DS4Controller, HIDController):
 		self._feedback_output[1] = DS4_USB_OUTPUT_VALID_MOTOR
 		self._feedback_pending: bool = False
 		self._feedback_cancel_tasks: list[Task | None] = [None, None]
-		HIDController.__init__(self, device, daemon, handle, config_file, config, test_mode)
+		USBHIDController.__init__(self, device, daemon, handle, config_file, config, test_mode)
 		log.debug("DS4 %s using USB/libusb", self.get_id())
 
 	@staticmethod
@@ -333,15 +333,15 @@ class DS4HIDController(DS4Controller, HIDController):
 			self._feedback_cancel_tasks[task_index] = self.mapper.schedule(duration, clear_feedback)
 
 	def flush(self) -> None:
-		HIDController.flush(self)
+		USBHIDController.flush(self)
 		if self._feedback_pending:
 			self.handle.interruptWrite(self._feedback_endpoint, bytes(self._feedback_output))
 			self._feedback_pending = False
 
 
-class DS4HIDRawController(DS4Controller):
-	def __init__(self, driver: DS4HIDRawDriver, syspath: str, hidrawdev: HIDRaw, device_file: BinaryIO, vid, pid) -> None:
-		self.driver: DS4HIDRawDriver = driver
+class DS4BluetoothHIDRawController(DS4Controller):
+	def __init__(self, driver: DS4BluetoothHIDRawDriver, syspath: str, hidrawdev: HIDRaw, device_file: BinaryIO, vid, pid) -> None:
+		self.driver: DS4BluetoothHIDRawDriver = driver
 		self.syspath: str = syspath
 
 		DS4Controller.__init__(self, driver.daemon)
@@ -439,7 +439,7 @@ class DS4HIDRawController(DS4Controller):
 			log.warning("Failed to turn off DS4 Bluetooth controller: %s", error)
 
 
-class DS4HIDRawDriver:
+class DS4BluetoothHIDRawDriver:
 	def __init__(self, daemon: SCCDaemon, config: dict) -> None:
 		self.config: dict = config
 		self.daemon: SCCDaemon = daemon
@@ -449,7 +449,7 @@ class DS4HIDRawDriver:
 	def retry(self, syspath: str) -> None:
 		pass
 
-	def make_bt_hidraw_callback(self, syspath: str, vid, pid, *whatever) -> DS4HIDRawController | None:
+	def make_bt_hidraw_callback(self, syspath: str, vid, pid, *whatever) -> DS4BluetoothHIDRawController | None:
 		log.debug("DS4 Bluetooth callback: syspath=%s vid=%04x pid=%04x", syspath, vid, pid)
 		hidrawname = self.daemon.get_device_monitor().get_hidraw(syspath)
 		if hidrawname is None:
@@ -457,9 +457,9 @@ class DS4HIDRawDriver:
 		try:
 			device_file = open(os.path.join("/dev/", hidrawname), "r+b", buffering=0)
 			hidraw = HIDRaw(device_file)
-			return DS4HIDRawController(self, syspath, hidraw, device_file, vid, pid)
-		except Exception as e:
-			log.exception(e)
+			return DS4BluetoothHIDRawController(self, syspath, hidraw, device_file, vid, pid)
+		except Exception:
+			log.exception("Failed creating DS4 HIDRaw device")
 			return None
 
 	def get_device_name(self) -> str:
@@ -669,8 +669,8 @@ class DS4EvdevController(EvdevController):
 def init(daemon: SCCDaemon, config: dict) -> bool:
 	"""Register hotplug callback for DS4 device."""
 
-	def hid_callback(device, handle) -> DS4HIDController:
-		return DS4HIDController(device, daemon, handle, None, None)
+	def hid_callback(device, handle) -> DS4USBController:
+		return DS4USBController(device, daemon, handle, None, None)
 
 	def make_evdev_device(sys_dev_path: str, *whatever):
 		devices = get_evdev_devices_from_syspath(sys_dev_path)
@@ -726,7 +726,7 @@ def init(daemon: SCCDaemon, config: dict) -> bool:
 		register_hotplug_device(hid_callback, VENDOR_ID, DS4_V1_PRODUCT_ID, on_failure=fail_cb)
 		if config["drivers"].get("hiddrv"):
 			# Only enable HIDRaw support for BT connections if hiddrv is enabled
-			_drv = DS4HIDRawDriver(daemon, config)
+			_drv = DS4BluetoothHIDRawDriver(daemon, config)
 		elif HAVE_EVDEV and config["drivers"].get("evdevdrv"):
 			# DS4 v.2
 			daemon.get_device_monitor().add_callback("bluetooth", VENDOR_ID, PRODUCT_ID, make_evdev_device, None)
@@ -741,4 +741,4 @@ if __name__ == "__main__":
 	""" Called when executed as script """
 	init_logging()
 	set_logging_level(True, True)
-	sys.exit(hiddrv_test(DS4HIDController, ["054c:09cc"]))
+	sys.exit(hiddrv_test(DS4USBController, ["054c:09cc"]))

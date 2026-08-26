@@ -7,14 +7,14 @@ from scc.drivers.hiddrv import AxisMode, AxisType
 
 
 def test_dualsense_decoders_use_dedicated_dpad_axes() -> None:
-	controller = object.__new__(ds5drv.DS5Controller)
+	controller = object.__new__(ds5drv.DS5USBController)
 	controller._load_hid_descriptor(None, None, None, None, None)
 
 	assert controller._decoder.axes[AxisType.AXIS_DPAD_X].mode == AxisMode.HATSWITCH
 	assert controller._decoder.axes[AxisType.AXIS_DPAD_X].data.hatswitch.button == 0
 	assert controller._decoder.axes[AxisType.AXIS_LPAD_X].mode == AxisMode.DISABLED
 
-	hidraw = object.__new__(ds5drv.DS5HidRawController)
+	hidraw = object.__new__(ds5drv.DS5BluetoothHIDRawController)
 	hidraw._delta_time = 0
 	hidraw._previous_quat = [1.0, 0.0, 0.0, 0.0]
 	data = bytearray(64)
@@ -29,7 +29,7 @@ def test_hidraw_driver_registers_all_dualsense_products() -> None:
 	daemon: Mock = Mock()
 	monitor = daemon.get_device_monitor.return_value
 
-	driver = ds5drv.DS5HidRawDriver(daemon, {})
+	driver = ds5drv.DS5BluetoothHIDRawDriver(daemon, {})
 
 	assert monitor.add_callback.call_args_list == [
 		call("bluetooth", ds5drv.VENDOR_ID, product_id, driver.make_bt_hidraw_callback, None)
@@ -37,7 +37,7 @@ def test_hidraw_driver_registers_all_dualsense_products() -> None:
 	]
 
 
-@patch.object(ds5drv, "DS5HidRawDriver")
+@patch.object(ds5drv, "DS5BluetoothHIDRawDriver")
 @patch.object(ds5drv, "register_hotplug_device")
 def test_init_registers_usb_products(register_hotplug_device: Mock, hidraw_driver: Mock) -> None:
 	daemon: Mock = Mock()
@@ -61,7 +61,7 @@ def test_init_registers_evdev_bluetooth_products(register_hotplug_device: Mock) 
 
 
 def test_hidraw_turnoff_disconnects_bluetooth_link() -> None:
-	controller = object.__new__(ds5drv.DS5HidRawController)
+	controller = object.__new__(ds5drv.DS5BluetoothHIDRawController)
 	controller.daemon = Mock()
 	controller.syspath = "/sys/devices/bluetooth/hci0/hci0:50"
 
@@ -71,7 +71,7 @@ def test_hidraw_turnoff_disconnects_bluetooth_link() -> None:
 
 
 def test_hidraw_read_error_disconnects_without_escaping() -> None:
-	controller = object.__new__(ds5drv.DS5HidRawController)
+	controller = object.__new__(ds5drv.DS5BluetoothHIDRawController)
 	controller._device_file = Mock()
 	controller._device_file.read.side_effect = OSError(5, "Input/output error")
 	controller._fileno = 12

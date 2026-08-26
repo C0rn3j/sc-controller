@@ -14,10 +14,10 @@ from scc.drivers.ds4drv import (
 	DS4_USB_OUTPUT_REPORT_ID,
 	DS4_USB_OUTPUT_REPORT_SIZE,
 	DS4_USB_OUTPUT_VALID_MOTOR,
+	DS4BluetoothHIDRawController,
 	DS4Controller,
 	DS4EvdevController,
-	DS4HIDController,
-	DS4HIDRawController,
+	DS4USBController,
 )
 from scc.drivers.hiddrv import AxisMode, AxisType, HIDControllerInput
 
@@ -44,8 +44,8 @@ def test_ds4_decoder_uses_dedicated_dpad_axes() -> None:
 	assert controller._decoder.axes[AxisType.AXIS_LPAD_X].mode == AxisMode.DISABLED
 
 
-def make_controller() -> DS4HIDController:
-	controller = object.__new__(DS4HIDController)
+def make_controller() -> DS4USBController:
+	controller = object.__new__(DS4USBController)
 	controller.handle = Mock()
 	controller.mapper = Mock()
 	controller._cmsg = []
@@ -119,11 +119,11 @@ def test_ds4_finds_interrupt_output_on_hid_interface() -> None:
 	hid.getClass.return_value = 3
 	hid.__iter__ = Mock(return_value=iter([hid_endpoint]))
 
-	assert DS4HIDController._find_feedback_endpoint([[[audio], [hid]]]) == 2
+	assert DS4USBController._find_feedback_endpoint([[[audio], [hid]]]) == 2
 
 
 def test_bluetooth_read_error_disconnects_without_escaping() -> None:
-	controller = object.__new__(DS4HIDRawController)
+	controller = object.__new__(DS4BluetoothHIDRawController)
 	controller._hidrawdev = Mock()
 	controller._device_file = Mock()
 	controller._device_file.read.side_effect = OSError(5, "Input/output error")
@@ -140,8 +140,8 @@ def test_bluetooth_read_error_disconnects_without_escaping() -> None:
 	controller._device_file.close.assert_called_once_with()
 
 
-def make_bluetooth_controller() -> DS4HIDRawController:
-	controller = object.__new__(DS4HIDRawController)
+def make_bluetooth_controller() -> DS4BluetoothHIDRawController:
+	controller = object.__new__(DS4BluetoothHIDRawController)
 	controller._hidrawdev = Mock()
 	controller._device_file = Mock()
 	controller.mapper = Mock()
@@ -187,7 +187,7 @@ def test_bluetooth_ds4_feedback_clear_writes_stopped_motor() -> None:
 
 
 def test_bluetooth_turnoff_disconnects_hci_link() -> None:
-	controller = object.__new__(DS4HIDRawController)
+	controller = object.__new__(DS4BluetoothHIDRawController)
 	controller.daemon = Mock()
 	controller.syspath = "/sys/devices/bluetooth/hci0/hci0:50"
 

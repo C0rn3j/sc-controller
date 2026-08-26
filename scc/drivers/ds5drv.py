@@ -53,8 +53,8 @@ from scc.drivers.hiddrv import (
 	AxisType,
 	ButtonData,
 	HatswitchModeData,
-	HIDController,
 	HIDDecoder,
+	USBHIDController,
 	_lib,
 	button_to_bit,
 	hiddrv_test,
@@ -200,7 +200,7 @@ ICON_COLORS = [
 ]
 
 
-class DS5Controller(HIDController):
+class DS5USBController(USBHIDController):
 	# Most of axes are the same
 	BUTTON_MAP = (
 		SCButtons.X,
@@ -343,7 +343,7 @@ class DS5Controller(HIDController):
 		else:
 			for x in range(BUTTON_COUNT):
 				self._decoder.buttons.button_map[x] = 64
-			for x, sc in enumerate(DS5Controller.BUTTON_MAP):
+			for x, sc in enumerate(DS5USBController.BUTTON_MAP):
 				self._decoder.buttons.button_map[x] = button_to_bit(sc)
 
 		self._packet_size = 64
@@ -433,7 +433,7 @@ class DS5Controller(HIDController):
 		return "ds5-config.json"
 
 	def __repr__(self) -> str:
-		return f"<DS5Controller {self.get_id()}>"
+		return f"<DS5USBController {self.get_id()}>"
 
 	def _generate_id(self) -> str:
 		"""ID is generated as 'ds5' or 'ds5:X' where 'X' starts as 1 and increases as controllers with same ids are connected."""
@@ -456,7 +456,7 @@ class DS5Controller(HIDController):
 			self.handle.interruptWrite(3, data)
 
 
-class DS5HidRawDriver:
+class DS5BluetoothHIDRawDriver:
 	def __init__(self, daemon: SCCDaemon, config: dict) -> None:
 		self.config = config
 		self.daemon = daemon
@@ -468,7 +468,7 @@ class DS5HidRawDriver:
 	def retry(self, syspath: str) -> None:
 		pass
 
-	def make_bt_hidraw_callback(self, syspath: str, *whatever) -> DS5HidRawController | None:
+	def make_bt_hidraw_callback(self, syspath: str, *whatever) -> DS5BluetoothHIDRawController | None:
 		hidrawname = self.daemon.get_device_monitor().get_hidraw(syspath)
 		if hidrawname is None:
 			return None
@@ -477,13 +477,13 @@ class DS5HidRawDriver:
 		try:
 			device_file = open(os.path.join("/dev/", hidrawname), "r+b", buffering=0)
 			hidraw = HIDRaw(device_file)
-			return DS5HidRawController(self, syspath, hidraw, device_file)
+			return DS5BluetoothHIDRawController(self, syspath, hidraw, device_file)
 		except Exception:
 			log.exception("Failed making bt hidraw callback")
 			return None
 
 
-class DS5HidRawController(Controller):
+class DS5BluetoothHIDRawController(Controller):
 	class _DPadOutputValues:
 		def __init__(self, x: int, y: int) -> None:
 			self.x: int = x
@@ -536,9 +536,9 @@ class DS5HidRawController(Controller):
 	)
 
 	# def __init__(self, device, daemon, handle, config_file, config, test_mode=False):
-	def __init__(self, driver: DS5HidRawDriver, syspath: str, hidrawdev: HIDRaw, device_file: BinaryIO) -> None:
+	def __init__(self, driver: DS5BluetoothHIDRawDriver, syspath: str, hidrawdev: HIDRaw, device_file: BinaryIO) -> None:
 		self._serial: bytes
-		self.driver: DS5HidRawDriver = driver
+		self.driver: DS5BluetoothHIDRawDriver = driver
 		self.daemon: SCCDaemon = driver.daemon
 		self.syspath: str = syspath
 
@@ -577,10 +577,10 @@ class DS5HidRawController(Controller):
 		self.daemon.get_device_monitor().add_remove_callback(syspath, self.close)
 		self.daemon.add_controller(self)
 
-	def get_device_name(self):
+	def get_device_name(self) -> str:
 		return "DualSense over Bluetooth HIDRaw"
 
-	def get_type(self):
+	def get_type(self) -> str:
 		return "ds5bt_hidraw"
 
 	def turnoff(self) -> None:
@@ -777,7 +777,7 @@ class DS5HidRawController(Controller):
 			state.buttons |= SCButtons.X
 		dpad_state = data[9] & 0x0F
 		if dpad_state != 8:
-			tempDPad = DS5HidRawController.DPAD_STATE_TYPES.get(dpad_state, DS5HidRawController.DPAD_CENTERED_STATE)
+			tempDPad = DS5BluetoothHIDRawController.DPAD_STATE_TYPES.get(dpad_state, DS5BluetoothHIDRawController.DPAD_CENTERED_STATE)
 			state.dpad_x = tempDPad.x
 			state.dpad_y = tempDPad.y
 
@@ -1217,8 +1217,8 @@ class DS5EvdevController(EvdevController):
 def init(daemon, config) -> bool:
 	"""Register hotplug callback for DS5 device."""
 
-	def hid_callback(device, handle) -> DS5Controller:
-		return DS5Controller(device, daemon, handle, None, None)
+	def hid_callback(device, handle) -> DS5USBController:
+		return DS5USBController(device, daemon, handle, None, None)
 
 	def make_evdev_device(syspath: str, *whatever):
 		devices = get_evdev_devices_from_syspath(syspath)
@@ -1272,7 +1272,7 @@ def init(daemon, config) -> bool:
 			register_hotplug_device(hid_callback, VENDOR_ID, product_id, on_failure=fail_cb)
 		if config["drivers"].get("hiddrv"):
 			# Only enable HIDRaw support for BT connections if hiddrv is enabled
-			_drv = DS5HidRawDriver(daemon, config)
+			_drv = DS5BluetoothHIDRawDriver(daemon, config)
 		elif HAVE_EVDEV and config["drivers"].get("evdevdrv"):
 			# Attempt evdev as a backup
 			for product_id in PRODUCT_IDS:
@@ -1292,4 +1292,4 @@ if __name__ == "__main__":
 	""" Called when executed as script """
 	init_logging()
 	set_logging_level(True, True)
-	sys.exit(hiddrv_test(DS5Controller, ["054c:0ce6", "054c:0df2"]))
+	sys.exit(hiddrv_test(DS5USBController, ["054c:0ce6", "054c:0df2"]))

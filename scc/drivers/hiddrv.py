@@ -247,7 +247,7 @@ class HIDDrvFakeDaemon:
 	def get_poller(self) -> Poller:
 		return self.poller
 
-class HIDController(SCUSBDevice, Controller):
+class USBHIDController(SCUSBDevice, Controller):
 	flags = (
 		ControllerFlags.HAS_RSTICK
 		| ControllerFlags.SEPARATE_LSTICK
@@ -309,7 +309,7 @@ class HIDController(SCUSBDevice, Controller):
 			self._ready = True
 
 	def _load_hid_descriptor(self, config: dict, max_size: int, vid: int, pid: int, test_mode) -> None:
-		hid_descriptor = HIDController.find_sys_devices_descriptor(vid, pid)
+		hid_descriptor = USBHIDController.find_sys_devices_descriptor(vid, pid)
 		if hid_descriptor is None:
 			hid_descriptor = self.handle.getRawDescriptor(LIBUSB_DT_REPORT, 0, 512)
 		with open("report", "wb") as file:
@@ -603,10 +603,10 @@ class HIDDrv:
 		self.scan_files()
 		self.daemon: SCCDaemon = daemon
 
-	def hotplug_cb(self, device: USBDevice, handle: USBDeviceHandle) -> HIDController | None:
+	def hotplug_cb(self, device: USBDevice, handle: USBDeviceHandle) -> USBHIDController | None:
 		vid, pid = device.getVendorID(), device.getProductID()
 		if (vid, pid) in self.configs:
-			return HIDController(device, self.daemon, handle, self.config_files[vid, pid], self.configs[vid, pid])
+			return USBHIDController(device, self.daemon, handle, self.config_files[vid, pid], self.configs[vid, pid])
 
 		return None
 
@@ -650,7 +650,7 @@ class HIDDrv:
 				del self.configs[vid, pid]
 
 
-def hiddrv_test(cls, args) -> int:
+def hiddrv_test(cls: type[USBHIDController], args: list[str]) -> int:
 	"""Small input test used by GUI while setting up the device.
 
 	Basically, if HID device works with this, it will work with daemon as well.
@@ -710,4 +710,4 @@ if __name__ == "__main__":
 
 	init_logging()
 	set_logging_level(True, True)
-	sys.exit(hiddrv_test(HIDController, sys.argv[1:]))
+	sys.exit(hiddrv_test(USBHIDController, sys.argv[1:]))

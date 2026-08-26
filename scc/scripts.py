@@ -75,9 +75,9 @@ def cmd_test_hid(argv0: str, argv: list[str]) -> int:
 	  3 - device is not HID-compatibile
 	  4 - failed to parse HID descriptor
 	"""
-	from scc.drivers.hiddrv import HIDController, hiddrv_test
+	from scc.drivers.hiddrv import USBHIDController, hiddrv_test
 
-	return hiddrv_test(HIDController, argv)
+	return hiddrv_test(USBHIDController, argv)
 
 
 def help_osd_keyboard() -> None:
