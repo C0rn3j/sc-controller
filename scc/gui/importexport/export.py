@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import json
 import logging
 import os
@@ -237,6 +236,7 @@ class Export(UserDataManager):
 
 	def _export_package(self, giofile, target_filename):
 		"""Performs actual exporting.
+
 		This method is used when profile is to be exported _with_ some
 		referenced files. It reads not only passed giofile, but all files
 		marked on 2nd page of export dialog.
@@ -264,7 +264,8 @@ class Export(UserDataManager):
 
 		def export_menu(tar, filename):
 			try:
-				menu = MenuData.from_json_data(json.loads(open(filename).read()), ActionParser())
+				with open(filename) as file:
+					menu = MenuData.from_json_data(json.loads(file.read()), ActionParser())
 				tar.add(filename, arcname=os.path.split(filename)[-1], recursive=False)
 			except Exception as e:
 				# Menu that cannot be parsed shouldn't be exported

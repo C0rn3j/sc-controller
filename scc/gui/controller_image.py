@@ -109,23 +109,27 @@ class ControllerImage(SVGWidget):
 		self.hilight({})
 		return self.current
 
-	def override_background(self, filename):
-		"""Overrides background image setting. This changes config in place,
-		so next time get_config is called, changed background is part of it.
+	def override_background(self, filename: str) -> None:
+		"""Overrides background image setting.
+
+		This changes config in place, so next time get_config is called, changed background is part of it.
 		"""
 		if self.backup is None:
 			self.backup = copy.deepcopy(self.current)
-		data = json.loads(open(os.path.join(self.app.imagepath, f"{filename}.json")).read())
+		with open(os.path.join(self.app.imagepath, f"{filename}.json")) as file:
+			data = json.loads(file.read())
 		self.current["gui"]["background"] = data["gui"]["background"]
 		self.use_config(self.current, self.backup)
 
-	def override_buttons(self, filename):
-		"""Overrides button settings. This changes config in place,
-		so next time get_config is called, changed background is part of it.
+	def override_buttons(self, filename: str) -> None:
+		"""Overrides button settings.
+
+		This changes config in place, so next time get_config is called, changed background is part of it.
 		"""
 		if self.backup is None:
 			self.backup = copy.deepcopy(self.current)
-		data = json.loads(open(os.path.join(self.app.imagepath, "{filename}.json")).read())
+		with open(os.path.join(self.app.imagepath, "{filename}.json")) as file:
+			data = json.loads(file.read())
 		self.current["gui"]["buttons"] = data["gui"]["buttons"]
 		self.current["buttons"] = data["buttons"]
 		self.use_config(self.current, self.backup)
@@ -136,7 +140,8 @@ class ControllerImage(SVGWidget):
 			self.use_config(self.backup, None)
 
 	def get_button_groups(self):
-		groups = json.loads(open(os.path.join(self.app.imagepath, "button-images", "groups.json")).read())
+		with open(os.path.join(self.app.imagepath, "button-images", "groups.json")) as file:
+			groups = json.loads(file.read())
 		return {x["key"]: x["buttons"] for x in groups if x["type"] == "buttons"}
 
 	def _get_default_images(self):

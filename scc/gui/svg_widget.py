@@ -710,6 +710,7 @@ class SVGEditor:
 		return e
 
 	@staticmethod
-	def load_from_file(filename):
-		tree = ET.fromstring(open(filename).read())
+	def load_from_file(filename: str) -> ET.Element[str] | None:
+		with open(filename) as file:
+			tree = ET.fromstring(file.read())
 		return SVGEditor.find_by_tag(tree, "g")

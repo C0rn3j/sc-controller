@@ -204,8 +204,9 @@ class Config:
 		rv["name"] = controller_id
 		return rv
 
-	def load(self):
-		self.values = json.loads(open(self.filename).read())
+	def load(self) -> None:
+		with open(self.filename) as file:
+			self.values = json.loads(file.read())
 
 	def create(self):
 		"""Creates new, empty configuration"""

@@ -1007,7 +1007,8 @@ class SCCDaemon(Daemon):
 						menuaction = self.osd_ids[item_id]
 					elif "." in menu_id:
 						# TODO: Move this common place
-						data = json.loads(open(menu_id).read())
+						with open(menu_id) as file:
+							data = json.loads(file.read())
 						menudata = MenuData.from_json_data(data, TalkingActionParser())
 						menuaction = menudata.get_by_id(item_id).action
 					else:

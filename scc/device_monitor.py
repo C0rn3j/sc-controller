@@ -283,8 +283,10 @@ class DeviceMonitor(Monitor):
 		May throw all kinds of OSErrors
 		"""
 		if os.path.exists(os.path.join(syspath, "idVendor")):
-			vendor = int(open(os.path.join(syspath, "idVendor")).read().strip(), 16)
-			product = int(open(os.path.join(syspath, "idProduct")).read().strip(), 16)
+			with open(os.path.join(syspath, "idVendor")) as file:
+				vendor = int(file.read().strip(), 16)
+			with open(os.path.join(syspath, "idProduct")) as file:
+				product = int(file.read().strip(), 16)
 			return vendor, product
 		if subsystem is None:
 			subsystem = DeviceMonitor.get_subsystem(syspath)
@@ -341,8 +343,10 @@ class DeviceMonitor(Monitor):
 
 		May throw all kinds of OSErrors
 		"""
-		busnum = int(open(os.path.join(syspath, "busnum")).read().strip())
-		devnum = int(open(os.path.join(syspath, "devnum")).read().strip())
+		with open(os.path.join(syspath, "busnum")) as file:
+			busnum = int(file.read().strip())
+		with open(os.path.join(syspath, "devnum")) as file:
+			devnum = int(file.read().strip())
 		return busnum, devnum
 
 	@staticmethod

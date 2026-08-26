@@ -152,13 +152,15 @@ class MenuData:
 	@staticmethod
 	def from_profile(filename, menuname, action_parser=None):
 		"""Loads menu from JSON profile file.
+
 		Actions are parsed only if action_parser is set to ActionParser instance.
 
 		Menus are stored as list under <root>/menus/<menuname>.
 		Throws ValueError if specified file cannot be parsed or
 		specified menu cannot be found.
 		"""
-		data = json.loads(open(filename).read())
+		with open(filename) as file:
+			data = json.loads(file.read())
 		if "menus" not in data:
 			raise ValueError("Menu not found")
 		if menuname not in data["menus"]:
@@ -179,8 +181,7 @@ class MenuItem:
 		self.widget = None  # May be set by UI code
 
 	def describe(self):
-		"""Returns user-friendly description of MenuItem or MenuGenerator.
-		"""
+		"""Returns user-friendly description of MenuItem or MenuGenerator."""
 		return self.label
 
 	def encode(self):

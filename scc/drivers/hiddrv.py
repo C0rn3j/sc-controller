@@ -312,7 +312,8 @@ class HIDController(SCUSBDevice, Controller):
 		hid_descriptor = HIDController.find_sys_devices_descriptor(vid, pid)
 		if hid_descriptor is None:
 			hid_descriptor = self.handle.getRawDescriptor(LIBUSB_DT_REPORT, 0, 512)
-		open("report", "wb").write(bytes(list(hid_descriptor)))
+		with open("report", "wb") as file:
+			file.write(bytes(list(hid_descriptor)))
 		self._build_hid_decoder(hid_descriptor, config, max_size)
 		self._packet_size = self._decoder.packet_size
 
@@ -624,7 +625,8 @@ class HIDDrv:
 				pid = int(pid, 16)
 				config_file = os.path.join(path, name)
 				try:
-					config = json.loads(open(config_file).read())
+					with open(config_file) as file:
+						config = json.loads(file.read())
 				except Exception:
 					log.warning("Ignoring file that cannot be parsed: %s", name)
 					continue

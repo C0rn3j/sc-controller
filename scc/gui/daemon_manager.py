@@ -405,7 +405,8 @@ class ControllerManager(GObject.GObject):
 			if "/" not in filename:
 				filename = os.path.join(default_path, filename)
 			try:
-				data = json.loads(open(filename).read()) or None
+				with open(filename) as file:
+					data = json.loads(file.read()) or None
 				return data
 			except Exception:
 				log.exception("Failed to load_gui_config()")

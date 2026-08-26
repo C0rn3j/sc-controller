@@ -437,7 +437,8 @@ class EvdevDriver:
 		if os.path.exists(config_file):
 			config = None
 			try:
-				config = json.loads(open(config_file).read())
+				with open(config_file) as file:
+					config = json.loads(file.read())
 			except Exception:
 				log.exception("Unknown exception loading config, skipping evdev node %s", eventnode)
 				return False

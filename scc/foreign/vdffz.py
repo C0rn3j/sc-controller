@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
 """Imports VDFFZ profile and converts it to Profile object.
-VDFFZ is just VDF encapsulated in json, so this just gets one value and calls
-VDFProfile to decode rest.
+
+VDFFZ is just VDF encapsulated in json, so this just gets one value and calls VDFProfile to decode rest.
 """
 
 import json
@@ -15,9 +14,10 @@ log = logging.getLogger("import.vdffz")
 
 
 class VDFFZProfile(VDFProfile):
-	def load(self, filename):
+	def load(self, filename: str) -> None:
 		try:
-			data = json.loads(open(filename).read())
+			with open(filename) as file:
+				data = json.loads(file.read())
 		except Exception:
 			raise ValueError("Failed to parse JSON")
 		if "ConfigData" not in data:
