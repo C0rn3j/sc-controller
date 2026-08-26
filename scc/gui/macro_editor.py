@@ -128,7 +128,7 @@ class MacroEditor(Editor):
 			grActions.attach(b, 1, i, 1, 1)
 		elif isinstance(action, SleepAction):
 			# Label and scale
-			l = Gtk.Label("")
+			l = Gtk.Label(label="")
 			l.set_xalign(0.0)
 			l.set_size_request(100, -1)
 			s = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 5, 5000, 5)
@@ -144,7 +144,7 @@ class MacroEditor(Editor):
 			self.on_change_delay(s, None, action.delay * 1000, action_data)
 		else:
 			# Placeholder
-			l = Gtk.Label("")
+			l = Gtk.Label(label="")
 			l.set_size_request(100, -1)
 
 			action_data = ActionData(

@@ -170,7 +170,7 @@ class ButtonsComponent(AEComponent, Chooser):
 		"""Hides 'set as toggle button' option"""
 		cbToggle = self.builder.get_object("cbToggle")
 		btnGrabAnother = self.builder.get_object("btnGrabAnother")
-		replacement = Gtk.Label("")
+		replacement = Gtk.Label(label="")
 		replacement.set_size_request(*cbToggle.get_size_request())
 		btnGrabAnother.set_visible(False)
 		parent = cbToggle.get_parent()
