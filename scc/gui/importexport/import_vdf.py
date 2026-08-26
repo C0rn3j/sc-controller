@@ -69,13 +69,14 @@ class ImportVdf:
 		Called from _load_profiles, in thread. Exceptions are catched and logged from there.
 		Calls GLib.idle_add to send loaded data into UI.
 		"""
-		# VDF file is a ISO-8859-1 encoded file. Not UTF-8
-		with open(filename, encoding="ISO-8859-1") as file:
+		with open(filename) as file:
 			data = parse_vdf(file)
 		# Sanity check
-		if "UserLocalConfigStore" not in data:
-			return None
-		if "controller_config" not in data["UserLocalConfigStore"]:
+		if (
+			"UserLocalConfigStore" not in data
+			or "controller_config" not in data["UserLocalConfigStore"]
+			or userid not in data["UserLocalConfigStore"]["controller_config"]
+		):
 			return None
 
 		# Grab config - currently only grabs SC configs!

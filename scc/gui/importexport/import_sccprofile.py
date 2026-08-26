@@ -33,8 +33,7 @@ class ImportSccprofile:
 				self.import_scc(d.get_filename())
 
 	def error(self, text):
-		"""Displays error page (reused from VDF import).
-		"""
+		"""Displays error page (reused from VDF import)."""
 		tbError = self.builder.get_object("tbError")
 		grImportFailed = self.builder.get_object("grImportFailed")
 
@@ -43,6 +42,7 @@ class ImportSccprofile:
 
 	def import_scc(self, filename):
 		"""Imports simple, single-file scc-profile.
+
 		Just loads it, checks for shell() actions and asks user to enter name.
 		"""
 		files = self.builder.get_object("lstImportPackage")

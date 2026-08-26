@@ -28,7 +28,7 @@ def ensure_list(value):
 
 	Otherwise, returns [ value ]
 	"""
-	return value if type(value) == list else [value]
+	return value if type(value) is list else [value]
 
 
 if __name__ == "__main__":
