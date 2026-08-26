@@ -34,6 +34,7 @@ class SCUSBDevice:
 	def __init__(self, device: USBDevice, handle: USBDeviceHandle) -> None:
 		self.device: USBDevice = device
 		self.handle: USBDeviceHandle = handle
+		self.syspath: str | None = None
 		self._claimed: list[int] = []
 		self._cmsg = []  # controll messages
 		self._rmsg = []  # requests (excepts response)
@@ -141,8 +142,12 @@ class SCUSBDevice:
 		Don't use unless absolutely necessary.
 		"""
 		tp = self.device.getVendorID(), self.device.getProductID()
+		syspath = self.syspath
 		self.close()
-		_usb._retry_devices.append(tp)
+		if syspath:
+			_usb._retry_devices.append((syspath, tp))
+		else:
+			log.error("force_restart: no syspath for %.4x:%.4x, cannot queue for retry", *tp)
 
 	def claim(self, number: int) -> None:
 		"""Remember list of claimed interfaces and allow to unclaim them all at once using unclaim() method
@@ -278,6 +283,7 @@ class USBDriver:
 			device.close()
 			return True
 		if handled_device:
+			handled_device.syspath = syspath
 			self._devices[device] = handled_device
 			self._syspaths[syspath] = device
 			log.debug("USB device added: %.4x:%.4x", *tp)
