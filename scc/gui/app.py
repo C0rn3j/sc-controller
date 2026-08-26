@@ -123,7 +123,6 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.window = self.builder.get_object("window")
 		self.add_window(self.window)
 		self.window.set_title(_("SC Controller"))
-		self.window.set_wmclass("SC Controller", "SC Controller")
 		self.ribar = None
 		self.create_binding_buttons()
 

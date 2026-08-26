@@ -27,7 +27,6 @@ from gi.repository import Gdk, GLib, GObject, Gtk
 
 from scc.config import Config
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN
-from scc.controller import Controller
 from scc.osd.timermanager import TimerManager
 from scc.paths import get_share_path
 from scc.tools import set_logging_level
@@ -75,7 +74,6 @@ class OSDWindow(Gtk.Window):
 		self._controller: ControllerManager | None = None
 		self.daemon: DaemonManager
 		self.set_name(wmclass)
-		self.set_wmclass(wmclass, wmclass)
 		self.using_wlroots = False
 		try:
 			import gi
@@ -103,7 +101,7 @@ class OSDWindow(Gtk.Window):
 			self.set_type_hint(Gdk.WindowTypeHint.NOTIFICATION)
 
 	@staticmethod
-	def _apply_css(config: dict) -> None:
+	def _apply_css(config: Config) -> None:
 		if OSDWindow.css_provider:
 			Gtk.StyleContext.remove_provider_for_screen(Gdk.Screen.get_default(), OSDWindow.css_provider)
 
