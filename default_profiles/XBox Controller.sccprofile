@@ -63,7 +63,7 @@
         "action": "sens(1.2, 1.2, XY(axis(Axes.ABS_X), raxis(Axes.ABS_Y)))"
     },
     "rstick": {
-        "action": "XY( axis(Axes.ABS_RX), raxis(Axes.ABS_RY) )"
+        "action": "sens(1.2, 1.2, XY(axis(Axes.ABS_RX), raxis(Axes.ABS_RY)))"
     },
     "trigger_left": {
         "action": "axis(Axes.ABS_Z)"
