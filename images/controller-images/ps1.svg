@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.979899"
-     inkscape:cx="204.05081"
-     inkscape:cy="143.94674"
+     inkscape:zoom="5.6"
+     inkscape:cx="94.107142"
+     inkscape:cy="136.07143"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
@@ -222,7 +222,7 @@
          style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
     </g>
     <rect
-       style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.0431373;fill-rule:evenodd;stroke:#00b400;stroke-width:8.413;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.0431373;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
        id="AREA_RSTICKTEST"
        width="77.544998"
        height="77.544998"
@@ -247,23 +247,25 @@
        transform="translate(3.03223,31.10227)"
        style="display:inline;fill:#00000a;fill-opacity:0.04313725"
        id="g4321"
-       inkscape:label="LSTICK">
+       inkscape:label="DPAD">
       <rect
          ry="0"
          y="58.79705"
          x="43.120647"
          height="93.374992"
-         width="93.374985"
-         id="AREA_LSTICK_1"
-         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.04313725;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
+         width="93.375"
+         id="AREA_DPAD_1"
+         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.0431373;fill-rule:evenodd;stroke:#ed00b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+         inkscape:label="AREA_DPAD_1" />
       <rect
-         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.0431373;fill-rule:evenodd;stroke:#00b400;stroke-width:10.0881;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
-         id="AREA_LSTICKTEST"
-         width="93.042686"
-         height="92.927147"
-         x="43.028015"
-         y="60.158569"
-         ry="0" />
+         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.0431373;fill-rule:evenodd;stroke:none;stroke-width:1.08642;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+         id="AREA_DPADTEST"
+         width="100.90015"
+         height="101.14143"
+         x="39.099445"
+         y="56.23"
+         ry="0"
+         inkscape:label="AREA_DPADTEST" />
     </g>
     <g
        style="display:inline;fill:#00000a;fill-opacity:0.04313725"

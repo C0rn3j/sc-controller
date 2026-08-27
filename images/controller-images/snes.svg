@@ -25,18 +25,18 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8284272"
-     inkscape:cx="312.54119"
-     inkscape:cy="165.99331"
+     inkscape:zoom="5.6568544"
+     inkscape:cx="97.22718"
+     inkscape:cy="170.50112"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
      units="px"
-     inkscape:window-width="1392"
-     inkscape:window-height="1042"
+     inkscape:window-width="2560"
+     inkscape:window-height="1332"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="0"
+     inkscape:window-maximized="1"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
@@ -207,12 +207,12 @@
        ry="0" />
     <rect
        ry="0"
-       y="156.20314"
-       x="81.64978"
-       height="41.091072"
-       width="40.905048"
+       y="136.22737"
+       x="61.497234"
+       height="79.628387"
+       width="79.795921"
        id="AREA_LSTICKTEST"
-       style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.0431373;fill-rule:evenodd;stroke:#00b400;stroke-width:64.7414;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#00000a;fill-opacity:0.0431373;fill-rule:evenodd;stroke:none;stroke-width:1.9443;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
     <g
        style="display:inline;fill:#00000a;fill-opacity:0.04313725"
        transform="translate(26.544905,-516.36365)"
@@ -327,6 +327,6 @@
        height="81.292725"
        width="83.302414"
        id="AREA_RPADTEST"
-       style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#000169;fill-opacity:1;fill-rule:evenodd;stroke:#00b400;stroke-width:8.43695;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#000169;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
   </g>
 </svg>
