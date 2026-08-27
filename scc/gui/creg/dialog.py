@@ -11,6 +11,9 @@ import os
 import re
 
 import evdev
+import gi
+
+gi.require_version("Gtk", "3.0")
 from gi.repository import GdkPixbuf, GLib, Gtk
 
 from scc.config import Config
@@ -87,6 +90,7 @@ class ControllerRegistration(Editor):
 	@staticmethod
 	def does_he_looks_like_a_gamepad(dev):
 		"""Examines device capabilities and decides if it passes for gamepad.
+
 		Device is considered gamepad-like if has at least one button with
 		keycode in gamepad range and at least two axes.
 		"""
@@ -186,6 +190,15 @@ class ControllerRegistration(Editor):
 								index, positive = SDL_DPAD[k]
 								data = DPadEmuData(self._axis_data[index], positive)
 								self._mappings[keycode] = data
+							elif k in SDL_DPAD and re.fullmatch(r"[+-]a\d+", v):
+								mapping = parse_sdl_dpad_axis(k, v, axes)
+								if mapping is None:
+									log.warning("Skipping unknown gamecontrollerdb dpad axis: '%s'", v)
+									continue
+								code, index, invert = mapping
+								axis = self._axis_data[index]
+								axis.invert = invert
+								self._mappings[code] = axis
 							elif k == "platform":
 								# Not interesting
 								pass
@@ -196,9 +209,8 @@ class ControllerRegistration(Editor):
 
 		return False
 
-	def generate_mappings(self):
-		"""Generates initial mappings, just to have some preset to show.
-		"""
+	def generate_mappings(self) -> None:
+		"""Generates initial mappings, just to have some preset to show."""
 		buttons = list(BUTTON_ORDER)
 		axes = list(self._axis_data)
 		log.info("Generating default mappings")
@@ -213,7 +225,7 @@ class ControllerRegistration(Editor):
 			if len(buttons) == 0:
 				break
 
-	def generate_unassigned(self):
+	def generate_unassigned(self) -> None:
 		unassigned = set()
 		unassigned.clear()
 		assigned_axes = set([x for x in self._mappings.values() if isinstance(x, AxisData)])
@@ -225,8 +237,7 @@ class ControllerRegistration(Editor):
 		for a in BUTTON_ORDER:
 			if a not in assigned_buttons:
 				if a not in (SCButtons.RGRIP, SCButtons.LGRIP):
-					# Grips are not colored red as most of controllers doesn't
-					# have them anyway
+					# Grips are not colored red as most of controllers don't have them anyway
 					unassigned.add(nameof(a))
 		for a in TRIGGER_AREAS:
 			axis = self._axis_data[TRIGGER_AREAS[a]]
@@ -299,7 +310,8 @@ class ControllerRegistration(Editor):
 		cbControllerButtons = self.builder.get_object("cbControllerButtons")
 		self._groups = {}
 		model = cbControllerButtons.get_model()
-		groups = json.loads(open(os.path.join(self.app.imagepath, "button-images", "groups.json")).read())
+		with open(os.path.join(self.app.imagepath, "button-images", "groups.json")) as file:
+			groups = json.loads(file.read())
 		for group in groups:
 			images = [
 				GdkPixbuf.Pixbuf.new_from_file(os.path.join(self.app.imagepath, "button-images", "%s.svg" % (b,)))
@@ -629,18 +641,17 @@ class ControllerRegistration(Editor):
 			px, py = cursor.position
 			# Grab values
 			try:
-				trash, ay, trash, ah = self._controller_image.get_area_position(axis.area)
-				ax, trash, aw, trash = self._controller_image.get_area_position(axis.area + "TEST")
+				ax, ay, aw, ah = self._controller_image.get_area_position(axis.area + "TEST")
 			except ValueError:
 				# Area not found
 				cursor.set_visible(False)
 				return
 			cw = cursor.get_allocation().width
 			# Compute center
-			x, y = ax + aw * 0.5 - cw * 0.5, ay + aw * 0.5 - cw * 0.5
+			x, y = ax + aw * 0.5 - cw * 0.5, ay + ah * 0.5 - cw * 0.5
 			# Add pad position
 			x += px * aw / STICK_PAD_MAX * 0.5
-			y -= py * aw / STICK_PAD_MAX * 0.5
+			y -= py * ah / STICK_PAD_MAX * 0.5
 			# Move circle
 			parent.move(cursor, x, y)
 			cursor.set_visible(True)
@@ -741,3 +752,20 @@ class ControllerRegistration(Editor):
 			self._controller_image.connect("leave", self.on_area_leave)
 			self._controller_image.connect("click", self.on_area_click)
 			rvController.add(self._controller_image)
+
+def parse_sdl_dpad_axis(key: str, value: str, axes: list[int]) -> tuple[int, int, bool] | None:
+	"""Parse an SDL signed half-axis D-pad binding from gamecontrollerdb.
+
+	Parses: `dpup:-a1`, `dpdown:+a1`, `dpleft:-a0`, `dpright:+a0`.
+	"""
+	match = re.fullmatch(r"([+-])a(\d+)", value)
+	if key not in SDL_DPAD or match is None:
+		return None
+	try:
+		code = axes[int(match.group(2))]
+	except IndexError:
+		return None
+	axis_index, expected_positive = SDL_DPAD[key]
+	source_positive = match.group(1) == "+"
+	default_invert = AXIS_ORDER[axis_index][0] == "dpad_y"
+	return code, axis_index, default_invert ^ (source_positive != expected_positive)
