@@ -40,8 +40,8 @@ Linux:
   - **Void Linux:** Packaged as [sc-controller](https://github.com/void-linux/void-packages/blob/master/srcpkgs/sc-controller/template) - Run `xbps-install -S sc-controller` in a terminal, points to archived Ryochan7's fork at the time of writing
   - **Others:** You can attempt to use one of the AppImages (try all, AppImages built on older distributions tend to work better), or a package meant for your parent distribution if applicable. Flatpak is planned.
 
-Windows:
-  - It should be possible to get it running as per the [wiki](https://github.com/C0rn3j/sc-controller/wiki/Running-SC-Controller-on-Windows), but this is untested and might be broken, report a bug if so
+Windows/macOS:
+  - Not planned, the half-finished C rewrite has Windows support but it has been abandoned, see https://github.com/C0rn3j/sc-controller/issues/44 for more info
 
 
 ## Building the package by yourself
