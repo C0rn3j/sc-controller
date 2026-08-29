@@ -1,4 +1,12 @@
-from scc.gui.creg.dialog import parse_sdl_dpad_axis
+from scc.gui.creg.dialog import order_evdev_buttons_for_sdl, parse_sdl_dpad_axis
+
+
+def test_order_evdev_buttons_for_sdl_puts_gamepad_buttons_before_extra_keys() -> None:
+	# Xbox One S exposes its Share button as KEY_RECORD. Numeric evdev ordering
+	# puts it before BTN_SOUTH, while SDL appends it after the gamepad buttons.
+	buttons = [167, 304, 305, 307, 308, 310, 311, 314, 315, 316, 317, 318]
+
+	assert order_evdev_buttons_for_sdl(buttons) == [304, 305, 307, 308, 310, 311, 314, 315, 316, 317, 318, 167]
 
 
 def test_parse_sdl_dpad_half_axes() -> None:
