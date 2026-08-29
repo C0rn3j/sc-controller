@@ -20,7 +20,6 @@
     <property name="value">512</property>
     <property name="step-increment">32</property>
     <property name="page-increment">128</property>
-    <property name="page-size">128</property>
   </object>
   <object class="GtkAdjustment" id="adjFFrequency">
     <property name="lower">1</property>
@@ -35,7 +34,6 @@
     <property name="value">1024</property>
     <property name="step-increment">32</property>
     <property name="page-increment">128</property>
-    <property name="page-size">128</property>
   </object>
   <object class="GtkAdjustment" id="adjFriction">
     <property name="upper">6</property>
@@ -161,7 +159,6 @@
     <property name="destroy-with-parent">True</property>
     <property name="type-hint">dialog</property>
     <signal name="destroy" handler="on_Dialog_destroy" swapped="no"/>
-    <signal name="key-press-event" handler="on_Dialog_key_press_event" swapped="no"/>
     <child>
       <!-- n-columns=3 n-rows=7 -->
       <object class="GtkGrid" id="grEditor">

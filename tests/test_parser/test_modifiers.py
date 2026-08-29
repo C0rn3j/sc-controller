@@ -37,6 +37,13 @@ class TestModifiers:
 		a = _parse_compressed("pressed(axis(KEY_A))")
 		assert isinstance(a, PressedModifier)
 
+	def test_inverted(self):
+		"""Tests if InvertedButtonModifier is parsed
+		"""
+		a = _parse_compressed("inverted(button(KEY_A))")
+		assert isinstance(a, InvertedButtonModifier)
+		assert isinstance(a.action, ButtonAction)
+
 	def test_touched(self):
 		"""Tests if TouchedModifier is parsed"""
 		a = _parse_compressed("touched(button(KEY_A))")
@@ -202,6 +209,24 @@ class TestModifiers:
 		# Bellow was failing in past
 		assert _parses_as_itself(FeedbackModifier(HapticPos.LEFT, MouseAction()))
 		assert _parses_as_itself(FeedbackModifier(HapticPos.RIGHT, MouseAction()))
+
+	def test_feedbacktone(self):
+		"""Tests if FeedbackToneModifier survives a to_string/parse round trip."""
+		assert _parses_as_itself(FeedbackToneModifier(HapticPos.BOTH, MouseAction()))
+		assert _parses_as_itself(FeedbackToneModifier(HapticPos.LEFT, 512, 220, MouseAction()))
+		assert _parses_as_itself(
+			FeedbackToneModifier(HapticPos.RIGHT, 512, 220, 300, 4, 128, MouseAction()))
+
+	def test_feedbacksweep(self):
+		"""Tests if FeedbackSweepModifier survives a to_string/parse round trip."""
+		assert _parses_as_itself(FeedbackSweepModifier(HapticPos.BOTH, MouseAction()))
+		assert _parses_as_itself(
+			FeedbackSweepModifier(HapticPos.LEFT, 512, 400, 80, 250, MouseAction()))
+
+	def test_feedbackscript(self):
+		"""Tests if FeedbackScriptModifier survives a to_string/parse round trip."""
+		assert _parses_as_itself(FeedbackScriptModifier(HapticPos.BOTH, MouseAction()))
+		assert _parses_as_itself(FeedbackScriptModifier(HapticPos.RIGHT, 512, 3, MouseAction()))
 
 	def test_rotate(self):
 		"""Tests if RotateInputModifier can be converted to string and parsed

@@ -43,7 +43,7 @@
         <col id="2">mouse_cam</col>
       </row>
       <row>
-        <col id="0">gyroabs(Rels.REL_Y, [Rels.REL_X|None, Rels.REL_X])</col>
+        <col id="0">gyro(Rels.REL_Y, [Rels.REL_X|None, Rels.REL_X])</col>
         <col id="1" translatable="yes">Mouse (Emulate Stick)</col>
         <col id="2">mouse_stick</col>
       </row>

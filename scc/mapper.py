@@ -6,7 +6,7 @@ import time
 import traceback
 from typing import TYPE_CHECKING
 
-from scc.actions import Action, ButtonAction, GyroAbsAction
+from scc.actions import Action, ButtonAction, GyroAction
 from scc.aliases import ALL_AXES, ALL_BUTTONS
 from scc.config import Config
 from scc.constants import (
@@ -44,6 +44,13 @@ if TYPE_CHECKING:
 	type CInput = DualSenseBTControllerInput | ControllerInput | HIDControllerInput | EvdevControllerInput
 
 log = logging.getLogger("Mapper")
+
+# SCC_HAPTIC_DEBUG=1 also dumps the raw force-feedback effect as the uinput
+# shim hands it over, which is the only way to tell a shim-side problem from a
+# driver-side one.
+_RUMBLE_DEBUG = bool(os.environ.get("SCC_HAPTIC_DEBUG"))
+if _RUMBLE_DEBUG:
+	log.setLevel(logging.INFO)
 
 
 class Mapper:
@@ -172,6 +179,22 @@ class Mapper:
 				self.generate_feedback()
 				return
 
+			# Controllers with real rumble motors take the magnitude directly;
+			# only fall through to the click-train emulation below if they
+			# cannot, which on a v1 is always, its "motors" being pad actuators.
+			if _RUMBLE_DEBUG:
+				log.info("FF-RAW  type=%d level=%d strong=%d weak=%d dur=%d reps=%d",
+					ef.type, ef.level, ef.strong, ef.weak, ef.duration, ef.repetitions)
+			strong, weak = ef.strong, ef.weak
+			if not strong and not weak and ef.level > 0:
+				# Only FF_RUMBLE carries the two magnitudes. Every other effect
+				# type -- and any older libuinput -- provides just the averaged
+				# level, so drive both motors from that instead of handing the
+				# controller a silent (0, 0) and returning as if it played.
+				strong = weak = ef.level
+			if self.controller and self.controller.rumble(
+					strong, weak, int(ef.duration * max(1, ef.repetitions))):
+				return
 			period_command = 0
 			amplitude = 0
 			if ef.level != 0 and ef.repetitions > 0:
@@ -465,8 +488,12 @@ class Mapper:
 		self.clear_bt_stick_mouse_velocity()
 
 	def reset_gyros(self) -> None:
+		# GyroAction covers GyroAbsAction (subclass): absolute actions re-capture
+		# their orientation reference (ir), relative ones their lean-to-turn
+		# neutral pose. Rate-based outputs (laser-pointer mouse, relative stick)
+		# have no reference by nature, so recentering rightly leaves them alone.
 		for a in self.profile.get_all_actions():
-			if isinstance(a, GyroAbsAction):
+			if isinstance(a, GyroAction):
 				a.reset()
 
 	def input(self, controller: Controller, old_state: CInput, state: CInput) -> None:
@@ -510,7 +537,14 @@ class Mapper:
 			elif not self.buttons & SCButtons.LPADTOUCH:
 				if FE_STICK in fe or self.old_state.lpad_x != state.lpad_x or self.old_state.lpad_y != state.lpad_y:
 					self.profile.lstick.whole(self, state.lpad_x, state.lpad_y, LSTICK)
-			if controller.flags & ControllerFlags.HAS_RSTICK:
+			# HAS_RSTICK controllers store the right stick either as a real rstick
+			# (Steam Controller 2 / Deck) or, for gamepads on the generic HID decoder
+			# (DS4/DS5), as the right pad (pads[RIGHT]). The latter's state struct
+			# (HIDControllerInput) has no rstick_* fields, so guard the access:
+			# without it every event raised AttributeError here, which aborted the
+			# rest of input processing (right pad, triggers, touchpad) -- the reason
+			# those controls were dead on the DS4.
+			if self.controller.flags & ControllerFlags.HAS_RSTICK and hasattr(state, "rstick_x"):
 				if (
 					FE_STICK in fe
 					or self.old_state.rstick_x != state.rstick_x

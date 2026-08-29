@@ -27,7 +27,7 @@ except ImportError:
 	except ImportError:
 		from scc.lib.hidraw import HIDRaw
 
-from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, HapticPos, SCButtons
+from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, TRIGGER_MAX, ControllerFlags, HapticPos, SCButtons
 from scc.controller import Controller
 from scc.drivers.evdevdrv import (
 	HAVE_EVDEV,
@@ -134,10 +134,11 @@ class DS4Controller(Controller):
 			size=8,
 			data=AxisDataUnion(
 				axis=AxisModeData(
-					scale=1.0,
-					offset=-127.5,
-					clamp_max=257,
-					deadzone=10,
+					scale=2.0 / 255,
+					offset=-1.0,
+					clamp_min=STICK_PAD_MIN,
+					clamp_max=STICK_PAD_MAX,
+					deadzone=10 * 2.0 / 255,
 				),
 			),
 		)
@@ -147,10 +148,11 @@ class DS4Controller(Controller):
 			size=8,
 			data=AxisDataUnion(
 				axis=AxisModeData(
-					scale=-1.0,
-					offset=127.5,
-					clamp_max=257,
-					deadzone=10,
+					scale=-2.0 / 255,
+					offset=1.0,
+					clamp_min=STICK_PAD_MIN,
+					clamp_max=STICK_PAD_MAX,
+					deadzone=10 * 2.0 / 255,
 				),
 			),
 		)
@@ -160,10 +162,11 @@ class DS4Controller(Controller):
 			size=8,
 			data=AxisDataUnion(
 				axis=AxisModeData(
-					scale=1.0,
-					offset=-127.5,
-					clamp_max=257,
-					deadzone=10,
+					scale=2.0 / 255,
+					offset=-1.0,
+					clamp_min=STICK_PAD_MIN,
+					clamp_max=STICK_PAD_MAX,
+					deadzone=10 * 2.0 / 255,
 				),
 			),
 		)
@@ -173,10 +176,11 @@ class DS4Controller(Controller):
 			size=8,
 			data=AxisDataUnion(
 				axis=AxisModeData(
-					scale=-1.0,
-					offset=127.5,
-					clamp_max=257,
-					deadzone=10,
+					scale=-2.0 / 255,
+					offset=1.0,
+					clamp_min=STICK_PAD_MIN,
+					clamp_max=STICK_PAD_MAX,
+					deadzone=10 * 2.0 / 255,
 				),
 			),
 		)
@@ -186,9 +190,9 @@ class DS4Controller(Controller):
 			size=8,
 			data=AxisDataUnion(
 				axis=AxisModeData(
-					scale=1.0,
-					clamp_max=1,
-					deadzone=10,
+					scale=1.0 / 255,
+					clamp_max=TRIGGER_MAX,
+					deadzone=10.0 / 255,
 				),
 			),
 		)
@@ -198,9 +202,9 @@ class DS4Controller(Controller):
 			size=8,
 			data=AxisDataUnion(
 				axis=AxisModeData(
-					scale=1.0,
-					clamp_max=1,
-					deadzone=10,
+					scale=1.0 / 255,
+					clamp_max=TRIGGER_MAX,
+					deadzone=10.0 / 255,
 				),
 			),
 		)
@@ -242,6 +246,9 @@ class DS4Controller(Controller):
 				self._decoder.buttons.button_map[x] = 64
 			for x, sc in enumerate(DS4Controller.BUTTON_MAP):
 				self._decoder.buttons.button_map[x] = button_to_bit(sc)
+
+		self._packet_size = 64
+		self._decoder.packet_size = 64
 
 	def input(self, endpoint: int, data: bytes | bytearray) -> None:
 		# Special override for CPAD touch button

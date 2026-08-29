@@ -8,6 +8,7 @@ Used by Action Editor to display window with just one Component
 import importlib
 import logging
 
+from scc.actions import NoAction
 from scc.gui.ae import AEComponent
 from scc.gui.dwsnc import headerbar
 from scc.gui.editor import Editor
@@ -61,3 +62,11 @@ class SimpleChooser(Editor):
 	def hide_mouse(self):
 		"""Prevents user from selecting mouse-related stuff"""
 		self.component.hide_mouse()
+
+	def show_clear(self):
+		"""Reveals a 'Clear' button. The caller's callback must accept a NoAction
+		(i.e. handle the unset case)."""
+		self.builder.get_object("btClear").set_visible(True)
+
+	def on_btClear_clicked(self, *a):
+		self.set_action(NoAction())
