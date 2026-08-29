@@ -332,19 +332,16 @@ class ControllerRegistration(Editor):
 
 		filename = self._evdevice.name.strip().replace("/", "")
 		if self._tester.driver == "hid":
-			filename = "%.4x:%.4x-%s" % (self._evdevice.info.vendor, self._evdevice.info.product, filename)
+			filename = f"{self._evdevice.info.vendor:04x}:{self._evdevice.info.product:04x}-{filename}"
 
 		config_file = os.path.join(
 			get_config_path(),
 			"devices",
-			"%s-%s.json"
-			% (
-				self._tester.driver,
-				filename,
-			),
+			f"{self._tester.driver}-{filename}.json",
 		)
 
-		open(config_file, "w").write(jsondata)
+		with open(config_file, "w") as file:
+			file.write(jsondata)
 		log.debug("Controller configuration '%s' written", config_file)
 
 		self.kill_tester()

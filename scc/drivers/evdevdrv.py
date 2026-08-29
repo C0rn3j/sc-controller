@@ -120,6 +120,18 @@ class EvdevController(Controller):
 		self._axis_map = {}
 		self._dpad_map = {}
 		self._calibrations = {}
+		legacy_axes = {
+			"stick_x": "lstick_x",
+			"stick_y": "lstick_y",
+			# Evdev profiles predate the dedicated d-pad and right-stick axes
+			# and used the touchpads - real touchpads should never be assigned to an evdev device
+			# so just rewrite it.
+			# TODO(Martin): Ideally we should version saved profiles and migrate this proper
+			"lpad_x": "dpad_x",
+			"lpad_y": "dpad_y",
+			"rpad_x": "rstick_x",
+			"rpad_y": "rstick_y",
+		}
 
 		for x, value in config.get("buttons", {}).items():
 			try:
@@ -136,14 +148,14 @@ class EvdevController(Controller):
 		for x, value in config.get("axes", {}).items():
 			code, axis = int(x), value.get("axis")
 			# TODO(Martin): The following is a compat crutch for saved devices - change it to autoconvert it to current standard instead
-			axis = {"stick_x": "lstick_x", "stick_y": "lstick_y"}.get(axis, axis)
+			axis = legacy_axes.get(axis, axis)
 			if axis in EvdevControllerInput._fields:
 				self._calibrations[code] = parse_axis(value)
 				self._axis_map[code] = axis
 		for x, value in config.get("dpads", {}).items():
 			code, axis = int(x), value.get("axis")
 			# TODO(Martin): The following is a compat crutch for saved devices - change it to autoconvert it to current standard instead
-			axis = {"stick_x": "lstick_x", "stick_y": "lstick_y"}.get(axis, axis)
+			axis = legacy_axes.get(axis, axis)
 			if axis in EvdevControllerInput._fields:
 				self._calibrations[code] = parse_axis(value)
 				self._dpad_map[code] = value.get("positive", False)

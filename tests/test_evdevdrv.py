@@ -42,6 +42,41 @@ def test_parse_stick_axis_remains_bipolar() -> None:
 	assert calibrated_value(calibration, 255) == STICK_PAD_MAX
 
 
+def test_legacy_evdev_lpad_axes_are_loaded_as_dpad() -> None:
+	controller = object.__new__(EvdevController)
+	controller._parse_config(
+		{
+			"axes": {
+				"16": {"axis": "lpad_x", "min": -1, "max": 1},
+				"17": {"axis": "lpad_y", "min": -1, "max": 1},
+			},
+		},
+	)
+
+	assert controller._axis_map == {16: "dpad_x", 17: "dpad_y"}
+
+
+def test_legacy_evdev_pad_axes_are_migrated_regardless_of_event_code() -> None:
+	controller = object.__new__(EvdevController)
+	controller._parse_config(
+		{
+			"axes": {
+				"0": {"axis": "lpad_x", "min": 0, "max": 1920},
+				"1": {"axis": "lpad_y", "min": 0, "max": 1080},
+				"2": {"axis": "rpad_x", "min": -32768, "max": 32767},
+				"5": {"axis": "rpad_y", "min": -32768, "max": 32767},
+			},
+		},
+	)
+
+	assert controller._axis_map == {
+		0: "dpad_x",
+		1: "dpad_y",
+		2: "rstick_x",
+		5: "rstick_y",
+	}
+
+
 def test_get_event_node_accepts_kernel_event_device() -> None:
 	assert EvdevDriver.get_event_node("/sys/devices/input/input1/event17") == "/dev/input/event17"
 
