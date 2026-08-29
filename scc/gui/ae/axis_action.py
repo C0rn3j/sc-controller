@@ -6,6 +6,7 @@ Assigns emulated axis to trigger
 import logging
 import os
 from ctypes import POINTER, cast
+from typing import TYPE_CHECKING
 
 from gi.repository import Gdk, GdkX11, GLib
 
@@ -34,6 +35,9 @@ from scc.osd.area import Area
 from scc.osd.timermanager import TimerManager
 from scc.tools import _
 from scc.uinput import Axes, Keys, Rels
+
+if TYPE_CHECKING:
+	from gi.repository import Gtk
 
 log = logging.getLogger("AE.AxisAction")
 
@@ -73,7 +77,7 @@ class AxisActionComponent(AEComponent, TimerManager):
 			)
 			self.builder.get_object("grArea").set_sensitive(False)
 
-		# Remove options that are not applicable to currently editted input
+		# Remove options that are not applicable to currently edited input
 		if self.editor.get_id() in STICKS:
 			# Remove "Mouse Region", "Mouse" and "Mouse (Emulate Stick)" options
 			# when editing stick bindings
@@ -83,7 +87,7 @@ class AxisActionComponent(AEComponent, TimerManager):
 					cb.get_model().remove(row.iter)
 		else:
 			# Remove "Mouse" option when editing pads
-			# (it's effectivelly same as Trackpad)
+			# (it's effectively the same as Trackpad)
 			cb = self.builder.get_object("cbAxisOutput")
 			for row in cb.get_model():
 				if row[2] in ("wheel_stick", "mouse_stick"):
@@ -173,16 +177,16 @@ class AxisActionComponent(AEComponent, TimerManager):
 
 		self.set_cb(cbAxisOutput, "circular", 2)
 
-	def load_button_action(self, action):
+	def load_button_action(self, action: Action) -> None:
 		self.button = action
-		cbAxisOutput = self.builder.get_object("cbAxisOutput")
-		btSingleButton = self.builder.get_object("btSingleButton")
+		cbAxisOutput: Gtk.ComboBox | None = self.builder.get_object("cbAxisOutput")
+		btSingleButton: Gtk.Button | None = self.builder.get_object("btSingleButton")
 		btSingleButton.set_label(self.button.describe(Action.AC_PAD))
 		self.set_cb(cbAxisOutput, "button", 2)
 
-	def load_mouse_action(self, action):
-		cbMouseOutput = self.builder.get_object("cbMouseOutput")
-		cbAxisOutput = self.builder.get_object("cbAxisOutput")
+	def load_mouse_action(self, action: Action) -> None:
+		cbMouseOutput: Gtk.ComboBox | None = self.builder.get_object("cbMouseOutput")
+		cbAxisOutput: Gtk.ComboBox | None = self.builder.get_object("cbAxisOutput")
 		self._recursing = True
 		if isinstance(action, MouseAction):
 			if self.editor.get_id() in STICKS:
@@ -204,10 +208,9 @@ class AxisActionComponent(AEComponent, TimerManager):
 					self.set_cb(cbAxisOutput, "wheel_pad", 2)
 		self._recursing = False
 
-	def load_area_action(self, action):
-		"""Load AreaAction values into UI.
-		"""
-		cbAreaType = self.builder.get_object("cbAreaType")
+	def load_area_action(self, action: AreaAction) -> None:
+		"""Load AreaAction values into UI."""
+		cbAreaType: Gtk.ComboBox | None = self.builder.get_object("cbAreaType")
 
 		x1, y1, x2, y2 = action.coords
 		self.relative_area = False

@@ -258,17 +258,17 @@ class USBHIDController(SCUSBDevice, Controller):
 	def __init__(
 		self,
 		device: USBDevice,
-		daemon: SCCDaemon,
+		daemon: SCCDaemon | None,
 		handle: USBDeviceHandle,
-		config_file: str,
-		config: dict,
+		config_file: str | None,
+		config: dict | None,
 		test_mode: bool = False,
 	) -> None:
 		self._decoder: HIDDecoder
 		SCUSBDevice.__init__(self, device, handle)
 		self._ready: bool = False
-		self.daemon: SCCDaemon = daemon
-		self.config_file: str = config_file
+		self.daemon: SCCDaemon | None = daemon
+		self.config_file: str | None = config_file
 
 		id = None
 		max_size = 64

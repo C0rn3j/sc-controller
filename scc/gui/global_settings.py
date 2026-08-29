@@ -3,12 +3,15 @@
 Currently setups only one thing...
 """
 
+from __future__ import annotations
+
 import json
 import logging
 import os
 import re
 import sys
 import traceback
+from typing import TYPE_CHECKING
 
 from gi.repository import Gdk, GdkPixbuf, GLib, GObject, Gtk
 
@@ -29,6 +32,10 @@ from scc.profile import Encoder, Profile
 from scc.special_actions import ChangeProfileAction, RestartDaemonAction, TurnOffAction
 from scc.tools import _, find_binary, find_menu, find_profile
 from scc.x11.autoswitcher import AutoSwitcher, Condition
+
+if TYPE_CHECKING:
+	from scc.gui.app import App
+
 
 log = logging.getLogger("GS")
 
@@ -59,12 +66,12 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		# order: 0 - top, 1 - after 'options', 2 bottom
 	]
 
-	def __init__(self, app):
+	def __init__(self, app: App):
 		UserDataManager.__init__(self)
-		self.app = app
+		self.app: App = app
 		self.setup_widgets()
-		self._timer = None
-		self._recursing = False
+		self._timer: int | None = None
+		self._recursing: bool = False
 		self._gamepad_icons = {
 			"unknown": GdkPixbuf.Pixbuf.new_from_file(
 				os.path.join(self.app.imagepath, "controller-icons", "unknown.svg"),
@@ -160,13 +167,13 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			w.set_rgba(color)
 
 	def load_colors(self) -> None:
-		cbOSDStyle = self.builder.get_object("cbOSDStyle")
-		cbOSDColorPreset = self.builder.get_object("cbOSDColorPreset")
+		cbOSDStyle: Gtk.ComboBox | None = self.builder.get_object("cbOSDStyle")
+		cbOSDColorPreset: Gtk.ComboBox | None = self.builder.get_object("cbOSDColorPreset")
 		for k in self.app.config["osd_colors"]:
-			w = self.builder.get_object("cb%s" % (k,))
+			w: Gtk.ColorButton | None = self.builder.get_object(f"cb{k}")
 			self._load_color(w, "osd_colors", k)
 		for k in self.app.config["osk_colors"]:
-			w = self.builder.get_object("cbosk_%s" % (k,))
+			w: Gtk.ColorButton | None = self.builder.get_object(f"cbosk_{k}")
 			self._load_color(w, "osk_colors", k)
 		theme = self.app.config.get("osd_color_theme", "None")
 		self.set_cb(cbOSDColorPreset, theme)
@@ -174,8 +181,8 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 
 	def load_autoswitch(self) -> None:
 		"""Transfers autoswitch settings from config to UI"""
-		tvItems = self.builder.get_object("tvItems")
-		cbShowOSD = self.builder.get_object("cbShowOSD")
+		tvItems: Gtk.TreeView | None = self.builder.get_object("tvItems")
+		cbShowOSD: Gtk.CheckButton | None = self.builder.get_object("cbShowOSD")
 		conditions = AutoSwitcher.parse_conditions(self.app.config)
 		model = tvItems.get_model()
 		model.clear()

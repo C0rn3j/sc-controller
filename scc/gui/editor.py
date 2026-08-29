@@ -12,7 +12,7 @@ log = logging.getLogger("Editor")
 
 
 class ComboSetter:
-	def set_cb(self, cb, key, keyindex=0) -> bool:
+	def set_cb(self, cb: Gtk.ComboBox | None, key: str, keyindex: int = 0) -> bool:
 		"""Set combobox value.
 
 		Returns True on success or False if key is not found.

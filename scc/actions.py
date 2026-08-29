@@ -53,7 +53,7 @@ from scc.tools import anglediff, circle_to_square, clamp, ensure_size, nameof, q
 from scc.uinput import Axes, Keys, Rels
 
 if TYPE_CHECKING:
-	from typing import Self
+	from typing import Self, ModuleType
 	from scc.mapper import Mapper
 	from scc.controller import HapticData
 
@@ -153,8 +153,9 @@ class Action:
 				Action.PKEYS[k] = action_cls
 
 	@staticmethod
-	def unregister_prefix(prefix):
+	def unregister_prefix(prefix: str) -> bool:
 		"""Unregisters prefix (as in Prefix.COMMAND) recognized by parser.
+
 		Returns True on sucess, False if there is no such prefix registered.
 		"""
 		if prefix in Action.ALL:
@@ -164,7 +165,7 @@ class Action:
 		return False
 
 	@staticmethod
-	def register_all(module, prefix=None):
+	def register_all(module: ModuleType, prefix: str | None = None) -> None:
 		"""Registers all actions from module"""
 		for x in dir(module):
 			g = getattr(module, x)
@@ -216,15 +217,16 @@ class Action:
 
 	__repr__ = __str__
 
-	def describe(self, context: int):
+	def describe(self, context: int) -> str:
 		"""Returns string that describes what action does in human-readable form.
+
 		Used in GUI.
 		"""
 		if self.name:
 			return self.name
 		return str(self)
 
-	def to_string(self, multiline: bool = False, pad: int = 0):
+	def to_string(self, multiline: bool = False, pad: int = 0) -> str:
 		"""Convert action back to string."""
 		return (" " * pad) + "{}({})".format(
 			self.COMMAND,
@@ -240,14 +242,14 @@ class Action:
 			),
 		)
 
-	def set_name(self, name) -> Self:
+	def set_name(self, name: str) -> Self:
 		"""Sets display name of action. Returns self."""
 		self.name = name
 		return self
 
 	def strip(self) -> Self:
-		"""For modifier, returns first child action that actually
-		does something (first non-modifier).
+		"""For modifier, returns first child action that actually does something (first non-modifier).
+
 		For everything else, returns itself.
 
 		Used only to determine effective action type in editor.

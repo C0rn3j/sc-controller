@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """SC-Controller - Controller Registration - Tester
 
 Class that interacts with `scc hid_test` and `scc evdev_test` commands.
@@ -15,6 +14,7 @@ log = logging.getLogger("CReg.Tester")
 
 class Tester(GObject.GObject):
 	"""List of signals:
+
 	ready ()
 		Emited when subprocess signalizes it's ready to send data
 	error (code)
@@ -35,15 +35,15 @@ class Tester(GObject.GObject):
 		"button": (GObject.SignalFlags.RUN_FIRST, None, (int, bool)),
 	}
 
-	def __init__(self, driver, device_id):
+	def __init__(self, driver, device_id) -> None:
 		GObject.GObject.__init__(self)
-		self.buffer = b""
+		self.buffer: bytes = b""
 		self.buttons: list[int] = []
 		self.axes = []
 		self.subprocess = None
 		self.driver = driver
 		self.device_id = device_id
-		self.errorred = False  # To prevent sending 'error' signal multiple times
+		self.errorred: bool = False  # To prevent sending 'error' signal multiple times
 
 	def __del__(self):
 		if self.subprocess:

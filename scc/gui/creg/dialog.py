@@ -51,7 +51,7 @@ class ControllerRegistration(Editor):
 		App.OBSERVE_COLOR.replace("#FF", "#7F"),
 	)
 
-	def __init__(self, app):
+	def __init__(self, app) -> None:
 		Editor.__init__(self)
 		self.app = app
 		self._gamepad_icon = GdkPixbuf.Pixbuf.new_from_file(
@@ -64,7 +64,7 @@ class ControllerRegistration(Editor):
 		self.setup_widgets()
 		self._controller_image = None
 		self._evdevice = None
-		self._tester = None
+		self._tester: Tester | None = None
 		self._grabber = None
 		self._input_axes = {}
 		self._mappings = {}
@@ -114,7 +114,7 @@ class ControllerRegistration(Editor):
 						return True
 		return False
 
-	def load_sdl_mappings(self):
+	def load_sdl_mappings(self) -> bool:
 		"""Attempts to load mappings from gamecontrollerdb.txt.
 
 		Return True on success.
@@ -136,9 +136,8 @@ class ControllerRegistration(Editor):
 		# Search in database
 		try:
 			db = open(os.path.join(get_share_path(), "gamecontrollerdb.txt"))
-		except Exception as e:
-			log.error("Failed to load gamecontrollerdb")
-			log.exception(e)
+		except Exception:
+			log.exception("Failed to load gamecontrollerdb")
 			return False
 
 		with db:
@@ -259,7 +258,7 @@ class ControllerRegistration(Editor):
 		for a in unhilight:
 			self.unhilight(a)
 
-	def generate_raw_data(self):
+	def generate_raw_data(self) -> None:
 		cbControllerButtons = self.builder.get_object("cbControllerButtons")
 		cbControllerType = self.builder.get_object("cbControllerType")
 		buffRawData = self.builder.get_object("buffRawData")
@@ -269,19 +268,19 @@ class ControllerRegistration(Editor):
 			dpads={},
 		)
 
-		def axis_to_json(axisdata: AxisData):
+		def axis_to_json(axisdata: AxisData) -> dict[str, str | float | int]:
 			index = self._axis_data.index(axisdata)
 			target_axis, xy = AXIS_ORDER[index]
 			min, max = axisdata.min, axisdata.max
 			if axisdata.invert:
 				min, max = max, min
 
-			rv = dict(axis=target_axis, min=min, max=max)
+			rv = {"axis": target_axis, "min": min, "max": max}
 			if target_axis not in ("ltrig", "rtrig"):
 				# Deadzone is generated with assumption that all sticks are left
 				# in center position before 'Save' is pressed.
-				center = axisdata.min + (axisdata.max - axisdata.min) / 2
-				deadzone = abs(axisdata.pos - center) * 2 + 2
+				center: float = axisdata.min + (axisdata.max - axisdata.min) / 2
+				deadzone: float = abs(axisdata.pos - center) * 2 + 2
 				if abs(axisdata.max) < 2:
 					# DPADs
 					deadzone = 0

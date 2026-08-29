@@ -47,7 +47,6 @@ from scc.tools import (
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-	from gi.repository.Gio import ApplicationCommandLine
 	from typing import Never
 	from scc.gui.osd_mode import OSDModeMapper
 	from gi.repository.Gtk import Image
@@ -1430,7 +1429,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.osd_mode = lo.contains("osd")
 		return -1
 
-	def do_command_line(self, cl: ApplicationCommandLine) -> int:
+	def do_command_line(self, cl: Gio.ApplicationCommandLine) -> int:
 		Gtk.Application.do_command_line(self, cl)
 		if len(cl.get_arguments()) > 1:
 			filename = " ".join(cl.get_arguments()[1:])  # 'cos fuck Gtk...
