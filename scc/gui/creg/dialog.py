@@ -121,6 +121,8 @@ class ControllerRegistration(Editor):
 		"""
 		# Build list of button and axes
 		buttons = self._tester.buttons
+		if self._tester.driver == "evdev":
+			buttons = order_evdev_buttons_for_sdl(buttons)
 		axes = self._tester.axes
 
 		# Generate database ID
@@ -747,6 +749,21 @@ class ControllerRegistration(Editor):
 			self._controller_image.connect("leave", self.on_area_leave)
 			self._controller_image.connect("click", self.on_area_click)
 			rvController.add(self._controller_image)
+
+def order_evdev_buttons_for_sdl(buttons: list[int]) -> list[int]:
+	"""Return evdev key codes in the order used by SDL's Linux joystick driver.
+
+	Anything above and including BTN_JOYSTICK (288) is sorted first.
+
+	SDL numbers joystick/gamepad buttons before other keys exposed by the same device.
+
+	Linux capabilities, on the other hand, are returned in numeric order,
+	so keys such as Xbox One S's KEY_RECORD (167) would otherwise incorrectly become b0.
+	"""
+	gamepad_buttons = [code for code in buttons if code >= evdev.ecodes.BTN_JOYSTICK]
+	other_buttons = [code for code in buttons if code < evdev.ecodes.BTN_JOYSTICK]
+	return gamepad_buttons + other_buttons
+
 
 def parse_sdl_dpad_axis(key: str, value: str, axes: list[int]) -> tuple[int, int, bool] | None:
 	"""Parse an SDL signed half-axis D-pad binding from gamecontrollerdb.
