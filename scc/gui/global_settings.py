@@ -757,11 +757,11 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 	def on_btRemoveController_clicked(self, *a):
 		tvControllers = self.builder.get_object("tvControllers")
 		d = Gtk.MessageDialog(
-			parent=self.window,
-			flags=Gtk.DialogFlags.MODAL,
-			type=Gtk.MessageType.WARNING,
+			transient_for=self.window,
+			modal=True,
+			message_type=Gtk.MessageType.WARNING,
 			buttons=Gtk.ButtonsType.YES_NO,
-			message_format=_("Unregister controller?"),
+			text=_("Unregister controller?"),
 		)
 		d.format_secondary_text(_("You'll lose all settings for it"))
 		if d.run() == -8:

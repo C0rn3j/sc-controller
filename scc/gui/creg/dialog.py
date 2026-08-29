@@ -503,19 +503,18 @@ class ControllerRegistration(Editor):
 		btNext.set_label("_Save")
 		btNext.set_sensitive(True)
 
-	def on_device_open_failed(self, *a):
-		"""Called when all (or user-selected) driver fails
-		to communicate with controller.
+	def on_device_open_failed(self, *a) -> None:
+		"""Called when all (or user-selected) driver fails to communicate with controller.
 
 		Shoudln't be really possible, but something
 		_has_ to happen in such case.
 		"""
 		d = Gtk.MessageDialog(
-			parent=self.window,
-			flags=Gtk.DialogFlags.MODAL,
-			type=Gtk.MessageType.ERROR,
+			transient_for=self.window,
+			modal=True,
+			message_type=Gtk.MessageType.ERROR,
 			buttons=Gtk.ButtonsType.OK,
-			message_format=_("Failed to open device"),
+			text=_("Failed to open device"),
 		)
 		d.run()
 		d.destroy()

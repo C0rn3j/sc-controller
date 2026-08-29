@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
 """SC-Controller - Action Editor - common part of "DPAD or menu" and "Special Action",
+
 two components with MenuAction selectable.
 """
 
@@ -177,11 +177,11 @@ class MenuActionCofC(UserDataManager):
 			text = _("Really delete selected menu?")
 
 		d = Gtk.MessageDialog(
-			parent=self.editor.window,
-			flags=Gtk.DialogFlags.MODAL,
-			type=Gtk.MessageType.WARNING,
+			transient_for=self.editor.window,
+			modal=True,
+			message_type=Gtk.MessageType.WARNING,
 			buttons=Gtk.ButtonsType.OK_CANCEL,
-			message_format=text,
+			text=text,
 		)
 
 		if MenuEditor.menu_is_global(id):

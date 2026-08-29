@@ -387,11 +387,11 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		by his vaim belief I'll not format his harddrive.
 		"""
 		d = Gtk.MessageDialog(
-			parent=self.window,
-			flags=Gtk.DialogFlags.MODAL,
-			type=Gtk.MessageType.WARNING,
+			transient_for=self.window,
+			modal=True,
+			message_type=Gtk.MessageType.WARNING,
 			buttons=Gtk.ButtonsType.OK_CANCEL,
-			message_format=_("sudo fix-my-pc"),
+			text=_("sudo fix-my-pc"),
 		)
 
 		def on_response(dialog, response_id) -> None:
@@ -402,11 +402,11 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 					self.dm.restart()
 				else:
 					d2 = Gtk.MessageDialog(
-						parent=d,
-						flags=Gtk.DialogFlags.MODAL,
-						type=Gtk.MessageType.ERROR,
+						transient_for=d,
+						modal=True,
+						message_type=Gtk.MessageType.ERROR,
 						buttons=Gtk.ButtonsType.OK,
-						message_format=_("Command Failed"),
+						text=_("Command Failed"),
 					)
 					d2.run()
 					d2.destroy()
@@ -677,11 +677,11 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		if self.current.is_template:
 			# Ask user if he is OK with overwriting template
 			d = Gtk.MessageDialog(
-				parent=self.window,
-				flags=Gtk.DialogFlags.MODAL,
-				type=Gtk.MessageType.QUESTION,
+				transient_for=self.window,
+				modal=True,
+				message_type=Gtk.MessageType.QUESTION,
 				buttons=Gtk.ButtonsType.YES_NO,
-				message_format=_("You are about to save changes over template.\nAre you sure?"),
+				text=_("You are about to save changes over template.\nAre you sure?"),
 			)
 			NEW_PROFILE_BUTTON = 7
 			d.add_button(_("Create New Profile"), NEW_PROFILE_BUTTON)
@@ -1326,11 +1326,11 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			text = _("Really delete current profile?")
 
 		d = Gtk.MessageDialog(
-			parent=self.window,
-			flags=Gtk.DialogFlags.MODAL,
-			type=Gtk.MessageType.WARNING,
+			transient_for=self.window,
+			modal=True,
+			message_type=Gtk.MessageType.WARNING,
 			buttons=Gtk.ButtonsType.OK_CANCEL,
-			message_format=text,
+			text=text,
 		)
 		d.format_secondary_text(_("This action is not undoable!"))
 
