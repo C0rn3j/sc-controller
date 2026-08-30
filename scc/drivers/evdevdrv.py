@@ -34,6 +34,8 @@ except ImportError:
 	ecodes = FakeECodes()
 
 if TYPE_CHECKING:
+	from evdev.device import InputDevice
+
 	from scc.mapper import Mapper
 	from scc.sccdaemon import SCCDaemon
 
@@ -102,10 +104,10 @@ class EvdevController(Controller):
 			log.error("Failed to parse config for evdev controller")
 			raise
 		Controller.__init__(self)
-		self.device = device
-		self.config_file = config_file
+		self.device: InputDevice[str] = device
+		self.config_file: str = config_file
 		self.config = config
-		self.daemon = daemon
+		self.daemon: SCCDaemon = daemon
 		self.poller = None
 		if daemon:
 			self.poller = daemon.get_poller()
@@ -169,7 +171,7 @@ class EvdevController(Controller):
 			pass
 		self.device.close()
 
-	def get_type(self):
+	def get_type(self) -> str:
 		return "evdev"
 
 	def get_id(self):

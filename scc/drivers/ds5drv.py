@@ -29,6 +29,8 @@ except ImportError:
 		from scc.lib.hidraw import HIDRaw
 
 from scc.constants import (
+	DUALSENSE_CPAD_X_MAX,
+	DUALSENSE_CPAD_Y_MAX,
 	STICK_PAD_MAX,
 	STICK_PAD_MIN,
 	STICK_PAD_RES,
@@ -184,8 +186,8 @@ class DualSenseBTControllerInput(ctypes.Structure):
 		("q2", ctypes.c_int32),
 		("q3", ctypes.c_int32),
 		("q4", ctypes.c_int32),
-		("cpad_x", ctypes.c_uint16),
-		("cpad_y", ctypes.c_uint16),
+		("cpad_x", ctypes.c_int32),
+		("cpad_y", ctypes.c_int32),
 	]
 
 
@@ -829,10 +831,18 @@ class DS5BluetoothHIDRawController(Controller):
 		if (data[34] & 0x80) == 0:
 			state.buttons |= SCButtons.CPADTOUCH
 
-		state.cpad_x = ((data[36] & 0x0F) << 8) | data[35]
-		state.cpad_y = ((data[37] & 0x0F) << 4) | ((data[36] & 0xF0) >> 4)
+		raw_cpad_x = ((data[36] & 0x0F) << 8) | data[35]
+		raw_cpad_y = (data[37] << 4) | ((data[36] & 0xF0) >> 4)
+		state.cpad_x = self._cpad_axis_scale(raw_cpad_x, DUALSENSE_CPAD_X_MAX)
+		state.cpad_y = self._cpad_axis_scale(raw_cpad_y, DUALSENSE_CPAD_Y_MAX, invert=True)
 
 		return state
+
+	@staticmethod
+	def _cpad_axis_scale(value: int, maximum: int, invert: bool = False) -> int:
+		value = max(0, min(value, maximum))
+		scaled = int(value * STICK_PAD_RES / maximum)
+		return STICK_PAD_MAX - scaled if invert else STICK_PAD_MIN + scaled
 
 	def _stick_axis_scale(self, value, invert=False, test=False):
 		result = value - 128

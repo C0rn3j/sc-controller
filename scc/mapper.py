@@ -98,11 +98,11 @@ class Mapper:
 		self.syn_list = set()
 		self.buttons: SCButtons = SCButtons(0)
 		self.old_buttons: SCButtons = SCButtons(0)
-		self.lpad_touched = False
+		self.lpad_touched: bool = False
 		self.state: CInput | None = None
 		self.old_state: CInput | None = None
 		self.force_event: set[int] = set() # FE_STICK, FE_TRIGGER, FE_PAD or FE_GYRO
-		self.time_elapsed = 0.0
+		self.time_elapsed: float = 0.0
 		self._bt_stick_mouse_velocities: dict[tuple[Action, SCSticks], tuple[float, float]] = {}
 		self._bt_stick_mouse_task: Task | None = None
 		self._bt_stick_mouse_last_tick: float = 0.0

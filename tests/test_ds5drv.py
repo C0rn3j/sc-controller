@@ -1,6 +1,6 @@
 from unittest.mock import Mock, call, patch
 
-from scc.constants import HapticPos
+from scc.constants import DUALSENSE_CPAD_X_MAX, DUALSENSE_CPAD_Y_MAX, STICK_PAD_MAX, STICK_PAD_MIN, HapticPos
 from scc.controller import HapticData
 from scc.drivers import ds5drv
 from scc.drivers.hiddrv import AxisMode, AxisType
@@ -23,6 +23,25 @@ def test_dualsense_decoders_use_dedicated_dpad_axes() -> None:
 	assert not hasattr(state, "lpad_x")
 	assert state.dpad_x > 0
 	assert state.dpad_y == 0
+
+
+def test_bluetooth_hidraw_touchpad_uses_full_normalized_range() -> None:
+	controller = object.__new__(ds5drv.DS5BluetoothHIDRawController)
+	controller._delta_time = 0
+	controller._previous_quat = [1.0, 0.0, 0.0, 0.0]
+	data = bytearray(64)
+
+	state = controller._convert_input_data(data)
+	assert (state.cpad_x, state.cpad_y) == (STICK_PAD_MIN, STICK_PAD_MAX)
+
+	raw_x = DUALSENSE_CPAD_X_MAX
+	raw_y = DUALSENSE_CPAD_Y_MAX
+	data[35] = raw_x & 0xFF
+	data[36] = ((raw_x >> 8) & 0x0F) | ((raw_y & 0x0F) << 4)
+	data[37] = raw_y >> 4
+
+	state = controller._convert_input_data(data)
+	assert (state.cpad_x, state.cpad_y) == (STICK_PAD_MAX, STICK_PAD_MIN)
 
 
 def test_hidraw_driver_registers_all_dualsense_products() -> None:
