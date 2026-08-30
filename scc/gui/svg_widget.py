@@ -295,7 +295,7 @@ class Area:
 
 	"""Basicaly just a rectangle with a name"""
 
-	def __init__(self, element: ET.Element, transform) -> None:
+	def __init__(self, element: ET.Element, transform: list[list[float]]) -> None:
 		self.color: tuple[float, float, float, float] | None
 		self.name: str = element.attrib["id"].split("_")[1]
 		# Check if this is an area name that images/buttons.svg uses
@@ -305,11 +305,20 @@ class Area:
 		# Hopefully this isn't used anywhere else
 		if self.name in Area.SPECIAL_CASES:
 			self.name = "_".join(element.attrib["id"].split("_")[1:3])
-		self.x: float
-		self.y: float
-		self.x, self.y = SVGEditor.get_translation(transform)
-		self.w: float = float(element.attrib.get("width", 0))
-		self.h: float = float(element.attrib.get("height", 0))
+		width = float(element.attrib.get("width", 0))
+		height = float(element.attrib.get("height", 0))
+		corners = (
+			SVGEditor.transform_point(transform, 0, 0),
+			SVGEditor.transform_point(transform, width, 0),
+			SVGEditor.transform_point(transform, 0, height),
+			SVGEditor.transform_point(transform, width, height),
+		)
+		xs = [point[0] for point in corners]
+		ys = [point[1] for point in corners]
+		self.x = min(xs)
+		self.y = min(ys)
+		self.w = max(xs) - self.x
+		self.h = max(ys) - self.y
 
 	def contains(self, x, y):
 		return x >= self.x and y >= self.y and x <= self.x + self.w and y <= self.y + self.h
@@ -539,6 +548,14 @@ class SVGEditor:
 		if len(a) > 0:
 			return SVGEditor.matrixmul(SVGEditor.matrixmul(X, Y), a[0], *a[1:])
 		return [[sum(a * b for a, b in zip(x, y)) for y in zip(*Y)] for x in X]
+
+	@staticmethod
+	def transform_point(matrix: list[list[float]], x: float, y: float) -> tuple[float, float]:
+		"""Transform a point using an SVG affine transformation matrix."""
+		return (
+			matrix[0][0] * x + matrix[0][1] * y + matrix[0][2],
+			matrix[1][0] * x + matrix[1][1] * y + matrix[1][2],
+		)
 
 	@staticmethod
 	def scale(xml, sx: float, sy: float | None = None) -> None:

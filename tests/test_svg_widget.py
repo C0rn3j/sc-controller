@@ -1,10 +1,39 @@
+from xml.etree import ElementTree as ET
+
 import gi
+import pytest
 
 gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
 gi.require_version("Rsvg", "2.0")
 
-from scc.gui.svg_widget import SVGEditor
+from scc.gui.svg_widget import SVGEditor, SVGWidget
+
+
+def test_area_bounds_apply_nonuniform_parent_scale() -> None:
+	tree = ET.fromstring(
+		'<svg><g transform="matrix(2,0,0,3,10,20)">'
+		'<rect id="AREA_TEST" x="4" y="5" width="6" height="7" />'
+		"</g></svg>",
+	)
+	areas = []
+
+	SVGWidget.find_areas(tree, None, areas)
+
+	assert (areas[0].x, areas[0].y, areas[0].w, areas[0].h) == (18, 35, 12, 21)
+
+
+def test_area_bounds_enclose_rotated_rectangle() -> None:
+	tree = ET.fromstring(
+		'<svg><g transform="rotate(90)">'
+		'<rect id="AREA_TEST" x="10" y="20" width="30" height="40" />'
+		"</g></svg>",
+	)
+	areas = []
+
+	SVGWidget.find_areas(tree, None, areas)
+
+	assert (areas[0].x, areas[0].y, areas[0].w, areas[0].h) == pytest.approx((-60, 10, 40, 30))
 
 
 def test_clone_element_deep_copies_children() -> None:
