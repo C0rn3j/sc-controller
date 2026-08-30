@@ -1,16 +1,29 @@
-#!/usr/bin/env python3
 """SC-Controller - Gestures
 
 Everything related to non-GUI part of gesture detection lies here.
 It's technically part of SCC-Daemon, separater into special module just to keep
 it clean.
 """
+from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 from scc.actions import Action
-from scc.constants import CPAD, CPAD_MIN, CPAD_X_MAX, CPAD_Y_MAX, STICK_PAD_MAX, STICK_PAD_MIN
+from scc.constants import (
+	CPAD,
+	CPAD_MIN,
+	DS4_CPAD_X_MAX,
+	DS4_CPAD_Y_MAX,
+	DUALSENSE_CPAD_X_MAX,
+	DUALSENSE_CPAD_Y_MAX,
+	STICK_PAD_MAX,
+	STICK_PAD_MIN,
+)
 from scc.tools import clamp
+
+if TYPE_CHECKING:
+	from scc.mapper import Mapper
 
 log = logging.getLogger("Gestures")
 
@@ -56,7 +69,7 @@ class GestureDetector(Action):
 		"""Returns gesture resolution"""
 		return self._resolution
 
-	def whole(self, mapper, x, y, what):
+	def whole(self, mapper: Mapper, x, y, what) -> None:
 		if self._enabled:
 			if (x, y) == (0, 0):
 				# Pad was released
@@ -65,6 +78,8 @@ class GestureDetector(Action):
 				return
 			# Convert positions on pad to position on grid
 			if what == CPAD:
+				con_type = mapper.controller.get_type()
+				#if con_type in ('ds4'):
 				x = clamp(0, float(x) / (CPAD_X_MAX - CPAD_MIN), 1.0)
 				y = clamp(0, float(y) / (CPAD_Y_MAX - CPAD_MIN), 1.0)
 				x *= self._resolution
