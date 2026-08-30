@@ -545,7 +545,7 @@ class Mapper:
 					self.profile.pads[DPAD].whole(self, state.dpad_x, state.dpad_y, SCPads.DPAD)
 
 			# LPAD
-			if controller.flags & ControllerFlags.SEPARATE_LSTICK:
+			if controller.flags & ControllerFlags.SEPARATE_LSTICK and hasattr(state, "lpad_x"):
 				if FE_PAD in fe or self.old_state.lpad_x != state.lpad_x or self.old_state.lpad_y != state.lpad_y:
 					self.profile.pads[SCPads.LPAD].whole(self, state.lpad_x, state.lpad_y, SCPads.LPAD)
 			elif self.buttons & SCButtons.LPADTOUCH:
