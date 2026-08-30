@@ -50,9 +50,6 @@ class ButtonsComponent(AEComponent, Chooser):
 		if not self.loaded:
 			AEComponent.load(self)
 			self.setup_image()
-			if self.app.osd_mode:
-				self.builder.get_object("btnGrabKey").set_sensitive(False)
-				self.builder.get_object("btnGrabAnother").set_sensitive(False)
 
 	def area_action_selected(self, area, action):
 		self.set_active_area(area)
