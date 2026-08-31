@@ -63,10 +63,12 @@ class Dialog(OSDWindow):
 		self._text.set_name("osd-dialog-text")
 		return dialog
 
-	def pack_items(self, parent, items):
+	def pack_items(self, parent, items) -> None:
 		for item in items:
-			if hasattr(item.widget, "set_alignment"):
-				item.widget.set_alignment(0.5, 0.5)
+			child = item.widget.get_child()
+			if child is not None:
+				child.set_halign(Gtk.Align.CENTER)
+				child.set_valign(Gtk.Align.CENTER)
 			self._buttons.pack_end(item.widget, True, True, 0)
 
 	def use_daemon(self, d):

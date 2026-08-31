@@ -96,14 +96,14 @@ class Launcher(OSDWindow):
 		name = "".join([Launcher.CHAR_TO_NUMBER[x] if x in Launcher.VALID_CHARS else " " for x in string.upper()])
 		return name
 
-	def create_parent(self):
+	def create_parent(self) -> None:
 		self.parent = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 		self.parent.set_name("osd-dialog")
 		self.f = Gtk.Fixed()
 		self.f.add(self.parent)
 		self.add(self.f)
 
-	def create_app_list(self):
+	def create_app_list(self) -> None:
 		lst = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 		lst.set_name("osd-application-list")
 		self.items = [self.generate_widget("") for x in range(self.MAX_ROWS)]
@@ -113,7 +113,7 @@ class Launcher(OSDWindow):
 		self._set_launchers([])
 		lst.show_all()
 
-	def create_buttons(self):
+	def create_buttons(self) -> None:
 		self.grid = Gtk.Grid()
 		self.parent.pack_start(self.grid, True, True, 0)
 		self._buttons = []
@@ -141,7 +141,7 @@ class Launcher(OSDWindow):
 				item.widget.set_alignment(0.5, 0.5)
 			self._buttons.pack_end(item.widget, True, True, 0)
 
-	def use_daemon(self, d):
+	def use_daemon(self, d) -> None:
 		"""Allows (re)using already existing DaemonManager instance in same process.
 
 		use_config() should be be called before parse_arguments() if this is used.
