@@ -550,10 +550,16 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 	def on_mnuEditPress_activate(self, *a) -> None:
 		"""Handler for 'Edit Pressed Action' context menu item."""
-		id = self.context_menu_for
-		if id == SCSticks.LSTICK:
-			id = nameof(SCButtons.LSTICKPRESS)
-		self.show_editor(getattr(SCButtons, id))
+		menu_id = self.context_menu_for
+		# Without these workarounds, the right click context menu won't work with these
+		# See https://github.com/C0rn3j/sc-controller/issues/139
+		if menu_id == SCSticks.LSTICK:
+			menu_id = nameof(SCButtons.LSTICKPRESS)
+		elif menu_id == SCSticks.RSTICK:
+			menu_id = nameof(SCButtons.RSTICKPRESS)
+		elif menu_id == SCPads.CPAD:
+			menu_id = nameof(SCButtons.CPADPRESS)
+		self.show_editor(getattr(SCButtons, menu_id))
 
 	def on_mnuGlobalSettings_activate(self, *a) -> None:
 		from scc.gui.global_settings import GlobalSettings
