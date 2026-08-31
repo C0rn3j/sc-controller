@@ -85,9 +85,14 @@ class BindingEditor:
 		Returns formely stored action.
 		"""
 		before = NoAction()
+		# First three are LSTICK/RSTICK/CPAD workarounds
+		# See https://github.com/C0rn3j/sc-controller/issues/139#issuecomment-5485733318
 		if id == SCButtons.LSTICKPRESS and SCSticks.LSTICK in self.button_widgets:
 			before, profile.buttons[id] = profile.buttons[id], action
 			self.button_widgets[SCSticks.LSTICK].update()
+		elif id == SCButtons.RSTICKPRESS and SCSticks.RSTICK in self.button_widgets:
+			before, profile.buttons[id] = profile.buttons[id], action
+			self.button_widgets[SCSticks.RSTICK].update()
 		elif id == SCButtons.CPADPRESS and SCPads.CPAD in self.button_widgets:
 			before, profile.buttons[id] = profile.buttons[id], action
 			self.button_widgets[SCPads.CPAD].update()
