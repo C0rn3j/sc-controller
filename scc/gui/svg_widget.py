@@ -41,7 +41,7 @@ log = logging.getLogger("Background")
 ET.register_namespace("", "http://www.w3.org/2000/svg")
 
 
-class SVGWidget(Gtk.EventBox):
+class SVGWidget(Gtk.Box):
 	FILENAME = "background.svg"
 	CACHE_SIZE = 50
 
@@ -55,7 +55,7 @@ class SVGWidget(Gtk.EventBox):
 	}
 
 	def __init__(self, filename: str, init_hilighted: bool = True) -> None:
-		Gtk.EventBox.__init__(self)
+		Gtk.Box.__init__(self)
 		self.cache = OrderedDict()
 		self.areas: list[Area] = []
 		self.current_svg: str | bytes
