@@ -13,6 +13,7 @@ import sys
 import threading
 import time
 import traceback
+from ctypes import CDLL
 from socketserver import StreamRequestHandler, ThreadingMixIn, UnixStreamServer
 from typing import TYPE_CHECKING
 
@@ -485,14 +486,16 @@ class SCCDaemon(Daemon):
 	def connect_x(self) -> None:
 		"""Creates connection to X Server"""
 		if "WAYLAND_DISPLAY" in os.environ:
+			# gtk4-layer-shell must be loaded before GTK imports libwayland-client
+			CDLL("libgtk4-layer-shell.so")
 			import gi
 
-			gi.require_version("Gtk", "3.0")
+			gi.require_version("Gtk", "4.0")
 			try:
-				gi.require_version("GtkLayerShell", "0.1")
-				from gi.repository import GtkLayerShell
+				gi.require_version("Gtk4LayerShell", "1.0")
+				from gi.repository import Gtk4LayerShell
 
-				if GtkLayerShell.is_supported():
+				if Gtk4LayerShell.is_supported():
 					log.warning(
 						"Wayland detected. Disabling X11 support, some functionality will be unavailable",
 					)
