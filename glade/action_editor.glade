@@ -412,7 +412,7 @@
                           <object class="GtkImage" id="image9">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="stock">gtk-clear</property>
+                            <property name="icon-name">edit-clear</property>
                           </object>
                         </child>
                       </object>
@@ -519,7 +519,7 @@
                           <object class="GtkImage" id="image13">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="stock">gtk-clear</property>
+                            <property name="icon-name">edit-clear</property>
                           </object>
                         </child>
                       </object>
@@ -633,7 +633,7 @@
                           <object class="GtkImage" id="image1">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="stock">gtk-clear</property>
+                            <property name="icon-name">edit-clear</property>
                           </object>
                         </child>
                       </object>
@@ -684,7 +684,7 @@
                           <object class="GtkImage" id="image2">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="stock">gtk-clear</property>
+                            <property name="icon-name">edit-clear</property>
                           </object>
                         </child>
                       </object>
@@ -735,7 +735,7 @@
                           <object class="GtkImage" id="image3">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="stock">gtk-clear</property>
+                            <property name="icon-name">edit-clear</property>
                           </object>
                         </child>
                       </object>
@@ -863,7 +863,7 @@
                           <object class="GtkImage" id="image4">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="stock">gtk-clear</property>
+                            <property name="icon-name">edit-clear</property>
                           </object>
                         </child>
                       </object>
@@ -882,7 +882,7 @@
                           <object class="GtkImage" id="image5">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="stock">gtk-clear</property>
+                            <property name="icon-name">edit-clear</property>
                           </object>
                         </child>
                       </object>
@@ -917,7 +917,7 @@
                           <object class="GtkImage" id="image6">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="stock">gtk-clear</property>
+                            <property name="icon-name">edit-clear</property>
                           </object>
                         </child>
                       </object>
@@ -1141,7 +1141,7 @@
                           <object class="GtkImage" id="image8">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="stock">gtk-clear</property>
+                            <property name="icon-name">edit-clear</property>
                           </object>
                         </child>
                       </object>
@@ -1160,7 +1160,7 @@
                           <object class="GtkImage" id="image7">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="stock">gtk-clear</property>
+                            <property name="icon-name">edit-clear</property>
                           </object>
                         </child>
                       </object>
@@ -1370,7 +1370,7 @@
                           <object class="GtkImage" id="image12">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="stock">gtk-clear</property>
+                            <property name="icon-name">edit-clear</property>
                           </object>
                         </child>
                       </object>
@@ -1389,7 +1389,7 @@
                           <object class="GtkImage" id="image11">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="stock">gtk-clear</property>
+                            <property name="icon-name">edit-clear</property>
                           </object>
                         </child>
                       </object>
@@ -1408,7 +1408,7 @@
                           <object class="GtkImage" id="image10">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="stock">gtk-clear</property>
+                            <property name="icon-name">edit-clear</property>
                           </object>
                         </child>
                       </object>

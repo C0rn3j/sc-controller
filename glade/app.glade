@@ -29,7 +29,7 @@
               <object class="GtkImage" id="imgOsdmodeExit">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="stock">gtk-missing-image</property>
+                <property name="icon-name">image-missing</property>
                 <property name="icon_size">3</property>
               </object>
               <packing>
@@ -72,7 +72,7 @@
               <object class="GtkImage" id="imgOsdmodeAct">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="stock">gtk-missing-image</property>
+                <property name="icon-name">image-missing</property>
                 <property name="icon_size">3</property>
               </object>
               <packing>
@@ -115,7 +115,7 @@
               <object class="GtkImage" id="imgOsdmodeOK">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="stock">gtk-missing-image</property>
+                <property name="icon-name">image-missing</property>
                 <property name="icon_size">3</property>
               </object>
               <packing>
@@ -158,7 +158,7 @@
               <object class="GtkImage" id="imgOsdmodeClose">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="stock">gtk-missing-image</property>
+                <property name="icon-name">image-missing</property>
                 <property name="icon_size">3</property>
               </object>
               <packing>
@@ -201,7 +201,7 @@
               <object class="GtkImage" id="imgOsdmodeSave">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="stock">gtk-missing-image</property>
+                <property name="icon-name">image-missing</property>
                 <property name="icon_size">3</property>
               </object>
               <packing>
@@ -1140,7 +1140,7 @@
               <object class="GtkImage" id="image1">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="stock">gtk-undo</property>
+                <property name="icon-name">edit-undo</property>
               </object>
             </child>
           </object>
@@ -1160,7 +1160,7 @@
               <object class="GtkImage" id="image3">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="stock">gtk-redo</property>
+                <property name="icon-name">edit-redo</property>
               </object>
             </child>
           </object>
@@ -1612,7 +1612,7 @@
           <object class="GtkImage" id="image6">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="stock">gtk-info</property>
+            <property name="icon-name">dialog-information</property>
             <property name="icon_size">6</property>
           </object>
           <packing>

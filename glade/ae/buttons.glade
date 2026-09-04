@@ -119,7 +119,7 @@
                       <object class="GtkImage" id="imgPlus">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="stock">gtk-add</property>
+                        <property name="icon-name">list-add</property>
                       </object>
                     </child>
                   </object>

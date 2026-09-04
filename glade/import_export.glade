@@ -910,7 +910,7 @@ what command does before clicking "Continue."</property>
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="margin-end">20</property>
-                    <property name="stock">gtk-dialog-warning</property>
+                    <property name="icon-name">dialog-warning</property>
                     <property name="icon_size">6</property>
                   </object>
                   <packing>

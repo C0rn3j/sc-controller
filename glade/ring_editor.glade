@@ -163,7 +163,7 @@
                   <object class="GtkImage" id="image3">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="stock">gtk-clear</property>
+                    <property name="icon-name">edit-clear</property>
                   </object>
                 </child>
               </object>
@@ -234,7 +234,7 @@
                   <object class="GtkImage" id="image2">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="stock">gtk-clear</property>
+                    <property name="icon-name">edit-clear</property>
                   </object>
                 </child>
               </object>
@@ -253,7 +253,7 @@
                   <object class="GtkImage" id="image1">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="stock">gtk-clear</property>
+                    <property name="icon-name">edit-clear</property>
                   </object>
                 </child>
               </object>

@@ -818,7 +818,7 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                           <object class="GtkImage" id="imgHIDWarning">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="stock">gtk-dialog-warning</property>
+                            <property name="icon-name">dialog-warning</property>
                             <property name="icon_size">6</property>
                           </object>
                           <packing>
@@ -957,7 +957,7 @@ future inputs or even crash.</property>
                 <property name="margin-end">30</property>
                 <property name="xalign">0.5</property>
                 <property name="yalign">0</property>
-                <property name="stock">gtk-missing-image</property>
+                <property name="icon-name">image-missing</property>
                 <property name="icon_size">6</property>
               </object>
               <packing>

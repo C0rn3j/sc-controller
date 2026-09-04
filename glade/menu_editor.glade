@@ -60,7 +60,7 @@
                       <object class="GtkImage" id="imgNope">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="stock">gtk-dialog-error</property>
+                        <property name="icon-name">dialog-error</property>
                         <property name="icon_size">3</property>
                       </object>
                       <packing>
@@ -486,7 +486,7 @@
           <object class="GtkImage" id="imgClearItemIcon">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="stock">gtk-clear</property>
+            <property name="icon-name">edit-clear</property>
           </object>
         </child>
       </object>
