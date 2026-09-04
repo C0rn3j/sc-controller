@@ -20,8 +20,8 @@
   <object class="GtkBox" id="gyro">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="margin-left">30</property>
-    <property name="margin-right">30</property>
+    <property name="margin-start">30</property>
+    <property name="margin-end">30</property>
     <property name="orientation">vertical</property>
     <child>
       <!-- n-columns=3 n-rows=3 -->
@@ -320,7 +320,7 @@
               <object class="GtkLabel" id="lblSoftLevel">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">20</property>
+                <property name="margin-start">20</property>
                 <property name="label" translatable="yes">Trigger Pull Level</property>
               </object>
               <packing>
@@ -333,8 +333,8 @@
               <object class="GtkScale" id="sclSoftLevel">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="margin-left">5</property>
-                <property name="margin-right">20</property>
+                <property name="margin-start">5</property>
+                <property name="margin-end">20</property>
                 <property name="adjustment">adjSoftLevel</property>
                 <property name="round-digits">2</property>
                 <property name="value-pos">right</property>

@@ -113,7 +113,7 @@
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
                     <property name="halign">start</property>
-                    <property name="margin-left">5</property>
+                    <property name="margin-start">5</property>
                     <signal name="clicked" handler="on_btnGrabAnother_clicked" swapped="no"/>
                     <child>
                       <object class="GtkImage" id="imgPlus">

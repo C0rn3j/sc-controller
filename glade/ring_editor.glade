@@ -47,15 +47,15 @@
       <object class="GtkGrid" id="grid1">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="margin-left">10</property>
-        <property name="margin-right">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-end">10</property>
         <property name="margin-top">10</property>
         <property name="margin-bottom">10</property>
         <child>
           <object class="GtkLabel" id="label1">
             <property name="can-focus">False</property>
             <property name="no-show-all">True</property>
-            <property name="margin-right">20</property>
+            <property name="margin-end">20</property>
             <property name="margin-bottom">4</property>
             <property name="label" translatable="yes">Action Name</property>
             <property name="ellipsize">end</property>
@@ -86,7 +86,7 @@
           <object class="GtkLabel" id="lblAddedWidget">
             <property name="can-focus">False</property>
             <property name="no-show-all">True</property>
-            <property name="margin-right">20</property>
+            <property name="margin-end">20</property>
             <property name="margin-bottom">5</property>
             <property name="label" translatable="yes">(Widget)</property>
             <property name="xalign">0</property>
@@ -121,8 +121,8 @@
           <object class="GtkGrid" id="grActions">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="margin-left">10</property>
-            <property name="margin-right">10</property>
+            <property name="margin-start">10</property>
+            <property name="margin-end">10</property>
             <property name="margin-top">10</property>
             <property name="row-spacing">4</property>
             <property name="column-spacing">15</property>

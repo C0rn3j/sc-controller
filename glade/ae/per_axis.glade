@@ -5,8 +5,8 @@
   <object class="GtkBox" id="per_axis">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="margin-left">50</property>
-    <property name="margin-right">50</property>
+    <property name="margin-start">50</property>
+    <property name="margin-end">50</property>
     <property name="margin-top">20</property>
     <property name="orientation">vertical</property>
     <property name="spacing">10</property>

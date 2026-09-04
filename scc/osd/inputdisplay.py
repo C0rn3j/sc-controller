@@ -39,8 +39,8 @@ class InputDisplay(OSDWindow):
 		self.rpadTest = Gtk.Image.new_from_file(os.path.join(self.imagepath, "inputdisplay-cursor.svg"))
 		self.lstickTest = Gtk.Image.new_from_file(os.path.join(self.imagepath, "inputdisplay-cursor.svg"))
 
-		self.main_area.set_property("margin-left", 10)
-		self.main_area.set_property("margin-right", 10)
+		self.main_area.set_property("margin-start", 10)
+		self.main_area.set_property("margin-end", 10)
 		self.main_area.set_property("margin-top", 10)
 		self.main_area.set_property("margin-bottom", 10)
 

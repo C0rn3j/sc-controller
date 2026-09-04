@@ -98,8 +98,8 @@
               <object class="GtkGrid" id="grIntro">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">20</property>
-                <property name="margin-right">20</property>
+                <property name="margin-start">20</property>
+                <property name="margin-end">20</property>
                 <property name="column-homogeneous">True</property>
                 <child>
                   <object class="GtkLabel" id="label3">
@@ -127,13 +127,13 @@
                       <object class="GtkBox" id="vbBtExport">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-left">20</property>
-                        <property name="margin-right">20</property>
+                        <property name="margin-start">20</property>
+                        <property name="margin-end">20</property>
                         <child>
                           <object class="GtkImage" id="imgBtExport">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="margin-right">10</property>
+                            <property name="margin-end">10</property>
                             <property name="pixel-size">32</property>
                             <property name="icon-name">document-save-as</property>
                             <property name="icon_size">6</property>
@@ -181,13 +181,13 @@
                       <object class="GtkBox" id="vbBtImport">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-left">20</property>
-                        <property name="margin-right">20</property>
+                        <property name="margin-start">20</property>
+                        <property name="margin-end">20</property>
                         <child>
                           <object class="GtkImage" id="imgBtImport">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="margin-right">10</property>
+                            <property name="margin-end">10</property>
                             <property name="pixel-size">32</property>
                             <property name="icon-name">document-open</property>
                             <property name="icon_size">6</property>
@@ -235,13 +235,13 @@
                       <object class="GtkBox" id="vbBtImportVdf">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-left">20</property>
-                        <property name="margin-right">20</property>
+                        <property name="margin-start">20</property>
+                        <property name="margin-end">20</property>
                         <child>
                           <object class="GtkImage" id="imgBtImportVdf">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="margin-right">10</property>
+                            <property name="margin-end">10</property>
                             <property name="pixel-size">32</property>
                             <property name="icon-name">steam</property>
                             <property name="use-fallback">True</property>
@@ -333,8 +333,8 @@
                 <property name="name">grSelectProfile</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">10</property>
-                <property name="margin-right">10</property>
+                <property name="margin-start">10</property>
+                <property name="margin-end">10</property>
                 <property name="margin-top">5</property>
                 <property name="margin-bottom">10</property>
                 <child>
@@ -428,8 +428,8 @@
               <object class="GtkGrid" id="grMakePackage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">20</property>
-                <property name="margin-right">20</property>
+                <property name="margin-start">20</property>
+                <property name="margin-end">20</property>
                 <child>
                   <object class="GtkLabel" id="lblTLDR">
                     <property name="visible">True</property>
@@ -555,8 +555,8 @@ Please, select what should be packaged along with exported profile.</property>
                 <property name="name">grVdfImport</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">10</property>
-                <property name="margin-right">10</property>
+                <property name="margin-start">10</property>
+                <property name="margin-end">10</property>
                 <property name="margin-top">5</property>
                 <property name="margin-bottom">10</property>
                 <child>
@@ -680,8 +680,8 @@ Please, select what should be packaged along with exported profile.</property>
                 <property name="name">grVdfImportFinished</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">20</property>
-                <property name="margin-right">20</property>
+                <property name="margin-start">20</property>
+                <property name="margin-end">20</property>
                 <child>
                   <object class="GtkLabel" id="lblVdfImportFinished">
                     <property name="visible">True</property>
@@ -781,7 +781,7 @@ Please, select what should be packaged along with exported profile.</property>
                   <object class="GtkLabel" id="lblASetList">
                     <property name="can-focus">False</property>
                     <property name="no-show-all">True</property>
-                    <property name="margin-left">20</property>
+                    <property name="margin-start">20</property>
                     <property name="margin-top">5</property>
                     <property name="margin-bottom">5</property>
                     <property name="label" translatable="yes">.XYZ.aset_1
@@ -876,8 +876,8 @@ Please, select what should be packaged along with exported profile.</property>
                 <property name="name">grImportShellCommands</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">20</property>
-                <property name="margin-right">20</property>
+                <property name="margin-start">20</property>
+                <property name="margin-end">20</property>
                 <child>
                   <object class="GtkLabel" id="lblShellWarning">
                     <property name="visible">True</property>
@@ -909,7 +909,7 @@ what command does before clicking "Continue."</property>
                   <object class="GtkImage" id="imgShellWarning">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-right">20</property>
+                    <property name="margin-end">20</property>
                     <property name="stock">gtk-dialog-warning</property>
                     <property name="icon_size">6</property>
                   </object>
@@ -985,8 +985,8 @@ what command does before clicking "Continue."</property>
                 <property name="name">grImportFailed</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">20</property>
-                <property name="margin-right">20</property>
+                <property name="margin-start">20</property>
+                <property name="margin-end">20</property>
                 <child>
                   <object class="GtkLabel" id="lblSccImportFinished">
                     <property name="visible">True</property>
@@ -1133,7 +1133,7 @@ and profile switches in imported profile may not work as expected.</property>
                   <object class="GtkRevealer" id="rvImportPackageAdvanced">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">25</property>
+                    <property name="margin-start">25</property>
                     <property name="margin-top">5</property>
                     <property name="vexpand">True</property>
                     <child>
@@ -1220,8 +1220,8 @@ and profile switches in imported profile may not work as expected.</property>
                 <property name="name">grImportFailed</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">20</property>
-                <property name="margin-right">20</property>
+                <property name="margin-start">20</property>
+                <property name="margin-end">20</property>
                 <child>
                   <object class="GtkLabel" id="lblImportFinished1">
                     <property name="visible">True</property>

@@ -95,8 +95,8 @@ class MacroEditor(Editor):
 
 		# Action button
 		b.set_property("hexpand", True)
-		b.set_property("margin-left", 10)
-		b.set_property("margin-right", 10)
+		b.set_property("margin-start", 10)
+		b.set_property("margin-end", 10)
 
 		if isinstance(action, ButtonAction) or isinstance(action, PressAction):
 			# Combobox

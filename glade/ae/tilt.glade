@@ -71,8 +71,8 @@
       <object class="GtkGrid" id="grTilt">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="margin-left">10</property>
-        <property name="margin-right">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-end">10</property>
         <property name="margin-top">10</property>
         <property name="margin-bottom">10</property>
         <property name="row-spacing">5</property>
@@ -175,8 +175,8 @@
           <object class="GtkImage" id="image1">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="margin-left">10</property>
-            <property name="margin-right">10</property>
+            <property name="margin-start">10</property>
+            <property name="margin-end">10</property>
             <property name="pixbuf">../../images/controller-side.svg</property>
           </object>
           <packing>

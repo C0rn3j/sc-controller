@@ -26,7 +26,7 @@
       <object class="GtkEntry" id="txGesture">
         <property name="visible">True</property>
         <property name="can-focus">True</property>
-        <property name="margin-right">10</property>
+        <property name="margin-end">10</property>
         <property name="hexpand">True</property>
         <property name="editable">False</property>
       </object>
@@ -103,8 +103,8 @@
       <object class="GtkGrid" id="grid2">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="margin-left">10</property>
-        <property name="margin-right">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-end">10</property>
         <property name="margin-bottom">10</property>
         <property name="hexpand">True</property>
         <property name="vexpand">True</property>
@@ -113,8 +113,8 @@
             <property name="width-request">400</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
-            <property name="margin-left">20</property>
-            <property name="margin-right">20</property>
+            <property name="margin-start">20</property>
+            <property name="margin-end">20</property>
             <property name="margin-top">20</property>
             <property name="margin-bottom">20</property>
             <property name="hexpand">True</property>
@@ -168,7 +168,7 @@
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="margin-left">10</property>
+                    <property name="margin-start">10</property>
                     <property name="image">imgApply</property>
                     <property name="use-underline">True</property>
                   </object>
@@ -263,8 +263,8 @@
           <object class="GtkScale" id="sclPrecision">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
-            <property name="margin-left">10</property>
-            <property name="margin-right">10</property>
+            <property name="margin-start">10</property>
+            <property name="margin-end">10</property>
             <property name="adjustment">adjPrecision</property>
             <property name="round-digits">2</property>
             <property name="value-pos">right</property>
@@ -308,8 +308,8 @@
       <object class="GtkLabel" id="lblGestureMessage">
         <property name="can-focus">False</property>
         <property name="no-show-all">True</property>
-        <property name="margin-left">10</property>
-        <property name="margin-right">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-end">10</property>
         <property name="margin-top">10</property>
         <property name="margin-bottom">10</property>
         <property name="label" translatable="yes">message</property>

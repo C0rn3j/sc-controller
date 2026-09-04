@@ -96,16 +96,16 @@
   <object class="GtkGrid" id="gyro_action">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="margin-left">25</property>
-    <property name="margin-right">30</property>
+    <property name="margin-start">25</property>
+    <property name="margin-end">30</property>
     <property name="row-spacing">3</property>
     <property name="column-spacing">10</property>
     <child>
       <object class="GtkLabel" id="lblYawRoll">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="margin-left">5</property>
-        <property name="margin-right">20</property>
+        <property name="margin-start">5</property>
+        <property name="margin-end">20</property>
         <property name="label" translatable="yes">X Axis Controlled by</property>
         <property name="xalign">0</property>
         <attributes>
@@ -141,8 +141,8 @@
       <object class="GtkLabel" id="label5">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="margin-left">5</property>
-        <property name="margin-right">20</property>
+        <property name="margin-start">5</property>
+        <property name="margin-end">20</property>
         <property name="label" translatable="yes">Output Mode</property>
         <property name="xalign">0</property>
         <attributes>
@@ -199,7 +199,7 @@
       <object class="GtkLabel" id="lblGyroEnable">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="margin-left">5</property>
+        <property name="margin-start">5</property>
         <property name="margin-top">20</property>
         <property name="label" translatable="yes">Gyro Enable Button</property>
         <property name="xalign">0</property>
@@ -276,7 +276,7 @@
               <object class="GtkLabel" id="lblSoftLevel">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">20</property>
+                <property name="margin-start">20</property>
                 <property name="label" translatable="yes">Trigger Pull Level</property>
               </object>
               <packing>
@@ -289,8 +289,8 @@
               <object class="GtkScale" id="sclSoftLevel">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="margin-left">5</property>
-                <property name="margin-right">20</property>
+                <property name="margin-start">5</property>
+                <property name="margin-end">20</property>
                 <property name="adjustment">adjSoftLevel</property>
                 <property name="round-digits">2</property>
                 <property name="value-pos">right</property>

@@ -285,8 +285,8 @@ or even crash.</property>
               <object class="GtkGrid" id="grid3">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">10</property>
-                <property name="margin-right">10</property>
+                <property name="margin-start">10</property>
+                <property name="margin-end">10</property>
                 <property name="margin-top">10</property>
                 <property name="margin-bottom">10</property>
                 <child>
@@ -309,8 +309,8 @@ or even crash.</property>
                   <object class="GtkLabel" id="label9">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">10</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">10</property>
                     <property name="margin-top">5</property>
                     <property name="label" translatable="yes">Left Stick</property>
                     <property name="xalign">0</property>
@@ -324,8 +324,8 @@ or even crash.</property>
                   <object class="GtkLabel" id="label10">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">10</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">10</property>
                     <property name="margin-top">5</property>
                     <property name="label" translatable="yes">Triggers</property>
                     <property name="xalign">0</property>
@@ -341,8 +341,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="margin-left">50</property>
-                    <property name="margin-right">50</property>
+                    <property name="margin-start">50</property>
+                    <property name="margin-end">50</property>
                     <property name="margin-top">15</property>
                     <property name="hexpand">True</property>
                     <signal name="clicked" handler="on_butEditKeyboardBindings_clicked" swapped="no"/>
@@ -357,7 +357,7 @@ or even crash.</property>
                   <object class="GtkComboBox" id="cbStickAction">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-right">20</property>
+                    <property name="margin-end">20</property>
                     <property name="margin-top">5</property>
                     <property name="hexpand">True</property>
                     <property name="model">lstStickAction</property>
@@ -379,7 +379,7 @@ or even crash.</property>
                   <object class="GtkComboBox" id="cbTriggersAction">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-right">20</property>
+                    <property name="margin-end">20</property>
                     <property name="margin-top">5</property>
                     <property name="hexpand">True</property>
                     <property name="model">lstTriggersAction</property>
@@ -418,8 +418,8 @@ or even crash.</property>
                   <object class="GtkLabel" id="label5">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">10</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">10</property>
                     <property name="margin-top">5</property>
                     <property name="label" translatable="yes">Horizontal</property>
                     <property name="xalign">0</property>
@@ -434,8 +434,8 @@ or even crash.</property>
                   <object class="GtkLabel" id="label6">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">10</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">10</property>
                     <property name="margin-top">5</property>
                     <property name="label" translatable="yes">Vertical</property>
                     <property name="xalign">0</property>
@@ -485,8 +485,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="margin-left">10</property>
-                    <property name="margin-right">20</property>
+                    <property name="margin-start">10</property>
+                    <property name="margin-end">20</property>
                     <property name="margin-top">5</property>
                     <signal name="clicked" handler="on_btClearSensX_clicked" swapped="no"/>
                     <child>
@@ -507,8 +507,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="margin-left">10</property>
-                    <property name="margin-right">20</property>
+                    <property name="margin-start">10</property>
+                    <property name="margin-end">20</property>
                     <property name="margin-top">5</property>
                     <signal name="clicked" handler="on_btClearSensY_clicked" swapped="no"/>
                     <child>
@@ -547,8 +547,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">10</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">10</property>
                     <property name="margin-bottom">5</property>
                     <property name="hexpand">True</property>
                     <property name="draw-indicator">True</property>
@@ -574,8 +574,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="margin-left">5</property>
-                    <property name="margin-right">20</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-end">20</property>
                     <property name="margin-bottom">5</property>
                     <property name="hexpand">True</property>
                     <property name="draw-indicator">True</property>
@@ -601,8 +601,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">5</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-bottom">5</property>
                     <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_cbMI_toggled" swapped="no"/>
@@ -627,8 +627,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="margin-left">5</property>
-                    <property name="margin-right">20</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-end">20</property>
                     <property name="margin-bottom">5</property>
                     <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_cbMI_toggled" swapped="no"/>
@@ -653,8 +653,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">5</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-bottom">5</property>
                     <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_cbMI_toggled" swapped="no"/>
@@ -679,8 +679,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="margin-left">5</property>
-                    <property name="margin-right">20</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-end">20</property>
                     <property name="margin-bottom">5</property>
                     <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_cbMI_toggled" swapped="no"/>
@@ -705,8 +705,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">5</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-bottom">5</property>
                     <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_cbMI_toggled" swapped="no"/>
@@ -731,8 +731,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="margin-left">5</property>
-                    <property name="margin-right">20</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-end">20</property>
                     <property name="margin-bottom">5</property>
                     <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_cbMI_toggled" swapped="no"/>
@@ -757,8 +757,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">5</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-bottom">5</property>
                     <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_cbMI_toggled" swapped="no"/>
@@ -783,8 +783,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="margin-left">5</property>
-                    <property name="margin-right">20</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-end">20</property>
                     <property name="margin-bottom">5</property>
                     <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_cbMI_toggled" swapped="no"/>
@@ -821,8 +821,8 @@ or even crash.</property>
               <object class="GtkGrid" id="grid67">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">10</property>
-                <property name="margin-right">10</property>
+                <property name="margin-start">10</property>
+                <property name="margin-end">10</property>
                 <property name="margin-top">10</property>
                 <property name="margin-bottom">10</property>
                 <child>
@@ -830,8 +830,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">10</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">10</property>
                     <property name="margin-bottom">5</property>
                     <property name="hexpand">True</property>
                     <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
@@ -846,8 +846,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">10</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">10</property>
                     <property name="margin-bottom">5</property>
                     <property name="hexpand">True</property>
                     <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
@@ -862,8 +862,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">10</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">10</property>
                     <property name="margin-bottom">5</property>
                     <property name="hexpand">True</property>
                     <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
@@ -878,8 +878,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">10</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">10</property>
                     <property name="margin-bottom">5</property>
                     <property name="hexpand">True</property>
                     <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
@@ -893,8 +893,8 @@ or even crash.</property>
                   <object class="GtkLabel" id="lblmenuseparator">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">5</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-bottom">5</property>
                     <property name="label" translatable="yes">Separator Text</property>
                     <property name="xalign">0</property>
@@ -908,8 +908,8 @@ or even crash.</property>
                   <object class="GtkLabel" id="lblmenuitem_hilight_text">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">5</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-bottom">5</property>
                     <property name="label" translatable="yes">Selected Text</property>
                     <property name="xalign">0</property>
@@ -923,8 +923,8 @@ or even crash.</property>
                   <object class="GtkLabel" id="lblmenuitem_hilight">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">5</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-bottom">5</property>
                     <property name="label" translatable="yes">Selected Background</property>
                     <property name="xalign">0</property>
@@ -938,8 +938,8 @@ or even crash.</property>
                   <object class="GtkLabel" id="lblmenuitem_hilight_border">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">5</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-bottom">5</property>
                     <property name="label" translatable="yes">Selected Border</property>
                     <property name="xalign">0</property>
@@ -954,8 +954,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">20</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">20</property>
                     <property name="margin-bottom">5</property>
                     <property name="hexpand">True</property>
                     <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
@@ -970,8 +970,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">20</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">20</property>
                     <property name="margin-bottom">5</property>
                     <property name="hexpand">True</property>
                     <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
@@ -986,8 +986,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">20</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">20</property>
                     <property name="margin-bottom">5</property>
                     <property name="hexpand">True</property>
                     <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
@@ -1002,8 +1002,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">20</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">20</property>
                     <property name="margin-bottom">5</property>
                     <property name="hexpand">True</property>
                     <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
@@ -1033,8 +1033,8 @@ or even crash.</property>
                   <object class="GtkLabel" id="lbltext">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">5</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-bottom">5</property>
                     <property name="label" translatable="yes">Text</property>
                     <property name="xalign">0</property>
@@ -1048,8 +1048,8 @@ or even crash.</property>
                   <object class="GtkLabel" id="lblmenuitem_border">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">5</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-bottom">5</property>
                     <property name="label" translatable="yes">Item Border</property>
                     <property name="xalign">0</property>
@@ -1063,8 +1063,8 @@ or even crash.</property>
                   <object class="GtkLabel" id="lblbackground">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">5</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-bottom">5</property>
                     <property name="label" translatable="yes">Background</property>
                     <property name="xalign">0</property>
@@ -1078,8 +1078,8 @@ or even crash.</property>
                   <object class="GtkLabel" id="lblborder">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">5</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-bottom">5</property>
                     <property name="label" translatable="yes">Border</property>
                     <property name="xalign">0</property>
@@ -1110,8 +1110,8 @@ or even crash.</property>
                   <object class="GtkLabel" id="lblosk_button1">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">5</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-bottom">5</property>
                     <property name="label" translatable="yes">Normal Button</property>
                     <property name="xalign">0</property>
@@ -1126,8 +1126,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">10</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">10</property>
                     <property name="margin-bottom">5</property>
                     <property name="hexpand">True</property>
                     <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
@@ -1141,8 +1141,8 @@ or even crash.</property>
                   <object class="GtkLabel" id="lblosk_pressed">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">5</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-bottom">5</property>
                     <property name="label" translatable="yes">Pressed Button</property>
                     <property name="xalign">0</property>
@@ -1158,8 +1158,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">10</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">10</property>
                     <property name="margin-bottom">5</property>
                     <property name="hexpand">True</property>
                     <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
@@ -1173,8 +1173,8 @@ or even crash.</property>
                   <object class="GtkLabel" id="lblosk_button2">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">5</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-bottom">5</property>
                     <property name="label" translatable="yes">Special Button</property>
                     <property name="xalign">0</property>
@@ -1190,8 +1190,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">10</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">10</property>
                     <property name="margin-bottom">5</property>
                     <property name="hexpand">True</property>
                     <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
@@ -1206,8 +1206,8 @@ or even crash.</property>
                     <property name="name">20</property>
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">5</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-bottom">5</property>
                     <property name="label" translatable="yes">Text</property>
                     <property name="xalign">0</property>
@@ -1223,8 +1223,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">20</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">20</property>
                     <property name="margin-bottom">5</property>
                     <property name="hexpand">True</property>
                     <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
@@ -1238,8 +1238,8 @@ or even crash.</property>
                   <object class="GtkLabel" id="lblosk_hilight">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">5</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-bottom">5</property>
                     <property name="label" translatable="yes">Higlight</property>
                     <property name="xalign">0</property>
@@ -1255,8 +1255,8 @@ or even crash.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">20</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">20</property>
                     <property name="margin-bottom">5</property>
                     <property name="hexpand">True</property>
                     <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
@@ -1298,8 +1298,8 @@ or even crash.</property>
                   <object class="GtkComboBox" id="cbOSDStyle">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">50</property>
-                    <property name="margin-right">10</property>
+                    <property name="margin-start">50</property>
+                    <property name="margin-end">10</property>
                     <property name="margin-top">5</property>
                     <property name="margin-bottom">10</property>
                     <property name="hexpand">True</property>
@@ -1339,7 +1339,7 @@ or even crash.</property>
                   <object class="GtkComboBox" id="cbOSDColorPreset">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-right">50</property>
+                    <property name="margin-end">50</property>
                     <property name="margin-top">5</property>
                     <property name="margin-bottom">10</property>
                     <property name="hexpand">True</property>
@@ -1381,8 +1381,8 @@ or even crash.</property>
               <object class="GtkGrid" id="grid68">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">10</property>
-                <property name="margin-right">10</property>
+                <property name="margin-start">10</property>
+                <property name="margin-end">10</property>
                 <property name="margin-top">10</property>
                 <property name="margin-bottom">10</property>
                 <child>
@@ -1468,7 +1468,7 @@ or even crash.</property>
                   <object class="GtkLabel" id="lblKuaa4">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">30</property>
+                    <property name="margin-start">30</property>
                     <property name="label" translatable="yes">If enabled, any connected DualSense controller will be automatically used by SC Controller</property>
                     <property name="xalign">0</property>
                     <property name="yalign">0</property>
@@ -1501,7 +1501,7 @@ or even crash.</property>
                   <object class="GtkLabel" id="lblKuaa14">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">30</property>
+                    <property name="margin-start">30</property>
                     <property name="label" translatable="yes">If enabled, any connected Dualshock4 controller will be automatically used by SC Controller</property>
                     <property name="xalign">0</property>
                     <property name="yalign">0</property>
@@ -1516,7 +1516,7 @@ or even crash.</property>
                   <object class="GtkLabel" id="lblKuaa16">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
+                    <property name="margin-start">20</property>
                     <property name="label" translatable="yes">Controllers listed here are automatically used by SC Controller whenever they are connected.</property>
                     <property name="xalign">0</property>
                   </object>
@@ -1531,8 +1531,8 @@ or even crash.</property>
                     <property name="height-request">100</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">20</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">20</property>
                     <property name="vexpand">True</property>
                     <property name="shadow-type">in</property>
                     <child>
@@ -1628,8 +1628,8 @@ or even crash.</property>
                   <object class="GtkBox" id="vbButtons1">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">20</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">20</property>
                     <property name="margin-top">3</property>
                     <property name="hexpand">True</property>
                     <child>
@@ -1765,7 +1765,7 @@ or even crash.</property>
                   <object class="GtkLabel" id="lblKuaa2">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">30</property>
+                    <property name="margin-start">30</property>
                     <property name="label" translatable="yes">If enabled, any device or application compatibile with Retroarch's Remote RetroPad protocol
 on network can connect and remote-control this computer as additional gamepad.
 &lt;a href="https://github.com/C0rn3j/sc-controller/wiki/Using-phone-with-Retroarch-as-additional-controller"&gt;See wiki for instructions and more info.&lt;/a&gt;</property>
@@ -1806,8 +1806,8 @@ on network can connect and remote-control this computer as additional gamepad.
               <object class="GtkGrid" id="grid1">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">10</property>
-                <property name="margin-right">10</property>
+                <property name="margin-start">10</property>
+                <property name="margin-end">10</property>
                 <property name="margin-top">10</property>
                 <property name="margin-bottom">10</property>
                 <property name="hexpand">True</property>
@@ -1817,7 +1817,7 @@ on network can connect and remote-control this computer as additional gamepad.
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="margin-left">10</property>
+                    <property name="margin-start">10</property>
                     <property name="margin-top">5</property>
                     <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_cbShowOSD_toggled" swapped="no"/>
@@ -1858,7 +1858,7 @@ on network can connect and remote-control this computer as additional gamepad.
                     <property name="height-request">200</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="margin-left">10</property>
+                    <property name="margin-start">10</property>
                     <property name="margin-top">5</property>
                     <property name="margin-bottom">5</property>
                     <property name="vexpand">True</property>
@@ -1927,7 +1927,7 @@ on network can connect and remote-control this computer as additional gamepad.
                   <object class="GtkBox" id="vbButtons">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">10</property>
+                    <property name="margin-start">10</property>
                     <property name="hexpand">True</property>
                     <child>
                       <object class="GtkButton" id="btEdit">
@@ -1958,7 +1958,7 @@ on network can connect and remote-control this computer as additional gamepad.
                               <object class="GtkLabel" id="label90">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="margin-left">5</property>
+                                <property name="margin-start">5</property>
                                 <property name="label" translatable="yes">Edit Condition</property>
                               </object>
                               <packing>
@@ -1993,7 +1993,7 @@ on network can connect and remote-control this computer as additional gamepad.
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
-                        <property name="margin-left">10</property>
+                        <property name="margin-start">10</property>
                         <property name="hexpand">False</property>
                         <property name="vexpand">False</property>
                         <signal name="clicked" handler="on_btRemove_clicked" swapped="no"/>
@@ -2017,7 +2017,7 @@ on network can connect and remote-control this computer as additional gamepad.
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
-                        <property name="margin-left">10</property>
+                        <property name="margin-start">10</property>
                         <property name="hexpand">False</property>
                         <property name="vexpand">False</property>
                         <signal name="clicked" handler="on_btAdd_clicked" swapped="no"/>
@@ -2094,8 +2094,8 @@ on network can connect and remote-control this computer as additional gamepad.
               <object class="GtkGrid" id="grid12">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">10</property>
-                <property name="margin-right">10</property>
+                <property name="margin-start">10</property>
+                <property name="margin-end">10</property>
                 <property name="margin-top">10</property>
                 <property name="margin-bottom">10</property>
                 <child>
@@ -2128,8 +2128,8 @@ on network can connect and remote-control this computer as additional gamepad.
                   <object class="GtkLabel" id="label28">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">25</property>
-                    <property name="margin-right">25</property>
+                    <property name="margin-start">25</property>
+                    <property name="margin-end">25</property>
                     <property name="margin-top">5</property>
                     <property name="label" translatable="yes">Allows applications to &lt;b&gt;watch and possibly log&lt;/b&gt; gamepad inputs.
 
@@ -2201,7 +2201,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="margin-left">30</property>
+                    <property name="margin-start">30</property>
                     <property name="margin-top">5</property>
                     <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_random_checkbox_toggled" swapped="no"/>
@@ -2250,8 +2250,8 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                   <object class="GtkLabel" id="label33">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">25</property>
-                    <property name="margin-right">25</property>
+                    <property name="margin-start">25</property>
+                    <property name="margin-end">25</property>
                     <property name="margin-top">5</property>
                     <property name="label" translatable="yes">Try disabling this option if your controller stops working randomly.</property>
                     <property name="use-markup">True</property>
@@ -2320,7 +2320,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="margin-left">30</property>
+                    <property name="margin-start">30</property>
                     <property name="margin-top">5</property>
                     <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_random_checkbox_toggled" swapped="no"/>
@@ -2450,8 +2450,8 @@ grips, triggers, finger positions on both pads and stick angle.</property>
       <object class="GtkBox" id="vbox321">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="margin-left">20</property>
-        <property name="margin-right">25</property>
+        <property name="margin-start">20</property>
+        <property name="margin-end">25</property>
         <property name="margin-top">5</property>
         <property name="margin-bottom">15</property>
         <property name="orientation">vertical</property>
@@ -2503,7 +2503,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
           <object class="GtkBox" id="vbBox1">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="margin-left">20</property>
+            <property name="margin-start">20</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="GtkEntry" id="entTitle">
@@ -2586,7 +2586,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
           <object class="GtkEntry" id="entClass">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
-            <property name="margin-left">20</property>
+            <property name="margin-start">20</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -2640,8 +2640,8 @@ grips, triggers, finger positions on both pads and stick angle.</property>
           <object class="GtkComboBox" id="cbProfile">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="margin-left">25</property>
-            <property name="margin-right">5</property>
+            <property name="margin-start">25</property>
+            <property name="margin-end">5</property>
             <property name="margin-top">5</property>
             <property name="model">lstProfile</property>
             <child>

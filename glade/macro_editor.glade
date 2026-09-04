@@ -39,8 +39,8 @@
       <object class="GtkGrid" id="grid1">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="margin-left">10</property>
-        <property name="margin-right">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-end">10</property>
         <property name="margin-top">10</property>
         <property name="margin-bottom">10</property>
         <child>
@@ -48,7 +48,7 @@
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="no-show-all">True</property>
-            <property name="margin-right">20</property>
+            <property name="margin-end">20</property>
             <property name="margin-bottom">4</property>
             <property name="label" translatable="yes">Action Name</property>
             <property name="ellipsize">end</property>
@@ -80,7 +80,7 @@
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="no-show-all">True</property>
-            <property name="margin-right">20</property>
+            <property name="margin-end">20</property>
             <property name="margin-bottom">4</property>
             <property name="label" translatable="yes">Macro Type</property>
             <property name="ellipsize">end</property>
@@ -165,7 +165,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="margin-left">5</property>
+                <property name="margin-start">5</property>
                 <property name="use-underline">True</property>
                 <signal name="clicked" handler="on_btAddAction_clicked" swapped="no"/>
               </object>
@@ -180,7 +180,7 @@
               <object class="GtkEntry" id="entAction">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="margin-right">10</property>
+                <property name="margin-end">10</property>
                 <property name="activates-default">True</property>
               </object>
               <packing>
@@ -240,7 +240,7 @@
           <object class="GtkLabel" id="lblAddedWidget">
             <property name="can-focus">False</property>
             <property name="no-show-all">True</property>
-            <property name="margin-right">20</property>
+            <property name="margin-end">20</property>
             <property name="margin-bottom">5</property>
             <property name="label" translatable="yes">(Widget)</property>
             <property name="xalign">0</property>

@@ -172,8 +172,8 @@
       <object class="GtkGrid" id="grid12">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="margin-left">10</property>
-        <property name="margin-right">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-end">10</property>
         <property name="margin-top">10</property>
         <property name="margin-bottom">10</property>
         <child>
@@ -196,8 +196,8 @@
           <object class="GtkScale" id="sclLED">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
-            <property name="margin-left">10</property>
-            <property name="margin-right">10</property>
+            <property name="margin-start">10</property>
+            <property name="margin-end">10</property>
             <property name="margin-top">5</property>
             <property name="hexpand">True</property>
             <property name="adjustment">adjLED</property>
@@ -246,8 +246,8 @@
           <object class="GtkEntry" id="txName">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
-            <property name="margin-left">20</property>
-            <property name="margin-right">20</property>
+            <property name="margin-start">20</property>
+            <property name="margin-end">20</property>
             <signal name="changed" handler="save_config" swapped="no"/>
           </object>
           <packing>
@@ -259,8 +259,8 @@
           <object class="GtkComboBox" id="cbIcon">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="margin-left">20</property>
-            <property name="margin-right">20</property>
+            <property name="margin-start">20</property>
+            <property name="margin-end">20</property>
             <property name="model">lstIcons</property>
             <signal name="changed" handler="save_config" swapped="no"/>
             <child>
@@ -376,8 +376,8 @@
               <object class="GtkGrid" id="grTouchpadRotation">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">20</property>
-                <property name="margin-right">20</property>
+                <property name="margin-start">20</property>
+                <property name="margin-end">20</property>
                 <child>
                   <object class="GtkLabel" id="label5">
                     <property name="visible">True</property>
@@ -529,8 +529,8 @@
           <object class="GtkRevealer" id="rvMenuButtons">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="margin-left">20</property>
-            <property name="margin-right">20</property>
+            <property name="margin-start">20</property>
+            <property name="margin-end">20</property>
             <child>
               <!-- n-columns=3 n-rows=4 -->
               <object class="GtkGrid" id="grMenuButtons">

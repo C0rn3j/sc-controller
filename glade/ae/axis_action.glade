@@ -219,8 +219,8 @@
       <object class="GtkComboBox" id="cbAxisOutput">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="margin-left">20</property>
-        <property name="margin-right">20</property>
+        <property name="margin-start">20</property>
+        <property name="margin-end">20</property>
         <property name="model">lstOutputMode</property>
         <property name="active">1</property>
         <signal name="changed" handler="on_cbAxisOutput_changed" swapped="no"/>
@@ -282,8 +282,8 @@
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="margin-left">150</property>
-                <property name="margin-right">150</property>
+                <property name="margin-start">150</property>
+                <property name="margin-end">150</property>
                 <signal name="clicked" handler="on_btSingleButton_clicked" swapped="no"/>
               </object>
               <packing>
@@ -324,8 +324,8 @@
               <object class="GtkLabel" id="label_n1">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">10</property>
-                <property name="margin-right">10</property>
+                <property name="margin-start">10</property>
+                <property name="margin-end">10</property>
                 <property name="margin-top">10</property>
                 <property name="label" translatable="yes">Type</property>
                 <property name="xalign">0</property>
@@ -342,7 +342,7 @@
               <object class="GtkComboBox" id="cbAreaType">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-right">10</property>
+                <property name="margin-end">10</property>
                 <property name="margin-top">10</property>
                 <property name="model">lstAreaType</property>
                 <property name="active">1</property>
@@ -363,8 +363,8 @@
               <object class="GtkLabel" id="label_n2">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">10</property>
-                <property name="margin-right">10</property>
+                <property name="margin-start">10</property>
+                <property name="margin-end">10</property>
                 <property name="margin-top">10</property>
                 <property name="label" translatable="yes">Coordinates</property>
                 <property name="xalign">0</property>
@@ -381,7 +381,7 @@
               <object class="GtkBox" id="vbAreaOptions">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">10</property>
+                <property name="margin-start">10</property>
                 <property name="margin-top">10</property>
                 <property name="homogeneous">True</property>
                 <child>
@@ -463,8 +463,8 @@
                     <property name="width-request">150</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="margin-left">5</property>
-                    <property name="margin-right">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-top">10</property>
                     <property name="hexpand">True</property>
                     <property name="text" translatable="yes">0</property>
@@ -496,8 +496,8 @@
                     <property name="width-request">150</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="margin-left">5</property>
-                    <property name="margin-right">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-top">10</property>
                     <property name="text" translatable="yes">0</property>
                     <property name="adjustment">adjAreaX2</property>
@@ -528,8 +528,8 @@
                     <property name="width-request">150</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="margin-left">5</property>
-                    <property name="margin-right">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-top">10</property>
                     <property name="hexpand">True</property>
                     <property name="text" translatable="yes">0</property>
@@ -561,8 +561,8 @@
                     <property name="width-request">150</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="margin-left">5</property>
-                    <property name="margin-right">10</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-end">10</property>
                     <property name="margin-top">10</property>
                     <property name="text" translatable="yes">0</property>
                     <property name="adjustment">adjAreaY2</property>
@@ -674,8 +674,8 @@
               <object class="GtkComboBox" id="cbMouseOutput">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">20</property>
-                <property name="margin-right">20</property>
+                <property name="margin-start">20</property>
+                <property name="margin-end">20</property>
                 <property name="model">lstMouseOutput</property>
                 <property name="active">0</property>
                 <signal name="changed" handler="on_mouse_options_changed" swapped="no"/>
@@ -696,8 +696,8 @@
               <object class="GtkLabel" id="lblSetupTrackball">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">20</property>
-                <property name="margin-right">20</property>
+                <property name="margin-start">20</property>
+                <property name="margin-end">20</property>
                 <property name="margin-top">5</property>
                 <property name="label" translatable="yes">&lt;a href="advanced://0#cbBallMode"&gt;Setup or disable Trackball Mode&lt;/a&gt;</property>
                 <property name="use-markup">True</property>
@@ -731,8 +731,8 @@
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="margin-left">10</property>
-                <property name="margin-right">100</property>
+                <property name="margin-start">10</property>
+                <property name="margin-end">100</property>
                 <signal name="clicked" handler="on_btClearCircularAxis_clicked" swapped="no"/>
                 <child>
                   <object class="GtkImage" id="image1">
@@ -752,8 +752,8 @@
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="margin-left">10</property>
-                <property name="margin-right">100</property>
+                <property name="margin-start">10</property>
+                <property name="margin-end">100</property>
                 <signal name="clicked" handler="on_btClearCircularButtons_clicked" swapped="no"/>
                 <child>
                   <object class="GtkImage" id="image2">
@@ -811,7 +811,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="margin-left">100</property>
+                <property name="margin-start">100</property>
                 <property name="hexpand">True</property>
                 <signal name="clicked" handler="on_btCircularAxis_clicked" swapped="no"/>
               </object>
@@ -827,8 +827,8 @@
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="margin-left">100</property>
-                <property name="margin-right">5</property>
+                <property name="margin-start">100</property>
+                <property name="margin-end">5</property>
                 <signal name="clicked" handler="on_btCircularButton_clicked" swapped="no"/>
               </object>
               <packing>
@@ -842,7 +842,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="margin-left">5</property>
+                <property name="margin-start">5</property>
                 <signal name="clicked" handler="on_btCircularButton_clicked" swapped="no"/>
               </object>
               <packing>

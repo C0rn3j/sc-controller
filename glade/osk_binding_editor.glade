@@ -18,8 +18,8 @@
       <object class="GtkGrid" id="gruid7">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="margin-left">20</property>
-        <property name="margin-right">20</property>
+        <property name="margin-start">20</property>
+        <property name="margin-end">20</property>
         <property name="margin-top">20</property>
         <property name="margin-bottom">20</property>
         <property name="row-spacing">2</property>

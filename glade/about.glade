@@ -44,8 +44,8 @@
           <object class="GtkBox" id="vb3">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="margin-left">50</property>
-            <property name="margin-right">50</property>
+            <property name="margin-start">50</property>
+            <property name="margin-end">50</property>
             <property name="margin-top">10</property>
             <property name="margin-bottom">10</property>
             <property name="orientation">vertical</property>

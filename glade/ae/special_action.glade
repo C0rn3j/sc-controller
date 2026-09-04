@@ -331,8 +331,8 @@
       <object class="GtkComboBox" id="cbActionType">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="margin-left">10</property>
-        <property name="margin-right">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-end">10</property>
         <property name="model">lstActionType</property>
         <property name="active">0</property>
         <signal name="changed" handler="on_cbActionType_changed" swapped="no"/>
@@ -353,8 +353,8 @@
       <object class="GtkStack" id="stActionData">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="margin-left">10</property>
-        <property name="margin-right">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-end">10</property>
         <property name="margin-top">20</property>
         <property name="transition-type">crossfade</property>
         <child>
@@ -392,8 +392,8 @@
               <object class="GtkEntry" id="enCommand">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="margin-left">10</property>
-                <property name="margin-right">10</property>
+                <property name="margin-start">10</property>
+                <property name="margin-end">10</property>
                 <signal name="changed" handler="on_enCommand_changed" swapped="no"/>
               </object>
               <packing>
@@ -434,7 +434,7 @@
               <object class="GtkComboBox" id="cbProfile">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-right">10</property>
+                <property name="margin-end">10</property>
                 <property name="model">lstProfile</property>
                 <signal name="changed" handler="on_cbProfile_changed" swapped="no"/>
                 <child>
@@ -493,8 +493,8 @@
               <object class="GtkEntry" id="enOSDText">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="margin-left">5</property>
-                <property name="margin-right">5</property>
+                <property name="margin-start">5</property>
+                <property name="margin-end">5</property>
                 <signal name="changed" handler="on_osd_settings_changed" swapped="no"/>
               </object>
               <packing>
@@ -524,8 +524,8 @@
               <object class="GtkScale" id="sclOSDTimeout">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="margin-left">5</property>
-                <property name="margin-right">5</property>
+                <property name="margin-start">5</property>
+                <property name="margin-end">5</property>
                 <property name="adjustment">adjOSDTimeout</property>
                 <property name="round-digits">1</property>
                 <property name="value-pos">right</property>
@@ -558,8 +558,8 @@
               <object class="GtkComboBox" id="cbOSDSize">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">10</property>
-                <property name="margin-right">10</property>
+                <property name="margin-start">10</property>
+                <property name="margin-end">10</property>
                 <property name="model">lstOSDSize</property>
                 <property name="active">0</property>
                 <signal name="changed" handler="on_osd_settings_changed" swapped="no"/>
@@ -648,7 +648,7 @@
               <object class="GtkComboBox" id="cbMenus">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-right">5</property>
+                <property name="margin-end">5</property>
                 <property name="hexpand">True</property>
                 <property name="model">lstMenu</property>
                 <signal name="button-press-event" handler="on_cbMenus_button_press_event" swapped="no"/>
@@ -672,7 +672,7 @@
                 <property name="sensitive">False</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="margin-left">5</property>
+                <property name="margin-start">5</property>
                 <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_btEditMenu_clicked" swapped="no"/>
               </object>
@@ -716,15 +716,15 @@
                   <object class="GtkGrid" id="grMenuControl">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">20</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">20</property>
                     <property name="margin-top">5</property>
                     <property name="margin-bottom">10</property>
                     <child>
                       <object class="GtkLabel" id="lblControlWith">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-right">20</property>
+                        <property name="margin-end">20</property>
                         <property name="margin-bottom">5</property>
                         <property name="label" translatable="yes">Control Menu With</property>
                         <property name="xalign">0</property>
@@ -738,7 +738,7 @@
                       <object class="GtkLabel" id="lblConfirmWith">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-right">20</property>
+                        <property name="margin-end">20</property>
                         <property name="margin-bottom">5</property>
                         <property name="label" translatable="yes">Confirm Button</property>
                         <property name="xalign">0</property>
@@ -752,7 +752,7 @@
                       <object class="GtkLabel" id="lblCancelWith">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-right">20</property>
+                        <property name="margin-end">20</property>
                         <property name="margin-bottom">5</property>
                         <property name="label" translatable="yes">Cancel Button</property>
                         <property name="xalign">0</property>
@@ -903,8 +903,8 @@
                   <object class="GtkGrid" id="grid7">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-left">20</property>
-                    <property name="margin-right">20</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">20</property>
                     <property name="margin-top">5</property>
                     <property name="margin-bottom">10</property>
                     <child>
@@ -939,7 +939,7 @@
                         <property name="width-request">200</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-left">20</property>
+                        <property name="margin-start">20</property>
                         <property name="model">lstMenuPosX</property>
                         <property name="active">0</property>
                         <signal name="changed" handler="on_cbMenus_changed" swapped="no"/>
@@ -960,7 +960,7 @@
                         <property name="width-request">200</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="margin-left">20</property>
+                        <property name="margin-start">20</property>
                         <property name="margin-top">5</property>
                         <property name="model">lstMenuPosY</property>
                         <property name="active">1</property>

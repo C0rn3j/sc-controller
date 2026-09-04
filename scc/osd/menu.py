@@ -347,7 +347,7 @@ class Menu(OSDWindow):
 			item.callback = self.show_submenu
 			label1 = widget.get_children()[0]
 			label2 = Gtk.Label(label=_(">>"))
-			label2.set_property("margin-left", 30)
+			label2.set_property("margin-start", 30)
 			box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 			widget.remove(label1)
 			box.pack_start(label1, True, True, 1)

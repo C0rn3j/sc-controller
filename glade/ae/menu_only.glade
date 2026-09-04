@@ -19,8 +19,8 @@
       <object class="GtkGrid" id="grMenu">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="margin-left">20</property>
-        <property name="margin-right">20</property>
+        <property name="margin-start">20</property>
+        <property name="margin-end">20</property>
         <child>
           <object class="GtkLabel" id="label4">
             <property name="visible">True</property>
@@ -42,8 +42,8 @@
           <object class="GtkComboBox" id="cbMenus">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="margin-left">20</property>
-            <property name="margin-right">10</property>
+            <property name="margin-start">20</property>
+            <property name="margin-end">10</property>
             <property name="hexpand">True</property>
             <property name="model">lstMenu</property>
             <signal name="button-press-event" handler="on_cbMenus_button_press_event" swapped="no"/>

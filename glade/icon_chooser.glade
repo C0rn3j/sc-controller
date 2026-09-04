@@ -38,8 +38,8 @@
           <object class="GtkGrid" id="grid1">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="margin-left">10</property>
-            <property name="margin-right">10</property>
+            <property name="margin-start">10</property>
+            <property name="margin-end">10</property>
             <property name="margin-top">10</property>
             <property name="margin-bottom">5</property>
             <property name="column-homogeneous">True</property>
@@ -66,7 +66,7 @@
                 <property name="height-request">400</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="margin-left">5</property>
+                <property name="margin-start">5</property>
                 <property name="margin-top">5</property>
                 <property name="hexpand">True</property>
                 <property name="vexpand">True</property>
@@ -107,7 +107,7 @@
               <object class="GtkScrolledWindow" id="swCategories">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="margin-right">5</property>
+                <property name="margin-end">5</property>
                 <property name="margin-top">5</property>
                 <property name="shadow-type">in</property>
                 <child>
@@ -160,8 +160,8 @@
           <object class="GtkRevealer" id="rvLicense">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="margin-left">10</property>
-            <property name="margin-right">10</property>
+            <property name="margin-start">10</property>
+            <property name="margin-end">10</property>
             <property name="margin-bottom">5</property>
             <child>
               <object class="GtkLabel" id="lblLicense">

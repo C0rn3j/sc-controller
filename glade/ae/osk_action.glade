@@ -78,8 +78,8 @@
       <object class="GtkComboBox" id="cbActionType">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="margin-left">10</property>
-        <property name="margin-right">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-end">10</property>
         <property name="model">lstActionType</property>
         <property name="active">0</property>
         <signal name="changed" handler="on_cbActionType_changed" swapped="no"/>
