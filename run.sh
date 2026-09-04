@@ -43,11 +43,11 @@ function testDeps() {
 #	fi
 	# https://stackoverflow.com/a/48006925/8962143
 	#import gi
-	#gi.require_version("Gtk", "3.0")
+	#gi.require_version("Gtk", "4.0")
 	#from gi.repository import Gtk
 	# + Another gi.require_version('Rsvg', '2.0') -> Rsvg -> gir1.2-rsvg-2.0 on Debian
-#	if ! python -c "import importlib.util; exit(0 if (lambda: (__import__('gi').require_version('Gtk', '3.0') or __import__('gi').repository.Gtk)) is not None else 1)"; then
-#		echo -e "${Red}gi.Gtk not found, install it. ${Yellow}The package may be named gtk3 or gir1.2-gtk-3.0 on your distribution!${NoColor}"
+#	if ! python -c "import importlib.util; exit(0 if (lambda: (__import__('gi').require_version('Gtk', '4.0') or __import__('gi').repository.Gtk)) is not None else 1)"; then
+#		echo -e "${Red}gi.Gtk not found, install it. ${Yellow}The package may be named gtk4 or gir1.2-gtk-4.0 on your distribution!${NoColor}"
 #		exit 1
 #	fi
 	if ! command -v x86_64-pc-linux-gnu-gcc >/dev/null; then
@@ -78,7 +78,7 @@ python -m venv .venv
 source .venv/bin/activate
 uv pip install . build
 # PYGOBJECT_STUB_CONFIG and --no-cache-dir is needed to build pygobject-stubs correctly
-PYGOBJECT_STUB_CONFIG=Gtk3,Gdk3 uv pip install --no-cache-dir ".[dev]"
+PYGOBJECT_STUB_CONFIG=Gtk4,Gdk4 uv pip install --no-cache-dir ".[dev]"
 uv build --wheel
 #python -m installer --destdir=".venv" dist/*.whl
 uv pip install --prefix ".venv" dist/*.whl --force-reinstall

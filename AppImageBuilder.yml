@@ -72,7 +72,7 @@ AppDir:
     fi
 
     # Enable icon theme
-    xdg_settings="${TARGET_APPDIR}/etc/xdg/gtk-3.0/settings.ini"
+    xdg_settings="${TARGET_APPDIR}/etc/xdg/gtk-4.0/settings.ini"
     if [ ! -e "${xdg_settings}" ]; then
       mkdir -p "$(dirname "${xdg_settings}")"
       theme=$(find "${icons}" -mindepth 1 -maxdepth 1 -type d -printf %f -quit)
@@ -109,13 +109,13 @@ AppDir:
       - sourceline: deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ {{APPIMAGE_APT_DISTRO}}-security main universe
 
     include:
-      - gir1.2-gtk-3.0
+      - gir1.2-gtk-4.0
       - gir1.2-rsvg-2.0
       - libbluetooth3
       - libgirepository-2.0-0
-      - libgtk-3-0
-      - libgtk-layer-shell-dev
-      - gir1.2-gtklayershell-0.1
+      - libgtk-4-1
+      - libgtk4-layer-shell-dev
+      - gir1.2-gtk4layershell-1.0
       - gir1.2-ayatanaappindicator3-0.1
       - libdbusmenu-glib4
       - libdbusmenu-gtk3-4
@@ -159,10 +159,10 @@ AppDir:
       - libfontconfig*  # fonts
       - libfreetype*    # fonts
       - libfribidi*     # i18n
-      - libgtk-3-common # gui
-      - liblz*          # codec
-      - libtiff*        # codec
-      - libwebp*        # codec
+      - libgtk-4-common # gui
+      # - liblz*          # codec
+      # - libtiff*        # codec
+      # - libwebp*        # codec
 
       # python3
       - "*krb*"         # security

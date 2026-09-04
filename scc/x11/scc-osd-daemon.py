@@ -15,9 +15,9 @@ import gi
 
 from scc.tools import set_logging_level
 
-gi.require_version("Gtk", "3.0")
+gi.require_version("Gtk", "4.0")
 gi.require_version("Rsvg", "2.0")
-gi.require_version("GdkX11", "3.0")
+gi.require_version("GdkX11", "4.0")
 from gi.repository import GLib
 
 from scc.config import Config

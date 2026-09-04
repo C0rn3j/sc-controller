@@ -86,11 +86,10 @@ AppDir:
       [ -e "${link}" ] || ln -sr "${file}" "${link}"
     done
 
-    # Trixie expects libpixbufloader libs with a dash suffix, not underscore
-    # see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1082676
-    find "${TARGET_APPDIR}" -type f -name 'libpixbufloader_*' | while read -r file; do
-      path="$(dirname "${file}")"
-      link="${path}/$(echo "$(basename "${file}")" | tr _ -)"
+    # Noble's GdkPixbuf loader cache uses the historical hyphenated module
+    # name, while the backported librsvg package installs an underscored name.
+    find "${TARGET_APPDIR}" -name 'libpixbufloader_svg.so' | while read -r file; do
+      link="${file%_svg.so}-svg.so"
       [ -e "${link}" ] || ln -sr "${file}" "${link}"
     done
 
@@ -108,12 +107,15 @@ AppDir:
       - "{{APPIMAGE_APT_ARCH}}"
 
     sources:
-      - sourceline: deb http://deb.debian.org/debian {{APPIMAGE_APT_DISTRO}} main
+      - sourceline: deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ {{APPIMAGE_APT_DISTRO}} main universe
         key_url: http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x{{APPIMAGE_APT_PUBKEY}}
-      - sourceline: deb http://deb.debian.org/debian {{APPIMAGE_APT_DISTRO}}-updates main
-        key_url: http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x{{APPIMAGE_APT_PUBKEY_UPDATES}}
-      - sourceline: deb http://deb.debian.org/debian-security/ {{APPIMAGE_APT_DISTRO}}-security main
-        key_url: http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x{{APPIMAGE_APT_PUBKEY_SECURITY}}
+      - sourceline: deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ {{APPIMAGE_APT_DISTRO}}-updates main universe
+      - sourceline: deb [arch=amd64] http://security.ubuntu.com/ubuntu/ {{APPIMAGE_APT_DISTRO}}-security main universe
+      - sourceline: deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ {{APPIMAGE_APT_DISTRO}} main universe
+      - sourceline: deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ {{APPIMAGE_APT_DISTRO}}-updates main universe
+      - sourceline: deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ {{APPIMAGE_APT_DISTRO}}-security main universe
+      - sourceline: deb [arch={{APPIMAGE_APT_ARCH}}] https://c0rn3j.github.io/PPA noble main
+        key_url: https://c0rn3j.github.io/PPA/repository-key.asc
 
     include:
       - gir1.2-gtk-4.0
@@ -123,9 +125,6 @@ AppDir:
       - libgtk-4-1
       - libgtk4-layer-shell-dev
       - gir1.2-gtk4layershell-1.0
-      - gir1.2-ayatanaappindicator3-0.1
-      - libdbusmenu-glib4
-      - libdbusmenu-gtk3-4
       - librsvg2-common
       - libwayland-client0
       - libwayland-cursor0
@@ -156,7 +155,7 @@ AppDir:
       - "*-icon-theme"  # gui
       - "*crypt*"       # security
       - "*dconf*"       # gui configuration
-      - "libdbus-1*"    # process communication (keep libdbusmenu for the tray icon)
+      - "libdbus-1*"    # process communication
       - "*gcc*"         # development
       - "*systemd*"     # linux core
       - libblk*         # filesystem
@@ -185,7 +184,7 @@ AppDir:
       - libuuid*        # development
       - media-types     # codec
 
-      # Debian Trixie
+      # Ubuntu Noble
       - libgprofng*     # development
       - libjansson*     # codec
       - libsframe*      # development

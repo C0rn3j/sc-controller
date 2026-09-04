@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sccontroller"
 dynamic = ["version"]
-description = "User-mode driver, mapper and GTK3 based GUI for Steam Controller, DS4 and similar controllers."
+description = "User-mode driver, mapper and GTK4 based GUI for Steam Controller, DS4 and similar controllers."
 authors = [{name = "C0rn3j", email = "martin@rys.rs"}]
 license = "GPL-2.0-only"
 keywords = ["controller", "mapping", "tools"]
@@ -33,7 +33,7 @@ dependencies = [
 
 [project.optional-dependencies]
 	dev = [
-		# Needs PYGOBJECT_STUB_CONFIG=Gtk3,Gdk3 env var when being installed
+		# Needs PYGOBJECT_STUB_CONFIG=Gtk4,Gdk4 env var when being installed
 		# And also --no-cache-dir for pip install
 		# https://github.com/pygobject/pygobject-stubs#project-integration
 		"pygobject-stubs",
