@@ -1424,6 +1424,9 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 	def do_startup(self, *a) -> None:
 		Gtk.Application.do_startup(self, *a)
+		display = Gdk.Display.get_default()
+		if display is not None:
+			Gtk.IconTheme.get_for_display(display).add_search_path(self.imagepath)
 		self.load_profile_list()
 		self.setup_widgets()
 		if self.app.config["gui"]["enable_status_icon"]:
