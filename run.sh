@@ -90,7 +90,9 @@ if [[ ${1-} == 'daemon' ]]; then
 		sleep 1
 	fi
 	shift
-	scc-daemon debug $@
+	# G_ENABLE_DIAGNOSTIC=1 to get GTK deprecation logs
+	G_ENABLE_DIAGNOSTIC=1 scc-daemon debug $@
 else
-	sc-controller --debug $@
+	# G_ENABLE_DIAGNOSTIC=1 to get GTK deprecation logs
+	G_ENABLE_DIAGNOSTIC=1 sc-controller --debug $@
 fi
