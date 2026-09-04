@@ -2,6 +2,7 @@
 ARG BASE_OS=ubuntu
 ARG BASE_CODENAME=noble
 FROM $BASE_OS:$BASE_CODENAME AS build-stage
+ARG TARGETARCH
 
 # Download build dependencies
 RUN <<EOR
@@ -10,15 +11,31 @@ RUN <<EOR
 	# Workaround for outstanding fix of https://bugs.launchpad.net/ubuntu/+source/python-build/+bug/1992108
 	. /etc/os-release
 
-	apt-get update
 	export DEBIAN_FRONTEND=noninteractive
+	apt-get update
+	# 24.04 does not package gtk4 layer shell, we build it ourselves
+	if [ "${UBUNTU_CODENAME:-}" = "noble" ]; then
+		case "${TARGETARCH}" in
+			amd64) package_revision=24.04.1 ;;
+			arm64) package_revision=24.04.2 ;;
+			*) echo "Unsupported Noble architecture: ${TARGETARCH}" >&2; exit 1 ;;
+		esac
+		apt-get install -y curl
+		for package in gir1.2-gtk4layershell-1.0 libgtk4-layer-shell0 libgtk4-layer-shell-dev; do
+			file="${package}_1.3.0-1.${package_revision}_${TARGETARCH}.deb"
+			curl -fL "https://github.com/C0rn3j/sc-controller/releases/download/v0.0.0_extras/${file}" --output "${file}"
+		done
+		apt-get install -y ./*_1.3.0-1."${package_revision}"_"${TARGETARCH}".deb
+		rm ./*_1.3.0-1."${package_revision}"_"${TARGETARCH}".deb
+	fi
 	apt-get install -y --no-install-recommends \
 		cmake \
-		gir1.2-gtklayershell-0.1 \
+		gir1.2-gtk4layershell-1.0 \
 		gir1.2-rsvg-2.0 \
 		libcairo2-dev \
 		libgirepository-2.0-dev \
-		libgtk-3-dev \
+		libgtk-4-dev \
+		libgtk4-layer-shell-dev \
 		gcc \
 		git \
 		librsvg2-bin \

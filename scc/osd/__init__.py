@@ -8,10 +8,15 @@ import argparse
 import logging
 import os
 import traceback
+from ctypes import CDLL
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import cairo
+
+# gtk4-layer-shell must be loaded before GTK imports libwayland-client
+CDLL("libgtk4-layer-shell.so")
+
 import gi
 
 if TYPE_CHECKING:
@@ -19,9 +24,9 @@ if TYPE_CHECKING:
 
 	from scc.gui.daemon_manager import ControllerManager, DaemonManager
 
-gi.require_version("Gtk", "3.0")
-gi.require_version("Gdk", "3.0")
-gi.require_version("GtkLayerShell", "0.1")
+gi.require_version("Gtk", "4.0")
+gi.require_version("Gdk", "4.0")
+gi.require_version("Gtk4LayerShell", "1.0")
 
 from gi.repository import Gdk, GLib, GObject, Gtk
 
@@ -76,20 +81,17 @@ class OSDWindow(Gtk.Window):
 		self.set_name(wmclass)
 		self.using_wlroots = False
 		try:
-			import gi
+			from gi.repository import Gtk4LayerShell
 
-			gi.require_version("GtkLayerShell", "0.1")
-			from gi.repository import GtkLayerShell
-
-			if GtkLayerShell.is_supported():
+			if Gtk4LayerShell.is_supported():
 				self.using_wlroots = True
-				self.x_layer_anchor = GtkLayerShell.Edge.LEFT
-				self.y_layer_anchor = GtkLayerShell.Edge.BOTTOM
-				GtkLayerShell.init_for_window(self)
-				GtkLayerShell.set_layer(self, layer if layer is not None else GtkLayerShell.Layer.OVERLAY)
-				GtkLayerShell.set_anchor(self, self.x_layer_anchor, True)
-				GtkLayerShell.set_anchor(self, self.y_layer_anchor, True)
-				self.layer_shell: GtkLayerShell = GtkLayerShell
+				self.x_layer_anchor = Gtk4LayerShell.Edge.LEFT
+				self.y_layer_anchor = Gtk4LayerShell.Edge.BOTTOM
+				Gtk4LayerShell.init_for_window(self)
+				Gtk4LayerShell.set_layer(self, layer if layer is not None else Gtk4LayerShell.Layer.OVERLAY)
+				Gtk4LayerShell.set_anchor(self, self.x_layer_anchor, True)
+				Gtk4LayerShell.set_anchor(self, self.y_layer_anchor, True)
+				self.layer_shell: Gtk4LayerShell = Gtk4LayerShell
 		except ImportError:
 			pass
 		if not self.using_wlroots:

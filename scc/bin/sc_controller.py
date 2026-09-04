@@ -13,8 +13,8 @@ def main() -> None:
 
 	import gi
 
-	gi.require_version("Gtk", "3.0")
-	gi.require_version("GdkX11", "3.0")
+	gi.require_version("Gtk", "4.0")
+	gi.require_version("GdkX11", "4.0")
 	gi.require_version("Rsvg", "2.0")
 
 	from scc.paths import get_share_path

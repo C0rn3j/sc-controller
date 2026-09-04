@@ -196,8 +196,8 @@ def cmd_dependency_check(argv0: str, argv: list[str]) -> int:
 	try:
 		import gi
 
-		gi.require_version("Gtk", "3.0")
-		gi.require_version("GdkX11", "3.0")
+		gi.require_version("Gtk", "4.0")
+		gi.require_version("GdkX11", "4.0")
 		gi.require_version("Rsvg", "2.0")
 	except ValueError as e1:
 		print(e1, file=sys.stderr)
@@ -339,9 +339,9 @@ def sigint(*a) -> None:
 def import_osd() -> None:
 	import gi
 
-	gi.require_version("Gtk", "3.0")
+	gi.require_version("Gtk", "4.0")
 	gi.require_version("Rsvg", "2.0")
-	gi.require_version("GdkX11", "3.0")
+	gi.require_version("GdkX11", "4.0")
 
 
 def run_osd_tool(tool, argv0: str, argv: list[str]) -> None:

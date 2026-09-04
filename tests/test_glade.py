@@ -11,10 +11,10 @@ import sys
 
 import gi
 
-gi.require_version("Gtk", "3.0")
+gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk
 
-Gtk.init([])
+Gtk.init()
 Gtk.Builder().add_from_file(sys.argv[1])
 """
 
@@ -71,7 +71,7 @@ class TestGlade:
 			{
 				"G_ENABLE_DIAGNOSTIC": "1",
 				"G_DEBUG": "fatal-warnings",
-				"NO_AT_BRIDGE": "1",
+				"GTK_A11Y": "test",
 			},
 		)
 		print(f"Validating GTK diagnostics: {filename}", flush=True)
