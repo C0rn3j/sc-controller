@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 log = logging.getLogger("PS")
 
 
-class ProfileSwitcher(Gtk.EventBox, UserDataManager):
+class ProfileSwitcher(Gtk.Box, UserDataManager):
 	"""List of signals:
 
 	changed (name, giofile)
@@ -55,8 +55,8 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 
 	SEND_TIMEOUT = 100  # How many ms should switcher wait before sending event about profile being switched
 
-	def __init__(self, imagepath, config):
-		Gtk.EventBox.__init__(self)
+	def __init__(self, imagepath, config) -> None:
+		Gtk.Box.__init__(self)
 		UserDataManager.__init__(self)
 		self.imagepath = imagepath
 		self.config = config
