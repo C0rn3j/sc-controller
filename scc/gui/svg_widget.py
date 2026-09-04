@@ -25,12 +25,12 @@ if TYPE_CHECKING:
 	from gi.repository import GdkPixbuf, GObject, Rsvg
 else:
 	gi.require_version("Rsvg", "2.0")
-	gi.require_version("Gdk", "3.0")
-	gi.require_version("Gtk", "3.0")
+	gi.require_version("Gdk", "4.0")
+	gi.require_version("Gtk", "4.0")
 	from gi.repository import Gdk, GdkPixbuf, GObject, Gtk, Rsvg
 #gi.require_version("Rsvg", "2.0")
-#gi.require_version("Gdk", "3.0")
-#gi.require_version("Gtk", "3.0")
+#gi.require_version("Gdk", "4.0")
+#gi.require_version("Gtk", "4.0")
 #from gi.repository import Gdk, GdkPixbuf, GObject, Gtk, Rsvg
 
 # sys.modules.pop('xml.etree.ElementTree', None)
