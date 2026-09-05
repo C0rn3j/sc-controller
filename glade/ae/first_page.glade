@@ -7,7 +7,6 @@
         <property name="margin-start">20</property>
         <property name="label" translatable="yes">(markup goes here)</property>
         <property name="use-markup">1</property>
-        <property name="track-visited-links">False</property>
         <property name="xalign">0</property>
         <property name="yalign">0</property>
         <signal name="activate-link" handler="on_lblMarkup_activate_link" swapped="no"/>
