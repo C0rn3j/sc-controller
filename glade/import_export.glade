@@ -1107,7 +1107,14 @@ and profile switches in imported profile may not work as expected.</property>
     </child>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="hbDialog">
-        <property name="title">Import / Export</property>
+        <property name="title-widget">
+          <object class="GtkLabel">
+            <property name="label">Import / Export</property>
+            <style>
+              <class name="title"/>
+            </style>
+          </object>
+        </property>
         <child type="end">
           <object class="GtkButton" id="btNext">
             <property name="visible">0</property>

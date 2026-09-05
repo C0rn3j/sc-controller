@@ -187,7 +187,14 @@
     </child>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="headerbar2">
-        <property name="title">New Profile</property>
+        <property name="title-widget">
+          <object class="GtkLabel">
+            <property name="label">New Profile</property>
+            <style>
+              <class name="title"/>
+            </style>
+          </object>
+        </property>
         <child type="end">
           <object class="GtkButton" id="btNewProfile">
             <property name="child">
@@ -256,7 +263,14 @@
     </child>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="headerbar1">
-        <property name="title">Rename Profile</property>
+        <property name="title-widget">
+          <object class="GtkLabel">
+            <property name="label">Rename Profile</property>
+            <style>
+              <class name="title"/>
+            </style>
+          </object>
+        </property>
         <child type="end">
           <object class="GtkButton" id="btRenameProfile">
             <property name="child">
@@ -846,7 +860,14 @@
     </child>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="hbProfileDetails">
-        <property name="title">Profile details</property>
+        <property name="title-widget">
+          <object class="GtkLabel">
+            <property name="label">Profile details</property>
+            <style>
+              <class name="title"/>
+            </style>
+          </object>
+        </property>
       </object>
     </child>
     <child internal-child="action_area">

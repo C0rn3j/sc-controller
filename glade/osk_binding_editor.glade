@@ -380,7 +380,14 @@
     </property>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="header3">
-        <property name="title">OSD Keyboard Bindings</property>
+        <property name="title-widget">
+          <object class="GtkLabel">
+            <property name="label">OSD Keyboard Bindings</property>
+            <style>
+              <class name="title"/>
+            </style>
+          </object>
+        </property>
         <child>
           <placeholder/>
         </child>

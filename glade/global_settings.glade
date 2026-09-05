@@ -2024,7 +2024,14 @@ grips, triggers, finger positions on both pads and stick angle.</property>
     </property>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="header">
-        <property name="title">Settings</property>
+        <property name="title-widget">
+          <object class="GtkLabel">
+            <property name="label">Settings</property>
+            <style>
+              <class name="title"/>
+            </style>
+          </object>
+        </property>
       </object>
     </child>
   </object>
@@ -2213,7 +2220,14 @@ grips, triggers, finger positions on both pads and stick angle.</property>
     </property>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="header2">
-        <property name="title">Edit Condition</property>
+        <property name="title-widget">
+          <object class="GtkLabel">
+            <property name="label">Edit Condition</property>
+            <style>
+              <class name="title"/>
+            </style>
+          </object>
+        </property>
         <child>
           <object class="GtkButton" id="btSave">
             <property name="child">
