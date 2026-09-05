@@ -52,10 +52,9 @@ class AEComponent(ComboSetter):
 		"""
 		if self.loaded:
 			return False
-		self.builder = Gtk.Builder()
+		self.builder = Gtk.Builder(self)
 		self.builder.add_from_file(os.path.join(self.app.gladepath, self.GLADE))
 		self.widget = self.builder.get_object(self.NAME)
-		self.builder.connect_signals(self)
 		self.loaded = True
 		return True
 
