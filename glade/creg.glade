@@ -702,10 +702,9 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                         <property name="show-close-button">1</property>
                         <signal name="response" handler="on_ibHIDWarning_response" swapped="no"/>
                         <child internal-child="action_area">
-                          <object class="GtkButtonBox" id="box1HIDWarning">
-                            <property name="can-focus">False</property>
+                          <object class="GtkBox" id="box1HIDWarning">
                             <property name="spacing">6</property>
-                            <property name="layout-style">end</property>
+                            <property name="halign">end</property>
                             <child>
                               <placeholder/>
                             </child>

@@ -28,10 +28,9 @@
                 <property name="orientation">vertical</property>
                 <property name="message-type">error</property>
                 <child internal-child="action_area">
-                  <object class="GtkButtonBox" id="kuaaaaaa">
-                    <property name="can-focus">False</property>
+                  <object class="GtkBox" id="kuaaaaaa">
                     <property name="spacing">6</property>
-                    <property name="layout-style">end</property>
+                    <property name="halign">end</property>
                     <child>
                       <placeholder/>
                     </child>
