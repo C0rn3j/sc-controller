@@ -330,7 +330,7 @@ class ActionEditor(Editor):
 					stActionModes.remove(c)
 
 		if component.get_widget() not in stActionModes.get_children():
-			stActionModes.add(component.get_widget())
+			stActionModes.add_child(component.get_widget())
 
 		component.set_action(self._mode, self._action)
 		if self._selected_component is not None:
@@ -880,7 +880,7 @@ class ActionEditor(Editor):
 				stActionModes = self.builder.get_object("stActionModes")
 				self._selected_component.load()
 				self._selected_component.shown()
-				stActionModes.add(self._selected_component.get_widget())
+				stActionModes.add_child(self._selected_component.get_widget())
 				stActionModes.set_visible_child(self._selected_component.get_widget())
 			if self._selected_component:
 				if self._selected_component in self.c_buttons:
@@ -1023,7 +1023,7 @@ class ActionEditor(Editor):
 
 				component.load()
 				if component.get_widget() not in stActionModes.get_children():
-					stActionModes.add(component.get_widget())
+					stActionModes.add_child(component.get_widget())
 
 		if action.name is None:
 			entName.set_text("")

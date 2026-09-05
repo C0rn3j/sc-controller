@@ -90,9 +90,9 @@ class ControllerButton(ControllerWidget):
 			vbox.append(self.icon)
 			vbox.append(separator)
 			vbox.append(self.label)
-			self.widget.add(vbox)
+			self.widget.set_child(vbox)
 		else:
-			self.widget.add(self.label)
+			self.widget.set_child(self.label)
 		self.widget.show_all()
 		self.label.set_max_width_chars(LONG_TEXT)
 		if name == "C":
@@ -142,7 +142,7 @@ class ControllerStick(ControllerWidget):
 		grid.attach(self.label, 2, 1, 1, 1)
 		self.over_icon = False
 		self.enable_press = enable_press
-		self.widget.add(grid)
+		self.widget.set_child(grid)
 		self.widget.show_all()
 
 	def on_cursor_enter(self, *a):
@@ -261,7 +261,7 @@ class ControllerGyro(ControllerWidget):
 		grid.attach(self.label, 2, 1, 1, 1)
 		grid.attach(self.pressed, 2, 2, 1, 1)
 		self.over_icon = False
-		self.widget.add(grid)
+		self.widget.set_child(grid)
 		self.widget.show_all()
 
 	def on_click(self, *a) -> None:
