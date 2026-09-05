@@ -26,6 +26,7 @@ class ControllerSettings(Editor, UserDataManager, ComboSetter):
 		self.controller = controller
 		self.profile_switcher = profile_switcher
 		self.setup_widgets()
+		self.builder.get_object("sclIdleTimeout").set_format_value_func(self.on_sclIdleTimeout_format_value)
 		self.load_icons()
 		self._timer = None
 		self.app.config.reload()
@@ -173,7 +174,7 @@ class ControllerSettings(Editor, UserDataManager, ComboSetter):
 			GLib.source_remove(self._timer)
 		self._timer = GLib.timeout_add_seconds(1, cb)
 
-	def on_sclIdleTimeout_format_value(self, scale, value):
+	def on_sclIdleTimeout_format_value(self, scale, value, *a):
 		if value <= 180:  # 2 minutes
 			return _("%s seconds") % int(value)
 		if value % 60 == 0:

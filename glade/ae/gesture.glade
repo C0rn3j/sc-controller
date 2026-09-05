@@ -234,7 +234,6 @@
             <property name="adjustment">adjPrecision</property>
             <property name="round-digits">2</property>
             <property name="value-pos">right</property>
-            <signal name="format-value" handler="on_sclPrecision_format_value" swapped="no"/>
             <signal name="value-changed" handler="on_sclPrecision_value_changed" swapped="no"/>
           </object>
         </child>

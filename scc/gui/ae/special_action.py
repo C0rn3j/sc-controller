@@ -41,6 +41,7 @@ class SpecialActionComponent(AEComponent, MenuActionCofC):
 		if self.loaded:
 			return
 		AEComponent.load(self)
+		self.builder.get_object("sclOSDTimeout").set_format_value_func(self.on_sclOSDTimeout_format_value)
 		cbConfirmWith = self.builder.get_object("cbConfirmWith")
 		cbCancelWith = self.builder.get_object("cbCancelWith")
 		cbConfirmWith.set_row_separator_func(lambda model, iter: model.get_value(iter, 0) == "-")
@@ -211,7 +212,7 @@ class SpecialActionComponent(AEComponent, MenuActionCofC):
 		rvMenuPosition = self.builder.get_object("rvMenuPosition")
 		rvMenuPosition.set_reveal_child(not ex.get_expanded())
 
-	def on_sclOSDTimeout_format_value(self, scale, value):
+	def on_sclOSDTimeout_format_value(self, scale, value, *a):
 		if value > 60.0:
 			return _("forever")
 		if value < 1:

@@ -140,6 +140,8 @@ class ActionEditor(Editor):
 
 	def setup_widgets(self):
 		Editor.setup_widgets(self)
+		self.builder.get_object("sclFriction").set_format_value_func(self.on_sclFriction_format_value)
+		self.builder.get_object("sclFFrequency").set_format_value_func(self.on_sclFFrequency_format_value)
 		headerbar(self.builder.get_object("header"))
 		for i in (0, 1, 2):
 			self.sens_widgets.append(
@@ -1030,13 +1032,13 @@ class ActionEditor(Editor):
 		if vbActionButtons.get_visible():
 			vbActionButtons.show_all()
 
-	def on_sclFFrequency_format_value(self, scale, value):
+	def on_sclFFrequency_format_value(self, scale, value, *a):
 		if value == 1:
 			# Special case
 			return " %0.2fHz" % (1.0 / value,)
 		return "%0.2fmHz" % (100.0 / value,)
 
-	def on_sclFriction_format_value(self, scale, value):
+	def on_sclFriction_format_value(self, scale, value, *a):
 		if value <= 0:
 			return "%0.3f" % (0,)
 		if value >= 6:
