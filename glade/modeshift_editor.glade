@@ -27,6 +27,7 @@
     </columns>
   </object>
   <object class="GtkWindow" id="Dialog">
+    <property name="default-widget">btOK</property>
     <property name="width-request">600</property>
     <property name="role">action-editor</property>
     <property name="resizable">0</property>
@@ -595,8 +596,6 @@
               </object>
             </property>
             <property name="focusable">1</property>
-            <property name="can-default">True</property>
-            <property name="has-default">1</property>
             <property name="receives-default">1</property>
             <signal name="clicked" handler="on_btOK_clicked" swapped="no"/>
             <style>
