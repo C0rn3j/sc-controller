@@ -7,12 +7,6 @@
     <property name="step-increment">0.10</property>
     <property name="page-increment">0.10</property>
   </object>
-  <object class="GtkImage" id="imgApply">
-    <property name="icon-name">object-select-symbolic</property>
-  </object>
-  <object class="GtkImage" id="imgChangeGesture">
-    <property name="icon-name">document-edit-symbolic</property>
-  </object>
   <object class="GtkGrid" id="gesture_editor">
     <child>
       <object class="GtkEntry" id="txGesture">
@@ -28,12 +22,24 @@
     </child>
     <child>
       <object class="GtkButton" id="btChangeGesture">
-        <property name="label" translatable="yes">_Change</property>
         <property name="focusable">1</property>
         <property name="receives-default">1</property>
-        <property name="image">imgChangeGesture</property>
-        <property name="always-show-image">True</property>
-        <property name="use-underline">1</property>
+        <property name="child">
+          <object class="GtkBox">
+            <property name="spacing">6</property>
+            <child>
+              <object class="GtkImage" id="imgChangeGesture">
+                <property name="icon-name">document-edit-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="label" translatable="yes">_Change</property>
+                <property name="use-underline">1</property>
+              </object>
+            </child>
+          </object>
+        </property>
         <signal name="clicked" handler="on_btChangeGesture_clicked" swapped="no"/>
         <layout>
           <property name="column">1</property>
@@ -70,9 +76,6 @@
     <child>
       <placeholder/>
     </child>
-  </object>
-  <object class="GtkImage" id="imgStartOver">
-    <property name="icon-name">view-refresh-symbolic</property>
   </object>
   <object class="GtkWindow" id="gesture_grabber">
     <property name="role">gesture_grabber</property>
@@ -116,23 +119,47 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="btnStartGestureOver">
-                    <property name="label" translatable="yes">Start _Over (Y)</property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
-                    <property name="image">imgStartOver</property>
-                    <property name="always-show-image">True</property>
-                    <property name="use-underline">1</property>
+                    <property name="child">
+                      <object class="GtkBox">
+                        <property name="spacing">6</property>
+                        <child>
+                          <object class="GtkImage" id="imgStartOver">
+                            <property name="icon-name">view-refresh-symbolic</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">Start _Over (Y)</property>
+                            <property name="use-underline">1</property>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkButton" id="btnConfirmGesutre">
-                    <property name="label" translatable="yes">_Use (A)</property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
                     <property name="margin-start">10</property>
-                    <property name="image">imgApply</property>
-                    <property name="always-show-image">True</property>
-                    <property name="use-underline">1</property>
+                    <property name="child">
+                      <object class="GtkBox">
+                        <property name="spacing">6</property>
+                        <child>
+                          <object class="GtkImage" id="imgApply">
+                            <property name="icon-name">object-select-symbolic</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">_Use (A)</property>
+                            <property name="use-underline">1</property>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
                   </object>
                 </child>
               </object>

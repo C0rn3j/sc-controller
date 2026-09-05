@@ -555,14 +555,23 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkImage" id="imgEditMenu">
-                    <property name="icon-name">document-edit-symbolic</property>
-                  </object>
                   <object class="GtkButton" id="btEditMenu">
-                    <property name="label" translatable="yes">_Edit</property>
-                    <property name="use-underline">1</property>
-                    <property name="image">imgEditMenu</property>
-                    <property name="always-show-image">True</property>
+                    <property name="child">
+                      <object class="GtkBox">
+                        <property name="spacing">6</property>
+                        <child>
+                          <object class="GtkImage" id="imgEditMenu">
+                            <property name="icon-name">document-edit-symbolic</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">_Edit</property>
+                            <property name="use-underline">1</property>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
                     <property name="sensitive">0</property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
