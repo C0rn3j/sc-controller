@@ -871,7 +871,14 @@ future inputs or even crash.</property>
     </property>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="header">
-        <property name="title">Controller Registration</property>
+        <property name="title-widget">
+          <object class="GtkLabel">
+            <property name="label">Controller Registration</property>
+            <style>
+              <class name="title"/>
+            </style>
+          </object>
+        </property>
         <child>
           <object class="GtkButton" id="btBack">
             <property name="label" translatable="yes">_Back</property>
@@ -948,7 +955,14 @@ future inputs or even crash.</property>
     </property>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="hb485">
-        <property name="title">Button Input</property>
+        <property name="title-widget">
+          <object class="GtkLabel">
+            <property name="label">Button Input</property>
+            <style>
+              <class name="title"/>
+            </style>
+          </object>
+        </property>
         <child>
           <placeholder/>
         </child>

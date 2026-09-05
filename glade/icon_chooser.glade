@@ -149,7 +149,14 @@
     </property>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="header">
-        <property name="title">Choose Icon</property>
+        <property name="title-widget">
+          <object class="GtkLabel">
+            <property name="label">Choose Icon</property>
+            <style>
+              <class name="title"/>
+            </style>
+          </object>
+        </property>
         <property name="has-subtitle">False</property>
         <child>
           <object class="GtkLinkButton" id="btUserFolder">
