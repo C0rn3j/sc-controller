@@ -723,7 +723,7 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                             <child>
                               <object class="GtkImage" id="imgHIDWarning">
                                 <property name="icon-name">dialog-warning</property>
-                                <property name="icon_size">6</property>
+                                <property name="pixel-size">48</property>
                               </object>
                             </child>
                             <child>
@@ -838,7 +838,7 @@ future inputs or even crash.</property>
                     <property name="halign">center</property>
                     <property name="valign">start</property>
                     <property name="icon-name">image-missing</property>
-                    <property name="icon_size">6</property>
+                    <property name="pixel-size">48</property>
                     <layout>
                       <property name="column">0</property>
                       <property name="row">0</property>

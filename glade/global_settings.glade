@@ -200,7 +200,7 @@
                     <child>
                       <object class="GtkImage" id="imgRestartWarning">
                         <property name="icon-name">dialog-warning</property>
-                        <property name="icon_size">6</property>
+                        <property name="pixel-size">48</property>
                       </object>
                     </child>
                     <child>
@@ -1423,7 +1423,7 @@ or even crash.</property>
                                 <child>
                                   <object class="GtkImage" id="image1">
                                     <property name="icon-name">list-add-symbolic</property>
-                                    <property name="icon_size">3</property>
+                                    <property name="icon-size">large</property>
                                   </object>
                                 </child>
                                 <child>
@@ -1450,7 +1450,7 @@ or even crash.</property>
                             <child>
                               <object class="GtkImage" id="image2">
                                 <property name="icon-name">list-remove-symbolic</property>
-                                <property name="icon_size">3</property>
+                                <property name="icon-size">large</property>
                               </object>
                             </child>
                           </object>
@@ -1655,7 +1655,7 @@ on network can connect and remote-control this computer as additional gamepad.
                                 <child>
                                   <object class="GtkImage" id="image34">
                                     <property name="icon-name">document-edit-symbolic</property>
-                                    <property name="icon_size">3</property>
+                                    <property name="icon-size">large</property>
                                   </object>
                                 </child>
                                 <child>
@@ -1684,7 +1684,7 @@ on network can connect and remote-control this computer as additional gamepad.
                             <child>
                               <object class="GtkImage" id="image35">
                                 <property name="icon-name">list-remove-symbolic</property>
-                                <property name="icon_size">3</property>
+                                <property name="icon-size">large</property>
                               </object>
                             </child>
                           </object>
@@ -1700,7 +1700,7 @@ on network can connect and remote-control this computer as additional gamepad.
                             <child>
                               <object class="GtkImage" id="image39">
                                 <property name="icon-name">list-add-symbolic</property>
-                                <property name="icon_size">3</property>
+                                <property name="icon-size">large</property>
                               </object>
                             </child>
                           </object>
