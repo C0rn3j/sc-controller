@@ -452,7 +452,6 @@
                         <property name="round-digits">1</property>
                         <property name="digits">0</property>
                         <property name="value-pos">right</property>
-                        <signal name="format-value" handler="on_sclDiagonalRange_format_value" swapped="no"/>
                         <signal name="value-changed" handler="on_sclDiagonalRange_value_changed" swapped="no"/>
                       </object>
                     </child>
@@ -619,7 +618,6 @@
                             <property name="adjustment">adjMenuSize</property>
                             <property name="round-digits">1</property>
                             <property name="value-pos">right</property>
-                            <signal name="format-value" handler="on_sclMenuSize_format_value" swapped="no"/>
                           </object>
                         </child>
                       </object>

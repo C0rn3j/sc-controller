@@ -446,7 +446,6 @@
                     <property name="adjustment">adjOSDTimeout</property>
                     <property name="round-digits">1</property>
                     <property name="value-pos">right</property>
-                    <signal name="format-value" handler="on_sclOSDTimeout_format_value" swapped="no"/>
                     <signal name="value-changed" handler="on_osd_settings_changed" swapped="no"/>
                   </object>
                 </child>

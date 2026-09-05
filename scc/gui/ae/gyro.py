@@ -33,6 +33,7 @@ class GyroComponent(AEComponent):
 		if self.loaded:
 			return
 		AEComponent.load(self)
+		self.builder.get_object("sclSoftLevel").set_format_value_func(self.on_sclSoftLevel_format_value)
 		cbGyroButton = self.builder.get_object("cbGyroButton")
 		self._recursing = True
 		cbGyroButton = self.builder.get_object("cbGyroButton")
@@ -138,7 +139,7 @@ class GyroComponent(AEComponent):
 		if not self._recursing:
 			self.send()
 
-	def on_sclSoftLevel_format_value(self, scale, value):
+	def on_sclSoftLevel_format_value(self, scale, value, *a):
 		return "%s%%" % (int(value * 100.0),)
 
 	def update(self, *a):
