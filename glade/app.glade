@@ -163,8 +163,6 @@
         </child>
         <child>
           <object class="GtkBox" id="newProfileChoices">
-            <property name="can-default">True</property>
-            <property name="has-default">1</property>
             <property name="homogeneous">1</property>
             <child>
               <object class="GtkCheckButton" id="rbNewProfile">
