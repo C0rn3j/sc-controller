@@ -309,7 +309,7 @@ class ActionEditor(Editor):
 		self._selected_component.shown()
 		stActionModes.set_visible_child(component.get_widget())
 
-		stActionModes.show_all()
+		stActionModes.show()
 
 	def force_page(self, component, remove_rest: bool = False):
 		"""Force action editor to display page with the specified component.
@@ -339,7 +339,7 @@ class ActionEditor(Editor):
 		self._selected_component = component
 		self._selected_component.shown()
 		stActionModes.set_visible_child(component.get_widget())
-		stActionModes.show_all()
+		stActionModes.show()
 
 		return component
 
@@ -1030,7 +1030,7 @@ class ActionEditor(Editor):
 		else:
 			entName.set_text(action.name)
 		if vbActionButtons.get_visible():
-			vbActionButtons.show_all()
+			vbActionButtons.show()
 
 	def on_sclFFrequency_format_value(self, scale, value, *a):
 		if value == 1:
