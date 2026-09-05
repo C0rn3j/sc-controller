@@ -96,7 +96,7 @@ class Editor(ComboSetter):
 		for ch in vbAddedWidget.get_children():
 			vbAddedWidget.remove(ch)
 		self.added_widget = widget
-		vbAddedWidget.pack_start(widget, True, False, 0)
+		vbAddedWidget.append(widget)
 		vbAddedWidget.set_visible(True)
 
 	def remove_added_widget(self):

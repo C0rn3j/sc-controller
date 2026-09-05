@@ -87,9 +87,9 @@ class ControllerButton(ControllerWidget):
 			vbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 			vbox.set_spacing(6)
 			separator = Gtk.Separator(orientation=Gtk.Orientation.VERTICAL)
-			vbox.pack_start(self.icon, False, False, 1)
-			vbox.pack_start(separator, False, False, 1)
-			vbox.pack_start(self.label, False, True, 1)
+			vbox.append(self.icon)
+			vbox.append(separator)
+			vbox.append(self.label)
 			self.widget.add(vbox)
 		else:
 			self.widget.add(self.label)

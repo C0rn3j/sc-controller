@@ -1017,7 +1017,7 @@ class ActionEditor(Editor):
 		for component in reversed(sorted(self.components, key=lambda a: a.PRIORITY)):
 			if (mode & component.CTXS) != 0:
 				b = Gtk.ToggleButton.new_with_label(component.get_button_title())
-				vbActionButtons.pack_start(b, True, True, 2)
+				vbActionButtons.append(b)
 				b.connect("toggled", self.on_action_type_changed)
 				self.c_buttons[component] = b
 

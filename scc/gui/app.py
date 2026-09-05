@@ -53,6 +53,20 @@ if TYPE_CHECKING:
 
 log = logging.getLogger("App")
 
+
+def reorder_box_child(box, child, position):
+	"""Move child to a zero-based position using GTK4 sibling ordering."""
+	sibling = None
+	current = box.get_first_child()
+	remaining = position
+	while current is not None and remaining:
+		next_child = current.get_next_sibling()
+		if current is not child:
+			sibling = current
+			remaining -= 1
+		current = next_child
+	box.reorder_child_after(child, sibling)
+
 menu_generators.register_menu_generators()
 
 
@@ -281,13 +295,13 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			btC: Gtk.Button | None = self.builder.get_object("btC")
 			btC.get_parent().remove(btC)
 			btC.set_margin_end(0)
-			btRGRIP.get_parent().pack_start(btC, False, True, 0)
-			btRGRIP.get_parent().reorder_child(btC, 5)
+			btRGRIP.get_parent().append(btC)
+			reorder_box_child(btRGRIP.get_parent(), btC, 5)
 			# Move 'GYRO' button to middle of image (where C was)
 			btGYRO: Gtk.Button | None = self.builder.get_object("btGYRO")
 			btGYRO.get_parent().remove(btGYRO)
 			vbC = self.builder.get_object("vbC")
-			vbC.pack_start(btGYRO, False, True, 0)
+			vbC.append(btGYRO)
 			btGYRO.set_margin_top(30)
 			# Resize buttons at bottom
 			# for w in ['btLSTICK', 'btRSTICK', 'btLPAD', 'btRPAD']:
@@ -296,8 +310,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			btLGRIP: Gtk.Button | None = self.builder.get_object("btLGRIP")
 			btDPAD: Gtk.Button | None = self.builder.get_object("btDPAD")
 			btDPAD.get_parent().remove(btDPAD)
-			btLGRIP.get_parent().pack_start(btDPAD, False, True, 6)
-			btLGRIP.get_parent().reorder_child(btDPAD, 5)
+			btLGRIP.get_parent().append(btDPAD)
+			reorder_box_child(btLGRIP.get_parent(), btDPAD, 5)
 
 	def setup_statusicon(self) -> None:
 		if self.statusicon is None:
@@ -967,13 +981,13 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		ps.connect("right-clicked", self.on_profile_right_clicked)
 		ps.connect("switch-to-clicked", self.on_switch_to_clicked)
 
-		vbSwitchers.pack_start(ps, False, False, 0)
-		vbSwitchers.reorder_child(ps, 0)
+		vbSwitchers.append(ps)
+		vbSwitchers.reorder_child_after(ps, None)
 		if len(vbSwitchers.get_children()) == 2:
 			# 1st switcher is bellow separator, rest is stacked on top.
 			# That means separator should be moved and shown when 2nd
 			# switcher is created.
-			vbSwitchers.reorder_child(sepSwitchers, 0)
+			vbSwitchers.reorder_child_after(sepSwitchers, None)
 			sepSwitchers.set_visible(True)
 		vbSwitchers.show_all()
 
@@ -1372,8 +1386,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		if self.ribar is None or self.ribar.get_label() is None:
 			self.ribar = ribar or RIBar(message, Gtk.MessageType.ERROR)
 			content = self.builder.get_object("content")
-			content.pack_start(self.ribar, False, False, 0)
-			content.reorder_child(self.ribar, 0)
+			content.append(self.ribar)
+			content.reorder_child_after(self.ribar, None)
 			self.ribar.connect("close", self.hide_error)
 			self.ribar.connect("response", self.hide_error)
 		else:

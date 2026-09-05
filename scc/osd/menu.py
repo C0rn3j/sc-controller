@@ -182,7 +182,7 @@ class Menu(OSDWindow):
 
 	def pack_items(self, parent, items):
 		for item in items:
-			parent.pack_start(item.widget, True, True, 0)
+			parent.append(item.widget)
 
 	def use_daemon(self, d):
 		"""Allows (re)using already existing DaemonManager instance in same process.
@@ -350,8 +350,8 @@ class Menu(OSDWindow):
 			label2.set_property("margin-start", 30)
 			box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 			widget.remove(label1)
-			box.pack_start(label1, True, True, 1)
-			box.pack_start(label2, False, True, 1)
+			box.append(label1)
+			box.append(label2)
 			widget.add(box)
 			widget.set_name("osd-menu-item")
 		elif item.id is None:
@@ -375,8 +375,8 @@ class Menu(OSDWindow):
 			for c in [] + widget.get_children():
 				widget.remove(c)
 			box = Gtk.Box()
-			box.pack_start(icon, False, True, 0)
-			box.pack_start(label, True, True, 10)
+			box.append(icon)
+			box.append(label)
 			widget.add(box)
 
 		return widget

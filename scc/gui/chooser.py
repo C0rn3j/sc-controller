@@ -8,6 +8,8 @@ Allows to edit button or trigger action.
 import logging
 import os
 
+from gi.repository import Gtk
+
 from scc.actions import AxisAction, HatDownAction, HatLeftAction, HatRightAction, HatUpAction, MouseAction
 from scc.gui.area_to_action import AREA_TO_ACTION
 from scc.gui.editor import Editor
@@ -43,9 +45,11 @@ class Chooser(Editor):
 				if grid_columns:
 					# Grid
 					parent.attach(image, 0, 0, grid_columns, 1)
+				elif isinstance(parent, Gtk.CenterBox):
+					parent.set_center_widget(image)
 				else:
 					# Box
-					parent.pack_start(image, True, True, 0)
+					parent.append(image)
 				parent.show_all()
 
 	def set_active_area(self, a):
