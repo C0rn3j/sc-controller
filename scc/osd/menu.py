@@ -330,7 +330,7 @@ class Menu(OSDWindow):
 		"""Generates gtk widget for specified menutitem"""
 		if isinstance(item, Separator) and item.label:
 			widget = Gtk.Button.new_with_label(item.label)
-			widget.set_relief(Gtk.ReliefStyle.NONE)
+			widget.add_css_class("flat")
 			widget.set_name("osd-menu-separator")
 			return widget
 		if isinstance(item, Separator):
@@ -338,7 +338,7 @@ class Menu(OSDWindow):
 			widget.set_name("osd-menu-separator")
 			return widget
 		widget = Gtk.Button.new_with_label(item.label)
-		widget.set_relief(Gtk.ReliefStyle.NONE)
+		widget.add_css_class("flat")
 		if hasattr(widget.get_children()[0], "set_xalign"):
 			widget.get_children()[0].set_xalign(0)
 		else:

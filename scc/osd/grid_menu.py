@@ -69,7 +69,7 @@ class GridMenu(Menu):
 		if icon_file:
 			# Gridmenu hides label when icon is displayed
 			widget = Gtk.Button()
-			widget.set_relief(Gtk.ReliefStyle.NONE)
+			widget.add_css_class("flat")
 			widget.set_name("osd-menu-item-big-icon")
 			if isinstance(item, Submenu):
 				item.callback = self.show_submenu

@@ -199,7 +199,6 @@ Please, select your controller from list bellow and click Next.</property>
                     </property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
-                    <property name="relief">half</property>
                     <signal name="clicked" handler="refresh_devices" swapped="no"/>
                     <layout>
                       <property name="column">0</property>
