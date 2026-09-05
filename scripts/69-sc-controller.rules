@@ -9,7 +9,13 @@ KERNEL=="hidraw*", KERNELS=="*28DE:*", MODE="0666", TAG+="uaccess"
 # Sony USB devices
 SUBSYSTEM=="usb", ATTRS{idVendor}=="054c", MODE="0666", TAG+="uaccess"
 # Sony input devices over bluetooth
+## DualShock 4 [CUH-ZCT1x]
+SUBSYSTEM=="input", KERNELS=="*054C:05C4*", MODE="0666", TAG+="uaccess"
+## DualShock 4 [CUH-ZCT2x]
 SUBSYSTEM=="input", KERNELS=="*054C:09CC*", MODE="0666", TAG+="uaccess"
+## DualSense
 SUBSYSTEM=="input", KERNELS=="*054C:0CE6*", MODE="0666", TAG+="uaccess"
+## DualSense Edge
+SUBSYSTEM=="input", KERNELS=="*054C:0DF2*", MODE="0666", TAG+="uaccess"
 # uinput kernel module write access (allows keyboard, mouse and gamepad emulation)
 KERNEL=="uinput", SUBSYSTEM=="misc", TAG+="uaccess", OPTIONS+="static_node=uinput", MODE="0666"
