@@ -339,42 +339,35 @@
                 <property name="label-xalign">0</property>
                 <property name="shadow-type">none</property>
                 <child>
-                  <object class="GtkAlignment" id="alFuckWhyIHaveToNameAllThisShit">
+                  <object class="GtkScrolledWindow" id="swItems">
+                    <property name="name">sw</property>
                     <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="vexpand">False</property>
-                    <property name="top-padding">12</property>
-                    <property name="left-padding">12</property>
+                    <property name="can-focus">True</property>
+                    <property name="vexpand">True</property>
+                    <property name="margin-top">12</property>
+                    <property name="margin-start">12</property>
+                    <property name="shadow-type">in</property>
                     <child>
-                      <object class="GtkScrolledWindow" id="swItems">
-                        <property name="name">sw</property>
+                      <object class="GtkTreeView" id="tvItems">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="vexpand">True</property>
-                        <property name="shadow-type">in</property>
+                        <property name="model">lstItems</property>
+                        <property name="headers-visible">False</property>
+                        <property name="reorderable">True</property>
+                        <property name="rubber-banding">True</property>
+                        <signal name="cursor-changed" handler="on_tvItems_cursor_changed" swapped="no"/>
+                        <signal name="row-activated" handler="btEdit_clicked_cb" swapped="no"/>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection" id="nonimportatboxthatneedsidjustbecauseofubunt"/>
+                        </child>
                         <child>
-                          <object class="GtkTreeView" id="tvItems">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="model">lstItems</property>
-                            <property name="headers-visible">False</property>
-                            <property name="reorderable">True</property>
-                            <property name="rubber-banding">True</property>
-                            <signal name="cursor-changed" handler="on_tvItems_cursor_changed" swapped="no"/>
-                            <signal name="row-activated" handler="btEdit_clicked_cb" swapped="no"/>
-                            <child internal-child="selection">
-                              <object class="GtkTreeSelection" id="nonimportatboxthatneedsidjustbecauseofubunt"/>
-                            </child>
+                          <object class="GtkTreeViewColumn" id="clItemLabel">
+                            <property name="title" translatable="yes">Item</property>
                             <child>
-                              <object class="GtkTreeViewColumn" id="clItemLabel">
-                                <property name="title" translatable="yes">Item</property>
-                                <child>
-                                  <object class="GtkCellRendererText" id="clItemLabelText"/>
-                                  <attributes>
-                                    <attribute name="text">1</attribute>
-                                  </attributes>
-                                </child>
-                              </object>
+                              <object class="GtkCellRendererText" id="clItemLabelText"/>
+                              <attributes>
+                                <attribute name="text">1</attribute>
+                              </attributes>
                             </child>
                           </object>
                         </child>

@@ -183,15 +183,20 @@ Please, select your controller from list bellow and click Next.</property>
             </child>
             <child>
               <object class="GtkCheckButton" id="cbShowAllDevices">
-                <property name="label" translatable="yes">Show All Devices</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">False</property>
                 <property name="halign">end</property>
                 <property name="hexpand">True</property>
-                <property name="xalign">1</property>
                 <property name="draw-indicator">True</property>
                 <signal name="toggled" handler="refresh_devices" swapped="no"/>
+                <child>
+                  <object class="GtkLabel" id="lblShowAllDevices">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Show All Devices</property>
+                    <property name="xalign">1</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="left-attach">1</property>
@@ -458,18 +463,12 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
               </packing>
             </child>
             <child>
-              <object class="GtkAlignment" id="alController">
+              <object class="GtkFixed" id="fxController">
+                <property name="width-request">32</property>
+                <property name="height-request">32</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="xscale">0</property>
-                <child>
-                  <object class="GtkFixed" id="fxController">
-                    <property name="width-request">32</property>
-                    <property name="height-request">32</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                  </object>
-                </child>
+                <property name="halign">center</property>
               </object>
               <packing>
                 <property name="left-attach">0</property>
@@ -955,8 +954,8 @@ future inputs or even crash.</property>
                 <property name="can-focus">False</property>
                 <property name="margin-start">5</property>
                 <property name="margin-end">30</property>
-                <property name="xalign">0.5</property>
-                <property name="yalign">0</property>
+                <property name="halign">center</property>
+                <property name="valign">start</property>
                 <property name="icon-name">image-missing</property>
                 <property name="icon_size">6</property>
               </object>

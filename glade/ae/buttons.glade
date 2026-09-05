@@ -20,16 +20,21 @@
             <property name="orientation">vertical</property>
             <child>
               <object class="GtkCheckButton" id="cbRepeat">
-                <property name="label" translatable="yes">Repeat</property>
                 <property name="width-request">150</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">False</property>
                 <property name="halign">start</property>
                 <property name="valign">end</property>
-                <property name="xalign">0</property>
                 <property name="draw-indicator">True</property>
                 <signal name="toggled" handler="on_cbRepeat_toggled" swapped="no"/>
+                <child>
+                  <object class="GtkLabel" id="lblRepeat">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Repeat</property>
+                    <property name="xalign">0</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -40,16 +45,21 @@
             </child>
             <child>
               <object class="GtkCheckButton" id="cbToggle">
-                <property name="label" translatable="yes">Toggle Button</property>
                 <property name="width-request">150</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">False</property>
                 <property name="halign">start</property>
                 <property name="valign">end</property>
-                <property name="xalign">0</property>
                 <property name="draw-indicator">True</property>
                 <signal name="toggled" handler="on_cbToggle_toggled" swapped="no"/>
+                <child>
+                  <object class="GtkLabel" id="lblToggle">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Toggle Button</property>
+                    <property name="xalign">0</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
