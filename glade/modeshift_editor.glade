@@ -98,11 +98,11 @@
                 <property name="receives-default">1</property>
                 <property name="margin-start">5</property>
                 <signal name="clicked" handler="on_btAddAction_clicked" swapped="no"/>
-                <child>
+                <property name="child">
                   <object class="GtkImage" id="image2">
                     <property name="icon-name">list-add-symbolic</property>
                   </object>
-                </child>
+                </property>
               </object>
             </child>
           </object>
@@ -130,11 +130,11 @@
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
                             <signal name="clicked" handler="on_nomodclear_clicked" swapped="no"/>
-                            <child>
+                            <property name="child">
                               <object class="GtkImage" id="image1">
                                 <property name="icon-name">edit-clear-symbolic</property>
                               </object>
-                            </child>
+                            </property>
                             <layout>
                               <property name="column">2</property>
                               <property name="row">0</property>
@@ -220,11 +220,11 @@
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
                             <signal name="clicked" handler="on_nomodclear_clicked" swapped="no"/>
-                            <child>
+                            <property name="child">
                               <object class="GtkImage" id="image3">
                                 <property name="icon-name">edit-clear-symbolic</property>
                               </object>
-                            </child>
+                            </property>
                             <layout>
                               <property name="column">2</property>
                               <property name="row">0</property>
@@ -388,11 +388,11 @@
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
                             <signal name="clicked" handler="on_nomodclear_clicked" swapped="no"/>
-                            <child>
+                            <property name="child">
                               <object class="GtkImage" id="image4">
                                 <property name="icon-name">edit-clear-symbolic</property>
                               </object>
-                            </child>
+                            </property>
                             <layout>
                               <property name="column">2</property>
                               <property name="row">0</property>

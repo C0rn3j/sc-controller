@@ -80,7 +80,7 @@
                         <property name="margin-bottom">10</property>
                         <property name="use-underline">1</property>
                         <signal name="clicked" handler="on_btExport_clicked" swapped="no"/>
-                        <child>
+                        <property name="child">
                           <object class="GtkBox" id="vbBtExport">
                             <property name="margin-start">20</property>
                             <property name="margin-end">20</property>
@@ -102,7 +102,7 @@
                               </object>
                             </child>
                           </object>
-                        </child>
+                        </property>
                         <layout>
                           <property name="column">0</property>
                           <property name="row">1</property>
@@ -117,7 +117,7 @@
                         <property name="margin-bottom">10</property>
                         <property name="use-underline">1</property>
                         <signal name="clicked" handler="on_btImportSccprofile_clicked" swapped="no"/>
-                        <child>
+                        <property name="child">
                           <object class="GtkBox" id="vbBtImport">
                             <property name="margin-start">20</property>
                             <property name="margin-end">20</property>
@@ -139,7 +139,7 @@
                               </object>
                             </child>
                           </object>
-                        </child>
+                        </property>
                         <layout>
                           <property name="column">0</property>
                           <property name="row">2</property>
@@ -154,7 +154,7 @@
                         <property name="margin-bottom">10</property>
                         <property name="use-underline">1</property>
                         <signal name="clicked" handler="on_btImportVdf_clicked" swapped="no"/>
-                        <child>
+                        <property name="child">
                           <object class="GtkBox" id="vbBtImportVdf">
                             <property name="margin-start">20</property>
                             <property name="margin-end">20</property>
@@ -177,7 +177,7 @@
                               </object>
                             </child>
                           </object>
-                        </child>
+                        </property>
                         <layout>
                           <property name="column">0</property>
                           <property name="row">3</property>

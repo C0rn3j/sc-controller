@@ -73,11 +73,11 @@
             <property name="margin-top">20</property>
             <property name="hexpand">1</property>
             <signal name="clicked" handler="on_btTilt_clicked" swapped="no"/>
-            <child>
+            <property name="child">
               <object class="GtkLabel" id="lblTilt2">
                 <property name="label" translatable="yes">(...)</property>
               </object>
-            </child>
+            </property>
             <layout>
               <property name="column">0</property>
               <property name="row">1</property>
@@ -93,11 +93,11 @@
             <property name="margin-top">20</property>
             <property name="hexpand">1</property>
             <signal name="clicked" handler="on_btTilt_clicked" swapped="no"/>
-            <child>
+            <property name="child">
               <object class="GtkLabel" id="lblTilt3">
                 <property name="label" translatable="yes">(...)</property>
               </object>
-            </child>
+            </property>
             <layout>
               <property name="column">3</property>
               <property name="row">1</property>
@@ -114,11 +114,11 @@
             <property name="margin-top">50</property>
             <property name="hexpand">1</property>
             <signal name="clicked" handler="on_btTilt_clicked" swapped="no"/>
-            <child>
+            <property name="child">
               <object class="GtkLabel" id="lblTilt0">
                 <property name="label" translatable="yes">(...)</property>
               </object>
-            </child>
+            </property>
             <layout>
               <property name="column">0</property>
               <property name="row">0</property>
@@ -135,11 +135,11 @@
             <property name="margin-top">50</property>
             <property name="hexpand">1</property>
             <signal name="clicked" handler="on_btTilt_clicked" swapped="no"/>
-            <child>
+            <property name="child">
               <object class="GtkLabel" id="lblTilt">
                 <property name="label" translatable="yes">(...)</property>
               </object>
-            </child>
+            </property>
             <layout>
               <property name="column">3</property>
               <property name="row">0</property>
@@ -183,11 +183,11 @@
             <property name="valign">start</property>
             <property name="hexpand">1</property>
             <signal name="clicked" handler="on_btTilt_clicked" swapped="no"/>
-            <child>
+            <property name="child">
               <object class="GtkLabel" id="lblTilt4">
                 <property name="label" translatable="yes">(...)</property>
               </object>
-            </child>
+            </property>
             <layout>
               <property name="column">1</property>
               <property name="row">2</property>
@@ -202,11 +202,11 @@
             <property name="valign">start</property>
             <property name="hexpand">1</property>
             <signal name="clicked" handler="on_btTilt_clicked" swapped="no"/>
-            <child>
+            <property name="child">
               <object class="GtkLabel" id="lblTilt5">
                 <property name="label" translatable="yes">(...)</property>
               </object>
-            </child>
+            </property>
             <layout>
               <property name="column">2</property>
               <property name="row">2</property>

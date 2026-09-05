@@ -421,11 +421,11 @@ or even crash.</property>
                         <property name="margin-end">20</property>
                         <property name="margin-top">5</property>
                         <signal name="clicked" handler="on_btClearSensX_clicked" swapped="no"/>
-                        <child>
+                        <property name="child">
                           <object class="GtkImage" id="image77">
                             <property name="icon-name">edit-clear-symbolic</property>
                           </object>
-                        </child>
+                        </property>
                         <layout>
                           <property name="column">5</property>
                           <property name="row">11</property>
@@ -440,11 +440,11 @@ or even crash.</property>
                         <property name="margin-end">20</property>
                         <property name="margin-top">5</property>
                         <signal name="clicked" handler="on_btClearSensY_clicked" swapped="no"/>
-                        <child>
+                        <property name="child">
                           <object class="GtkImage" id="image89">
                             <property name="icon-name">edit-clear-symbolic</property>
                           </object>
-                        </child>
+                        </property>
                         <layout>
                           <property name="column">5</property>
                           <property name="row">12</property>
@@ -1417,7 +1417,7 @@ or even crash.</property>
                             <property name="hexpand">0</property>
                             <property name="vexpand">0</property>
                             <signal name="clicked" handler="on_btAddController_clicked" swapped="no"/>
-                            <child>
+                            <property name="child">
                               <object class="GtkBox" id="box1">
                                 <child>
                                   <object class="GtkImage" id="image1">
@@ -1431,7 +1431,7 @@ or even crash.</property>
                                   </object>
                                 </child>
                               </object>
-                            </child>
+                            </property>
                           </object>
                         </child>
                         <child>
@@ -1446,12 +1446,12 @@ or even crash.</property>
                             <property name="hexpand">0</property>
                             <property name="vexpand">0</property>
                             <signal name="clicked" handler="on_btRemoveController_clicked" swapped="no"/>
-                            <child>
+                            <property name="child">
                               <object class="GtkImage" id="image2">
                                 <property name="icon-name">list-remove-symbolic</property>
                                 <property name="icon-size">large</property>
                               </object>
-                            </child>
+                            </property>
                           </object>
                         </child>
                       </object>
@@ -1648,7 +1648,7 @@ on network can connect and remote-control this computer as additional gamepad.
                             <property name="hexpand">0</property>
                             <property name="vexpand">0</property>
                             <signal name="clicked" handler="btEdit_clicked_cb" swapped="no"/>
-                            <child>
+                            <property name="child">
                               <object class="GtkBox" id="box4">
                                 <child>
                                   <object class="GtkImage" id="image34">
@@ -1663,7 +1663,7 @@ on network can connect and remote-control this computer as additional gamepad.
                                   </object>
                                 </child>
                               </object>
-                            </child>
+                            </property>
                           </object>
                         </child>
                         <child>
@@ -1679,12 +1679,12 @@ on network can connect and remote-control this computer as additional gamepad.
                             <property name="hexpand">0</property>
                             <property name="vexpand">0</property>
                             <signal name="clicked" handler="on_btRemove_clicked" swapped="no"/>
-                            <child>
+                            <property name="child">
                               <object class="GtkImage" id="image35">
                                 <property name="icon-name">list-remove-symbolic</property>
                                 <property name="icon-size">large</property>
                               </object>
-                            </child>
+                            </property>
                           </object>
                         </child>
                         <child>
@@ -1695,12 +1695,12 @@ on network can connect and remote-control this computer as additional gamepad.
                             <property name="hexpand">0</property>
                             <property name="vexpand">0</property>
                             <signal name="clicked" handler="on_btAdd_clicked" swapped="no"/>
-                            <child>
+                            <property name="child">
                               <object class="GtkImage" id="image39">
                                 <property name="icon-name">list-add-symbolic</property>
                                 <property name="icon-size">large</property>
                               </object>
-                            </child>
+                            </property>
                           </object>
                         </child>
                       </object>

@@ -29,12 +29,12 @@
                         <property name="halign">start</property>
                         <property name="valign">end</property>
                         <signal name="toggled" handler="on_cbToggle_toggled" swapped="no"/>
-                        <child>
+                        <property name="child">
                           <object class="GtkLabel" id="lblToggle">
                             <property name="label" translatable="yes">Toggle Button</property>
                             <property name="xalign">0</property>
                           </object>
-                        </child>
+                        </property>
                       </object>
                     </child>
                     <child>
@@ -44,12 +44,12 @@
                         <property name="halign">start</property>
                         <property name="valign">end</property>
                         <signal name="toggled" handler="on_cbRepeat_toggled" swapped="no"/>
-                        <child>
+                        <property name="child">
                           <object class="GtkLabel" id="lblRepeat">
                             <property name="label" translatable="yes">Repeat</property>
                             <property name="xalign">0</property>
                           </object>
-                        </child>
+                        </property>
                       </object>
                     </child>
                   </object>
@@ -89,11 +89,11 @@
                         <property name="halign">start</property>
                         <property name="margin-start">5</property>
                         <signal name="clicked" handler="on_btnGrabAnother_clicked" swapped="no"/>
-                        <child>
+                        <property name="child">
                           <object class="GtkImage" id="imgPlus">
                             <property name="icon-name">list-add-symbolic</property>
                           </object>
-                        </child>
+                        </property>
                       </object>
                     </child>
                   </object>

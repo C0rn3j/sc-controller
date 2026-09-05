@@ -343,7 +343,7 @@
                     <child>
                       <object class="GtkCheckButton" id="cbAreaClickEnabled">
                         <property name="focusable">1</property>
-                        <child>
+                        <property name="child">
                           <object class="GtkLabel" id="label_n3">
                             <property name="label" translatable="yes">Pressing the Pad Clicks</property>
                             <property name="xalign">0</property>
@@ -351,14 +351,14 @@
                               <attribute name="weight" value="bold"></attribute>
                             </attributes>
                           </object>
-                        </child>
+                        </property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkCheckButton" id="cbAreaOSDEnabled">
                         <property name="focusable">1</property>
                         <signal name="toggled" handler="on_cbAreaOSDEnabled_toggled" swapped="no"/>
-                        <child>
+                        <property name="child">
                           <object class="GtkLabel" id="label_n4">
                             <property name="label" translatable="yes">Display Area While Pad is Being Touched</property>
                             <property name="xalign">0</property>
@@ -366,7 +366,7 @@
                               <attribute name="weight" value="bold"></attribute>
                             </attributes>
                           </object>
-                        </child>
+                        </property>
                       </object>
                     </child>
                   </object>
@@ -627,11 +627,11 @@
                     <property name="margin-start">10</property>
                     <property name="margin-end">100</property>
                     <signal name="clicked" handler="on_btClearCircularAxis_clicked" swapped="no"/>
-                    <child>
+                    <property name="child">
                       <object class="GtkImage" id="image1">
                         <property name="icon-name">edit-clear-symbolic</property>
                       </object>
-                    </child>
+                    </property>
                     <layout>
                       <property name="column">2</property>
                       <property name="row">1</property>
@@ -645,11 +645,11 @@
                     <property name="margin-start">10</property>
                     <property name="margin-end">100</property>
                     <signal name="clicked" handler="on_btClearCircularButtons_clicked" swapped="no"/>
-                    <child>
+                    <property name="child">
                       <object class="GtkImage" id="image2">
                         <property name="icon-name">edit-clear-symbolic</property>
                       </object>
-                    </child>
+                    </property>
                     <layout>
                       <property name="column">2</property>
                       <property name="row">3</property>
