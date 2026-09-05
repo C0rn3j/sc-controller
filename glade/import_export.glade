@@ -262,7 +262,7 @@
                         <property name="focusable">1</property>
                         <property name="hexpand">1</property>
                         <property name="vexpand">1</property>
-                        <property name="shadow-type">in</property>
+                        <property name="has-frame">1</property>
                         <property name="child">
                           <object class="GtkTreeView" id="tvProfiles">
                             <property name="focusable">1</property>
@@ -352,7 +352,7 @@ Please, select what should be packaged along with exported profile.</property>
                         <property name="margin-top">10</property>
                         <property name="margin-bottom">5</property>
                         <property name="vexpand">1</property>
-                        <property name="shadow-type">in</property>
+                        <property name="has-frame">1</property>
                         <property name="child">
                           <object class="GtkTreeView" id="tvPackage">
                             <property name="focusable">1</property>
@@ -454,7 +454,7 @@ Please, select what should be packaged along with exported profile.</property>
                         <property name="margin-top">5</property>
                         <property name="hexpand">1</property>
                         <property name="vexpand">1</property>
-                        <property name="shadow-type">in</property>
+                        <property name="has-frame">1</property>
                         <property name="child">
                           <object class="GtkTreeView" id="tvVdfProfiles">
                             <property name="focusable">1</property>
@@ -596,7 +596,7 @@ Please, select what should be packaged along with exported profile.</property>
                         <property name="focusable">1</property>
                         <property name="margin-top">5</property>
                         <property name="margin-bottom">10</property>
-                        <property name="shadow-type">in</property>
+                        <property name="has-frame">1</property>
                         <property name="child">
                           <object class="GtkTextView" id="tvError">
                             <property name="focusable">1</property>
@@ -792,7 +792,7 @@ what command does before clicking &quot;Continue.&quot;</property>
                       <object class="GtkScrolledWindow" id="swShellCommands">
                         <property name="focusable">1</property>
                         <property name="vexpand">1</property>
-                        <property name="shadow-type">in</property>
+                        <property name="has-frame">1</property>
                         <property name="child">
                           <object class="GtkTreeView" id="tvShellCommands">
                             <property name="focusable">1</property>
@@ -947,7 +947,7 @@ and profile switches in imported profile may not work as expected.</property>
                           <object class="GtkScrolledWindow" id="svImportPackage">
                             <property name="height-request">150</property>
                             <property name="focusable">1</property>
-                            <property name="shadow-type">in</property>
+                            <property name="has-frame">1</property>
                             <property name="child">
                               <object class="GtkTreeView" id="tvImportPackage">
                                 <property name="focusable">1</property>
@@ -1058,7 +1058,7 @@ and profile switches in imported profile may not work as expected.</property>
                         <property name="margin-top">5</property>
                         <property name="margin-bottom">10</property>
                         <property name="vexpand">1</property>
-                        <property name="shadow-type">in</property>
+                        <property name="has-frame">1</property>
                         <property name="child">
                           <object class="GtkTextView" id="tvError1">
                             <property name="focusable">1</property>

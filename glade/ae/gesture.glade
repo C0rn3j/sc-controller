@@ -268,7 +268,7 @@
       <object class="GtkScrolledWindow" id="scGestures">
         <property name="vexpand">1</property>
         <property name="focusable">1</property>
-        <property name="shadow-type">in</property>
+        <property name="has-frame">1</property>
         <property name="child">
           <object class="GtkTreeView" id="tvGestures">
             <property name="focusable">1</property>

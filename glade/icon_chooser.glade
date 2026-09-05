@@ -58,7 +58,7 @@
                 <property name="margin-top">5</property>
                 <property name="hexpand">1</property>
                 <property name="vexpand">1</property>
-                <property name="shadow-type">in</property>
+                <property name="has-frame">1</property>
                 <property name="child">
                   <object class="GtkTreeView" id="tvIcons">
                     <property name="focusable">1</property>
@@ -95,7 +95,7 @@
                 <property name="focusable">1</property>
                 <property name="margin-end">5</property>
                 <property name="margin-top">5</property>
-                <property name="shadow-type">in</property>
+                <property name="has-frame">1</property>
                 <property name="child">
                   <object class="GtkTreeView" id="tvCategories">
                     <property name="focusable">1</property>

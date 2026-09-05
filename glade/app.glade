@@ -829,7 +829,7 @@
                 <property name="width-request">500</property>
                 <property name="height-request">75</property>
                 <property name="focusable">1</property>
-                <property name="shadow-type">in</property>
+                <property name="has-frame">1</property>
                 <property name="child">
                   <object class="GtkTextView" id="txProfileDescription">
                     <property name="focusable">1</property>
