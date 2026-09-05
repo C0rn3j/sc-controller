@@ -812,8 +812,8 @@ class DS5BluetoothHIDRawController(Controller):
 
 		# Change gyro dir values to match Steam Controller
 		state.gpitch = ctypes.c_int16((data[18] << 8) | data[17]).value
-		state.gyaw = ctypes.c_int16((data[20] << 8) | data[19]).value * -1
-		state.groll = ctypes.c_int16((data[22] << 8) | data[21]).value * -1
+		state.gyaw   = ctypes.c_int16((data[20] << 8) | data[19]).value
+		state.groll  = ctypes.c_int16((data[22] << 8) | data[21]).value
 
 		# Change accel axes to match Steam Controller (flip pitch and roll)
 		# Scale values for 2G instead of 1G

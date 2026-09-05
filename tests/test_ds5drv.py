@@ -13,6 +13,9 @@ def test_dualsense_decoders_use_dedicated_dpad_axes() -> None:
 	assert controller._decoder.axes[AxisType.AXIS_DPAD_X].mode == AxisMode.HATSWITCH
 	assert controller._decoder.axes[AxisType.AXIS_DPAD_X].data.hatswitch.button == 0
 	assert controller._decoder.axes[AxisType.AXIS_LPAD_X].mode == AxisMode.DISABLED
+	assert controller._decoder.axes[AxisType.AXIS_GPITCH].mode == AxisMode.DS4ACCEL
+	assert controller._decoder.axes[AxisType.AXIS_GYAW].mode == AxisMode.DS4ACCEL
+	assert controller._decoder.axes[AxisType.AXIS_GROLL].mode == AxisMode.DS4ACCEL
 
 	hidraw = object.__new__(ds5drv.DS5BluetoothHIDRawController)
 	hidraw._delta_time = 0
@@ -23,6 +26,22 @@ def test_dualsense_decoders_use_dedicated_dpad_axes() -> None:
 	assert not hasattr(state, "lpad_x")
 	assert state.dpad_x > 0
 	assert state.dpad_y == 0
+
+
+def test_bluetooth_hidraw_gyro_preserves_sensor_directions() -> None:
+	controller = object.__new__(ds5drv.DS5BluetoothHIDRawController)
+	controller._delta_time = 0
+	controller._previous_quat = [1.0, 0.0, 0.0, 0.0]
+	data = bytearray(64)
+	data[17:23] = (100).to_bytes(2, "little", signed=True) + (200).to_bytes(
+		2, "little", signed=True
+	) + (-300).to_bytes(2, "little", signed=True)
+
+	state = controller._convert_input_data(data)
+
+	assert state.gpitch == 100
+	assert state.gyaw == 200
+	assert state.groll == -300
 
 
 def test_bluetooth_hidraw_touchpad_uses_full_normalized_range() -> None:
