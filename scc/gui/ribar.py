@@ -41,10 +41,10 @@ class RIBar(Gtk.Revealer):
 			elif message_type == Gtk.MessageType.WARNING:
 				icon_name = "dialog-warning"
 			icon = Gtk.Image.new_from_icon_name(icon_name)
-			self._infobar.get_content_area().pack_start(icon, False, False, 1)
+			self._infobar.get_content_area().append(icon)
 			# Label
 			if isinstance(label, Gtk.Widget):
-				self._infobar.get_content_area().pack_start(label, True, True, 0)
+				self._infobar.get_content_area().append(label)
 				self._label = label
 			else:
 				self._label = Gtk.Label()
@@ -82,7 +82,8 @@ class RIBar(Gtk.Revealer):
 			self._infobar.set_show_close_button(False)
 
 	def add_widget(self, widget, expand=False, fill=True):
-		self._infobar.get_content_area().pack_start(widget, expand, fill, 1)
+		widget.set_hexpand(expand)
+		self._infobar.get_content_area().append(widget)
 		widget.show()
 
 	def add_button(self, button, response_id):

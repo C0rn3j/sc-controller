@@ -100,8 +100,8 @@ class ProfileSwitcher(Gtk.Box, UserDataManager):
 		self.add_controller(click)
 
 		# Pack
-		self._box.pack_start(self._icon, False, True, 0)
-		self._box.pack_start(self._combo, True, True, 0)
+		self._box.append(self._icon)
+		self._box.append(self._combo)
 		self.append(self._box)
 
 	def set_profile(self, name: str | None, create: bool = False) -> bool | None:
@@ -291,7 +291,7 @@ class ProfileSwitcher(Gtk.Box, UserDataManager):
 			if not self._savebutton:
 				# Save button has to be created
 				self._savebutton = ButtonInRevealer("document-save", _("Save changes"), self.on_savebutton_clicked)
-				self._box.pack_start(self._savebutton, False, True, 0)
+				self._box.append(self._savebutton)
 				self.show_all()
 			self._savebutton.set_reveal_child(True)
 			iter = self._combo.get_active_iter()
@@ -317,7 +317,7 @@ class ProfileSwitcher(Gtk.Box, UserDataManager):
 				self._switch_to_button = ButtonInRevealer(
 					"document-edit", _("Edit mappings of this controller"), self.on_switch_to_clicked,
 				)
-				self._box.pack_start(self._switch_to_button, False, True, 0)
+				self._box.append(self._switch_to_button)
 				self.show_all()
 			self._switch_to_button.set_reveal_child(True)
 		elif self._switch_to_button:
