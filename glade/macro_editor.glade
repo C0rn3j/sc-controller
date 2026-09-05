@@ -27,7 +27,6 @@
     <property name="resizable">0</property>
     <property name="window-position">center-on-parent</property>
     <property name="destroy-with-parent">1</property>
-    <property name="type-hint">dialog</property>
     <signal name="destroy" handler="on_Dialog_destroy" swapped="no"/>
     <signal name="key-press-event" handler="on_window_key_press_event" swapped="no"/>
     <property name="child">

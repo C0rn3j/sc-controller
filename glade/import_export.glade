@@ -43,9 +43,6 @@
   </object>
   <object class="GtkTextBuffer" id="tbError"/>
   <object class="GtkDialog" id="Dialog">
-    <property name="type-hint">dialog</property>
-    <property name="skip-taskbar-hint">True</property>
-    <property name="skip-pager-hint">True</property>
     <child internal-child="content_area">
       <object class="GtkBox" id="vbDialog">
         <property name="visible">0</property>
