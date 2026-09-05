@@ -49,7 +49,7 @@
                     <child>
                       <object class="GtkImage" id="imgNope">
                         <property name="icon-name">dialog-error</property>
-                        <property name="icon_size">3</property>
+                        <property name="icon-size">large</property>
                       </object>
                     </child>
                     <child>

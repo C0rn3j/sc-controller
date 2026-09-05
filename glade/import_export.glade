@@ -92,7 +92,7 @@
                                 <property name="margin-end">10</property>
                                 <property name="pixel-size">32</property>
                                 <property name="icon-name">document-save-as-symbolic</property>
-                                <property name="icon_size">6</property>
+                                <property name="pixel-size">48</property>
                               </object>
                             </child>
                             <child>
@@ -129,7 +129,7 @@
                                 <property name="margin-end">10</property>
                                 <property name="pixel-size">32</property>
                                 <property name="icon-name">document-open-symbolic</property>
-                                <property name="icon_size">6</property>
+                                <property name="pixel-size">48</property>
                               </object>
                             </child>
                             <child>
@@ -167,7 +167,7 @@
                                 <property name="pixel-size">32</property>
                                 <property name="icon-name">steam</property>
                                 <property name="use-fallback">1</property>
-                                <property name="icon_size">6</property>
+                                <property name="pixel-size">48</property>
                               </object>
                             </child>
                             <child>
@@ -782,7 +782,7 @@ what command does before clicking &quot;Continue.&quot;</property>
                       <object class="GtkImage" id="imgShellWarning">
                         <property name="margin-end">20</property>
                         <property name="icon-name">dialog-warning</property>
-                        <property name="icon_size">6</property>
+                        <property name="pixel-size">48</property>
                         <layout>
                           <property name="column">0</property>
                           <property name="row">0</property>

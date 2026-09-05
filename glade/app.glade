@@ -21,7 +21,7 @@
             <child>
               <object class="GtkImage" id="imgOsdmodeExit">
                 <property name="icon-name">image-missing</property>
-                <property name="icon_size">3</property>
+                <property name="icon-size">large</property>
               </object>
             </child>
             <child>
@@ -43,7 +43,7 @@
             <child>
               <object class="GtkImage" id="imgOsdmodeAct">
                 <property name="icon-name">image-missing</property>
-                <property name="icon_size">3</property>
+                <property name="icon-size">large</property>
               </object>
             </child>
             <child>
@@ -63,7 +63,7 @@
             <child>
               <object class="GtkImage" id="imgOsdmodeOK">
                 <property name="icon-name">image-missing</property>
-                <property name="icon_size">3</property>
+                <property name="icon-size">large</property>
               </object>
             </child>
             <child>
@@ -85,7 +85,7 @@
             <child>
               <object class="GtkImage" id="imgOsdmodeClose">
                 <property name="icon-name">image-missing</property>
-                <property name="icon_size">3</property>
+                <property name="icon-size">large</property>
               </object>
             </child>
             <child>
@@ -105,7 +105,7 @@
             <child>
               <object class="GtkImage" id="imgOsdmodeSave">
                 <property name="icon-name">image-missing</property>
-                <property name="icon_size">3</property>
+                <property name="icon-size">large</property>
               </object>
             </child>
             <child>
@@ -1154,7 +1154,7 @@
         <child>
           <object class="GtkImage" id="image6">
             <property name="icon-name">dialog-information</property>
-            <property name="icon_size">6</property>
+            <property name="pixel-size">48</property>
           </object>
         </child>
         <child>
