@@ -493,7 +493,7 @@ or even crash.</property>
                       <object class="GtkImage" id="image77">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="icon-name">edit-clear</property>
+                        <property name="icon-name">edit-clear-symbolic</property>
                       </object>
                     </child>
                   </object>
@@ -515,7 +515,7 @@ or even crash.</property>
                       <object class="GtkImage" id="image89">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="icon-name">edit-clear</property>
+                        <property name="icon-name">edit-clear-symbolic</property>
                       </object>
                     </child>
                   </object>
@@ -1648,7 +1648,7 @@ or even crash.</property>
                               <object class="GtkImage" id="image1">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="icon-name">list-add</property>
+                                <property name="icon-name">list-add-symbolic</property>
                                 <property name="icon_size">3</property>
                               </object>
                               <packing>
@@ -1702,7 +1702,7 @@ or even crash.</property>
                           <object class="GtkImage" id="image2">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="icon-name">list-remove</property>
+                            <property name="icon-name">list-remove-symbolic</property>
                             <property name="icon_size">3</property>
                           </object>
                         </child>
@@ -1945,7 +1945,7 @@ on network can connect and remote-control this computer as additional gamepad.
                               <object class="GtkImage" id="image34">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="icon-name">document-edit</property>
+                                <property name="icon-name">document-edit-symbolic</property>
                                 <property name="icon_size">3</property>
                               </object>
                               <packing>
@@ -2001,7 +2001,7 @@ on network can connect and remote-control this computer as additional gamepad.
                           <object class="GtkImage" id="image35">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="icon-name">list-remove</property>
+                            <property name="icon-name">list-remove-symbolic</property>
                             <property name="icon_size">3</property>
                           </object>
                         </child>
@@ -2025,7 +2025,7 @@ on network can connect and remote-control this computer as additional gamepad.
                           <object class="GtkImage" id="image39">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="icon-name">list-add</property>
+                            <property name="icon-name">list-add-symbolic</property>
                             <property name="icon_size">3</property>
                           </object>
                         </child>

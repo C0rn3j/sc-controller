@@ -116,7 +116,7 @@
                   <object class="GtkImage" id="image2">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="icon-name">list-add</property>
+                    <property name="icon-name">list-add-symbolic</property>
                   </object>
                 </child>
               </object>
@@ -165,7 +165,7 @@
                           <object class="GtkImage" id="image1">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="icon-name">edit-clear</property>
+                            <property name="icon-name">edit-clear-symbolic</property>
                           </object>
                         </child>
                       </object>
@@ -278,7 +278,7 @@
                           <object class="GtkImage" id="image3">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="icon-name">edit-clear</property>
+                            <property name="icon-name">edit-clear-symbolic</property>
                           </object>
                         </child>
                       </object>
@@ -523,7 +523,7 @@
                           <object class="GtkImage" id="image4">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="icon-name">edit-clear</property>
+                            <property name="icon-name">edit-clear-symbolic</property>
                           </object>
                         </child>
                       </object>

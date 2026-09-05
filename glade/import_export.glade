@@ -135,7 +135,7 @@
                             <property name="can-focus">False</property>
                             <property name="margin-end">10</property>
                             <property name="pixel-size">32</property>
-                            <property name="icon-name">document-save-as</property>
+                            <property name="icon-name">document-save-as-symbolic</property>
                             <property name="icon_size">6</property>
                           </object>
                           <packing>
@@ -189,7 +189,7 @@
                             <property name="can-focus">False</property>
                             <property name="margin-end">10</property>
                             <property name="pixel-size">32</property>
-                            <property name="icon-name">document-open</property>
+                            <property name="icon-name">document-open-symbolic</property>
                             <property name="icon_size">6</property>
                           </object>
                           <packing>
