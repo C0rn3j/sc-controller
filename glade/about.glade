@@ -5,7 +5,6 @@
     <property name="title" translatable="yes">About SC Controller</property>
     <property name="window-position">center-on-parent</property>
     <property name="icon">../images/sc-controller-small.svg</property>
-    <property name="type-hint">dialog</property>
     <signal name="response" handler="on_dialog_response" swapped="no"/>
     <child internal-child="content_area">
       <object class="GtkBox" id="vb1">
