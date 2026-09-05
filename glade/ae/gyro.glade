@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.40.0 -->
 <interface>
-  <requires lib="gtk+" version="3.24"/>
+  <requires lib="gtk" version="4.0"/>
   <object class="GtkAdjustment" id="adjSoftLevel">
     <property name="lower">0.01</property>
     <property name="upper">1</property>
@@ -11,234 +10,146 @@
   </object>
   <object class="GtkListStore" id="lstGyroButton">
     <columns>
-      <!-- column-name value -->
       <column type="gchararray"/>
-      <!-- column-name text -->
       <column type="gchararray"/>
     </columns>
   </object>
   <object class="GtkBox" id="gyro">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
     <property name="margin-start">30</property>
     <property name="margin-end">30</property>
     <property name="orientation">vertical</property>
     <child>
-      <!-- n-columns=3 n-rows=3 -->
       <object class="GtkGrid" id="whatthefuckubuntu">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
         <property name="row-spacing">2</property>
         <property name="column-spacing">10</property>
         <child>
           <object class="GtkButton" id="btPitch">
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="hexpand">True</property>
+            <property name="focusable">1</property>
+            <property name="receives-default">1</property>
+            <property name="hexpand">1</property>
             <signal name="clicked" handler="on_select_axis" swapped="no"/>
             <child>
               <object class="GtkBox" id="box8">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
                 <child>
                   <object class="GtkLabel" id="label6">
                     <property name="width-request">100</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Pitch</property>
+                    <property name="label" translatable="1">Pitch</property>
                     <property name="xalign">0</property>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
                 <child>
-                  <object class="GtkSeparator" id="separator7">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
+                  <object class="GtkSeparator" id="separator7"/>
                 </child>
                 <child>
                   <object class="GtkLabel" id="lblPitch">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">(...)</property>
+                    <property name="hexpand">1</property>
+                    <property name="label" translatable="1">(...)</property>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
-                  </packing>
                 </child>
               </object>
             </child>
+            <layout>
+              <property name="column">0</property>
+              <property name="row">0</property>
+            </layout>
           </object>
-          <packing>
-            <property name="left-attach">0</property>
-            <property name="top-attach">0</property>
-          </packing>
         </child>
         <child>
           <object class="GtkButton" id="btYaw">
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="hexpand">True</property>
+            <property name="focusable">1</property>
+            <property name="receives-default">1</property>
+            <property name="hexpand">1</property>
             <signal name="clicked" handler="on_select_axis" swapped="no"/>
             <child>
               <object class="GtkBox" id="box9">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
                 <child>
                   <object class="GtkLabel" id="label8">
                     <property name="width-request">100</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Yaw</property>
+                    <property name="label" translatable="1">Yaw</property>
                     <property name="xalign">0</property>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
                 <child>
-                  <object class="GtkSeparator" id="separator8">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
+                  <object class="GtkSeparator" id="separator8"/>
                 </child>
                 <child>
                   <object class="GtkLabel" id="lblYaw">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">(...)</property>
+                    <property name="hexpand">1</property>
+                    <property name="label" translatable="1">(...)</property>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
-                  </packing>
                 </child>
               </object>
             </child>
+            <layout>
+              <property name="column">0</property>
+              <property name="row">1</property>
+            </layout>
           </object>
-          <packing>
-            <property name="left-attach">0</property>
-            <property name="top-attach">1</property>
-          </packing>
         </child>
         <child>
           <object class="GtkButton" id="btRoll">
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="hexpand">True</property>
+            <property name="focusable">1</property>
+            <property name="receives-default">1</property>
+            <property name="hexpand">1</property>
             <signal name="clicked" handler="on_select_axis" swapped="no"/>
             <child>
               <object class="GtkBox" id="box1">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
                 <child>
                   <object class="GtkLabel" id="label1">
                     <property name="width-request">100</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Roll</property>
+                    <property name="label" translatable="1">Roll</property>
                     <property name="xalign">0</property>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
                 <child>
-                  <object class="GtkSeparator" id="separator1">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
+                  <object class="GtkSeparator" id="separator1"/>
                 </child>
                 <child>
                   <object class="GtkLabel" id="lblRoll">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">(...)</property>
+                    <property name="hexpand">1</property>
+                    <property name="label" translatable="1">(...)</property>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
-                  </packing>
                 </child>
               </object>
             </child>
+            <layout>
+              <property name="column">0</property>
+              <property name="row">2</property>
+            </layout>
           </object>
-          <packing>
-            <property name="left-attach">0</property>
-            <property name="top-attach">2</property>
-          </packing>
         </child>
         <child>
           <object class="GtkCheckButton" id="cbPitchAbs">
-            <property name="label" translatable="yes">Absolute</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">False</property>
-            <property name="draw-indicator">True</property>
+            <property name="label" translatable="1">Absolute</property>
+            <property name="focusable">1</property>
             <signal name="toggled" handler="on_abs_changed" swapped="no"/>
+            <layout>
+              <property name="column">1</property>
+              <property name="row">0</property>
+            </layout>
           </object>
-          <packing>
-            <property name="left-attach">1</property>
-            <property name="top-attach">0</property>
-          </packing>
         </child>
         <child>
           <object class="GtkCheckButton" id="cbYawAbs">
-            <property name="label" translatable="yes">Absolute</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">False</property>
-            <property name="draw-indicator">True</property>
+            <property name="label" translatable="1">Absolute</property>
+            <property name="focusable">1</property>
             <signal name="toggled" handler="on_abs_changed" swapped="no"/>
+            <layout>
+              <property name="column">1</property>
+              <property name="row">1</property>
+            </layout>
           </object>
-          <packing>
-            <property name="left-attach">1</property>
-            <property name="top-attach">1</property>
-          </packing>
         </child>
         <child>
           <object class="GtkCheckButton" id="cbRollAbs">
-            <property name="label" translatable="yes">Absolute</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">False</property>
-            <property name="draw-indicator">True</property>
+            <property name="label" translatable="1">Absolute</property>
+            <property name="focusable">1</property>
             <signal name="toggled" handler="on_abs_changed" swapped="no"/>
+            <layout>
+              <property name="column">1</property>
+              <property name="row">2</property>
+            </layout>
           </object>
-          <packing>
-            <property name="left-attach">1</property>
-            <property name="top-attach">2</property>
-          </packing>
         </child>
         <child>
           <placeholder/>
@@ -250,39 +161,23 @@
           <placeholder/>
         </child>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">0</property>
-      </packing>
     </child>
     <child>
       <object class="GtkBox" id="ihaveid">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
         <property name="margin-top">20</property>
         <property name="spacing">10</property>
         <child>
           <object class="GtkLabel" id="lblGyroEnable">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="label" translatable="yes">Gyro Enable Button</property>
+            <property name="label" translatable="1">Gyro Enable Button</property>
             <property name="xalign">0</property>
             <attributes>
-              <attribute name="weight" value="bold"/>
+              <attribute name="weight" value="bold"></attribute>
             </attributes>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
         </child>
         <child>
           <object class="GtkComboBox" id="cbGyroButton">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="hexpand">True</property>
+            <property name="hexpand">1</property>
             <property name="model">lstGyroButton</property>
             <property name="active">1</property>
             <signal name="changed" handler="send" swapped="no"/>
@@ -293,46 +188,26 @@
               </attributes>
             </child>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
         </child>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">1</property>
-      </packing>
     </child>
     <child>
       <object class="GtkRevealer" id="rvSoftLevel">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
         <property name="margin-top">5</property>
         <property name="margin-bottom">10</property>
-        <child>
+        <property name="child">
           <object class="GtkBox" id="vbSoftLevel">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
             <child>
               <object class="GtkLabel" id="lblSoftLevel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
                 <property name="margin-start">20</property>
-                <property name="label" translatable="yes">Trigger Pull Level</property>
+                <property name="label" translatable="1">Trigger Pull Level</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
             </child>
             <child>
               <object class="GtkScale" id="sclSoftLevel">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
+                <property name="draw-value">1</property>
+                <property name="hexpand">1</property>
+                <property name="focusable">1</property>
                 <property name="margin-start">5</property>
                 <property name="margin-end">20</property>
                 <property name="adjustment">adjSoftLevel</property>
@@ -341,44 +216,24 @@
                 <signal name="format-value" handler="on_sclSoftLevel_format_value" swapped="no"/>
                 <signal name="value-changed" handler="send" swapped="no"/>
               </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
             </child>
           </object>
-        </child>
+        </property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">2</property>
-      </packing>
     </child>
     <child>
       <object class="GtkCheckButton" id="cbInvertGyro">
-        <property name="visible">True</property>
-        <property name="can-focus">True</property>
-        <property name="receives-default">False</property>
-        <property name="draw-indicator">True</property>
+        <property name="focusable">1</property>
         <signal name="toggled" handler="on_cbInvertGyro_toggled" swapped="no"/>
         <child>
           <object class="GtkLabel" id="label9414">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="label" translatable="yes">Button disables Gyro</property>
+            <property name="label" translatable="1">Button disables Gyro</property>
             <attributes>
-              <attribute name="weight" value="bold"/>
+              <attribute name="weight" value="bold"></attribute>
             </attributes>
           </object>
         </child>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">3</property>
-      </packing>
     </child>
   </object>
 </interface>
