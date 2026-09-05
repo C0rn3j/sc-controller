@@ -81,7 +81,6 @@
     <property name="role">gesture_grabber</property>
     <property name="resizable">0</property>
     <property name="modal">1</property>
-    <property name="window-position">center-on-parent</property>
     <property name="urgency-hint">True</property>
     <property name="child">
       <object class="GtkGrid" id="grid2">

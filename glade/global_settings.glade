@@ -148,7 +148,6 @@
     <property name="width-request">650</property>
     <property name="role">action-editor</property>
     <property name="resizable">0</property>
-    <property name="window-position">center-on-parent</property>
     <property name="destroy-with-parent">1</property>
     <signal name="destroy" handler="on_Dialog_destroy" swapped="no"/>
     <signal name="key-press-event" handler="on_window_key_press_event" swapped="no"/>
@@ -2039,7 +2038,6 @@ grips, triggers, finger positions on both pads and stick angle.</property>
     <property name="role">condition editor</property>
     <property name="resizable">0</property>
     <property name="modal">1</property>
-    <property name="window-position">center-on-parent</property>
     <property name="transient-for">Dialog</property>
     <signal name="close-request" handler="hide_dont_destroy" swapped="no"/>
     <signal name="key-press-event" handler="on_ConditionEditor_key_press_event" swapped="no"/>

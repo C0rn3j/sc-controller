@@ -18,7 +18,6 @@
     <property name="default-widget">btOK</property>
     <property name="width-request">650</property>
     <property name="role">icon-chooser</property>
-    <property name="window-position">center-on-parent</property>
     <property name="destroy-with-parent">1</property>
     <signal name="key-press-event" handler="on_window_key_press_event" swapped="no"/>
     <property name="child">
