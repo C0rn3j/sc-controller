@@ -134,7 +134,7 @@
     <property name="resizable">0</property>
     <property name="modal">1</property>
     <signal name="close-request" handler="undeletable_dialog" swapped="no"/>
-    <child internal-child="content_area">
+    <property name="child">
       <object class="GtkBox" id="dialog-vbox1">
         <property name="visible">0</property>
         <property name="margin-start">18</property>
@@ -184,7 +184,7 @@
           </object>
         </child>
       </object>
-    </child>
+    </property>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="headerbar2">
         <property name="title-widget">
@@ -223,21 +223,13 @@
         </child>
       </object>
     </child>
-    <child internal-child="action_area">
-      <object class="GtkBox" id="dialog-action_area1">
-        <property name="halign">end</property>
-        <child>
-          <placeholder/>
-        </child>
-      </object>
-    </child>
   </object>
   <object class="GtkDialog" id="dlgRenameProfile">
     <property name="width-request">600</property>
     <property name="resizable">0</property>
     <property name="modal">1</property>
     <signal name="close-request" handler="undeletable_dialog" swapped="no"/>
-    <child internal-child="content_area">
+    <property name="child">
       <object class="GtkBox" id="dialog-vbox2">
         <property name="visible">0</property>
         <property name="margin-start">18</property>
@@ -259,7 +251,7 @@
           </object>
         </child>
       </object>
-    </child>
+    </property>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="headerbar1">
         <property name="title-widget">
@@ -295,14 +287,6 @@
               <class name="suggested-action"/>
             </style>
           </object>
-        </child>
-      </object>
-    </child>
-    <child internal-child="action_area">
-      <object class="GtkBox" id="dialog-action_area2">
-        <property name="halign">end</property>
-        <child>
-          <placeholder/>
         </child>
       </object>
     </child>
@@ -719,7 +703,7 @@
     <property name="modal">1</property>
     <property name="transient-for">window</property>
     <signal name="close-request" handler="undeletable_dialog" swapped="no"/>
-    <child internal-child="content_area">
+    <property name="child">
       <object class="GtkBox" id="dlgProfileDetailsVB">
         <property name="visible">0</property>
         <property name="margin-start">18</property>
@@ -783,7 +767,7 @@
           </object>
         </child>
       </object>
-    </child>
+    </property>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="hbProfileDetails">
         <property name="title-widget">
@@ -794,14 +778,6 @@
             </style>
           </object>
         </property>
-      </object>
-    </child>
-    <child internal-child="action_area">
-      <object class="GtkBox" id="dlgProfileDetailsBB">
-        <property name="halign">end</property>
-        <child>
-          <placeholder/>
-        </child>
       </object>
     </child>
   </object>
@@ -1046,21 +1022,7 @@
   <object class="GtkInfoBar" id="riNewRelease">
     <signal name="close" handler="hide_error" swapped="no"/>
     <signal name="response" handler="hide_error" swapped="no"/>
-    <child internal-child="action_area">
-      <object class="GtkBox" id="riNewReleaseBB">
-        <property name="spacing">6</property>
-        <property name="halign">end</property>
-        <child>
-          <placeholder/>
-        </child>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">False</property>
-        <property name="position">0</property>
-      </packing>
-    </child>
-    <child internal-child="content_area">
+    <child>
       <object class="GtkBox" id="riNewReleaseVB">
         <property name="visible">0</property>
         <property name="hexpand">1</property>
@@ -1133,11 +1095,6 @@
           </object>
         </child>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">False</property>
-        <property name="position">0</property>
-      </packing>
     </child>
     <child>
       <placeholder/>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <interface>
   <requires lib="gtk" version="4.0"/>
   <object class="GtkAdjustment" id="adjLED">
@@ -164,37 +164,7 @@
             <property name="child">
               <object class="GtkInfoBar" id="infoBarRestartWarning">
                 <property name="message-type">warning</property>
-                <child internal-child="action_area">
-                  <object class="GtkBox" id="bbRestartWarning">
-                    <property name="spacing">6</property>
-                    <property name="halign">end</property>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="btRestartEmulation">
-                        <property name="label" translatable="yes">Restart Emulation</property>
-                        <property name="focusable">1</property>
-                        <property name="receives-default">1</property>
-                        <signal name="clicked" handler="on_btRestartEmulation_clicked" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">2</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child internal-child="content_area">
+                <child>
                   <object class="GtkBox" id="vbRestartWarning">
                     <property name="visible">0</property>
                     <property name="spacing">16</property>
@@ -207,7 +177,7 @@
                     <child>
                       <object class="GtkLabel" id="lblRestartWarning">
                         <property name="label" translatable="yes">Emulation has to be restarted to apply all settings.
-If you have any games running, restarting emulation will &quot;unplug&quot;
+If you have any games running, restarting emulation will "unplug"
 virtual gamepad, what may cause them to ignore future inputs
 or even crash.</property>
                         <property name="wrap">1</property>
@@ -216,12 +186,15 @@ or even crash.</property>
                     <child>
                       <placeholder/>
                     </child>
+                    <child>
+                      <object class="GtkButton" id="btRestartEmulation">
+                        <property name="label" translatable="yes">Restart Emulation</property>
+                        <property name="focusable">1</property>
+                        <property name="receives-default">1</property>
+                        <signal name="clicked" handler="on_btRestartEmulation_clicked" swapped="no"/>
+                      </object>
+                    </child>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
                 <child>
                   <placeholder/>
@@ -246,7 +219,7 @@ or even crash.</property>
                         <property name="label" translatable="yes">On-Screen Keyboard Bindings</property>
                         <property name="xalign">0</property>
                         <attributes>
-                          <attribute name="weight" value="bold"></attribute>
+                          <attribute name="weight" value="bold"/>
                         </attributes>
                         <layout>
                           <property name="column">0</property>
@@ -344,7 +317,7 @@ or even crash.</property>
                         <property name="label" translatable="yes">Pad Sensitivity</property>
                         <property name="xalign">0</property>
                         <attributes>
-                          <attribute name="weight" value="bold"></attribute>
+                          <attribute name="weight" value="bold"/>
                         </attributes>
                         <layout>
                           <property name="column">0</property>
@@ -459,7 +432,7 @@ or even crash.</property>
                         <property name="label" translatable="yes">Default Menu Items</property>
                         <property name="xalign">0</property>
                         <attributes>
-                          <attribute name="weight" value="bold"></attribute>
+                          <attribute name="weight" value="bold"/>
                         </attributes>
                         <layout>
                           <property name="column">0</property>
@@ -875,7 +848,7 @@ or even crash.</property>
                         <property name="label" translatable="yes">OSD Menu Colors</property>
                         <property name="xalign">0</property>
                         <attributes>
-                          <attribute name="weight" value="bold"></attribute>
+                          <attribute name="weight" value="bold"/>
                         </attributes>
                         <layout>
                           <property name="column">0</property>
@@ -942,7 +915,7 @@ or even crash.</property>
                         <property name="label" translatable="yes">On-Screen Keyboard Colors</property>
                         <property name="xalign">0</property>
                         <attributes>
-                          <attribute name="weight" value="bold"></attribute>
+                          <attribute name="weight" value="bold"/>
                         </attributes>
                         <layout>
                           <property name="column">0</property>
@@ -1111,7 +1084,7 @@ or even crash.</property>
                         <property name="label" translatable="yes">OSD Style</property>
                         <property name="xalign">0</property>
                         <attributes>
-                          <attribute name="weight" value="bold"></attribute>
+                          <attribute name="weight" value="bold"/>
                         </attributes>
                         <layout>
                           <property name="column">0</property>
@@ -1148,7 +1121,7 @@ or even crash.</property>
                         <property name="label" translatable="yes">Color Preset</property>
                         <property name="xalign">0</property>
                         <attributes>
-                          <attribute name="weight" value="bold"></attribute>
+                          <attribute name="weight" value="bold"/>
                         </attributes>
                         <layout>
                           <property name="column">2</property>
@@ -1207,7 +1180,7 @@ or even crash.</property>
                             <property name="label" translatable="yes">Enable Steam Controller support</property>
                             <property name="xalign">0</property>
                             <attributes>
-                              <attribute name="weight" value="bold"></attribute>
+                              <attribute name="weight" value="bold"/>
                             </attributes>
                           </object>
                         </child>
@@ -1229,7 +1202,7 @@ or even crash.</property>
                             <property name="label" translatable="yes">Enable Dualshock4 (PS4 controller) support</property>
                             <property name="xalign">0</property>
                             <attributes>
-                              <attribute name="weight" value="bold"></attribute>
+                              <attribute name="weight" value="bold"/>
                             </attributes>
                           </object>
                         </child>
@@ -1250,7 +1223,7 @@ or even crash.</property>
                           <object class="GtkLabel" id="lblKuaa3">
                             <property name="label" translatable="yes">Enable DualSense (PS5 controller) support</property>
                             <attributes>
-                              <attribute name="weight" value="bold"></attribute>
+                              <attribute name="weight" value="bold"/>
                             </attributes>
                           </object>
                         </child>
@@ -1281,7 +1254,7 @@ or even crash.</property>
                         <property name="xalign">0</property>
                         <property name="yalign">0</property>
                         <attributes>
-                          <attribute name="weight" value="bold"></attribute>
+                          <attribute name="weight" value="bold"/>
                         </attributes>
                         <layout>
                           <property name="column">0</property>
@@ -1368,7 +1341,7 @@ or even crash.</property>
                             <property name="label" translatable="yes">Enable HID device support</property>
                             <property name="xalign">0</property>
                             <attributes>
-                              <attribute name="weight" value="bold"></attribute>
+                              <attribute name="weight" value="bold"/>
                             </attributes>
                           </object>
                         </child>
@@ -1390,7 +1363,7 @@ or even crash.</property>
                             <property name="label" translatable="yes">Enable evdev support</property>
                             <property name="xalign">0</property>
                             <attributes>
-                              <attribute name="weight" value="bold"></attribute>
+                              <attribute name="weight" value="bold"/>
                             </attributes>
                           </object>
                         </child>
@@ -1463,7 +1436,7 @@ or even crash.</property>
                         <property name="visible">0</property>
                         <property name="label" translatable="yes">Note: python-evdev package is needed for non-steam controller support</property>
                         <attributes>
-                          <attribute name="style" value="italic"></attribute>
+                          <attribute name="style" value="italic"/>
                         </attributes>
                         <layout>
                           <property name="column">0</property>
@@ -1482,7 +1455,7 @@ or even crash.</property>
                             <property name="label" translatable="yes">Enable Remote RetroPad protocol support</property>
                             <property name="xalign">0</property>
                             <attributes>
-                              <attribute name="weight" value="bold"></attribute>
+                              <attribute name="weight" value="bold"/>
                             </attributes>
                           </object>
                         </child>
@@ -1496,9 +1469,9 @@ or even crash.</property>
                     <child>
                       <object class="GtkLabel" id="lblKuaa2">
                         <property name="margin-start">30</property>
-                        <property name="label" translatable="yes">If enabled, any device or application compatibile with Retroarch&apos;s Remote RetroPad protocol
+                        <property name="label" translatable="yes">If enabled, any device or application compatibile with Retroarch's Remote RetroPad protocol
 on network can connect and remote-control this computer as additional gamepad.
-&lt;a href=&quot;https://github.com/C0rn3j/sc-controller/wiki/Using-phone-with-Retroarch-as-additional-controller&quot;&gt;See wiki for instructions and more info.&lt;/a&gt;</property>
+&lt;a href="https://github.com/C0rn3j/sc-controller/wiki/Using-phone-with-Retroarch-as-additional-controller"&gt;See wiki for instructions and more info.&lt;/a&gt;</property>
                         <property name="use-markup">1</property>
                         <property name="xalign">0</property>
                         <property name="yalign">0</property>
@@ -1560,7 +1533,7 @@ on network can connect and remote-control this computer as additional gamepad.
                         <property name="label" translatable="yes">Switching Rules</property>
                         <property name="xalign">0</property>
                         <attributes>
-                          <attribute name="weight" value="bold"></attribute>
+                          <attribute name="weight" value="bold"/>
                         </attributes>
                         <layout>
                           <property name="column">0</property>
@@ -1627,7 +1600,7 @@ on network can connect and remote-control this computer as additional gamepad.
                         <property name="label" translatable="yes">Automatic Profile Switching Options</property>
                         <property name="xalign">0</property>
                         <attributes>
-                          <attribute name="weight" value="bold"></attribute>
+                          <attribute name="weight" value="bold"/>
                         </attributes>
                         <layout>
                           <property name="column">0</property>
@@ -1766,7 +1739,7 @@ on network can connect and remote-control this computer as additional gamepad.
                             <property name="use-underline">1</property>
                             <property name="mnemonic-widget">cbShowOSD</property>
                             <attributes>
-                              <attribute name="weight" value="bold"></attribute>
+                              <attribute name="weight" value="bold"/>
                             </attributes>
                           </object>
                         </child>
@@ -1805,7 +1778,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                             <property name="use-underline">1</property>
                             <property name="mnemonic-widget">cbShowOSD</property>
                             <attributes>
-                              <attribute name="weight" value="bold"></attribute>
+                              <attribute name="weight" value="bold"/>
                             </attributes>
                           </object>
                         </child>
@@ -1826,7 +1799,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                             <property name="use-underline">1</property>
                             <property name="mnemonic-widget">cbShowOSD</property>
                             <attributes>
-                              <attribute name="weight" value="bold"></attribute>
+                              <attribute name="weight" value="bold"/>
                             </attributes>
                           </object>
                         </child>
@@ -1866,7 +1839,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                             <property name="use-underline">1</property>
                             <property name="mnemonic-widget">cbShowOSD</property>
                             <attributes>
-                              <attribute name="weight" value="bold"></attribute>
+                              <attribute name="weight" value="bold"/>
                             </attributes>
                           </object>
                         </child>
@@ -1902,7 +1875,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                             <property name="use-underline">1</property>
                             <property name="mnemonic-widget">cbShowOSD</property>
                             <attributes>
-                              <attribute name="weight" value="bold"></attribute>
+                              <attribute name="weight" value="bold"/>
                             </attributes>
                           </object>
                         </child>
@@ -1923,7 +1896,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                             <property name="use-underline">1</property>
                             <property name="mnemonic-widget">cbShowOSD</property>
                             <attributes>
-                              <attribute name="weight" value="bold"></attribute>
+                              <attribute name="weight" value="bold"/>
                             </attributes>
                           </object>
                         </child>
@@ -2062,7 +2035,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
             <property name="label" translatable="yes">Condition</property>
             <property name="xalign">0</property>
             <attributes>
-              <attribute name="weight" value="bold"></attribute>
+              <attribute name="weight" value="bold"/>
             </attributes>
           </object>
         </child>
@@ -2076,7 +2049,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                 <property name="label" translatable="yes">Match Window Title</property>
                 <property name="xalign">0</property>
                 <attributes>
-                  <attribute name="weight" value="bold"></attribute>
+                  <attribute name="weight" value="bold"/>
                 </attributes>
               </object>
             </child>
@@ -2128,7 +2101,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                 <property name="xalign">0</property>
                 <property name="label" translatable="yes">Match Window Class</property>
                 <attributes>
-                  <attribute name="weight" value="bold"></attribute>
+                  <attribute name="weight" value="bold"/>
                 </attributes>
               </object>
             </child>
@@ -2146,7 +2119,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
             <property name="label" translatable="yes">Action</property>
             <property name="xalign">0</property>
             <attributes>
-              <attribute name="weight" value="bold"></attribute>
+              <attribute name="weight" value="bold"/>
             </attributes>
           </object>
         </child>
@@ -2159,7 +2132,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
               <object class="GtkLabel" id="label77">
                 <property name="label" translatable="yes">Activate Profile</property>
                 <attributes>
-                  <attribute name="weight" value="bold"></attribute>
+                  <attribute name="weight" value="bold"/>
                 </attributes>
               </object>
             </child>
@@ -2199,7 +2172,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
               <object class="GtkLabel" id="label41">
                 <property name="label" translatable="yes">Turn Off Controller</property>
                 <attributes>
-                  <attribute name="weight" value="bold"></attribute>
+                  <attribute name="weight" value="bold"/>
                 </attributes>
               </object>
             </child>
@@ -2215,7 +2188,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
               <object class="GtkLabel" id="label43">
                 <property name="label" translatable="yes">Restart Daemon</property>
                 <attributes>
-                  <attribute name="weight" value="bold"></attribute>
+                  <attribute name="weight" value="bold"/>
                 </attributes>
               </object>
             </child>
