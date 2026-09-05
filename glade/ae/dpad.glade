@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <interface>
   <requires lib="gtk" version="4.0"/>
   <object class="GtkAdjustment" id="adjDiagonalRange">
@@ -492,7 +492,7 @@
                     <property name="label" translatable="yes">Menu</property>
                     <property name="xalign">0</property>
                     <attributes>
-                      <attribute name="weight" value="bold"></attribute>
+                      <attribute name="weight" value="bold"/>
                     </attributes>
                     <layout>
                       <property name="column">0</property>
@@ -555,7 +555,7 @@
                     <property name="label" translatable="yes">Menu Type</property>
                     <property name="xalign">0</property>
                     <attributes>
-                      <attribute name="weight" value="bold"></attribute>
+                      <attribute name="weight" value="bold"/>
                     </attributes>
                     <layout>
                       <property name="column">0</property>
@@ -595,7 +595,7 @@
                             <property name="label" translatable="yes">Items per row</property>
                             <property name="xalign">0</property>
                             <attributes>
-                              <attribute name="weight" value="bold"></attribute>
+                              <attribute name="weight" value="bold"/>
                             </attributes>
                           </object>
                         </child>
@@ -640,7 +640,7 @@
                       <object class="GtkLabel" id="label67">
                         <property name="label" translatable="yes">Control Options...</property>
                         <attributes>
-                          <attribute name="weight" value="bold"></attribute>
+                          <attribute name="weight" value="bold"/>
                         </attributes>
                       </object>
                     </child>
@@ -814,7 +814,7 @@
                       <object class="GtkLabel" id="label8">
                         <property name="label" translatable="yes">Menu Position...</property>
                         <attributes>
-                          <attribute name="weight" value="bold"></attribute>
+                          <attribute name="weight" value="bold"/>
                         </attributes>
                       </object>
                     </child>
@@ -965,7 +965,7 @@
         <property name="label" translatable="yes">Output Type</property>
         <property name="xalign">0</property>
         <attributes>
-          <attribute name="weight" value="bold"></attribute>
+          <attribute name="weight" value="bold"/>
         </attributes>
         <layout>
           <property name="column">0</property>
@@ -1007,44 +1007,39 @@
       <placeholder/>
     </child>
   </object>
-  <object class="GtkMenu" id="mnuMenu">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <child>
-      <object class="GtkMenuItem" id="mnuMenuNew">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="label" translatable="yes">_New Menu</property>
-        <property name="use-underline">True</property>
-        <signal name="activate" handler="on_mnuMenuNew_activate" swapped="no"/>
+  <object class="GtkPopover" id="mnuMenu">
+    <property name="child">
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkButton" id="mnuMenuNew">
+            <property name="label" translatable="yes">_New Menu</property>
+            <property name="use-underline">True</property>
+            <signal name="clicked" handler="on_mnuMenuNew_activate" swapped="no"/>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="mnuMenuCopy">
+            <property name="label" translatable="yes">_Copy Menu</property>
+            <property name="use-underline">True</property>
+            <signal name="clicked" handler="on_mnuMenuCopy_activate" swapped="no"/>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="mnuMenuRename">
+            <property name="label" translatable="yes">_Rename Menu</property>
+            <property name="use-underline">True</property>
+            <signal name="clicked" handler="on_mnuMenuRename_activate" swapped="no"/>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="mnuMenuDelete">
+            <property name="label" translatable="yes">_Delete Menu</property>
+            <property name="use-underline">True</property>
+            <signal name="clicked" handler="on_mnuMenuDelete_activate" swapped="no"/>
+          </object>
+        </child>
       </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="mnuMenuCopy">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="label" translatable="yes">_Copy Menu</property>
-        <property name="use-underline">True</property>
-        <signal name="activate" handler="on_mnuMenuCopy_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="mnuMenuRename">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="label" translatable="yes">_Rename Menu</property>
-        <property name="use-underline">True</property>
-        <signal name="activate" handler="on_mnuMenuRename_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="mnuMenuDelete">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="label" translatable="yes">_Delete Menu</property>
-        <property name="use-underline">True</property>
-        <signal name="activate" handler="on_mnuMenuDelete_activate" swapped="no"/>
-      </object>
-    </child>
+    </property>
   </object>
 </interface>
