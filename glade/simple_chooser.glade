@@ -3,7 +3,6 @@
   <requires lib="gtk" version="4.0"/>
   <object class="GtkWindow" id="Dialog">
     <property name="resizable">0</property>
-    <property name="window-position">center-on-parent</property>
     <signal name="key-press-event" handler="on_window_key_press_event" swapped="no"/>
     <child>
       <placeholder/>
