@@ -9,7 +9,7 @@ import os
 
 from gi.repository import Gtk
 
-from scc.gui.gdk_to_key import keyevent_to_key
+from scc.gui.gdk_to_key import keycode_to_key
 from scc.uinput import Keys
 
 log = logging.getLogger("KeyGrabber")
@@ -69,15 +69,15 @@ class KeyGrabber:
 		# Don't allow destroying
 		return True
 
-	def on_keyGrab_key_press_event(self, trash, event):
+	def on_keyGrab_key_press_event(self, controller, keyval, keycode, state):
 		"""Handle keypress on "Grab Key" dialog.
 
 		Remembers modifiers and displays text in middle of dialog.
 		Dialog is dismissed (and key is accepted) by key_release handler bellow.
 		"""
-		key = keyevent_to_key(event)
+		key = keycode_to_key(keycode)
 		if key is None:
-			log.warning("Unknown keycode %s/%s" % (event.keyval, event.hardware_keycode))
+			log.warning("Unknown keycode %s/%s" % (keyval, keycode))
 			return
 
 		if key in MODIFIERS:
@@ -93,7 +93,7 @@ class KeyGrabber:
 			label = key.name
 		self.builder.get_object("lblKey").set_label(label)
 
-	def on_keyGrab_key_release_event(self, trash, event):
+	def on_keyGrab_key_release_event(self, controller, keyval, keycode, state):
 		"""Handles keyrelease on "Grab Key" dialog.
 
 		Key is accepted if either:
@@ -102,7 +102,7 @@ class KeyGrabber:
 
 		Calls callback if key is accepted
 		"""
-		key = keyevent_to_key(event)
+		key = keycode_to_key(keycode)
 		if key is not None:
 			if key in MODIFIERS:
 				if key in self.active_mods:

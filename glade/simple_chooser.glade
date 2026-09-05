@@ -3,7 +3,11 @@
   <requires lib="gtk" version="4.0"/>
   <object class="GtkWindow" id="Dialog">
     <property name="resizable">0</property>
-    <signal name="key-press-event" handler="on_window_key_press_event" swapped="no"/>
+    <child>
+      <object class="GtkEventControllerKey">
+        <signal name="key-pressed" handler="on_window_key_press_event" swapped="no"/>
+      </object>
+    </child>
     <child>
       <placeholder/>
     </child>

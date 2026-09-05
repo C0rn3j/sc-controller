@@ -551,10 +551,10 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 
 		cb.set_active(0)
 
-	def on_ConditionEditor_key_press_event(self, w, event):
+	def on_ConditionEditor_key_press_event(self, controller, keyval, keycode, state):
 		"""Checks if pressed key was escape and if yes, closes window"""
-		if event.keyval == Gdk.KEY_Escape:
-			self.hide_dont_destroy(w)
+		if keyval == Gdk.KEY_Escape:
+			self.hide_dont_destroy(controller.get_widget())
 
 	def on_cbExactTitle_toggled(self, tg):
 		# Ensure that 'Match Title' checkbox is checked and only one of

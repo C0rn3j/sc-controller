@@ -150,7 +150,11 @@
     <property name="resizable">0</property>
     <property name="destroy-with-parent">1</property>
     <signal name="destroy" handler="on_Dialog_destroy" swapped="no"/>
-    <signal name="key-press-event" handler="on_window_key_press_event" swapped="no"/>
+    <child>
+      <object class="GtkEventControllerKey">
+        <signal name="key-pressed" handler="on_window_key_press_event" swapped="no"/>
+      </object>
+    </child>
     <property name="child">
       <object class="GtkBox" id="vbMain">
         <property name="orientation">vertical</property>
@@ -2040,7 +2044,11 @@ grips, triggers, finger positions on both pads and stick angle.</property>
     <property name="modal">1</property>
     <property name="transient-for">Dialog</property>
     <signal name="close-request" handler="hide_dont_destroy" swapped="no"/>
-    <signal name="key-press-event" handler="on_ConditionEditor_key_press_event" swapped="no"/>
+    <child>
+      <object class="GtkEventControllerKey">
+        <signal name="key-pressed" handler="on_ConditionEditor_key_press_event" swapped="no"/>
+      </object>
+    </child>
     <property name="child">
       <object class="GtkBox" id="vbox321">
         <property name="margin-start">20</property>

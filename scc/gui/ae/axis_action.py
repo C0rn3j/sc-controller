@@ -438,7 +438,8 @@ class AxisActionComponent(AEComponent, TimerManager):
 		else:
 			button.set_text("%s px" % (int(button.get_value())))
 
-	def on_sbArea_focus_out_event(self, button, *a):
+	def on_sbArea_focus_out_event(self, controller, *a):
+		button = controller.get_widget()
 		GLib.idle_add(self.on_sbArea_output, button)
 
 	def on_sbArea_changed(self, button, *a):
