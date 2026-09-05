@@ -332,7 +332,6 @@
           <object class="GtkStackPage">
             <property name="name">vbCommand</property>
             <property name="title" translatable="yes">page3</property>
-            <property name="position">1</property>
             <property name="child">
               <object class="GtkBox" id="vbShell">
                 <property name="orientation">vertical</property>
@@ -361,7 +360,6 @@
           <object class="GtkStackPage">
             <property name="name">vbProfile</property>
             <property name="title" translatable="yes">page0</property>
-            <property name="position">2</property>
             <property name="child">
               <object class="GtkBox" id="vbProfile">
                 <property name="orientation">vertical</property>
@@ -405,7 +403,6 @@
           <object class="GtkStackPage">
             <property name="name">page0</property>
             <property name="title" translatable="yes">page0</property>
-            <property name="position">3</property>
             <property name="child">
               <object class="GtkBox" id="vbOSD">
                 <property name="orientation">vertical</property>
@@ -481,7 +478,6 @@
           <object class="GtkStackPage">
             <property name="name">page1</property>
             <property name="title" translatable="yes">page1</property>
-            <property name="position">4</property>
             <property name="child">
               <object class="GtkGrid" id="grMenu">
                 <child>

@@ -230,7 +230,6 @@
           <object class="GtkStackPage">
             <property name="name">page21</property>
             <property name="title" translatable="yes">page21</property>
-            <property name="position">1</property>
             <property name="child">
               <object class="GtkBox" id="vbButton">
                 <property name="orientation">vertical</property>
@@ -262,7 +261,6 @@
           <object class="GtkStackPage">
             <property name="name">page0</property>
             <property name="title" translatable="yes">page0</property>
-            <property name="position">2</property>
             <property name="child">
               <object class="GtkGrid" id="grArea">
                 <child>
@@ -565,7 +563,6 @@
           <object class="GtkStackPage">
             <property name="name">page1</property>
             <property name="title" translatable="yes">page1</property>
-            <property name="position">3</property>
             <property name="child">
               <object class="GtkBox" id="vbMose">
                 <property name="orientation">vertical</property>
@@ -616,7 +613,6 @@
           <object class="GtkStackPage">
             <property name="name">grCircular</property>
             <property name="title" translatable="yes">page2</property>
-            <property name="position">4</property>
             <property name="child">
               <object class="GtkGrid" id="grCircular">
                 <property name="hexpand">0</property>

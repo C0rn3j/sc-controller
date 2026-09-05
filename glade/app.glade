@@ -721,7 +721,6 @@
               <object class="GtkStackPage">
                 <property name="name">page1</property>
                 <property name="title" translatable="yes">page1</property>
-                <property name="position">1</property>
                 <property name="child">
                   <object class="GtkLabel" id="lblEmpty"/>
                 </property>
