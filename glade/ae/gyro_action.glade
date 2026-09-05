@@ -93,7 +93,7 @@
       <object class="GtkLabel" id="lblYawRoll">
         <property name="margin-start">5</property>
         <property name="margin-end">20</property>
-        <property name="label" translatable="1">X Axis Controlled by</property>
+        <property name="label" translatable="yes">X Axis Controlled by</property>
         <property name="xalign">0</property>
         <attributes>
           <attribute name="weight" value="bold"></attribute>
@@ -126,7 +126,7 @@
       <object class="GtkLabel" id="label5">
         <property name="margin-start">5</property>
         <property name="margin-end">20</property>
-        <property name="label" translatable="1">Output Mode</property>
+        <property name="label" translatable="yes">Output Mode</property>
         <property name="xalign">0</property>
         <attributes>
           <attribute name="weight" value="bold"></attribute>
@@ -178,7 +178,7 @@
       <object class="GtkLabel" id="lblGyroEnable">
         <property name="margin-start">5</property>
         <property name="margin-top">20</property>
-        <property name="label" translatable="1">Gyro Enable Button</property>
+        <property name="label" translatable="yes">Gyro Enable Button</property>
         <property name="xalign">0</property>
         <attributes>
           <attribute name="weight" value="bold"></attribute>
@@ -195,7 +195,7 @@
         <signal name="toggled" handler="cbInvertY_toggled_cb" swapped="no"/>
         <child>
           <object class="GtkLabel" id="label3">
-            <property name="label" translatable="1">Invert Y Axis</property>
+            <property name="label" translatable="yes">Invert Y Axis</property>
             <property name="xalign">0</property>
             <attributes>
               <attribute name="weight" value="bold"></attribute>
@@ -215,7 +215,7 @@
         <signal name="toggled" handler="on_cbInvertGyro_toggled" swapped="no"/>
         <child>
           <object class="GtkLabel" id="label4">
-            <property name="label" translatable="1">Button disables Gyro</property>
+            <property name="label" translatable="yes">Button disables Gyro</property>
             <property name="xalign">0</property>
             <attributes>
               <attribute name="weight" value="bold"></attribute>
@@ -238,7 +238,7 @@
             <child>
               <object class="GtkLabel" id="lblSoftLevel">
                 <property name="margin-start">20</property>
-                <property name="label" translatable="1">Trigger Pull Level</property>
+                <property name="label" translatable="yes">Trigger Pull Level</property>
               </object>
             </child>
             <child>

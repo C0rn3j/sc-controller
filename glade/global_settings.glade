@@ -175,7 +175,7 @@
                     </child>
                     <child>
                       <object class="GtkButton" id="btRestartEmulation">
-                        <property name="label" translatable="1">Restart Emulation</property>
+                        <property name="label" translatable="yes">Restart Emulation</property>
                         <property name="focusable">1</property>
                         <property name="receives-default">1</property>
                         <signal name="clicked" handler="on_btRestartEmulation_clicked" swapped="no"/>
@@ -205,7 +205,7 @@
                     </child>
                     <child>
                       <object class="GtkLabel" id="lblRestartWarning">
-                        <property name="label" translatable="1">Emulation has to be restarted to apply all settings.
+                        <property name="label" translatable="yes">Emulation has to be restarted to apply all settings.
 If you have any games running, restarting emulation will &quot;unplug&quot;
 virtual gamepad, what may cause them to ignore future inputs
 or even crash.</property>
@@ -242,7 +242,7 @@ or even crash.</property>
                     <property name="margin-bottom">10</property>
                     <child>
                       <object class="GtkLabel" id="label8">
-                        <property name="label" translatable="1">On-Screen Keyboard Bindings</property>
+                        <property name="label" translatable="yes">On-Screen Keyboard Bindings</property>
                         <property name="xalign">0</property>
                         <attributes>
                           <attribute name="weight" value="bold"></attribute>
@@ -259,7 +259,7 @@ or even crash.</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">10</property>
                         <property name="margin-top">5</property>
-                        <property name="label" translatable="1">Left Stick</property>
+                        <property name="label" translatable="yes">Left Stick</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">0</property>
@@ -272,7 +272,7 @@ or even crash.</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">10</property>
                         <property name="margin-top">5</property>
-                        <property name="label" translatable="1">Triggers</property>
+                        <property name="label" translatable="yes">Triggers</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">0</property>
@@ -282,7 +282,7 @@ or even crash.</property>
                     </child>
                     <child>
                       <object class="GtkButton" id="butEditKeyboardBindings">
-                        <property name="label" translatable="1">Advanced...</property>
+                        <property name="label" translatable="yes">Advanced...</property>
                         <property name="focusable">1</property>
                         <property name="receives-default">1</property>
                         <property name="margin-start">50</property>
@@ -340,7 +340,7 @@ or even crash.</property>
                     <child>
                       <object class="GtkLabel" id="label4">
                         <property name="margin-top">20</property>
-                        <property name="label" translatable="1">Pad Sensitivity</property>
+                        <property name="label" translatable="yes">Pad Sensitivity</property>
                         <property name="xalign">0</property>
                         <attributes>
                           <attribute name="weight" value="bold"></attribute>
@@ -357,7 +357,7 @@ or even crash.</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">10</property>
                         <property name="margin-top">5</property>
-                        <property name="label" translatable="1">Horizontal</property>
+                        <property name="label" translatable="yes">Horizontal</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">0</property>
@@ -371,7 +371,7 @@ or even crash.</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">10</property>
                         <property name="margin-top">5</property>
-                        <property name="label" translatable="1">Vertical</property>
+                        <property name="label" translatable="yes">Vertical</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">0</property>
@@ -455,7 +455,7 @@ or even crash.</property>
                     <child>
                       <object class="GtkLabel" id="label37">
                         <property name="margin-bottom">5</property>
-                        <property name="label" translatable="1">Default Menu Items</property>
+                        <property name="label" translatable="yes">Default Menu Items</property>
                         <property name="xalign">0</property>
                         <attributes>
                           <attribute name="weight" value="bold"></attribute>
@@ -478,7 +478,7 @@ or even crash.</property>
                         <signal name="toggled" handler="on_cbMI_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label98">
-                            <property name="label" translatable="1">List of recent profiles</property>
+                            <property name="label" translatable="yes">List of recent profiles</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>
@@ -500,7 +500,7 @@ or even crash.</property>
                         <signal name="toggled" handler="on_cbMI_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label93">
-                            <property name="label" translatable="1">Run Program...</property>
+                            <property name="label" translatable="yes">Run Program...</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>
@@ -521,7 +521,7 @@ or even crash.</property>
                         <signal name="toggled" handler="on_cbMI_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label99">
-                            <property name="label" translatable="1">Autoswitch options</property>
+                            <property name="label" translatable="yes">Autoswitch options</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>
@@ -542,7 +542,7 @@ or even crash.</property>
                         <signal name="toggled" handler="on_cbMI_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label91">
-                            <property name="label" translatable="1">Kill Current Window</property>
+                            <property name="label" translatable="yes">Kill Current Window</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>
@@ -563,7 +563,7 @@ or even crash.</property>
                         <signal name="toggled" handler="on_cbMI_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label97">
-                            <property name="label" translatable="1">Window switcher</property>
+                            <property name="label" translatable="yes">Window switcher</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>
@@ -584,7 +584,7 @@ or even crash.</property>
                         <signal name="toggled" handler="on_cbMI_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label38">
-                            <property name="label" translatable="1">Show Current Bindings</property>
+                            <property name="label" translatable="yes">Show Current Bindings</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>
@@ -605,7 +605,7 @@ or even crash.</property>
                         <signal name="toggled" handler="on_cbMI_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label39">
-                            <property name="label" translatable="1">Games List</property>
+                            <property name="label" translatable="yes">Games List</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>
@@ -626,7 +626,7 @@ or even crash.</property>
                         <signal name="toggled" handler="on_cbMI_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label95">
-                            <property name="label" translatable="1">Turn Controller OFF</property>
+                            <property name="label" translatable="yes">Turn Controller OFF</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>
@@ -647,7 +647,7 @@ or even crash.</property>
                         <signal name="toggled" handler="on_cbMI_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label7">
-                            <property name="label" translatable="1">Display Keyboard</property>
+                            <property name="label" translatable="yes">Display Keyboard</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>
@@ -668,7 +668,7 @@ or even crash.</property>
                         <signal name="toggled" handler="on_cbMI_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label11">
-                            <property name="label" translatable="1">Edit Current Bindings</property>
+                            <property name="label" translatable="yes">Edit Current Bindings</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>
@@ -683,7 +683,7 @@ or even crash.</property>
                 </property>
                 <property name="tab">
                   <object class="GtkLabel" id="label18">
-                    <property name="label" translatable="1">Menus &amp; Keyboard</property>
+                    <property name="label" translatable="yes">Menus &amp; Keyboard</property>
                   </object>
                 </property>
               </object>
@@ -762,7 +762,7 @@ or even crash.</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">5</property>
                         <property name="margin-bottom">5</property>
-                        <property name="label" translatable="1">Separator Text</property>
+                        <property name="label" translatable="yes">Separator Text</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">2</property>
@@ -775,7 +775,7 @@ or even crash.</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">5</property>
                         <property name="margin-bottom">5</property>
-                        <property name="label" translatable="1">Selected Text</property>
+                        <property name="label" translatable="yes">Selected Text</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">2</property>
@@ -788,7 +788,7 @@ or even crash.</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">5</property>
                         <property name="margin-bottom">5</property>
-                        <property name="label" translatable="1">Selected Background</property>
+                        <property name="label" translatable="yes">Selected Background</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">2</property>
@@ -801,7 +801,7 @@ or even crash.</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">5</property>
                         <property name="margin-bottom">5</property>
-                        <property name="label" translatable="1">Selected Border</property>
+                        <property name="label" translatable="yes">Selected Border</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">2</property>
@@ -871,7 +871,7 @@ or even crash.</property>
                     </child>
                     <child>
                       <object class="GtkLabel" id="label2985">
-                        <property name="label" translatable="1">OSD Menu Colors</property>
+                        <property name="label" translatable="yes">OSD Menu Colors</property>
                         <property name="xalign">0</property>
                         <attributes>
                           <attribute name="weight" value="bold"></attribute>
@@ -888,7 +888,7 @@ or even crash.</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">5</property>
                         <property name="margin-bottom">5</property>
-                        <property name="label" translatable="1">Text</property>
+                        <property name="label" translatable="yes">Text</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">0</property>
@@ -901,7 +901,7 @@ or even crash.</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">5</property>
                         <property name="margin-bottom">5</property>
-                        <property name="label" translatable="1">Item Border</property>
+                        <property name="label" translatable="yes">Item Border</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">0</property>
@@ -914,7 +914,7 @@ or even crash.</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">5</property>
                         <property name="margin-bottom">5</property>
-                        <property name="label" translatable="1">Background</property>
+                        <property name="label" translatable="yes">Background</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">0</property>
@@ -927,7 +927,7 @@ or even crash.</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">5</property>
                         <property name="margin-bottom">5</property>
-                        <property name="label" translatable="1">Border</property>
+                        <property name="label" translatable="yes">Border</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">0</property>
@@ -938,7 +938,7 @@ or even crash.</property>
                     <child>
                       <object class="GtkLabel" id="label21">
                         <property name="margin-top">10</property>
-                        <property name="label" translatable="1">On-Screen Keyboard Colors</property>
+                        <property name="label" translatable="yes">On-Screen Keyboard Colors</property>
                         <property name="xalign">0</property>
                         <attributes>
                           <attribute name="weight" value="bold"></attribute>
@@ -955,7 +955,7 @@ or even crash.</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">5</property>
                         <property name="margin-bottom">5</property>
-                        <property name="label" translatable="1">Normal Button</property>
+                        <property name="label" translatable="yes">Normal Button</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">0</property>
@@ -983,7 +983,7 @@ or even crash.</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">5</property>
                         <property name="margin-bottom">5</property>
-                        <property name="label" translatable="1">Pressed Button</property>
+                        <property name="label" translatable="yes">Pressed Button</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">0</property>
@@ -1012,7 +1012,7 @@ or even crash.</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">5</property>
                         <property name="margin-bottom">5</property>
-                        <property name="label" translatable="1">Special Button</property>
+                        <property name="label" translatable="yes">Special Button</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">0</property>
@@ -1042,7 +1042,7 @@ or even crash.</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">5</property>
                         <property name="margin-bottom">5</property>
-                        <property name="label" translatable="1">Text</property>
+                        <property name="label" translatable="yes">Text</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">2</property>
@@ -1071,7 +1071,7 @@ or even crash.</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">5</property>
                         <property name="margin-bottom">5</property>
-                        <property name="label" translatable="1">Higlight</property>
+                        <property name="label" translatable="yes">Higlight</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">2</property>
@@ -1097,7 +1097,7 @@ or even crash.</property>
                     </child>
                     <child>
                       <object class="GtkLabel" id="label269">
-                        <property name="label" translatable="1"> </property>
+                        <property name="label" translatable="yes"> </property>
                         <layout>
                           <property name="column">2</property>
                           <property name="row">10</property>
@@ -1107,7 +1107,7 @@ or even crash.</property>
                     </child>
                     <child>
                       <object class="GtkLabel" id="label2">
-                        <property name="label" translatable="1">OSD Style</property>
+                        <property name="label" translatable="yes">OSD Style</property>
                         <property name="xalign">0</property>
                         <attributes>
                           <attribute name="weight" value="bold"></attribute>
@@ -1144,7 +1144,7 @@ or even crash.</property>
                     </child>
                     <child>
                       <object class="GtkLabel" id="label119">
-                        <property name="label" translatable="1">Color Preset</property>
+                        <property name="label" translatable="yes">Color Preset</property>
                         <property name="xalign">0</property>
                         <attributes>
                           <attribute name="weight" value="bold"></attribute>
@@ -1182,7 +1182,7 @@ or even crash.</property>
                 </property>
                 <property name="tab">
                   <object class="GtkLabel" id="label19">
-                    <property name="label" translatable="1">OSD Colors</property>
+                    <property name="label" translatable="yes">OSD Colors</property>
                   </object>
                 </property>
               </object>
@@ -1203,7 +1203,7 @@ or even crash.</property>
                         <property name="active">1</property>
                         <child>
                           <object class="GtkLabel" id="lblKuaa19">
-                            <property name="label" translatable="1">Enable Steam Controller support</property>
+                            <property name="label" translatable="yes">Enable Steam Controller support</property>
                             <property name="xalign">0</property>
                             <attributes>
                               <attribute name="weight" value="bold"></attribute>
@@ -1225,7 +1225,7 @@ or even crash.</property>
                         <signal name="toggled" handler="on_cbEnableDriver_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="lblKuaa13">
-                            <property name="label" translatable="1">Enable Dualshock4 (PS4 controller) support</property>
+                            <property name="label" translatable="yes">Enable Dualshock4 (PS4 controller) support</property>
                             <property name="xalign">0</property>
                             <attributes>
                               <attribute name="weight" value="bold"></attribute>
@@ -1247,7 +1247,7 @@ or even crash.</property>
                         <signal name="toggled" handler="on_cbEnableDriver_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="lblKuaa3">
-                            <property name="label" translatable="1">Enable DualSense (PS5 controller) support</property>
+                            <property name="label" translatable="yes">Enable DualSense (PS5 controller) support</property>
                             <attributes>
                               <attribute name="weight" value="bold"></attribute>
                             </attributes>
@@ -1263,7 +1263,7 @@ or even crash.</property>
                     <child>
                       <object class="GtkLabel" id="lblKuaa4">
                         <property name="margin-start">30</property>
-                        <property name="label" translatable="1">If enabled, any connected DualSense controller will be automatically used by SC Controller</property>
+                        <property name="label" translatable="yes">If enabled, any connected DualSense controller will be automatically used by SC Controller</property>
                         <property name="xalign">0</property>
                         <property name="yalign">0</property>
                         <layout>
@@ -1276,7 +1276,7 @@ or even crash.</property>
                     <child>
                       <object class="GtkLabel" id="lblKuaa15">
                         <property name="margin-top">20</property>
-                        <property name="label" translatable="1">Other registered controllers</property>
+                        <property name="label" translatable="yes">Other registered controllers</property>
                         <property name="xalign">0</property>
                         <property name="yalign">0</property>
                         <attributes>
@@ -1292,7 +1292,7 @@ or even crash.</property>
                     <child>
                       <object class="GtkLabel" id="lblKuaa14">
                         <property name="margin-start">30</property>
-                        <property name="label" translatable="1">If enabled, any connected Dualshock4 controller will be automatically used by SC Controller</property>
+                        <property name="label" translatable="yes">If enabled, any connected Dualshock4 controller will be automatically used by SC Controller</property>
                         <property name="xalign">0</property>
                         <property name="yalign">0</property>
                         <layout>
@@ -1305,7 +1305,7 @@ or even crash.</property>
                     <child>
                       <object class="GtkLabel" id="lblKuaa16">
                         <property name="margin-start">20</property>
-                        <property name="label" translatable="1">Controllers listed here are automatically used by SC Controller whenever they are connected.</property>
+                        <property name="label" translatable="yes">Controllers listed here are automatically used by SC Controller whenever they are connected.</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">0</property>
@@ -1332,7 +1332,7 @@ or even crash.</property>
                             </child>
                             <child>
                               <object class="GtkTreeViewColumn" id="tcDevice">
-                                <property name="title" translatable="1">column</property>
+                                <property name="title" translatable="yes">column</property>
                                 <child>
                                   <object class="GtkCellRendererPixbuf" id="tcDeviceIcon"/>
                                   <attributes>
@@ -1364,7 +1364,7 @@ or even crash.</property>
                         <signal name="toggled" handler="on_cbEnableDriver_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="lblKuaa12">
-                            <property name="label" translatable="1">Enable HID device support</property>
+                            <property name="label" translatable="yes">Enable HID device support</property>
                             <property name="xalign">0</property>
                             <attributes>
                               <attribute name="weight" value="bold"></attribute>
@@ -1386,7 +1386,7 @@ or even crash.</property>
                         <signal name="toggled" handler="on_cbEnableDriver_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="lblKuaa11">
-                            <property name="label" translatable="1">Enable evdev support</property>
+                            <property name="label" translatable="yes">Enable evdev support</property>
                             <property name="xalign">0</property>
                             <attributes>
                               <attribute name="weight" value="bold"></attribute>
@@ -1428,7 +1428,7 @@ or even crash.</property>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="label1">
-                                    <property name="label" translatable="1">Register New Controller</property>
+                                    <property name="label" translatable="yes">Register New Controller</property>
                                   </object>
                                 </child>
                               </object>
@@ -1461,7 +1461,7 @@ or even crash.</property>
                       <object class="GtkLabel" id="txEvdevMissing">
                         <property name="visible">0</property>
                         <property name="no-show-all">True</property>
-                        <property name="label" translatable="1">Note: python-evdev package is needed for non-steam controller support</property>
+                        <property name="label" translatable="yes">Note: python-evdev package is needed for non-steam controller support</property>
                         <attributes>
                           <attribute name="style" value="italic"></attribute>
                         </attributes>
@@ -1479,7 +1479,7 @@ or even crash.</property>
                         <signal name="toggled" handler="on_cbEnableDriver_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="lblKuaa1">
-                            <property name="label" translatable="1">Enable Remote RetroPad protocol support</property>
+                            <property name="label" translatable="yes">Enable Remote RetroPad protocol support</property>
                             <property name="xalign">0</property>
                             <attributes>
                               <attribute name="weight" value="bold"></attribute>
@@ -1496,7 +1496,7 @@ or even crash.</property>
                     <child>
                       <object class="GtkLabel" id="lblKuaa2">
                         <property name="margin-start">30</property>
-                        <property name="label" translatable="1">If enabled, any device or application compatibile with Retroarch&apos;s Remote RetroPad protocol
+                        <property name="label" translatable="yes">If enabled, any device or application compatibile with Retroarch&apos;s Remote RetroPad protocol
 on network can connect and remote-control this computer as additional gamepad.
 &lt;a href=&quot;https://github.com/C0rn3j/sc-controller/wiki/Using-phone-with-Retroarch-as-additional-controller&quot;&gt;See wiki for instructions and more info.&lt;/a&gt;</property>
                         <property name="use-markup">1</property>
@@ -1519,7 +1519,7 @@ on network can connect and remote-control this computer as additional gamepad.
                 </property>
                 <property name="tab">
                   <object class="GtkLabel" id="label69">
-                    <property name="label" translatable="1">Controllers</property>
+                    <property name="label" translatable="yes">Controllers</property>
                   </object>
                 </property>
               </object>
@@ -1543,7 +1543,7 @@ on network can connect and remote-control this computer as additional gamepad.
                         <signal name="toggled" handler="on_cbShowOSD_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label42">
-                            <property name="label" translatable="1">Show _OSD notification when profile is switched automatically</property>
+                            <property name="label" translatable="yes">Show _OSD notification when profile is switched automatically</property>
                             <property name="use-underline">1</property>
                             <property name="mnemonic-widget">cbShowOSD</property>
                           </object>
@@ -1557,7 +1557,7 @@ on network can connect and remote-control this computer as additional gamepad.
                     <child>
                       <object class="GtkLabel" id="lblItems">
                         <property name="margin-top">10</property>
-                        <property name="label" translatable="1">Switching Rules</property>
+                        <property name="label" translatable="yes">Switching Rules</property>
                         <property name="xalign">0</property>
                         <attributes>
                           <attribute name="weight" value="bold"></attribute>
@@ -1593,7 +1593,7 @@ on network can connect and remote-control this computer as additional gamepad.
                             <child>
                               <object class="GtkTreeViewColumn" id="clWhen">
                                 <property name="resizable">1</property>
-                                <property name="title" translatable="1">When window...</property>
+                                <property name="title" translatable="yes">When window...</property>
                                 <child>
                                   <object class="GtkCellRendererText" id="crWhen"/>
                                   <attributes>
@@ -1605,7 +1605,7 @@ on network can connect and remote-control this computer as additional gamepad.
                             <child>
                               <object class="GtkTreeViewColumn" id="clThen">
                                 <property name="resizable">1</property>
-                                <property name="title" translatable="1">... then</property>
+                                <property name="title" translatable="yes">... then</property>
                                 <child>
                                   <object class="GtkCellRendererText" id="crProfile"/>
                                   <attributes>
@@ -1624,7 +1624,7 @@ on network can connect and remote-control this computer as additional gamepad.
                     </child>
                     <child>
                       <object class="GtkLabel" id="lblItems1">
-                        <property name="label" translatable="1">Automatic Profile Switching Options</property>
+                        <property name="label" translatable="yes">Automatic Profile Switching Options</property>
                         <property name="xalign">0</property>
                         <attributes>
                           <attribute name="weight" value="bold"></attribute>
@@ -1661,7 +1661,7 @@ on network can connect and remote-control this computer as additional gamepad.
                                 <child>
                                   <object class="GtkLabel" id="label90">
                                     <property name="margin-start">5</property>
-                                    <property name="label" translatable="1">Edit Condition</property>
+                                    <property name="label" translatable="yes">Edit Condition</property>
                                   </object>
                                 </child>
                               </object>
@@ -1741,7 +1741,7 @@ on network can connect and remote-control this computer as additional gamepad.
                 </property>
                 <property name="tab">
                   <object class="GtkLabel" id="label78">
-                    <property name="label" translatable="1">Autoswitcher</property>
+                    <property name="label" translatable="yes">Autoswitcher</property>
                   </object>
                 </property>
               </object>
@@ -1762,7 +1762,7 @@ on network can connect and remote-control this computer as additional gamepad.
                         <signal name="toggled" handler="on_random_checkbox_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label27">
-                            <property name="label" translatable="1">Enable Input Test Mode</property>
+                            <property name="label" translatable="yes">Enable Input Test Mode</property>
                             <property name="use-underline">1</property>
                             <property name="mnemonic-widget">cbShowOSD</property>
                             <attributes>
@@ -1781,7 +1781,7 @@ on network can connect and remote-control this computer as additional gamepad.
                         <property name="margin-start">25</property>
                         <property name="margin-end">25</property>
                         <property name="margin-top">5</property>
-                        <property name="label" translatable="1">Allows applications to &lt;b&gt;watch and possibly log&lt;/b&gt; gamepad inputs.
+                        <property name="label" translatable="yes">Allows applications to &lt;b&gt;watch and possibly log&lt;/b&gt; gamepad inputs.
 
 When enabled, main application window will display pressed buttons,
 grips, triggers, finger positions on both pads and stick angle.</property>
@@ -1801,7 +1801,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                         <signal name="toggled" handler="on_restarting_checkbox_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label32">
-                            <property name="label" translatable="1">Use Serial Numbers to Identify Controllers</property>
+                            <property name="label" translatable="yes">Use Serial Numbers to Identify Controllers</property>
                             <property name="use-underline">1</property>
                             <property name="mnemonic-widget">cbShowOSD</property>
                             <attributes>
@@ -1822,7 +1822,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                         <signal name="toggled" handler="on_random_checkbox_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label30">
-                            <property name="label" translatable="1">Automatically Disable Emulation When Closing GUI</property>
+                            <property name="label" translatable="yes">Automatically Disable Emulation When Closing GUI</property>
                             <property name="use-underline">1</property>
                             <property name="mnemonic-widget">cbShowOSD</property>
                             <attributes>
@@ -1844,7 +1844,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                         <signal name="toggled" handler="on_random_checkbox_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label31">
-                            <property name="label" translatable="1">Minimize to status icon instead closing</property>
+                            <property name="label" translatable="yes">Minimize to status icon instead closing</property>
                             <property name="use-underline">1</property>
                             <property name="mnemonic-widget">cbShowOSD</property>
                           </object>
@@ -1862,7 +1862,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                         <signal name="toggled" handler="on_random_checkbox_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label29">
-                            <property name="label" translatable="1">Enable Status (Systray) Icon</property>
+                            <property name="label" translatable="yes">Enable Status (Systray) Icon</property>
                             <property name="use-underline">1</property>
                             <property name="mnemonic-widget">cbShowOSD</property>
                             <attributes>
@@ -1881,7 +1881,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                         <property name="margin-start">25</property>
                         <property name="margin-end">25</property>
                         <property name="margin-top">5</property>
-                        <property name="label" translatable="1">Try disabling this option if your controller stops working randomly.</property>
+                        <property name="label" translatable="yes">Try disabling this option if your controller stops working randomly.</property>
                         <property name="use-markup">1</property>
                         <property name="wrap">1</property>
                         <property name="xalign">0</property>
@@ -1898,7 +1898,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                         <signal name="toggled" handler="on_restarting_checkbox_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label34">
-                            <property name="label" translatable="1">Enable Rumble Support</property>
+                            <property name="label" translatable="yes">Enable Rumble Support</property>
                             <property name="use-underline">1</property>
                             <property name="mnemonic-widget">cbShowOSD</property>
                             <attributes>
@@ -1919,7 +1919,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                         <signal name="toggled" handler="on_random_checkbox_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label40">
-                            <property name="label" translatable="1">Display a message with changelog when SC Controller updates</property>
+                            <property name="label" translatable="yes">Display a message with changelog when SC Controller updates</property>
                             <property name="use-underline">1</property>
                             <property name="mnemonic-widget">cbShowOSD</property>
                             <attributes>
@@ -1941,7 +1941,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                         <signal name="toggled" handler="on_random_checkbox_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label15">
-                            <property name="label" translatable="1">Minimize to tray on start</property>
+                            <property name="label" translatable="yes">Minimize to tray on start</property>
                             <property name="mnemonic-widget">cbShowOSD</property>
                           </object>
                         </child>
@@ -2015,7 +2015,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                 </property>
                 <property name="tab">
                   <object class="GtkLabel" id="label79">
-                    <property name="label" translatable="1">Advanced</property>
+                    <property name="label" translatable="yes">Advanced</property>
                   </object>
                 </property>
               </object>
@@ -2052,7 +2052,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
         <child>
           <object class="GtkLabel" id="label3">
             <property name="margin-top">5</property>
-            <property name="label" translatable="1">Condition</property>
+            <property name="label" translatable="yes">Condition</property>
             <property name="xalign">0</property>
             <attributes>
               <attribute name="weight" value="bold"></attribute>
@@ -2066,7 +2066,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
             <property name="margin-bottom">5</property>
             <child>
               <object class="GtkLabel" id="label74">
-                <property name="label" translatable="1">Match Window Title</property>
+                <property name="label" translatable="yes">Match Window Title</property>
                 <property name="xalign">0</property>
                 <attributes>
                   <attribute name="weight" value="bold"></attribute>
@@ -2091,7 +2091,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                 <signal name="toggled" handler="on_cbExactTitle_toggled" swapped="no"/>
                 <child>
                   <object class="GtkLabel" id="lblExactTitle">
-                    <property name="label" translatable="1">Match exact title</property>
+                    <property name="label" translatable="yes">Match exact title</property>
                     <property name="xalign">0</property>
                   </object>
                 </child>
@@ -2103,7 +2103,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                 <signal name="toggled" handler="on_cbRegExp_toggled" swapped="no"/>
                 <child>
                   <object class="GtkLabel" id="lblRegExp">
-                    <property name="label" translatable="1">Use regular expression</property>
+                    <property name="label" translatable="yes">Use regular expression</property>
                     <property name="xalign">0</property>
                   </object>
                 </child>
@@ -2119,7 +2119,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
             <child>
               <object class="GtkLabel" id="label35">
                 <property name="xalign">0</property>
-                <property name="label" translatable="1">Match Window Class</property>
+                <property name="label" translatable="yes">Match Window Class</property>
                 <attributes>
                   <attribute name="weight" value="bold"></attribute>
                 </attributes>
@@ -2136,7 +2136,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
         <child>
           <object class="GtkLabel" id="label36">
             <property name="margin-top">15</property>
-            <property name="label" translatable="1">Action</property>
+            <property name="label" translatable="yes">Action</property>
             <property name="xalign">0</property>
             <attributes>
               <attribute name="weight" value="bold"></attribute>
@@ -2150,7 +2150,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
             <property name="active">1</property>
             <child>
               <object class="GtkLabel" id="label77">
-                <property name="label" translatable="1">Activate Profile</property>
+                <property name="label" translatable="yes">Activate Profile</property>
                 <attributes>
                   <attribute name="weight" value="bold"></attribute>
                 </attributes>
@@ -2190,7 +2190,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
             <property name="group">rbProfile</property>
             <child>
               <object class="GtkLabel" id="label41">
-                <property name="label" translatable="1">Turn Off Controller</property>
+                <property name="label" translatable="yes">Turn Off Controller</property>
                 <attributes>
                   <attribute name="weight" value="bold"></attribute>
                 </attributes>
@@ -2206,7 +2206,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
             <property name="group">rbProfile</property>
             <child>
               <object class="GtkLabel" id="label43">
-                <property name="label" translatable="1">Restart Daemon</property>
+                <property name="label" translatable="yes">Restart Daemon</property>
                 <attributes>
                   <attribute name="weight" value="bold"></attribute>
                 </attributes>
@@ -2224,7 +2224,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
             <property name="icon-name">document-save-symbolic</property>
           </object>
           <object class="GtkButton" id="btSave">
-            <property name="label" translatable="1">_Save</property>
+            <property name="label" translatable="yes">_Save</property>
             <property name="use-underline">1</property>
             <property name="image">imgSave</property>
             <property name="always-show-image">True</property>
