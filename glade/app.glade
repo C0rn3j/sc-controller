@@ -39,7 +39,6 @@
           <object class="GtkBox" id="vbOsdmodeAct">
             <property name="visible">0</property>
             <property name="width-request">75</property>
-            <property name="no-show-all">True</property>
             <child>
               <object class="GtkImage" id="imgOsdmodeAct">
                 <property name="icon-name">image-missing</property>
@@ -81,7 +80,6 @@
           <object class="GtkBox" id="vbOsdmodeClose">
             <property name="visible">0</property>
             <property name="width-request">75</property>
-            <property name="no-show-all">True</property>
             <child>
               <object class="GtkImage" id="imgOsdmodeClose">
                 <property name="icon-name">image-missing</property>
@@ -370,7 +368,6 @@
             <child>
               <object class="GtkSeparator" id="sepSwitchers">
                 <property name="visible">0</property>
-                <property name="no-show-all">True</property>
               </object>
             </child>
           </object>
