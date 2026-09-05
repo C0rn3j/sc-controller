@@ -116,9 +116,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 	def setup_widgets(self) -> None:
 		# Important stuff
-		self.builder = Gtk.Builder()
+		self.builder = Gtk.Builder(self)
 		self.builder.add_from_file(os.path.join(self.gladepath, "app.glade"))
-		self.builder.connect_signals(self)
 		self.window = self.builder.get_object("window")
 		for menu_id in ("mnuImage", "mnuPS", "mnuPopup", "mnuTray"):
 			self.builder.get_object(menu_id).set_parent(self.window)

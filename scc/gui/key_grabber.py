@@ -60,10 +60,9 @@ class KeyGrabber:
 		self.window.set_focus()
 
 	def setup_widgets(self):
-		self.builder = Gtk.Builder()
+		self.builder = Gtk.Builder(self)
 		self.builder.add_from_file(os.path.join(self.app.gladepath, self.GLADE))
 		self.window = self.builder.get_object("KeyGrab")
-		self.builder.connect_signals(self)
 
 	def on_KeyGrab_destroy(self, *a):
 		# Don't allow destroying
