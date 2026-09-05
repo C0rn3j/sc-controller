@@ -34,6 +34,7 @@ class GestureComponent(AEComponent):
 
 	def load(self):
 		if AEComponent.load(self):
+			self.builder.get_object("sclPrecision").set_format_value_func(self.on_sclPrecision_format_value)
 			# Unlike mose region, gesutres kinda work with XWayland
 			self.on_wayland = not isinstance(Gdk.Display.get_default(), GdkX11.X11Display)
 			if self.on_wayland:
@@ -156,7 +157,7 @@ class GestureComponent(AEComponent):
 			self.editor.set_osd_enabled(True)
 		self._grabber.grab(grabbed)
 
-	def on_sclPrecision_format_value(self, scl, value):
+	def on_sclPrecision_format_value(self, scl, value, *a):
 		return "%s%%" % (int(value * 100.0),)
 
 	def on_sclPrecision_value_changed(self, *a):

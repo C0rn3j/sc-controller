@@ -437,7 +437,6 @@
                             <property name="adjustment">adjFriction</property>
                             <property name="round-digits">1</property>
                             <property name="value-pos">right</property>
-                            <signal name="format-value" handler="on_sclFriction_format_value" swapped="no"/>
                             <signal name="value-changed" handler="update_modifiers" swapped="no"/>
                             <layout>
                               <property name="column">1</property>
@@ -820,7 +819,6 @@
                             <property name="round-digits">0</property>
                             <property name="digits">0</property>
                             <property name="value-pos">right</property>
-                            <signal name="format-value" handler="on_sclFFrequency_format_value" swapped="no"/>
                             <signal name="value-changed" handler="update_modifiers" swapped="no"/>
                             <layout>
                               <property name="column">1</property>

@@ -131,7 +131,6 @@
                 <property name="adjustment">adjRadius</property>
                 <property name="round-digits">2</property>
                 <property name="value-pos">right</property>
-                <signal name="format-value" handler="on_sclRadius_format_value" swapped="no"/>
                 <layout>
                   <property name="column">1</property>
                   <property name="row">3</property>

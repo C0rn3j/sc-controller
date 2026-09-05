@@ -303,7 +303,6 @@
             <property name="round-digits">0</property>
             <property name="digits">0</property>
             <property name="value-pos">right</property>
-            <signal name="format-value" handler="on_sclIdleTimeout_format_value" swapped="no"/>
             <signal name="value-changed" handler="on_sclIdleTimeout_value_changed" swapped="no"/>
             <layout>
               <property name="column">0</property>

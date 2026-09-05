@@ -213,7 +213,6 @@
                 <property name="adjustment">adjSoftLevel</property>
                 <property name="round-digits">2</property>
                 <property name="value-pos">right</property>
-                <signal name="format-value" handler="on_sclSoftLevel_format_value" swapped="no"/>
                 <signal name="value-changed" handler="send" swapped="no"/>
               </object>
             </child>

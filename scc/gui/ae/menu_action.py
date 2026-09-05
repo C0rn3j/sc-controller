@@ -463,7 +463,7 @@ class MenuActionCofC(UserDataManager):
 			spinner.get_buffer().set_text(str(val), -1)
 		return True
 
-	def on_sclMenuSize_format_value(self, scale, val):
+	def on_sclMenuSize_format_value(self, scale, val, *a):
 		cbm = self.builder.get_object("cbMenuType")
 		menu_type = cbm.get_model().get_value(cbm.get_active_iter(), 1)
 		if menu_type == "radialmenu":
