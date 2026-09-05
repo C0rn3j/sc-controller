@@ -12,7 +12,6 @@
     <property name="width-request">650</property>
     <property name="role">action-editor</property>
     <property name="resizable">0</property>
-    <property name="window-position">center-on-parent</property>
     <property name="destroy-with-parent">1</property>
     <signal name="close-request" handler="on_Dialog_close_request" swapped="no"/>
     <signal name="key-press-event" handler="on_window_key_press_event" swapped="no"/>

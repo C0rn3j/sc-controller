@@ -363,7 +363,6 @@
   </object>
   <object class="GtkWindow" id="window">
     <property name="resizable">0</property>
-    <property name="window-position">center</property>
     <signal name="close-request" handler="on_window_close_request" swapped="no"/>
     <signal name="key-press-event" handler="on_window_key_press_event" swapped="no"/>
     <property name="child">

@@ -3,7 +3,6 @@
   <requires lib="gtk" version="4.0"/>
   <object class="GtkWindow" id="KeyGrab">
     <property name="resizable">0</property>
-    <property name="window-position">center-on-parent</property>
     <property name="destroy-with-parent">1</property>
     <signal name="destroy" handler="on_KeyGrab_destroy" swapped="no"/>
     <signal name="key-press-event" handler="on_keyGrab_key_press_event" swapped="no"/>

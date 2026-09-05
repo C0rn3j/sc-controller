@@ -3,7 +3,6 @@
   <requires lib="gtk" version="4.0"/>
   <object class="GtkDialog" id="Dialog">
     <property name="title" translatable="yes">About SC Controller</property>
-    <property name="window-position">center-on-parent</property>
     <property name="icon">../images/sc-controller-small.svg</property>
     <signal name="response" handler="on_dialog_response" swapped="no"/>
     <child internal-child="content_area">
