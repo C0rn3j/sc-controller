@@ -1322,7 +1322,7 @@ or even crash.</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">20</property>
                         <property name="vexpand">1</property>
-                        <property name="shadow-type">in</property>
+                        <property name="has-frame">1</property>
                         <property name="child">
                           <object class="GtkTreeView" id="tvControllers">
                             <property name="focusable">1</property>
@@ -1577,7 +1577,7 @@ on network can connect and remote-control this computer as additional gamepad.
                         <property name="margin-top">5</property>
                         <property name="margin-bottom">5</property>
                         <property name="vexpand">1</property>
-                        <property name="shadow-type">in</property>
+                        <property name="has-frame">1</property>
                         <property name="child">
                           <object class="GtkTreeView" id="tvItems">
                             <property name="focusable">1</property>

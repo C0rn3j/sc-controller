@@ -22,7 +22,7 @@
         <property name="height-request">150</property>
         <property name="focusable">1</property>
         <property name="margin-top">5</property>
-        <property name="shadow-type">in</property>
+        <property name="has-frame">1</property>
         <property name="child">
           <object class="GtkTextView" id="txCustomAction">
             <property name="focusable">1</property>
