@@ -120,6 +120,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.builder.add_from_file(os.path.join(self.gladepath, "app.glade"))
 		self.builder.connect_signals(self)
 		self.window = self.builder.get_object("window")
+		for menu_id in ("mnuImage", "mnuPS", "mnuPopup", "mnuTray"):
+			self.builder.get_object(menu_id).set_parent(self.window)
 		self.add_window(self.window)
 		self.window.set_title(_("SC Controller"))
 		self.ribar = None
@@ -474,7 +476,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		mnuEPress.set_visible(for_id in (SCPads.LPAD, SCPads.RPAD, SCPads.CPAD, SCSticks.LSTICK, SCSticks.RSTICK))
 		mnuEPressS.set_visible(mnuEPress.get_visible())
 
-		mnuPopup.popup(None, None, None, None, 3, Gtk.get_current_event_time())
+		mnuPopup.popup()
 
 	def save_config(self) -> None:
 		self.config.save()
@@ -817,7 +819,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 	def on_background_button_press(self, trash, event):
 		if event.button == 3:
 			mnuImage = self.builder.get_object("mnuImage")
-			mnuImage.popup(None, None, None, None, 3, Gtk.get_current_event_time())
+			mnuImage.popup()
 
 	def on_mnu_change_background_image(self, mnu, *a):
 		command, filename = mnu.get_name().split(",")
@@ -1256,7 +1258,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 		mnuPS = self.builder.get_object("mnuPS")
 		mnuPS.ps = ps
-		mnuPS.popup(None, None, None, None, 3, Gtk.get_current_event_time())
+		mnuPS.popup()
 
 	def on_mnuConfigureController_activate(self, *a) -> None:
 		from scc.gui.controller_settings import ControllerSettings

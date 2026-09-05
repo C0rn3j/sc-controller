@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <interface>
   <requires lib="gtk" version="4.0"/>
   <object class="GtkTextBuffer" id="buffRawData">
@@ -90,7 +90,7 @@
                     <property name="label" translatable="yes">Controller Device</property>
                     <property name="xalign">0</property>
                     <attributes>
-                      <attribute name="weight" value="bold"></attribute>
+                      <attribute name="weight" value="bold"/>
                     </attributes>
                     <layout>
                       <property name="column">0</property>
@@ -268,7 +268,7 @@ Please, select options that are best describing controller you are configuring.<
                     <property name="label" translatable="yes">Sticks</property>
                     <property name="xalign">0</property>
                     <attributes>
-                      <attribute name="weight" value="bold"></attribute>
+                      <attribute name="weight" value="bold"/>
                     </attributes>
                     <layout>
                       <property name="column">0</property>
@@ -284,7 +284,7 @@ Please, select options that are best describing controller you are configuring.<
                     <property name="label" translatable="yes">Labels</property>
                     <property name="xalign">0</property>
                     <attributes>
-                      <attribute name="weight" value="bold"></attribute>
+                      <attribute name="weight" value="bold"/>
                     </attributes>
                     <layout>
                       <property name="column">0</property>
@@ -420,7 +420,7 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                     <property name="max-width-chars">60</property>
                     <property name="xalign">1</property>
                     <attributes>
-                      <attribute name="style" value="italic"></attribute>
+                      <attribute name="style" value="italic"/>
                     </attributes>
                     <layout>
                       <property name="column">0</property>
@@ -632,7 +632,7 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                       <object class="GtkLabel" id="lblAdditionalOptions">
                         <property name="label" translatable="yes">Advanced Options</property>
                         <attributes>
-                          <attribute name="weight" value="bold"></attribute>
+                          <attribute name="weight" value="bold"/>
                         </attributes>
                       </object>
                     </child>
@@ -657,7 +657,7 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                       <object class="GtkLabel" id="lblRawData">
                         <property name="label" translatable="yes">Display Raw Data</property>
                         <attributes>
-                          <attribute name="weight" value="bold"></attribute>
+                          <attribute name="weight" value="bold"/>
                         </attributes>
                       </object>
                     </child>
@@ -737,7 +737,7 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
 
 That means your account lacks permissons needed to read controller exclusively. You can still use controller in evdev mode, but you may have trouble with some games detecting it twice.
 
-&lt;a href=&quot;https://github.com/C0rn3j/sc-controller/wiki/Evdev-and-HID-mode-for-non-steam-controllers&quot;&gt;Click here&lt;/a&gt; for more info.</property>
+&lt;a href="https://github.com/C0rn3j/sc-controller/wiki/Evdev-and-HID-mode-for-non-steam-controllers"&gt;Click here&lt;/a&gt; for more info.</property>
                                 <property name="use-markup">1</property>
                                 <property name="justify">fill</property>
                                 <property name="wrap">1</property>
@@ -784,7 +784,7 @@ That means your account lacks permissons needed to read controller exclusively. 
 
 SC Controller supports DS4 controllers automatically
 and requires no additional configuration. All you need
-is to make sure that the &quot;DS4 Controller Support&quot; checkbox
+is to make sure that the "DS4 Controller Support" checkbox
 is enabled in the Settings or here:</property>
                     <property name="use-markup">1</property>
                     <property name="wrap">1</property>
@@ -809,7 +809,7 @@ is enabled in the Settings or here:</property>
                         <property name="mnemonic-widget">cbDS4</property>
                         <property name="xalign">0</property>
                         <attributes>
-                          <attribute name="weight" value="bold"></attribute>
+                          <attribute name="weight" value="bold"/>
                         </attributes>
                       </object>
                     </child>
@@ -824,7 +824,7 @@ is enabled in the Settings or here:</property>
                     <property name="hexpand">1</property>
                     <property name="label" translatable="yes">Change will be applied after emulation is restarted.
 If you have any games running, restarting emulation will
-&quot;unplug&quot; virtual gamepad, what may cause them to ignore
+"unplug" virtual gamepad, what may cause them to ignore
 future inputs or even crash.</property>
                     <property name="use-markup">1</property>
                     <property name="wrap">1</property>
@@ -916,7 +916,7 @@ future inputs or even crash.</property>
             <property name="margin-bottom">25</property>
             <property name="label" translatable="yes">Press button...</property>
             <attributes>
-              <attribute name="weight" value="bold"></attribute>
+              <attribute name="weight" value="bold"/>
             </attributes>
           </object>
         </child>
@@ -985,26 +985,25 @@ future inputs or even crash.</property>
       </row>
     </data>
   </object>
-  <object class="GtkMenu" id="mnuStick">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <child>
-      <object class="GtkMenuItem" id="mnuStickPress">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="label" translatable="yes">Change mapping for _Pressing stick</property>
-        <property name="use-underline">True</property>
-        <signal name="activate" handler="on_mnuStickPress_activate" swapped="no"/>
+  <object class="GtkPopover" id="mnuStick">
+    <property name="child">
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkButton" id="mnuStickPress">
+            <property name="label" translatable="yes">Change mapping for _Pressing stick</property>
+            <property name="use-underline">True</property>
+            <signal name="clicked" handler="on_mnuStickPress_activate" swapped="no"/>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="mnuStickmove">
+            <property name="label" translatable="yes">Change mapping for _Moving stick</property>
+            <property name="use-underline">True</property>
+            <signal name="clicked" handler="on_mnuStickmove_activate" swapped="no"/>
+          </object>
+        </child>
       </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="mnuStickmove">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="label" translatable="yes">Change mapping for _Moving stick</property>
-        <property name="use-underline">True</property>
-        <signal name="activate" handler="on_mnuStickmove_activate" swapped="no"/>
-      </object>
-    </child>
+    </property>
   </object>
 </interface>

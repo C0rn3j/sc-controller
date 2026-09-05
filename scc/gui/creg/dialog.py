@@ -76,6 +76,7 @@ class ControllerRegistration(Editor):
 
 	def setup_widgets(self):
 		Editor.setup_widgets(self)
+		self.builder.get_object("mnuStick").set_parent(self.window)
 		cursors = {}
 		for axis in self._axis_data:
 			if "trig" in axis.name:
@@ -699,7 +700,7 @@ class ControllerRegistration(Editor):
 				mnuStick = self.builder.get_object("mnuStick")
 				mnuStick._what = "LSTICKPRESS" if what == "LSTICK" else what
 				mnuStick._axes = [self._axis_data[index] for index in axes]
-				mnuStick.popup(None, None, None, None, 1, Gtk.get_current_event_time())
+				mnuStick.popup()
 			elif what in TRIGGER_AREAS:
 				self._grabber = TriggerGrabber(self, self._axis_data[TRIGGER_AREAS[what]])
 			elif hasattr(SCButtons, what):
