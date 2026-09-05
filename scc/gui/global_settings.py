@@ -763,6 +763,9 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 
 	def on_btRemoveController_clicked(self, *a):
 		tvControllers = self.builder.get_object("tvControllers")
+		model, iter = tvControllers.get_selection().get_selected()
+		if iter is None:
+			return
 		d = Gtk.MessageDialog(
 			transient_for=self.window,
 			modal=True,
@@ -773,7 +776,6 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		d.format_secondary_text(_("You'll lose all settings for it"))
 		if d.run() == -8:
 			# Yes
-			model, iter = tvControllers.get_selection().get_selected()
 			path = model[iter][0]
 			try:
 				os.unlink(path)
@@ -782,6 +784,12 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			self._needs_restart()
 			self.load_controllers()
 		d.destroy()
+
+	def on_tvControllers_cursor_changed(self, *a):
+		"""Enable controller removal only while a controller is selected."""
+		tvControllers = self.builder.get_object("tvControllers")
+		model, iter = tvControllers.get_selection().get_selected()
+		self.builder.get_object("btRemoveController").set_sensitive(iter is not None)
 
 	def load_controllers(self, *a):
 		lstControllers = self.builder.get_object("lstControllers")
@@ -801,3 +809,4 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 					continue
 				path = os.path.join(get_config_path(), "devices", filename)
 				lstControllers.append((path, name, self._get_gamepad_icon(drv)))
+		self.on_tvControllers_cursor_changed()

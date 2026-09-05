@@ -1542,7 +1542,9 @@ or even crash.</property>
                         <property name="model">lstControllers</property>
                         <property name="headers-visible">False</property>
                         <child internal-child="selection">
-                          <object class="GtkTreeSelection" id="tsControllers"/>
+                          <object class="GtkTreeSelection" id="tsControllers">
+                            <signal name="changed" handler="on_tvControllers_cursor_changed" swapped="no"/>
+                          </object>
                         </child>
                         <child>
                           <object class="GtkTreeViewColumn" id="tcDevice">
@@ -1695,6 +1697,7 @@ or even crash.</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
+                        <property name="sensitive">False</property>
                         <property name="hexpand">False</property>
                         <property name="vexpand">False</property>
                         <signal name="clicked" handler="on_btRemoveController_clicked" swapped="no"/>
