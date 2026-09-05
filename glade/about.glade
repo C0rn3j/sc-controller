@@ -89,14 +89,23 @@ See the &lt;a href=&quot;http://www.gnu.org/licenses/old-licenses/gpl-2.0.html&q
         <property name="can-focus">False</property>
         <property name="layout-style">end</property>
         <child>
-          <object class="GtkImage" id="imgClose">
-            <property name="icon-name">window-close-symbolic</property>
-          </object>
           <object class="GtkButton" id="btnClose">
-            <property name="label" translatable="yes">_Close</property>
-            <property name="use-underline">1</property>
-            <property name="image">imgClose</property>
-            <property name="always-show-image">True</property>
+            <property name="child">
+              <object class="GtkBox">
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkImage" id="imgClose">
+                    <property name="icon-name">window-close-symbolic</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label" translatable="yes">_Close</property>
+                    <property name="use-underline">1</property>
+                  </object>
+                </child>
+              </object>
+            </property>
             <property name="focusable">1</property>
             <property name="receives-default">1</property>
             <signal name="clicked" handler="on_dialog_response" swapped="no"/>
