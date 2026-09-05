@@ -224,7 +224,6 @@ Please, select your controller from list bellow and click Next.</property>
           <object class="GtkStackPage">
             <property name="name">page1</property>
             <property name="title" translatable="yes">page1</property>
-            <property name="position">1</property>
             <property name="child">
               <object class="GtkGrid" id="grSettings">
                 <property name="margin-start">10</property>
@@ -386,7 +385,6 @@ Please, select options that are best describing controller you are configuring.<
           <object class="GtkStackPage">
             <property name="name">page2</property>
             <property name="title" translatable="yes">page2</property>
-            <property name="position">2</property>
             <property name="child">
               <object class="GtkGrid" id="grBindings">
                 <property name="margin-bottom">10</property>
@@ -774,7 +772,6 @@ That means your account lacks permissons needed to read controller exclusively. 
           <object class="GtkStackPage">
             <property name="name">page3</property>
             <property name="title" translatable="yes">page3</property>
-            <property name="position">3</property>
             <property name="child">
               <object class="GtkGrid" id="grDS4">
                 <property name="name">01</property>

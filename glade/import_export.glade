@@ -234,7 +234,6 @@
             <child>
               <object class="GtkStackPage">
                 <property name="title" translatable="yes">Export Profile</property>
-                <property name="position">1</property>
                 <property name="child">
                   <object class="GtkGrid" id="grSelectProfile">
                     <property name="name">grSelectProfile</property>
@@ -325,7 +324,6 @@
             <child>
               <object class="GtkStackPage">
                 <property name="title" translatable="yes">Export Profile</property>
-                <property name="position">2</property>
                 <property name="child">
                   <object class="GtkGrid" id="grMakePackage">
                     <property name="margin-start">20</property>
@@ -443,7 +441,6 @@ Please, select what should be packaged along with exported profile.</property>
             <child>
               <object class="GtkStackPage">
                 <property name="title" translatable="yes">Import Steam Profile</property>
-                <property name="position">3</property>
                 <property name="child">
                   <object class="GtkGrid" id="grVdfImport">
                     <property name="name">grVdfImport</property>
@@ -559,7 +556,6 @@ Please, select what should be packaged along with exported profile.</property>
             <child>
               <object class="GtkStackPage">
                 <property name="title" translatable="yes">Import Steam Profile</property>
-                <property name="position">4</property>
                 <property name="child">
                   <object class="GtkGrid" id="grVdfImportFinished">
                     <property name="name">grVdfImportFinished</property>
@@ -740,7 +736,6 @@ Please, select what should be packaged along with exported profile.</property>
             <child>
               <object class="GtkStackPage">
                 <property name="title" translatable="yes">Import</property>
-                <property name="position">5</property>
                 <property name="child">
                   <object class="GtkGrid" id="grShellCommands">
                     <property name="name">grImportShellCommands</property>
@@ -841,7 +836,6 @@ what command does before clicking &quot;Continue.&quot;</property>
             <child>
               <object class="GtkStackPage">
                 <property name="title" translatable="yes">Import</property>
-                <property name="position">6</property>
                 <property name="child">
                   <object class="GtkGrid" id="grSccImportFinished">
                     <property name="name">grImportFailed</property>
@@ -1026,7 +1020,6 @@ and profile switches in imported profile may not work as expected.</property>
             <child>
               <object class="GtkStackPage">
                 <property name="title" translatable="yes">Import</property>
-                <property name="position">7</property>
                 <property name="child">
                   <object class="GtkGrid" id="grImportFailed">
                     <property name="name">grImportFailed</property>
