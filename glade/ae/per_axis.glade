@@ -13,7 +13,7 @@
         <property name="receives-default">1</property>
         <property name="hexpand">1</property>
         <signal name="clicked" handler="on_btAxisX_clicked" swapped="no"/>
-        <child>
+        <property name="child">
           <object class="GtkBox" id="box8">
             <child>
               <object class="GtkLabel" id="label6">
@@ -32,7 +32,7 @@
               </object>
             </child>
           </object>
-        </child>
+        </property>
       </object>
     </child>
     <child>
@@ -41,7 +41,7 @@
         <property name="receives-default">1</property>
         <property name="hexpand">1</property>
         <signal name="clicked" handler="on_btAxisY_clicked" swapped="no"/>
-        <child>
+        <property name="child">
           <object class="GtkBox" id="box9">
             <child>
               <object class="GtkLabel" id="label8">
@@ -60,7 +60,7 @@
               </object>
             </child>
           </object>
-        </child>
+        </property>
       </object>
     </child>
   </object>

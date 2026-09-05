@@ -193,7 +193,7 @@
       <object class="GtkCheckButton" id="cbInvertY">
         <property name="focusable">1</property>
         <signal name="toggled" handler="cbInvertY_toggled_cb" swapped="no"/>
-        <child>
+        <property name="child">
           <object class="GtkLabel" id="label3">
             <property name="label" translatable="yes">Invert Y Axis</property>
             <property name="xalign">0</property>
@@ -201,7 +201,7 @@
               <attribute name="weight" value="bold"></attribute>
             </attributes>
           </object>
-        </child>
+        </property>
         <layout>
           <property name="column">0</property>
           <property name="row">2</property>
@@ -213,7 +213,7 @@
       <object class="GtkCheckButton" id="cbInvertGyro">
         <property name="focusable">1</property>
         <signal name="toggled" handler="on_cbInvertGyro_toggled" swapped="no"/>
-        <child>
+        <property name="child">
           <object class="GtkLabel" id="label4">
             <property name="label" translatable="yes">Button disables Gyro</property>
             <property name="xalign">0</property>
@@ -221,7 +221,7 @@
               <attribute name="weight" value="bold"></attribute>
             </attributes>
           </object>
-        </child>
+        </property>
         <layout>
           <property name="column">0</property>
           <property name="row">5</property>

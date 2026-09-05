@@ -142,11 +142,11 @@
                 <property name="focusable">1</property>
                 <property name="receives-default">1</property>
                 <signal name="clicked" handler="on_btClearRadius_clicked" swapped="no"/>
-                <child>
+                <property name="child">
                   <object class="GtkImage" id="image3">
                     <property name="icon-name">edit-clear-symbolic</property>
                   </object>
-                </child>
+                </property>
                 <layout>
                   <property name="column">2</property>
                   <property name="row">3</property>
@@ -203,11 +203,11 @@
                 <property name="focusable">1</property>
                 <property name="receives-default">1</property>
                 <signal name="clicked" handler="on_clearb_clicked" swapped="no"/>
-                <child>
+                <property name="child">
                   <object class="GtkImage" id="image2">
                     <property name="icon-name">edit-clear-symbolic</property>
                   </object>
-                </child>
+                </property>
                 <layout>
                   <property name="column">2</property>
                   <property name="row">1</property>
@@ -219,11 +219,11 @@
                 <property name="focusable">1</property>
                 <property name="receives-default">1</property>
                 <signal name="clicked" handler="on_clearb_clicked" swapped="no"/>
-                <child>
+                <property name="child">
                   <object class="GtkImage" id="image1">
                     <property name="icon-name">edit-clear-symbolic</property>
                   </object>
-                </child>
+                </property>
                 <layout>
                   <property name="column">2</property>
                   <property name="row">2</property>
