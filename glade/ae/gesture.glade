@@ -28,7 +28,7 @@
     </child>
     <child>
       <object class="GtkButton" id="btChangeGesture">
-        <property name="label" translatable="1">_Change</property>
+        <property name="label" translatable="yes">_Change</property>
         <property name="focusable">1</property>
         <property name="receives-default">1</property>
         <property name="image">imgChangeGesture</property>
@@ -43,7 +43,7 @@
     </child>
     <child>
       <object class="GtkCheckButton" id="cbIgnoreStroke">
-        <property name="label" translatable="1">Ignore Stroke _Length</property>
+        <property name="label" translatable="yes">Ignore Stroke _Length</property>
         <property name="focusable">1</property>
         <property name="margin-top">5</property>
         <property name="use-underline">1</property>
@@ -119,7 +119,7 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="btnStartGestureOver">
-                    <property name="label" translatable="1">Start _Over (Y)</property>
+                    <property name="label" translatable="yes">Start _Over (Y)</property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
                     <property name="image">imgStartOver</property>
@@ -129,7 +129,7 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="btnConfirmGesutre">
-                    <property name="label" translatable="1">_Use (A)</property>
+                    <property name="label" translatable="yes">_Use (A)</property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
                     <property name="margin-start">10</property>
@@ -168,7 +168,7 @@
       <object class="GtkHeaderBar" id="hb1">
         <child type="title">
           <object class="GtkLabel" id="lblGestureGrabberTitle">
-            <property name="label" translatable="1">Draw gesture on LEFT pad...</property>
+            <property name="label" translatable="yes">Draw gesture on LEFT pad...</property>
             <attributes>
               <attribute name="weight" value="bold"></attribute>
             </attributes>
@@ -194,7 +194,7 @@
         <property name="margin-bottom">5</property>
         <child>
           <object class="GtkLabel" id="lblPrecision">
-            <property name="label" translatable="1">Matching Precision</property>
+            <property name="label" translatable="yes">Matching Precision</property>
             <attributes>
               <attribute name="weight" value="bold"></attribute>
             </attributes>
@@ -236,7 +236,7 @@
         <property name="margin-end">10</property>
         <property name="margin-top">10</property>
         <property name="margin-bottom">10</property>
-        <property name="label" translatable="1">message</property>
+        <property name="label" translatable="yes">message</property>
         <property name="xalign">0</property>
         <attributes>
           <attribute name="weight" value="semibold"></attribute>
@@ -259,7 +259,7 @@
             </child>
             <child>
               <object class="GtkTreeViewColumn" id="tvcGesture">
-                <property name="title" translatable="1">Gesture</property>
+                <property name="title" translatable="yes">Gesture</property>
                 <child>
                   <object class="GtkCellRendererText" id="crGesture"/>
                   <attributes>
@@ -270,7 +270,7 @@
             </child>
             <child>
               <object class="GtkTreeViewColumn" id="tvcAction">
-                <property name="title" translatable="1">Action</property>
+                <property name="title" translatable="yes">Action</property>
                 <child>
                   <object class="GtkCellRendererText" id="crAction"/>
                   <attributes>
@@ -290,7 +290,7 @@
           <object class="GtkButton" id="btEditAction">
             <property name="sensitive">0</property>
             <property name="is-important">True</property>
-            <property name="label" translatable="1">Edit</property>
+            <property name="label" translatable="yes">Edit</property>
             <property name="use-underline">1</property>
             <property name="icon-name">document-edit-symbolic</property>
             <signal name="clicked" handler="on_btEditAction_clicked" swapped="no"/>
@@ -305,7 +305,7 @@
         <child>
           <object class="GtkButton" id="btRemove">
             <property name="sensitive">0</property>
-            <property name="label" translatable="1">_Remove</property>
+            <property name="label" translatable="yes">_Remove</property>
             <property name="use-underline">1</property>
             <property name="icon-name">list-remove-symbolic</property>
             <signal name="clicked" handler="on_btRemove_clicked" swapped="no"/>
@@ -313,7 +313,7 @@
         </child>
         <child>
           <object class="GtkButton" id="btAdd">
-            <property name="label" translatable="1">_Add</property>
+            <property name="label" translatable="yes">_Add</property>
             <property name="use-underline">1</property>
             <property name="icon-name">list-add-symbolic</property>
             <signal name="clicked" handler="on_btAdd_clicked" swapped="no"/>

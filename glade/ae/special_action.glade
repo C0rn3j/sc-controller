@@ -291,7 +291,7 @@
       <object class="GtkLabel" id="label5">
         <property name="margin-top">10</property>
         <property name="margin-bottom">10</property>
-        <property name="label" translatable="1">Action</property>
+        <property name="label" translatable="yes">Action</property>
         <property name="xalign">0</property>
         <attributes>
           <attribute name="weight" value="bold"></attribute>
@@ -322,7 +322,7 @@
         <child>
           <object class="GtkStackPage">
             <property name="name">page4</property>
-            <property name="title" translatable="1">page4</property>
+            <property name="title" translatable="yes">page4</property>
             <property name="child">
               <object class="GtkFixed" id="nothing"/>
             </property>
@@ -331,14 +331,14 @@
         <child>
           <object class="GtkStackPage">
             <property name="name">vbCommand</property>
-            <property name="title" translatable="1">page3</property>
+            <property name="title" translatable="yes">page3</property>
             <property name="position">1</property>
             <property name="child">
               <object class="GtkBox" id="vbShell">
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkLabel" id="label1">
-                    <property name="label" translatable="1">Command</property>
+                    <property name="label" translatable="yes">Command</property>
                     <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"></attribute>
@@ -360,14 +360,14 @@
         <child>
           <object class="GtkStackPage">
             <property name="name">vbProfile</property>
-            <property name="title" translatable="1">page0</property>
+            <property name="title" translatable="yes">page0</property>
             <property name="position">2</property>
             <property name="child">
               <object class="GtkBox" id="vbProfile">
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkLabel" id="label2">
-                    <property name="label" translatable="1">Profile</property>
+                    <property name="label" translatable="yes">Profile</property>
                     <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"></attribute>
@@ -404,7 +404,7 @@
         <child>
           <object class="GtkStackPage">
             <property name="name">page0</property>
-            <property name="title" translatable="1">page0</property>
+            <property name="title" translatable="yes">page0</property>
             <property name="position">3</property>
             <property name="child">
               <object class="GtkBox" id="vbOSD">
@@ -412,7 +412,7 @@
                 <property name="spacing">1</property>
                 <child>
                   <object class="GtkLabel" id="label3">
-                    <property name="label" translatable="1">Text to Display</property>
+                    <property name="label" translatable="yes">Text to Display</property>
                     <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"></attribute>
@@ -430,7 +430,7 @@
                 <child>
                   <object class="GtkLabel" id="label7">
                     <property name="margin-top">5</property>
-                    <property name="label" translatable="1">Display Time</property>
+                    <property name="label" translatable="yes">Display Time</property>
                     <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"></attribute>
@@ -452,7 +452,7 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="label9">
-                    <property name="label" translatable="1">Size</property>
+                    <property name="label" translatable="yes">Size</property>
                     <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"></attribute>
@@ -481,14 +481,14 @@
         <child>
           <object class="GtkStackPage">
             <property name="name">page1</property>
-            <property name="title" translatable="1">page1</property>
+            <property name="title" translatable="yes">page1</property>
             <property name="position">4</property>
             <property name="child">
               <object class="GtkGrid" id="grMenu">
                 <child>
                   <object class="GtkLabel" id="label4">
                     <property name="margin-bottom">5</property>
-                    <property name="label" translatable="1">Menu Type</property>
+                    <property name="label" translatable="yes">Menu Type</property>
                     <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"></attribute>
@@ -523,7 +523,7 @@
                   <object class="GtkLabel" id="label6">
                     <property name="margin-top">10</property>
                     <property name="margin-bottom">5</property>
-                    <property name="label" translatable="1">Menu</property>
+                    <property name="label" translatable="yes">Menu</property>
                     <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"></attribute>
@@ -559,7 +559,7 @@
                     <property name="icon-name">document-edit-symbolic</property>
                   </object>
                   <object class="GtkButton" id="btEditMenu">
-                    <property name="label" translatable="1">_Edit</property>
+                    <property name="label" translatable="yes">_Edit</property>
                     <property name="use-underline">1</property>
                     <property name="image">imgEditMenu</property>
                     <property name="always-show-image">True</property>
@@ -584,7 +584,7 @@
                     </child>
                     <child type="label">
                       <object class="GtkLabel" id="label67">
-                        <property name="label" translatable="1">Control Options...</property>
+                        <property name="label" translatable="yes">Control Options...</property>
                         <attributes>
                           <attribute name="weight" value="bold"></attribute>
                         </attributes>
@@ -609,7 +609,7 @@
                           <object class="GtkLabel" id="lblControlWith">
                             <property name="margin-end">20</property>
                             <property name="margin-bottom">5</property>
-                            <property name="label" translatable="1">Control Menu With</property>
+                            <property name="label" translatable="yes">Control Menu With</property>
                             <property name="xalign">0</property>
                             <layout>
                               <property name="column">0</property>
@@ -621,7 +621,7 @@
                           <object class="GtkLabel" id="lblConfirmWith">
                             <property name="margin-end">20</property>
                             <property name="margin-bottom">5</property>
-                            <property name="label" translatable="1">Confirm Button</property>
+                            <property name="label" translatable="yes">Confirm Button</property>
                             <property name="xalign">0</property>
                             <layout>
                               <property name="column">0</property>
@@ -633,7 +633,7 @@
                           <object class="GtkLabel" id="lblCancelWith">
                             <property name="margin-end">20</property>
                             <property name="margin-bottom">5</property>
-                            <property name="label" translatable="1">Cancel Button</property>
+                            <property name="label" translatable="yes">Cancel Button</property>
                             <property name="xalign">0</property>
                             <layout>
                               <property name="column">0</property>
@@ -648,7 +648,7 @@
                             <signal name="toggled" handler="on_cbMenus_changed" swapped="no"/>
                             <child>
                               <object class="GtkLabel" id="lblMenuAutoConfirm">
-                                <property name="label" translatable="1">Confirm selection by releasing the button</property>
+                                <property name="label" translatable="yes">Confirm selection by releasing the button</property>
                               </object>
                             </child>
                             <layout>
@@ -746,7 +746,7 @@
                     </child>
                     <child type="label">
                       <object class="GtkLabel" id="label8">
-                        <property name="label" translatable="1">Menu Position...</property>
+                        <property name="label" translatable="yes">Menu Position...</property>
                         <attributes>
                           <attribute name="weight" value="bold"></attribute>
                         </attributes>
@@ -893,7 +893,7 @@
       <object class="GtkMenuItem" id="mnuMenuNew">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_New Menu</property>
+        <property name="label" translatable="yes">_New Menu</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuMenuNew_activate" swapped="no"/>
       </object>
@@ -902,7 +902,7 @@
       <object class="GtkMenuItem" id="mnuMenuCopy">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_Copy Menu</property>
+        <property name="label" translatable="yes">_Copy Menu</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuMenuCopy_activate" swapped="no"/>
       </object>
@@ -911,7 +911,7 @@
       <object class="GtkMenuItem" id="mnuMenuRename">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_Rename Menu</property>
+        <property name="label" translatable="yes">_Rename Menu</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuMenuRename_activate" swapped="no"/>
       </object>
@@ -920,7 +920,7 @@
       <object class="GtkMenuItem" id="mnuMenuDelete">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_Delete Menu</property>
+        <property name="label" translatable="yes">_Delete Menu</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuMenuDelete_activate" swapped="no"/>
       </object>

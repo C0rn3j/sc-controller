@@ -6,7 +6,7 @@
       <object class="GtkLabel" id="label9">
         <property name="margin-top">5</property>
         <property name="margin-bottom">5</property>
-        <property name="label" translatable="1">click on axis or trigger</property>
+        <property name="label" translatable="yes">click on axis or trigger</property>
         <property name="xalign">1</property>
         <attributes>
           <attribute name="style" value="italic"></attribute>

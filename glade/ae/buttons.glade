@@ -31,7 +31,7 @@
                         <signal name="toggled" handler="on_cbToggle_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="lblToggle">
-                            <property name="label" translatable="1">Toggle Button</property>
+                            <property name="label" translatable="yes">Toggle Button</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>
@@ -46,7 +46,7 @@
                         <signal name="toggled" handler="on_cbRepeat_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="lblRepeat">
-                            <property name="label" translatable="1">Repeat</property>
+                            <property name="label" translatable="yes">Repeat</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>
@@ -66,7 +66,7 @@
                     <property name="no-show-all">True</property>
                     <property name="margin-top">5</property>
                     <property name="margin-bottom">5</property>
-                    <property name="label" translatable="1">click any button or...</property>
+                    <property name="label" translatable="yes">click any button or...</property>
                     <attributes>
                       <attribute name="style" value="italic"></attribute>
                     </attributes>
@@ -76,7 +76,7 @@
                   <object class="GtkBox" id="vbWeirdSetOfBoxes3">
                     <child>
                       <object class="GtkButton" id="btnGrabKey">
-                        <property name="label" translatable="1">Grab a key</property>
+                        <property name="label" translatable="yes">Grab a key</property>
                         <property name="focusable">1</property>
                         <property name="receives-default">1</property>
                         <property name="hexpand">1</property>

@@ -78,7 +78,7 @@
             <child>
               <object class="GtkLabel" id="label10">
                 <property name="width-request">200</property>
-                <property name="label" translatable="1">Partially Pressed Action</property>
+                <property name="label" translatable="yes">Partially Pressed Action</property>
                 <property name="xalign">0</property>
               </object>
             </child>
@@ -91,7 +91,7 @@
             <child>
               <object class="GtkLabel" id="lblPartPressed">
                 <property name="hexpand">1</property>
-                <property name="label" translatable="1">(...)</property>
+                <property name="label" translatable="yes">(...)</property>
               </object>
             </child>
           </object>
@@ -114,7 +114,7 @@
             <child>
               <object class="GtkLabel" id="label11">
                 <property name="width-request">200</property>
-                <property name="label" translatable="1">Fully Pressed Action</property>
+                <property name="label" translatable="yes">Fully Pressed Action</property>
                 <property name="xalign">0</property>
               </object>
             </child>
@@ -127,7 +127,7 @@
             <child>
               <object class="GtkLabel" id="lblFullPressed">
                 <property name="hexpand">1</property>
-                <property name="label" translatable="1">(not set)</property>
+                <property name="label" translatable="yes">(not set)</property>
               </object>
             </child>
           </object>
@@ -210,7 +210,7 @@
             <child>
               <object class="GtkLabel" id="label8">
                 <property name="width-request">200</property>
-                <property name="label" translatable="1">Analog Output</property>
+                <property name="label" translatable="yes">Analog Output</property>
                 <property name="xalign">0</property>
               </object>
             </child>
@@ -220,7 +220,7 @@
             <child>
               <object class="GtkLabel" id="lblAnalog">
                 <property name="hexpand">1</property>
-                <property name="label" translatable="1">(disabled)</property>
+                <property name="label" translatable="yes">(disabled)</property>
               </object>
             </child>
           </object>
@@ -253,7 +253,7 @@
     <child>
       <object class="GtkLabel" id="label6">
         <property name="width-request">250</property>
-        <property name="label" translatable="1">Analog Range Start</property>
+        <property name="label" translatable="yes">Analog Range Start</property>
         <property name="xalign">0</property>
         <attributes>
           <attribute name="weight" value="bold"></attribute>
@@ -303,7 +303,7 @@
     <child>
       <object class="GtkLabel" id="label1">
         <property name="width-request">250</property>
-        <property name="label" translatable="1">Analog Range End</property>
+        <property name="label" translatable="yes">Analog Range End</property>
         <property name="xalign">0</property>
         <attributes>
           <attribute name="weight" value="bold"></attribute>
@@ -368,7 +368,7 @@
     <child>
       <object class="GtkLabel" id="label5">
         <property name="width-request">250</property>
-        <property name="label" translatable="1">Fully Pressed Level</property>
+        <property name="label" translatable="yes">Fully Pressed Level</property>
         <property name="xalign">0</property>
         <attributes>
           <attribute name="weight" value="bold"></attribute>
@@ -400,7 +400,7 @@
     <child>
       <object class="GtkLabel" id="label4">
         <property name="width-request">250</property>
-        <property name="label" translatable="1">Partially Pressed Level</property>
+        <property name="label" translatable="yes">Partially Pressed Level</property>
         <property name="xalign">0</property>
         <attributes>
           <attribute name="weight" value="bold"></attribute>
@@ -415,7 +415,7 @@
     <child>
       <object class="GtkLabel" id="label3">
         <property name="width-request">200</property>
-        <property name="label" translatable="1">Dual Stage Trigger Style</property>
+        <property name="label" translatable="yes">Dual Stage Trigger Style</property>
         <property name="xalign">0</property>
         <attributes>
           <attribute name="weight" value="bold"></attribute>
@@ -449,7 +449,7 @@
     <child>
       <object class="GtkLabel" id="label2">
         <property name="width-request">200</property>
-        <property name="label" translatable="1">Hip Fire Delay</property>
+        <property name="label" translatable="yes">Hip Fire Delay</property>
         <property name="xalign">0</property>
         <attributes>
           <attribute name="weight" value="bold"></attribute>

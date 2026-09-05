@@ -70,7 +70,7 @@
                     </child>
                     <child>
                       <object class="GtkTreeViewColumn" id="clIcon">
-                        <property name="title" translatable="1">Icon</property>
+                        <property name="title" translatable="yes">Icon</property>
                         <child>
                           <object class="GtkCellRendererText" id="crIconName"/>
                           <attributes>
@@ -106,7 +106,7 @@
                     </child>
                     <child>
                       <object class="GtkTreeViewColumn" id="clCategory">
-                        <property name="title" translatable="1">Category</property>
+                        <property name="title" translatable="yes">Category</property>
                         <child>
                           <object class="GtkCellRendererText" id="crCategory"/>
                           <attributes>
@@ -154,7 +154,7 @@
         <property name="has-subtitle">False</property>
         <child>
           <object class="GtkLinkButton" id="btUserFolder">
-            <property name="label" translatable="1">button</property>
+            <property name="label" translatable="yes">button</property>
             <property name="focusable">1</property>
             <property name="receives-default">1</property>
             <property name="relief">none</property>
@@ -167,7 +167,7 @@
             <property name="icon-name">emblem-ok-symbolic</property>
           </object>
           <object class="GtkButton" id="btOK">
-            <property name="label" translatable="1">_OK</property>
+            <property name="label" translatable="yes">_OK</property>
             <property name="use-underline">1</property>
             <property name="image">imgOK</property>
             <property name="always-show-image">True</property>

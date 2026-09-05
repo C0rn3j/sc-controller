@@ -190,7 +190,7 @@
       <object class="GtkLabel" id="label5">
         <property name="margin-top">10</property>
         <property name="margin-bottom">10</property>
-        <property name="label" translatable="1">Output</property>
+        <property name="label" translatable="yes">Output</property>
         <property name="xalign">0</property>
         <attributes>
           <attribute name="weight" value="bold"></attribute>
@@ -220,7 +220,7 @@
         <child>
           <object class="GtkStackPage">
             <property name="name">page4</property>
-            <property name="title" translatable="1">page4</property>
+            <property name="title" translatable="yes">page4</property>
             <property name="child">
               <object class="GtkFixed" id="nothing"/>
             </property>
@@ -229,7 +229,7 @@
         <child>
           <object class="GtkStackPage">
             <property name="name">page21</property>
-            <property name="title" translatable="1">page21</property>
+            <property name="title" translatable="yes">page21</property>
             <property name="position">1</property>
             <property name="child">
               <object class="GtkBox" id="vbButton">
@@ -237,7 +237,7 @@
                 <child>
                   <object class="GtkLabel" id="label91">
                     <property name="margin-bottom">10</property>
-                    <property name="label" translatable="1">Button</property>
+                    <property name="label" translatable="yes">Button</property>
                     <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"></attribute>
@@ -246,7 +246,7 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="btSingleButton">
-                    <property name="label" translatable="1">A</property>
+                    <property name="label" translatable="yes">A</property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
                     <property name="margin-start">150</property>
@@ -261,13 +261,13 @@
         <child>
           <object class="GtkStackPage">
             <property name="name">page0</property>
-            <property name="title" translatable="1">page0</property>
+            <property name="title" translatable="yes">page0</property>
             <property name="position">2</property>
             <property name="child">
               <object class="GtkGrid" id="grArea">
                 <child>
                   <object class="GtkLabel" id="lblArea">
-                    <property name="label" translatable="1">Region Options</property>
+                    <property name="label" translatable="yes">Region Options</property>
                     <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"></attribute>
@@ -284,7 +284,7 @@
                     <property name="margin-start">10</property>
                     <property name="margin-end">10</property>
                     <property name="margin-top">10</property>
-                    <property name="label" translatable="1">Type</property>
+                    <property name="label" translatable="yes">Type</property>
                     <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"></attribute>
@@ -319,7 +319,7 @@
                     <property name="margin-start">10</property>
                     <property name="margin-end">10</property>
                     <property name="margin-top">10</property>
-                    <property name="label" translatable="1">Coordinates</property>
+                    <property name="label" translatable="yes">Coordinates</property>
                     <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"></attribute>
@@ -345,7 +345,7 @@
                         <property name="focusable">1</property>
                         <child>
                           <object class="GtkLabel" id="label_n3">
-                            <property name="label" translatable="1">Pressing the Pad Clicks</property>
+                            <property name="label" translatable="yes">Pressing the Pad Clicks</property>
                             <property name="xalign">0</property>
                             <attributes>
                               <attribute name="weight" value="bold"></attribute>
@@ -360,7 +360,7 @@
                         <signal name="toggled" handler="on_cbAreaOSDEnabled_toggled" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label_n4">
-                            <property name="label" translatable="1">Display Area While Pad is Being Touched</property>
+                            <property name="label" translatable="yes">Display Area While Pad is Being Touched</property>
                             <property name="xalign">0</property>
                             <attributes>
                               <attribute name="weight" value="bold"></attribute>
@@ -376,7 +376,7 @@
                     <child>
                       <object class="GtkLabel" id="label_n6">
                         <property name="margin-top">10</property>
-                        <property name="label" translatable="1">X1</property>
+                        <property name="label" translatable="yes">X1</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">0</property>
@@ -392,7 +392,7 @@
                         <property name="margin-end">5</property>
                         <property name="margin-top">10</property>
                         <property name="hexpand">1</property>
-                        <property name="text" translatable="1">0</property>
+                        <property name="text" translatable="yes">0</property>
                         <property name="adjustment">adjAreaX1</property>
                         <signal name="focus-out-event" handler="on_sbArea_focus_out_event" swapped="no"/>
                         <signal name="output" handler="on_sbArea_output" swapped="no"/>
@@ -406,7 +406,7 @@
                     <child>
                       <object class="GtkLabel" id="label_n9">
                         <property name="margin-top">10</property>
-                        <property name="label" translatable="1">X2</property>
+                        <property name="label" translatable="yes">X2</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">2</property>
@@ -421,7 +421,7 @@
                         <property name="margin-start">5</property>
                         <property name="margin-end">5</property>
                         <property name="margin-top">10</property>
-                        <property name="text" translatable="1">0</property>
+                        <property name="text" translatable="yes">0</property>
                         <property name="adjustment">adjAreaX2</property>
                         <signal name="focus-out-event" handler="on_sbArea_focus_out_event" swapped="no"/>
                         <signal name="output" handler="on_sbArea_output" swapped="no"/>
@@ -435,7 +435,7 @@
                     <child>
                       <object class="GtkLabel" id="label_n10">
                         <property name="margin-top">10</property>
-                        <property name="label" translatable="1">Y1</property>
+                        <property name="label" translatable="yes">Y1</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">4</property>
@@ -451,7 +451,7 @@
                         <property name="margin-end">5</property>
                         <property name="margin-top">10</property>
                         <property name="hexpand">1</property>
-                        <property name="text" translatable="1">0</property>
+                        <property name="text" translatable="yes">0</property>
                         <property name="adjustment">adjAreaY1</property>
                         <signal name="focus-out-event" handler="on_sbArea_focus_out_event" swapped="no"/>
                         <signal name="output" handler="on_sbArea_output" swapped="no"/>
@@ -465,7 +465,7 @@
                     <child>
                       <object class="GtkLabel" id="label_n15">
                         <property name="margin-top">10</property>
-                        <property name="label" translatable="1">Y2</property>
+                        <property name="label" translatable="yes">Y2</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">6</property>
@@ -480,7 +480,7 @@
                         <property name="margin-start">5</property>
                         <property name="margin-end">10</property>
                         <property name="margin-top">10</property>
-                        <property name="text" translatable="1">0</property>
+                        <property name="text" translatable="yes">0</property>
                         <property name="adjustment">adjAreaY2</property>
                         <signal name="focus-out-event" handler="on_sbArea_focus_out_event" swapped="no"/>
                         <signal name="output" handler="on_sbArea_output" swapped="no"/>
@@ -564,7 +564,7 @@
         <child>
           <object class="GtkStackPage">
             <property name="name">page1</property>
-            <property name="title" translatable="1">page1</property>
+            <property name="title" translatable="yes">page1</property>
             <property name="position">3</property>
             <property name="child">
               <object class="GtkBox" id="vbMose">
@@ -572,7 +572,7 @@
                 <child>
                   <object class="GtkLabel" id="label2">
                     <property name="margin-bottom">10</property>
-                    <property name="label" translatable="1">Output As</property>
+                    <property name="label" translatable="yes">Output As</property>
                     <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"></attribute>
@@ -599,7 +599,7 @@
                     <property name="margin-start">20</property>
                     <property name="margin-end">20</property>
                     <property name="margin-top">5</property>
-                    <property name="label" translatable="1">&lt;a href=&quot;advanced://0#cbBallMode&quot;&gt;Setup or disable Trackball Mode&lt;/a&gt;</property>
+                    <property name="label" translatable="yes">&lt;a href=&quot;advanced://0#cbBallMode&quot;&gt;Setup or disable Trackball Mode&lt;/a&gt;</property>
                     <property name="use-markup">1</property>
                     <property name="xalign">0</property>
                     <signal name="activate-link" handler="on_lblSetupTrackball_activate_link" swapped="no"/>
@@ -615,7 +615,7 @@
         <child>
           <object class="GtkStackPage">
             <property name="name">grCircular</property>
-            <property name="title" translatable="1">page2</property>
+            <property name="title" translatable="yes">page2</property>
             <property name="position">4</property>
             <property name="child">
               <object class="GtkGrid" id="grCircular">
@@ -660,7 +660,7 @@
                   <object class="GtkLabel" id="label1">
                     <property name="margin-bottom">10</property>
                     <property name="hexpand">0</property>
-                    <property name="label" translatable="1">Output Axis</property>
+                    <property name="label" translatable="yes">Output Axis</property>
                     <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"></attribute>
@@ -677,7 +677,7 @@
                     <property name="margin-top">5</property>
                     <property name="margin-bottom">10</property>
                     <property name="hexpand">0</property>
-                    <property name="label" translatable="1">Output Buttons</property>
+                    <property name="label" translatable="yes">Output Buttons</property>
                     <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"></attribute>
@@ -691,7 +691,7 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="btCircularAxis">
-                    <property name="label" translatable="1">Mouse Wheel</property>
+                    <property name="label" translatable="yes">Mouse Wheel</property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
                     <property name="margin-start">100</property>
@@ -706,7 +706,7 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="btCircularButton0">
-                    <property name="label" translatable="1">(not set)</property>
+                    <property name="label" translatable="yes">(not set)</property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
                     <property name="margin-start">100</property>
@@ -720,7 +720,7 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="btCircularButton1">
-                    <property name="label" translatable="1">(not set)</property>
+                    <property name="label" translatable="yes">(not set)</property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
                     <property name="margin-start">5</property>

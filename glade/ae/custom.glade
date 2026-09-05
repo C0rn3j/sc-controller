@@ -8,7 +8,7 @@
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkLabel" id="label4">
-        <property name="label" translatable="1">Custom Action</property>
+        <property name="label" translatable="yes">Custom Action</property>
         <property name="max-width-chars">4</property>
         <property name="xalign">0</property>
         <attributes>
