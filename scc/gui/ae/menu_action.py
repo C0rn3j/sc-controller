@@ -158,7 +158,9 @@ class MenuActionCofC(UserDataManager):
 	def on_cbMenus_button_press_event(self, trash, event):
 		if event.button == 3:
 			mnuMenu = self.builder.get_object("mnuMenu")
-			mnuMenu.popup(None, None, None, None, 3, Gtk.get_current_event_time())
+			if mnuMenu.get_parent() is None:
+				mnuMenu.set_parent(trash)
+			mnuMenu.popup()
 
 	def on_mnuMenuNew_activate(self, *a):
 		self.on_new_menu_selected()
