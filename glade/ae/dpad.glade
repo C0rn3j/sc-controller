@@ -368,7 +368,6 @@
                     <property name="name">4</property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
-                    <property name="no-show-all">True</property>
                     <property name="margin-top">20</property>
                     <property name="hexpand">1</property>
                     <signal name="clicked" handler="on_btDPAD_clicked" swapped="no"/>
@@ -385,7 +384,6 @@
                     <property name="name">5</property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
-                    <property name="no-show-all">True</property>
                     <property name="margin-top">20</property>
                     <property name="hexpand">1</property>
                     <signal name="clicked" handler="on_btDPAD_clicked" swapped="no"/>
@@ -402,7 +400,6 @@
                     <property name="name">6</property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
-                    <property name="no-show-all">True</property>
                     <property name="margin-top">20</property>
                     <property name="hexpand">1</property>
                     <signal name="clicked" handler="on_btDPAD_clicked" swapped="no"/>
@@ -419,7 +416,6 @@
                     <property name="name">7</property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
-                    <property name="no-show-all">True</property>
                     <property name="margin-top">20</property>
                     <property name="hexpand">1</property>
                     <signal name="clicked" handler="on_btDPAD_clicked" swapped="no"/>
@@ -601,7 +597,6 @@
                             <property name="vexpand">1</property>
                             <property name="visible">0</property>
                             <property name="focusable">1</property>
-                            <property name="no-show-all">True</property>
                             <property name="adjustment">adjMenuSize</property>
                             <signal name="changed" handler="on_cbMenus_changed" swapped="no"/>
                             <signal name="output" handler="on_spMenuSize_format_value" swapped="no"/>
@@ -612,7 +607,6 @@
                             <property name="draw-value">1</property>
                             <property name="visible">0</property>
                             <property name="focusable">1</property>
-                            <property name="no-show-all">True</property>
                             <property name="adjustment">adjMenuSize</property>
                             <property name="round-digits">1</property>
                             <property name="value-pos">right</property>
