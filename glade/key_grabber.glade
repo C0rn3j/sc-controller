@@ -178,7 +178,14 @@
     </property>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="headerbar1">
-        <property name="title">Press a Key...</property>
+        <property name="title-widget">
+          <object class="GtkLabel">
+            <property name="label">Press a Key...</property>
+            <style>
+              <class name="title"/>
+            </style>
+          </object>
+        </property>
       </object>
     </child>
   </object>

@@ -718,7 +718,14 @@
     </property>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="header">
-        <property name="title">Controller Settings</property>
+        <property name="title-widget">
+          <object class="GtkLabel">
+            <property name="label">Controller Settings</property>
+            <style>
+              <class name="title"/>
+            </style>
+          </object>
+        </property>
       </object>
     </child>
   </object>
