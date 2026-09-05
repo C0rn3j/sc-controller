@@ -59,7 +59,7 @@ class Editor(ComboSetter):
 			)
 
 	def hide_dont_destroy(self, w, *a):
-		"""When used as handler for 'delete-event' signal, prevents window from being destroyed after closing."""
+		"""When used as a 'close-request' handler, hide the window instead of destroying it."""
 		w.hide()
 		return True
 

@@ -204,7 +204,7 @@ class GestureGrabber:
 		self.lblGestureStatus = self.builder.get_object("lblGestureStatus")
 		self.rvGestureGrab = self.builder.get_object("rvGestureGrab")
 		# Can't use autoconnect for this :(
-		self.gesture_grabber.connect("delete-event", self.close)
+		self.gesture_grabber.connect("close-request", self.close)
 		self.gesture_grabber.connect("destroy", self.close)
 		self.builder.get_object("btnStartGestureOver").connect("clicked", self.start_over)
 		self.builder.get_object("btnConfirmGesutre").connect("clicked", self.use)

@@ -133,7 +133,7 @@
     <property name="width-request">600</property>
     <property name="resizable">0</property>
     <property name="modal">1</property>
-    <signal name="delete-event" handler="undeletable_dialog" swapped="no"/>
+    <signal name="close-request" handler="undeletable_dialog" swapped="no"/>
     <child internal-child="content_area">
       <object class="GtkBox" id="dialog-vbox1">
         <property name="visible">0</property>
@@ -232,7 +232,7 @@
     <property name="width-request">600</property>
     <property name="resizable">0</property>
     <property name="modal">1</property>
-    <signal name="delete-event" handler="undeletable_dialog" swapped="no"/>
+    <signal name="close-request" handler="undeletable_dialog" swapped="no"/>
     <child internal-child="content_area">
       <object class="GtkBox" id="dialog-vbox2">
         <property name="visible">0</property>
@@ -362,7 +362,7 @@
   <object class="GtkWindow" id="window">
     <property name="resizable">0</property>
     <property name="window-position">center</property>
-    <signal name="delete-event" handler="on_window_delete_event" swapped="no"/>
+    <signal name="close-request" handler="on_window_close_request" swapped="no"/>
     <signal name="key-press-event" handler="on_window_key_press_event" swapped="no"/>
     <property name="child">
       <object class="GtkBox" id="content">
@@ -780,7 +780,7 @@
     <property name="resizable">0</property>
     <property name="modal">1</property>
     <property name="transient-for">window</property>
-    <signal name="delete-event" handler="undeletable_dialog" swapped="no"/>
+    <signal name="close-request" handler="undeletable_dialog" swapped="no"/>
     <child internal-child="content_area">
       <object class="GtkBox" id="dlgProfileDetailsVB">
         <property name="visible">0</property>
