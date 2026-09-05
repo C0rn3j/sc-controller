@@ -1460,7 +1460,6 @@ or even crash.</property>
                     <child>
                       <object class="GtkLabel" id="txEvdevMissing">
                         <property name="visible">0</property>
-                        <property name="no-show-all">True</property>
                         <property name="label" translatable="yes">Note: python-evdev package is needed for non-steam controller support</property>
                         <attributes>
                           <attribute name="style" value="italic"></attribute>

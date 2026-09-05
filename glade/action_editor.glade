@@ -163,7 +163,6 @@
         <child>
           <object class="GtkEntry" id="entName">
             <property name="focusable">1</property>
-            <property name="no-show-all">True</property>
             <property name="margin-end">20</property>
             <property name="margin-bottom">2</property>
             <property name="hexpand">1</property>
@@ -238,7 +237,6 @@
         </child>
         <child>
           <object class="GtkLabel" id="lblName">
-            <property name="no-show-all">True</property>
             <property name="margin-start">20</property>
             <property name="margin-end">50</property>
             <property name="margin-bottom">2</property>
@@ -684,7 +682,6 @@
                             <property name="visible">0</property>
                             <property name="label" translatable="yes">Invert Roll</property>
                             <property name="focusable">1</property>
-                            <property name="no-show-all">True</property>
                             <signal name="toggled" handler="update_modifiers" swapped="no"/>
                             <layout>
                               <property name="column">0</property>
@@ -716,7 +713,6 @@
                         <child>
                           <object class="GtkLabel" id="lblFPeriod">
                             <property name="visible">0</property>
-                            <property name="no-show-all">True</property>
                             <property name="margin-start">10</property>
                             <property name="label" translatable="yes">Period</property>
                             <property name="ellipsize">end</property>
@@ -785,7 +781,6 @@
                             <property name="draw-value">1</property>
                             <property name="visible">0</property>
                             <property name="focusable">1</property>
-                            <property name="no-show-all">True</property>
                             <property name="hexpand">1</property>
                             <property name="adjustment">adjFPeriod</property>
                             <property name="round-digits">0</property>
@@ -803,7 +798,6 @@
                             <property name="visible">0</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
-                            <property name="no-show-all">True</property>
                             <signal name="clicked" handler="on_btClearFeedback_clicked" swapped="no"/>
                             <child>
                               <object class="GtkImage" id="image6">
@@ -1289,7 +1283,6 @@
         <child>
           <object class="GtkLabel" id="lblAddedWidget">
             <property name="visible">0</property>
-            <property name="no-show-all">True</property>
             <property name="margin-start">20</property>
             <property name="margin-end">50</property>
             <property name="margin-top">10</property>
@@ -1309,7 +1302,6 @@
         <child>
           <object class="GtkBox" id="vbAddedWidget">
             <property name="visible">0</property>
-            <property name="no-show-all">True</property>
             <property name="margin-end">20</property>
             <property name="margin-bottom">7</property>
             <property name="orientation">vertical</property>
