@@ -34,7 +34,6 @@
             <child>
               <object class="GtkEntry" id="entName">
                 <property name="focusable">1</property>
-                <property name="no-show-all">True</property>
                 <property name="margin-bottom">2</property>
                 <property name="hexpand">1</property>
                 <property name="editable">0</property>

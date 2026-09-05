@@ -44,7 +44,6 @@
         <child>
           <object class="GtkLabel" id="label1">
             <property name="visible">0</property>
-            <property name="no-show-all">True</property>
             <property name="margin-end">20</property>
             <property name="margin-bottom">4</property>
             <property name="label" translatable="yes">Action Name</property>
@@ -63,7 +62,6 @@
           <object class="GtkEntry" id="entry1">
             <property name="visible">0</property>
             <property name="focusable">1</property>
-            <property name="no-show-all">True</property>
             <property name="margin-bottom">2</property>
             <property name="hexpand">1</property>
             <property name="activates-default">1</property>
@@ -498,7 +496,6 @@
         <child>
           <object class="GtkLabel" id="lblAddedWidget">
             <property name="visible">0</property>
-            <property name="no-show-all">True</property>
             <property name="margin-end">20</property>
             <property name="margin-bottom">5</property>
             <property name="label" translatable="yes">(Widget)</property>
@@ -516,7 +513,6 @@
         <child>
           <object class="GtkBox" id="vbAddedWidget">
             <property name="visible">0</property>
-            <property name="no-show-all">True</property>
             <property name="margin-bottom">5</property>
             <property name="hexpand">1</property>
             <property name="orientation">vertical</property>

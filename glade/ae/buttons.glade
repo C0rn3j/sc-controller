@@ -63,7 +63,6 @@
                 <child>
                   <object class="GtkLabel" id="lblClickAnyButton">
                     <property name="vexpand">1</property>
-                    <property name="no-show-all">True</property>
                     <property name="margin-top">5</property>
                     <property name="margin-bottom">5</property>
                     <property name="label" translatable="yes">click any button or...</property>
