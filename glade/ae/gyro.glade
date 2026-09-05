@@ -33,7 +33,7 @@
                 <child>
                   <object class="GtkLabel" id="label6">
                     <property name="width-request">100</property>
-                    <property name="label" translatable="1">Pitch</property>
+                    <property name="label" translatable="yes">Pitch</property>
                     <property name="xalign">0</property>
                   </object>
                 </child>
@@ -43,7 +43,7 @@
                 <child>
                   <object class="GtkLabel" id="lblPitch">
                     <property name="hexpand">1</property>
-                    <property name="label" translatable="1">(...)</property>
+                    <property name="label" translatable="yes">(...)</property>
                   </object>
                 </child>
               </object>
@@ -65,7 +65,7 @@
                 <child>
                   <object class="GtkLabel" id="label8">
                     <property name="width-request">100</property>
-                    <property name="label" translatable="1">Yaw</property>
+                    <property name="label" translatable="yes">Yaw</property>
                     <property name="xalign">0</property>
                   </object>
                 </child>
@@ -75,7 +75,7 @@
                 <child>
                   <object class="GtkLabel" id="lblYaw">
                     <property name="hexpand">1</property>
-                    <property name="label" translatable="1">(...)</property>
+                    <property name="label" translatable="yes">(...)</property>
                   </object>
                 </child>
               </object>
@@ -97,7 +97,7 @@
                 <child>
                   <object class="GtkLabel" id="label1">
                     <property name="width-request">100</property>
-                    <property name="label" translatable="1">Roll</property>
+                    <property name="label" translatable="yes">Roll</property>
                     <property name="xalign">0</property>
                   </object>
                 </child>
@@ -107,7 +107,7 @@
                 <child>
                   <object class="GtkLabel" id="lblRoll">
                     <property name="hexpand">1</property>
-                    <property name="label" translatable="1">(...)</property>
+                    <property name="label" translatable="yes">(...)</property>
                   </object>
                 </child>
               </object>
@@ -120,7 +120,7 @@
         </child>
         <child>
           <object class="GtkCheckButton" id="cbPitchAbs">
-            <property name="label" translatable="1">Absolute</property>
+            <property name="label" translatable="yes">Absolute</property>
             <property name="focusable">1</property>
             <signal name="toggled" handler="on_abs_changed" swapped="no"/>
             <layout>
@@ -131,7 +131,7 @@
         </child>
         <child>
           <object class="GtkCheckButton" id="cbYawAbs">
-            <property name="label" translatable="1">Absolute</property>
+            <property name="label" translatable="yes">Absolute</property>
             <property name="focusable">1</property>
             <signal name="toggled" handler="on_abs_changed" swapped="no"/>
             <layout>
@@ -142,7 +142,7 @@
         </child>
         <child>
           <object class="GtkCheckButton" id="cbRollAbs">
-            <property name="label" translatable="1">Absolute</property>
+            <property name="label" translatable="yes">Absolute</property>
             <property name="focusable">1</property>
             <signal name="toggled" handler="on_abs_changed" swapped="no"/>
             <layout>
@@ -168,7 +168,7 @@
         <property name="spacing">10</property>
         <child>
           <object class="GtkLabel" id="lblGyroEnable">
-            <property name="label" translatable="1">Gyro Enable Button</property>
+            <property name="label" translatable="yes">Gyro Enable Button</property>
             <property name="xalign">0</property>
             <attributes>
               <attribute name="weight" value="bold"></attribute>
@@ -200,7 +200,7 @@
             <child>
               <object class="GtkLabel" id="lblSoftLevel">
                 <property name="margin-start">20</property>
-                <property name="label" translatable="1">Trigger Pull Level</property>
+                <property name="label" translatable="yes">Trigger Pull Level</property>
               </object>
             </child>
             <child>
@@ -227,7 +227,7 @@
         <signal name="toggled" handler="on_cbInvertGyro_toggled" swapped="no"/>
         <child>
           <object class="GtkLabel" id="label9414">
-            <property name="label" translatable="1">Button disables Gyro</property>
+            <property name="label" translatable="yes">Button disables Gyro</property>
             <attributes>
               <attribute name="weight" value="bold"></attribute>
             </attributes>

@@ -50,7 +50,7 @@
             <property name="no-show-all">True</property>
             <property name="margin-end">20</property>
             <property name="margin-bottom">4</property>
-            <property name="label" translatable="1">Action Name</property>
+            <property name="label" translatable="yes">Action Name</property>
             <property name="ellipsize">end</property>
             <property name="xalign">0</property>
             <attributes>
@@ -82,7 +82,7 @@
             <property name="no-show-all">True</property>
             <property name="margin-end">20</property>
             <property name="margin-bottom">5</property>
-            <property name="label" translatable="1">(Widget)</property>
+            <property name="label" translatable="yes">(Widget)</property>
             <property name="xalign">0</property>
             <property name="yalign">0</property>
             <attributes>
@@ -120,7 +120,7 @@
             <child>
               <object class="GtkLabel" id="lblRadius">
                 <property name="width-request">150</property>
-                <property name="label" translatable="1">Inner Ring Radius</property>
+                <property name="label" translatable="yes">Inner Ring Radius</property>
                 <property name="xalign">0</property>
                 <layout>
                   <property name="column">0</property>
@@ -166,7 +166,7 @@
                 <property name="margin-top">20</property>
                 <child>
                   <object class="GtkLabel" id="label2">
-                    <property name="label" translatable="1">Preview Immediately</property>
+                    <property name="label" translatable="yes">Preview Immediately</property>
                     <property name="ellipsize">end</property>
                     <property name="xalign">0</property>
                     <attributes>
@@ -184,7 +184,7 @@
             <child>
               <object class="GtkLabel" id="lblInner">
                 <property name="width-request">150</property>
-                <property name="label" translatable="1">Inner Ring</property>
+                <property name="label" translatable="yes">Inner Ring</property>
                 <property name="xalign">0</property>
                 <layout>
                   <property name="column">0</property>
@@ -251,7 +251,7 @@
             <child>
               <object class="GtkLabel" id="lblOuter">
                 <property name="width-request">150</property>
-                <property name="label" translatable="1">Outer Ring</property>
+                <property name="label" translatable="yes">Outer Ring</property>
                 <property name="xalign">0</property>
                 <layout>
                   <property name="column">0</property>
@@ -262,7 +262,7 @@
             <child>
               <object class="GtkLabel" id="lblPressAlone3">
                 <property name="width-request">150</property>
-                <property name="label" translatable="1">Mode</property>
+                <property name="label" translatable="yes">Mode</property>
                 <property name="xalign">0</property>
                 <layout>
                   <property name="column">0</property>
@@ -313,7 +313,7 @@
             <property name="icon-name">emblem-ok-symbolic</property>
           </object>
           <object class="GtkButton" id="btOK">
-            <property name="label" translatable="1">_OK</property>
+            <property name="label" translatable="yes">_OK</property>
             <property name="use-underline">1</property>
             <property name="image">imgOK</property>
             <property name="always-show-image">True</property>
@@ -332,7 +332,7 @@
             <property name="icon-name">edit-clear-symbolic</property>
           </object>
           <object class="GtkButton" id="btClear">
-            <property name="label" translatable="1">_Clear</property>
+            <property name="label" translatable="yes">_Clear</property>
             <property name="use-underline">1</property>
             <property name="image">imgClear</property>
             <property name="always-show-image">True</property>
@@ -343,7 +343,7 @@
         </child>
         <child>
           <object class="GtkButton" id="btCustomActionEditor">
-            <property name="label" translatable="1">Custom Editor</property>
+            <property name="label" translatable="yes">Custom Editor</property>
             <property name="focusable">1</property>
             <property name="receives-default">1</property>
             <signal name="clicked" handler="on_btCustomActionEditor_clicked" swapped="no"/>

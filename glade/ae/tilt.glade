@@ -75,7 +75,7 @@
             <signal name="clicked" handler="on_btTilt_clicked" swapped="no"/>
             <child>
               <object class="GtkLabel" id="lblTilt2">
-                <property name="label" translatable="1">(...)</property>
+                <property name="label" translatable="yes">(...)</property>
               </object>
             </child>
             <layout>
@@ -95,7 +95,7 @@
             <signal name="clicked" handler="on_btTilt_clicked" swapped="no"/>
             <child>
               <object class="GtkLabel" id="lblTilt3">
-                <property name="label" translatable="1">(...)</property>
+                <property name="label" translatable="yes">(...)</property>
               </object>
             </child>
             <layout>
@@ -116,7 +116,7 @@
             <signal name="clicked" handler="on_btTilt_clicked" swapped="no"/>
             <child>
               <object class="GtkLabel" id="lblTilt0">
-                <property name="label" translatable="1">(...)</property>
+                <property name="label" translatable="yes">(...)</property>
               </object>
             </child>
             <layout>
@@ -137,7 +137,7 @@
             <signal name="clicked" handler="on_btTilt_clicked" swapped="no"/>
             <child>
               <object class="GtkLabel" id="lblTilt">
-                <property name="label" translatable="1">(...)</property>
+                <property name="label" translatable="yes">(...)</property>
               </object>
             </child>
             <layout>
@@ -185,7 +185,7 @@
             <signal name="clicked" handler="on_btTilt_clicked" swapped="no"/>
             <child>
               <object class="GtkLabel" id="lblTilt4">
-                <property name="label" translatable="1">(...)</property>
+                <property name="label" translatable="yes">(...)</property>
               </object>
             </child>
             <layout>
@@ -204,7 +204,7 @@
             <signal name="clicked" handler="on_btTilt_clicked" swapped="no"/>
             <child>
               <object class="GtkLabel" id="lblTilt5">
-                <property name="label" translatable="1">(...)</property>
+                <property name="label" translatable="yes">(...)</property>
               </object>
             </child>
             <layout>
