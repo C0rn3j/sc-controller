@@ -55,8 +55,8 @@ class Dialog(OSDWindow):
 		self._text = Gtk.Label()
 		self._buttons = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 		dialog = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-		dialog.pack_start(self._text, True, True, 0)
-		dialog.pack_start(self._buttons, True, True, 0)
+		dialog.append(self._text)
+		dialog.append(self._buttons)
 
 		dialog.set_name("osd-dialog")
 		self._buttons.set_name("osd-dialog-buttons")
@@ -67,7 +67,7 @@ class Dialog(OSDWindow):
 		for item in items:
 			if hasattr(item.widget, "set_alignment"):
 				item.widget.set_alignment(0.5, 0.5)
-			self._buttons.pack_end(item.widget, True, True, 0)
+			self._buttons.append(item.widget)
 
 	def use_daemon(self, d):
 		"""Allows (re)using already existing DaemonManager instance in same process.

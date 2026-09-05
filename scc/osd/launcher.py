@@ -108,14 +108,14 @@ class Launcher(OSDWindow):
 		lst.set_name("osd-application-list")
 		self.items = [self.generate_widget("") for x in range(self.MAX_ROWS)]
 		for a in self.items:
-			lst.pack_start(a, False, True, 0)
-		self.parent.pack_start(lst, True, True, 0)
+			lst.append(a)
+		self.parent.append(lst)
 		self._set_launchers([])
 		lst.show_all()
 
 	def create_buttons(self):
 		self.grid = Gtk.Grid()
-		self.parent.pack_start(self.grid, True, True, 0)
+		self.parent.append(self.grid)
 		self._buttons = []
 
 		x, y = 0, 0
@@ -139,7 +139,7 @@ class Launcher(OSDWindow):
 		for item in items:
 			if hasattr(item.widget, "set_alignment"):
 				item.widget.set_alignment(0.5, 0.5)
-			self._buttons.pack_end(item.widget, True, True, 0)
+			self._buttons.append(item.widget)
 
 	def use_daemon(self, d):
 		"""Allows (re)using already existing DaemonManager instance in same process.

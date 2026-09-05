@@ -51,8 +51,8 @@ class MenuEditor(Editor):
 		self.window = self.builder.get_object("Dialog")
 		self.menu_icon = MenuIcon(None, True)
 		vbChangeItemIcon.remove(lblItemIconName)
-		vbChangeItemIcon.pack_start(self.menu_icon, False, True, 0)
-		vbChangeItemIcon.pack_start(lblItemIconName, True, True, 0)
+		vbChangeItemIcon.append(self.menu_icon)
+		vbChangeItemIcon.append(lblItemIconName)
 		headerbar(self.builder.get_object("header"))
 
 	def allow_menus(self, allow_globals, allow_in_profile):
