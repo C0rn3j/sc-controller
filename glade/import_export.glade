@@ -1328,13 +1328,19 @@ and profile switches in imported profile may not work as expected.</property>
           </packing>
         </child>
         <child>
+          <object class="GtkImage" id="imgSaveAs">
+            <property name="visible">True</property>
+            <property name="icon-name">document-save-as-symbolic</property>
+          </object>
           <object class="GtkButton" id="btSaveAs">
-            <property name="label">gtk-save-as</property>
+            <property name="label" translatable="yes">Save _As…</property>
+            <property name="use-underline">True</property>
+            <property name="image">imgSaveAs</property>
+            <property name="always-show-image">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
             <property name="no-show-all">True</property>
             <property name="relief">half</property>
-            <property name="use-stock">True</property>
             <signal name="clicked" handler="on_btSaveAs_clicked" swapped="no"/>
             <style>
               <class name="suggested-action"/>

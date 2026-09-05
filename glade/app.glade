@@ -386,12 +386,19 @@
         <property name="title">New Profile</property>
         <property name="show-close-button">True</property>
         <child>
+          <object class="GtkImage" id="imgNewProfileOK">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="icon-name">emblem-ok-symbolic</property>
+          </object>
           <object class="GtkButton" id="btNewProfile">
-            <property name="label">gtk-ok</property>
+            <property name="label" translatable="yes">_OK</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
-            <property name="use-stock">True</property>
+            <property name="always-show-image">True</property>
+            <property name="image">imgNewProfileOK</property>
+            <property name="use-underline">True</property>
             <signal name="clicked" handler="on_btNewProfile_clicked" swapped="no"/>
             <style>
               <class name="suggested-action"/>
@@ -467,12 +474,19 @@
         <property name="title">Rename Profile</property>
         <property name="show-close-button">True</property>
         <child>
+          <object class="GtkImage" id="imgRenameProfileOK">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="icon-name">emblem-ok-symbolic</property>
+          </object>
           <object class="GtkButton" id="btRenameProfile">
-            <property name="label">gtk-ok</property>
+            <property name="label" translatable="yes">_Rename</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
-            <property name="use-stock">True</property>
+            <property name="always-show-image">True</property>
+            <property name="image">imgRenameProfileOK</property>
+            <property name="use-underline">True</property>
             <signal name="clicked" handler="on_btRenameProfile_clicked" swapped="no"/>
             <style>
               <class name="suggested-action"/>

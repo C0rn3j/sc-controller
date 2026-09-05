@@ -201,14 +201,20 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="btOk">
-            <property name="label">gtk-ok</property>
+          <object class="GtkImage" id="imgOK">
+            <property name="visible">True</property>
+            <property name="icon-name">emblem-ok-symbolic</property>
+          </object>
+          <object class="GtkButton" id="btOK">
+            <property name="label" translatable="yes">_OK</property>
+            <property name="use-underline">True</property>
+            <property name="image">imgOK</property>
+            <property name="always-show-image">True</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="can-default">True</property>
             <property name="has-default">True</property>
             <property name="receives-default">True</property>
-            <property name="use-stock">True</property>
             <signal name="clicked" handler="on_btOk_clicked" swapped="no"/>
             <style>
               <class name="suggested-action"/>

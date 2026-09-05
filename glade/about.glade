@@ -19,12 +19,18 @@
             <property name="can-focus">False</property>
             <property name="layout-style">end</property>
             <child>
+              <object class="GtkImage" id="imgClose">
+                <property name="visible">True</property>
+                <property name="icon-name">window-close-symbolic</property>
+              </object>
               <object class="GtkButton" id="btnClose">
-                <property name="label">gtk-close</property>
+                <property name="label" translatable="yes">_Close</property>
+                <property name="use-underline">True</property>
+                <property name="image">imgClose</property>
+                <property name="always-show-image">True</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_dialog_response" swapped="no"/>
               </object>
               <packing>
