@@ -41,7 +41,7 @@
             <property name="no-show-all">True</property>
             <property name="margin-end">20</property>
             <property name="margin-bottom">4</property>
-            <property name="label" translatable="1">Action Name</property>
+            <property name="label" translatable="yes">Action Name</property>
             <property name="ellipsize">end</property>
             <property name="xalign">0</property>
             <attributes>
@@ -70,7 +70,7 @@
             <property name="no-show-all">True</property>
             <property name="margin-end">20</property>
             <property name="margin-bottom">4</property>
-            <property name="label" translatable="1">Macro Type</property>
+            <property name="label" translatable="yes">Macro Type</property>
             <property name="ellipsize">end</property>
             <property name="xalign">0</property>
             <attributes>
@@ -161,7 +161,7 @@
               <object class="GtkBox">
                 <child>
                   <object class="GtkButton" id="btAddDelay">
-                    <property name="label" translatable="1">Add Delay</property>
+                    <property name="label" translatable="yes">Add Delay</property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
                     <signal name="clicked" handler="on_btAddDelay_clicked" swapped="no"/>
@@ -169,7 +169,7 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="btAddAction">
-                    <property name="label" translatable="1">Add _Action</property>
+                    <property name="label" translatable="yes">Add _Action</property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
                     <property name="margin-start">5</property>
@@ -208,7 +208,7 @@
             <property name="no-show-all">True</property>
             <property name="margin-end">20</property>
             <property name="margin-bottom">5</property>
-            <property name="label" translatable="1">(Widget)</property>
+            <property name="label" translatable="yes">(Widget)</property>
             <property name="xalign">0</property>
             <property name="yalign">0</property>
             <attributes>
@@ -263,7 +263,7 @@
       <object class="GtkHeaderBar" id="header">
         <child>
           <object class="GtkButton" id="btCustomActionEditor">
-            <property name="label" translatable="1">Custom Editor</property>
+            <property name="label" translatable="yes">Custom Editor</property>
             <property name="focusable">1</property>
             <property name="receives-default">1</property>
             <signal name="clicked" handler="on_btCustomActionEditor_clicked" swapped="no"/>
@@ -274,7 +274,7 @@
             <property name="icon-name">edit-clear-symbolic</property>
           </object>
           <object class="GtkButton" id="btClear">
-            <property name="label" translatable="1">_Clear</property>
+            <property name="label" translatable="yes">_Clear</property>
             <property name="use-underline">1</property>
             <property name="image">imgClear</property>
             <property name="always-show-image">True</property>
@@ -288,7 +288,7 @@
             <property name="icon-name">emblem-ok-symbolic</property>
           </object>
           <object class="GtkButton" id="btOK">
-            <property name="label" translatable="1">_OK</property>
+            <property name="label" translatable="yes">_OK</property>
             <property name="use-underline">1</property>
             <property name="image">imgOK</property>
             <property name="always-show-image">True</property>

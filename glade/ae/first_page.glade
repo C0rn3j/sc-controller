@@ -5,7 +5,7 @@
     <child>
       <object class="GtkLabel" id="lblMarkup">
         <property name="margin-start">20</property>
-        <property name="label" translatable="1">(markup goes here)</property>
+        <property name="label" translatable="yes">(markup goes here)</property>
         <property name="use-markup">1</property>
         <property name="track-visited-links">False</property>
         <property name="xalign">0</property>

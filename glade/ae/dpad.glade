@@ -228,7 +228,7 @@
         <child>
           <object class="GtkStackPage">
             <property name="name">page0</property>
-            <property name="title" translatable="1">page0</property>
+            <property name="title" translatable="yes">page0</property>
             <property name="child">
               <object class="GtkGrid" id="grDPAD">
                 <property name="row-spacing">5</property>
@@ -254,7 +254,7 @@
                         <child>
                           <object class="GtkLabel" id="lblDPAD2">
                             <property name="hexpand">1</property>
-                            <property name="label" translatable="1">(...)</property>
+                            <property name="label" translatable="yes">(...)</property>
                           </object>
                         </child>
                       </object>
@@ -286,7 +286,7 @@
                         <child>
                           <object class="GtkLabel" id="lblDPAD1">
                             <property name="hexpand">1</property>
-                            <property name="label" translatable="1">(...)</property>
+                            <property name="label" translatable="yes">(...)</property>
                           </object>
                         </child>
                       </object>
@@ -318,7 +318,7 @@
                         <child>
                           <object class="GtkLabel" id="lblDPAD0">
                             <property name="hexpand">1</property>
-                            <property name="label" translatable="1">(...)</property>
+                            <property name="label" translatable="yes">(...)</property>
                           </object>
                         </child>
                       </object>
@@ -342,7 +342,7 @@
                         <child>
                           <object class="GtkLabel" id="lblDPAD3">
                             <property name="hexpand">1</property>
-                            <property name="label" translatable="1">(...)</property>
+                            <property name="label" translatable="yes">(...)</property>
                           </object>
                         </child>
                         <child>
@@ -364,7 +364,7 @@
                 <child>
                   <object class="GtkButton" id="btDPAD4">
                     <property name="visible">0</property>
-                    <property name="label" translatable="1">(...)</property>
+                    <property name="label" translatable="yes">(...)</property>
                     <property name="name">4</property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
@@ -381,7 +381,7 @@
                 <child>
                   <object class="GtkButton" id="btDPAD5">
                     <property name="visible">0</property>
-                    <property name="label" translatable="1">(...)</property>
+                    <property name="label" translatable="yes">(...)</property>
                     <property name="name">5</property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
@@ -398,7 +398,7 @@
                 <child>
                   <object class="GtkButton" id="btDPAD6">
                     <property name="visible">0</property>
-                    <property name="label" translatable="1">(...)</property>
+                    <property name="label" translatable="yes">(...)</property>
                     <property name="name">6</property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
@@ -415,7 +415,7 @@
                 <child>
                   <object class="GtkButton" id="btDPAD7">
                     <property name="visible">0</property>
-                    <property name="label" translatable="1">(...)</property>
+                    <property name="label" translatable="yes">(...)</property>
                     <property name="name">7</property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
@@ -441,7 +441,7 @@
                     </layout>
                     <child>
                       <object class="GtkLabel" id="lblDiagonalRange">
-                        <property name="label" translatable="1">Diagonal Range</property>
+                        <property name="label" translatable="yes">Diagonal Range</property>
                         <property name="xalign">0</property>
                       </object>
                     </child>
@@ -484,7 +484,7 @@
         <child>
           <object class="GtkStackPage">
             <property name="name">page1</property>
-            <property name="title" translatable="1">page1</property>
+            <property name="title" translatable="yes">page1</property>
             <property name="position">1</property>
             <property name="child">
               <object class="GtkGrid" id="grMenu">
@@ -495,7 +495,7 @@
                   <object class="GtkLabel" id="label4">
                     <property name="margin-top">10</property>
                     <property name="margin-bottom">5</property>
-                    <property name="label" translatable="1">Menu</property>
+                    <property name="label" translatable="yes">Menu</property>
                     <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"></attribute>
@@ -531,7 +531,7 @@
                     <property name="icon-name">document-edit-symbolic</property>
                   </object>
                   <object class="GtkButton" id="btEditMenu">
-                    <property name="label" translatable="1">_Edit</property>
+                    <property name="label" translatable="yes">_Edit</property>
                     <property name="use-underline">1</property>
                     <property name="image">imgEditMenu</property>
                     <property name="always-show-image">True</property>
@@ -549,7 +549,7 @@
                 <child>
                   <object class="GtkLabel" id="label1">
                     <property name="margin-bottom">5</property>
-                    <property name="label" translatable="1">Menu Type</property>
+                    <property name="label" translatable="yes">Menu Type</property>
                     <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"></attribute>
@@ -589,7 +589,7 @@
                           <object class="GtkLabel" id="lblMenuSize">
                             <property name="margin-top">10</property>
                             <property name="margin-bottom">5</property>
-                            <property name="label" translatable="1">Items per row</property>
+                            <property name="label" translatable="yes">Items per row</property>
                             <property name="xalign">0</property>
                             <attributes>
                               <attribute name="weight" value="bold"></attribute>
@@ -638,7 +638,7 @@
                     </child>
                     <child type="label">
                       <object class="GtkLabel" id="label67">
-                        <property name="label" translatable="1">Control Options...</property>
+                        <property name="label" translatable="yes">Control Options...</property>
                         <attributes>
                           <attribute name="weight" value="bold"></attribute>
                         </attributes>
@@ -663,7 +663,7 @@
                           <object class="GtkLabel" id="lblConfirmWith">
                             <property name="margin-end">20</property>
                             <property name="margin-bottom">5</property>
-                            <property name="label" translatable="1">Confirm Button</property>
+                            <property name="label" translatable="yes">Confirm Button</property>
                             <property name="xalign">0</property>
                             <layout>
                               <property name="column">0</property>
@@ -675,7 +675,7 @@
                           <object class="GtkLabel" id="lblCancelWith">
                             <property name="margin-end">20</property>
                             <property name="margin-bottom">5</property>
-                            <property name="label" translatable="1">Cancel Button</property>
+                            <property name="label" translatable="yes">Cancel Button</property>
                             <property name="xalign">0</property>
                             <layout>
                               <property name="column">0</property>
@@ -729,7 +729,7 @@
                             <signal name="toggled" handler="prevent_confirm_cancel_nonsense" swapped="no"/>
                             <child>
                               <object class="GtkLabel" id="lblMenuAutoConfirm">
-                                <property name="label" translatable="1">Confirm selection when pad is released</property>
+                                <property name="label" translatable="yes">Confirm selection when pad is released</property>
                                 <property name="xalign">0</property>
                               </object>
                             </child>
@@ -748,7 +748,7 @@
                             <signal name="toggled" handler="prevent_confirm_cancel_nonsense" swapped="no"/>
                             <child>
                               <object class="GtkLabel" id="lblMenuAutoCancel">
-                                <property name="label" translatable="1">Cancel menu when pad is released</property>
+                                <property name="label" translatable="yes">Cancel menu when pad is released</property>
                                 <property name="xalign">0</property>
                               </object>
                             </child>
@@ -767,7 +767,7 @@
                             <signal name="toggled" handler="prevent_confirm_cancel_nonsense" swapped="no"/>
                             <child>
                               <object class="GtkLabel" id="lblMenuConfirmWithClick">
-                                <property name="label" translatable="1">Confirm selection by clicking the pad</property>
+                                <property name="label" translatable="yes">Confirm selection by clicking the pad</property>
                                 <property name="xalign">0</property>
                               </object>
                             </child>
@@ -812,7 +812,7 @@
                     </child>
                     <child type="label">
                       <object class="GtkLabel" id="label8">
-                        <property name="label" translatable="1">Menu Position...</property>
+                        <property name="label" translatable="yes">Menu Position...</property>
                         <attributes>
                           <attribute name="weight" value="bold"></attribute>
                         </attributes>
@@ -962,7 +962,7 @@
     <child>
       <object class="GtkLabel" id="label12">
         <property name="margin-end">20</property>
-        <property name="label" translatable="1">Output Type</property>
+        <property name="label" translatable="yes">Output Type</property>
         <property name="xalign">0</property>
         <attributes>
           <attribute name="weight" value="bold"></attribute>
@@ -1014,7 +1014,7 @@
       <object class="GtkMenuItem" id="mnuMenuNew">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_New Menu</property>
+        <property name="label" translatable="yes">_New Menu</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuMenuNew_activate" swapped="no"/>
       </object>
@@ -1023,7 +1023,7 @@
       <object class="GtkMenuItem" id="mnuMenuCopy">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_Copy Menu</property>
+        <property name="label" translatable="yes">_Copy Menu</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuMenuCopy_activate" swapped="no"/>
       </object>
@@ -1032,7 +1032,7 @@
       <object class="GtkMenuItem" id="mnuMenuRename">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_Rename Menu</property>
+        <property name="label" translatable="yes">_Rename Menu</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuMenuRename_activate" swapped="no"/>
       </object>
@@ -1041,7 +1041,7 @@
       <object class="GtkMenuItem" id="mnuMenuDelete">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_Delete Menu</property>
+        <property name="label" translatable="yes">_Delete Menu</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuMenuDelete_activate" swapped="no"/>
       </object>

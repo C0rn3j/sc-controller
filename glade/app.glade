@@ -26,7 +26,7 @@
             </child>
             <child>
               <object class="GtkLabel" id="lblOsdmodeExit">
-                <property name="label" translatable="1">Exit</property>
+                <property name="label" translatable="yes">Exit</property>
                 <attributes>
                   <attribute name="weight" value="bold"></attribute>
                   <attribute name="scale" value="1.5"></attribute>
@@ -48,7 +48,7 @@
             </child>
             <child>
               <object class="GtkLabel" id="lblOsdmodeAct">
-                <property name="label" translatable="1">Activate</property>
+                <property name="label" translatable="yes">Activate</property>
                 <attributes>
                   <attribute name="weight" value="bold"></attribute>
                   <attribute name="scale" value="1.5"></attribute>
@@ -68,7 +68,7 @@
             </child>
             <child>
               <object class="GtkLabel" id="lblOsdmodeOK">
-                <property name="label" translatable="1">OK</property>
+                <property name="label" translatable="yes">OK</property>
                 <attributes>
                   <attribute name="weight" value="bold"></attribute>
                   <attribute name="scale" value="1.5"></attribute>
@@ -90,7 +90,7 @@
             </child>
             <child>
               <object class="GtkLabel" id="lblOsdmodeClose">
-                <property name="label" translatable="1">Close</property>
+                <property name="label" translatable="yes">Close</property>
                 <attributes>
                   <attribute name="weight" value="bold"></attribute>
                   <attribute name="scale" value="1.5"></attribute>
@@ -110,7 +110,7 @@
             </child>
             <child>
               <object class="GtkLabel" id="lblOsdmodeSave">
-                <property name="label" translatable="1">Save</property>
+                <property name="label" translatable="yes">Save</property>
                 <attributes>
                   <attribute name="weight" value="bold"></attribute>
                   <attribute name="scale" value="1.5"></attribute>
@@ -159,7 +159,7 @@
             <child>
               <object class="GtkLabel" id="lblNewProfile">
                 <property name="halign">start</property>
-                <property name="label" translatable="1">Profile name</property>
+                <property name="label" translatable="yes">Profile name</property>
               </object>
             </child>
             <child>
@@ -177,7 +177,7 @@
             <property name="homogeneous">1</property>
             <child>
               <object class="GtkCheckButton" id="rbNewProfile">
-                <property name="label" translatable="1">Empty profile</property>
+                <property name="label" translatable="yes">Empty profile</property>
                 <property name="focusable">1</property>
                 <property name="active">1</property>
                 <signal name="toggled" handler="on_rbNewProfile_group_changed" swapped="no"/>
@@ -185,7 +185,7 @@
             </child>
             <child>
               <object class="GtkCheckButton" id="rbCopyProfile">
-                <property name="label" translatable="1">Copy current profile</property>
+                <property name="label" translatable="yes">Copy current profile</property>
                 <property name="focusable">1</property>
                 <property name="active">1</property>
                 <property name="group">rbNewProfile</property>
@@ -204,7 +204,7 @@
             <property name="icon-name">emblem-ok-symbolic</property>
           </object>
           <object class="GtkButton" id="btNewProfile">
-            <property name="label" translatable="1">_OK</property>
+            <property name="label" translatable="yes">_OK</property>
             <property name="focusable">1</property>
             <property name="receives-default">1</property>
             <property name="always-show-image">True</property>
@@ -248,7 +248,7 @@
         <child>
           <object class="GtkLabel" id="label3">
             <property name="halign">start</property>
-            <property name="label" translatable="1">Profile name</property>
+            <property name="label" translatable="yes">Profile name</property>
           </object>
         </child>
         <child>
@@ -267,7 +267,7 @@
             <property name="icon-name">emblem-ok-symbolic</property>
           </object>
           <object class="GtkButton" id="btRenameProfile">
-            <property name="label" translatable="1">_Rename</property>
+            <property name="label" translatable="yes">_Rename</property>
             <property name="focusable">1</property>
             <property name="receives-default">1</property>
             <property name="always-show-image">True</property>
@@ -305,7 +305,7 @@
       <object class="GtkCheckMenuItem" id="mnuEmulationEnabled">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_Emulation Enabled</property>
+        <property name="label" translatable="yes">_Emulation Enabled</property>
         <property name="use-underline">True</property>
         <signal name="toggled" handler="on_mnuEmulationEnabled_toggled" swapped="no"/>
       </object>
@@ -314,7 +314,7 @@
       <object class="GtkMenuItem" id="mnuGlobalSettings">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_Settings</property>
+        <property name="label" translatable="yes">_Settings</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuGlobalSettings_activate" swapped="no"/>
       </object>
@@ -323,7 +323,7 @@
       <object class="GtkMenuItem" id="mnuImport">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">Import/Export _Profile...</property>
+        <property name="label" translatable="yes">Import/Export _Profile...</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuImport_activate" swapped="no"/>
       </object>
@@ -338,7 +338,7 @@
       <object class="GtkMenuItem" id="mnuAbout">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">About</property>
+        <property name="label" translatable="yes">About</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuAbout_activate" swapped="no"/>
       </object>
@@ -347,7 +347,7 @@
       <object class="GtkMenuItem" id="mnuExit">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">Quit</property>
+        <property name="label" translatable="yes">Quit</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuExit_activate" swapped="no"/>
       </object>
@@ -386,7 +386,7 @@
             <child>
               <object class="GtkStackPage">
                 <property name="name">page0</property>
-                <property name="title" translatable="1">page0</property>
+                <property name="title" translatable="yes">page0</property>
                 <property name="child">
                   <object class="GtkGrid" id="grEditor">
                     <property name="row-spacing">12</property>
@@ -703,7 +703,7 @@
             <child>
               <object class="GtkStackPage">
                 <property name="name">page1</property>
-                <property name="title" translatable="1">page1</property>
+                <property name="title" translatable="yes">page1</property>
                 <property name="position">1</property>
                 <property name="child">
                   <object class="GtkLabel" id="lblEmpty"/>
@@ -733,7 +733,7 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lblDaemon">
-                    <property name="label" translatable="1">Menu</property>
+                    <property name="label" translatable="yes">Menu</property>
                   </object>
                 </child>
               </object>
@@ -745,7 +745,7 @@
             <property name="sensitive">0</property>
             <property name="focusable">1</property>
             <property name="receives-default">1</property>
-            <property name="tooltip-text" translatable="1">Undo</property>
+            <property name="tooltip-text" translatable="yes">Undo</property>
             <signal name="clicked" handler="on_btUndo_clicked" swapped="no"/>
             <child>
               <object class="GtkImage" id="image1">
@@ -759,7 +759,7 @@
             <property name="sensitive">0</property>
             <property name="focusable">1</property>
             <property name="receives-default">1</property>
-            <property name="tooltip-text" translatable="1">Redo</property>
+            <property name="tooltip-text" translatable="yes">Redo</property>
             <signal name="clicked" handler="on_btRedo_clicked" swapped="no"/>
             <child>
               <object class="GtkImage" id="image3">
@@ -793,7 +793,7 @@
             <child>
               <object class="GtkLabel" id="lblProfileFilename">
                 <property name="halign">start</property>
-                <property name="label" translatable="1">_Filename</property>
+                <property name="label" translatable="yes">_Filename</property>
                 <property name="use-underline">1</property>
               </object>
             </child>
@@ -811,7 +811,7 @@
             <child>
               <object class="GtkLabel" id="lblProfileDescription">
                 <property name="halign">start</property>
-                <property name="label" translatable="1">_Description</property>
+                <property name="label" translatable="yes">_Description</property>
                 <property name="use-underline">1</property>
                 <property name="mnemonic-widget">txProfileDescription</property>
               </object>
@@ -834,7 +834,7 @@
         </child>
         <child>
           <object class="GtkCheckButton" id="cbProfileIsTemplate">
-            <property name="label" translatable="1">Profile is _template</property>
+            <property name="label" translatable="yes">Profile is _template</property>
             <property name="focusable">1</property>
             <property name="use-underline">1</property>
             <signal name="toggled" handler="on_cbProfileIsTemplate_toggled" swapped="no"/>
@@ -864,7 +864,7 @@
       <object class="GtkMenuItem" id="mnuImgSticks">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">Change Sticks and Background</property>
+        <property name="label" translatable="yes">Change Sticks and Background</property>
         <property name="use-underline">True</property>
         <child type="submenu">
           <object class="GtkMenu" id="submnuImgSticks">
@@ -875,7 +875,7 @@
                 <property name="name">background,ds4-config</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="1">Symetrical</property>
+                <property name="label" translatable="yes">Symetrical</property>
                 <property name="use-underline">True</property>
                 <signal name="activate" handler="on_mnu_change_background_image" swapped="no"/>
               </object>
@@ -885,7 +885,7 @@
                 <property name="name">background,x360-config</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="1">Asymmetrical</property>
+                <property name="label" translatable="yes">Asymmetrical</property>
                 <property name="use-underline">True</property>
                 <signal name="activate" handler="on_mnu_change_background_image" swapped="no"/>
               </object>
@@ -895,7 +895,7 @@
                 <property name="name">background,sc-config</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="1">Touchpads</property>
+                <property name="label" translatable="yes">Touchpads</property>
                 <property name="use-underline">True</property>
                 <signal name="activate" handler="on_mnu_change_background_image" swapped="no"/>
               </object>
@@ -908,7 +908,7 @@
       <object class="GtkMenuItem" id="mnuImgButtons">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">Change Buttons</property>
+        <property name="label" translatable="yes">Change Buttons</property>
         <property name="use-underline">True</property>
         <child type="submenu">
           <object class="GtkMenu" id="submnuImgButtons">
@@ -919,7 +919,7 @@
                 <property name="name">buttons,ds4-config</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="1">PSx</property>
+                <property name="label" translatable="yes">PSx</property>
                 <property name="use-underline">True</property>
                 <signal name="activate" handler="on_mnu_change_background_image" swapped="no"/>
               </object>
@@ -929,7 +929,7 @@
                 <property name="name">buttons,x360-config</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="1">ABXY</property>
+                <property name="label" translatable="yes">ABXY</property>
                 <property name="use-underline">True</property>
                 <signal name="activate" handler="on_mnu_change_background_image" swapped="no"/>
               </object>
@@ -943,7 +943,7 @@
         <property name="name">undo,undo</property>
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">Clear Above Settings</property>
+        <property name="label" translatable="yes">Clear Above Settings</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnu_change_background_image" swapped="no"/>
       </object>
@@ -956,7 +956,7 @@
       <object class="GtkMenuItem" id="mnuConfigureController">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_Configure Controller</property>
+        <property name="label" translatable="yes">_Configure Controller</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuConfigureController_activate" swapped="no"/>
       </object>
@@ -965,7 +965,7 @@
       <object class="GtkMenuItem" id="mnuTurnoffController">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_Turn Off Controller</property>
+        <property name="label" translatable="yes">_Turn Off Controller</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="mnuTurnoffController_activate" swapped="no"/>
       </object>
@@ -980,7 +980,7 @@
       <object class="GtkMenuItem" id="mnuProfileNew">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_New Profile</property>
+        <property name="label" translatable="yes">_New Profile</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuProfileNew_activate" swapped="no"/>
       </object>
@@ -989,7 +989,7 @@
       <object class="GtkMenuItem" id="mnuProfileCopy">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_Copy Profile</property>
+        <property name="label" translatable="yes">_Copy Profile</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuProfileCopy_activate" swapped="no"/>
       </object>
@@ -998,7 +998,7 @@
       <object class="GtkMenuItem" id="mnuProfileRename">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_Rename Profile</property>
+        <property name="label" translatable="yes">_Rename Profile</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuProfileRename_activate" swapped="no"/>
       </object>
@@ -1007,7 +1007,7 @@
       <object class="GtkMenuItem" id="mnuProfileDelete">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_Delete Profile</property>
+        <property name="label" translatable="yes">_Delete Profile</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuProfileDelete_activate" swapped="no"/>
       </object>
@@ -1015,7 +1015,7 @@
     <child>
       <object class="GtkMenuItem" id="mnuProfileRevert">
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_Revert Profile to Defaults</property>
+        <property name="label" translatable="yes">_Revert Profile to Defaults</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuProfileDelete_activate" swapped="no"/>
       </object>
@@ -1030,7 +1030,7 @@
       <object class="GtkMenuItem" id="mnuProfileDetails">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">Profile D_etails</property>
+        <property name="label" translatable="yes">Profile D_etails</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuProfileDetails_activate" swapped="no"/>
       </object>
@@ -1043,7 +1043,7 @@
       <object class="GtkMenuItem" id="mnuClear">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">C_lear</property>
+        <property name="label" translatable="yes">C_lear</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuClear_activate" swapped="no"/>
       </object>
@@ -1052,7 +1052,7 @@
       <object class="GtkMenuItem" id="mnuCopy">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_Copy</property>
+        <property name="label" translatable="yes">_Copy</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuCopy_activate" swapped="no"/>
       </object>
@@ -1061,7 +1061,7 @@
       <object class="GtkMenuItem" id="mnuPaste">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_Paste</property>
+        <property name="label" translatable="yes">_Paste</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuPaste_activate" swapped="no"/>
       </object>
@@ -1076,7 +1076,7 @@
       <object class="GtkMenuItem" id="mnuEditPress">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_Edit Pressed Action</property>
+        <property name="label" translatable="yes">_Edit Pressed Action</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuEditPress_activate" swapped="no"/>
       </object>
@@ -1088,7 +1088,7 @@
     <child>
       <object class="GtkMenuItem" id="mnuShowWindowTray">
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">Show/Hide _Window</property>
+        <property name="label" translatable="yes">Show/Hide _Window</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_statusicon_clicked" swapped="no"/>
       </object>
@@ -1097,7 +1097,7 @@
       <object class="GtkCheckMenuItem" id="mnuEmulationEnabledTray">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">_Emulation Enabled</property>
+        <property name="label" translatable="yes">_Emulation Enabled</property>
         <property name="use-underline">True</property>
         <signal name="toggled" handler="on_mnuEmulationEnabled_toggled" swapped="no"/>
       </object>
@@ -1112,7 +1112,7 @@
       <object class="GtkMenuItem" id="mnuAboutTray">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">About</property>
+        <property name="label" translatable="yes">About</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuAbout_activate" swapped="no"/>
       </object>
@@ -1121,7 +1121,7 @@
       <object class="GtkMenuItem" id="mnuExitTray">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="1">Quit</property>
+        <property name="label" translatable="yes">Quit</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_mnuExit_activate" swapped="no"/>
       </object>
@@ -1162,7 +1162,7 @@
             <child>
               <object class="GtkLabel" id="lblNewRelease">
                 <property name="hexpand">1</property>
-                <property name="label" translatable="1">Welcome to the version &lt;b&gt;%s&lt;/b&gt;</property>
+                <property name="label" translatable="yes">Welcome to the version &lt;b&gt;%s&lt;/b&gt;</property>
                 <property name="use-markup">1</property>
                 <property name="xalign">0</property>
                 <property name="yalign">0</property>
@@ -1175,7 +1175,7 @@
             </child>
             <child>
               <object class="GtkLabel" id="cbNewReleaseHeader">
-                <property name="label" translatable="1">SC Controller was upgraded</property>
+                <property name="label" translatable="yes">SC Controller was upgraded</property>
                 <property name="xalign">0</property>
                 <attributes>
                   <attribute name="weight" value="bold"></attribute>
@@ -1188,7 +1188,7 @@
             </child>
             <child>
               <object class="GtkCheckButton" id="cbNewRelease">
-                <property name="label" translatable="1">Display with each new version</property>
+                <property name="label" translatable="yes">Display with each new version</property>
                 <property name="focusable">1</property>
                 <property name="halign">end</property>
                 <property name="hexpand">1</property>

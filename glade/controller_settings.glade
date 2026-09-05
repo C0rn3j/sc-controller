@@ -166,7 +166,7 @@
         <child>
           <object class="GtkLabel" id="label30">
             <property name="margin-top">10</property>
-            <property name="label" translatable="1">LED brightness</property>
+            <property name="label" translatable="yes">LED brightness</property>
             <property name="xalign">0</property>
             <attributes>
               <attribute name="weight" value="bold"></attribute>
@@ -198,7 +198,7 @@
         </child>
         <child>
           <object class="GtkLabel" id="label1">
-            <property name="label" translatable="1">Controller Name</property>
+            <property name="label" translatable="yes">Controller Name</property>
             <property name="xalign">0</property>
             <attributes>
               <attribute name="weight" value="bold"></attribute>
@@ -212,7 +212,7 @@
         <child>
           <object class="GtkLabel" id="label2">
             <property name="margin-top">5</property>
-            <property name="label" translatable="1">Icon</property>
+            <property name="label" translatable="yes">Icon</property>
             <property name="xalign">0</property>
             <attributes>
               <attribute name="weight" value="bold"></attribute>
@@ -269,7 +269,7 @@
             <signal name="toggled" handler="save_config" swapped="no"/>
             <child>
               <object class="GtkLabel" id="label3">
-                <property name="label" translatable="1">Right-aligned OSD</property>
+                <property name="label" translatable="yes">Right-aligned OSD</property>
                 <property name="xalign">0</property>
                 <attributes>
                   <attribute name="weight" value="bold"></attribute>
@@ -284,7 +284,7 @@
         </child>
         <child>
           <object class="GtkLabel" id="label8">
-            <property name="label" translatable="1">Automatically turn off when inactive for</property>
+            <property name="label" translatable="yes">Automatically turn off when inactive for</property>
             <property name="xalign">0</property>
             <attributes>
               <attribute name="weight" value="bold"></attribute>
@@ -324,7 +324,7 @@
             <child type="label">
               <object class="GtkLabel" id="label4">
                 <property name="margin-top">5</property>
-                <property name="label" translatable="1">Touchpad Input Rotation</property>
+                <property name="label" translatable="yes">Touchpad Input Rotation</property>
                 <property name="xalign">0</property>
                 <attributes>
                   <attribute name="weight" value="bold"></attribute>
@@ -346,7 +346,7 @@
                 <child>
                   <object class="GtkLabel" id="label5">
                     <property name="margin-top">5</property>
-                    <property name="label" translatable="1">Applied to everything, even if profile sets no rotation on its actions.</property>
+                    <property name="label" translatable="yes">Applied to everything, even if profile sets no rotation on its actions.</property>
                     <property name="xalign">0</property>
                     <layout>
                       <property name="column">0</property>
@@ -357,7 +357,7 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="label6">
-                    <property name="label" translatable="1">Left Pad Angle</property>
+                    <property name="label" translatable="yes">Left Pad Angle</property>
                     <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"></attribute>
@@ -370,7 +370,7 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="label7">
-                    <property name="label" translatable="1">Right Pad Angle</property>
+                    <property name="label" translatable="yes">Right Pad Angle</property>
                     <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"></attribute>
@@ -462,7 +462,7 @@
             <child type="label">
               <object class="GtkLabel" id="label9">
                 <property name="margin-top">5</property>
-                <property name="label" translatable="1">Default Menu Controls</property>
+                <property name="label" translatable="yes">Default Menu Controls</property>
                 <property name="xalign">0</property>
                 <attributes>
                   <attribute name="weight" value="bold"></attribute>
@@ -486,7 +486,7 @@
                 <child>
                   <object class="GtkLabel" id="label10">
                     <property name="margin-top">5</property>
-                    <property name="label" translatable="1">Used to control menus unless profile sets something different</property>
+                    <property name="label" translatable="yes">Used to control menus unless profile sets something different</property>
                     <property name="xalign">0</property>
                     <layout>
                       <property name="column">0</property>
@@ -498,7 +498,7 @@
                 <child>
                   <object class="GtkLabel" id="lblControlWith">
                     <property name="hexpand">1</property>
-                    <property name="label" translatable="1">Control Menu With</property>
+                    <property name="label" translatable="yes">Control Menu With</property>
                     <property name="xalign">0</property>
                     <layout>
                       <property name="column">0</property>
@@ -527,7 +527,7 @@
                 <child>
                   <object class="GtkLabel" id="lblConfirmWith">
                     <property name="hexpand">1</property>
-                    <property name="label" translatable="1">Confirm Button</property>
+                    <property name="label" translatable="yes">Confirm Button</property>
                     <property name="xalign">0</property>
                     <layout>
                       <property name="column">0</property>
@@ -538,7 +538,7 @@
                 <child>
                   <object class="GtkLabel" id="lblCancelWith">
                     <property name="hexpand">1</property>
-                    <property name="label" translatable="1">Cancel Button</property>
+                    <property name="label" translatable="yes">Cancel Button</property>
                     <property name="xalign">0</property>
                     <layout>
                       <property name="column">0</property>

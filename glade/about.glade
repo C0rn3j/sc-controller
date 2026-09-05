@@ -2,7 +2,7 @@
 <interface domain="">
   <requires lib="gtk" version="4.0"/>
   <object class="GtkDialog" id="Dialog">
-    <property name="title" translatable="1">About SC Controller</property>
+    <property name="title" translatable="yes">About SC Controller</property>
     <property name="window-position">center-on-parent</property>
     <property name="icon">../images/sc-controller-small.svg</property>
     <property name="type-hint">dialog</property>
@@ -28,7 +28,7 @@
             </child>
             <child>
               <object class="GtkLabel" id="label1">
-                <property name="label" translatable="1">&lt;span size=&quot;large&quot;&gt;&lt;b&gt;SC Controller&lt;/b&gt;&lt;/span&gt;</property>
+                <property name="label" translatable="yes">&lt;span size=&quot;large&quot;&gt;&lt;b&gt;SC Controller&lt;/b&gt;&lt;/span&gt;</property>
                 <property name="use-markup">1</property>
                 <property name="justify">center</property>
               </object>
@@ -37,13 +37,13 @@
               <object class="GtkLabel" id="lblVersion">
                 <property name="margin-top">5</property>
                 <property name="margin-bottom">10</property>
-                <property name="label" translatable="1">(version)</property>
+                <property name="label" translatable="yes">(version)</property>
               </object>
             </child>
             <child>
               <object class="GtkLabel" id="label4">
                 <property name="margin-bottom">20</property>
-                <property name="label" translatable="1">User-mode driver and GTK3 based GUI for the Steam Controller, DS4 and similar controllers</property>
+                <property name="label" translatable="yes">User-mode driver and GTK3 based GUI for the Steam Controller, DS4 and similar controllers</property>
                 <property name="use-markup">1</property>
                 <property name="justify">center</property>
               </object>
@@ -52,7 +52,7 @@
               <object class="GtkLabel" id="label3">
                 <property name="focusable">1</property>
                 <property name="margin-bottom">25</property>
-                <property name="label" translatable="1">
+                <property name="label" translatable="yes">
 &lt;b&gt;Code&amp;amp;UI © 2016-2023 Kozec&lt;/b&gt;
 &lt;b&gt;Python 3 port&amp;amp;Maintenance © 2020-2024 Ryochan7&lt;/b&gt;
 &lt;b&gt;Maintenance © 2024 Martin Rys&lt;/b&gt;
@@ -74,7 +74,7 @@ Donation links for Kozec, who is the original developer, can be found &lt;a href
                 <property name="vexpand">1</property>
                 <property name="focusable">1</property>
                 <property name="margin-top">10</property>
-                <property name="label" translatable="1">&lt;small&gt;This program comes with absolutely no warranty.
+                <property name="label" translatable="yes">&lt;small&gt;This program comes with absolutely no warranty.
 See the &lt;a href=&quot;http://www.gnu.org/licenses/old-licenses/gpl-2.0.html&quot;&gt;GNU General Public License, version 2&lt;/a&gt; for details.&lt;/small&gt;</property>
                 <property name="use-markup">1</property>
                 <property name="justify">center</property>
@@ -94,7 +94,7 @@ See the &lt;a href=&quot;http://www.gnu.org/licenses/old-licenses/gpl-2.0.html&q
             <property name="icon-name">window-close-symbolic</property>
           </object>
           <object class="GtkButton" id="btnClose">
-            <property name="label" translatable="1">_Close</property>
+            <property name="label" translatable="yes">_Close</property>
             <property name="use-underline">1</property>
             <property name="image">imgClose</property>
             <property name="always-show-image">True</property>

@@ -21,7 +21,7 @@
         <property name="column-spacing">20</property>
         <child>
           <object class="GtkLabel" id="grid8">
-            <property name="label" translatable="1">A</property>
+            <property name="label" translatable="yes">A</property>
             <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
@@ -31,7 +31,7 @@
         </child>
         <child>
           <object class="GtkLabel" id="grid9">
-            <property name="label" translatable="1">B</property>
+            <property name="label" translatable="yes">B</property>
             <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
@@ -41,7 +41,7 @@
         </child>
         <child>
           <object class="GtkLabel" id="label10">
-            <property name="label" translatable="1">X</property>
+            <property name="label" translatable="yes">X</property>
             <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
@@ -51,7 +51,7 @@
         </child>
         <child>
           <object class="GtkLabel" id="label11">
-            <property name="label" translatable="1">Y</property>
+            <property name="label" translatable="yes">Y</property>
             <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
@@ -62,7 +62,7 @@
         <child>
           <object class="GtkLabel" id="label12">
             <property name="margin-top">10</property>
-            <property name="label" translatable="1">Back</property>
+            <property name="label" translatable="yes">Back</property>
             <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
@@ -72,7 +72,7 @@
         </child>
         <child>
           <object class="GtkLabel" id="label13">
-            <property name="label" translatable="1">Start</property>
+            <property name="label" translatable="yes">Start</property>
             <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
@@ -83,7 +83,7 @@
         <child>
           <object class="GtkLabel" id="label14">
             <property name="margin-top">10</property>
-            <property name="label" translatable="1">Left Trigger</property>
+            <property name="label" translatable="yes">Left Trigger</property>
             <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
@@ -93,7 +93,7 @@
         </child>
         <child>
           <object class="GtkLabel" id="label15">
-            <property name="label" translatable="1">Left Bumper</property>
+            <property name="label" translatable="yes">Left Bumper</property>
             <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
@@ -104,7 +104,7 @@
         <child>
           <object class="GtkLabel" id="label16">
             <property name="margin-top">10</property>
-            <property name="label" translatable="1">Right Trigger</property>
+            <property name="label" translatable="yes">Right Trigger</property>
             <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
@@ -114,7 +114,7 @@
         </child>
         <child>
           <object class="GtkLabel" id="label17">
-            <property name="label" translatable="1">Right Bumper</property>
+            <property name="label" translatable="yes">Right Bumper</property>
             <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
@@ -268,7 +268,7 @@
         </child>
         <child>
           <object class="GtkLabel" id="label21">
-            <property name="label" translatable="1">C</property>
+            <property name="label" translatable="yes">C</property>
             <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
@@ -294,7 +294,7 @@
         <child>
           <object class="GtkLabel" id="label2">
             <property name="margin-top">10</property>
-            <property name="label" translatable="1">Stick Movement</property>
+            <property name="label" translatable="yes">Stick Movement</property>
             <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
@@ -320,7 +320,7 @@
         <child>
           <object class="GtkLabel" id="label1">
             <property name="margin-top">10</property>
-            <property name="label" translatable="1">Stick Press</property>
+            <property name="label" translatable="yes">Stick Press</property>
             <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
