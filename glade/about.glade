@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <interface domain="">
   <requires lib="gtk" version="4.0"/>
   <object class="GtkDialog" id="Dialog">
     <property name="title" translatable="yes">About SC Controller</property>
     <property name="icon">../images/sc-controller-small.svg</property>
     <signal name="response" handler="on_dialog_response" swapped="no"/>
-    <child internal-child="content_area">
+    <property name="child">
       <object class="GtkBox" id="vb1">
         <property name="visible">0</property>
         <property name="orientation">vertical</property>
@@ -26,7 +26,7 @@
             </child>
             <child>
               <object class="GtkLabel" id="label1">
-                <property name="label" translatable="yes">&lt;span size=&quot;large&quot;&gt;&lt;b&gt;SC Controller&lt;/b&gt;&lt;/span&gt;</property>
+                <property name="label" translatable="yes">&lt;span size="large"&gt;&lt;b&gt;SC Controller&lt;/b&gt;&lt;/span&gt;</property>
                 <property name="use-markup">1</property>
                 <property name="justify">center</property>
               </object>
@@ -55,11 +55,11 @@
 &lt;b&gt;Python 3 port&amp;amp;Maintenance © 2020-2024 Ryochan7&lt;/b&gt;
 &lt;b&gt;Maintenance © 2024 Martin Rys&lt;/b&gt;
 
-Source code available on &lt;a href=&quot;https://github.com/C0rn3j/sc-controller&quot;&gt;GitHub&lt;/a&gt;
+Source code available on &lt;a href="https://github.com/C0rn3j/sc-controller"&gt;GitHub&lt;/a&gt;
 
-If you like what I am doing, you can become a supporter on &lt;a href=&quot;https://ko-fi.com/martinrys&quot;&gt;Ko-Fi&lt;/a&gt; or check out other &lt;a href=&quot;https://rys.rs/donate&quot;&gt;ways to donate&lt;/a&gt;
+If you like what I am doing, you can become a supporter on &lt;a href="https://ko-fi.com/martinrys"&gt;Ko-Fi&lt;/a&gt; or check out other &lt;a href="https://rys.rs/donate"&gt;ways to donate&lt;/a&gt;
 
-Donation links for Kozec, who is the original developer, can be found &lt;a href=&quot;https://github.com/kozec/sc-controller?tab=readme-ov-file#like-what-im-doing&quot;&gt;here&lt;/a&gt;
+Donation links for Kozec, who is the original developer, can be found &lt;a href="https://github.com/kozec/sc-controller?tab=readme-ov-file#like-what-im-doing"&gt;here&lt;/a&gt;
 
 </property>
                 <property name="use-markup">1</property>
@@ -73,7 +73,7 @@ Donation links for Kozec, who is the original developer, can be found &lt;a href
                 <property name="focusable">1</property>
                 <property name="margin-top">10</property>
                 <property name="label" translatable="yes">&lt;small&gt;This program comes with absolutely no warranty.
-See the &lt;a href=&quot;http://www.gnu.org/licenses/old-licenses/gpl-2.0.html&quot;&gt;GNU General Public License, version 2&lt;/a&gt; for details.&lt;/small&gt;</property>
+See the &lt;a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html"&gt;GNU General Public License, version 2&lt;/a&gt; for details.&lt;/small&gt;</property>
                 <property name="use-markup">1</property>
                 <property name="justify">center</property>
                 <property name="yalign">1</property>
@@ -81,11 +81,6 @@ See the &lt;a href=&quot;http://www.gnu.org/licenses/old-licenses/gpl-2.0.html&q
             </child>
           </object>
         </child>
-      </object>
-    </child>
-    <child internal-child="action_area">
-      <object class="GtkBox" id="vb2">
-        <property name="halign">end</property>
         <child>
           <object class="GtkButton" id="btnClose">
             <property name="child">
@@ -108,13 +103,8 @@ See the &lt;a href=&quot;http://www.gnu.org/licenses/old-licenses/gpl-2.0.html&q
             <property name="receives-default">1</property>
             <signal name="clicked" handler="on_dialog_response" swapped="no"/>
           </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
         </child>
       </object>
-    </child>
+    </property>
   </object>
 </interface>

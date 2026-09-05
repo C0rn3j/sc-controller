@@ -703,27 +703,7 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                       <object class="GtkInfoBar" id="ibHIDWarning">
                         <property name="show-close-button">1</property>
                         <signal name="response" handler="on_ibHIDWarning_response" swapped="no"/>
-                        <child internal-child="action_area">
-                          <object class="GtkBox" id="box1HIDWarning">
-                            <property name="spacing">6</property>
-                            <property name="halign">end</property>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child internal-child="content_area">
+                        <child>
                           <object class="GtkBox" id="box2HIDWarning">
                             <property name="visible">0</property>
                             <property name="spacing">16</property>
@@ -750,11 +730,6 @@ That means your account lacks permissons needed to read controller exclusively. 
                               <placeholder/>
                             </child>
                           </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="position">0</property>
-                          </packing>
                         </child>
                       </object>
                     </property>
