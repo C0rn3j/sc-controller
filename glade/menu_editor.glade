@@ -13,7 +13,7 @@
     <property name="resizable">0</property>
     <property name="window-position">center-on-parent</property>
     <property name="destroy-with-parent">1</property>
-    <signal name="delete-event" handler="on_Dialog_delete_event" swapped="no"/>
+    <signal name="close-request" handler="on_Dialog_close_request" swapped="no"/>
     <signal name="key-press-event" handler="on_window_key_press_event" swapped="no"/>
     <property name="child">
       <object class="GtkBox" id="iHateUselessIDs">

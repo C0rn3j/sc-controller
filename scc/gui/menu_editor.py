@@ -299,7 +299,7 @@ class MenuEditor(Editor):
 			for i in items:
 				self._add_menuitem(i)
 
-	def on_Dialog_delete_event(self, *a):
+	def on_Dialog_close_request(self, *a):
 		try:
 			if self.original_type == MenuEditor.TYPE_GLOBAL:
 				MenuEditor.OPEN.remove(self.original_id + ".menu")
@@ -310,7 +310,7 @@ class MenuEditor(Editor):
 		return False
 
 	def close(self, *a):
-		self.on_Dialog_delete_event()
+		self.on_Dialog_close_request()
 		Editor.close(self)
 
 	def _load_items_from_file(self, id):

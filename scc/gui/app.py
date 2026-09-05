@@ -485,7 +485,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		"""Handler for user clicking on tray icon button."""
 		self.window.set_visible(not self.window.get_visible())
 
-	def on_window_delete_event(self, *a) -> bool:
+	def on_window_close_request(self, *a) -> bool:
 		"""Called when user tries to close window"""
 		if not IS_UNITY and self.config["gui"]["enable_status_icon"] and self.config["gui"]["minimize_to_status_icon"]:
 			if self.statusicon and self.statusicon.get_property("active"):
