@@ -219,6 +219,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		btDPAD = self.builder.get_object("btDPAD")
 		btGYRO = self.builder.get_object("btGYRO")
 		btC = self.builder.get_object("btC")
+		btLGRIPTOUCH = self.builder.get_object("btLGRIPTOUCH")
+		btRGRIPTOUCH = self.builder.get_object("btRGRIPTOUCH")
 
 		buttons = ControllerImage.get_names(config.get("buttons", {}))
 		axes = ControllerImage.get_names(config.get("axes", {}))
@@ -230,10 +232,18 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			if w:
 				w.set_sensitive(nameof(b) in buttons)
 		# Buttons (as GTK Widgets)
+		# A controller may ship its own side-panel icons under
+		# images/<background>/<NAME>.svg (e.g. images/sc2/); use them when
+		# present, else fall back to the shared default icon.
+		bg = config.get("gui", {}).get("background")
 		for b in self.button_widgets:
 			try:
 				w = self.button_widgets[b]
 				icon, trash = ControllerManager.get_button_icon(config, b, True)
+				if bg:
+					cand = os.path.join(self.imagepath, bg, nameof(b) + ".svg")
+					if os.path.exists(cand):
+						icon = cand
 				w.icon.set_from_file(icon)
 			except Exception:
 				pass
@@ -256,8 +266,9 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				# TODO: Maybe actual detection
 				w.set_sensitive(gyros)
 
-		for w in (btC, btCPAD, btDPAD, btGYRO):
-			w.set_visible(w.get_sensitive())
+		for w in (btC, btCPAD, btDPAD, btGYRO, btLGRIPTOUCH, btRGRIPTOUCH):
+			if w:
+				w.set_visible(w.get_sensitive())
 
 		# Re-layout if needed
 		expected_layout = "default"
