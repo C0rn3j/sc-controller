@@ -177,14 +177,23 @@ Please, select your controller from list bellow and click Next.</property>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkImage" id="imgRefresh">
-                    <property name="icon-name">view-refresh-symbolic</property>
-                  </object>
                   <object class="GtkButton" id="btnRefresh">
-                    <property name="label" translatable="yes">_Refresh</property>
-                    <property name="use-underline">1</property>
-                    <property name="image">imgRefresh</property>
-                    <property name="always-show-image">True</property>
+                    <property name="child">
+                      <object class="GtkBox">
+                        <property name="spacing">6</property>
+                        <child>
+                          <object class="GtkImage" id="imgRefresh">
+                            <property name="icon-name">view-refresh-symbolic</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">_Refresh</property>
+                            <property name="use-underline">1</property>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
                     <property name="relief">half</property>
@@ -909,14 +918,23 @@ future inputs or even crash.</property>
           </object>
         </child>
         <child>
-          <object class="GtkImage" id="imgCancelInput">
-            <property name="icon-name">process-stop-symbolic</property>
-          </object>
           <object class="GtkButton" id="btCancelInput">
-            <property name="label" translatable="yes">_Cancel</property>
-            <property name="use-underline">1</property>
-            <property name="image">imgCancelInput</property>
-            <property name="always-show-image">True</property>
+            <property name="child">
+              <object class="GtkBox">
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkImage" id="imgCancelInput">
+                    <property name="icon-name">process-stop-symbolic</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label" translatable="yes">_Cancel</property>
+                    <property name="use-underline">1</property>
+                  </object>
+                </child>
+              </object>
+            </property>
             <property name="focusable">1</property>
             <property name="receives-default">1</property>
             <property name="margin-start">50</property>

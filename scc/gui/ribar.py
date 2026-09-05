@@ -40,8 +40,7 @@ class RIBar(Gtk.Revealer):
 				icon_name = "dialog-error"
 			elif message_type == Gtk.MessageType.WARNING:
 				icon_name = "dialog-warning"
-			icon = Gtk.Image()
-			icon.set_from_icon_name(icon_name, Gtk.IconSize.DIALOG)
+			icon = Gtk.Image.new_from_icon_name(icon_name)
 			self._infobar.get_content_area().pack_start(icon, False, False, 1)
 			# Label
 			if isinstance(label, Gtk.Widget):
@@ -133,12 +132,14 @@ class RIBar(Gtk.Revealer):
 	@staticmethod
 	def build_button(label, icon_name=None, icon_widget=None, use_stock=False):
 		"""Builds button situable for action area"""
-		b = Gtk.Button.new_from_stock(label) if use_stock else Gtk.Button.new_with_label(label)
-		b.set_use_underline(True)
+		b = Gtk.Button.new_with_mnemonic(label)
 		if icon_name is not None:
-			icon_widget = Gtk.Image()
-			icon_widget.set_from_icon_name(icon_name, Gtk.IconSize.BUTTON)
+			icon_widget = Gtk.Image.new_from_icon_name(icon_name)
 		if icon_widget is not None:
-			b.set_image(icon_widget)
-			b.set_always_show_image(True)
+			content = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+			content.append(icon_widget)
+			button_label = Gtk.Label.new_with_mnemonic(label)
+			button_label.set_mnemonic_widget(b)
+			content.append(button_label)
+			b.set_child(content)
 		return b

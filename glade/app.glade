@@ -191,16 +191,25 @@
       <object class="GtkHeaderBar" id="headerbar2">
         <property name="title">New Profile</property>
         <child type="end">
-          <object class="GtkImage" id="imgNewProfileOK">
-            <property name="icon-name">emblem-ok-symbolic</property>
-          </object>
           <object class="GtkButton" id="btNewProfile">
-            <property name="label" translatable="yes">_OK</property>
+            <property name="child">
+              <object class="GtkBox">
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkImage" id="imgNewProfileOK">
+                    <property name="icon-name">emblem-ok-symbolic</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label" translatable="yes">_OK</property>
+                    <property name="use-underline">1</property>
+                  </object>
+                </child>
+              </object>
+            </property>
             <property name="focusable">1</property>
             <property name="receives-default">1</property>
-            <property name="always-show-image">True</property>
-            <property name="image">imgNewProfileOK</property>
-            <property name="use-underline">1</property>
             <signal name="clicked" handler="on_btNewProfile_clicked" swapped="no"/>
             <style>
               <class name="suggested-action"/>
@@ -251,16 +260,25 @@
       <object class="GtkHeaderBar" id="headerbar1">
         <property name="title">Rename Profile</property>
         <child type="end">
-          <object class="GtkImage" id="imgRenameProfileOK">
-            <property name="icon-name">emblem-ok-symbolic</property>
-          </object>
           <object class="GtkButton" id="btRenameProfile">
-            <property name="label" translatable="yes">_Rename</property>
+            <property name="child">
+              <object class="GtkBox">
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkImage" id="imgRenameProfileOK">
+                    <property name="icon-name">emblem-ok-symbolic</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label" translatable="yes">_Rename</property>
+                    <property name="use-underline">1</property>
+                  </object>
+                </child>
+              </object>
+            </property>
             <property name="focusable">1</property>
             <property name="receives-default">1</property>
-            <property name="always-show-image">True</property>
-            <property name="image">imgRenameProfileOK</property>
-            <property name="use-underline">1</property>
             <signal name="clicked" handler="on_btRenameProfile_clicked" swapped="no"/>
             <style>
               <class name="suggested-action"/>

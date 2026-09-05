@@ -2215,14 +2215,23 @@ grips, triggers, finger positions on both pads and stick angle.</property>
       <object class="GtkHeaderBar" id="header2">
         <property name="title">Edit Condition</property>
         <child>
-          <object class="GtkImage" id="imgSave">
-            <property name="icon-name">document-save-symbolic</property>
-          </object>
           <object class="GtkButton" id="btSave">
-            <property name="label" translatable="yes">_Save</property>
-            <property name="use-underline">1</property>
-            <property name="image">imgSave</property>
-            <property name="always-show-image">True</property>
+            <property name="child">
+              <object class="GtkBox">
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkImage" id="imgSave">
+                    <property name="icon-name">document-save-symbolic</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label" translatable="yes">_Save</property>
+                    <property name="use-underline">1</property>
+                  </object>
+                </child>
+              </object>
+            </property>
             <property name="focusable">1</property>
             <property name="receives-default">1</property>
             <signal name="clicked" handler="on_btSave_clicked" swapped="no"/>
