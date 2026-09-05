@@ -162,10 +162,9 @@
               <object class="GtkInfoBar" id="infoBarRestartWarning">
                 <property name="message-type">warning</property>
                 <child internal-child="action_area">
-                  <object class="GtkButtonBox" id="bbRestartWarning">
-                    <property name="can-focus">False</property>
+                  <object class="GtkBox" id="bbRestartWarning">
                     <property name="spacing">6</property>
-                    <property name="layout-style">end</property>
+                    <property name="halign">end</property>
                     <child>
                       <placeholder/>
                     </child>

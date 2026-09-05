@@ -1158,9 +1158,8 @@ and profile switches in imported profile may not work as expected.</property>
       </object>
     </child>
     <child internal-child="action_area">
-      <object class="GtkButtonBox" id="vbDialogButtons">
-        <property name="can-focus">False</property>
-        <property name="layout-style">end</property>
+      <object class="GtkBox" id="vbDialogButtons">
+        <property name="halign">end</property>
         <child>
           <placeholder/>
         </child>

@@ -224,9 +224,8 @@
       </object>
     </child>
     <child internal-child="action_area">
-      <object class="GtkButtonBox" id="dialog-action_area1">
-        <property name="can-focus">False</property>
-        <property name="layout-style">end</property>
+      <object class="GtkBox" id="dialog-action_area1">
+        <property name="halign">end</property>
         <child>
           <placeholder/>
         </child>
@@ -300,9 +299,8 @@
       </object>
     </child>
     <child internal-child="action_area">
-      <object class="GtkButtonBox" id="dialog-action_area2">
-        <property name="can-focus">False</property>
-        <property name="layout-style">end</property>
+      <object class="GtkBox" id="dialog-action_area2">
+        <property name="halign">end</property>
         <child>
           <placeholder/>
         </child>
@@ -870,9 +868,8 @@
       </object>
     </child>
     <child internal-child="action_area">
-      <object class="GtkButtonBox" id="dlgProfileDetailsBB">
-        <property name="can-focus">False</property>
-        <property name="layout-style">end</property>
+      <object class="GtkBox" id="dlgProfileDetailsBB">
+        <property name="halign">end</property>
         <child>
           <placeholder/>
         </child>
@@ -1153,10 +1150,9 @@
     <signal name="close" handler="hide_error" swapped="no"/>
     <signal name="response" handler="hide_error" swapped="no"/>
     <child internal-child="action_area">
-      <object class="GtkButtonBox" id="riNewReleaseBB">
-        <property name="can-focus">False</property>
+      <object class="GtkBox" id="riNewReleaseBB">
         <property name="spacing">6</property>
-        <property name="layout-style">end</property>
+        <property name="halign">end</property>
         <child>
           <placeholder/>
         </child>
