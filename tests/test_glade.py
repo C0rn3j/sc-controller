@@ -1,5 +1,22 @@
 import os
+import subprocess
+import sys
 import xml.etree.ElementTree as ET
+
+import pytest
+
+
+GLADE_LOADER = """
+import sys
+
+import gi
+
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk
+
+Gtk.init([])
+Gtk.Builder().add_from_file(sys.argv[1])
+"""
 
 
 def _get_files():
@@ -16,7 +33,7 @@ def _get_files():
 				rv.append(filename)
 
 	recursive("glade/")
-	return rv
+	return sorted(rv)
 
 
 def _check_ids(el, filename, parent_id):
@@ -45,3 +62,22 @@ class TestGlade:
 		for filename in _get_files():
 			root = ET.parse(filename).getroot()
 			_check_ids(root, filename, "<root element>")
+
+	@pytest.mark.parametrize("filename", _get_files(), ids=lambda filename: filename)
+	def test_no_gtk_deprecations(self, filename):
+		"""Load each Glade file with fatal GTK diagnostics enabled."""
+		env = os.environ.copy()
+		env.update(
+			{
+				"G_ENABLE_DIAGNOSTIC": "1",
+				"G_DEBUG": "fatal-warnings",
+				"NO_AT_BRIDGE": "1",
+			},
+		)
+		print(f"Validating GTK diagnostics: {filename}", flush=True)
+		result = subprocess.run(
+			[sys.executable, "-c", GLADE_LOADER, filename],
+			env=env,
+			check=False,
+		)
+		assert result.returncode == 0, f"GTK diagnostics failed for {filename}"
