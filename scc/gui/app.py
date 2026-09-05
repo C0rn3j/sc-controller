@@ -989,7 +989,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			# switcher is created.
 			vbSwitchers.reorder_child_after(sepSwitchers, None)
 			sepSwitchers.set_visible(True)
-		vbSwitchers.show_all()
+		vbSwitchers.show()
 
 		if self.osd_mode:
 			ps.set_allow_switch(False)

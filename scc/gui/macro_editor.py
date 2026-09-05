@@ -192,7 +192,7 @@ class MacroEditor(Editor):
 
 		self.actions.append(action_data)
 		self.update_action_field()
-		grActions.show_all()
+		grActions.show()
 
 	def on_moveb_clicked(self, trash, direction, action_data) -> None:
 		"""Handler for 'move action' buttons"""

@@ -93,7 +93,7 @@ class ControllerButton(ControllerWidget):
 			self.widget.set_child(vbox)
 		else:
 			self.widget.set_child(self.label)
-		self.widget.show_all()
+		self.widget.show()
 		self.label.set_max_width_chars(LONG_TEXT)
 		if name == "C":
 			self.label.set_max_width_chars(10)
@@ -143,7 +143,7 @@ class ControllerStick(ControllerWidget):
 		self.over_icon = False
 		self.enable_press = enable_press
 		self.widget.set_child(grid)
-		self.widget.show_all()
+		self.widget.show()
 
 	def on_cursor_enter(self, *a):
 		return
@@ -262,7 +262,7 @@ class ControllerGyro(ControllerWidget):
 		grid.attach(self.pressed, 2, 2, 1, 1)
 		self.over_icon = False
 		self.widget.set_child(grid)
-		self.widget.show_all()
+		self.widget.show()
 
 	def on_click(self, *a) -> None:
 		self.app.show_editor(self.id)

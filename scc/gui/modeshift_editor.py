@@ -161,7 +161,7 @@ class ModeshiftEditor(Editor):
 		grActions.attach(clearb, 2, i, 1, 1)
 
 		self.actions[index].append([what, action, l, b, clearb])
-		grActions.show_all()
+		grActions.show()
 
 	def on_clearb_clicked(self, trash, index, button):
 		grActions = self.action_widgets[index][0]

@@ -74,7 +74,7 @@ class SVGWidget(Gtk.Box):
 		if init_hilighted:
 			self.hilight({})
 		self.append(self.image)
-		self.show_all()
+		self.show()
 
 	def set_image(self, filename: str) -> None:
 		with open(filename) as file:

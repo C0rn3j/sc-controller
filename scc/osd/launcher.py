@@ -61,7 +61,7 @@ class Launcher(OSDWindow):
 			c.set_name("osd-menu-cursor")
 			c.selected = None
 			self.f.add(c)
-		self.f.show_all()
+		self.f.show()
 
 		self._scon = StickController()
 		self._scon.connect("direction", self.on_stick_direction)
@@ -111,7 +111,7 @@ class Launcher(OSDWindow):
 			lst.append(a)
 		self.parent.append(lst)
 		self._set_launchers([])
-		lst.show_all()
+		lst.show()
 
 	def create_buttons(self):
 		self.grid = Gtk.Grid()
