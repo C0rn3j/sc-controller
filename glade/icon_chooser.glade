@@ -19,7 +19,6 @@
     <property name="role">icon-chooser</property>
     <property name="window-position">center-on-parent</property>
     <property name="destroy-with-parent">1</property>
-    <property name="type-hint">dialog</property>
     <signal name="key-press-event" handler="on_window_key_press_event" swapped="no"/>
     <property name="child">
       <object class="GtkBox" id="iHateUselessIDs">
