@@ -85,9 +85,8 @@ See the &lt;a href=&quot;http://www.gnu.org/licenses/old-licenses/gpl-2.0.html&q
       </object>
     </child>
     <child internal-child="action_area">
-      <object class="GtkButtonBox" id="vb2">
-        <property name="can-focus">False</property>
-        <property name="layout-style">end</property>
+      <object class="GtkBox" id="vb2">
+        <property name="halign">end</property>
         <child>
           <object class="GtkButton" id="btnClose">
             <property name="child">
