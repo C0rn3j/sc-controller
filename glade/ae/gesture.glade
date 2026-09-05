@@ -11,12 +11,12 @@
   <object class="GtkImage" id="imgApply">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="icon-name">object-select</property>
+    <property name="icon-name">object-select-symbolic</property>
   </object>
   <object class="GtkImage" id="imgChangeGesture">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="icon-name">document-edit</property>
+    <property name="icon-name">document-edit-symbolic</property>
   </object>
   <!-- n-columns=3 n-rows=3 -->
   <object class="GtkGrid" id="gesture_editor">
@@ -42,6 +42,7 @@
         <property name="can-focus">True</property>
         <property name="receives-default">True</property>
         <property name="image">imgChangeGesture</property>
+        <property name="always-show-image">True</property>
         <property name="use-underline">True</property>
         <signal name="clicked" handler="on_btChangeGesture_clicked" swapped="no"/>
       </object>
@@ -86,7 +87,7 @@
   <object class="GtkImage" id="imgStartOver">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="icon-name">view-refresh</property>
+    <property name="icon-name">view-refresh-symbolic</property>
   </object>
   <object class="GtkWindow" id="gesture_grabber">
     <property name="can-focus">False</property>
@@ -154,6 +155,7 @@
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
                     <property name="image">imgStartOver</property>
+                    <property name="always-show-image">True</property>
                     <property name="use-underline">True</property>
                   </object>
                   <packing>
@@ -170,6 +172,7 @@
                     <property name="receives-default">True</property>
                     <property name="margin-start">10</property>
                     <property name="image">imgApply</property>
+                    <property name="always-show-image">True</property>
                     <property name="use-underline">True</property>
                   </object>
                   <packing>
@@ -382,7 +385,7 @@
             <property name="is-important">True</property>
             <property name="label" translatable="yes">Edit</property>
             <property name="use-underline">True</property>
-            <property name="stock-id">gtk-edit</property>
+            <property name="icon-name">document-edit-symbolic</property>
             <signal name="clicked" handler="on_btEditAction_clicked" swapped="no"/>
           </object>
           <packing>
@@ -408,7 +411,7 @@
             <property name="can-focus">False</property>
             <property name="label" translatable="yes">_Remove</property>
             <property name="use-underline">True</property>
-            <property name="stock-id">gtk-remove</property>
+            <property name="icon-name">list-remove-symbolic</property>
             <signal name="clicked" handler="on_btRemove_clicked" swapped="no"/>
           </object>
           <packing>
@@ -422,7 +425,7 @@
             <property name="can-focus">False</property>
             <property name="label" translatable="yes">_Add</property>
             <property name="use-underline">True</property>
-            <property name="stock-id">gtk-add</property>
+            <property name="icon-name">list-add-symbolic</property>
             <signal name="clicked" handler="on_btAdd_clicked" swapped="no"/>
           </object>
           <packing>

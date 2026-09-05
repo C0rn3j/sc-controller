@@ -207,7 +207,7 @@
                     <property name="is-important">True</property>
                     <property name="label" translatable="yes">_Edit Item</property>
                     <property name="use-underline">True</property>
-                    <property name="stock-id">gtk-edit</property>
+                    <property name="icon-name">document-edit-symbolic</property>
                     <signal name="clicked" handler="btEdit_clicked_cb" swapped="no"/>
                   </object>
                   <packing>
@@ -233,7 +233,7 @@
                     <property name="can-focus">False</property>
                     <property name="label" translatable="yes">_Remove</property>
                     <property name="use-underline">True</property>
-                    <property name="stock-id">gtk-remove</property>
+                    <property name="icon-name">list-remove-symbolic</property>
                     <signal name="clicked" handler="on_btRemoveItem_clicked" swapped="no"/>
                   </object>
                   <packing>
@@ -247,7 +247,7 @@
                     <property name="can-focus">False</property>
                     <property name="label" translatable="yes">_Add</property>
                     <property name="use-underline">True</property>
-                    <property name="stock-id">gtk-add</property>
+                    <property name="icon-name">list-add-symbolic</property>
                     <signal name="clicked" handler="on_btAddItem_clicked" swapped="no"/>
                     <child type="menu">
                       <object class="GtkMenu" id="mnuAdd">
