@@ -219,8 +219,8 @@ class ActionEditor(Editor):
 		if self._selected_component is not None:
 			self._selected_component.hidden()
 
-	def on_Dialog_key_press_event(self, window, event):
-		if self.app.osd_mode and event.keyval == 65471:
+	def on_Dialog_key_press_event(self, controller, keyval, keycode, state):
+		if self.app.osd_mode and keyval == 65471:
 			self.on_btOK_clicked()
 
 	def set_osd_enabled(self, value):

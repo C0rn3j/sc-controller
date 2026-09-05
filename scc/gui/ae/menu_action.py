@@ -155,11 +155,11 @@ class MenuActionCofC(UserDataManager):
 			me.allow_menus(self.allow_globals, self.allow_in_profile)
 			me.show(self.editor.window)
 
-	def on_cbMenus_button_press_event(self, trash, event):
-		if event.button == 3:
+	def on_cbMenus_button_press_event(self, gesture, n_press, x, y):
+		if gesture.get_current_button() == 3:
 			mnuMenu = self.builder.get_object("mnuMenu")
 			if mnuMenu.get_parent() is None:
-				mnuMenu.set_parent(trash)
+				mnuMenu.set_parent(gesture.get_widget())
 			mnuMenu.popup()
 
 	def on_mnuMenuNew_activate(self, *a):

@@ -38,9 +38,9 @@ class Editor(ComboSetter):
 	def __init__(self):
 		self.added_widget = None  # See add_widget method
 
-	def on_window_key_press_event(self, trash, event):
+	def on_window_key_press_event(self, controller, keyval, keycode, state):
 		"""Checks if pressed key was escape and if yes, closes window"""
-		if event.keyval == Gdk.KEY_Escape:
+		if keyval == Gdk.KEY_Escape:
 			self.close()
 
 	def setup_widgets(self):

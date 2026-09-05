@@ -506,7 +506,11 @@
                     <property name="margin-end">5</property>
                     <property name="hexpand">1</property>
                     <property name="model">lstMenu</property>
-                    <signal name="button-press-event" handler="on_cbMenus_button_press_event" swapped="no"/>
+                    <child>
+                      <object class="GtkGestureClick">
+                        <signal name="pressed" handler="on_cbMenus_button_press_event" swapped="no"/>
+                      </object>
+                    </child>
                     <signal name="changed" handler="on_cbMenus_changed" swapped="no"/>
                     <child>
                       <object class="GtkCellRendererText" id="cellrenderertext3"/>
