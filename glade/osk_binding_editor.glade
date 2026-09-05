@@ -6,7 +6,11 @@
     <property name="resizable">0</property>
     <property name="modal">1</property>
     <property name="destroy-with-parent">1</property>
-    <signal name="key-press-event" handler="on_window_key_press_event" swapped="no"/>
+    <child>
+      <object class="GtkEventControllerKey">
+        <signal name="key-pressed" handler="on_window_key_press_event" swapped="no"/>
+      </object>
+    </child>
     <property name="child">
       <object class="GtkGrid" id="gruid7">
         <property name="margin-start">20</property>

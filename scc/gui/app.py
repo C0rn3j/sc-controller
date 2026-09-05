@@ -11,9 +11,10 @@ import os
 import platform
 import re
 import sys
+from typing import TYPE_CHECKING
 from urllib.parse import unquote
 
-from gi.repository import Gdk, Gio, GLib, Gtk
+from gi.repository import Gdk, Gio, GLib, GObject, Gtk
 
 from scc.actions import NoAction
 from scc.config import Config
@@ -44,7 +45,6 @@ from scc.tools import (
 	profile_is_override,
 	set_logging_level,
 )
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
 	from typing import Never
@@ -134,18 +134,17 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		ps.connect("save-clicked", self.on_save_clicked)
 
 		# Drag&drop target
-		self.builder.get_object("content").drag_dest_set(
-			Gtk.DestDefaults.ALL,
-			[
-				Gtk.TargetEntry.new("text/uri-list", Gtk.TargetFlags.OTHER_APP, 0),
-				Gtk.TargetEntry.new("text/plain", Gtk.TargetFlags.OTHER_APP, 0),
-			],
-			Gdk.DragAction.COPY,
-		)
+		content = self.builder.get_object("content")
+		for value_type in (Gdk.FileList, GObject.TYPE_STRING):
+			drop_target = Gtk.DropTarget.new(value_type, Gdk.DragAction.COPY)
+			drop_target.connect("drop", self.on_drag_data_received)
+			content.add_controller(drop_target)
 
 		# 'C' and 'CPAD' buttons
 		vbc = self.builder.get_object("vbC")
 		self.main_area = self.builder.get_object("mainArea")
+		self.main_area.connect("notify::width", self.on_c_size_allocate)
+		self.main_area.connect("notify::height", self.on_c_size_allocate)
 		vbc.get_parent().remove(vbc)
 
 		# Background
@@ -153,7 +152,10 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.background.connect("hover", self.on_background_area_hover)
 		self.background.connect("leave", self.on_background_area_hover, None)
 		self.background.connect("click", self.on_background_area_click)
-		self.background.connect("button-press-event", self.on_background_button_press)
+		background_click = Gtk.GestureClick.new()
+		background_click.set_button(3)
+		background_click.connect("pressed", self.on_background_button_press)
+		self.background.add_controller(background_click)
 		self.main_area.put(self.background, 0, 0)
 		self.main_area.put(vbc, 0, 0)  # (self.IMAGE_SIZE[0] / 2) - 90, self.IMAGE_SIZE[1] - 100)
 
@@ -816,10 +818,9 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 	def on_background_area_hover(self, trash, area):
 		self.hint(area)
 
-	def on_background_button_press(self, trash, event):
-		if event.button == 3:
-			mnuImage = self.builder.get_object("mnuImage")
-			mnuImage.popup()
+	def on_background_button_press(self, gesture, n_press, x, y):
+		mnuImage = self.builder.get_object("mnuImage")
+		mnuImage.popup()
 
 	def on_mnu_change_background_image(self, mnu, *a):
 		command, filename = mnu.get_name().split(",")
@@ -1361,11 +1362,11 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		if mnuPS.ps.get_controller():
 			mnuPS.ps.get_controller().turnoff()
 
-	def on_window_key_press_event(self, window, event) -> None:
-		if (event.state & Gdk.ModifierType.CONTROL_MASK) != 0:
-			if event.keyval == 115:
+	def on_window_key_press_event(self, controller, keyval, keycode, state) -> None:
+		if (state & Gdk.ModifierType.CONTROL_MASK) != 0:
+			if keyval == 115:
 				self.on_save_clicked()
-		elif self.osd_mode and event.keyval == 65471:
+		elif self.osd_mode and keyval == 65471:
 			self.on_save_clicked()
 
 	def show_error(self, message, ribar=None):
@@ -1671,30 +1672,16 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.app.config["gui"]["news"]["enabled"] = cb.get_active()
 		self.config.save()
 
-	def on_drag_data_received(self, widget, context, x, y, data, info, time) -> None:
+	def on_drag_data_received(self, target, data, x, y) -> bool:
 		"""Drag-n-drop handler"""
 		uri: str = ""
-		data_type: str = str(data.get_data_type())
-		log.debug("Drag and drop initiated with %s", data_type)
-		if data_type == "text/uri-list":
-			# Only file can be dropped here
-			if len(data.get_uris()):
-				uri = data.get_uris()[0]
-		elif data_type == "text/plain":
-			# This can be anything, so try to extract uri from it
-			text_data = data.get_data()
-			if isinstance(text_data, bytes):
-				try:
-					text = text_data.decode()
-				except UnicodeDecodeError:
-					log.warning("Dropped text is not valid UTF-8")
-					return
-				except Exception:
-					log.exception("Dropped text could not be decoded")
-					return
-			else:  # Should be string
-				text = text_data
-
+		log.debug("Drag and drop initiated with %s", type(data).__name__)
+		if isinstance(data, Gdk.FileList):
+			files = data.get_files()
+			if files:
+				uri = files[0].get_uri()
+		elif isinstance(data, str):
+			text = data
 			lines: list[str] = str(text).split("\n")
 			if len(lines) > 0:
 				first = lines[0]
@@ -1725,7 +1712,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				else:
 					# Failed. Just do nothing
 					log.debug("Failed downloading %s", uri)
-					return
+					return False
 			if giofile.get_path():
 				path = giofile.get_path()
 				filetype = Dialog.determine_type(path)
@@ -1738,6 +1725,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 					ied.import_file(path, filetype=filetype)
 				else:
 					log.error("Unknown file type: '%s'...", path)
+			return True
+		return False
 
 	def convert_old_profiles(self) -> None:
 		"""Checks all available profiles and automatically converts outdated profiles."""

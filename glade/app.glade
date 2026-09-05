@@ -364,11 +364,14 @@
   <object class="GtkWindow" id="window">
     <property name="resizable">0</property>
     <signal name="close-request" handler="on_window_close_request" swapped="no"/>
-    <signal name="key-press-event" handler="on_window_key_press_event" swapped="no"/>
+    <child>
+      <object class="GtkEventControllerKey">
+        <signal name="key-pressed" handler="on_window_key_press_event" swapped="no"/>
+      </object>
+    </child>
     <property name="child">
       <object class="GtkBox" id="content">
         <property name="orientation">vertical</property>
-        <signal name="drag-data-received" handler="on_drag_data_received" swapped="no"/>
         <child>
           <object class="GtkBox" id="vbSwitchers">
             <property name="margin-bottom">2</property>
@@ -604,7 +607,6 @@
                     <child>
                       <object class="GtkFixed" id="mainArea">
                         <property name="halign">center</property>
-                        <signal name="size-allocate" handler="on_c_size_allocate" swapped="no"/>
                         <child>
                           <object class="GtkBox" id="vbC">
                             <property name="width-request">150</property>

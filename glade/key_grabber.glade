@@ -5,8 +5,16 @@
     <property name="resizable">0</property>
     <property name="destroy-with-parent">1</property>
     <signal name="destroy" handler="on_KeyGrab_destroy" swapped="no"/>
-    <signal name="key-press-event" handler="on_keyGrab_key_press_event" swapped="no"/>
-    <signal name="key-release-event" handler="on_keyGrab_key_release_event" swapped="no"/>
+    <child>
+      <object class="GtkEventControllerKey">
+        <signal name="key-pressed" handler="on_keyGrab_key_press_event" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkEventControllerKey">
+        <signal name="key-released" handler="on_keyGrab_key_release_event" swapped="no"/>
+      </object>
+    </child>
     <property name="child">
       <object class="GtkGrid" id="grid2">
         <property name="margin-start">30</property>

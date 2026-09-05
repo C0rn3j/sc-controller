@@ -60,10 +60,12 @@ class SVGWidget(Gtk.Box):
 		self.areas: list[Area] = []
 		self.current_svg: str | bytes
 
-		self.connect("motion-notify-event", self.on_mouse_moved)
-		self.connect("button-press-event", self.on_mouse_click)
-		self.set_events(Gdk.EventMask.POINTER_MOTION_MASK | Gdk.EventMask.BUTTON_PRESS_MASK)
-
+		motion = Gtk.EventControllerMotion.new()
+		motion.connect("motion", self.on_mouse_moved)
+		self.add_controller(motion)
+		click = Gtk.GestureClick.new()
+		click.connect("pressed", self.on_mouse_click)
+		self.add_controller(click)
 		self.size_override: tuple[int, int] | None = None
 		self.image_width: float = 1
 		self.image_height: float = 1
@@ -99,16 +101,18 @@ class SVGWidget(Gtk.Box):
 		self.size_override = width, height
 		self.cache = OrderedDict()
 
-	def on_mouse_click(self, trash, event) -> None:
-		area = self.on_mouse_moved(trash, event)
+	def on_mouse_click(self, gesture, n_press, x, y) -> None:
+		area = self.get_area_at(x, y)
 		if area is not None:
 			self.emit("click", area)
 
-	def on_mouse_moved(self, trash, event) -> str | None:
+	def on_mouse_moved(self, controller, x, y) -> str | None:
 		"""Not actual signal handler, just called from App."""
+		return self.get_area_at(x, y)
+
+	def get_area_at(self, x, y) -> str | None:
 		x_offset = (self.get_allocation().width - self.image_width) / 2
-		x = event.x - x_offset
-		y = event.y
+		x = x - x_offset
 		for a in self.areas:
 			# *TEST areas exist only to bound the Input Test cursor (looked up
 			# by id via get_area_position), not as hover targets. Skip them so

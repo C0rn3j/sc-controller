@@ -14,7 +14,11 @@
     <property name="resizable">0</property>
     <property name="destroy-with-parent">1</property>
     <signal name="close-request" handler="on_Dialog_close_request" swapped="no"/>
-    <signal name="key-press-event" handler="on_window_key_press_event" swapped="no"/>
+    <child>
+      <object class="GtkEventControllerKey">
+        <signal name="key-pressed" handler="on_window_key_press_event" swapped="no"/>
+      </object>
+    </child>
     <property name="child">
       <object class="GtkBox" id="iHateUselessIDs">
         <property name="orientation">vertical</property>

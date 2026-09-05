@@ -94,12 +94,15 @@ class ProfileSwitcher(Gtk.Box, UserDataManager):
 
 		# Signals
 		self._combo.connect("changed", self.on_combo_changed)
-		self.connect("button_press_event", self.on_button_press)
+		click = Gtk.GestureClick.new()
+		click.set_button(3)
+		click.connect("pressed", self.on_button_press)
+		self.add_controller(click)
 
 		# Pack
 		self._box.pack_start(self._icon, False, True, 0)
 		self._box.pack_start(self._combo, True, True, 0)
-		self.add(self._box)
+		self.append(self._box)
 
 	def set_profile(self, name: str | None, create: bool = False) -> bool | None:
 		"""Selects specified profile in UI.
@@ -249,9 +252,8 @@ class ProfileSwitcher(Gtk.Box, UserDataManager):
 			GLib.source_remove(self._timer)
 		self._timer = GLib.timeout_add(ProfileSwitcher.SEND_TIMEOUT, run_later)
 
-	def on_button_press(self, trash, event):
-		if event.button == 3:
-			self.emit("right-clicked")
+	def on_button_press(self, gesture, n_press, x, y):
+		self.emit("right-clicked")
 
 	def on_savebutton_clicked(self, *a):
 		self.emit("save-clicked")
@@ -399,4 +401,4 @@ class ButtonInRevealer(Gtk.Revealer):
 		self.button.set_tooltip_text(tooltip)
 		self.set_reveal_child(False)
 		self.set_transition_type(Gtk.RevealerTransitionType.SLIDE_LEFT)
-		self.add(self.button)
+		self.append(self.button)

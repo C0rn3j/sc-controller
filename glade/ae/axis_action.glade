@@ -392,7 +392,11 @@
                         <property name="hexpand">1</property>
                         <property name="text" translatable="yes">0</property>
                         <property name="adjustment">adjAreaX1</property>
-                        <signal name="focus-out-event" handler="on_sbArea_focus_out_event" swapped="no"/>
+                        <child>
+                          <object class="GtkEventControllerFocus">
+                            <signal name="leave" handler="on_sbArea_focus_out_event" swapped="no"/>
+                          </object>
+                        </child>
                         <signal name="output" handler="on_sbArea_output" swapped="no"/>
                         <signal name="value-changed" handler="on_sbArea_changed" swapped="no"/>
                         <layout>
@@ -421,7 +425,11 @@
                         <property name="margin-top">10</property>
                         <property name="text" translatable="yes">0</property>
                         <property name="adjustment">adjAreaX2</property>
-                        <signal name="focus-out-event" handler="on_sbArea_focus_out_event" swapped="no"/>
+                        <child>
+                          <object class="GtkEventControllerFocus">
+                            <signal name="leave" handler="on_sbArea_focus_out_event" swapped="no"/>
+                          </object>
+                        </child>
                         <signal name="output" handler="on_sbArea_output" swapped="no"/>
                         <signal name="value-changed" handler="on_sbArea_changed" swapped="no"/>
                         <layout>
@@ -451,7 +459,11 @@
                         <property name="hexpand">1</property>
                         <property name="text" translatable="yes">0</property>
                         <property name="adjustment">adjAreaY1</property>
-                        <signal name="focus-out-event" handler="on_sbArea_focus_out_event" swapped="no"/>
+                        <child>
+                          <object class="GtkEventControllerFocus">
+                            <signal name="leave" handler="on_sbArea_focus_out_event" swapped="no"/>
+                          </object>
+                        </child>
                         <signal name="output" handler="on_sbArea_output" swapped="no"/>
                         <signal name="value-changed" handler="on_sbArea_changed" swapped="no"/>
                         <layout>
@@ -480,7 +492,11 @@
                         <property name="margin-top">10</property>
                         <property name="text" translatable="yes">0</property>
                         <property name="adjustment">adjAreaY2</property>
-                        <signal name="focus-out-event" handler="on_sbArea_focus_out_event" swapped="no"/>
+                        <child>
+                          <object class="GtkEventControllerFocus">
+                            <signal name="leave" handler="on_sbArea_focus_out_event" swapped="no"/>
+                          </object>
+                        </child>
                         <signal name="output" handler="on_sbArea_output" swapped="no"/>
                         <signal name="value-changed" handler="on_sbArea_changed" swapped="no"/>
                         <layout>
