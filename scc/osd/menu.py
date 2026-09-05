@@ -134,7 +134,7 @@ class Menu(OSDWindow):
 		sw = getattr(self, "_scrollwindow", None)
 		if sw is None:
 			return
-		self.parent.show_all()
+		self.parent.show()
 		nath = self.parent.get_preferred_height()[1]
 		natw = self.parent.get_preferred_width()[1]
 		cap = self._max_menu_height()
@@ -323,7 +323,7 @@ class Menu(OSDWindow):
 	def enable_cursor(self):
 		if not self._use_cursor:
 			self.f.add(self.cursor)
-			self.f.show_all()
+			self.f.show()
 			self._use_cursor = True
 
 	def generate_widget(self, item):
