@@ -166,7 +166,9 @@
             <property name="label" translatable="yes">button</property>
             <property name="focusable">1</property>
             <property name="receives-default">1</property>
-            <property name="relief">none</property>
+            <style>
+              <class name="flat"/>
+            </style>
             <property name="uri">file:///</property>
             <signal name="activate-link" handler="on_btUserFolder_activate_link" swapped="no"/>
           </object>

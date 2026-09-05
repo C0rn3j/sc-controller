@@ -662,9 +662,8 @@
           <object class="GtkMenuButton" id="btDaemon">
             <property name="focusable">1</property>
             <property name="receives-default">1</property>
-            <property name="relief">none</property>
             <property name="popover">mnuDaemon</property>
-            <child>
+            <property name="child">
               <object class="GtkBox" id="boxDaemon">
                 <child>
                   <object class="GtkImage" id="imgDaemonStatus">
@@ -678,7 +677,10 @@
                   </object>
                 </child>
               </object>
-            </child>
+            </property>
+            <style>
+              <class name="flat"/>
+            </style>
           </object>
         </child>
         <child>

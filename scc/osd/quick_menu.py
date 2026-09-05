@@ -39,7 +39,7 @@ class QuickMenu(Menu):
 			return None
 		if isinstance(item, (MenuItem, Submenu)):
 			widget = Gtk.Button.new_with_label(item.label)
-			widget.set_relief(Gtk.ReliefStyle.NONE)
+			widget.add_css_class("flat")
 			if hasattr(widget.get_children()[0], "set_xalign"):
 				widget.get_children()[0].set_xalign(0)
 			else:
