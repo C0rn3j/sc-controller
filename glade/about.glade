@@ -1,55 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.40.0 -->
 <interface domain="">
-  <requires lib="gtk+" version="3.24"/>
+  <requires lib="gtk" version="4.0"/>
   <object class="GtkDialog" id="Dialog">
-    <property name="can-focus">False</property>
-    <property name="title" translatable="yes">About SC Controller</property>
+    <property name="title" translatable="1">About SC Controller</property>
     <property name="window-position">center-on-parent</property>
     <property name="icon">../images/sc-controller-small.svg</property>
     <property name="type-hint">dialog</property>
     <signal name="response" handler="on_dialog_response" swapped="no"/>
-    <child internal-child="vbox">
+    <child internal-child="content_area">
       <object class="GtkBox" id="vb1">
-        <property name="can-focus">False</property>
+        <property name="visible">0</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
-        <child internal-child="action_area">
-          <object class="GtkButtonBox" id="vb2">
-            <property name="can-focus">False</property>
-            <property name="layout-style">end</property>
-            <child>
-              <object class="GtkImage" id="imgClose">
-                <property name="visible">True</property>
-                <property name="icon-name">window-close-symbolic</property>
-              </object>
-              <object class="GtkButton" id="btnClose">
-                <property name="label" translatable="yes">_Close</property>
-                <property name="use-underline">True</property>
-                <property name="image">imgClose</property>
-                <property name="always-show-image">True</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <signal name="clicked" handler="on_dialog_response" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
         <child>
           <object class="GtkBox" id="vb3">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
+            <property name="vexpand">1</property>
             <property name="margin-start">50</property>
             <property name="margin-end">50</property>
             <property name="margin-top">10</property>
@@ -57,104 +22,85 @@
             <property name="orientation">vertical</property>
             <child>
               <object class="GtkImage" id="image1">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
                 <property name="margin-bottom">10</property>
-                <property name="pixbuf">../images/sc-controller-small.svg</property>
+                <property name="file">../images/sc-controller-small.svg</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
             </child>
             <child>
               <object class="GtkLabel" id="label1">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes">&lt;span size="large"&gt;&lt;b&gt;SC Controller&lt;/b&gt;&lt;/span&gt;</property>
-                <property name="use-markup">True</property>
+                <property name="label" translatable="1">&lt;span size=&quot;large&quot;&gt;&lt;b&gt;SC Controller&lt;/b&gt;&lt;/span&gt;</property>
+                <property name="use-markup">1</property>
                 <property name="justify">center</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
             </child>
             <child>
               <object class="GtkLabel" id="lblVersion">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
                 <property name="margin-top">5</property>
                 <property name="margin-bottom">10</property>
-                <property name="label" translatable="yes">(version)</property>
+                <property name="label" translatable="1">(version)</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
             </child>
             <child>
               <object class="GtkLabel" id="label4">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
                 <property name="margin-bottom">20</property>
-                <property name="label" translatable="yes">User-mode driver and GTK4 based GUI for the Steam Controller, DS4 and similar controllers</property>
-                <property name="use-markup">True</property>
+                <property name="label" translatable="1">User-mode driver and GTK4 based GUI for the Steam Controller, DS4 and similar controllers</property>
+                <property name="use-markup">1</property>
                 <property name="justify">center</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">3</property>
-              </packing>
             </child>
             <child>
               <object class="GtkLabel" id="label3">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
+                <property name="focusable">1</property>
                 <property name="margin-bottom">25</property>
-                <property name="label" translatable="yes">
+                <property name="label" translatable="1">
 &lt;b&gt;Code&amp;amp;UI © 2016-2023 Kozec&lt;/b&gt;
 &lt;b&gt;Python 3 port&amp;amp;Maintenance © 2020-2024 Ryochan7&lt;/b&gt;
 &lt;b&gt;Maintenance © 2024 Martin Rys&lt;/b&gt;
 
-Source code available on &lt;a href="https://github.com/C0rn3j/sc-controller"&gt;GitHub&lt;/a&gt;
+Source code available on &lt;a href=&quot;https://github.com/C0rn3j/sc-controller&quot;&gt;GitHub&lt;/a&gt;
 
-If you like what I am doing, you can become a supporter on &lt;a href="https://ko-fi.com/martinrys"&gt;Ko-Fi&lt;/a&gt; or check out other &lt;a href="https://rys.rs/donate"&gt;ways to donate&lt;/a&gt;
+If you like what I am doing, you can become a supporter on &lt;a href=&quot;https://ko-fi.com/martinrys&quot;&gt;Ko-Fi&lt;/a&gt; or check out other &lt;a href=&quot;https://rys.rs/donate&quot;&gt;ways to donate&lt;/a&gt;
 
-Donation links for Kozec, who is the original developer, can be found &lt;a href="https://github.com/kozec/sc-controller?tab=readme-ov-file#like-what-im-doing"&gt;here&lt;/a&gt;
+Donation links for Kozec, who is the original developer, can be found &lt;a href=&quot;https://github.com/kozec/sc-controller?tab=readme-ov-file#like-what-im-doing&quot;&gt;here&lt;/a&gt;
 
 </property>
-                <property name="use-markup">True</property>
+                <property name="use-markup">1</property>
                 <property name="justify">center</property>
                 <property name="yalign">0</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">4</property>
-              </packing>
             </child>
             <child>
               <object class="GtkLabel" id="label2">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
+                <property name="vexpand">1</property>
+                <property name="focusable">1</property>
                 <property name="margin-top">10</property>
-                <property name="label" translatable="yes">&lt;small&gt;This program comes with absolutely no warranty.
-See the &lt;a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html"&gt;GNU General Public License, version 2&lt;/a&gt; for details.&lt;/small&gt;</property>
-                <property name="use-markup">True</property>
+                <property name="label" translatable="1">&lt;small&gt;This program comes with absolutely no warranty.
+See the &lt;a href=&quot;http://www.gnu.org/licenses/old-licenses/gpl-2.0.html&quot;&gt;GNU General Public License, version 2&lt;/a&gt; for details.&lt;/small&gt;</property>
+                <property name="use-markup">1</property>
                 <property name="justify">center</property>
                 <property name="yalign">1</property>
               </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">5</property>
-              </packing>
             </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child internal-child="action_area">
+      <object class="GtkButtonBox" id="vb2">
+        <property name="can-focus">False</property>
+        <property name="layout-style">end</property>
+        <child>
+          <object class="GtkImage" id="imgClose">
+            <property name="icon-name">window-close-symbolic</property>
+          </object>
+          <object class="GtkButton" id="btnClose">
+            <property name="label" translatable="1">_Close</property>
+            <property name="use-underline">1</property>
+            <property name="image">imgClose</property>
+            <property name="always-show-image">True</property>
+            <property name="focusable">1</property>
+            <property name="receives-default">1</property>
+            <signal name="clicked" handler="on_dialog_response" swapped="no"/>
           </object>
           <packing>
             <property name="expand">True</property>
