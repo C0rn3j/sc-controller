@@ -343,7 +343,7 @@
                     <child>
                       <object class="GtkCheckButton" id="cbAreaClickEnabled">
                         <property name="focusable">1</property>
-                        <child>
+                        <property name="child">
                           <object class="GtkLabel" id="label_n3">
                             <property name="label" translatable="yes">Pressing the Pad Clicks</property>
                             <property name="xalign">0</property>
@@ -351,14 +351,14 @@
                               <attribute name="weight" value="bold"></attribute>
                             </attributes>
                           </object>
-                        </child>
+                        </property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkCheckButton" id="cbAreaOSDEnabled">
                         <property name="focusable">1</property>
                         <signal name="toggled" handler="on_cbAreaOSDEnabled_toggled" swapped="no"/>
-                        <child>
+                        <property name="child">
                           <object class="GtkLabel" id="label_n4">
                             <property name="label" translatable="yes">Display Area While Pad is Being Touched</property>
                             <property name="xalign">0</property>
@@ -366,7 +366,7 @@
                               <attribute name="weight" value="bold"></attribute>
                             </attributes>
                           </object>
-                        </child>
+                        </property>
                       </object>
                     </child>
                   </object>

@@ -28,7 +28,7 @@
             <property name="receives-default">1</property>
             <property name="hexpand">1</property>
             <signal name="clicked" handler="on_select_axis" swapped="no"/>
-            <child>
+            <property name="child">
               <object class="GtkBox" id="box8">
                 <child>
                   <object class="GtkLabel" id="label6">
@@ -47,7 +47,7 @@
                   </object>
                 </child>
               </object>
-            </child>
+            </property>
             <layout>
               <property name="column">0</property>
               <property name="row">0</property>
@@ -60,7 +60,7 @@
             <property name="receives-default">1</property>
             <property name="hexpand">1</property>
             <signal name="clicked" handler="on_select_axis" swapped="no"/>
-            <child>
+            <property name="child">
               <object class="GtkBox" id="box9">
                 <child>
                   <object class="GtkLabel" id="label8">
@@ -79,7 +79,7 @@
                   </object>
                 </child>
               </object>
-            </child>
+            </property>
             <layout>
               <property name="column">0</property>
               <property name="row">1</property>
@@ -92,7 +92,7 @@
             <property name="receives-default">1</property>
             <property name="hexpand">1</property>
             <signal name="clicked" handler="on_select_axis" swapped="no"/>
-            <child>
+            <property name="child">
               <object class="GtkBox" id="box1">
                 <child>
                   <object class="GtkLabel" id="label1">
@@ -111,7 +111,7 @@
                   </object>
                 </child>
               </object>
-            </child>
+            </property>
             <layout>
               <property name="column">0</property>
               <property name="row">2</property>
@@ -225,14 +225,14 @@
       <object class="GtkCheckButton" id="cbInvertGyro">
         <property name="focusable">1</property>
         <signal name="toggled" handler="on_cbInvertGyro_toggled" swapped="no"/>
-        <child>
+        <property name="child">
           <object class="GtkLabel" id="label9414">
             <property name="label" translatable="yes">Button disables Gyro</property>
             <attributes>
               <attribute name="weight" value="bold"></attribute>
             </attributes>
           </object>
-        </child>
+        </property>
       </object>
     </child>
   </object>

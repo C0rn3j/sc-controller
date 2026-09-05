@@ -73,7 +73,7 @@
         <property name="receives-default">1</property>
         <property name="hexpand">1</property>
         <signal name="clicked" handler="on_btPartPressed_clicked" swapped="no"/>
-        <child>
+        <property name="child">
           <object class="GtkBox" id="box4">
             <child>
               <object class="GtkLabel" id="label10">
@@ -95,7 +95,7 @@
               </object>
             </child>
           </object>
-        </child>
+        </property>
         <layout>
           <property name="column">0</property>
           <property name="row">0</property>
@@ -109,7 +109,7 @@
         <property name="receives-default">1</property>
         <property name="hexpand">1</property>
         <signal name="clicked" handler="on_btFullPress_clicked" swapped="no"/>
-        <child>
+        <property name="child">
           <object class="GtkBox" id="box5">
             <child>
               <object class="GtkLabel" id="label11">
@@ -131,7 +131,7 @@
               </object>
             </child>
           </object>
-        </child>
+        </property>
         <layout>
           <property name="column">0</property>
           <property name="row">1</property>
@@ -145,11 +145,11 @@
         <property name="receives-default">1</property>
         <property name="margin-start">10</property>
         <signal name="clicked" handler="on_btFullPressedClear_clicked" swapped="no"/>
-        <child>
+        <property name="child">
           <object class="GtkImage" id="image1">
             <property name="icon-name">edit-clear-symbolic</property>
           </object>
-        </child>
+        </property>
         <layout>
           <property name="column">3</property>
           <property name="row">1</property>
@@ -162,11 +162,11 @@
         <property name="receives-default">1</property>
         <property name="margin-start">10</property>
         <signal name="clicked" handler="on_btPartPresedClear_clicked" swapped="no"/>
-        <child>
+        <property name="child">
           <object class="GtkImage" id="image7">
             <property name="icon-name">edit-clear-symbolic</property>
           </object>
-        </child>
+        </property>
         <layout>
           <property name="column">3</property>
           <property name="row">2</property>
@@ -179,11 +179,11 @@
         <property name="receives-default">1</property>
         <property name="margin-start">10</property>
         <signal name="clicked" handler="on_btFullyPresedClear_clicked" swapped="no"/>
-        <child>
+        <property name="child">
           <object class="GtkImage" id="image8">
             <property name="icon-name">edit-clear-symbolic</property>
           </object>
-        </child>
+        </property>
         <layout>
           <property name="column">3</property>
           <property name="row">3</property>
@@ -205,7 +205,7 @@
         <property name="margin-top">20</property>
         <property name="hexpand">1</property>
         <signal name="clicked" handler="on_btAnalog_clicked" swapped="no"/>
-        <child>
+        <property name="child">
           <object class="GtkBox" id="box1">
             <child>
               <object class="GtkLabel" id="label8">
@@ -224,7 +224,7 @@
               </object>
             </child>
           </object>
-        </child>
+        </property>
         <layout>
           <property name="column">0</property>
           <property name="row">6</property>
@@ -239,11 +239,11 @@
         <property name="margin-start">10</property>
         <property name="margin-top">20</property>
         <signal name="clicked" handler="on_btAnalogClear_clicked" swapped="no"/>
-        <child>
+        <property name="child">
           <object class="GtkImage" id="image2">
             <property name="icon-name">edit-clear-symbolic</property>
           </object>
-        </child>
+        </property>
         <layout>
           <property name="column">3</property>
           <property name="row">6</property>
@@ -320,11 +320,11 @@
         <property name="receives-default">1</property>
         <property name="margin-start">10</property>
         <signal name="clicked" handler="on_btARangeStartClear_clicked" swapped="no"/>
-        <child>
+        <property name="child">
           <object class="GtkImage" id="image3">
             <property name="icon-name">edit-clear-symbolic</property>
           </object>
-        </child>
+        </property>
         <layout>
           <property name="column">3</property>
           <property name="row">7</property>
@@ -337,11 +337,11 @@
         <property name="receives-default">1</property>
         <property name="margin-start">10</property>
         <signal name="clicked" handler="on_btARangeEndClear_clicked" swapped="no"/>
-        <child>
+        <property name="child">
           <object class="GtkImage" id="image4">
             <property name="icon-name">edit-clear-symbolic</property>
           </object>
-        </child>
+        </property>
         <layout>
           <property name="column">3</property>
           <property name="row">8</property>
@@ -467,11 +467,11 @@
         <property name="receives-default">1</property>
         <property name="margin-start">10</property>
         <signal name="clicked" handler="on_btTimeOutClear_clicked" swapped="no"/>
-        <child>
+        <property name="child">
           <object class="GtkImage" id="image5">
             <property name="icon-name">edit-clear-symbolic</property>
           </object>
-        </child>
+        </property>
         <layout>
           <property name="column">3</property>
           <property name="row">5</property>

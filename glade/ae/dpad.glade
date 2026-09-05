@@ -241,7 +241,7 @@
                     <property name="margin-top">20</property>
                     <property name="hexpand">1</property>
                     <signal name="clicked" handler="on_btDPAD_clicked" swapped="no"/>
-                    <child>
+                    <property name="child">
                       <object class="GtkBox" id="box1">
                         <child>
                           <object class="GtkImage" id="image2">
@@ -258,7 +258,7 @@
                           </object>
                         </child>
                       </object>
-                    </child>
+                    </property>
                     <layout>
                       <property name="column">0</property>
                       <property name="row">1</property>
@@ -273,7 +273,7 @@
                     <property name="margin-top">20</property>
                     <property name="hexpand">1</property>
                     <signal name="clicked" handler="on_btDPAD_clicked" swapped="no"/>
-                    <child>
+                    <property name="child">
                       <object class="GtkBox" id="box2">
                         <child>
                           <object class="GtkImage" id="image3">
@@ -290,7 +290,7 @@
                           </object>
                         </child>
                       </object>
-                    </child>
+                    </property>
                     <layout>
                       <property name="column">1</property>
                       <property name="row">2</property>
@@ -305,7 +305,7 @@
                     <property name="margin-top">20</property>
                     <property name="hexpand">1</property>
                     <signal name="clicked" handler="on_btDPAD_clicked" swapped="no"/>
-                    <child>
+                    <property name="child">
                       <object class="GtkBox" id="box6">
                         <child>
                           <object class="GtkImage" id="image4">
@@ -322,7 +322,7 @@
                           </object>
                         </child>
                       </object>
-                    </child>
+                    </property>
                     <layout>
                       <property name="column">1</property>
                       <property name="row">0</property>
@@ -337,7 +337,7 @@
                     <property name="margin-top">20</property>
                     <property name="hexpand">1</property>
                     <signal name="clicked" handler="on_btDPAD_clicked" swapped="no"/>
-                    <child>
+                    <property name="child">
                       <object class="GtkBox" id="box7">
                         <child>
                           <object class="GtkLabel" id="lblDPAD3">
@@ -354,7 +354,7 @@
                           </object>
                         </child>
                       </object>
-                    </child>
+                    </property>
                     <layout>
                       <property name="column">2</property>
                       <property name="row">1</property>
@@ -461,11 +461,11 @@
                         <property name="focusable">1</property>
                         <property name="receives-default">1</property>
                         <signal name="clicked" handler="on_btClearDiagonalRange_clicked" swapped="no"/>
-                        <child>
+                        <property name="child">
                           <object class="GtkImage" id="image10">
                             <property name="icon-name">edit-clear-symbolic</property>
                           </object>
-                        </child>
+                        </property>
                       </object>
                     </child>
                   </object>
@@ -721,12 +721,12 @@
                             <property name="margin-top">5</property>
                             <signal name="toggled" handler="on_cbMenus_changed" swapped="no"/>
                             <signal name="toggled" handler="prevent_confirm_cancel_nonsense" swapped="no"/>
-                            <child>
+                            <property name="child">
                               <object class="GtkLabel" id="lblMenuAutoConfirm">
                                 <property name="label" translatable="yes">Confirm selection when pad is released</property>
                                 <property name="xalign">0</property>
                               </object>
-                            </child>
+                            </property>
                             <layout>
                               <property name="column">0</property>
                               <property name="row">3</property>
@@ -740,12 +740,12 @@
                             <property name="margin-top">5</property>
                             <signal name="toggled" handler="on_cbMenus_changed" swapped="no"/>
                             <signal name="toggled" handler="prevent_confirm_cancel_nonsense" swapped="no"/>
-                            <child>
+                            <property name="child">
                               <object class="GtkLabel" id="lblMenuAutoCancel">
                                 <property name="label" translatable="yes">Cancel menu when pad is released</property>
                                 <property name="xalign">0</property>
                               </object>
-                            </child>
+                            </property>
                             <layout>
                               <property name="column">0</property>
                               <property name="row">4</property>
@@ -759,12 +759,12 @@
                             <property name="margin-top">5</property>
                             <signal name="toggled" handler="on_cbMenus_changed" swapped="no"/>
                             <signal name="toggled" handler="prevent_confirm_cancel_nonsense" swapped="no"/>
-                            <child>
+                            <property name="child">
                               <object class="GtkLabel" id="lblMenuConfirmWithClick">
                                 <property name="label" translatable="yes">Confirm selection by clicking the pad</property>
                                 <property name="xalign">0</property>
                               </object>
-                            </child>
+                            </property>
                             <layout>
                               <property name="column">0</property>
                               <property name="row">2</property>
