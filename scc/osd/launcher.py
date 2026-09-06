@@ -409,7 +409,7 @@ class Launcher(OSDWindow):
 				break
 
 	def _get_under_cursor(self, cursor):
-		x, y = self.f.child_get(cursor, "x", "y")
+		x, y = self.f.get_child_position(cursor)
 		for i in self._buttons:
 			if point_in_gtkrect(i.get_allocation(), x, y):
 				return i

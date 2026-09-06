@@ -72,8 +72,8 @@ class Menu(OSDWindow):
 
 		self.parent: Gtk.Box = self.create_parent()
 		self.f = Gtk.Fixed()
-		self.f.add(self.scroll_wrap(self.parent))
-		self.add(self.f)
+		self.f.put(self.scroll_wrap(self.parent), 0, 0)
+		self.set_child(self.f)
 
 		self._submenu = None
 		self._scon = StickController()
@@ -107,11 +107,7 @@ class Menu(OSDWindow):
 		"""
 		sw = Gtk.ScrolledWindow()
 		sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-		try:
-			sw.set_shadow_type(Gtk.ShadowType.NONE)
-		except Exception:
-			log.exception("Unknown exception - Failed to set shadow type!")
-		sw.add(parent)
+		sw.set_child(parent)
 		self._scrollwindow = sw
 		return sw
 
@@ -322,7 +318,7 @@ class Menu(OSDWindow):
 
 	def enable_cursor(self):
 		if not self._use_cursor:
-			self.f.add(self.cursor)
+			self.f.put(self.cursor, 0, 0)
 			self.f.show()
 			self._use_cursor = True
 
@@ -339,20 +335,20 @@ class Menu(OSDWindow):
 			return widget
 		widget = Gtk.Button.new_with_label(item.label)
 		widget.add_css_class("flat")
-		if hasattr(widget.observe_children()[0], "set_xalign"):
-			widget.observe_children()[0].set_xalign(0)
+		if hasattr(widget.get_child(), "set_xalign"):
+			widget.get_child().set_xalign(0)
 		else:
-			widget.observe_children()[0].set_halign(Gtk.Align.START)
+			widget.get_child().set_halign(Gtk.Align.START)
 		if isinstance(item, Submenu):
 			item.callback = self.show_submenu
-			label1 = widget.observe_children()[0]
+			label1 = widget.get_child()
 			label2 = Gtk.Label(label=_(">>"))
 			label2.set_property("margin-start", 30)
 			box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-			widget.remove(label1)
+			widget.set_child(None)
 			box.append(label1)
 			box.append(label2)
-			widget.add(box)
+			widget.set_child(box)
 			widget.set_name("osd-menu-item")
 		elif item.id is None:
 			widget.set_name("osd-menu-dummy")
@@ -371,13 +367,12 @@ class Menu(OSDWindow):
 
 		if icon_file:
 			icon = MenuIcon(icon_file, has_colors)
-			label = widget.observe_children()[0]
-			for c in [] + widget.observe_children():
-				widget.remove(c)
+			label = widget.get_child()
+			widget.set_child(None)
 			box = Gtk.Box()
 			box.append(icon)
 			box.append(label)
-			widget.add(box)
+			widget.set_child(box)
 
 		return widget
 
