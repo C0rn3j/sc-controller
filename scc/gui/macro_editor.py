@@ -237,7 +237,7 @@ class MacroEditor(Editor):
 	def _clear_grid(self) -> None:
 		"""Removes everything from UI"""
 		grActions = self.builder.get_object("grActions")
-		for child in [] + grActions.get_children():
+		for child in [] + grActions.observe_children():
 			grActions.remove(child)
 
 	def _refill_grid(self, new_actions) -> None:
@@ -321,7 +321,7 @@ class MacroEditor(Editor):
 		vbAddedWidget = self.builder.get_object("vbAddedWidget")
 		lblAddedWidget.set_label(label)
 		lblAddedWidget.set_visible(True)
-		for ch in vbAddedWidget.get_children():
+		for ch in vbAddedWidget.observe_children():
 			vbAddedWidget.remove(ch)
 		self.added_widget = widget
 		vbAddedWidget.append(widget)
@@ -329,7 +329,7 @@ class MacroEditor(Editor):
 
 	def on_Dialog_destroy(self, *a):
 		vbAddedWidget = self.builder.get_object("vbAddedWidget")
-		for ch in vbAddedWidget.get_children():
+		for ch in vbAddedWidget.observe_children():
 			vbAddedWidget.remove(ch)
 
 	def allow_first_page(self):

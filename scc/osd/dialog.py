@@ -147,10 +147,10 @@ class Dialog(OSDWindow):
 		"""Generates gtk widget for specified menutitem"""
 		widget = Gtk.Button.new_with_label(item.label)
 		widget.add_css_class("flat")
-		if hasattr(widget.get_children()[0], "set_xalign"):
-			widget.get_children()[0].set_xalign(0)
+		if hasattr(widget.observe_children()[0], "set_xalign"):
+			widget.observe_children()[0].set_xalign(0)
 		else:
-			widget.get_children()[0].set_halign(Gtk.Align.START)
+			widget.observe_children()[0].set_halign(Gtk.Align.START)
 		widget.set_name("osd-menu-item")
 
 		return widget

@@ -229,7 +229,7 @@ class OSDWindow(Gtk.Window):
 		return self.get_window().get_width(), self.get_window().get_height()
 
 	def show(self) -> None:
-		self.get_children()[0].show()
+		self.observe_children()[0].show()
 		self.realize()
 		self.get_window().set_override_redirect(True)
 
