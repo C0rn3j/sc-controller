@@ -77,7 +77,7 @@ class Editor(ComboSetter):
 		title_widget.set_label(title)
 
 	def close(self, *a):
-		self.window.destroy()
+		self.window.close()
 
 	def get_transient_for(self):
 		"""Return parent window for this editor. Usually main application window"""

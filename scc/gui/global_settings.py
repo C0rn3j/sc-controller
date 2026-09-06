@@ -758,8 +758,12 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		from scc.gui.creg.dialog import ControllerRegistration
 
 		cr = ControllerRegistration(self.app)
-		cr.window.connect("destroy", self.load_controllers)
+		cr.window.connect("close-request", self.on_controller_registration_closed)
 		cr.show(self.window)
+
+	def on_controller_registration_closed(self, *a):
+		self.load_controllers()
+		return False
 
 	def on_btRemoveController_clicked(self, *a):
 		tvControllers = self.builder.get_object("tvControllers")
@@ -781,7 +785,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 				log.exception(e)
 			self._needs_restart()
 			self.load_controllers()
-		d.destroy()
+		d.close()
 
 	def load_controllers(self, *a):
 		lstControllers = self.builder.get_object("lstControllers")
