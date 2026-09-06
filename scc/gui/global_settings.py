@@ -770,7 +770,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			buttons=Gtk.ButtonsType.YES_NO,
 			text=_("Unregister controller?"),
 		)
-		d.format_secondary_text(_("You'll lose all settings for it"))
+		d.set_property("secondary-text", _("You'll lose all settings for it"))
 		if d.run() == -8:
 			# Yes
 			model, iter = tvControllers.get_selection().get_selected()

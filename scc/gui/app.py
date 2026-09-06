@@ -429,7 +429,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			d.destroy()
 
 		d.connect("response", on_response)
-		d.format_secondary_markup(
+		d.set_property(
+			"secondary-text",
 			_("""Following command is going to be executed:
 
 <b>%s</b>
@@ -437,6 +438,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 %s""")
 			% (" ".join(shell_command), message),
 		)
+		d.set_property("secondary-use-markup", True)
 		d.show()
 
 	def hilight(self, button):
@@ -517,8 +519,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 					buttons=Gtk.ButtonsType.NONE,
 					text=_("Unable to hide the window to the system tray"),
 				)
-				dialog.format_secondary_text(
-					_("Do you want to quit the application instead?")
+				dialog.set_property(
+					"secondary-text", _("Do you want to quit the application instead?")
 				)
 				dialog.add_buttons(
 					_("_Cancel"), Gtk.ResponseType.CANCEL,
@@ -1353,7 +1355,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			buttons=Gtk.ButtonsType.OK_CANCEL,
 			text=text,
 		)
-		d.format_secondary_text(_("This action is not undoable!"))
+		d.set_property("secondary-text", _("This action is not undoable!"))
 
 		if d.run() == -5:  # OK button, no idea where is this defined...
 			fname = os.path.join(get_profiles_path(), name + ".sccprofile")

@@ -187,7 +187,7 @@ class MenuActionCofC(UserDataManager):
 		)
 
 		if MenuEditor.menu_is_global(id):
-			d.format_secondary_text(_("This action is not undoable!"))
+			d.set_property("secondary-text", _("This action is not undoable!"))
 
 		if d.run() == -5:  # OK button, no idea where is this defined...
 			if MenuEditor.menu_is_global(id):
