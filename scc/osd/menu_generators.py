@@ -122,7 +122,9 @@ class WindowListMenuGenerator(MenuGenerator):
 		rv: list[MenuItem] = []
 		x11_dpy = None
 		if isinstance(Gdk.Display.get_default(), GdkX11.X11Display):
-			x11_dpy = X.Display(hash(GdkX11.x11_get_default_xdisplay()))
+			from scc.x11 import get_xdisplay
+
+			x11_dpy = get_xdisplay()
 		if x11_dpy is not None:
 			root = X.get_default_root_window(x11_dpy)
 

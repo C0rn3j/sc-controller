@@ -8,14 +8,14 @@ prints chosen item id to stdout
 import logging
 import sys
 
-from gi.repository import GdkX11, Gtk
+from gi.repository import Gtk
 
 from scc.config import Config
 from scc.constants import DEFAULT, DPAD, LSTICK, ControllerFlags, HapticPos
 from scc.gui.daemon_manager import DaemonManager
-from scc.lib import xwrappers as X
 from scc.menu_data import MenuData
 from scc.osd import OSDWindow, StickController
+from scc.x11 import get_xdisplay
 
 log = logging.getLogger("osd.dialog")
 
@@ -39,7 +39,7 @@ class Dialog(OSDWindow):
 		self.feedback = None
 		self.controller = None
 		self._control_with_dpad: bool = False
-		self.xdisplay = X.Display(hash(GdkX11.x11_get_default_xdisplay()))  # Magic
+		self.xdisplay = get_xdisplay()
 
 		self.parent = self.create_parent()
 		self.f = Gtk.Fixed()
