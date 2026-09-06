@@ -270,7 +270,7 @@ class OSDWindow(Gtk.Window):
 				if surface is not None:
 					monitor = Gdk.Display.get_default().get_monitor_at_surface(surface)
 			if monitor is not None:
-				geometry = monitor.get_workarea()
+				geometry = monitor.get_geometry()
 				window_width, window_height = self.get_window_size()
 				max_x = max(0.0, float(geometry.width - window_width))
 				max_y = max(0.0, float(geometry.height - window_height))
