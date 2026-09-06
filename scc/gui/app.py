@@ -1518,7 +1518,6 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		imgDaemonStatus.set_from_file(icon)
 		mnuEmulationEnabled.set_sensitive(True)
 		mnuEmulationEnabledTray.set_sensitive(True)
-		self.window.set_icon_from_file(icon)
 		self.status = status
 		if self.statusicon:
 			GLib.idle_add(self.statusicon.set, "scc-%s" % (self.status,), _("SC Controller"))
