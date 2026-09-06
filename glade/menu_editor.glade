@@ -120,7 +120,6 @@
                 <property name="label" translatable="yes">Stored in Profile</property>
                 <property name="focusable">1</property>
                 <property name="margin-top">10</property>
-                <property name="active">1</property>
                 <property name="group">rbGlobal</property>
                 <signal name="toggled" handler="on_entName_changed" swapped="no"/>
                 <layout>
