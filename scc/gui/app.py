@@ -528,11 +528,13 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				)
 				dialog.set_default_response(Gtk.ResponseType.CANCEL)
 
-				response = dialog.run()
-				dialog.destroy()
+				def on_response(dialog, response) -> None:
+					dialog.close()
+					if response == Gtk.ResponseType.OK:
+						self.on_mnuExit_activate()
 
-				if response == Gtk.ResponseType.OK:
-					self.on_mnuExit_activate()
+				dialog.connect("response", on_response)
+				dialog.present()
 		else:
 			self.on_mnuExit_activate()
 		return True # TRUE to stop other handlers from being invoked for the event. FALSE to propagate the event further.
