@@ -363,8 +363,16 @@ class Menu(OSDWindow):
 			icon_file = item.icon.get_file().get_path()
 			has_colors = True
 		elif isinstance(item.icon, Gio.ThemedIcon):
-			icon = Gtk.IconTheme.get_default().choose_icon(item.icon.get_names(), 64, 0)
-			icon_file = icon.get_filename() if icon else None
+			icon_names = item.icon.get_names()
+			icon = Gtk.IconTheme.get_for_display(Gdk.Display.get_default()).lookup_icon(
+				icon_names[0],
+				icon_names[1:],
+				64,
+				self.get_scale_factor(),
+				self.get_direction(),
+				Gtk.IconLookupFlags(0),
+			)
+			icon_file = icon.get_file().get_path() if icon and icon.get_file() else None
 			has_colors = True
 		else:
 			icon_file, has_colors = find_icon(item.icon, self.PREFER_BW_ICONS)
