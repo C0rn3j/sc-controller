@@ -9,12 +9,11 @@ Reuses styles from OSD Menu and OSD Dialog
 import logging
 import os
 
-from gi.repository import GdkX11, Gio, Gtk, Pango
+from gi.repository import Gio, Gtk, Pango
 
 from scc.config import Config
 from scc.constants import DEFAULT, STICK_PAD_MAX, ControllerFlags, HapticPos, SCPads, SCSticks
 from scc.gui.daemon_manager import DaemonManager
-from scc.lib import xwrappers as X
 from scc.osd import OSDWindow, StickController
 from scc.paths import get_share_path
 from scc.tools import _, circle_to_square, clamp, point_in_gtkrect
@@ -49,7 +48,9 @@ class Launcher(OSDWindow):
 		self.config: Config | None = None
 		self.feedback: tuple[HapticPos, int] | None = None
 		self.controller = None
-		self.xdisplay = X.Display(hash(GdkX11.x11_get_default_xdisplay()))  # Magic
+		from scc.x11 import get_xdisplay
+
+		self.xdisplay = get_xdisplay()
 
 		self.create_parent()
 		self.create_app_list()

@@ -487,7 +487,9 @@ class FakeMapper:
 	"""
 
 	def __init__(self, editor):
-		self._xdisplay = X.Display(hash(GdkX11.x11_get_default_xdisplay()))
+		from scc.x11 import get_xdisplay
+
+		self._xdisplay = get_xdisplay()
 		self.editor = editor
 
 	def get_xdisplay(self):

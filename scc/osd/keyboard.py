@@ -330,7 +330,9 @@ class Keyboard(OSDWindow, TimerManager):
 		self.profile = Profile(TalkingActionParser())
 		self.config = config or Config()
 		if isinstance(Gdk.Display.get_default(), GdkX11.X11Display):
-			self.x11_dpy = X.Display(hash(GdkX11.x11_get_default_xdisplay()))
+			from scc.x11 import get_xdisplay
+
+			self.x11_dpy = get_xdisplay()
 			self.group = None
 		else:
 			self.x11_dpy = None
