@@ -3,7 +3,6 @@
   <requires lib="gtk" version="4.0"/>
   <object class="GtkDialog" id="Dialog">
     <property name="title" translatable="yes">About SC Controller</property>
-    <property name="icon">../images/sc-controller-small.svg</property>
     <signal name="response" handler="on_dialog_response" swapped="no"/>
     <property name="child">
       <object class="GtkBox" id="vb1">
