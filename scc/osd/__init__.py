@@ -96,11 +96,6 @@ class OSDWindow(Gtk.Window):
 			pass
 		if not self.using_wlroots:
 			self.set_decorated(False)
-			self.stick()
-			self.set_skip_taskbar_hint(True)
-			self.set_skip_pager_hint(True)
-			self.set_keep_above(True)
-			self.set_type_hint(Gdk.WindowTypeHint.NOTIFICATION)
 
 	@staticmethod
 	def _apply_css(config: Config) -> None:
