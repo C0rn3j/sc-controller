@@ -17,7 +17,7 @@ from gi.repository import Gdk, Gio, GLib, Gtk
 
 from scc.actions import NoAction
 from scc.config import Config
-from scc.constants import DAEMON_VERSION, DPAD, STICK_PAD_MAX, SCButtons, SCPads, SCSticks
+from scc.constants import DAEMON_VERSION, DPAD, STICK_PAD_MAX, SCButtons, SCPads, SCSticks, SCTouchpads
 from scc.custom import load_custom_module
 from scc.gui.binding_editor import BindingEditor
 from scc.gui.controller_image import ControllerImage
@@ -471,7 +471,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		mnuCopy.set_sensitive(bool(self.get_action(self.current, for_id)))
 		mnuClear.set_sensitive(bool(self.get_action(self.current, for_id)))
 		mnuPaste.set_sensitive(clp.wait_is_text_available())
-		mnuEPress.set_visible(for_id in STICKS + PADS)
+		mnuEPress.set_visible(for_id in (SCPads.LPAD, SCPads.RPAD, SCPads.CPAD, SCSticks.LSTICK, SCSticks.RSTICK))
 		mnuEPressS.set_visible(mnuEPress.get_visible())
 
 		mnuPopup.popup(None, None, None, None, 3, Gtk.get_current_event_time())
