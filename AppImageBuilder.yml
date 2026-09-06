@@ -116,9 +116,6 @@ AppDir:
       - libgtk-4-1
       - libgtk4-layer-shell-dev
       - gir1.2-gtk4layershell-1.0
-      - gir1.2-ayatanaappindicator3-0.1
-      - libdbusmenu-glib4
-      - libdbusmenu-gtk3-4
       - librsvg2-common
       - libwayland-client0
       - libwayland-cursor0
@@ -149,7 +146,7 @@ AppDir:
       - "*-icon-theme"  # gui
       - "*crypt*"       # security
       - "*dconf*"       # gui configuration
-      - "libdbus-1*"    # process communication (keep libdbusmenu for the tray icon)
+      - "libdbus-1*"    # process communication
       - "*gcc*"         # development
       - "*systemd*"     # linux core
       - libblk*         # filesystem
