@@ -290,7 +290,6 @@
     </property>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="header">
-        <property name="has-subtitle">False</property>
         <child type="end">
           <object class="GtkButton" id="btSave">
             <property name="child">

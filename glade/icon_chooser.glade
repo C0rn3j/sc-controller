@@ -159,7 +159,6 @@
             </style>
           </object>
         </property>
-        <property name="has-subtitle">False</property>
         <child>
           <object class="GtkLinkButton" id="btUserFolder">
             <property name="label" translatable="yes">button</property>
