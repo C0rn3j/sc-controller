@@ -380,7 +380,7 @@ class Menu(OSDWindow):
 			icon = MenuIcon(icon_file, has_colors)
 			label = widget.get_child()
 			widget.set_child(None)
-			box = Gtk.Box()
+			box = Gtk.Box(spacing=5)
 			box.append(icon)
 			box.append(label)
 			widget.set_child(box)
@@ -666,7 +666,8 @@ class MenuIcon(Gtk.DrawingArea):
 
 	def __init__(self, filename, has_colors=False):
 		Gtk.DrawingArea.__init__(self)
-		self.connect("notify::height", self.on_height_changed)
+		self.set_content_width(32)
+		self.set_content_height(32)
 		self.set_draw_func(self.on_draw)
 		self.has_colors = has_colors
 		self.set_filename(filename)
@@ -677,25 +678,17 @@ class MenuIcon(Gtk.DrawingArea):
 		else:
 			self.pb = GdkPixbuf.Pixbuf.new_from_file(filename)
 
-	def on_height_changed(self, *args):
-		height = self.get_height()
-		if height > 0 and self.get_width() < height:
-			self.set_size_request(height, -1)
-
 	def on_draw(self, drawing_area, cr, width, height):
-		if width >= height:
-			context = Gtk.Widget.get_style_context(self)
-			Gtk.render_background(context, cr, 0, 0, width, height)
-			if self.pb is None:
-				# No icon set
-				return
-			scaled = self.pb.scale_simple(height, height, GdkPixbuf.InterpType.BILINEAR)
-			Gdk.cairo_set_source_pixbuf(cr, scaled, 0, 0)
+		icon_size = min(width, height)
+		if icon_size <= 0 or self.pb is None:
+			return
+		context = Gtk.Widget.get_style_context(self)
+		Gtk.render_background(context, cr, 0, 0, width, height)
+		scaled = self.pb.scale_simple(icon_size, icon_size, GdkPixbuf.InterpType.BILINEAR)
+		Gdk.cairo_set_source_pixbuf(cr, scaled, 0, 0)
+		cr.paint()
+		if not self.has_colors:
+			cr.set_operator(cairo.OPERATOR_IN)
+			Gdk.cairo_set_source_rgba(cr, context.get_color())
 			cr.paint()
-			if self.has_colors:
-				return
-			else:
-				cr.set_operator(cairo.OPERATOR_IN)
-				Gdk.cairo_set_source_rgba(cr, context.get_color(Gtk.StateFlags.NORMAL))
-				cr.paint()
-				cr.set_operator(cairo.OPERATOR_OVER)
+			cr.set_operator(cairo.OPERATOR_OVER)

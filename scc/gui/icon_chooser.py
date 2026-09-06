@@ -204,6 +204,10 @@ class CellRendererMenuIcon(Gtk.CellRenderer):
 			color_flags = Gtk.StateFlags.NORMAL
 			if (flags & Gtk.CellRendererState.SELECTED) != 0:
 				color_flags = Gtk.StateFlags.SELECTED
-			Gdk.cairo_set_source_rgba(cr, context.get_color(color_flags))
+			context.save()
+			context.set_state(color_flags)
+			color = context.get_color()
+			context.restore()
+			Gdk.cairo_set_source_rgba(cr, color)
 			cr.mask_surface(surf, cell_area.x, cell_area.y)
 		cr.fill()
