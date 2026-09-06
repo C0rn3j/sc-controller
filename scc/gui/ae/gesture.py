@@ -206,7 +206,6 @@ class GestureGrabber:
 		self.rvGestureGrab = self.builder.get_object("rvGestureGrab")
 		# Can't use autoconnect for this :(
 		self.gesture_grabber.connect("close-request", self.close)
-		self.gesture_grabber.connect("destroy", self.close)
 		self.builder.get_object("btnStartGestureOver").connect("clicked", self.start_over)
 		self.builder.get_object("btnConfirmGesutre").connect("clicked", self.use)
 
@@ -292,7 +291,7 @@ class GestureGrabber:
 		self._gd.use_daemon(self.editor.app.dm)
 		self._gd.show()
 		self._gd.connect("gesture-updated", self.on_gesture_updated)
-		self._gd.connect("destroy", self.on_gesture_recognized)
+		self._gd.connect("close-request", self.on_gesture_recognized)
 		self.lock_buttons()
 
 	def on_gesture_updated(self, gd, gstr):
@@ -304,7 +303,7 @@ class GestureGrabber:
 		self.disconnect_signals()
 		if gd.get_exit_code() != 0:
 			# Canceled or cannot grab controller
-			return
+			return False
 		if gd.get_gesture():
 			self.on_gesture_updated(gd, gd.get_gesture())
 			if self._gesture == None:
@@ -318,3 +317,4 @@ class GestureGrabber:
 				self.lblGestureStatus.set_label(_("Gesture differs"))
 
 		self._create_gd()
+		return False

@@ -314,7 +314,7 @@ class OSDWindow(Gtk.Window):
 		if self.mainloop:
 			self.mainloop.quit()
 		else:
-			self.destroy()
+			self.close()
 
 
 class OSDCssMagic(dict):

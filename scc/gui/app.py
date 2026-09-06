@@ -434,8 +434,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 						text=_("Command Failed"),
 					)
 					d2.run()
-					d2.destroy()
-			d.destroy()
+					d2.close()
+			d.close()
 
 		d.connect("response", on_response)
 		d.set_property(
@@ -734,7 +734,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			d.add_button(_("Create New Profile"), NEW_PROFILE_BUTTON)
 
 			r = d.run()
-			d.destroy()
+			d.close()
 			if r == NEW_PROFILE_BUTTON:
 				# New profile button clicked
 				ps = self.profile_switchers[0]
@@ -1033,7 +1033,6 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		vbSwitchers = self.builder.get_object("vbSwitchers")
 		sepSwitchers = self.builder.get_object("sepSwitchers")
 		vbSwitchers.remove(s)
-		s.destroy()
 		if len(vbSwitchers.observe_children()) == 2:
 			sepSwitchers.set_visible(False)
 
@@ -1393,7 +1392,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 					ps.refresh_profile_path(name)
 			except Exception as e:
 				log.error("Failed to remove %s: %s", fname, e)
-		d.destroy()
+		d.close()
 
 	def mnuTurnoffController_activate(self, *a) -> None:
 		mnuPS = self.builder.get_object("mnuPS")
@@ -1491,7 +1490,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				def i_told_you_to_quit(*a) -> Never:
 					sys.exit(0)
 
-				ied.window.connect("destroy", i_told_you_to_quit)
+				ied.window.connect("close-request", i_told_you_to_quit)
 				ied.show(self.window)
 				# Skip first screen and try to import this file
 				ied.import_file(filename)

@@ -559,6 +559,7 @@ class Menu(OSDWindow):
 		self._submenu = None
 		if self.using_wlroots:
 			self.layer_shell.set_layer(self, self.layer_shell.Layer.OVERLAY)
+		return False
 
 	def show_submenu(self, trash, trash2, trash3, menuitem):
 		"""Called when user chooses menu item pointing to submenu"""
@@ -596,7 +597,7 @@ class Menu(OSDWindow):
 			self._submenu.use_daemon(self.daemon)
 			self._submenu.use_controller(self.controller)
 			self._submenu.controller = self.controller
-			self._submenu.connect("destroy", self.on_submenu_closed)
+			self._submenu.connect("close-request", self.on_submenu_closed)
 			self._submenu.show()
 			self.set_name("osd-menu-inactive")
 
