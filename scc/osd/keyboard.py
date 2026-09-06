@@ -68,8 +68,7 @@ class KeyboardImage(Gtk.DrawingArea):
 
 	def __init__(self, image):
 		Gtk.DrawingArea.__init__(self)
-		self.connect("size-allocate", self.on_size_allocate)
-		self.connect("draw", self.on_draw)
+		self.set_draw_func(self.on_draw)
 
 		areas = []
 		self.color_button1 = 0.8, 0, 0, 1  # Just random mess,
@@ -185,7 +184,7 @@ class KeyboardImage(Gtk.DrawingArea):
 		i = self._button_images[x]
 		return i
 
-	def on_draw(self, self2, ctx):
+	def on_draw(self, drawing_area, ctx, width, height):
 		ctx.select_font_face(self.font_face, 0, 0)
 
 		ctx.set_line_width(self.LINE_WIDTH)
@@ -271,10 +270,6 @@ class KeyboardImage(Gtk.DrawingArea):
 				ctx.show_text(line)
 				ctx.stroke()
 
-	def on_size_allocate(self, *a):
-		pass
-
-
 class Button:
 	def __init__(self, tree, area):
 		self.contains = area.contains
@@ -324,8 +319,12 @@ class Keyboard(OSDWindow, TimerManager):
 		OSDWindow.__init__(self, "osd-keyboard")
 		self.daemon: DaemonManager | None = None
 		self.mapper = None
-		self.keymap = Gdk.Keymap.get_default()
-		self.keymap.connect("state-changed", self.on_keymap_state_changed)
+		self.display = Gdk.Display.get_default()
+		seat = self.display.get_default_seat()
+		self.keyboard_device = seat.get_keyboard() if seat is not None else None
+		if self.keyboard_device is not None:
+			self.keyboard_device.connect("notify::modifier-state", self.on_keymap_state_changed)
+			self.keyboard_device.connect("notify::active-layout-index", self.on_keymap_state_changed)
 		Action.register_all(sys.modules["scc.osd.osk_actions"], prefix="OSK")
 		self.profile = Profile(TalkingActionParser())
 		self.config = config or Config()
@@ -405,7 +404,7 @@ class Keyboard(OSDWindow, TimerManager):
 		if self.background is not None:
 			self.background.queue_draw()
 
-	def on_keymap_state_changed(self, x11keymap) -> None:
+	def on_keymap_state_changed(self, *a) -> None:
 		if not self.timer_active("labels"):
 			self.timer("labels", 0.1, self.update_labels)
 
@@ -478,8 +477,14 @@ class Keyboard(OSDWindow, TimerManager):
 		# Get current layout group
 		if self.x11_dpy is not None:
 			self.group = X.get_xkb_state(self.x11_dpy).group
+		elif self.keyboard_device is not None:
+			self.group = self.keyboard_device.get_active_layout_index()
 		# Get state of shift/alt/ctrl key
-		mt = Gdk.ModifierType(self.keymap.get_modifier_state())
+		mt = (
+			self.keyboard_device.get_modifier_state()
+			if self.keyboard_device is not None
+			else Gdk.ModifierType(0)
+		)
 		# On Wayland a client does not necessarily observe modifier state from the uinput keyboard it created.
 		# Include modifiers held by the OSK's own virtual keyboard so its labels still match the keys it will emit.
 		if self.x11_dpy is None and self.mapper is not None:
@@ -490,11 +495,12 @@ class Keyboard(OSDWindow, TimerManager):
 		for button in self.background.buttons:
 			if getattr(Keys, button.name, None) in KEY_TO_KEYCODE:
 				keycode = KEY_TO_KEYCODE[getattr(Keys, button.name)]
-				translation = self.keymap.translate_keyboard_state(keycode, mt, self.group)
-				if hasattr(translation, "keyval"):
-					code = Gdk.keyval_to_unicode(translation.keyval)
-				else:
-					code = Gdk.keyval_to_unicode(translation[1])
+				translated, keyval, _effective_group, _level, _consumed = self.display.translate_key(
+					keycode, mt, self.group,
+				)
+				if not translated:
+					continue
+				code = Gdk.keyval_to_unicode(keyval)
 				if code >= 33:  # Printable chars, w/out space
 					labels[button] = chr(code).strip()
 				else:
