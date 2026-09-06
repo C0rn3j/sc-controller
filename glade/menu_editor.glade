@@ -150,7 +150,7 @@
                 <child>
                   <object class="GtkSeparator" id="sep17">
                     <property name="orientation">vertical</property>
-                    <property name="draw">False</property>
+                    <property name="opacity">0</property>
                   </object>
                 </child>
                 <child>
