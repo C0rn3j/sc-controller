@@ -174,7 +174,7 @@ class OSDDaemon:
 				# TODO: is allowed
 				if len(self._visible_messages):
 					tmp = list(self._visible_messages.values())
-					height = tmp[0].get_size().height
+					height = tmp[0].get_height()
 					x, y = m.position
 					while y in [i.position[1] for i in tmp]:
 						y -= height + 5
