@@ -80,7 +80,6 @@
   <object class="GtkWindow" id="gesture_grabber">
     <property name="resizable">0</property>
     <property name="modal">1</property>
-    <property name="urgency-hint">True</property>
     <property name="child">
       <object class="GtkGrid" id="grid2">
         <property name="margin-start">10</property>
