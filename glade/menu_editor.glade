@@ -25,9 +25,7 @@
           <object class="GtkRevealer" id="rvInvalidID">
             <property name="child">
               <object class="GtkInfoBar" id="ibNope">
-                <property name="app-paintable">True</property>
                 <property name="hexpand">0</property>
-                <property name="orientation">vertical</property>
                 <property name="message-type">error</property>
                 <child>
                   <object class="GtkBox" id="nonimportatboxthatneedsidjustbecauseofubuntu1">
