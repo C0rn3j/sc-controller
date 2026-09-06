@@ -43,8 +43,8 @@ class Dialog(OSDWindow):
 
 		self.parent = self.create_parent()
 		self.f = Gtk.Fixed()
-		self.f.add(self.parent)
-		self.add(self.f)
+		self.f.put(self.parent, 0, 0)
+		self.set_child(self.f)
 
 		self._scon = StickController()
 		self._scon.connect("direction", self.on_stick_direction)
