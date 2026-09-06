@@ -310,8 +310,8 @@ class Keyboard(OSDWindow, TimerManager):
 		Keys.KEY_RIGHTSHIFT: Gdk.ModifierType.SHIFT_MASK,
 		Keys.KEY_LEFTCTRL: Gdk.ModifierType.CONTROL_MASK,
 		Keys.KEY_RIGHTCTRL: Gdk.ModifierType.CONTROL_MASK,
-		Keys.KEY_LEFTALT: Gdk.ModifierType.MOD1_MASK,  # TODO(Martin): Change to ALT_MASK for Gdk4
-		Keys.KEY_RIGHTALT: Gdk.ModifierType.MOD1_MASK,  # TODO(Martin): Change to ALT_MASK for Gdk4
+		Keys.KEY_LEFTALT: Gdk.ModifierType.ALT_MASK,
+		Keys.KEY_RIGHTALT: Gdk.ModifierType.ALT_MASK,
 	}
 
 	def __init__(self, config=None) -> None:
