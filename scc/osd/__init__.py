@@ -189,24 +189,26 @@ class OSDWindow(Gtk.Window):
 		return True
 
 	def make_window_clicktrough(self):
-		(width, height) = self.get_size()
+		width, height = self.get_window_size()
+		if width <= 0 or height <= 0:
+			return False
 		surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
 		surface_ctx = cairo.Context(surface)
 		surface_ctx.set_source_rgba(0.0, 0.0, 0.0, 0.0)
 		surface_ctx.set_operator(cairo.OPERATOR_SOURCE)
 		surface_ctx.paint()
 		reg = Gdk.cairo_region_create_from_surface(surface)
-		self.input_shape_combine_region(reg)
+		self.get_surface().set_input_region(reg)
+		return False
 
 	def get_active_screen_geometry(self):
 		"""Return geometry of active screen or None if active screen cannot be determined."""
-		screen = self.get_window().get_screen()
-		active_window = screen.get_active_window()
-		if active_window:
-			monitor = screen.get_monitor_at_window(active_window)
-			if monitor is not None:
-				return screen.get_monitor_geometry(monitor)
-		return None
+		display = Gdk.Display.get_default()
+		surface = self.get_surface()
+		monitor = display.get_monitor_at_surface(surface) if surface is not None else None
+		if monitor is None:
+			monitor = display.get_monitors().get_item(0)
+		return monitor.get_geometry() if monitor is not None else None
 
 	def compute_position(self):
 		"""Adjust position for currently active screen (display)."""
@@ -226,15 +228,13 @@ class OSDWindow(Gtk.Window):
 		return x, y
 
 	def get_window_size(self):
-		return self.get_window().get_width(), self.get_window().get_height()
+		return self.get_width(), self.get_height()
 
 	def show(self) -> None:
-		self.observe_children()[0].show()
-		self.realize()
-		self.get_window().set_override_redirect(True)
+		self.get_child().show()
 
-		x, y = self.compute_position()
 		if self.using_wlroots:
+			x, y = self.position
 			if x < 0:
 				self.layer_shell.set_anchor(self, self.x_layer_anchor, False)
 				self.x_layer_anchor = self.layer_shell.Edge.RIGHT
@@ -249,6 +249,7 @@ class OSDWindow(Gtk.Window):
 			self.layer_shell.set_margin(self, self.y_layer_anchor, y)
 			self._layer_position = [float(x), float(y)]
 		else:  # X11
+			x, y = self.compute_position()
 			if x < 0:  # Negative X position is counted from right border
 				x = Gdk.Screen.width() - self.get_allocated_width() + x + 1
 			if y < 0:  # Negative Y position is counted from bottom border
@@ -256,7 +257,7 @@ class OSDWindow(Gtk.Window):
 			self.move(x, y)
 
 		Gtk.Window.show(self)
-		self.make_window_clicktrough()
+		GLib.idle_add(self.make_window_clicktrough)
 
 	def move_relative(self, dx: float, dy: float) -> None:
 		"""Move an OSD window by a relative amount on X11 or layer-shell."""
@@ -270,7 +271,9 @@ class OSDWindow(Gtk.Window):
 				]
 			monitor = self.layer_shell.get_monitor(self)
 			if monitor is None:
-				monitor = self.get_window().get_display().get_monitor_at_window(self.get_window())
+				surface = self.get_surface()
+				if surface is not None:
+					monitor = Gdk.Display.get_default().get_monitor_at_surface(surface)
 			if monitor is not None:
 				geometry = monitor.get_workarea()
 				window_width, window_height = self.get_window_size()
