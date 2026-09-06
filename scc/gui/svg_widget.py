@@ -70,7 +70,9 @@ class SVGWidget(Gtk.Box):
 		self.image_width: float = 1
 		self.image_height: float = 1
 		self.set_image(filename)
-		self.image: Gtk.Image = Gtk.Image()
+		self.image: Gtk.Picture = Gtk.Picture()
+		self.image.set_can_shrink(False)
+		self._pixbuf: GdkPixbuf.Pixbuf | None = None
 		if init_hilighted:
 			self.hilight({})
 		self.append(self.image)
@@ -265,11 +267,12 @@ class SVGWidget(Gtk.Box):
 			else:
 				self.cache[cache_id] = pixbuf
 
-		self.image.set_from_pixbuf(self.cache[cache_id])
+		self._pixbuf = self.cache[cache_id]
+		self.image.set_pixbuf(self._pixbuf)
 
 	def get_pixbuf(self):
 		"""Returns pixbuf of current image"""
-		return self.image.get_pixbuf()
+		return self._pixbuf
 
 	def edit(self) -> SVGEditor:
 		"""Returns new Editor instance bound to this widget"""
