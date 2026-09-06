@@ -182,7 +182,7 @@ class QuickMenu(Menu):
 			)
 			self._submenu.set_is_submenu()
 			self._submenu.use_daemon(self.daemon)
-			self._submenu.connect("destroy", self.on_submenu_closed)
+			self._submenu.connect("close-request", self.on_submenu_closed)
 			self._submenu.controller = self.controller
 			self._submenu.show()
 			self.cancel_timer()
@@ -194,6 +194,7 @@ class QuickMenu(Menu):
 			self._menuid = self._submenu._menuid
 		self._selected = self._submenu._selected
 		self.quit(self._submenu.get_exit_code())
+		return False
 
 	def pressed(self, what):
 		"""Called when button is pressed. If menu with that button assigned

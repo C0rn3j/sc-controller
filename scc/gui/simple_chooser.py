@@ -52,7 +52,6 @@ class SimpleChooser(Editor):
 	def set_action(self, action):
 		self.callback(action)
 		self.close()
-		self.window.destroy()
 
 	def hide_axes(self):
 		"""Prevents user from selecting axes"""

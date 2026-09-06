@@ -200,7 +200,7 @@ class MenuActionCofC(UserDataManager):
 				del self.app.current.menus[id]
 				self.app.on_profile_modified()
 			self.load_menu_list()
-		d.destroy()
+		d.close()
 
 	def on_menus_loaded(self, menus):
 		cb = self.builder.get_object("cbMenus")

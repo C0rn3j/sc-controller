@@ -348,7 +348,7 @@ class ControllerRegistration(Editor):
 		log.debug("Controller configuration '%s' written", config_file)
 
 		self.kill_tester()
-		self.window.destroy()
+		self.window.close()
 		GLib.timeout_add_seconds(1, self.app.dm.rescan)
 
 	def on_buffRawData_changed(self, buffRawData, *a):
@@ -408,7 +408,7 @@ class ControllerRegistration(Editor):
 			self.app.dm.stop()
 			GLib.timeout_add_seconds(1, self.app.dm.start)
 			self.kill_tester()
-			self.window.destroy()
+			self.window.close()
 
 	def on_btBack_clicked(self, *a):
 		stDialog = self.builder.get_object("stDialog")
@@ -520,8 +520,8 @@ class ControllerRegistration(Editor):
 			text=_("Failed to open device"),
 		)
 		d.run()
-		d.destroy()
-		self.window.destroy()
+		d.close()
+		self.window.close()
 
 	def kill_tester(self, *a):
 		"""Called when window is closed"""

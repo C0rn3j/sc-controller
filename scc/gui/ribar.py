@@ -109,10 +109,9 @@ class RIBar(Gtk.Revealer):
 		GLib.timeout_add(self.get_transition_duration() + 50, self._cb_destroy)
 
 	def _cb_destroy(self, *a):
-		"""Callback used by _cb_close method"""
+		"""Remove the revealer after its closing animation."""
 		if self.get_parent() is not None:
 			self.get_parent().remove(self)
-		self.destroy()
 
 	def set_value(self, key, value):
 		"""Stores some metadata"""

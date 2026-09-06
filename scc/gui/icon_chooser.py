@@ -56,7 +56,7 @@ class IconChooser(Editor, UserDataManager):
 
 	def on_btOk_clicked(self, *a):
 		icon = self.get_selected()
-		self.window.destroy()
+		self.window.close()
 		if icon:
 			self.callback(icon)
 
