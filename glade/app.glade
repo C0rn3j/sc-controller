@@ -136,7 +136,7 @@
     <signal name="close-request" handler="undeletable_dialog" swapped="no"/>
     <property name="child">
       <object class="GtkBox" id="dialog-vbox1">
-        <property name="visible">0</property>
+        <property name="visible">1</property>
         <property name="margin-start">18</property>
         <property name="margin-end">18</property>
         <property name="margin-top">18</property>
@@ -176,7 +176,6 @@
               <object class="GtkCheckButton" id="rbCopyProfile">
                 <property name="label" translatable="yes">Copy current profile</property>
                 <property name="focusable">1</property>
-                <property name="active">1</property>
                 <property name="group">rbNewProfile</property>
                 <signal name="toggled" handler="on_rbNewProfile_group_changed" swapped="no"/>
               </object>
@@ -231,7 +230,7 @@
     <signal name="close-request" handler="undeletable_dialog" swapped="no"/>
     <property name="child">
       <object class="GtkBox" id="dialog-vbox2">
-        <property name="visible">0</property>
+        <property name="visible">1</property>
         <property name="margin-start">18</property>
         <property name="margin-end">18</property>
         <property name="margin-top">18</property>
