@@ -151,7 +151,6 @@
         <child>
           <object class="GtkLabel" id="lblKey">
             <property name="focusable">1</property>
-            <property name="has-focus">1</property>
             <property name="label" translatable="yes">(...)</property>
             <layout>
               <property name="column">2</property>
