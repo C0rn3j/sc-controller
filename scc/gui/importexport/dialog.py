@@ -124,7 +124,7 @@ class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 	def _page_selected(self, page: GObject.Object | None) -> None:
 		stDialog = self.builder.get_object("stDialog")
 		hbDialog = self.builder.get_object("hbDialog")
-		hbDialog.set_title(stDialog.child_get_property(page, "title"))
+		self.set_headerbar_title(hbDialog, stDialog.child_get_property(page, "title"))
 		hname = f"on_{page.get_name()}_activated"
 		if hasattr(self, hname):
 			getattr(self, hname)()
