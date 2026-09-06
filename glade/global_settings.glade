@@ -146,7 +146,6 @@
   </object>
   <object class="GtkWindow" id="Dialog">
     <property name="width-request">650</property>
-    <property name="role">action-editor</property>
     <property name="resizable">0</property>
     <property name="destroy-with-parent">1</property>
     <signal name="destroy" handler="on_Dialog_destroy" swapped="no"/>
@@ -2012,7 +2011,6 @@ grips, triggers, finger positions on both pads and stick angle.</property>
   </object>
   <object class="GtkWindow" id="ConditionEditor">
     <property name="width-request">500</property>
-    <property name="role">condition editor</property>
     <property name="resizable">0</property>
     <property name="modal">1</property>
     <property name="transient-for">Dialog</property>

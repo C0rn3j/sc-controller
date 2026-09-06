@@ -17,7 +17,6 @@
   <object class="GtkWindow" id="Dialog">
     <property name="default-widget">btOK</property>
     <property name="width-request">650</property>
-    <property name="role">icon-chooser</property>
     <property name="destroy-with-parent">1</property>
     <child>
       <object class="GtkEventControllerKey">

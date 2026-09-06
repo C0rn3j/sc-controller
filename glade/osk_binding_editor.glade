@@ -2,7 +2,6 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <object class="GtkWindow" id="Dialog">
-    <property name="role">osk-bind-editor</property>
     <property name="resizable">0</property>
     <property name="modal">1</property>
     <property name="destroy-with-parent">1</property>
