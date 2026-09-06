@@ -7,10 +7,10 @@ from __future__ import annotations
 import logging
 import os
 import sys
-import cairo
 from math import sqrt
 from typing import TYPE_CHECKING
 
+import cairo
 from gi.repository import Gdk, GdkPixbuf, GdkX11, Gio, GLib, Gtk
 
 from scc.config import Config
@@ -27,12 +27,11 @@ from scc.constants import (
 	SCSticks,
 )
 from scc.gui.daemon_manager import DaemonManager
-from scc.lib import xwrappers as X
 from scc.menu_data import MenuData, Separator, Submenu
 from scc.osd import OSDWindow, StickController, menu_generators
 from scc.paths import get_share_path
 from scc.tools import _, circle_to_square, clamp, find_icon, find_menu
-from scc.x11 import autoswitcher
+from scc.x11 import autoswitcher, get_xdisplay
 
 if TYPE_CHECKING:
 	from scc.gui.daemon_manager import ControllerManager
@@ -63,7 +62,7 @@ class Menu(OSDWindow):
 		self.feedback: tuple[HapticPos, int] | None = None
 		self.controller = None
 		if isinstance(Gdk.Display.get_default(), GdkX11.X11Display):
-			self.xdisplay = X.Display(hash(GdkX11.x11_get_default_xdisplay()))  # Magic
+			self.xdisplay = get_xdisplay()
 		else:
 			self.xdisplay = None
 
