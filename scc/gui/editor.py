@@ -64,7 +64,17 @@ class Editor(ComboSetter):
 
 	def set_title(self, title):
 		self.window.set_title(title)
-		self.builder.get_object("header").set_title(title)
+		self.set_headerbar_title(self.builder.get_object("header"), title)
+
+	@staticmethod
+	def set_headerbar_title(headerbar, title):
+		"""Set a GTK4 header bar's title-widget label."""
+		title_widget = headerbar.get_title_widget()
+		if not isinstance(title_widget, Gtk.Label):
+			title_widget = Gtk.Label()
+			title_widget.add_css_class("title")
+			headerbar.set_title_widget(title_widget)
+		title_widget.set_label(title)
 
 	def close(self, *a):
 		self.window.destroy()
