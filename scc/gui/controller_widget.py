@@ -43,7 +43,11 @@ class ControllerWidget:
 
 		self.label = Gtk.Label()
 		self.label.set_ellipsize(Pango.EllipsizeMode.END)
-		self.icon = Gtk.Image.new_from_file(self.get_image()) if use_icon else None
+		if use_icon:
+			self.icon = Gtk.Picture.new_for_filename(self.get_image())
+			self.icon.set_can_shrink(False)
+		else:
+			self.icon = None
 		self.update()
 
 		motion = Gtk.EventControllerMotion.new()
