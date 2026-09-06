@@ -153,7 +153,7 @@ class ModeshiftEditor(Editor):
 		b.set_property("hexpand", True)
 		b.connect("clicked", self.on_actionb_clicked, index, what)
 		clearb = Gtk.Button()
-		clearb.set_image(Gtk.Image.new_from_stock("gtk-delete", Gtk.IconSize.SMALL_TOOLBAR))
+		clearb.set_child(Gtk.Image.new_from_icon_name("edit-delete-symbolic"))
 		clearb.add_css_class("flat")
 		clearb.connect("clicked", self.on_clearb_clicked, index, what)
 		grActions.attach(l, 0, i, 1, 1)
