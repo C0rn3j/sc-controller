@@ -339,13 +339,13 @@ class Menu(OSDWindow):
 			return widget
 		widget = Gtk.Button.new_with_label(item.label)
 		widget.add_css_class("flat")
-		if hasattr(widget.get_children()[0], "set_xalign"):
-			widget.get_children()[0].set_xalign(0)
+		if hasattr(widget.observe_children()[0], "set_xalign"):
+			widget.observe_children()[0].set_xalign(0)
 		else:
-			widget.get_children()[0].set_halign(Gtk.Align.START)
+			widget.observe_children()[0].set_halign(Gtk.Align.START)
 		if isinstance(item, Submenu):
 			item.callback = self.show_submenu
-			label1 = widget.get_children()[0]
+			label1 = widget.observe_children()[0]
 			label2 = Gtk.Label(label=_(">>"))
 			label2.set_property("margin-start", 30)
 			box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
@@ -371,8 +371,8 @@ class Menu(OSDWindow):
 
 		if icon_file:
 			icon = MenuIcon(icon_file, has_colors)
-			label = widget.get_children()[0]
-			for c in [] + widget.get_children():
+			label = widget.observe_children()[0]
+			for c in [] + widget.observe_children():
 				widget.remove(c)
 			box = Gtk.Box()
 			box.append(icon)

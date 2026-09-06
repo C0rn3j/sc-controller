@@ -983,7 +983,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 		vbSwitchers.append(ps)
 		vbSwitchers.reorder_child_after(ps, None)
-		if len(vbSwitchers.get_children()) == 2:
+		if len(vbSwitchers.observe_children()) == 2:
 			# 1st switcher is bellow separator, rest is stacked on top.
 			# That means separator should be moved and shown when 2nd
 			# switcher is created.
@@ -1009,7 +1009,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		sepSwitchers = self.builder.get_object("sepSwitchers")
 		vbSwitchers.remove(s)
 		s.destroy()
-		if len(vbSwitchers.get_children()) == 2:
+		if len(vbSwitchers.observe_children()) == 2:
 			sepSwitchers.set_visible(False)
 
 	def enable_test_mode(self, controller: ControllerManager | None = None) -> None:
