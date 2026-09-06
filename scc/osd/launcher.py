@@ -212,7 +212,7 @@ class Launcher(OSDWindow):
 		for i in range(len(launchers)):
 			self.items[i].set_name("osd-launcher-item")
 			self.items[i].launcher = launchers[i]
-			label = self.items[i].get_children()[0]
+			label = self.items[i].observe_children()[0]
 			label.set_markup(self._format_label_markup(launchers[i]))
 			label.set_max_width_chars(1)
 			label.set_ellipsize(Pango.EllipsizeMode.MIDDLE)
@@ -274,10 +274,10 @@ class Launcher(OSDWindow):
 			label = label.label
 		widget = Gtk.Button.new_with_label(label)
 		widget.add_css_class("flat")
-		if hasattr(widget.get_children()[0], "set_xalign"):
-			widget.get_children()[0].set_xalign(0)
+		if hasattr(widget.observe_children()[0], "set_xalign"):
+			widget.observe_children()[0].set_xalign(0)
 		else:
-			widget.get_children()[0].set_halign(Gtk.Align.START)
+			widget.observe_children()[0].set_halign(Gtk.Align.START)
 		widget.set_name("osd-menu-item")
 
 		return widget

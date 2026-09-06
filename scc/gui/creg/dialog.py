@@ -372,7 +372,7 @@ class ControllerRegistration(Editor):
 		stDialog = self.builder.get_object("stDialog")
 		btBack = self.builder.get_object("btBack")
 		btNext = self.builder.get_object("btNext")
-		pages = stDialog.get_children()
+		pages = stDialog.observe_children()
 		index = pages.index(stDialog.get_visible_child())
 		if index == 0:
 			model, iter = tvDevices.get_selection().get_selected()
@@ -414,7 +414,7 @@ class ControllerRegistration(Editor):
 		stDialog = self.builder.get_object("stDialog")
 		btBack = self.builder.get_object("btBack")
 		btNext = self.builder.get_object("btNext")
-		pages = stDialog.get_children()
+		pages = stDialog.observe_children()
 		index = pages.index(stDialog.get_visible_child())
 		if index == 1:
 			stDialog.set_visible_child(pages[0])
@@ -500,7 +500,7 @@ class ControllerRegistration(Editor):
 
 		self._controller_image.get_parent().remove(self._controller_image)
 		fxController.add(self._controller_image)
-		pages = stDialog.get_children()
+		pages = stDialog.observe_children()
 		stDialog.set_visible_child(pages[2])
 		cbEmulateC.grab_focus()
 		btNext.set_label("_Save")
@@ -692,7 +692,7 @@ class ControllerRegistration(Editor):
 
 	def on_area_click(self, trash, what):
 		stDialog = self.builder.get_object("stDialog")
-		pages = stDialog.get_children()
+		pages = stDialog.observe_children()
 		index = pages.index(stDialog.get_visible_child())
 		if index == 2:
 			if what in STICK_PAD_AREAS:

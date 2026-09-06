@@ -42,7 +42,7 @@ if "XDG_CURRENT_DESKTOP" in os.environ:
 		IS_UNITY = True
 
 		def _headerbar(bar) -> None:
-			children = [] + bar.get_children()
+			children = [] + bar.observe_children()
 			pack_start = []
 			pack_end = []
 			for c in children:

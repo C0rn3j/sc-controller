@@ -36,7 +36,7 @@ class HorizontalMenu(GridMenu):
 		if isinstance(item, (Separator, Submenu)) or item.id is None:
 			return None
 		widget = GridMenu.generate_widget(self, item)
-		icon = widget.get_children()[-1]
+		icon = widget.observe_children()[-1]
 		if self._size > 1 and isinstance(icon, MenuIcon):
 			widget.set_size_request(-1, 32 + self._size * 3)
 		return widget

@@ -325,11 +325,11 @@ class ActionEditor(Editor):
 		stActionModes = self.builder.get_object("stActionModes")
 		component.load()
 		if remove_rest:
-			for c in stActionModes.get_children():
+			for c in stActionModes.observe_children():
 				if c != component:
 					stActionModes.remove(c)
 
-		if component.get_widget() not in stActionModes.get_children():
+		if component.get_widget() not in stActionModes.observe_children():
 			stActionModes.add_child(component.get_widget())
 
 		component.set_action(self._mode, self._action)
@@ -1022,7 +1022,7 @@ class ActionEditor(Editor):
 				self.c_buttons[component] = b
 
 				component.load()
-				if component.get_widget() not in stActionModes.get_children():
+				if component.get_widget() not in stActionModes.observe_children():
 					stActionModes.add_child(component.get_widget())
 
 		if action.name is None:

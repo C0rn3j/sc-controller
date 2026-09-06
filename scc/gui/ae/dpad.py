@@ -87,7 +87,7 @@ class DPADComponent(AEComponent, MenuActionCofC, BindingEditor):
 		desc = describe_action(Action.AC_BUTTON, None, self.actions[i])
 		l = self.builder.get_object("lblDPAD%s" % (i,))
 		if l is None:
-			l = self.builder.get_object("btDPAD%s" % (i,)).get_children()[0]
+			l = self.builder.get_object("btDPAD%s" % (i,)).observe_children()[0]
 		l.set_markup(desc)
 
 	def get_button_title(self):

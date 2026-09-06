@@ -93,7 +93,7 @@ class Editor(ComboSetter):
 		vbAddedWidget = self.builder.get_object("vbAddedWidget")
 		lblAddedWidget.set_label(label)
 		lblAddedWidget.set_visible(True)
-		for ch in vbAddedWidget.get_children():
+		for ch in vbAddedWidget.observe_children():
 			vbAddedWidget.remove(ch)
 		self.added_widget = widget
 		vbAddedWidget.append(widget)
@@ -105,7 +105,7 @@ class Editor(ComboSetter):
 		Should be called from on_destory handlers.
 		"""
 		vbAddedWidget = self.builder.get_object("vbAddedWidget")
-		for ch in vbAddedWidget.get_children():
+		for ch in vbAddedWidget.observe_children():
 			vbAddedWidget.remove(ch)
 		self.added_widget = None
 
