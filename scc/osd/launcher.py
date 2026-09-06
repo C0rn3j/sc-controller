@@ -61,7 +61,7 @@ class Launcher(OSDWindow):
 		for c in self.cursors:
 			c.set_name("osd-menu-cursor")
 			c.selected = None
-			self.f.add(c)
+			self.f.put(c, 0, 0)
 		self.f.show()
 
 		self._scon = StickController()
@@ -101,8 +101,8 @@ class Launcher(OSDWindow):
 		self.parent = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 		self.parent.set_name("osd-dialog")
 		self.f = Gtk.Fixed()
-		self.f.add(self.parent)
-		self.add(self.f)
+		self.f.put(self.parent, 0, 0)
+		self.set_child(self.f)
 
 	def create_app_list(self):
 		lst = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)

@@ -372,12 +372,12 @@ class Keyboard(OSDWindow, TimerManager):
 		self._pack()
 
 	def _pack(self) -> None:
-		self.f.add(self.background)
-		self.f.add(self.cursors[SCLeftRight.LEFT])
-		self.f.add(self.cursors[SCLeftRight.RIGHT])
-		self.f.add(self.cursors[SCPads.CPAD])
-		self.c.add(self.f)
-		self.add(self.c)
+		self.f.put(self.background, 0, 0)
+		self.f.put(self.cursors[SCLeftRight.LEFT], 0, 0)
+		self.f.put(self.cursors[SCLeftRight.RIGHT], 0, 0)
+		self.f.put(self.cursors[SCPads.CPAD], 0, 0)
+		self.c.append(self.f)
+		self.set_child(self.c)
 
 	def recolor(self) -> None:
 		# TODO: keyboard description is probably not needed anymore
