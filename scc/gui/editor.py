@@ -53,8 +53,8 @@ class Editor(ComboSetter):
 		if Editor._error_css_provider is None:
 			Editor._error_css_provider = Gtk.CssProvider()
 			Editor._error_css_provider.load_from_data(Editor.ERROR_CSS.encode("utf-8"))
-			Gtk.StyleContext.add_provider_for_screen(
-				Gdk.Screen.get_default(), Editor._error_css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER,
+			Gtk.StyleContext.add_provider_for_display(
+				Gdk.Display.get_default(), Editor._error_css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER,
 			)
 
 	def hide_dont_destroy(self, w, *a):
