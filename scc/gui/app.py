@@ -179,6 +179,15 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.rstick_test: Image = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
 		self.dpad_test: Image = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
 		self.cpad_test: Image = Gtk.Image.new_from_file(os.path.join(self.imagepath, "test-cursor.svg"))
+		for marker in (
+			self.lpad_test,
+			self.rpad_test,
+			self.lstick_test,
+			self.rstick_test,
+			self.dpad_test,
+			self.cpad_test,
+		):
+			marker.set_visible(False)
 		self.main_area.put(self.lpad_test, 40, 40)
 		self.main_area.put(self.rpad_test, 290, 90)
 		self.main_area.put(self.lstick_test, 150, 40)
