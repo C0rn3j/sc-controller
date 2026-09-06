@@ -29,7 +29,7 @@ class Message(OSDWindow):
 		self.l.set_name("osd-label-%s" % (self.size,))
 		self.l.set_label(self.text)
 
-		self.add(self.l)
+		self.set_child(self.l)
 
 		if self.size < 2:
 			self.set_name("osd-message-1")
