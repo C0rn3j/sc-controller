@@ -155,10 +155,12 @@ class MenuActionCofC(UserDataManager):
 			me.allow_menus(self.allow_globals, self.allow_in_profile)
 			me.show(self.editor.window)
 
-	def on_cbMenus_button_press_event(self, trash, event):
-		if event.button == 3:
+	def on_cbMenus_button_press_event(self, gesture, n_press, x, y):
+		if gesture.get_current_button() == 3:
 			mnuMenu = self.builder.get_object("mnuMenu")
-			mnuMenu.popup(None, None, None, None, 3, Gtk.get_current_event_time())
+			if mnuMenu.get_parent() is None:
+				mnuMenu.set_parent(gesture.get_widget())
+			mnuMenu.popup()
 
 	def on_mnuMenuNew_activate(self, *a):
 		self.on_new_menu_selected()
@@ -185,7 +187,7 @@ class MenuActionCofC(UserDataManager):
 		)
 
 		if MenuEditor.menu_is_global(id):
-			d.format_secondary_text(_("This action is not undoable!"))
+			d.set_property("secondary-text", _("This action is not undoable!"))
 
 		if d.run() == -5:  # OK button, no idea where is this defined...
 			if MenuEditor.menu_is_global(id):
@@ -198,7 +200,7 @@ class MenuActionCofC(UserDataManager):
 				del self.app.current.menus[id]
 				self.app.on_profile_modified()
 			self.load_menu_list()
-		d.destroy()
+		d.close()
 
 	def on_menus_loaded(self, menus):
 		cb = self.builder.get_object("cbMenus")
@@ -463,7 +465,7 @@ class MenuActionCofC(UserDataManager):
 			spinner.get_buffer().set_text(str(val), -1)
 		return True
 
-	def on_sclMenuSize_format_value(self, scale, val):
+	def on_sclMenuSize_format_value(self, scale, val, *a):
 		cbm = self.builder.get_object("cbMenuType")
 		menu_type = cbm.get_model().get_value(cbm.get_active_iter(), 1)
 		if menu_type == "radialmenu":

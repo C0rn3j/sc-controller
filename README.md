@@ -3,7 +3,7 @@
 [![SCC Linux CI](https://github.com/C0rn3j/sc-controller/actions/workflows/scc-linux.yml/badge.svg?branch=python3)](https://github.com/C0rn3j/sc-controller/actions/workflows/scc-linux.yml)
 [![Build and publish AppImages](https://github.com/C0rn3j/sc-controller/actions/workflows/appimage.yml/badge.svg?event=release)](https://github.com/C0rn3j/sc-controller/actions/workflows/appimage.yml)
 
-User-mode driver, mapper and GTK3 based GUI for Steam Controller, DS4 and many other controllers.
+User-mode driver, mapper and GTK4 based GUI for Steam Controller, DS4 and many other controllers.
 
 [![screenshot1](docs/screenshot1-tn.png?raw=true)](docs/screenshot1.png?raw=true)
 [![screenshot2](docs/screenshot2-tn.png?raw=true)](docs/screenshot2.png?raw=true)
@@ -48,7 +48,7 @@ Windows/macOS:
 
 ### Dependencies
   - Python 3.12+
-  - GTK 3.24+
+  - GTK 4.x+
   - [PyGObject](https://live.gnome.org/PyGObject)
   - [python-gi-cairo](https://packages.debian.org/sid/python-gi-cairo) and [gir1.2-rsvg-2.0](https://packages.debian.org/sid/gir1.2-rsvg-2.0) on Debian-based distributions (included in PyGObject elsewhere)
   - [setuptools](https://pypi.python.org/pypi/setuptools)
@@ -58,7 +58,7 @@ Windows/macOS:
   - [python-libusb1](https://github.com/vpelletier/python-libusb1)
   - [python-hidraw-pure](https://github.com/vpelletier/python-hidraw) - Note: Temporarily vendored as v1.2 can conflict with python-hidapi, but system version is preferred by the code if present
   - [python-ioctl-opt](https://pypi.org/project/ioctl-opt/)
-  - [gtk-layer-shell](https://github.com/wmww/gtk-layer-shell)
+  - [gtk4-layer-shell](https://github.com/wmww/gtk4-layer-shell)
 
 ### Via Python into a local build directory
   - ~~Download and extract [latest release](https://github.com/C0rn3j/sc-controller/releases/latest)~~ .zip releases without .git directory are currently broken - tracked in [#50](https://github.com/C0rn3j/sc-controller/issues/50)

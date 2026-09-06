@@ -13,8 +13,8 @@ def main() -> None:
 
 	import gi
 
-	gi.require_version("Gtk", "3.0")
-	gi.require_version("GdkX11", "3.0")
+	gi.require_version("Gtk", "4.0")
+	gi.require_version("GdkX11", "4.0")
 	gi.require_version("Rsvg", "2.0")
 
 	from scc.paths import get_share_path
@@ -26,8 +26,6 @@ def main() -> None:
 
 	glades = os.path.join(get_share_path(), "glade")
 	images = os.path.join(get_share_path(), "images")
-	if Gtk.IconTheme.get_default():
-		Gtk.IconTheme.get_default().append_search_path(images)
 	# GObject.threads_init()
 
 	from scc.gui.app import App

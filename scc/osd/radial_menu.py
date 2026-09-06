@@ -58,7 +58,8 @@ class RadialMenu(Menu):
 	def create_parent(self) -> SVGWidget:
 		background = os.path.join(get_share_path(), "images", "radial-menu.svg")
 		self.b = SVGWidget(background)
-		self.b.connect("size-allocate", self.on_size_allocate)
+		self.b.connect("notify::width", self.on_size_allocate)
+		self.b.connect("notify::height", self.on_size_allocate)
 		self.recolor()
 		return self.b
 
@@ -87,10 +88,10 @@ class RadialMenu(Menu):
 
 		editor.commit()
 
-	def on_size_allocate(self, trash, allocation):
+	def on_size_allocate(self, *a):
 		"""(Re)centers all icons when menu is displayed or size is changed"""
-		cx = allocation.width * self.scale * 0.5
-		cy = allocation.height * self.scale * 0.5
+		cx = self.b.get_width() * self.scale * 0.5
+		cy = self.b.get_height() * self.scale * 0.5
 		radius = min(cx, cy) * 2 / 3
 		for i in self.items_with_icon:
 			angle, icon = float(i.a) * PI / 180.0, i.icon_widget
@@ -311,9 +312,9 @@ class RadialMenu(Menu):
 if __name__ == "__main__":
 	import gi
 
-	gi.require_version("Gtk", "3.0")
+	gi.require_version("Gtk", "4.0")
 	gi.require_version("Rsvg", "2.0")
-	gi.require_version("GdkX11", "3.0")
+	gi.require_version("GdkX11", "4.0")
 
 	from scc.tools import init_logging
 

@@ -3,8 +3,8 @@ from xml.etree import ElementTree as ET
 import gi
 import pytest
 
-gi.require_version("Gdk", "3.0")
-gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "4.0")
+gi.require_version("Gtk", "4.0")
 gi.require_version("Rsvg", "2.0")
 
 from scc.gui.svg_widget import SVGEditor, SVGWidget

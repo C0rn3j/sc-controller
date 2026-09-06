@@ -48,6 +48,8 @@ class DPADComponent(AEComponent, MenuActionCofC, BindingEditor):
 		if self.loaded:
 			return
 		AEComponent.load(self)
+		self.builder.get_object("sclDiagonalRange").set_format_value_func(self.on_sclDiagonalRange_format_value)
+		self.builder.get_object("sclMenuSize").set_format_value_func(self.on_sclMenuSize_format_value)
 		cbConfirmWith = self.builder.get_object("cbConfirmWith")
 		cbCancelWith = self.builder.get_object("cbCancelWith")
 		cbConfirmWith.set_row_separator_func(lambda model, iter: model.get_value(iter, 0) == "-")
@@ -85,7 +87,7 @@ class DPADComponent(AEComponent, MenuActionCofC, BindingEditor):
 		desc = describe_action(Action.AC_BUTTON, None, self.actions[i])
 		l = self.builder.get_object("lblDPAD%s" % (i,))
 		if l is None:
-			l = self.builder.get_object("btDPAD%s" % (i,)).get_children()[0]
+			l = self.builder.get_object("btDPAD%s" % (i,)).observe_children()[0]
 		l.set_markup(desc)
 
 	def get_button_title(self):
@@ -173,7 +175,7 @@ class DPADComponent(AEComponent, MenuActionCofC, BindingEditor):
 		self.set_button_desc(i)
 		self.update()
 
-	def on_sclDiagonalRange_format_value(self, scale, value):
+	def on_sclDiagonalRange_format_value(self, scale, value, *a):
 		return _("%s°") % (value,)
 
 	def on_btClearDiagonalRange_clicked(self, *a):

@@ -175,8 +175,8 @@ class ButtonsComponent(AEComponent, Chooser):
 		btnGrabAnother.set_visible(False)
 		parent = cbToggle.get_parent()
 		parent.remove(cbToggle)
-		parent.pack_start(replacement, True, True, 0)
-		parent.reorder_child(replacement, 0)
+		parent.append(replacement)
+		parent.reorder_child_after(replacement, None)
 		replacement.set_visible(True)
 
 	def hide_axes(self):

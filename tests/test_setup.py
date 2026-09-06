@@ -13,8 +13,8 @@ class TestSetup:
 		try:
 			import gi
 
-			gi.require_version("Gtk", "3.0")
-			gi.require_version("GdkX11", "3.0")
+			gi.require_version("Gtk", "4.0")
+			gi.require_version("GdkX11", "4.0")
 			gi.require_version("Rsvg", "2.0")
 		except ImportError:
 			pass

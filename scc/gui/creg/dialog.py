@@ -13,7 +13,7 @@ import re
 import evdev
 import gi
 
-gi.require_version("Gtk", "3.0")
+gi.require_version("Gtk", "4.0")
 gi.require_version("GdkPixbuf", "2.0")
 from gi.repository import GdkPixbuf, GLib, Gtk
 
@@ -76,6 +76,7 @@ class ControllerRegistration(Editor):
 
 	def setup_widgets(self):
 		Editor.setup_widgets(self)
+		self.builder.get_object("mnuStick").set_parent(self.window)
 		cursors = {}
 		for axis in self._axis_data:
 			if "trig" in axis.name:
@@ -347,7 +348,7 @@ class ControllerRegistration(Editor):
 		log.debug("Controller configuration '%s' written", config_file)
 
 		self.kill_tester()
-		self.window.destroy()
+		self.window.close()
 		GLib.timeout_add_seconds(1, self.app.dm.rescan)
 
 	def on_buffRawData_changed(self, buffRawData, *a):
@@ -371,7 +372,7 @@ class ControllerRegistration(Editor):
 		stDialog = self.builder.get_object("stDialog")
 		btBack = self.builder.get_object("btBack")
 		btNext = self.builder.get_object("btNext")
-		pages = stDialog.get_children()
+		pages = stDialog.observe_children()
 		index = pages.index(stDialog.get_visible_child())
 		if index == 0:
 			model, iter = tvDevices.get_selection().get_selected()
@@ -407,13 +408,13 @@ class ControllerRegistration(Editor):
 			self.app.dm.stop()
 			GLib.timeout_add_seconds(1, self.app.dm.start)
 			self.kill_tester()
-			self.window.destroy()
+			self.window.close()
 
 	def on_btBack_clicked(self, *a):
 		stDialog = self.builder.get_object("stDialog")
 		btBack = self.builder.get_object("btBack")
 		btNext = self.builder.get_object("btNext")
-		pages = stDialog.get_children()
+		pages = stDialog.observe_children()
 		index = pages.index(stDialog.get_visible_child())
 		if index == 1:
 			stDialog.set_visible_child(pages[0])
@@ -499,7 +500,7 @@ class ControllerRegistration(Editor):
 
 		self._controller_image.get_parent().remove(self._controller_image)
 		fxController.add(self._controller_image)
-		pages = stDialog.get_children()
+		pages = stDialog.observe_children()
 		stDialog.set_visible_child(pages[2])
 		cbEmulateC.grab_focus()
 		btNext.set_label("_Save")
@@ -519,8 +520,8 @@ class ControllerRegistration(Editor):
 			text=_("Failed to open device"),
 		)
 		d.run()
-		d.destroy()
-		self.window.destroy()
+		d.close()
+		self.window.close()
 
 	def kill_tester(self, *a):
 		"""Called when window is closed"""
@@ -691,7 +692,7 @@ class ControllerRegistration(Editor):
 
 	def on_area_click(self, trash, what):
 		stDialog = self.builder.get_object("stDialog")
-		pages = stDialog.get_children()
+		pages = stDialog.observe_children()
 		index = pages.index(stDialog.get_visible_child())
 		if index == 2:
 			if what in STICK_PAD_AREAS:
@@ -699,7 +700,7 @@ class ControllerRegistration(Editor):
 				mnuStick = self.builder.get_object("mnuStick")
 				mnuStick._what = "LSTICKPRESS" if what == "LSTICK" else what
 				mnuStick._axes = [self._axis_data[index] for index in axes]
-				mnuStick.popup(None, None, None, None, 1, Gtk.get_current_event_time())
+				mnuStick.popup()
 			elif what in TRIGGER_AREAS:
 				self._grabber = TriggerGrabber(self, self._axis_data[TRIGGER_AREAS[what]])
 			elif hasattr(SCButtons, what):

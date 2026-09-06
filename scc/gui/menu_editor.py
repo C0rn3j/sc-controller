@@ -44,16 +44,15 @@ class MenuEditor(Editor):
 		self.setup_widgets()
 
 	def setup_widgets(self):
-		self.builder = Gtk.Builder()
+		self.builder = Gtk.Builder(self)
 		self.builder.add_from_file(os.path.join(self.app.gladepath, self.GLADE))
 		lblItemIconName = self.builder.get_object("lblItemIconName")
 		vbChangeItemIcon = self.builder.get_object("vbChangeItemIcon")
 		self.window = self.builder.get_object("Dialog")
 		self.menu_icon = MenuIcon(None, True)
 		vbChangeItemIcon.remove(lblItemIconName)
-		vbChangeItemIcon.pack_start(self.menu_icon, False, True, 0)
-		vbChangeItemIcon.pack_start(lblItemIconName, True, True, 0)
-		self.builder.connect_signals(self)
+		vbChangeItemIcon.append(self.menu_icon)
+		vbChangeItemIcon.append(lblItemIconName)
 		headerbar(self.builder.get_object("header"))
 
 	def allow_menus(self, allow_globals, allow_in_profile):
@@ -299,7 +298,7 @@ class MenuEditor(Editor):
 			for i in items:
 				self._add_menuitem(i)
 
-	def on_Dialog_delete_event(self, *a):
+	def on_Dialog_close_request(self, *a):
 		try:
 			if self.original_type == MenuEditor.TYPE_GLOBAL:
 				MenuEditor.OPEN.remove(self.original_id + ".menu")
@@ -310,7 +309,7 @@ class MenuEditor(Editor):
 		return False
 
 	def close(self, *a):
-		self.on_Dialog_delete_event()
+		self.on_Dialog_close_request()
 		Editor.close(self)
 
 	def _load_items_from_file(self, id):

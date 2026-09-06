@@ -43,13 +43,22 @@ class ControllerWidget:
 
 		self.label = Gtk.Label()
 		self.label.set_ellipsize(Pango.EllipsizeMode.END)
-		self.icon = Gtk.Image.new_from_file(self.get_image()) if use_icon else None
+		if use_icon:
+			self.icon = Gtk.Picture.new_for_filename(self.get_image())
+			self.icon.set_can_shrink(False)
+		else:
+			self.icon = None
 		self.update()
 
-		self.widget.connect("enter", self.on_cursor_enter)
-		self.widget.connect("leave", self.on_cursor_leave)
+		motion = Gtk.EventControllerMotion.new()
+		motion.connect("enter", self.on_cursor_enter)
+		motion.connect("leave", self.on_cursor_leave)
+		self.widget.add_controller(motion)
 		self.widget.connect("clicked", self.on_click)
-		self.widget.connect("button-release-event", self.on_button_release)
+		click = Gtk.GestureClick.new()
+		click.set_button(0)
+		click.connect("released", self.on_button_release)
+		self.widget.add_controller(click)
 
 	def get_image(self):
 		return os.path.join(self.app.imagepath, self.name + ".svg")
@@ -60,8 +69,8 @@ class ControllerWidget:
 	def on_click(self, *a):
 		self.app.show_editor(self.id)
 
-	def on_button_release(self, bt, event):
-		if event.button == 3:
+	def on_button_release(self, gesture, n_press, x, y):
+		if gesture.get_current_button() == 3:
 			# Rightclick
 			self.app.show_context_menu(self.id)
 
@@ -82,13 +91,13 @@ class ControllerButton(ControllerWidget):
 			vbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 			vbox.set_spacing(6)
 			separator = Gtk.Separator(orientation=Gtk.Orientation.VERTICAL)
-			vbox.pack_start(self.icon, False, False, 1)
-			vbox.pack_start(separator, False, False, 1)
-			vbox.pack_start(self.label, False, True, 1)
-			self.widget.add(vbox)
+			vbox.append(self.icon)
+			vbox.append(separator)
+			vbox.append(self.label)
+			self.widget.set_child(vbox)
 		else:
-			self.widget.add(self.label)
-		self.widget.show_all()
+			self.widget.set_child(self.label)
+		self.widget.show()
 		self.label.set_max_width_chars(LONG_TEXT)
 		if name == "C":
 			self.label.set_max_width_chars(10)
@@ -117,8 +126,9 @@ class ControllerStick(ControllerWidget):
 
 		grid = Gtk.Grid()
 		grid.set_column_spacing(6)
-		self.widget.set_events(Gdk.EventMask.POINTER_MOTION_MASK)
-		self.widget.connect("motion-notify-event", self.on_cursor_motion)
+		motion = Gtk.EventControllerMotion.new()
+		motion.connect("motion", self.on_cursor_motion)
+		self.widget.add_controller(motion)
 		self.label.set_max_width_chars(LONG_TEXT)
 		if self.pressed:
 			self.label.set_halign(Gtk.Align.START)
@@ -136,8 +146,8 @@ class ControllerStick(ControllerWidget):
 		grid.attach(self.label, 2, 1, 1, 1)
 		self.over_icon = False
 		self.enable_press = enable_press
-		self.widget.add(grid)
-		self.widget.show_all()
+		self.widget.set_child(grid)
+		self.widget.show()
 
 	def on_cursor_enter(self, *a):
 		return
@@ -148,12 +158,12 @@ class ControllerStick(ControllerWidget):
 		else:
 			self.app.show_editor(self.id)
 
-	def on_cursor_motion(self, trash, event):
+	def on_cursor_motion(self, controller, x, y):
 		# self.icon.get_allocation().x + self.icon.get_allocation().width	# yields nonsense
 		ix2 = 74
 		# Check if cursor is placed on icon
 		what = None
-		if event.x < ix2:
+		if x < ix2:
 			what = {
 				Profile.LPAD: LEFT,
 				Profile.RPAD: RIGHT,
@@ -255,8 +265,8 @@ class ControllerGyro(ControllerWidget):
 		grid.attach(self.label, 2, 1, 1, 1)
 		grid.attach(self.pressed, 2, 2, 1, 1)
 		self.over_icon = False
-		self.widget.add(grid)
-		self.widget.show_all()
+		self.widget.set_child(grid)
+		self.widget.show()
 
 	def on_click(self, *a) -> None:
 		self.app.show_editor(self.id)

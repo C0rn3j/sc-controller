@@ -214,9 +214,9 @@ class Export(UserDataManager):
 
 			if self._needs_package():
 				if self._export_package(model[iter][1], fn):
-					self.window.destroy()
+					self.window.close()
 			elif self._export(model[iter][1], fn):
-				self.window.destroy()
+				self.window.close()
 
 	def _export(self, giofile, target_filename):
 		"""Performs actual exporting.

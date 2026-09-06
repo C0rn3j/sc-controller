@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import logging
 
-from gi.repository import GdkX11, Gtk
+from gi.repository import Gtk
 
 from scc.lib import xwrappers as X
 from scc.osd import OSDWindow
@@ -64,7 +64,9 @@ class Area(OSDWindow, TimerManager):
 		Area needs only border, rest should be transparent.
 		"""
 		width, height = self.size
-		dpy = X.Display(hash(GdkX11.x11_get_default_xdisplay()))  # I have no idea why this works...
+		from scc.x11 import get_xdisplay
+
+		dpy = get_xdisplay()
 		wid = X.XID(self.get_window().get_xid())
 
 		mask = X.create_pixmap(dpy, wid, width, height, 1)

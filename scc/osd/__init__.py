@@ -8,10 +8,15 @@ import argparse
 import logging
 import os
 import traceback
+from ctypes import CDLL
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import cairo
+
+# gtk4-layer-shell must be loaded before GTK imports libwayland-client
+CDLL("libgtk4-layer-shell.so")
+
 import gi
 
 if TYPE_CHECKING:
@@ -19,9 +24,9 @@ if TYPE_CHECKING:
 
 	from scc.gui.daemon_manager import ControllerManager, DaemonManager
 
-gi.require_version("Gtk", "3.0")
-gi.require_version("Gdk", "3.0")
-gi.require_version("GtkLayerShell", "0.1")
+gi.require_version("Gtk", "4.0")
+gi.require_version("Gdk", "4.0")
+gi.require_version("Gtk4LayerShell", "1.0")
 
 from gi.repository import Gdk, GLib, GObject, Gtk
 
@@ -53,6 +58,20 @@ class OSDWindow(Gtk.Window):
 			min-width: 100px;
 			margin: 0px 5px 0px 5px;
 		}
+
+		/* Breeze's negative scrollbar-slider margins and transparent border
+		 * can produce a -2px minimum size with GTK4. */
+		scrollbar slider {
+			margin: 0;
+			border-width: 0;
+			min-width: 6px;
+			min-height: 30px;
+		}
+
+		scrollbar.horizontal slider {
+			min-width: 30px;
+			min-height: 6px;
+		}
 	"""
 
 	EPILOG = ""
@@ -76,34 +95,26 @@ class OSDWindow(Gtk.Window):
 		self.set_name(wmclass)
 		self.using_wlroots = False
 		try:
-			import gi
+			from gi.repository import Gtk4LayerShell
 
-			gi.require_version("GtkLayerShell", "0.1")
-			from gi.repository import GtkLayerShell
-
-			if GtkLayerShell.is_supported():
+			if Gtk4LayerShell.is_supported():
 				self.using_wlroots = True
-				self.x_layer_anchor = GtkLayerShell.Edge.LEFT
-				self.y_layer_anchor = GtkLayerShell.Edge.BOTTOM
-				GtkLayerShell.init_for_window(self)
-				GtkLayerShell.set_layer(self, layer if layer is not None else GtkLayerShell.Layer.OVERLAY)
-				GtkLayerShell.set_anchor(self, self.x_layer_anchor, True)
-				GtkLayerShell.set_anchor(self, self.y_layer_anchor, True)
-				self.layer_shell: GtkLayerShell = GtkLayerShell
+				self.x_layer_anchor = Gtk4LayerShell.Edge.LEFT
+				self.y_layer_anchor = Gtk4LayerShell.Edge.TOP
+				Gtk4LayerShell.init_for_window(self)
+				Gtk4LayerShell.set_layer(self, layer if layer is not None else Gtk4LayerShell.Layer.OVERLAY)
+				Gtk4LayerShell.set_anchor(self, self.x_layer_anchor, True)
+				Gtk4LayerShell.set_anchor(self, self.y_layer_anchor, True)
+				self.layer_shell: Gtk4LayerShell = Gtk4LayerShell
 		except ImportError:
 			pass
 		if not self.using_wlroots:
 			self.set_decorated(False)
-			self.stick()
-			self.set_skip_taskbar_hint(True)
-			self.set_skip_pager_hint(True)
-			self.set_keep_above(True)
-			self.set_type_hint(Gdk.WindowTypeHint.NOTIFICATION)
 
 	@staticmethod
 	def _apply_css(config: Config) -> None:
 		if OSDWindow.css_provider:
-			Gtk.StyleContext.remove_provider_for_screen(Gdk.Screen.get_default(), OSDWindow.css_provider)
+			Gtk.StyleContext.remove_provider_for_display(Gdk.Display.get_default(), OSDWindow.css_provider)
 
 		colors = {}
 		for x in config["osk_colors"]:
@@ -119,8 +130,8 @@ class OSDWindow(Gtk.Window):
 				css += OSDWindow.CSS_3_20
 			OSDWindow.css_provider = Gtk.CssProvider()
 			OSDWindow.css_provider.load_from_data((css % colors).encode("utf-8"))
-			Gtk.StyleContext.add_provider_for_screen(
-				Gdk.Screen.get_default(), OSDWindow.css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER,
+			Gtk.StyleContext.add_provider_for_display(
+				Gdk.Display.get_default(), OSDWindow.css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER,
 			)
 		except GLib.Error as e:
 			log.error("Failed to apply css with user settings:")
@@ -134,8 +145,8 @@ class OSDWindow(Gtk.Window):
 			if (Gtk.get_major_version(), Gtk.get_minor_version()) > (3, 20):
 				css += OSDWindow.CSS_3_20
 			OSDWindow.css_provider.load_from_data((css % colors).encode("utf-8"))
-			Gtk.StyleContext.add_provider_for_screen(
-				Gdk.Screen.get_default(), OSDWindow.css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER,
+			Gtk.StyleContext.add_provider_for_display(
+				Gdk.Display.get_default(), OSDWindow.css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER,
 			)
 
 	def _add_arguments(self) -> None:
@@ -187,24 +198,26 @@ class OSDWindow(Gtk.Window):
 		return True
 
 	def make_window_clicktrough(self):
-		(width, height) = self.get_size()
+		width, height = self.get_window_size()
+		if width <= 0 or height <= 0:
+			return False
 		surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
 		surface_ctx = cairo.Context(surface)
 		surface_ctx.set_source_rgba(0.0, 0.0, 0.0, 0.0)
 		surface_ctx.set_operator(cairo.OPERATOR_SOURCE)
 		surface_ctx.paint()
 		reg = Gdk.cairo_region_create_from_surface(surface)
-		self.input_shape_combine_region(reg)
+		self.get_surface().set_input_region(reg)
+		return False
 
 	def get_active_screen_geometry(self):
 		"""Return geometry of active screen or None if active screen cannot be determined."""
-		screen = self.get_window().get_screen()
-		active_window = screen.get_active_window()
-		if active_window:
-			monitor = screen.get_monitor_at_window(active_window)
-			if monitor is not None:
-				return screen.get_monitor_geometry(monitor)
-		return None
+		display = Gdk.Display.get_default()
+		surface = self.get_surface()
+		monitor = display.get_monitor_at_surface(surface) if surface is not None else None
+		if monitor is None:
+			monitor = display.get_monitors().get_item(0)
+		return monitor.get_geometry() if monitor is not None else None
 
 	def compute_position(self):
 		"""Adjust position for currently active screen (display)."""
@@ -224,15 +237,13 @@ class OSDWindow(Gtk.Window):
 		return x, y
 
 	def get_window_size(self):
-		return self.get_window().get_width(), self.get_window().get_height()
+		return self.get_width(), self.get_height()
 
 	def show(self) -> None:
-		self.get_children()[0].show_all()
-		self.realize()
-		self.get_window().set_override_redirect(True)
+		self.get_child().show()
 
-		x, y = self.compute_position()
 		if self.using_wlroots:
+			x, y = self.position
 			if x < 0:
 				self.layer_shell.set_anchor(self, self.x_layer_anchor, False)
 				self.x_layer_anchor = self.layer_shell.Edge.RIGHT
@@ -247,6 +258,7 @@ class OSDWindow(Gtk.Window):
 			self.layer_shell.set_margin(self, self.y_layer_anchor, y)
 			self._layer_position = [float(x), float(y)]
 		else:  # X11
+			x, y = self.compute_position()
 			if x < 0:  # Negative X position is counted from right border
 				x = Gdk.Screen.width() - self.get_allocated_width() + x + 1
 			if y < 0:  # Negative Y position is counted from bottom border
@@ -254,7 +266,7 @@ class OSDWindow(Gtk.Window):
 			self.move(x, y)
 
 		Gtk.Window.show(self)
-		self.make_window_clicktrough()
+		GLib.idle_add(self.make_window_clicktrough)
 
 	def move_relative(self, dx: float, dy: float) -> None:
 		"""Move an OSD window by a relative amount on X11 or layer-shell."""
@@ -268,9 +280,11 @@ class OSDWindow(Gtk.Window):
 				]
 			monitor = self.layer_shell.get_monitor(self)
 			if monitor is None:
-				monitor = self.get_window().get_display().get_monitor_at_window(self.get_window())
+				surface = self.get_surface()
+				if surface is not None:
+					monitor = Gdk.Display.get_default().get_monitor_at_surface(surface)
 			if monitor is not None:
-				geometry = monitor.get_workarea()
+				geometry = monitor.get_geometry()
 				window_width, window_height = self.get_window_size()
 				max_x = max(0.0, float(geometry.width - window_width))
 				max_y = max(0.0, float(geometry.height - window_height))
@@ -314,7 +328,7 @@ class OSDWindow(Gtk.Window):
 		if self.mainloop:
 			self.mainloop.quit()
 		else:
-			self.destroy()
+			self.close()
 
 
 class OSDCssMagic(dict):

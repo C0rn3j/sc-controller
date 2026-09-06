@@ -136,8 +136,10 @@ class OSDModeMappings:
 		self.parent = app.window
 		self.first_window = None
 		GLib.timeout_add(10, self.move_around)
-		self.app.window.connect("focus-in-event", self.on_main_window_focus_in_event)
-		self.app.window.connect("focus-out-event", self.on_main_window_focus_out_event)
+		focus = Gtk.EventControllerFocus.new()
+		focus.connect("enter", self.on_main_window_focus_in_event)
+		focus.connect("leave", self.on_main_window_focus_out_event)
+		self.app.window.add_controller(focus)
 		self.on_main_window_focus_in_event()
 
 	def set_controller(self, c):

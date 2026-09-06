@@ -5,8 +5,8 @@ import os
 
 import gi
 
-gi.require_version("Gdk", "3.0")
-gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "4.0")
+gi.require_version("Gtk", "4.0")
 from gi.repository import Gdk, GLib, Gtk
 
 from scc.actions import Action, NoAction, XYAction
@@ -52,10 +52,9 @@ class AEComponent(ComboSetter):
 		"""
 		if self.loaded:
 			return False
-		self.builder = Gtk.Builder()
+		self.builder = Gtk.Builder(self)
 		self.builder.add_from_file(os.path.join(self.app.gladepath, self.GLADE))
 		self.widget = self.builder.get_object(self.NAME)
-		self.builder.connect_signals(self)
 		self.loaded = True
 		return True
 

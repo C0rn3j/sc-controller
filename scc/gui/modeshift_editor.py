@@ -64,6 +64,7 @@ class ModeshiftEditor(Editor):
 
 	def setup_widgets(self):
 		Editor.setup_widgets(self)
+		self.builder.get_object("sclSoftLevel").set_format_value_func(self.on_sclSoftLevel_format_value)
 
 		cbButtonChooser = self.builder.get_object("cbButtonChooser")
 		cbButtonChooser.set_row_separator_func(lambda model, iter: model.get_value(iter, 0) is None)
@@ -152,15 +153,15 @@ class ModeshiftEditor(Editor):
 		b.set_property("hexpand", True)
 		b.connect("clicked", self.on_actionb_clicked, index, what)
 		clearb = Gtk.Button()
-		clearb.set_image(Gtk.Image.new_from_stock("gtk-delete", Gtk.IconSize.SMALL_TOOLBAR))
-		clearb.set_relief(Gtk.ReliefStyle.NONE)
+		clearb.set_child(Gtk.Image.new_from_icon_name("edit-delete-symbolic"))
+		clearb.add_css_class("flat")
 		clearb.connect("clicked", self.on_clearb_clicked, index, what)
 		grActions.attach(l, 0, i, 1, 1)
 		grActions.attach(b, 1, i, 1, 1)
 		grActions.attach(clearb, 2, i, 1, 1)
 
 		self.actions[index].append([what, action, l, b, clearb])
-		grActions.show_all()
+		grActions.show()
 
 	def on_clearb_clicked(self, trash, index, button):
 		grActions = self.action_widgets[index][0]
@@ -271,7 +272,7 @@ class ModeshiftEditor(Editor):
 			b = getattr(SCButtons, item)
 			self._add_action(self.current_page, b, NoAction())
 
-	def on_sclSoftLevel_format_value(self, scale, value):
+	def on_sclSoftLevel_format_value(self, scale, value, *a):
 		return "%s%%" % (int(value * 100.0),)
 
 	def on_btClear_clicked(self, *a):

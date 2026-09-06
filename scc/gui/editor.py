@@ -38,37 +38,46 @@ class Editor(ComboSetter):
 	def __init__(self):
 		self.added_widget = None  # See add_widget method
 
-	def on_window_key_press_event(self, trash, event):
+	def on_window_key_press_event(self, controller, keyval, keycode, state):
 		"""Checks if pressed key was escape and if yes, closes window"""
-		if event.keyval == Gdk.KEY_Escape:
+		if keyval == Gdk.KEY_Escape:
 			self.close()
 
 	def setup_widgets(self):
-		self.builder = Gtk.Builder()
+		self.builder = Gtk.Builder(self)
 		self.builder.add_from_file(os.path.join(self.app.gladepath, self.GLADE))
 		self.window = self.builder.get_object("Dialog")
-		self.builder.connect_signals(self)
 
 	@staticmethod
 	def install_error_css():
 		if Editor._error_css_provider is None:
 			Editor._error_css_provider = Gtk.CssProvider()
 			Editor._error_css_provider.load_from_data(Editor.ERROR_CSS.encode("utf-8"))
-			Gtk.StyleContext.add_provider_for_screen(
-				Gdk.Screen.get_default(), Editor._error_css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER,
+			Gtk.StyleContext.add_provider_for_display(
+				Gdk.Display.get_default(), Editor._error_css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER,
 			)
 
 	def hide_dont_destroy(self, w, *a):
-		"""When used as handler for 'delete-event' signal, prevents window from being destroyed after closing."""
+		"""When used as a 'close-request' handler, hide the window instead of destroying it."""
 		w.hide()
 		return True
 
 	def set_title(self, title):
 		self.window.set_title(title)
-		self.builder.get_object("header").set_title(title)
+		self.set_headerbar_title(self.builder.get_object("header"), title)
+
+	@staticmethod
+	def set_headerbar_title(headerbar, title):
+		"""Set a GTK4 header bar's title-widget label."""
+		title_widget = headerbar.get_title_widget()
+		if not isinstance(title_widget, Gtk.Label):
+			title_widget = Gtk.Label()
+			title_widget.add_css_class("title")
+			headerbar.set_title_widget(title_widget)
+		title_widget.set_label(title)
 
 	def close(self, *a):
-		self.window.destroy()
+		self.window.close()
 
 	def get_transient_for(self):
 		"""Return parent window for this editor. Usually main application window"""
@@ -94,10 +103,10 @@ class Editor(ComboSetter):
 		vbAddedWidget = self.builder.get_object("vbAddedWidget")
 		lblAddedWidget.set_label(label)
 		lblAddedWidget.set_visible(True)
-		for ch in vbAddedWidget.get_children():
+		for ch in vbAddedWidget.observe_children():
 			vbAddedWidget.remove(ch)
 		self.added_widget = widget
-		vbAddedWidget.pack_start(widget, True, False, 0)
+		vbAddedWidget.append(widget)
 		vbAddedWidget.set_visible(True)
 
 	def remove_added_widget(self):
@@ -106,7 +115,7 @@ class Editor(ComboSetter):
 		Should be called from on_destory handlers.
 		"""
 		vbAddedWidget = self.builder.get_object("vbAddedWidget")
-		for ch in vbAddedWidget.get_children():
+		for ch in vbAddedWidget.observe_children():
 			vbAddedWidget.remove(ch)
 		self.added_widget = None
 

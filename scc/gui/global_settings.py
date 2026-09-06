@@ -551,10 +551,10 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 
 		cb.set_active(0)
 
-	def on_ConditionEditor_key_press_event(self, w, event):
+	def on_ConditionEditor_key_press_event(self, controller, keyval, keycode, state):
 		"""Checks if pressed key was escape and if yes, closes window"""
-		if event.keyval == Gdk.KEY_Escape:
-			self.hide_dont_destroy(w)
+		if keyval == Gdk.KEY_Escape:
+			self.hide_dont_destroy(controller.get_widget())
 
 	def on_cbExactTitle_toggled(self, tg):
 		# Ensure that 'Match Title' checkbox is checked and only one of
@@ -758,8 +758,12 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		from scc.gui.creg.dialog import ControllerRegistration
 
 		cr = ControllerRegistration(self.app)
-		cr.window.connect("destroy", self.load_controllers)
+		cr.window.connect("close-request", self.on_controller_registration_closed)
 		cr.show(self.window)
+
+	def on_controller_registration_closed(self, *a):
+		self.load_controllers()
+		return False
 
 	def on_btRemoveController_clicked(self, *a):
 		tvControllers = self.builder.get_object("tvControllers")
@@ -770,7 +774,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			buttons=Gtk.ButtonsType.YES_NO,
 			text=_("Unregister controller?"),
 		)
-		d.format_secondary_text(_("You'll lose all settings for it"))
+		d.set_property("secondary-text", _("You'll lose all settings for it"))
 		if d.run() == -8:
 			# Yes
 			model, iter = tvControllers.get_selection().get_selected()
@@ -781,7 +785,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 				log.exception(e)
 			self._needs_restart()
 			self.load_controllers()
-		d.destroy()
+		d.close()
 
 	def load_controllers(self, *a):
 		lstControllers = self.builder.get_object("lstControllers")

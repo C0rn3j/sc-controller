@@ -1,11 +1,22 @@
-"""Syncthing-GTK - StatusIcon."""
+"""SC Controller - StatusIcon.
+
+Taken from Syncthing-GTK, but with all the Plasma stuff removed, since it doesn't work in latest Plasma anymore.
+
+
+               | MATE      | Unity      | Cinnamon   | Cairo-Dock (classic) | Cairo-Dock (modern) |
+----------------+-----------+------------+------------+----------------------+---------------------+
+StatusIconAppI | none      | excellent  | none       | none                 | excellent           |
+
+Notes:
+ - StatusIconAppIndicator does not implement any fallback (but the original libappindicator did)
+
+"""
 
 import logging
 import os
 
-from gi.repository import Gdk, GdkX11, GLib, GObject, Gtk
+from gi.repository import GLib, GObject
 
-from scc.gui.dwsnc import IS_GNOME, IS_UNITY
 from scc.tools import _  # gettext function
 
 log = logging.getLogger("StatusIcon")
@@ -27,21 +38,6 @@ def silence_ayatana_deprecation_warning() -> None:
 
 	GLib.log_set_handler("libayatana-appindicator", GLib.LogLevelFlags.LEVEL_WARNING, filter_warning)
 	ayatana_deprecation_warning_silenced = True
-
-
-# Taken from Syncthing-GTK, but got all Plasma stuff removed, since it doesn't work in latest Plasma anymore.
-
-
-#                | MATE      | Unity      | Cinnamon   | Cairo-Dock (classic) | Cairo-Dock (modern) |
-# ----------------+-----------+------------+------------+----------------------+---------------------+
-# StatusIconAppI | none      | excellent  | none       | none                 | excellent           |
-# StatusIconGTK3 | excellent | none       | very good¹ | very good¹           | none                |
-#
-# Notes:
-#  - StatusIconAppIndicator does not implement any fallback (but the original libappindicator did)
-#  - Markers:
-#     ¹ Icon cropped
-
 
 class StatusIcon(GObject.GObject):
 	"""Base class for all status icon backends."""
@@ -190,67 +186,6 @@ class StatusIconDummy(StatusIcon):
 	def destroy(self):
 		return
 
-
-class StatusIconGTK3(StatusIcon):
-	"""Gtk.StatusIcon based status icon backend"""
-
-	def __init__(self, *args, **kwargs) -> None:
-		StatusIcon.__init__(self, *args, **kwargs)
-		# This backend is not supported on Wayland
-		if not isinstance(Gdk.Display.get_default(), GdkX11.X11Display):
-			raise NotImplementedError
-
-		if not self._is_forced():
-			if IS_UNITY:
-				# Unity fakes SysTray support but actually hides all icons...
-				raise NotImplementedError
-			if IS_GNOME:
-				# Gnome got broken as well
-				raise NotImplementedError
-
-		self._tray = Gtk.StatusIcon()
-
-		self._tray.connect("activate", self._on_click)
-		self._tray.connect("popup-menu", self._on_rclick)
-		self._tray.connect("notify::embedded", self._on_embedded_change)
-
-		self._tray.set_visible(True)
-		self._tray.set_name("sc-controller")
-		self._tray.set_title(self.TRAY_TITLE)
-
-		# self._tray.is_embedded() must be called asynchronously
-		# See: http://stackoverflow.com/a/6365904/277882
-		GLib.idle_add(self._on_embedded_change)
-
-	def destroy(self) -> None:
-		self.hide()
-		self._tray = None
-
-	def set(self, icon=None, text=None) -> None:
-		StatusIcon.set(self, icon, text)
-
-		self._tray.set_from_icon_name(self._get_icon(icon))
-		self._tray.set_tooltip_text(self._get_text(text))
-
-	def _on_embedded_change(self, *args) -> None:
-		# Without an icon update at this point GTK might consider the icon embedded and visible even through
-		# it can't actually be seen...
-		self._tray.set_from_file(self._get_icon())
-
-		# An invisible tray icon will never be embedded but it also should not be replaced by a fallback icon
-		is_embedded = self._tray.is_embedded() or not self._tray.get_visible()
-		if is_embedded != self.get_property("active"):
-			self.set_property("active", is_embedded)
-
-	def _on_rclick(self, si, button, time) -> None:
-		self._get_popupmenu().popup(None, None, None, None, button, time)
-
-	def _set_visible(self, active) -> None:
-		StatusIcon._set_visible(self, active)
-
-		self._tray.set_visible(active)
-
-
 class StatusIconDBus(StatusIcon):
 	pass
 
@@ -318,17 +253,9 @@ class StatusIconProxy(StatusIcon):
 		if "force" in self._arguments[1]:
 			del self._arguments[1]["force"]
 
-		try:
-			# Try loading GTK native status icon
-			self._status_gtk = StatusIconGTK3(*args, **kwargs)
-			self._status_gtk.connect("clicked", self._on_click)
-			self._status_gtk.connect("notify::active", self._on_notify_active_gtk)
-			self._on_notify_active_gtk()
-
-			log.info("Using backend StatusIconGTK3 (primary)")
-		except NotImplementedError:
-			# Directly load fallback implementation
-			self._load_fallback()
+		# Directly load fallback implementation
+		# TODO(Martin): This is no longer a "fallback" but the primary, after the GTK4 migration
+		self._load_fallback()
 
 	def _on_click(self, *args):
 		self.emit("clicked")

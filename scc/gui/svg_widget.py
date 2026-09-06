@@ -20,17 +20,17 @@ import gi
 if TYPE_CHECKING:
 	from typing import Self
 
-	import gi.repository._Gdk3 as Gdk
-	import gi.repository._Gtk3 as Gtk
+	import gi.repository._Gdk4 as Gdk
+	import gi.repository._Gtk4 as Gtk
 	from gi.repository import GdkPixbuf, GObject, Rsvg
 else:
 	gi.require_version("Rsvg", "2.0")
-	gi.require_version("Gdk", "3.0")
-	gi.require_version("Gtk", "3.0")
+	gi.require_version("Gdk", "4.0")
+	gi.require_version("Gtk", "4.0")
 	from gi.repository import Gdk, GdkPixbuf, GObject, Gtk, Rsvg
 #gi.require_version("Rsvg", "2.0")
-#gi.require_version("Gdk", "3.0")
-#gi.require_version("Gtk", "3.0")
+#gi.require_version("Gdk", "4.0")
+#gi.require_version("Gtk", "4.0")
 #from gi.repository import Gdk, GdkPixbuf, GObject, Gtk, Rsvg
 
 # sys.modules.pop('xml.etree.ElementTree', None)
@@ -41,7 +41,7 @@ log = logging.getLogger("Background")
 ET.register_namespace("", "http://www.w3.org/2000/svg")
 
 
-class SVGWidget(Gtk.EventBox):
+class SVGWidget(Gtk.Box):
 	FILENAME = "background.svg"
 	CACHE_SIZE = 50
 
@@ -55,24 +55,28 @@ class SVGWidget(Gtk.EventBox):
 	}
 
 	def __init__(self, filename: str, init_hilighted: bool = True) -> None:
-		Gtk.EventBox.__init__(self)
+		Gtk.Box.__init__(self)
 		self.cache = OrderedDict()
 		self.areas: list[Area] = []
 		self.current_svg: str | bytes
 
-		self.connect("motion-notify-event", self.on_mouse_moved)
-		self.connect("button-press-event", self.on_mouse_click)
-		self.set_events(Gdk.EventMask.POINTER_MOTION_MASK | Gdk.EventMask.BUTTON_PRESS_MASK)
-
+		motion = Gtk.EventControllerMotion.new()
+		motion.connect("motion", self.on_mouse_moved)
+		self.add_controller(motion)
+		click = Gtk.GestureClick.new()
+		click.connect("pressed", self.on_mouse_click)
+		self.add_controller(click)
 		self.size_override: tuple[int, int] | None = None
 		self.image_width: float = 1
 		self.image_height: float = 1
 		self.set_image(filename)
-		self.image: Gtk.Image = Gtk.Image()
+		self.image: Gtk.Picture = Gtk.Picture()
+		self.image.set_can_shrink(False)
+		self._pixbuf: GdkPixbuf.Pixbuf | None = None
 		if init_hilighted:
 			self.hilight({})
-		self.add(self.image)
-		self.show_all()
+		self.append(self.image)
+		self.show()
 
 	def set_image(self, filename: str) -> None:
 		with open(filename) as file:
@@ -99,16 +103,18 @@ class SVGWidget(Gtk.EventBox):
 		self.size_override = width, height
 		self.cache = OrderedDict()
 
-	def on_mouse_click(self, trash, event) -> None:
-		area = self.on_mouse_moved(trash, event)
+	def on_mouse_click(self, gesture, n_press, x, y) -> None:
+		area = self.get_area_at(x, y)
 		if area is not None:
 			self.emit("click", area)
 
-	def on_mouse_moved(self, trash, event) -> str | None:
+	def on_mouse_moved(self, controller, x, y) -> str | None:
 		"""Not actual signal handler, just called from App."""
+		return self.get_area_at(x, y)
+
+	def get_area_at(self, x, y) -> str | None:
 		x_offset = (self.get_allocation().width - self.image_width) / 2
-		x = event.x - x_offset
-		y = event.y
+		x = x - x_offset
 		for a in self.areas:
 			# *TEST areas exist only to bound the Input Test cursor (looked up
 			# by id via get_area_position), not as hover targets. Skip them so
@@ -261,11 +267,12 @@ class SVGWidget(Gtk.EventBox):
 			else:
 				self.cache[cache_id] = pixbuf
 
-		self.image.set_from_pixbuf(self.cache[cache_id])
+		self._pixbuf = self.cache[cache_id]
+		self.image.set_pixbuf(self._pixbuf)
 
 	def get_pixbuf(self):
 		"""Returns pixbuf of current image"""
-		return self.image.get_pixbuf()
+		return self._pixbuf
 
 	def edit(self) -> SVGEditor:
 		"""Returns new Editor instance bound to this widget"""

@@ -212,6 +212,10 @@ KEY_TO_KEYCODE = {KEYCODE_TO_KEY[a]: a for a in KEYCODE_TO_KEY}
 
 
 def keyevent_to_key(event):
-	if event.hardware_keycode in KEYCODE_TO_KEY:
-		return KEYCODE_TO_KEY[event.hardware_keycode]
+	return keycode_to_key(event.hardware_keycode)
+
+
+def keycode_to_key(hardware_keycode):
+	if hardware_keycode in KEYCODE_TO_KEY:
+		return KEYCODE_TO_KEY[hardware_keycode]
 	return None

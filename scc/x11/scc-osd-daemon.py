@@ -15,9 +15,9 @@ import gi
 
 from scc.tools import set_logging_level
 
-gi.require_version("Gtk", "3.0")
+gi.require_version("Gtk", "4.0")
 gi.require_version("Rsvg", "2.0")
-gi.require_version("GdkX11", "3.0")
+gi.require_version("GdkX11", "4.0")
 from gi.repository import GLib
 
 from scc.config import Config
@@ -122,15 +122,18 @@ class OSDDaemon:
 				lambda *a: False,
 				lambda *a: False,
 			)
+		return False
 
 	def on_message_closed(self, m):
 		hsh = m.hash()
 		if hsh in self._visible_messages:
 			del self._visible_messages[hsh]
+		return False
 
 	def on_keyboard_closed(self, *a):
 		"""Called after on-screen keyboard is hidden from the screen"""
 		self._window = None
+		return False
 
 	def on_gesture_recognized(self, gd):
 		"""Called after on-screen keyboard is hidden from the screen"""
@@ -139,6 +142,7 @@ class OSDDaemon:
 			self.daemon.request("Gestured: %s" % (gd.get_gesture(),), lambda *a: False, lambda *a: False)
 		else:
 			self.daemon.request("Gestured: x", lambda *a: False, lambda *a: False)
+		return False
 
 	@staticmethod
 	def _is_menu_message(m):
@@ -164,27 +168,27 @@ class OSDDaemon:
 			hsh = m.hash()
 			if hsh in self._visible_messages:
 				self._visible_messages[hsh].extend()
-				m.destroy()
+				m.close()
 			else:
 				# TODO: Do this only for default position once changing
 				# TODO: is allowed
 				if len(self._visible_messages):
 					tmp = list(self._visible_messages.values())
-					height = tmp[0].get_size().height
+					height = tmp[0].get_height()
 					x, y = m.position
 					while y in [i.position[1] for i in tmp]:
 						y -= height + 5
 					m.position = x, y
 				m.show()
 				self._visible_messages[hsh] = m
-				m.connect("destroy", self.on_message_closed)
+				m.connect("close-request", self.on_message_closed)
 		elif message.startswith("OSD: keyboard"):
 			if self._window:
 				log.warning("Another OSD is already visible - refusing to show keyboard")
 			else:
 				args = shsplit(message)[1:]
 				self._window = Keyboard(self.config)
-				self._window.connect("destroy", self.on_keyboard_closed)
+				self._window.connect("close-request", self.on_keyboard_closed)
 				self._window.parse_arguments(args)
 				self._window.show()
 				self._window.use_daemon(self.daemon)
@@ -197,7 +201,7 @@ class OSDDaemon:
 				self._window.parse_arguments(args)
 				self._window.use_daemon(self.daemon)
 				self._window.show()
-				self._window.connect("destroy", self.on_gesture_recognized)
+				self._window.connect("close-request", self.on_gesture_recognized)
 		elif self._is_menu_message(message):
 			args = shsplit(message)[1:]
 			if self._window:
@@ -215,7 +219,7 @@ class OSDDaemon:
 					self._window = Dialog()
 				else:
 					self._window = Menu()
-				self._window.connect("destroy", self.on_menu_closed)
+				self._window.connect("close-request", self.on_menu_closed)
 				self._window.use_config(self.config)
 				try:
 					if self._window.parse_arguments(args):
@@ -235,7 +239,7 @@ class OSDDaemon:
 			else:
 				args = shsplit(message)[1:]
 				self._window = Area()
-				self._window.connect("destroy", self.on_keyboard_closed)
+				self._window.connect("close-request", self.on_keyboard_closed)
 				if self._window.parse_arguments(args):
 					self._window.show()
 				else:
@@ -261,7 +265,7 @@ class OSDDaemon:
 		to_destroy = [] + list(self._visible_messages.values())
 		for m in to_destroy:
 			if not only_long_lasting or m.timeout <= 0 or m.timeout > OSDAction.DEFAULT_TIMEOUT * 2:
-				m.destroy()
+				m.close()
 
 	def _check_colorconfig_change(self):
 		"""Checks if OSD color configuration is changed and re-applies CSS

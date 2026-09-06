@@ -135,11 +135,11 @@ class BindingDisplay(OSDWindow):
 		if self.background is None:
 			self.realize()
 			self.background = SVGWidget(self.args.image, init_hilighted=True)
-			self.c.add(self.background)
-			self.add(self.c)
+			self.c.append(self.background)
+			self.set_child(self.c)
 
+		self.position = tuple(int(value) for value in self.compute_position())
 		OSDWindow.show(self, *a)
-		self.move(*self.compute_position())
 
 	def on_event(self, daemon, what, data):
 		"""Called when button press, button release or stick / pad update is

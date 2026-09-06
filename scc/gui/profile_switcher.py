@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 log = logging.getLogger("PS")
 
 
-class ProfileSwitcher(Gtk.EventBox, UserDataManager):
+class ProfileSwitcher(Gtk.Box, UserDataManager):
 	"""List of signals:
 
 	changed (name, giofile)
@@ -55,8 +55,8 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 
 	SEND_TIMEOUT = 100  # How many ms should switcher wait before sending event about profile being switched
 
-	def __init__(self, imagepath, config):
-		Gtk.EventBox.__init__(self)
+	def __init__(self, imagepath, config) -> None:
+		Gtk.Box.__init__(self)
 		UserDataManager.__init__(self)
 		self.imagepath = imagepath
 		self.config = config
@@ -94,12 +94,15 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 
 		# Signals
 		self._combo.connect("changed", self.on_combo_changed)
-		self.connect("button_press_event", self.on_button_press)
+		click = Gtk.GestureClick.new()
+		click.set_button(3)
+		click.connect("pressed", self.on_button_press)
+		self.add_controller(click)
 
 		# Pack
-		self._box.pack_start(self._icon, False, True, 0)
-		self._box.pack_start(self._combo, True, True, 0)
-		self.add(self._box)
+		self._box.append(self._icon)
+		self._box.append(self._combo)
+		self.append(self._box)
 
 	def set_profile(self, name: str | None, create: bool = False) -> bool | None:
 		"""Selects specified profile in UI.
@@ -249,9 +252,8 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 			GLib.source_remove(self._timer)
 		self._timer = GLib.timeout_add(ProfileSwitcher.SEND_TIMEOUT, run_later)
 
-	def on_button_press(self, trash, event):
-		if event.button == 3:
-			self.emit("right-clicked")
+	def on_button_press(self, gesture, n_press, x, y):
+		self.emit("right-clicked")
 
 	def on_savebutton_clicked(self, *a):
 		self.emit("save-clicked")
@@ -289,8 +291,8 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 			if not self._savebutton:
 				# Save button has to be created
 				self._savebutton = ButtonInRevealer("document-save", _("Save changes"), self.on_savebutton_clicked)
-				self._box.pack_start(self._savebutton, False, True, 0)
-				self.show_all()
+				self._box.append(self._savebutton)
+				self.show()
 			self._savebutton.set_reveal_child(True)
 			iter = self._combo.get_active_iter()
 			if is_template:
@@ -315,8 +317,8 @@ class ProfileSwitcher(Gtk.EventBox, UserDataManager):
 				self._switch_to_button = ButtonInRevealer(
 					"document-edit", _("Edit mappings of this controller"), self.on_switch_to_clicked,
 				)
-				self._box.pack_start(self._switch_to_button, False, True, 0)
-				self.show_all()
+				self._box.append(self._switch_to_button)
+				self.show()
 			self._switch_to_button.set_reveal_child(True)
 		elif self._switch_to_button:
 			# Nothing to hide if there is no revealer
@@ -399,4 +401,4 @@ class ButtonInRevealer(Gtk.Revealer):
 		self.button.set_tooltip_text(tooltip)
 		self.set_reveal_child(False)
 		self.set_transition_type(Gtk.RevealerTransitionType.SLIDE_LEFT)
-		self.add(self.button)
+		self.append(self.button)

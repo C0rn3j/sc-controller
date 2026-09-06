@@ -9,12 +9,11 @@ Reuses styles from OSD Menu and OSD Dialog
 import logging
 import os
 
-from gi.repository import GdkX11, Gio, Gtk, Pango
+from gi.repository import Gio, Gtk, Pango
 
 from scc.config import Config
 from scc.constants import DEFAULT, STICK_PAD_MAX, ControllerFlags, HapticPos, SCPads, SCSticks
 from scc.gui.daemon_manager import DaemonManager
-from scc.lib import xwrappers as X
 from scc.osd import OSDWindow, StickController
 from scc.paths import get_share_path
 from scc.tools import _, circle_to_square, clamp, point_in_gtkrect
@@ -49,7 +48,9 @@ class Launcher(OSDWindow):
 		self.config: Config | None = None
 		self.feedback: tuple[HapticPos, int] | None = None
 		self.controller = None
-		self.xdisplay = X.Display(hash(GdkX11.x11_get_default_xdisplay()))  # Magic
+		from scc.x11 import get_xdisplay
+
+		self.xdisplay = get_xdisplay()
 
 		self.create_parent()
 		self.create_app_list()
@@ -60,8 +61,8 @@ class Launcher(OSDWindow):
 		for c in self.cursors:
 			c.set_name("osd-menu-cursor")
 			c.selected = None
-			self.f.add(c)
-		self.f.show_all()
+			self.f.put(c, 0, 0)
+		self.f.show()
 
 		self._scon = StickController()
 		self._scon.connect("direction", self.on_stick_direction)
@@ -100,22 +101,22 @@ class Launcher(OSDWindow):
 		self.parent = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 		self.parent.set_name("osd-dialog")
 		self.f = Gtk.Fixed()
-		self.f.add(self.parent)
-		self.add(self.f)
+		self.f.put(self.parent, 0, 0)
+		self.set_child(self.f)
 
 	def create_app_list(self):
 		lst = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 		lst.set_name("osd-application-list")
 		self.items = [self.generate_widget("") for x in range(self.MAX_ROWS)]
 		for a in self.items:
-			lst.pack_start(a, False, True, 0)
-		self.parent.pack_start(lst, True, True, 0)
+			lst.append(a)
+		self.parent.append(lst)
 		self._set_launchers([])
-		lst.show_all()
+		lst.show()
 
 	def create_buttons(self):
 		self.grid = Gtk.Grid()
-		self.parent.pack_start(self.grid, True, True, 0)
+		self.parent.append(self.grid)
 		self._buttons = []
 
 		x, y = 0, 0
@@ -139,7 +140,7 @@ class Launcher(OSDWindow):
 		for item in items:
 			if hasattr(item.widget, "set_alignment"):
 				item.widget.set_alignment(0.5, 0.5)
-			self._buttons.pack_end(item.widget, True, True, 0)
+			self._buttons.append(item.widget)
 
 	def use_daemon(self, d):
 		"""Allows (re)using already existing DaemonManager instance in same process.
@@ -212,7 +213,7 @@ class Launcher(OSDWindow):
 		for i in range(len(launchers)):
 			self.items[i].set_name("osd-launcher-item")
 			self.items[i].launcher = launchers[i]
-			label = self.items[i].get_children()[0]
+			label = self.items[i].observe_children()[0]
 			label.set_markup(self._format_label_markup(launchers[i]))
 			label.set_max_width_chars(1)
 			label.set_ellipsize(Pango.EllipsizeMode.MIDDLE)
@@ -273,11 +274,11 @@ class Launcher(OSDWindow):
 		if hasattr(label, "label"):
 			label = label.label
 		widget = Gtk.Button.new_with_label(label)
-		widget.set_relief(Gtk.ReliefStyle.NONE)
-		if hasattr(widget.get_children()[0], "set_xalign"):
-			widget.get_children()[0].set_xalign(0)
+		widget.add_css_class("flat")
+		if hasattr(widget.observe_children()[0], "set_xalign"):
+			widget.observe_children()[0].set_xalign(0)
 		else:
-			widget.get_children()[0].set_halign(Gtk.Align.START)
+			widget.observe_children()[0].set_halign(Gtk.Align.START)
 		widget.set_name("osd-menu-item")
 
 		return widget
@@ -409,7 +410,7 @@ class Launcher(OSDWindow):
 				break
 
 	def _get_under_cursor(self, cursor):
-		x, y = self.f.child_get(cursor, "x", "y")
+		x, y = self.f.get_child_position(cursor)
 		for i in self._buttons:
 			if point_in_gtkrect(i.get_allocation(), x, y):
 				return i

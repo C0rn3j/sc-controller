@@ -39,20 +39,20 @@ class QuickMenu(Menu):
 			return None
 		if isinstance(item, (MenuItem, Submenu)):
 			widget = Gtk.Button.new_with_label(item.label)
-			widget.set_relief(Gtk.ReliefStyle.NONE)
-			if hasattr(widget.get_children()[0], "set_xalign"):
-				widget.get_children()[0].set_xalign(0)
+			widget.add_css_class("flat")
+			if hasattr(widget.observe_children()[0], "set_xalign"):
+				widget.observe_children()[0].set_xalign(0)
 			else:
-				widget.get_children()[0].set_halign(Gtk.Align.START)
+				widget.observe_children()[0].set_halign(Gtk.Align.START)
 			if isinstance(item, Submenu):
 				item.callback = self.show_submenu
-				label1 = widget.get_children()[0]
+				label1 = widget.observe_children()[0]
 				label2 = Gtk.Label(label=_(">>"))
 				label2.set_property("margin-start", 30)
 				box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 				widget.remove(label1)
-				box.pack_start(label1, True, True, 1)
-				box.pack_start(label2, False, True, 1)
+				box.append(label1)
+				box.append(label2)
 				widget.add(box)
 				widget.set_name("osd-menu-item")
 			elif item.id is None:
@@ -66,13 +66,13 @@ class QuickMenu(Menu):
 
 			icon_file, has_colors = find_icon(f"buttons/{item.button}", False)
 			icon = MenuIcon(icon_file, has_colors)
-			label = widget.get_children()[0]
-			for c in [] + widget.get_children():
+			label = widget.observe_children()[0]
+			for c in [] + widget.observe_children():
 				widget.remove(c)
 			self._icons.append(icon)
 			box = Gtk.Box()
-			box.pack_start(icon, False, True, 0)
-			box.pack_start(label, True, True, 10)
+			box.append(icon)
+			box.append(label)
 			widget.add(box)
 			return widget
 		return None
@@ -182,7 +182,7 @@ class QuickMenu(Menu):
 			)
 			self._submenu.set_is_submenu()
 			self._submenu.use_daemon(self.daemon)
-			self._submenu.connect("destroy", self.on_submenu_closed)
+			self._submenu.connect("close-request", self.on_submenu_closed)
 			self._submenu.controller = self.controller
 			self._submenu.show()
 			self.cancel_timer()
@@ -194,6 +194,7 @@ class QuickMenu(Menu):
 			self._menuid = self._submenu._menuid
 		self._selected = self._submenu._selected
 		self.quit(self._submenu.get_exit_code())
+		return False
 
 	def pressed(self, what):
 		"""Called when button is pressed. If menu with that button assigned
@@ -256,9 +257,9 @@ class QuickMenu(Menu):
 if __name__ == "__main__":
 	import gi
 
-	gi.require_version("Gtk", "3.0")
+	gi.require_version("Gtk", "4.0")
 	gi.require_version("Rsvg", "2.0")
-	gi.require_version("GdkX11", "3.0")
+	gi.require_version("GdkX11", "4.0")
 
 	from scc.paths import get_share_path
 	from scc.tools import init_logging

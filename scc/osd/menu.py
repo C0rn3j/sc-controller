@@ -10,6 +10,7 @@ import sys
 from math import sqrt
 from typing import TYPE_CHECKING
 
+import cairo
 from gi.repository import Gdk, GdkPixbuf, GdkX11, Gio, GLib, Gtk
 
 from scc.config import Config
@@ -26,12 +27,11 @@ from scc.constants import (
 	SCSticks,
 )
 from scc.gui.daemon_manager import DaemonManager
-from scc.lib import xwrappers as X
 from scc.menu_data import MenuData, Separator, Submenu
 from scc.osd import OSDWindow, StickController, menu_generators
 from scc.paths import get_share_path
 from scc.tools import _, circle_to_square, clamp, find_icon, find_menu
-from scc.x11 import autoswitcher
+from scc.x11 import autoswitcher, get_xdisplay
 
 if TYPE_CHECKING:
 	from scc.gui.daemon_manager import ControllerManager
@@ -62,7 +62,7 @@ class Menu(OSDWindow):
 		self.feedback: tuple[HapticPos, int] | None = None
 		self.controller = None
 		if isinstance(Gdk.Display.get_default(), GdkX11.X11Display):
-			self.xdisplay = X.Display(hash(GdkX11.x11_get_default_xdisplay()))  # Magic
+			self.xdisplay = get_xdisplay()
 		else:
 			self.xdisplay = None
 
@@ -72,8 +72,8 @@ class Menu(OSDWindow):
 
 		self.parent: Gtk.Box = self.create_parent()
 		self.f = Gtk.Fixed()
-		self.f.add(self.scroll_wrap(self.parent))
-		self.add(self.f)
+		self.f.put(self.scroll_wrap(self.parent), 0, 0)
+		self.set_child(self.f)
 
 		self._submenu = None
 		self._scon = StickController()
@@ -107,11 +107,7 @@ class Menu(OSDWindow):
 		"""
 		sw = Gtk.ScrolledWindow()
 		sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-		try:
-			sw.set_shadow_type(Gtk.ShadowType.NONE)
-		except Exception:
-			log.exception("Unknown exception - Failed to set shadow type!")
-		sw.add(parent)
+		sw.set_child(parent)
 		self._scrollwindow = sw
 		return sw
 
@@ -119,7 +115,10 @@ class Menu(OSDWindow):
 		"""Largest the menu may grow before scrolling (monitor height minus margin)."""
 		try:
 			display = Gdk.Display.get_default()
-			monitor = display.get_primary_monitor() or display.get_monitor(0)
+			surface = self.get_surface()
+			monitor = display.get_monitor_at_surface(surface) if surface is not None else None
+			if monitor is None:
+				monitor = display.get_monitors().get_item(0)
 			return max(240, monitor.get_geometry().height - 80)
 		except Exception:
 			log.exception("Unknown exception - Failed to get display/monitor!")
@@ -134,9 +133,9 @@ class Menu(OSDWindow):
 		sw = getattr(self, "_scrollwindow", None)
 		if sw is None:
 			return
-		self.parent.show_all()
-		nath = self.parent.get_preferred_height()[1]
-		natw = self.parent.get_preferred_width()[1]
+		self.parent.show()
+		_, natw, _, _ = self.parent.measure(Gtk.Orientation.HORIZONTAL, -1)
+		_, nath, _, _ = self.parent.measure(Gtk.Orientation.VERTICAL, natw)
 		cap = self._max_menu_height()
 		if nath > cap:
 			sw.set_size_request(natw + 24, cap)
@@ -182,7 +181,7 @@ class Menu(OSDWindow):
 
 	def pack_items(self, parent, items):
 		for item in items:
-			parent.pack_start(item.widget, True, True, 0)
+			parent.append(item.widget)
 
 	def use_daemon(self, d):
 		"""Allows (re)using already existing DaemonManager instance in same process.
@@ -322,15 +321,15 @@ class Menu(OSDWindow):
 
 	def enable_cursor(self):
 		if not self._use_cursor:
-			self.f.add(self.cursor)
-			self.f.show_all()
+			self.f.put(self.cursor, 0, 0)
+			self.f.show()
 			self._use_cursor = True
 
 	def generate_widget(self, item):
 		"""Generates gtk widget for specified menutitem"""
 		if isinstance(item, Separator) and item.label:
 			widget = Gtk.Button.new_with_label(item.label)
-			widget.set_relief(Gtk.ReliefStyle.NONE)
+			widget.add_css_class("flat")
 			widget.set_name("osd-menu-separator")
 			return widget
 		if isinstance(item, Separator):
@@ -338,21 +337,21 @@ class Menu(OSDWindow):
 			widget.set_name("osd-menu-separator")
 			return widget
 		widget = Gtk.Button.new_with_label(item.label)
-		widget.set_relief(Gtk.ReliefStyle.NONE)
-		if hasattr(widget.get_children()[0], "set_xalign"):
-			widget.get_children()[0].set_xalign(0)
+		widget.add_css_class("flat")
+		if hasattr(widget.get_child(), "set_xalign"):
+			widget.get_child().set_xalign(0)
 		else:
-			widget.get_children()[0].set_halign(Gtk.Align.START)
+			widget.get_child().set_halign(Gtk.Align.START)
 		if isinstance(item, Submenu):
 			item.callback = self.show_submenu
-			label1 = widget.get_children()[0]
+			label1 = widget.get_child()
 			label2 = Gtk.Label(label=_(">>"))
 			label2.set_property("margin-start", 30)
 			box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-			widget.remove(label1)
-			box.pack_start(label1, True, True, 1)
-			box.pack_start(label2, False, True, 1)
-			widget.add(box)
+			widget.set_child(None)
+			box.append(label1)
+			box.append(label2)
+			widget.set_child(box)
 			widget.set_name("osd-menu-item")
 		elif item.id is None:
 			widget.set_name("osd-menu-dummy")
@@ -363,21 +362,28 @@ class Menu(OSDWindow):
 			icon_file = item.icon.get_file().get_path()
 			has_colors = True
 		elif isinstance(item.icon, Gio.ThemedIcon):
-			icon = Gtk.IconTheme.get_default().choose_icon(item.icon.get_names(), 64, 0)
-			icon_file = icon.get_filename() if icon else None
+			icon_names = item.icon.get_names()
+			icon = Gtk.IconTheme.get_for_display(Gdk.Display.get_default()).lookup_icon(
+				icon_names[0],
+				icon_names[1:],
+				64,
+				self.get_scale_factor(),
+				self.get_direction(),
+				Gtk.IconLookupFlags(0),
+			)
+			icon_file = icon.get_file().get_path() if icon and icon.get_file() else None
 			has_colors = True
 		else:
 			icon_file, has_colors = find_icon(item.icon, self.PREFER_BW_ICONS)
 
 		if icon_file:
 			icon = MenuIcon(icon_file, has_colors)
-			label = widget.get_children()[0]
-			for c in [] + widget.get_children():
-				widget.remove(c)
-			box = Gtk.Box()
-			box.pack_start(icon, False, True, 0)
-			box.pack_start(label, True, True, 10)
-			widget.add(box)
+			label = widget.get_child()
+			widget.set_child(None)
+			box = Gtk.Box(spacing=5)
+			box.append(icon)
+			box.append(label)
+			widget.set_child(box)
 
 		return widget
 
@@ -552,6 +558,7 @@ class Menu(OSDWindow):
 		self._submenu = None
 		if self.using_wlroots:
 			self.layer_shell.set_layer(self, self.layer_shell.Layer.OVERLAY)
+		return False
 
 	def show_submenu(self, trash, trash2, trash3, menuitem):
 		"""Called when user chooses menu item pointing to submenu"""
@@ -589,7 +596,7 @@ class Menu(OSDWindow):
 			self._submenu.use_daemon(self.daemon)
 			self._submenu.use_controller(self.controller)
 			self._submenu.controller = self.controller
-			self._submenu.connect("destroy", self.on_submenu_closed)
+			self._submenu.connect("close-request", self.on_submenu_closed)
 			self._submenu.show()
 			self.set_name("osd-menu-inactive")
 
@@ -659,7 +666,9 @@ class MenuIcon(Gtk.DrawingArea):
 
 	def __init__(self, filename, has_colors=False):
 		Gtk.DrawingArea.__init__(self)
-		self.connect("size_allocate", self.on_size_allocate)
+		self.set_content_width(32)
+		self.set_content_height(32)
+		self.set_draw_func(self.on_draw)
 		self.has_colors = has_colors
 		self.set_filename(filename)
 
@@ -669,25 +678,17 @@ class MenuIcon(Gtk.DrawingArea):
 		else:
 			self.pb = GdkPixbuf.Pixbuf.new_from_file(filename)
 
-	def on_size_allocate(self, trash, allocation):
-		if allocation.width < allocation.height:
-			self.set_size_request(allocation.height, -1)
-
-	def do_draw(self, cr):
-		allocation = self.get_allocation()
-		if allocation.width >= allocation.height:
-			context = Gtk.Widget.get_style_context(self)
-			Gtk.render_background(context, cr, 0, 0, allocation.width, allocation.height)
-			if self.pb is None:
-				# No icon set
-				return
-			scaled = self.pb.scale_simple(allocation.height, allocation.height, GdkPixbuf.InterpType.BILINEAR)
-			surf = Gdk.cairo_surface_create_from_pixbuf(scaled, 1)
-			if self.has_colors:
-				cr.set_source_surface(surf, 1.0, 1.0)
-				# allocation.height, allocation.height)
-				cr.rectangle(0, 0, allocation.height, allocation.height)
-			else:
-				Gdk.cairo_set_source_rgba(cr, context.get_color(Gtk.StateFlags.NORMAL))
-				cr.mask_surface(surf, 0, 0)
-			cr.fill()
+	def on_draw(self, drawing_area, cr, width, height):
+		icon_size = min(width, height)
+		if icon_size <= 0 or self.pb is None:
+			return
+		context = Gtk.Widget.get_style_context(self)
+		Gtk.render_background(context, cr, 0, 0, width, height)
+		scaled = self.pb.scale_simple(icon_size, icon_size, GdkPixbuf.InterpType.BILINEAR)
+		Gdk.cairo_set_source_pixbuf(cr, scaled, 0, 0)
+		cr.paint()
+		if not self.has_colors:
+			cr.set_operator(cairo.OPERATOR_IN)
+			Gdk.cairo_set_source_rgba(cr, context.get_color())
+			cr.paint()
+			cr.set_operator(cairo.OPERATOR_OVER)

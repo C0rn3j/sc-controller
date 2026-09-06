@@ -8,14 +8,14 @@ prints chosen item id to stdout
 import logging
 import sys
 
-from gi.repository import GdkX11, Gtk
+from gi.repository import Gtk
 
 from scc.config import Config
 from scc.constants import DEFAULT, DPAD, LSTICK, ControllerFlags, HapticPos
 from scc.gui.daemon_manager import DaemonManager
-from scc.lib import xwrappers as X
 from scc.menu_data import MenuData
 from scc.osd import OSDWindow, StickController
+from scc.x11 import get_xdisplay
 
 log = logging.getLogger("osd.dialog")
 
@@ -39,12 +39,12 @@ class Dialog(OSDWindow):
 		self.feedback = None
 		self.controller = None
 		self._control_with_dpad: bool = False
-		self.xdisplay = X.Display(hash(GdkX11.x11_get_default_xdisplay()))  # Magic
+		self.xdisplay = get_xdisplay()
 
 		self.parent = self.create_parent()
 		self.f = Gtk.Fixed()
-		self.f.add(self.parent)
-		self.add(self.f)
+		self.f.put(self.parent, 0, 0)
+		self.set_child(self.f)
 
 		self._scon = StickController()
 		self._scon.connect("direction", self.on_stick_direction)
@@ -55,8 +55,8 @@ class Dialog(OSDWindow):
 		self._text = Gtk.Label()
 		self._buttons = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 		dialog = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-		dialog.pack_start(self._text, True, True, 0)
-		dialog.pack_start(self._buttons, True, True, 0)
+		dialog.append(self._text)
+		dialog.append(self._buttons)
 
 		dialog.set_name("osd-dialog")
 		self._buttons.set_name("osd-dialog-buttons")
@@ -67,7 +67,7 @@ class Dialog(OSDWindow):
 		for item in items:
 			if hasattr(item.widget, "set_alignment"):
 				item.widget.set_alignment(0.5, 0.5)
-			self._buttons.pack_end(item.widget, True, True, 0)
+			self._buttons.append(item.widget)
 
 	def use_daemon(self, d):
 		"""Allows (re)using already existing DaemonManager instance in same process.
@@ -146,11 +146,11 @@ class Dialog(OSDWindow):
 	def generate_widget(self, item):
 		"""Generates gtk widget for specified menutitem"""
 		widget = Gtk.Button.new_with_label(item.label)
-		widget.set_relief(Gtk.ReliefStyle.NONE)
-		if hasattr(widget.get_children()[0], "set_xalign"):
-			widget.get_children()[0].set_xalign(0)
+		widget.add_css_class("flat")
+		if hasattr(widget.observe_children()[0], "set_xalign"):
+			widget.observe_children()[0].set_xalign(0)
 		else:
-			widget.get_children()[0].set_halign(Gtk.Align.START)
+			widget.observe_children()[0].set_halign(Gtk.Align.START)
 		widget.set_name("osd-menu-item")
 
 		return widget

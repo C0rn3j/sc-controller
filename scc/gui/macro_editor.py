@@ -165,16 +165,16 @@ class MacroEditor(Editor):
 		button_down.connect("clicked", self.on_moveb_clicked, 1, action_data)
 
 		# Move Up button
-		button_up.set_image(Gtk.Image.new_from_stock("gtk-go-up", Gtk.IconSize.SMALL_TOOLBAR))
-		button_up.set_relief(Gtk.ReliefStyle.NONE)
+		button_up.set_child(Gtk.Image.new_from_icon_name("go-up-symbolic"))
+		button_up.add_css_class("flat")
 
 		# Move Down button
-		button_down.set_image(Gtk.Image.new_from_stock("gtk-go-down", Gtk.IconSize.SMALL_TOOLBAR))
-		button_down.set_relief(Gtk.ReliefStyle.NONE)
+		button_down.set_child(Gtk.Image.new_from_icon_name("go-down-symbolic"))
+		button_down.add_css_class("flat")
 
 		# Clear button
-		button_clear.set_image(Gtk.Image.new_from_stock("gtk-delete", Gtk.IconSize.SMALL_TOOLBAR))
-		button_clear.set_relief(Gtk.ReliefStyle.NONE)
+		button_clear.set_child(Gtk.Image.new_from_icon_name("edit-delete-symbolic"))
+		button_clear.add_css_class("flat")
 
 		# Pack
 		grActions.attach(button_up, 2, i, 1, 1)
@@ -192,7 +192,7 @@ class MacroEditor(Editor):
 
 		self.actions.append(action_data)
 		self.update_action_field()
-		grActions.show_all()
+		grActions.show()
 
 	def on_moveb_clicked(self, trash, direction, action_data) -> None:
 		"""Handler for 'move action' buttons"""
@@ -237,7 +237,7 @@ class MacroEditor(Editor):
 	def _clear_grid(self) -> None:
 		"""Removes everything from UI"""
 		grActions = self.builder.get_object("grActions")
-		for child in [] + grActions.get_children():
+		for child in [] + grActions.observe_children():
 			grActions.remove(child)
 
 	def _refill_grid(self, new_actions) -> None:
@@ -321,15 +321,15 @@ class MacroEditor(Editor):
 		vbAddedWidget = self.builder.get_object("vbAddedWidget")
 		lblAddedWidget.set_label(label)
 		lblAddedWidget.set_visible(True)
-		for ch in vbAddedWidget.get_children():
+		for ch in vbAddedWidget.observe_children():
 			vbAddedWidget.remove(ch)
 		self.added_widget = widget
-		vbAddedWidget.pack_start(widget, True, False, 0)
+		vbAddedWidget.append(widget)
 		vbAddedWidget.set_visible(True)
 
 	def on_Dialog_destroy(self, *a):
 		vbAddedWidget = self.builder.get_object("vbAddedWidget")
-		for ch in vbAddedWidget.get_children():
+		for ch in vbAddedWidget.observe_children():
 			vbAddedWidget.remove(ch)
 
 	def allow_first_page(self):

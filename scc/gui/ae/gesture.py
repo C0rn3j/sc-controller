@@ -34,6 +34,7 @@ class GestureComponent(AEComponent):
 
 	def load(self):
 		if AEComponent.load(self):
+			self.builder.get_object("sclPrecision").set_format_value_func(self.on_sclPrecision_format_value)
 			# Unlike mose region, gesutres kinda work with XWayland
 			self.on_wayland = not isinstance(Gdk.Display.get_default(), GdkX11.X11Display)
 			if self.on_wayland:
@@ -156,7 +157,7 @@ class GestureComponent(AEComponent):
 			self.editor.set_osd_enabled(True)
 		self._grabber.grab(grabbed)
 
-	def on_sclPrecision_format_value(self, scl, value):
+	def on_sclPrecision_format_value(self, scl, value, *a):
 		return "%s%%" % (int(value * 100.0),)
 
 	def on_sclPrecision_value_changed(self, *a):
@@ -204,8 +205,7 @@ class GestureGrabber:
 		self.lblGestureStatus = self.builder.get_object("lblGestureStatus")
 		self.rvGestureGrab = self.builder.get_object("rvGestureGrab")
 		# Can't use autoconnect for this :(
-		self.gesture_grabber.connect("delete-event", self.close)
-		self.gesture_grabber.connect("destroy", self.close)
+		self.gesture_grabber.connect("close-request", self.close)
 		self.builder.get_object("btnStartGestureOver").connect("clicked", self.start_over)
 		self.builder.get_object("btnConfirmGesutre").connect("clicked", self.use)
 
@@ -291,7 +291,7 @@ class GestureGrabber:
 		self._gd.use_daemon(self.editor.app.dm)
 		self._gd.show()
 		self._gd.connect("gesture-updated", self.on_gesture_updated)
-		self._gd.connect("destroy", self.on_gesture_recognized)
+		self._gd.connect("close-request", self.on_gesture_recognized)
 		self.lock_buttons()
 
 	def on_gesture_updated(self, gd, gstr):
@@ -303,7 +303,7 @@ class GestureGrabber:
 		self.disconnect_signals()
 		if gd.get_exit_code() != 0:
 			# Canceled or cannot grab controller
-			return
+			return False
 		if gd.get_gesture():
 			self.on_gesture_updated(gd, gd.get_gesture())
 			if self._gesture == None:
@@ -317,3 +317,4 @@ class GestureGrabber:
 				self.lblGestureStatus.set_label(_("Gesture differs"))
 
 		self._create_gd()
+		return False

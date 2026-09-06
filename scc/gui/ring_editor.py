@@ -30,6 +30,7 @@ class RingEditor(Editor, ComboSetter):
 
 	def setup_widgets(self):
 		Editor.setup_widgets(self)
+		self.builder.get_object("sclRadius").set_format_value_func(self.on_sclRadius_format_value)
 		b = lambda a: self.builder.get_object(a)
 		self.action_widgets = (
 			# Order goes: Action Button, Clear Button
@@ -54,7 +55,7 @@ class RingEditor(Editor, ComboSetter):
 	def on_adjRadius_value_changed(self, scale, *a):
 		self.radius = scale.get_value()
 
-	def on_sclRadius_format_value(self, scale, value):
+	def on_sclRadius_format_value(self, scale, value, *a):
 		return "%s%%" % (int(value * 100),)
 
 	def on_Dialog_destroy(self, *a):

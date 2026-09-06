@@ -438,7 +438,8 @@ class AxisActionComponent(AEComponent, TimerManager):
 		else:
 			button.set_text("%s px" % (int(button.get_value())))
 
-	def on_sbArea_focus_out_event(self, button, *a):
+	def on_sbArea_focus_out_event(self, controller, *a):
+		button = controller.get_widget()
 		GLib.idle_add(self.on_sbArea_output, button)
 
 	def on_sbArea_changed(self, button, *a):
@@ -486,7 +487,9 @@ class FakeMapper:
 	"""
 
 	def __init__(self, editor):
-		self._xdisplay = X.Display(hash(GdkX11.x11_get_default_xdisplay()))
+		from scc.x11 import get_xdisplay
+
+		self._xdisplay = get_xdisplay()
 		self.editor = editor
 
 	def get_xdisplay(self):

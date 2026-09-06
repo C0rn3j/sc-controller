@@ -140,6 +140,8 @@ class ActionEditor(Editor):
 
 	def setup_widgets(self):
 		Editor.setup_widgets(self)
+		self.builder.get_object("sclFriction").set_format_value_func(self.on_sclFriction_format_value)
+		self.builder.get_object("sclFFrequency").set_format_value_func(self.on_sclFFrequency_format_value)
 		headerbar(self.builder.get_object("header"))
 		for i in (0, 1, 2):
 			self.sens_widgets.append(
@@ -217,8 +219,8 @@ class ActionEditor(Editor):
 		if self._selected_component is not None:
 			self._selected_component.hidden()
 
-	def on_Dialog_key_press_event(self, window, event):
-		if self.app.osd_mode and event.keyval == 65471:
+	def on_Dialog_key_press_event(self, controller, keyval, keycode, state):
+		if self.app.osd_mode and keyval == 65471:
 			self.on_btOK_clicked()
 
 	def set_osd_enabled(self, value):
@@ -307,7 +309,7 @@ class ActionEditor(Editor):
 		self._selected_component.shown()
 		stActionModes.set_visible_child(component.get_widget())
 
-		stActionModes.show_all()
+		stActionModes.show()
 
 	def force_page(self, component, remove_rest: bool = False):
 		"""Force action editor to display page with the specified component.
@@ -323,12 +325,12 @@ class ActionEditor(Editor):
 		stActionModes = self.builder.get_object("stActionModes")
 		component.load()
 		if remove_rest:
-			for c in stActionModes.get_children():
+			for c in stActionModes.observe_children():
 				if c != component:
 					stActionModes.remove(c)
 
-		if component.get_widget() not in stActionModes.get_children():
-			stActionModes.add(component.get_widget())
+		if component.get_widget() not in stActionModes.observe_children():
+			stActionModes.add_child(component.get_widget())
 
 		component.set_action(self._mode, self._action)
 		if self._selected_component is not None:
@@ -337,7 +339,7 @@ class ActionEditor(Editor):
 		self._selected_component = component
 		self._selected_component.shown()
 		stActionModes.set_visible_child(component.get_widget())
-		stActionModes.show_all()
+		stActionModes.show()
 
 		return component
 
@@ -878,7 +880,7 @@ class ActionEditor(Editor):
 				stActionModes = self.builder.get_object("stActionModes")
 				self._selected_component.load()
 				self._selected_component.shown()
-				stActionModes.add(self._selected_component.get_widget())
+				stActionModes.add_child(self._selected_component.get_widget())
 				stActionModes.set_visible_child(self._selected_component.get_widget())
 			if self._selected_component:
 				if self._selected_component in self.c_buttons:
@@ -1015,28 +1017,28 @@ class ActionEditor(Editor):
 		for component in reversed(sorted(self.components, key=lambda a: a.PRIORITY)):
 			if (mode & component.CTXS) != 0:
 				b = Gtk.ToggleButton.new_with_label(component.get_button_title())
-				vbActionButtons.pack_start(b, True, True, 2)
+				vbActionButtons.append(b)
 				b.connect("toggled", self.on_action_type_changed)
 				self.c_buttons[component] = b
 
 				component.load()
-				if component.get_widget() not in stActionModes.get_children():
-					stActionModes.add(component.get_widget())
+				if component.get_widget() not in stActionModes.observe_children():
+					stActionModes.add_child(component.get_widget())
 
 		if action.name is None:
 			entName.set_text("")
 		else:
 			entName.set_text(action.name)
 		if vbActionButtons.get_visible():
-			vbActionButtons.show_all()
+			vbActionButtons.show()
 
-	def on_sclFFrequency_format_value(self, scale, value):
+	def on_sclFFrequency_format_value(self, scale, value, *a):
 		if value == 1:
 			# Special case
 			return " %0.2fHz" % (1.0 / value,)
 		return "%0.2fmHz" % (100.0 / value,)
 
-	def on_sclFriction_format_value(self, scale, value):
+	def on_sclFriction_format_value(self, scale, value, *a):
 		if value <= 0:
 			return "%0.3f" % (0,)
 		if value >= 6:

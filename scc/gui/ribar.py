@@ -40,12 +40,11 @@ class RIBar(Gtk.Revealer):
 				icon_name = "dialog-error"
 			elif message_type == Gtk.MessageType.WARNING:
 				icon_name = "dialog-warning"
-			icon = Gtk.Image()
-			icon.set_from_icon_name(icon_name, Gtk.IconSize.DIALOG)
-			self._infobar.get_content_area().pack_start(icon, False, False, 1)
+			icon = Gtk.Image.new_from_icon_name(icon_name)
+			self._infobar.get_content_area().append(icon)
 			# Label
 			if isinstance(label, Gtk.Widget):
-				self._infobar.get_content_area().pack_start(label, True, True, 0)
+				self._infobar.get_content_area().append(label)
 				self._label = label
 			else:
 				self._label = Gtk.Label()
@@ -70,7 +69,7 @@ class RIBar(Gtk.Revealer):
 		self.set_reveal_child(False)
 		# Packing
 		self.add(self._infobar)
-		self.show_all()
+		self.show()
 
 	def _cb_close(self, ib):
 		self.emit("close")
@@ -83,12 +82,13 @@ class RIBar(Gtk.Revealer):
 			self._infobar.set_show_close_button(False)
 
 	def add_widget(self, widget, expand=False, fill=True):
-		self._infobar.get_content_area().pack_start(widget, expand, fill, 1)
+		widget.set_hexpand(expand)
+		self._infobar.get_content_area().append(widget)
 		widget.show()
 
 	def add_button(self, button, response_id):
 		self._infobar.add_action_widget(button, response_id)
-		self._infobar.show_all()
+		self._infobar.show()
 
 	def get_label(self):
 		"""Returns label widget"""
@@ -109,10 +109,9 @@ class RIBar(Gtk.Revealer):
 		GLib.timeout_add(self.get_transition_duration() + 50, self._cb_destroy)
 
 	def _cb_destroy(self, *a):
-		"""Callback used by _cb_close method"""
+		"""Remove the revealer after its closing animation."""
 		if self.get_parent() is not None:
 			self.get_parent().remove(self)
-		self.destroy()
 
 	def set_value(self, key, value):
 		"""Stores some metadata"""
@@ -133,12 +132,14 @@ class RIBar(Gtk.Revealer):
 	@staticmethod
 	def build_button(label, icon_name=None, icon_widget=None, use_stock=False):
 		"""Builds button situable for action area"""
-		b = Gtk.Button.new_from_stock(label) if use_stock else Gtk.Button.new_with_label(label)
-		b.set_use_underline(True)
+		b = Gtk.Button.new_with_mnemonic(label)
 		if icon_name is not None:
-			icon_widget = Gtk.Image()
-			icon_widget.set_from_icon_name(icon_name, Gtk.IconSize.BUTTON)
+			icon_widget = Gtk.Image.new_from_icon_name(icon_name)
 		if icon_widget is not None:
-			b.set_image(icon_widget)
-			b.set_always_show_image(True)
+			content = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+			content.append(icon_widget)
+			button_label = Gtk.Label.new_with_mnemonic(label)
+			button_label.set_mnemonic_widget(b)
+			content.append(button_label)
+			b.set_child(content)
 		return b
