@@ -7,6 +7,7 @@ from __future__ import annotations
 import logging
 import os
 import sys
+import cairo
 from math import sqrt
 from typing import TYPE_CHECKING
 
@@ -115,7 +116,10 @@ class Menu(OSDWindow):
 		"""Largest the menu may grow before scrolling (monitor height minus margin)."""
 		try:
 			display = Gdk.Display.get_default()
-			monitor = display.get_primary_monitor() or display.get_monitor(0)
+			surface = self.get_surface()
+			monitor = display.get_monitor_at_surface(surface) if surface is not None else None
+			if monitor is None:
+				monitor = display.get_monitors().get_item(0)
 			return max(240, monitor.get_geometry().height - 80)
 		except Exception:
 			log.exception("Unknown exception - Failed to get display/monitor!")
@@ -131,8 +135,8 @@ class Menu(OSDWindow):
 		if sw is None:
 			return
 		self.parent.show()
-		nath = self.parent.get_preferred_height()[1]
-		natw = self.parent.get_preferred_width()[1]
+		_, natw, _, _ = self.parent.measure(Gtk.Orientation.HORIZONTAL, -1)
+		_, nath, _, _ = self.parent.measure(Gtk.Orientation.VERTICAL, natw)
 		cap = self._max_menu_height()
 		if nath > cap:
 			sw.set_size_request(natw + 24, cap)
@@ -654,7 +658,8 @@ class MenuIcon(Gtk.DrawingArea):
 
 	def __init__(self, filename, has_colors=False):
 		Gtk.DrawingArea.__init__(self)
-		self.connect("size_allocate", self.on_size_allocate)
+		self.connect("notify::height", self.on_height_changed)
+		self.set_draw_func(self.on_draw)
 		self.has_colors = has_colors
 		self.set_filename(filename)
 
@@ -664,25 +669,25 @@ class MenuIcon(Gtk.DrawingArea):
 		else:
 			self.pb = GdkPixbuf.Pixbuf.new_from_file(filename)
 
-	def on_size_allocate(self, trash, allocation):
-		if allocation.width < allocation.height:
-			self.set_size_request(allocation.height, -1)
+	def on_height_changed(self, *args):
+		height = self.get_height()
+		if height > 0 and self.get_width() < height:
+			self.set_size_request(height, -1)
 
-	def do_draw(self, cr):
-		allocation = self.get_allocation()
-		if allocation.width >= allocation.height:
+	def on_draw(self, drawing_area, cr, width, height):
+		if width >= height:
 			context = Gtk.Widget.get_style_context(self)
-			Gtk.render_background(context, cr, 0, 0, allocation.width, allocation.height)
+			Gtk.render_background(context, cr, 0, 0, width, height)
 			if self.pb is None:
 				# No icon set
 				return
-			scaled = self.pb.scale_simple(allocation.height, allocation.height, GdkPixbuf.InterpType.BILINEAR)
-			surf = Gdk.cairo_surface_create_from_pixbuf(scaled, 1)
+			scaled = self.pb.scale_simple(height, height, GdkPixbuf.InterpType.BILINEAR)
+			Gdk.cairo_set_source_pixbuf(cr, scaled, 0, 0)
+			cr.paint()
 			if self.has_colors:
-				cr.set_source_surface(surf, 1.0, 1.0)
-				# allocation.height, allocation.height)
-				cr.rectangle(0, 0, allocation.height, allocation.height)
+				return
 			else:
+				cr.set_operator(cairo.OPERATOR_IN)
 				Gdk.cairo_set_source_rgba(cr, context.get_color(Gtk.StateFlags.NORMAL))
-				cr.mask_surface(surf, 0, 0)
-			cr.fill()
+				cr.paint()
+				cr.set_operator(cairo.OPERATOR_OVER)
