@@ -1356,7 +1356,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			if get_profile_name(c.get_profile()) == old_name:
 				ps = self.profile_switchers[controllers.index(c)]
 				ps.set_profile(new_name, True)
-				c.set_profile(new_name)
+				c.set_profile(new_fname)
 		self.load_profile_list()
 		dlg.hide()
 
@@ -1379,20 +1379,24 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		)
 		d.set_property("secondary-text", _("This action is not undoable!"))
 
-		if d.run() == -5:  # OK button, no idea where is this defined...
-			fname = os.path.join(get_profiles_path(), name + ".sccprofile")
-			try:
-				os.unlink(fname)
+		def on_response(dialog, response_id) -> None:
+			if response_id == Gtk.ResponseType.OK:
+				fname = os.path.join(get_profiles_path(), name + ".sccprofile")
 				try:
-					os.unlink(fname + ".mod")
-				except:
-					# non-existing .mod file is expected
-					pass
-				for ps in self.profile_switchers:
-					ps.refresh_profile_path(name)
-			except Exception as e:
-				log.error("Failed to remove %s: %s", fname, e)
-		d.close()
+					os.unlink(fname)
+					try:
+						os.unlink(fname + ".mod")
+					except FileNotFoundError:
+						# A non-existing .mod file is expected.
+						pass
+					for ps in self.profile_switchers:
+						ps.refresh_profile_path(name)
+				except Exception as e:
+					log.error("Failed to remove %s: %s", fname, e)
+			dialog.close()
+
+		d.connect("response", on_response)
+		d.present()
 
 	def mnuTurnoffController_activate(self, *a) -> None:
 		mnuPS = self.builder.get_object("mnuPS")
