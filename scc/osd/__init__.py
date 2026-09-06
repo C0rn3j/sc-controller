@@ -58,6 +58,20 @@ class OSDWindow(Gtk.Window):
 			min-width: 100px;
 			margin: 0px 5px 0px 5px;
 		}
+
+		/* Breeze's negative scrollbar-slider margins and transparent border
+		 * can produce a -2px minimum size with GTK4. */
+		scrollbar slider {
+			margin: 0;
+			border-width: 0;
+			min-width: 6px;
+			min-height: 30px;
+		}
+
+		scrollbar.horizontal slider {
+			min-width: 30px;
+			min-height: 6px;
+		}
 	"""
 
 	EPILOG = ""
@@ -86,7 +100,7 @@ class OSDWindow(Gtk.Window):
 			if Gtk4LayerShell.is_supported():
 				self.using_wlroots = True
 				self.x_layer_anchor = Gtk4LayerShell.Edge.LEFT
-				self.y_layer_anchor = Gtk4LayerShell.Edge.BOTTOM
+				self.y_layer_anchor = Gtk4LayerShell.Edge.TOP
 				Gtk4LayerShell.init_for_window(self)
 				Gtk4LayerShell.set_layer(self, layer if layer is not None else Gtk4LayerShell.Layer.OVERLAY)
 				Gtk4LayerShell.set_anchor(self, self.x_layer_anchor, True)

@@ -47,7 +47,7 @@
 	color: #%(text+50)s;
 }
 
-#osd-menu, #osd-gesture {
+#osd-menu, #osd-menu-inactive, #osd-gesture {
 	padding: 7px 7px 7px 7px;
 }
 
