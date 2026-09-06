@@ -165,15 +165,15 @@ class MacroEditor(Editor):
 		button_down.connect("clicked", self.on_moveb_clicked, 1, action_data)
 
 		# Move Up button
-		button_up.set_image(Gtk.Image.new_from_stock("gtk-go-up", Gtk.IconSize.SMALL_TOOLBAR))
+		button_up.set_child(Gtk.Image.new_from_icon_name("go-up-symbolic"))
 		button_up.add_css_class("flat")
 
 		# Move Down button
-		button_down.set_image(Gtk.Image.new_from_stock("gtk-go-down", Gtk.IconSize.SMALL_TOOLBAR))
+		button_down.set_child(Gtk.Image.new_from_icon_name("go-down-symbolic"))
 		button_down.add_css_class("flat")
 
 		# Clear button
-		button_clear.set_image(Gtk.Image.new_from_stock("gtk-delete", Gtk.IconSize.SMALL_TOOLBAR))
+		button_clear.set_child(Gtk.Image.new_from_icon_name("edit-delete-symbolic"))
 		button_clear.add_css_class("flat")
 
 		# Pack
