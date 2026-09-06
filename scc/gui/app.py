@@ -486,10 +486,14 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		mnuEPress = self.builder.get_object("mnuEditPress")
 		mnuEPressS = self.builder.get_object("mnuEditPressSeparator")
 		self.context_menu_for = for_id
-		clp = Gtk.Clipboard.get_default(Gdk.Display.get_default())
+		clp = Gdk.Display.get_default().get_clipboard()
+		formats = clp.get_formats()
+		has_text = formats.contain_gtype(GObject.TYPE_STRING) or any(
+			mime_type.startswith("text/plain") for mime_type in formats.get_mime_types()
+		)
 		mnuCopy.set_sensitive(bool(self.get_action(self.current, for_id)))
 		mnuClear.set_sensitive(bool(self.get_action(self.current, for_id)))
-		mnuPaste.set_sensitive(clp.wait_is_text_available())
+		mnuPaste.set_sensitive(has_text)
 		mnuEPress.set_visible(for_id in (SCPads.LPAD, SCPads.RPAD, SCPads.CPAD, SCSticks.LSTICK, SCSticks.RSTICK))
 		mnuEPressS.set_visible(mnuEPress.get_visible())
 
@@ -553,21 +557,29 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		if a:
 			if a.name:
 				a = NameModifier(a.name, a)
-			clp = Gtk.Clipboard.get_default(Gdk.Display.get_default())
-			clp.set_text(a.to_string().encode("utf-8"), -1)
-			clp.store()
+			clp = Gdk.Display.get_default().get_clipboard()
+			clp.set(GObject.Value(GObject.TYPE_STRING, a.to_string()))
 
 	def on_mnuPaste_activate(self, *a):
 		"""Handler for 'Paste' context menu item.
 		Reads string from clipboard, parses it as action and sets that action
 		on selected input.
 		"""
-		clp = Gtk.Clipboard.get_default(Gdk.Display.get_default())
-		text = clp.wait_for_text()
-		if text:
-			a = GuiActionParser().restart(text.decode("utf-8")).parse()
-			if not isinstance(a, InvalidAction):
-				self.on_action_chosen(self.context_menu_for, a)
+		clp = Gdk.Display.get_default().get_clipboard()
+		context_menu_for = self.context_menu_for
+
+		def on_text_read(clp, result):
+			try:
+				text = clp.read_text_finish(result)
+			except GLib.Error as error:
+				log.warning("Failed to read clipboard text: %s", error)
+				return
+			if text:
+				a = GuiActionParser().restart(text).parse()
+				if not isinstance(a, InvalidAction):
+					self.on_action_chosen(context_menu_for, a)
+
+		clp.read_text_async(None, on_text_read)
 
 	def on_mnuEditPress_activate(self, *a) -> None:
 		"""Handler for 'Edit Pressed Action' context menu item."""
