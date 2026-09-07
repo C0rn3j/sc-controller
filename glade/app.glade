@@ -704,7 +704,7 @@
     <signal name="close-request" handler="undeletable_dialog" swapped="no"/>
     <property name="child">
       <object class="GtkBox" id="dlgProfileDetailsVB">
-        <property name="visible">0</property>
+        <property name="visible">1</property>
         <property name="margin-start">18</property>
         <property name="margin-end">18</property>
         <property name="margin-top">18</property>
