@@ -128,7 +128,7 @@ class ControllerImage(SVGWidget):
 		"""
 		if self.backup is None:
 			self.backup = copy.deepcopy(self.current)
-		with open(os.path.join(self.app.imagepath, "{filename}.json")) as file:
+		with open(os.path.join(self.app.imagepath, f"{filename}.json")) as file:
 			data = json.loads(file.read())
 		self.current["gui"]["buttons"] = data["gui"]["buttons"]
 		self.current["buttons"] = data["buttons"]
