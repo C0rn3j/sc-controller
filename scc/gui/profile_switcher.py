@@ -396,9 +396,9 @@ class ProfileSwitcher(Gtk.Box, UserDataManager):
 class ButtonInRevealer(Gtk.Revealer):
 	def __init__(self, button_name, tooltip, callback) -> None:
 		Gtk.Revealer.__init__(self)
-		self.button = Gtk.Button.new_from_icon_name(button_name, Gtk.IconSize.SMALL_TOOLBAR)
+		self.button = Gtk.Button.new_from_icon_name(button_name)
 		self.button.connect("clicked", callback)
 		self.button.set_tooltip_text(tooltip)
 		self.set_reveal_child(False)
 		self.set_transition_type(Gtk.RevealerTransitionType.SLIDE_LEFT)
-		self.append(self.button)
+		self.set_child(self.button)
