@@ -6,7 +6,7 @@
     <signal name="response" handler="on_dialog_response" swapped="no"/>
     <property name="child">
       <object class="GtkBox" id="vb1">
-        <property name="visible">0</property>
+        <property name="visible">1</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child>
@@ -18,9 +18,10 @@
             <property name="margin-bottom">10</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkImage" id="image1">
+              <object class="GtkPicture" id="image1">
+                <property name="content-fit">scale-down</property>
+                <property name="halign">center</property>
                 <property name="margin-bottom">10</property>
-                <property name="file">../images/sc-controller-small.svg</property>
               </object>
             </child>
             <child>
@@ -82,6 +83,9 @@ See the &lt;a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html"&gt;GN
         </child>
         <child>
           <object class="GtkButton" id="btnClose">
+            <property name="halign">end</property>
+            <property name="margin-end">10</property>
+            <property name="margin-bottom">10</property>
             <property name="child">
               <object class="GtkBox">
                 <property name="spacing">6</property>
