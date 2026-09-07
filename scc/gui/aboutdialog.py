@@ -1,5 +1,7 @@
 """SC-Controller - About dialog."""
 
+import os
+
 from scc.gui.editor import Editor
 
 
@@ -20,6 +22,9 @@ class AboutDialog(Editor):
 			scc.__file__: /home/user/sc-controller/scc/__init__.py
 		"""
 		Editor.setup_widgets(self)
+		self.builder.get_object("image1").set_filename(
+			os.path.join(self.app.imagepath, "sc-controller-small.svg"),
+		)
 
 		app_ver = "(unknown version)"
 		import importlib.metadata
