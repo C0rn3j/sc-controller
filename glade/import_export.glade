@@ -96,9 +96,9 @@
                               <object class="GtkLabel" id="lblBtExport">
                                 <property name="label" translatable="yes">_Export Profile</property>
                                 <property name="use-underline">1</property>
-                                <attributes>
-                                  <attribute name="weight" value="bold"/>
-                                </attributes>
+                                <property name="attributes">
+                                  0 -1 weight bold
+                                </property>
                               </object>
                             </child>
                           </object>
@@ -133,9 +133,9 @@
                               <object class="GtkLabel" id="lblBtImport">
                                 <property name="label" translatable="yes">_Import SC Controller Profile</property>
                                 <property name="use-underline">1</property>
-                                <attributes>
-                                  <attribute name="weight" value="bold"/>
-                                </attributes>
+                                <property name="attributes">
+                                  0 -1 weight bold
+                                </property>
                               </object>
                             </child>
                           </object>
@@ -171,9 +171,9 @@
                               <object class="GtkLabel" id="lblBtImportVdf">
                                 <property name="label" translatable="yes">Import _Steam Profile</property>
                                 <property name="use-underline">1</property>
-                                <attributes>
-                                  <attribute name="weight" value="bold"/>
-                                </attributes>
+                                <property name="attributes">
+                                  0 -1 weight bold
+                                </property>
                               </object>
                             </child>
                           </object>
@@ -247,9 +247,9 @@
                         <property name="margin-bottom">10</property>
                         <property name="label" translatable="yes">Select Profile to Export</property>
                         <property name="xalign">0</property>
-                        <attributes>
-                          <attribute name="weight" value="bold"/>
-                        </attributes>
+                        <property name="attributes">
+                          0 -1 weight bold
+                        </property>
                         <layout>
                           <property name="column">0</property>
                           <property name="row">0</property>
@@ -505,9 +505,9 @@ Please, select what should be packaged along with exported profile.</property>
                       <object class="GtkLabel" id="label2">
                         <property name="label" translatable="yes">Select Profile to Import</property>
                         <property name="xalign">0</property>
-                        <attributes>
-                          <attribute name="weight" value="bold"/>
-                        </attributes>
+                        <property name="attributes">
+                          0 -1 weight bold
+                        </property>
                         <layout>
                           <property name="column">0</property>
                           <property name="row">0</property>
@@ -567,9 +567,9 @@ Please, select what should be packaged along with exported profile.</property>
                         <property name="margin-bottom">50</property>
                         <property name="hexpand">1</property>
                         <property name="label" translatable="yes">Import results goes here</property>
-                        <attributes>
-                          <attribute name="weight" value="bold"/>
-                        </attributes>
+                        <property name="attributes">
+                          0 -1 weight bold
+                        </property>
                         <layout>
                           <property name="column">0</property>
                           <property name="row">0</property>
@@ -659,9 +659,9 @@ Please, select what should be packaged along with exported profile.</property>
 		.XYZ.aset_3
 		.XYZ.aset_4</property>
                         <property name="xalign">0</property>
-                        <attributes>
-                          <attribute name="style" value="italic"/>
-                        </attributes>
+                        <property name="attributes">
+                          0 -1 style italic
+                        </property>
                         <layout>
                           <property name="column">0</property>
                           <property name="row">6</property>
@@ -847,9 +847,9 @@ what command does before clicking "Continue."</property>
                         <property name="margin-bottom">30</property>
                         <property name="hexpand">1</property>
                         <property name="label" translatable="yes">Import results goes here</property>
-                        <attributes>
-                          <attribute name="weight" value="bold"/>
-                        </attributes>
+                        <property name="attributes">
+                          0 -1 weight bold
+                        </property>
                         <layout>
                           <property name="column">0</property>
                           <property name="row">0</property>
@@ -1031,9 +1031,9 @@ and profile switches in imported profile may not work as expected.</property>
                         <property name="margin-bottom">20</property>
                         <property name="hexpand">1</property>
                         <property name="label" translatable="yes">Import failed</property>
-                        <attributes>
-                          <attribute name="weight" value="bold"/>
-                        </attributes>
+                        <property name="attributes">
+                          0 -1 weight bold
+                        </property>
                         <layout>
                           <property name="column">0</property>
                           <property name="row">0</property>

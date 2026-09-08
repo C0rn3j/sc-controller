@@ -491,9 +491,9 @@
                     <property name="margin-bottom">5</property>
                     <property name="label" translatable="yes">Menu</property>
                     <property name="xalign">0</property>
-                    <attributes>
-                      <attribute name="weight" value="bold"/>
-                    </attributes>
+                    <property name="attributes">
+                      0 -1 weight bold
+                    </property>
                     <layout>
                       <property name="column">0</property>
                       <property name="row">2</property>
@@ -558,9 +558,9 @@
                     <property name="margin-bottom">5</property>
                     <property name="label" translatable="yes">Menu Type</property>
                     <property name="xalign">0</property>
-                    <attributes>
-                      <attribute name="weight" value="bold"/>
-                    </attributes>
+                    <property name="attributes">
+                      0 -1 weight bold
+                    </property>
                     <layout>
                       <property name="column">0</property>
                       <property name="row">0</property>
@@ -598,9 +598,9 @@
                             <property name="margin-bottom">5</property>
                             <property name="label" translatable="yes">Items per row</property>
                             <property name="xalign">0</property>
-                            <attributes>
-                              <attribute name="weight" value="bold"/>
-                            </attributes>
+                            <property name="attributes">
+                              0 -1 weight bold
+                            </property>
                           </object>
                         </child>
                         <child>
@@ -643,9 +643,9 @@
                     <child type="label">
                       <object class="GtkLabel" id="label67">
                         <property name="label" translatable="yes">Control Options...</property>
-                        <attributes>
-                          <attribute name="weight" value="bold"/>
-                        </attributes>
+                        <property name="attributes">
+                          0 -1 weight bold
+                        </property>
                       </object>
                     </child>
                     <layout>
@@ -817,9 +817,9 @@
                     <child type="label">
                       <object class="GtkLabel" id="label8">
                         <property name="label" translatable="yes">Menu Position...</property>
-                        <attributes>
-                          <attribute name="weight" value="bold"/>
-                        </attributes>
+                        <property name="attributes">
+                          0 -1 weight bold
+                        </property>
                       </object>
                     </child>
                     <layout>
@@ -968,9 +968,9 @@
         <property name="margin-end">20</property>
         <property name="label" translatable="yes">Output Type</property>
         <property name="xalign">0</property>
-        <attributes>
-          <attribute name="weight" value="bold"/>
-        </attributes>
+        <property name="attributes">
+          0 -1 weight bold
+        </property>
         <layout>
           <property name="column">0</property>
           <property name="row">0</property>

@@ -255,9 +255,9 @@
         <property name="width-request">250</property>
         <property name="label" translatable="yes">Analog Range Start</property>
         <property name="xalign">0</property>
-        <attributes>
-          <attribute name="weight" value="bold"></attribute>
-        </attributes>
+        <property name="attributes">
+          0 -1 weight bold
+        </property>
         <layout>
           <property name="column">0</property>
           <property name="row">7</property>
@@ -305,9 +305,9 @@
         <property name="width-request">250</property>
         <property name="label" translatable="yes">Analog Range End</property>
         <property name="xalign">0</property>
-        <attributes>
-          <attribute name="weight" value="bold"></attribute>
-        </attributes>
+        <property name="attributes">
+          0 -1 weight bold
+        </property>
         <layout>
           <property name="column">0</property>
           <property name="row">8</property>
@@ -370,9 +370,9 @@
         <property name="width-request">250</property>
         <property name="label" translatable="yes">Fully Pressed Level</property>
         <property name="xalign">0</property>
-        <attributes>
-          <attribute name="weight" value="bold"></attribute>
-        </attributes>
+        <property name="attributes">
+          0 -1 weight bold
+        </property>
         <layout>
           <property name="column">0</property>
           <property name="row">3</property>
@@ -402,9 +402,9 @@
         <property name="width-request">250</property>
         <property name="label" translatable="yes">Partially Pressed Level</property>
         <property name="xalign">0</property>
-        <attributes>
-          <attribute name="weight" value="bold"></attribute>
-        </attributes>
+        <property name="attributes">
+          0 -1 weight bold
+        </property>
         <layout>
           <property name="column">0</property>
           <property name="row">2</property>
@@ -417,9 +417,9 @@
         <property name="width-request">200</property>
         <property name="label" translatable="yes">Dual Stage Trigger Style</property>
         <property name="xalign">0</property>
-        <attributes>
-          <attribute name="weight" value="bold"></attribute>
-        </attributes>
+        <property name="attributes">
+          0 -1 weight bold
+        </property>
         <layout>
           <property name="column">0</property>
           <property name="row">4</property>
@@ -450,9 +450,9 @@
         <property name="width-request">200</property>
         <property name="label" translatable="yes">Hip Fire Delay</property>
         <property name="xalign">0</property>
-        <attributes>
-          <attribute name="weight" value="bold"></attribute>
-        </attributes>
+        <property name="attributes">
+          0 -1 weight bold
+        </property>
         <layout>
           <property name="column">0</property>
           <property name="row">5</property>

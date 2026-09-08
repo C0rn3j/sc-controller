@@ -95,9 +95,9 @@
         <property name="margin-end">20</property>
         <property name="label" translatable="yes">X Axis Controlled by</property>
         <property name="xalign">0</property>
-        <attributes>
-          <attribute name="weight" value="bold"></attribute>
-        </attributes>
+        <property name="attributes">
+          0 -1 weight bold
+        </property>
         <layout>
           <property name="column">0</property>
           <property name="row">1</property>
@@ -128,9 +128,9 @@
         <property name="margin-end">20</property>
         <property name="label" translatable="yes">Output Mode</property>
         <property name="xalign">0</property>
-        <attributes>
-          <attribute name="weight" value="bold"></attribute>
-        </attributes>
+        <property name="attributes">
+          0 -1 weight bold
+        </property>
         <layout>
           <property name="column">0</property>
           <property name="row">0</property>
@@ -180,9 +180,9 @@
         <property name="margin-top">20</property>
         <property name="label" translatable="yes">Gyro Enable Button</property>
         <property name="xalign">0</property>
-        <attributes>
-          <attribute name="weight" value="bold"></attribute>
-        </attributes>
+        <property name="attributes">
+          0 -1 weight bold
+        </property>
         <layout>
           <property name="column">0</property>
           <property name="row">3</property>
@@ -197,9 +197,9 @@
           <object class="GtkLabel" id="label3">
             <property name="label" translatable="yes">Invert Y Axis</property>
             <property name="xalign">0</property>
-            <attributes>
-              <attribute name="weight" value="bold"></attribute>
-            </attributes>
+            <property name="attributes">
+              0 -1 weight bold
+            </property>
           </object>
         </property>
         <layout>
@@ -217,9 +217,9 @@
           <object class="GtkLabel" id="label4">
             <property name="label" translatable="yes">Button disables Gyro</property>
             <property name="xalign">0</property>
-            <attributes>
-              <attribute name="weight" value="bold"></attribute>
-            </attributes>
+            <property name="attributes">
+              0 -1 weight bold
+            </property>
           </object>
         </property>
         <layout>

@@ -8,9 +8,9 @@
         <property name="margin-bottom">5</property>
         <property name="label" translatable="yes">click on axis or trigger</property>
         <property name="xalign">1</property>
-        <attributes>
-          <attribute name="style" value="italic"></attribute>
-        </attributes>
+        <property name="attributes">
+          0 -1 style italic
+        </property>
         <layout>
           <property name="column">0</property>
           <property name="row">1</property>
