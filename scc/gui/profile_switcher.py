@@ -82,7 +82,9 @@ class ProfileSwitcher(Gtk.Box, UserDataManager):
 		# Setup
 		rend1 = Gtk.CellRendererText()
 		rend2 = Gtk.CellRendererText()
+		self._box.set_hexpand(True)
 		self._box.set_spacing(12)
+		self._combo.set_hexpand(True)
 		self._combo.pack_start(rend1, True)
 		self._combo.pack_start(rend2, False)
 		self._combo.add_attribute(rend1, "text", 0)
