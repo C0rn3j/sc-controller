@@ -9,14 +9,6 @@ import os
 from gi.repository import GObject, Gtk
 
 
-def child_get_property(parent, child, propname) -> int:
-	"""Wrapper for child_get_property, which pygobject doesn't properly introspect"""
-	value = GObject.Value()
-	value.init(GObject.TYPE_INT)
-	parent.child_get_property(child, propname, value)
-	return value.get_int()
-
-
 def headerbar(bar) -> None:
 	"""Moves all buttons from left to right (and vice versa) if user's desktop environment is identified as Unity.
 
@@ -46,7 +38,10 @@ if "XDG_CURRENT_DESKTOP" in os.environ:
 			pack_start = []
 			pack_end = []
 			for c in children:
-				if child_get_property(bar, c, "pack-type") == Gtk.PackType.END:
+				value = GObject.Value()
+				value.init(GObject.TYPE_INT)
+				bar.child_get_property(c, "pack-type", value)
+				if value.get_int() == Gtk.PackType.END:
 					bar.remove(c)
 					pack_start.append(c)
 				else:
