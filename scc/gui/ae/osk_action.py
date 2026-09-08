@@ -42,7 +42,7 @@ class OSKActionComponent(AEComponent):
 			self.set_cb(cb, "OSK.press(RIGHT)")
 		elif isinstance(action, MoveOSKAction):
 			self.set_cb(cb, "OSK.move()")
-		if isinstance(action, ButtonAction):
+		elif isinstance(action, ButtonAction):
 			if action.button == Keys.BTN_LEFT:
 				self.set_cb(cb, "button(Keys.BTN_LEFT)")
 			elif action.button == Keys.BTN_RIGHT:
