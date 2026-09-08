@@ -310,6 +310,7 @@
         </child>
         <child>
           <object class="GtkButton" id="mnuGlobalSettings">
+            <property name="css-name">modelbutton</property>
             <property name="label" translatable="yes">_Settings</property>
             <property name="use-underline">True</property>
             <signal name="clicked" handler="on_mnuGlobalSettings_activate" swapped="no"/>
@@ -317,6 +318,7 @@
         </child>
         <child>
           <object class="GtkButton" id="mnuImport">
+            <property name="css-name">modelbutton</property>
             <property name="label" translatable="yes">Import/Export _Profile...</property>
             <property name="use-underline">True</property>
             <signal name="clicked" handler="on_mnuImport_activate" swapped="no"/>
@@ -329,6 +331,7 @@
         </child>
         <child>
           <object class="GtkButton" id="mnuAbout">
+            <property name="css-name">modelbutton</property>
             <property name="label" translatable="yes">About</property>
             <property name="use-underline">True</property>
             <signal name="clicked" handler="on_mnuAbout_activate" swapped="no"/>
@@ -336,6 +339,7 @@
         </child>
         <child>
           <object class="GtkButton" id="mnuExit">
+            <property name="css-name">modelbutton</property>
             <property name="label" translatable="yes">Quit</property>
             <property name="use-underline">True</property>
             <signal name="clicked" handler="on_mnuExit_activate" swapped="no"/>
