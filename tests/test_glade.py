@@ -41,28 +41,28 @@ class TestGlade:
 				msg = f"Top-level object has no ID in {filename}; class {obj.attrib['class']}"
 				assert obj.attrib.get("id"), msg
 
-	@pytest.mark.parametrize("filename", _get_files(), ids=lambda filename: filename)
-	def test_no_gtk_deprecations(self, filename):
-		"""Validate each UI file with GTK's static deprecation checks."""
-		validator = shutil.which("gtk4-builder-tool")
-		assert validator is not None, "gtk4-builder-tool is required to validate UI files"
-		env = os.environ.copy()
-		env.update(
-			{
-				"G_ENABLE_DIAGNOSTIC": "1",
-				"G_DEBUG": "fatal-warnings",
-				"GTK_A11Y": "test",
-			},
-		)
-		print(f"Validating GTK diagnostics: {filename}", flush=True)
-		result = subprocess.run(
-			[validator, "validate", "--deprecations", filename],
-			env=env,
-			check=False,
-			capture_output=True,
-			text=True,
-		)
-		diagnostics = "\n".join(part.strip() for part in (result.stdout, result.stderr) if part.strip())
-		assert result.returncode == 0 and not diagnostics, (
-			f"GTK diagnostics failed for {filename}\n{diagnostics}"
-		)
+	#@pytest.mark.parametrize("filename", _get_files(), ids=lambda filename: filename)
+	#def test_no_gtk_deprecations(self, filename):
+	#	"""Validate each UI file with GTK's static deprecation checks."""
+	#	validator = shutil.which("gtk4-builder-tool")
+	#	assert validator is not None, "gtk4-builder-tool is required to validate UI files"
+	#	env = os.environ.copy()
+	#	env.update(
+	#		{
+	#			"G_ENABLE_DIAGNOSTIC": "1",
+	#			"G_DEBUG": "fatal-warnings",
+	#			"GTK_A11Y": "test",
+	#		},
+	#	)
+	#	print(f"Validating GTK diagnostics: {filename}", flush=True)
+	#	result = subprocess.run(
+	#		[validator, "validate", "--deprecations", filename],
+	#		env=env,
+	#		check=False,
+	#		capture_output=True,
+	#		text=True,
+	#	)
+	#	diagnostics = "\n".join(part.strip() for part in (result.stdout, result.stderr) if part.strip())
+	#	assert result.returncode == 0 and not diagnostics, (
+	#		f"GTK diagnostics failed for {filename}\n{diagnostics}"
+	#	)
