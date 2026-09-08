@@ -1,0 +1,77 @@
+name: Build gtk4-layer-shell for Noble
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Noble packages
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Install packaging tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes \
+            devscripts \
+            equivs \
+            ubuntu-dev-tools
+
+      - name: Download Ubuntu source package
+        working-directory: ${{ runner.temp }}
+        run: pull-lp-source gtk4-layer-shell resolute
+
+      - name: Prepare Noble backport
+        working-directory: ${{ runner.temp }}
+        env:
+          DEBEMAIL: github-actions@github.com
+          DEBFULLNAME: GitHub Actions
+        run: |
+          source_dir=$(find . -mindepth 1 -maxdepth 1 -type d -name 'gtk4-layer-shell-*' -print -quit)
+          test -n "$source_dir"
+          cd "$source_dir"
+
+          source_version=$(dpkg-parsechangelog --show-field Version)
+          dch \
+            --force-bad-version \
+            --newversion "${source_version}~24.04.${GITHUB_RUN_NUMBER}" \
+            --distribution noble \
+            "Backport to Ubuntu 24.04 for CI."
+
+      - name: Install build dependencies
+        working-directory: ${{ runner.temp }}
+        run: |
+          source_dir=$(find . -mindepth 1 -maxdepth 1 -type d -name 'gtk4-layer-shell-*' -print -quit)
+          test -n "$source_dir"
+          cd "$source_dir"
+          sudo mk-build-deps \
+            --install \
+            --remove \
+            --tool 'apt-get --yes --no-install-recommends' \
+            debian/control
+
+      - name: Build binary packages
+        working-directory: ${{ runner.temp }}
+        run: |
+          source_dir=$(find . -mindepth 1 -maxdepth 1 -type d -name 'gtk4-layer-shell-*' -print -quit)
+          test -n "$source_dir"
+          cd "$source_dir"
+          dpkg-buildpackage --build=binary --no-sign
+
+      - name: Collect packages
+        working-directory: ${{ runner.temp }}
+        run: |
+          mkdir packages
+          find . \
+            -maxdepth 1 \
+            -type f \
+            -name '*.deb' \
+            -exec cp --target-directory=packages {} +
+          test -n "$(find packages -maxdepth 1 -type f -name '*.deb' -print -quit)"
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: gtk4-layer-shell-noble-amd64
+          path: ${{ runner.temp }}/packages/*.deb
+          if-no-files-found: error
