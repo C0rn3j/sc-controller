@@ -187,14 +187,14 @@
     </property>
     <property name="titlebar">
       <object class="GtkHeaderBar" id="hb1">
-        <child type="title">
+        <property name="title-widget">
           <object class="GtkLabel" id="lblGestureGrabberTitle">
             <property name="label" translatable="yes">Draw gesture on LEFT pad...</property>
             <property name="attributes">
               0 -1 weight bold
             </property>
           </object>
-        </child>
+        </property>
         <child>
           <placeholder/>
         </child>
