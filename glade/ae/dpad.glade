@@ -640,14 +640,14 @@
                     <child>
                       <placeholder/>
                     </child>
-                    <child type="label">
+                    <property name="label-widget">
                       <object class="GtkLabel" id="label67">
                         <property name="label" translatable="yes">Control Options...</property>
                         <property name="attributes">
                           0 -1 weight bold
                         </property>
                       </object>
-                    </child>
+                    </property>
                     <layout>
                       <property name="column">0</property>
                       <property name="row">5</property>
@@ -814,14 +814,14 @@
                     <child>
                       <placeholder/>
                     </child>
-                    <child type="label">
+                    <property name="label-widget">
                       <object class="GtkLabel" id="label8">
                         <property name="label" translatable="yes">Menu Position...</property>
                         <property name="attributes">
                           0 -1 weight bold
                         </property>
                       </object>
-                    </child>
+                    </property>
                     <layout>
                       <property name="column">0</property>
                       <property name="row">7</property>

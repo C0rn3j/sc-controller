@@ -631,14 +631,14 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                     <child>
                       <placeholder/>
                     </child>
-                    <child type="label">
+                    <property name="label-widget">
                       <object class="GtkLabel" id="lblAdditionalOptions">
                         <property name="label" translatable="yes">Advanced Options</property>
                         <property name="attributes">
                           0 -1 weight bold
                         </property>
                       </object>
-                    </child>
+                    </property>
                     <layout>
                       <property name="column">0</property>
                       <property name="row">4</property>
@@ -656,14 +656,14 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                     <child>
                       <placeholder/>
                     </child>
-                    <child type="label">
+                    <property name="label-widget">
                       <object class="GtkLabel" id="lblRawData">
                         <property name="label" translatable="yes">Display Raw Data</property>
                         <property name="attributes">
                           0 -1 weight bold
                         </property>
                       </object>
-                    </child>
+                    </property>
                     <layout>
                       <property name="column">0</property>
                       <property name="row">6</property>
