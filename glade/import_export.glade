@@ -1098,7 +1098,7 @@ and profile switches in imported profile may not work as expected.</property>
         </child>
       </object>
     </property>
-    <child type="titlebar">
+    <property name="titlebar">
       <object class="GtkHeaderBar" id="hbDialog">
         <property name="title-widget">
           <object class="GtkLabel">
@@ -1154,6 +1154,6 @@ and profile switches in imported profile may not work as expected.</property>
           </object>
         </child>
       </object>
-    </child>
+    </property>
   </object>
 </interface>

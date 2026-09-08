@@ -185,7 +185,7 @@
         </child>
       </object>
     </property>
-    <child type="titlebar">
+    <property name="titlebar">
       <object class="GtkHeaderBar" id="hb1">
         <child type="title">
           <object class="GtkLabel" id="lblGestureGrabberTitle">
@@ -199,7 +199,7 @@
           <placeholder/>
         </child>
       </object>
-    </child>
+    </property>
   </object>
   <object class="GtkListStore" id="lstGestures">
     <columns>

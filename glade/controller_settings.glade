@@ -717,7 +717,7 @@
         </child>
       </object>
     </property>
-    <child type="titlebar">
+    <property name="titlebar">
       <object class="GtkHeaderBar" id="header">
         <property name="title-widget">
           <object class="GtkLabel">
@@ -728,6 +728,6 @@
           </object>
         </property>
       </object>
-    </child>
+    </property>
   </object>
 </interface>

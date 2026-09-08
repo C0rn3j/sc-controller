@@ -846,7 +846,7 @@ future inputs or even crash.</property>
         </child>
       </object>
     </property>
-    <child type="titlebar">
+    <property name="titlebar">
       <object class="GtkHeaderBar" id="header">
         <property name="title-widget">
           <object class="GtkLabel">
@@ -876,7 +876,7 @@ future inputs or even crash.</property>
           </object>
         </child>
       </object>
-    </child>
+    </property>
   </object>
   <object class="GtkWindow" id="dlgPressButton">
     <property name="resizable">0</property>
@@ -930,7 +930,7 @@ future inputs or even crash.</property>
         </child>
       </object>
     </property>
-    <child type="titlebar">
+    <property name="titlebar">
       <object class="GtkHeaderBar" id="hb485">
         <property name="title-widget">
           <object class="GtkLabel">
@@ -944,7 +944,7 @@ future inputs or even crash.</property>
           <placeholder/>
         </child>
       </object>
-    </child>
+    </property>
   </object>
   <object class="GtkListStore" id="lstTriggers">
     <columns>

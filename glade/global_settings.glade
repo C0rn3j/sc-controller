@@ -2012,7 +2012,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
         </child>
       </object>
     </property>
-    <child type="titlebar">
+    <property name="titlebar">
       <object class="GtkHeaderBar" id="header">
         <property name="title-widget">
           <object class="GtkLabel">
@@ -2023,7 +2023,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
           </object>
         </property>
       </object>
-    </child>
+    </property>
   </object>
   <object class="GtkWindow" id="ConditionEditor">
     <property name="width-request">500</property>
@@ -2208,7 +2208,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
         </child>
       </object>
     </property>
-    <child type="titlebar">
+    <property name="titlebar">
       <object class="GtkHeaderBar" id="header2">
         <property name="title-widget">
           <object class="GtkLabel">
@@ -2245,6 +2245,6 @@ grips, triggers, finger positions on both pads and stick angle.</property>
           </object>
         </child>
       </object>
-    </child>
+    </property>
   </object>
 </interface>
