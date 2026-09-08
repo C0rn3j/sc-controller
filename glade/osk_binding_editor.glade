@@ -240,7 +240,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="btTriggerLEFT">
+          <object class="GtkButton" id="btLT">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
@@ -256,7 +256,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="btTriggerRIGHT">
+          <object class="GtkButton" id="btRT">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
