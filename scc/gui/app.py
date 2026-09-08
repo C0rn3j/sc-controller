@@ -1267,7 +1267,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 	def on_mnuProfileNew_activate(self, *a) -> None:
 		mnuPS = self.builder.get_object("mnuPS")
-		self.on_new_clicked(mnuPS.ps, mnuPS.ps.get_name())
+		self.on_new_clicked(mnuPS.ps, mnuPS.ps.get_profile_name())
 
 	def on_mnuProfileCopy_activate(self, *a) -> None:
 		mnuPS = self.builder.get_object("mnuPS")
