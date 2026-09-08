@@ -320,7 +320,7 @@
             <child>
               <placeholder/>
             </child>
-            <child type="label">
+            <property name="label-widget">
               <object class="GtkLabel" id="label4">
                 <property name="margin-top">5</property>
                 <property name="label" translatable="yes">Touchpad Input Rotation</property>
@@ -329,7 +329,7 @@
                   0 -1 weight bold
                 </property>
               </object>
-            </child>
+            </property>
             <layout>
               <property name="column">0</property>
               <property name="row">11</property>
@@ -458,7 +458,7 @@
             <child>
               <placeholder/>
             </child>
-            <child type="label">
+            <property name="label-widget">
               <object class="GtkLabel" id="label9">
                 <property name="margin-top">5</property>
                 <property name="label" translatable="yes">Default Menu Controls</property>
@@ -467,7 +467,7 @@
                   0 -1 weight bold
                 </property>
               </object>
-            </child>
+            </property>
             <layout>
               <property name="column">0</property>
               <property name="row">9</property>
