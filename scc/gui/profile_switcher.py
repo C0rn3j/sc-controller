@@ -255,6 +255,7 @@ class ProfileSwitcher(Gtk.Box, UserDataManager):
 		self._timer = GLib.timeout_add(ProfileSwitcher.SEND_TIMEOUT, run_later)
 
 	def on_button_press(self, gesture, n_press, x, y):
+		self._right_click_position = (x, y)
 		self.emit("right-clicked")
 
 	def on_savebutton_clicked(self, *a):

@@ -133,12 +133,51 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.builder = Gtk.Builder(self)
 		self.builder.add_from_file(os.path.join(self.gladepath, "app.glade"))
 		self.window = self.builder.get_object("window")
-		for menu_id in ("mnuImage", "mnuPS", "mnuPopup", "mnuTray"):
+		for menu_id in ("mnuTray",):
 			self.builder.get_object(menu_id).set_parent(self.window)
+		self._setup_popover_menus()
 		self.add_window(self.window)
 		self.window.set_title(_("SC Controller"))
 		self.ribar = None
 		self.create_binding_buttons()
+
+	def _add_menu_action(self, name, callback, parameter_type=None):
+		action = Gio.SimpleAction.new(name, parameter_type)
+		action.connect("activate", callback)
+		self.add_action(action)
+		return action
+
+	def _setup_popover_menus(self):
+		"""Build context menus as native GTK4 model-backed popovers."""
+		self._add_menu_action("context-clear", lambda *a: self.on_mnuClear_activate())
+		self._add_menu_action("context-copy", lambda *a: self.on_mnuCopy_activate())
+		self._add_menu_action("context-paste", lambda *a: self.on_mnuPaste_activate())
+		self._context_press_action = self._add_menu_action(
+			"context-edit-press", lambda *a: self.on_mnuEditPress_activate()
+		)
+		model = self.builder.get_object("mnuPopupModel")
+		self._context_press_section = Gio.Menu()
+		model.append_section(None, self._context_press_section)
+		self._mnu_popup = self.builder.get_object("mnuPopup")
+
+		self._add_menu_action(
+			"change-controller-image", self._on_change_controller_image_action, GLib.VariantType.new("s")
+		)
+		self._mnu_image = self.builder.get_object("mnuImage")
+
+		for name, callback in (
+			("profile-configure", self.on_mnuConfigureController_activate),
+			("profile-turn-off", self.mnuTurnoffController_activate),
+			("profile-new", self.on_mnuProfileNew_activate),
+			("profile-copy", self.on_mnuProfileCopy_activate),
+			("profile-rename", self.on_mnuProfileRename_activate),
+			("profile-delete", self.on_mnuProfileDelete_activate),
+			("profile-revert", self.on_mnuProfileDelete_activate),
+			("profile-details", self.on_mnuProfileDetails_activate),
+		):
+			self._add_menu_action(name, lambda action, parameter, callback=callback: callback())
+		self._mnu_ps = Gtk.PopoverMenu()
+		self._profile_menu_ps = None
 
 		ps = self.add_switcher(12, 12)
 		ps.set_allow_new(True)
@@ -486,27 +525,39 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		ae.set_input(id, action)
 		ae.show(self.window)
 
-	def show_context_menu(self, for_id):
+	def show_context_menu(self, for_id, source, x, y):
 		"""Sets sensitivity of popup menu items and displays it on screen"""
-		mnuPopup = self.builder.get_object("mnuPopup")
-		mnuCopy = self.builder.get_object("mnuCopy")
-		mnuClear = self.builder.get_object("mnuClear")
-		mnuPaste = self.builder.get_object("mnuPaste")
-		mnuEPress = self.builder.get_object("mnuEditPress")
-		mnuEPressS = self.builder.get_object("mnuEditPressSeparator")
+		mnuPopup = self._mnu_popup
 		self.context_menu_for = for_id
 		clp = Gdk.Display.get_default().get_clipboard()
 		formats = clp.get_formats()
 		has_text = formats.contain_gtype(GObject.TYPE_STRING) or any(
 			mime_type.startswith("text/plain") for mime_type in formats.get_mime_types()
 		)
-		mnuCopy.set_sensitive(bool(self.get_action(self.current, for_id)))
-		mnuClear.set_sensitive(bool(self.get_action(self.current, for_id)))
-		mnuPaste.set_sensitive(has_text)
-		mnuEPress.set_visible(for_id in (SCPads.LPAD, SCPads.RPAD, SCPads.CPAD, SCSticks.LSTICK, SCSticks.RSTICK))
-		mnuEPressS.set_visible(mnuEPress.get_visible())
+		has_action = bool(self.get_action(self.current, for_id))
+		self.lookup_action("context-copy").set_enabled(has_action)
+		self.lookup_action("context-clear").set_enabled(has_action)
+		self.lookup_action("context-paste").set_enabled(has_text)
+		self._context_press_section.remove_all()
+		if for_id in (SCPads.LPAD, SCPads.RPAD, SCPads.CPAD, SCSticks.LSTICK, SCSticks.RSTICK):
+			self._context_press_section.append(_("_Edit Pressed Action"), "app.context-edit-press")
 
-		mnuPopup.popup()
+		self._popup_at(mnuPopup, source, x, y)
+
+	def _popup_at(self, popover, source, x, y):
+		"""Displays a popover relative to a click on source."""
+		parent = popover.get_parent()
+		if parent is not source:
+			if parent is not None:
+				popover.unparent()
+			popover.set_parent(source)
+		point = Gdk.Rectangle()
+		point.x = int(x)
+		point.y = int(y)
+		point.width = 1
+		point.height = 1
+		popover.set_pointing_to(point)
+		popover.popup()
 
 	def save_config(self) -> None:
 		self.config.save()
@@ -857,11 +908,17 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.hint(area)
 
 	def on_background_button_press(self, gesture, n_press, x, y):
-		mnuImage = self.builder.get_object("mnuImage")
-		mnuImage.popup()
+		self._popup_at(self._mnu_image, self.background, x, y)
+
+	def _on_change_controller_image_action(self, action, parameter):
+		command, filename = parameter.get_string().split(",")
+		self._change_controller_image(command, filename)
 
 	def on_mnu_change_background_image(self, mnu, *a):
 		command, filename = mnu.get_name().split(",")
+		self._change_controller_image(command, filename)
+
+	def _change_controller_image(self, command, filename):
 		if command == "background":
 			self.background.override_background(filename)
 		elif command == "buttons":
@@ -1266,53 +1323,48 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			log.debug("Unprocessed event in on_daemon_event_observer(): %s", what)
 
 	def on_profile_right_clicked(self, ps) -> None:
-		for name in ("mnuConfigureController", "mnuTurnoffController"):
-			# Disable controller-related menu items if controller is not connected
-			obj = self.builder.get_object(name)
-			obj.set_sensitive(ps.get_controller() is not None)
-
-		for name in (
-			"mnuProfileNew",
-			"mnuProfileCopy",
-			"mnuProfileRename",
-			"mnuProfileDetails",
-			"mnuProfileSeparator1",
-			"mnuProfileSeparator2",
-		):
-			# Hide profile-related menu items for all but 1st profile switcher
-			obj = self.builder.get_object(name)
-			obj.set_visible(ps == self.profile_switchers[0])
-
+		connected = ps.get_controller() is not None
+		self.lookup_action("profile-configure").set_enabled(connected)
+		self.lookup_action("profile-turn-off").set_enabled(connected)
+		model = Gio.Menu()
+		controller = Gio.Menu()
+		controller.append(_("_Configure Controller"), "app.profile-configure")
+		controller.append(_("_Turn Off Controller"), "app.profile-turn-off")
+		model.append_section(None, controller)
 		if ps == self.profile_switchers[0]:
+			profiles = Gio.Menu()
+			profiles.append(_("_New Profile"), "app.profile-new")
+			profiles.append(_("_Copy Profile"), "app.profile-copy")
 			name = ps.get_profile_name()
 			is_override = profile_is_override(name)
 			is_default = profile_is_default(name)
-			self.builder.get_object("mnuProfileDelete").set_visible(not is_default)
-			self.builder.get_object("mnuProfileRevert").set_visible(is_override)
-			self.builder.get_object("mnuProfileRename").set_visible(not is_default)
-		else:
-			self.builder.get_object("mnuProfileDelete").set_visible(False)
-			self.builder.get_object("mnuProfileRevert").set_visible(False)
-
-		mnuPS = self.builder.get_object("mnuPS")
-		mnuPS.ps = ps
-		mnuPS.popup()
+			if not is_default:
+				profiles.append(_("_Rename Profile"), "app.profile-rename")
+				profiles.append(_("_Delete Profile"), "app.profile-delete")
+			if is_override:
+				profiles.append(_("_Revert Profile to Defaults"), "app.profile-revert")
+			profiles.append(_("Profile D_etails"), "app.profile-details")
+			model.append_section(None, profiles)
+		self._profile_menu_ps = ps
+		self._mnu_ps.set_menu_model(model)
+		x, y = getattr(ps, "_right_click_position", (ps.get_width() / 2, ps.get_height() / 2))
+		self._popup_at(self._mnu_ps, ps, x, y)
 
 	def on_mnuConfigureController_activate(self, *a) -> None:
 		from scc.gui.controller_settings import ControllerSettings
 
-		mnuPS = self.builder.get_object("mnuPS")
-		cs = ControllerSettings(self, mnuPS.ps.get_controller(), mnuPS.ps)
+		ps = self._profile_menu_ps
+		cs = ControllerSettings(self, ps.get_controller(), ps)
 		cs.show(self.window)
 
 	def on_mnuProfileNew_activate(self, *a) -> None:
-		mnuPS = self.builder.get_object("mnuPS")
-		self.on_new_clicked(mnuPS.ps, mnuPS.ps.get_profile_name())
+		ps = self._profile_menu_ps
+		self.on_new_clicked(ps, ps.get_profile_name())
 
 	def on_mnuProfileCopy_activate(self, *a) -> None:
-		mnuPS = self.builder.get_object("mnuPS")
 		rbCopyProfile = self.builder.get_object("rbCopyProfile")
-		self.on_new_clicked(mnuPS.ps, mnuPS.ps.get_profile_name())
+		ps = self._profile_menu_ps
+		self.on_new_clicked(ps, ps.get_profile_name())
 		rbCopyProfile.set_active(True)
 
 	def on_mnuProfileDetails_activate(self, *a) -> None:
@@ -1321,8 +1373,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 	def on_mnuProfileRename_activate(self, *a) -> None:
 		dlg = self.builder.get_object("dlgRenameProfile")
 		txRename = self.builder.get_object("txRename")
-		mnuPS = self.builder.get_object("mnuPS")
-		name = mnuPS.ps.get_profile_name()
+		name = self._profile_menu_ps.get_profile_name()
 		txRename.set_text(name)
 		dlg._name = name
 		dlg.set_transient_for(self.window)
@@ -1361,8 +1412,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		dlg.set_visible(False)
 
 	def on_mnuProfileDelete_activate(self, *a) -> None:
-		mnuPS = self.builder.get_object("mnuPS")
-		name = mnuPS.ps.get_profile_name()
+		name = self._profile_menu_ps.get_profile_name()
 		is_override = profile_is_override(name)
 
 		if is_override:
@@ -1399,9 +1449,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		d.present()
 
 	def mnuTurnoffController_activate(self, *a) -> None:
-		mnuPS = self.builder.get_object("mnuPS")
-		if mnuPS.ps.get_controller():
-			mnuPS.ps.get_controller().turnoff()
+		if self._profile_menu_ps.get_controller():
+			self._profile_menu_ps.get_controller().turnoff()
 
 	def on_window_key_press_event(self, controller, keyval, keycode, state) -> None:
 		if (state & Gdk.ModifierType.CONTROL_MASK) != 0:

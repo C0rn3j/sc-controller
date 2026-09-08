@@ -784,90 +784,22 @@
       </object>
     </property>
   </object>
-  <object class="GtkPopover" id="mnuImage">
-    <property name="child">
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkMenuButton" id="mnuImgSticks">
-            <property name="label" translatable="yes">Change Sticks and Background</property>
-            <property name="use-underline">True</property>
-            <property name="popover">
-              <object class="GtkPopover" id="submnuImgSticks">
-                <property name="child">
-                  <object class="GtkBox">
-                    <property name="orientation">vertical</property>
-                    <child>
-                      <object class="GtkButton" id="mnuImgSticksSym">
-                        <property name="name">background,ds4-config</property>
-                        <property name="label" translatable="yes">Symetrical</property>
-                        <property name="use-underline">True</property>
-                        <signal name="clicked" handler="on_mnu_change_background_image" swapped="no"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="mnuImgAsym">
-                        <property name="name">background,x360-config</property>
-                        <property name="label" translatable="yes">Asymmetrical</property>
-                        <property name="use-underline">True</property>
-                        <signal name="clicked" handler="on_mnu_change_background_image" swapped="no"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="mnuImgTouchpads">
-                        <property name="name">background,sc-config</property>
-                        <property name="label" translatable="yes">Touchpads</property>
-                        <property name="use-underline">True</property>
-                        <signal name="clicked" handler="on_mnu_change_background_image" swapped="no"/>
-                      </object>
-                    </child>
-                  </object>
-                </property>
-              </object>
-            </property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkMenuButton" id="mnuImgButtons">
-            <property name="label" translatable="yes">Change Buttons</property>
-            <property name="use-underline">True</property>
-            <property name="popover">
-              <object class="GtkPopover" id="submnuImgButtons">
-                <property name="child">
-                  <object class="GtkBox">
-                    <property name="orientation">vertical</property>
-                    <child>
-                      <object class="GtkButton" id="mnuImgPSx">
-                        <property name="name">buttons,ds4-config</property>
-                        <property name="label" translatable="yes">PSx</property>
-                        <property name="use-underline">True</property>
-                        <signal name="clicked" handler="on_mnu_change_background_image" swapped="no"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="mnuImgABXY">
-                        <property name="name">buttons,x360-config</property>
-                        <property name="label" translatable="yes">ABXY</property>
-                        <property name="use-underline">True</property>
-                        <signal name="clicked" handler="on_mnu_change_background_image" swapped="no"/>
-                      </object>
-                    </child>
-                  </object>
-                </property>
-              </object>
-            </property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="mnuImgClear">
-            <property name="name">undo,undo</property>
-            <property name="label" translatable="yes">Clear Above Settings</property>
-            <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnu_change_background_image" swapped="no"/>
-          </object>
-        </child>
-      </object>
-    </property>
+  <menu id="mnuImageModel">
+    <submenu>
+      <attribute name="label" translatable="yes">Change Sticks and Background</attribute>
+      <item><attribute name="label" translatable="yes">Symetrical</attribute><attribute name="action">app.change-controller-image</attribute><attribute name="target">background,ds4-config</attribute></item>
+      <item><attribute name="label" translatable="yes">Asymmetrical</attribute><attribute name="action">app.change-controller-image</attribute><attribute name="target">background,x360-config</attribute></item>
+      <item><attribute name="label" translatable="yes">Touchpads</attribute><attribute name="action">app.change-controller-image</attribute><attribute name="target">background,sc-config</attribute></item>
+    </submenu>
+    <submenu>
+      <attribute name="label" translatable="yes">Change Buttons</attribute>
+      <item><attribute name="label" translatable="yes">PSx</attribute><attribute name="action">app.change-controller-image</attribute><attribute name="target">buttons,ds4-config</attribute></item>
+      <item><attribute name="label" translatable="yes">ABXY</attribute><attribute name="action">app.change-controller-image</attribute><attribute name="target">buttons,x360-config</attribute></item>
+    </submenu>
+    <item><attribute name="label" translatable="yes">Clear Above Settings</attribute><attribute name="action">app.change-controller-image</attribute><attribute name="target">undo,undo</attribute></item>
+  </menu>
+  <object class="GtkPopoverMenu" id="mnuImage">
+    <property name="menu-model">mnuImageModel</property>
   </object>
   <object class="GtkPopover" id="mnuPS">
     <property name="child">
@@ -942,45 +874,13 @@
       </object>
     </property>
   </object>
-  <object class="GtkPopover" id="mnuPopup">
-    <property name="child">
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkButton" id="mnuClear">
-            <property name="label" translatable="yes">C_lear</property>
-            <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuClear_activate" swapped="no"/>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="mnuCopy">
-            <property name="label" translatable="yes">_Copy</property>
-            <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuCopy_activate" swapped="no"/>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="mnuPaste">
-            <property name="label" translatable="yes">_Paste</property>
-            <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuPaste_activate" swapped="no"/>
-          </object>
-        </child>
-        <child>
-          <object class="GtkSeparator" id="mnuEditPressSeparator">
-            <property name="orientation">horizontal</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="mnuEditPress">
-            <property name="label" translatable="yes">_Edit Pressed Action</property>
-            <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuEditPress_activate" swapped="no"/>
-          </object>
-        </child>
-      </object>
-    </property>
+  <menu id="mnuPopupModel">
+    <item><attribute name="label" translatable="yes">C_lear</attribute><attribute name="action">app.context-clear</attribute></item>
+    <item><attribute name="label" translatable="yes">_Copy</attribute><attribute name="action">app.context-copy</attribute></item>
+    <item><attribute name="label" translatable="yes">_Paste</attribute><attribute name="action">app.context-paste</attribute></item>
+  </menu>
+  <object class="GtkPopoverMenu" id="mnuPopup">
+    <property name="menu-model">mnuPopupModel</property>
   </object>
   <object class="GtkPopover" id="mnuTray">
     <property name="child">

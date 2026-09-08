@@ -72,7 +72,7 @@ class ControllerWidget:
 	def on_button_release(self, gesture, n_press, x, y):
 		if gesture.get_current_button() == 3:
 			# Rightclick
-			self.app.show_context_menu(self.id)
+			self.app.show_context_menu(self.id, self.widget, x, y)
 
 	def on_cursor_enter(self, *a):
 		self.app.hilight(self.name)
