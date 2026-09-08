@@ -2164,7 +2164,6 @@ grips, triggers, finger positions on both pads and stick angle.</property>
           <object class="GtkCheckButton" id="rbTurnOff">
             <property name="focusable">1</property>
             <property name="margin-top">5</property>
-            <property name="active">1</property>
             <property name="group">rbProfile</property>
             <child>
               <object class="GtkLabel" id="label41">
@@ -2180,7 +2179,6 @@ grips, triggers, finger positions on both pads and stick angle.</property>
           <object class="GtkCheckButton" id="rbRestart">
             <property name="focusable">1</property>
             <property name="margin-top">5</property>
-            <property name="active">1</property>
             <property name="group">rbProfile</property>
             <child>
               <object class="GtkLabel" id="label43">
