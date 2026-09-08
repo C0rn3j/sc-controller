@@ -170,7 +170,7 @@ class OSDModeMappings:
 		return tx, ty
 
 	def show(self):
-		self.window.show()
+		self.window.set_visible(True)
 		self.window.get_window().set_override_redirect(True)
 
 	def move_around(self, *a):
