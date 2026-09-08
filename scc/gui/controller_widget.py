@@ -97,7 +97,7 @@ class ControllerButton(ControllerWidget):
 			self.widget.set_child(vbox)
 		else:
 			self.widget.set_child(self.label)
-		self.widget.show()
+		self.widget.set_visible(True)
 		self.label.set_max_width_chars(LONG_TEXT)
 		if name == "C":
 			self.label.set_max_width_chars(10)

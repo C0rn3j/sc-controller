@@ -448,7 +448,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			% (" ".join(shell_command), message),
 		)
 		d.set_property("secondary-use-markup", True)
-		d.show()
+		d.set_visible(True)
 
 	def hilight(self, button):
 		"""Hilights specified button on background image"""
@@ -645,8 +645,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		for ps in self.profile_switchers:
 			ps.set_profile_list(profiles)
 
-	def undeletable_dialog(self, dlg, *a):
-		dlg.hide()
+	def undeletable_dialog(self, dlg: Gtk.Widget, *a) -> bool:
+		dlg.set_visible(False)
 		return True
 
 	def on_btNewProfile_clicked(self, *a):
@@ -654,14 +654,14 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		txNewProfile = self.builder.get_object("txNewProfile")
 		rbNewProfile = self.builder.get_object("rbNewProfile")
 
-		dlg = self.builder.get_object("dlgNewProfile")
+		dlg: Gtk.Dialog = self.builder.get_object("dlgNewProfile")
 		if rbNewProfile.get_active():
 			# Creating blank profile is requested
 			self.current.clear()
 		else:
 			self.current.is_template = False
 		self.new_profile(self.current, txNewProfile.get_text())
-		dlg.hide()
+		dlg.set_visible(False)
 
 	def on_rbNewProfile_group_changed(self, *a):
 		"""Called when user clicks 'Copy current profile' button.
@@ -839,7 +839,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		txNewProfile._changed = False
 		self.recursing = False
 		dlg.set_transient_for(self.window)
-		dlg.show()
+		dlg.set_visible(True)
 
 	def on_action_chosen(self, id, action, mark_changed=True):
 		before = self.set_action(self.current, id, action)
@@ -1014,7 +1014,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			# switcher is created.
 			vbSwitchers.reorder_child_after(sepSwitchers, None)
 			sepSwitchers.set_visible(True)
-		vbSwitchers.show()
+		vbSwitchers.set_visible(True)
 
 		if self.osd_mode:
 			ps.set_allow_switch(False)
@@ -1226,10 +1226,10 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				self._update_background()
 			# Check if stick or pad is released
 			if data[0] == data[1] == 0:
-				widget.hide()
+				widget.set_visible(False)
 				return
 			if not widget.is_visible():
-				widget.show()
+				widget.set_visible(True)
 			# Grab values
 			ax, ay, aw, ah = self.background.get_area_position(area)
 			cw = widget.get_allocation().width
@@ -1316,7 +1316,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		rbCopyProfile.set_active(True)
 
 	def on_mnuProfileDetails_activate(self, *a) -> None:
-		self.builder.get_object("dlgProfileDetails").show()
+		self.builder.get_object("dlgProfileDetails").set_visible(True)
 
 	def on_mnuProfileRename_activate(self, *a) -> None:
 		dlg = self.builder.get_object("dlgRenameProfile")
@@ -1326,7 +1326,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		txRename.set_text(name)
 		dlg._name = name
 		dlg.set_transient_for(self.window)
-		dlg.show()
+		dlg.set_visible(True)
 
 	def on_txRename_changed(self, tx) -> None:
 		name = tx.get_text()
@@ -1358,7 +1358,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				ps.set_profile(new_name, True)
 				c.set_profile(new_fname)
 		self.load_profile_list()
-		dlg.hide()
+		dlg.set_visible(False)
 
 	def on_mnuProfileDelete_activate(self, *a) -> None:
 		mnuPS = self.builder.get_object("mnuPS")
@@ -1420,7 +1420,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			self.ribar.connect("response", self.hide_error)
 		else:
 			self.ribar.get_label().set_markup(message)
-		self.ribar.show()
+		self.ribar.set_visible(True)
 		self.ribar.set_reveal_child(True)
 		return self.ribar
 
@@ -1506,11 +1506,11 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		return 0
 
 	def do_activate(self, *a) -> None:
-		self.builder.get_object("window").show()
+		self.builder.get_object("window").set_visible(True)
 		if self.config["gui"]["minimize_on_start"] and self.statusicon and self.statusicon.get_property("active"):
-			self.builder.get_object("window").hide()
+			self.builder.get_object("window").set_visible(False)
 		else:
-			self.builder.get_object("window").show()
+			self.builder.get_object("window").set_visible(True)
 
 	def remove_dot_profile(self) -> None:
 		"""Checks if first profile in list begins with dot and if yes, removes it.
@@ -1563,7 +1563,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.recursing = False
 
 	def on_btCloseDetails_clicked(self, *a) -> None:
-		self.builder.get_object("dlgProfileDetails").hide()
+		self.builder.get_object("dlgProfileDetails").set_visible(False)
 
 	def on_buffProfileDescription_changed(self, buffer, *a) -> None:
 		if self.recursing:
