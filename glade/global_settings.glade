@@ -22,6 +22,9 @@
     <property name="page-increment">1</property>
     <property name="page-size">0.01</property>
   </object>
+  <object class="GtkColorDialog" id="color_dialog">
+    <property name="with-alpha">1</property>
+  </object>
   <object class="GtkListStore" id="lstControllers">
     <columns>
       <column type="gchararray"/>
@@ -671,14 +674,15 @@ or even crash.</property>
                     <property name="margin-top">10</property>
                     <property name="margin-bottom">10</property>
                     <child>
-                      <object class="GtkColorButton" id="cbtext">
+                      <object class="GtkColorDialogButton" id="cbtext">
+                        <property name="dialog">color_dialog</property>
                         <property name="focusable">1</property>
                         <property name="receives-default">1</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">10</property>
                         <property name="margin-bottom">5</property>
                         <property name="hexpand">1</property>
-                        <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
+                        <signal name="notify::rgba" handler="on_osd_color_set" swapped="no"/>
                         <layout>
                           <property name="column">1</property>
                           <property name="row">3</property>
@@ -686,14 +690,15 @@ or even crash.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkColorButton" id="cbmenuitem_border">
+                      <object class="GtkColorDialogButton" id="cbmenuitem_border">
+                        <property name="dialog">color_dialog</property>
                         <property name="focusable">1</property>
                         <property name="receives-default">1</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">10</property>
                         <property name="margin-bottom">5</property>
                         <property name="hexpand">1</property>
-                        <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
+                        <signal name="notify::rgba" handler="on_osd_color_set" swapped="no"/>
                         <layout>
                           <property name="column">1</property>
                           <property name="row">6</property>
@@ -701,14 +706,15 @@ or even crash.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkColorButton" id="cbbackground">
+                      <object class="GtkColorDialogButton" id="cbbackground">
+                        <property name="dialog">color_dialog</property>
                         <property name="focusable">1</property>
                         <property name="receives-default">1</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">10</property>
                         <property name="margin-bottom">5</property>
                         <property name="hexpand">1</property>
-                        <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
+                        <signal name="notify::rgba" handler="on_osd_color_set" swapped="no"/>
                         <layout>
                           <property name="column">1</property>
                           <property name="row">4</property>
@@ -716,14 +722,15 @@ or even crash.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkColorButton" id="cbborder">
+                      <object class="GtkColorDialogButton" id="cbborder">
+                        <property name="dialog">color_dialog</property>
                         <property name="focusable">1</property>
                         <property name="receives-default">1</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">10</property>
                         <property name="margin-bottom">5</property>
                         <property name="hexpand">1</property>
-                        <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
+                        <signal name="notify::rgba" handler="on_osd_color_set" swapped="no"/>
                         <layout>
                           <property name="column">1</property>
                           <property name="row">5</property>
@@ -783,14 +790,15 @@ or even crash.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkColorButton" id="cbmenuseparator">
+                      <object class="GtkColorDialogButton" id="cbmenuseparator">
+                        <property name="dialog">color_dialog</property>
                         <property name="focusable">1</property>
                         <property name="receives-default">1</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">20</property>
                         <property name="margin-bottom">5</property>
                         <property name="hexpand">1</property>
-                        <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
+                        <signal name="notify::rgba" handler="on_osd_color_set" swapped="no"/>
                         <layout>
                           <property name="column">3</property>
                           <property name="row">3</property>
@@ -798,14 +806,15 @@ or even crash.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkColorButton" id="cbmenuitem_hilight_text">
+                      <object class="GtkColorDialogButton" id="cbmenuitem_hilight_text">
+                        <property name="dialog">color_dialog</property>
                         <property name="focusable">1</property>
                         <property name="receives-default">1</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">20</property>
                         <property name="margin-bottom">5</property>
                         <property name="hexpand">1</property>
-                        <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
+                        <signal name="notify::rgba" handler="on_osd_color_set" swapped="no"/>
                         <layout>
                           <property name="column">3</property>
                           <property name="row">4</property>
@@ -813,14 +822,15 @@ or even crash.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkColorButton" id="cbmenuitem_hilight">
+                      <object class="GtkColorDialogButton" id="cbmenuitem_hilight">
+                        <property name="dialog">color_dialog</property>
                         <property name="focusable">1</property>
                         <property name="receives-default">1</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">20</property>
                         <property name="margin-bottom">5</property>
                         <property name="hexpand">1</property>
-                        <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
+                        <signal name="notify::rgba" handler="on_osd_color_set" swapped="no"/>
                         <layout>
                           <property name="column">3</property>
                           <property name="row">5</property>
@@ -828,14 +838,15 @@ or even crash.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkColorButton" id="cbmenuitem_hilight_border">
+                      <object class="GtkColorDialogButton" id="cbmenuitem_hilight_border">
+                        <property name="dialog">color_dialog</property>
                         <property name="focusable">1</property>
                         <property name="receives-default">1</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">20</property>
                         <property name="margin-bottom">5</property>
                         <property name="hexpand">1</property>
-                        <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
+                        <signal name="notify::rgba" handler="on_osd_color_set" swapped="no"/>
                         <layout>
                           <property name="column">3</property>
                           <property name="row">6</property>
@@ -937,14 +948,15 @@ or even crash.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkColorButton" id="cbosk_button1">
+                      <object class="GtkColorDialogButton" id="cbosk_button1">
+                        <property name="dialog">color_dialog</property>
                         <property name="focusable">1</property>
                         <property name="receives-default">1</property>
                         <property name="margin-start">20</property>
                         <property name="margin-end">10</property>
                         <property name="margin-bottom">5</property>
                         <property name="hexpand">1</property>
-                        <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
+                        <signal name="notify::rgba" handler="on_osd_color_set" swapped="no"/>
                         <layout>
                           <property name="column">1</property>
                           <property name="row">8</property>
@@ -965,7 +977,8 @@ or even crash.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkColorButton" id="cbosk_pressed">
+                      <object class="GtkColorDialogButton" id="cbosk_pressed">
+                        <property name="dialog">color_dialog</property>
                         <property name="name">20</property>
                         <property name="focusable">1</property>
                         <property name="receives-default">1</property>
@@ -973,7 +986,7 @@ or even crash.</property>
                         <property name="margin-end">10</property>
                         <property name="margin-bottom">5</property>
                         <property name="hexpand">1</property>
-                        <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
+                        <signal name="notify::rgba" handler="on_osd_color_set" swapped="no"/>
                         <layout>
                           <property name="column">1</property>
                           <property name="row">9</property>
@@ -994,7 +1007,8 @@ or even crash.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkColorButton" id="cbosk_button2">
+                      <object class="GtkColorDialogButton" id="cbosk_button2">
+                        <property name="dialog">color_dialog</property>
                         <property name="name">20</property>
                         <property name="focusable">1</property>
                         <property name="receives-default">1</property>
@@ -1002,7 +1016,7 @@ or even crash.</property>
                         <property name="margin-end">10</property>
                         <property name="margin-bottom">5</property>
                         <property name="hexpand">1</property>
-                        <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
+                        <signal name="notify::rgba" handler="on_osd_color_set" swapped="no"/>
                         <layout>
                           <property name="column">1</property>
                           <property name="row">10</property>
@@ -1024,7 +1038,8 @@ or even crash.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkColorButton" id="cbosk_text">
+                      <object class="GtkColorDialogButton" id="cbosk_text">
+                        <property name="dialog">color_dialog</property>
                         <property name="name">20</property>
                         <property name="focusable">1</property>
                         <property name="receives-default">1</property>
@@ -1032,7 +1047,7 @@ or even crash.</property>
                         <property name="margin-end">20</property>
                         <property name="margin-bottom">5</property>
                         <property name="hexpand">1</property>
-                        <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
+                        <signal name="notify::rgba" handler="on_osd_color_set" swapped="no"/>
                         <layout>
                           <property name="column">3</property>
                           <property name="row">8</property>
@@ -1053,7 +1068,8 @@ or even crash.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkColorButton" id="cbosk_hilight">
+                      <object class="GtkColorDialogButton" id="cbosk_hilight">
+                        <property name="dialog">color_dialog</property>
                         <property name="name">20</property>
                         <property name="focusable">1</property>
                         <property name="receives-default">1</property>
@@ -1061,7 +1077,7 @@ or even crash.</property>
                         <property name="margin-end">20</property>
                         <property name="margin-bottom">5</property>
                         <property name="hexpand">1</property>
-                        <signal name="color-set" handler="on_osd_color_set" swapped="no"/>
+                        <signal name="notify::rgba" handler="on_osd_color_set" swapped="no"/>
                         <layout>
                           <property name="column">3</property>
                           <property name="row">9</property>

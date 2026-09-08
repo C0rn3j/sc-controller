@@ -72,6 +72,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		self.setup_widgets()
 		self._timer: int | None = None
 		self._recursing: bool = False
+		self.loading_colors: bool = False
 		self._gamepad_icons = {
 			"unknown": GdkPixbuf.Pixbuf.new_from_file(
 				os.path.join(self.app.imagepath, "controller-icons", "unknown.svg"),
@@ -158,7 +159,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			if w:
 				w.set_active(value)
 
-	def _load_color(self, w: Gtk.ColorButton | None, dct: str, key: str) -> None:
+	def _load_color(self, w: Gtk.ColorDialogButton | None, dct: str, key: str) -> None:
 		"""Common part of load_colors"""
 		if w:
 			color = Gdk.RGBA()
@@ -167,17 +168,19 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			w.set_rgba(color)
 
 	def load_colors(self) -> None:
+		self.loading_colors = True
 		cbOSDStyle: Gtk.ComboBox | None = self.builder.get_object("cbOSDStyle")
 		cbOSDColorPreset: Gtk.ComboBox | None = self.builder.get_object("cbOSDColorPreset")
 		for k in self.app.config["osd_colors"]:
-			w: Gtk.ColorButton | None = self.builder.get_object(f"cb{k}")
+			w: Gtk.ColorDialogButton | None = self.builder.get_object(f"cb{k}")
 			self._load_color(w, "osd_colors", k)
 		for k in self.app.config["osk_colors"]:
-			w: Gtk.ColorButton | None = self.builder.get_object(f"cbosk_{k}")
+			w: Gtk.ColorDialogButton | None = self.builder.get_object(f"cbosk_{k}")
 			self._load_color(w, "osk_colors", k)
 		theme = self.app.config.get("osd_color_theme", "None")
 		self.set_cb(cbOSDColorPreset, theme)
 		self.set_cb(cbOSDStyle, self.app.config.get("osd_style"))
+		self.loading_colors = False
 
 	def load_autoswitch(self) -> None:
 		"""Transfers autoswitch settings from config to UI"""
@@ -266,6 +269,10 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 
 	def on_osd_color_set(self, *a):
 		"""Called when user selects color."""
+		# Both user picking a color AND set_rgba() can emit the notify::rgba signal
+		# So ignore the signal if we're setting colors up
+		if self.loading_colors:
+			return
 		# Convert Gdk.RGBA into the RRGGBB notation used by the config.
 		cbOSDColorPreset = self.builder.get_object("cbOSDColorPreset")
 		tohex = lambda a: "".join(f"{int(x * 0xFF):02x}" for x in (a.red, a.green, a.blue))
