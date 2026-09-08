@@ -43,7 +43,7 @@ class SimpleChooser(Editor):
 		self.component.load()
 		if component_name == "buttons":
 			self.component.hide_toggle()
-		self.window.add(self.component.get_widget())
+		self.window.set_child(self.component.get_widget())
 
 	def display_action(self, mode, action):
 		self._action = action
