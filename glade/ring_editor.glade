@@ -302,7 +302,7 @@
         </child>
       </object>
     </property>
-    <child type="titlebar">
+    <property name="titlebar">
       <object class="GtkHeaderBar" id="header">
         <child type="end">
           <object class="GtkButton" id="btOK">
@@ -362,6 +362,6 @@
           </object>
         </child>
       </object>
-    </child>
+    </property>
   </object>
 </interface>

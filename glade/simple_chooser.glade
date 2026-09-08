@@ -11,7 +11,7 @@
     <child>
       <placeholder/>
     </child>
-    <child type="titlebar">
+    <property name="titlebar">
       <object class="GtkHeaderBar" id="header">
         <child>
           <placeholder/>
@@ -20,6 +20,6 @@
           <placeholder/>
         </child>
       </object>
-    </child>
+    </property>
   </object>
 </interface>

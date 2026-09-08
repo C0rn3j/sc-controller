@@ -184,7 +184,7 @@
         </child>
       </object>
     </property>
-    <child type="titlebar">
+    <property name="titlebar">
       <object class="GtkHeaderBar" id="headerbar2">
         <property name="title-widget">
           <object class="GtkLabel">
@@ -221,7 +221,7 @@
           </object>
         </child>
       </object>
-    </child>
+    </property>
   </object>
   <object class="GtkDialog" id="dlgRenameProfile">
     <property name="width-request">600</property>
@@ -251,7 +251,7 @@
         </child>
       </object>
     </property>
-    <child type="titlebar">
+    <property name="titlebar">
       <object class="GtkHeaderBar" id="headerbar1">
         <property name="title-widget">
           <object class="GtkLabel">
@@ -288,7 +288,7 @@
           </object>
         </child>
       </object>
-    </child>
+    </property>
   </object>
   <object class="GtkListStore" id="lstProfile">
     <columns>
@@ -638,7 +638,7 @@
         </child>
       </object>
     </property>
-    <child type="titlebar">
+    <property name="titlebar">
       <object class="GtkHeaderBar" id="hbWindow">
         <property name="decoration-layout">menu:minimize,close</property>
         <child>
@@ -695,7 +695,7 @@
           </object>
         </child>
       </object>
-    </child>
+    </property>
   </object>
   <object class="GtkDialog" id="dlgProfileDetails">
     <property name="resizable">0</property>
@@ -767,7 +767,7 @@
         </child>
       </object>
     </property>
-    <child type="titlebar">
+    <property name="titlebar">
       <object class="GtkHeaderBar" id="hbProfileDetails">
         <property name="title-widget">
           <object class="GtkLabel">
@@ -778,7 +778,7 @@
           </object>
         </property>
       </object>
-    </child>
+    </property>
   </object>
   <object class="GtkPopover" id="mnuImage">
     <property name="child">

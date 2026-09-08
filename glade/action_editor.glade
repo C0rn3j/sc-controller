@@ -1337,7 +1337,7 @@
         </child>
       </object>
     </property>
-    <child type="titlebar">
+    <property name="titlebar">
       <object class="GtkHeaderBar" id="header">
         <child>
           <object class="GtkButton" id="btModeshift">
@@ -1413,7 +1413,7 @@
           </object>
         </child>
       </object>
-    </child>
+    </property>
   </object>
   <object class="GtkListStore" id="lstOutputMode">
     <columns>
