@@ -26,11 +26,19 @@ class ImportSccprofile:
 		# Create dialog
 		d = Gtk.FileChooserNative.new(_("Import Profile..."), self.window, Gtk.FileChooserAction.OPEN)
 		d.add_filter(f1)
-		if d.run() == Gtk.ResponseType.ACCEPT:
-			if d.get_filename().endswith(".tar.gz"):
-				self.import_scc_tar(d.get_filename())
-			else:
-				self.import_scc(d.get_filename())
+
+		def on_response(dialog, response) -> None:
+			if response == Gtk.ResponseType.ACCEPT:
+				file = dialog.get_file()
+				filename = file.get_path() if file else None
+				if filename and filename.endswith(".tar.gz"):
+					self.import_scc_tar(filename)
+				elif filename:
+					self.import_scc(filename)
+			dialog.destroy()
+
+		d.connect("response", on_response)
+		d.show()
 
 	def error(self, text):
 		"""Displays error page (reused from VDF import)."""

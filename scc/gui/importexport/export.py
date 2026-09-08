@@ -203,20 +203,28 @@ class Export(UserDataManager):
 		# Create dialog
 		d = Gtk.FileChooserNative.new(_("Export to File..."), self.window, Gtk.FileChooserAction.SAVE)
 		d.add_filter(f)
-		d.set_do_overwrite_confirmation(True)
 		# Set default filename
 		d.set_current_name("%s.%s" % (model[iter][2], fmt))
-		if d.run() == Gtk.ResponseType.ACCEPT:
-			fn = d.get_filename()
-			if len(os.path.split(fn)[-1].split(".")) < 2:
-				# User wrote filename without extension
-				fn = "%s.%s" % (fn, fmt)
+		needs_package = self._needs_package()
 
-			if self._needs_package():
-				if self._export_package(model[iter][1], fn):
-					self.window.close()
-			elif self._export(model[iter][1], fn):
-				self.window.close()
+		def on_response(dialog, response) -> None:
+			if response == Gtk.ResponseType.ACCEPT:
+				file = dialog.get_file()
+				fn = file.get_path() if file else None
+				if fn:
+					if len(os.path.split(fn)[-1].split(".")) < 2:
+						# User wrote filename without extension
+						fn = "%s.%s" % (fn, fmt)
+
+					if needs_package:
+						if self._export_package(model[iter][1], fn):
+							self.window.close()
+					elif self._export(model[iter][1], fn):
+						self.window.close()
+			dialog.destroy()
+
+		d.connect("response", on_response)
+		d.show()
 
 	def _export(self, giofile, target_filename):
 		"""Performs actual exporting.
