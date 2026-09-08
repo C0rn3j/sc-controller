@@ -23,10 +23,10 @@
             <child>
               <object class="GtkLabel" id="lblOsdmodeExit">
                 <property name="label" translatable="yes">Exit</property>
-                <attributes>
-                  <attribute name="weight" value="bold"/>
-                  <attribute name="scale" value="1.5"/>
-                </attributes>
+                <property name="attributes">
+                  0 -1 weight bold
+                  0 -1 scale 1.5
+                </property>
               </object>
             </child>
           </object>
@@ -44,10 +44,10 @@
             <child>
               <object class="GtkLabel" id="lblOsdmodeAct">
                 <property name="label" translatable="yes">Activate</property>
-                <attributes>
-                  <attribute name="weight" value="bold"/>
-                  <attribute name="scale" value="1.5"/>
-                </attributes>
+                <property name="attributes">
+                  0 -1 weight bold
+                  0 -1 scale 1.5
+                </property>
               </object>
             </child>
           </object>
@@ -64,10 +64,10 @@
             <child>
               <object class="GtkLabel" id="lblOsdmodeOK">
                 <property name="label" translatable="yes">OK</property>
-                <attributes>
-                  <attribute name="weight" value="bold"/>
-                  <attribute name="scale" value="1.5"/>
-                </attributes>
+                <property name="attributes">
+                  0 -1 weight bold
+                  0 -1 scale 1.5
+                </property>
               </object>
             </child>
           </object>
@@ -85,10 +85,10 @@
             <child>
               <object class="GtkLabel" id="lblOsdmodeClose">
                 <property name="label" translatable="yes">Close</property>
-                <attributes>
-                  <attribute name="weight" value="bold"/>
-                  <attribute name="scale" value="1.5"/>
-                </attributes>
+                <property name="attributes">
+                  0 -1 weight bold
+                  0 -1 scale 1.5
+                </property>
               </object>
             </child>
           </object>
@@ -105,10 +105,10 @@
             <child>
               <object class="GtkLabel" id="lblOsdmodeSave">
                 <property name="label" translatable="yes">Save</property>
-                <attributes>
-                  <attribute name="weight" value="bold"/>
-                  <attribute name="scale" value="1.5"/>
-                </attributes>
+                <property name="attributes">
+                  0 -1 weight bold
+                  0 -1 scale 1.5
+                </property>
               </object>
             </child>
           </object>
@@ -1053,9 +1053,9 @@
               <object class="GtkLabel" id="cbNewReleaseHeader">
                 <property name="label" translatable="yes">SC Controller was upgraded</property>
                 <property name="xalign">0</property>
-                <attributes>
-                  <attribute name="weight" value="bold"/>
-                </attributes>
+                <property name="attributes">
+                  0 -1 weight bold
+                </property>
                 <layout>
                   <property name="column">0</property>
                   <property name="row">0</property>

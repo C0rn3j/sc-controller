@@ -190,9 +190,9 @@
         <child type="title">
           <object class="GtkLabel" id="lblGestureGrabberTitle">
             <property name="label" translatable="yes">Draw gesture on LEFT pad...</property>
-            <attributes>
-              <attribute name="weight" value="bold"></attribute>
-            </attributes>
+            <property name="attributes">
+              0 -1 weight bold
+            </property>
           </object>
         </child>
         <child>
@@ -216,9 +216,9 @@
         <child>
           <object class="GtkLabel" id="lblPrecision">
             <property name="label" translatable="yes">Matching Precision</property>
-            <attributes>
-              <attribute name="weight" value="bold"></attribute>
-            </attributes>
+            <property name="attributes">
+              0 -1 weight bold
+            </property>
           </object>
         </child>
         <child>
@@ -257,9 +257,9 @@
         <property name="margin-bottom">10</property>
         <property name="label" translatable="yes">message</property>
         <property name="xalign">0</property>
-        <attributes>
-          <attribute name="weight" value="semibold"></attribute>
-        </attributes>
+        <property name="attributes">
+          0 -1 weight semibold
+        </property>
       </object>
     </child>
     <child>

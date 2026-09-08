@@ -170,9 +170,9 @@
           <object class="GtkLabel" id="lblGyroEnable">
             <property name="label" translatable="yes">Gyro Enable Button</property>
             <property name="xalign">0</property>
-            <attributes>
-              <attribute name="weight" value="bold"></attribute>
-            </attributes>
+            <property name="attributes">
+              0 -1 weight bold
+            </property>
           </object>
         </child>
         <child>
@@ -227,9 +227,9 @@
         <property name="child">
           <object class="GtkLabel" id="label9414">
             <property name="label" translatable="yes">Button disables Gyro</property>
-            <attributes>
-              <attribute name="weight" value="bold"></attribute>
-            </attributes>
+            <property name="attributes">
+              0 -1 weight bold
+            </property>
           </object>
         </property>
       </object>
