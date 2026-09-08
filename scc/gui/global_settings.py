@@ -632,7 +632,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		self.app.save_config()
 
 	def on_cbOSDStyle_changed(self, cb) -> None:
-		color_keys = self.app.config["osk_colors"].keys() + self.app.config["osd_colors"].keys()
+		color_keys = list(self.app.config["osk_colors"]) + list(self.app.config["osd_colors"])
 		osd_style = cb.get_model().get_value(cb.get_active_iter(), 0)
 		css_file = os.path.join(get_share_path(), "osd-styles", osd_style)
 		with open(css_file) as file:
@@ -644,8 +644,8 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 				used_colors = None  # None means "all"
 
 		for key in color_keys:
-			cb = self.builder.get_object("cb%s" % (key,))
-			lbl = self.builder.get_object("lbl%s" % (key,))
+			cb = self.builder.get_object(f"cb{key}")
+			lbl = self.builder.get_object(f"lbl{key}")
 			if cb:
 				cb.set_sensitive((used_colors is None) or (key in used_colors))
 			if lbl:
