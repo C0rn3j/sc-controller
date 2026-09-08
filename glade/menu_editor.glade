@@ -150,6 +150,7 @@
                   <object class="GtkSeparator" id="sep17">
                     <property name="orientation">vertical</property>
                     <property name="opacity">0</property>
+                    <property name="hexpand">1</property>
                   </object>
                 </child>
                 <child>
@@ -162,15 +163,28 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkMenuButton" id="btMnuAdd">
-                    <property name="focusable">0</property>
-                    <property name="label" translatable="yes">_Add</property>
-                    <property name="use-underline">True</property>
-                    <property name="icon-name">list-add-symbolic</property>
-                    <property name="popover">
-                      <object class="GtkPopover" id="mnuAdd">
+                  <object class="GtkBox">
+                    <child>
+                      <object class="GtkButton" id="btAddItem">
+                        <property name="label" translatable="yes">_Add</property>
+                        <property name="use-underline">1</property>
+                        <property name="icon-name">list-add-symbolic</property>
+                        <signal name="clicked" handler="on_btAddItem_clicked" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuButton" id="btMnuAdd">
+                        <property name="focusable">0</property>
+                        <property name="direction">down</property>
                         <property name="child">
-                          <object class="GtkBox">
+                          <object class="GtkImage">
+                            <property name="icon-name">pan-down-symbolic</property>
+                          </object>
+                        </property>
+                        <property name="popover">
+                          <object class="GtkPopover" id="mnuAdd">
+                            <property name="child">
+                              <object class="GtkBox">
                             <property name="orientation">vertical</property>
                             <child>
                               <object class="GtkButton" id="mnuAddItem">
@@ -181,7 +195,7 @@
                             </child>
                             <child>
                               <object class="GtkButton" id="mnuAddSeparator">
-                                <property name="label" translatable="yes">Add SSeparator</property>
+                                <property name="label" translatable="yes">Add Separator</property>
                                 <property name="use-underline">True</property>
                                 <signal name="clicked" handler="on_mnuAddSeparator_clicked" swapped="no"/>
                               </object>
@@ -219,24 +233,27 @@
                                 <signal name="clicked" handler="on_mnuAddGamesList_activate" swapped="no"/>
                               </object>
                             </child>
+                              </object>
+                            </property>
                           </object>
                         </property>
                       </object>
-                    </property>
+                    </child>
                   </object>
                 </child>
               </object>
             </child>
             <child>
-              <object class="GtkBox" id="frItems">
+              <object class="GtkFrame" id="frItems">
                 <property name="height-request">300</property>
                 <property name="margin-top">10</property>
                 <property name="hexpand">1</property>
                 <property name="vexpand">1</property>
-                <child>
+                <property name="child">
                   <object class="GtkScrolledWindow" id="swItems">
                     <property name="name">sw</property>
                     <property name="focusable">1</property>
+                    <property name="hexpand">1</property>
                     <property name="vexpand">1</property>
                     <property name="margin-top">12</property>
                     <property name="margin-start">12</property>
@@ -267,15 +284,15 @@
                       </object>
                     </property>
                   </object>
-                </child>
-                <child type="label">
+                </property>
+                <property name="label-widget">
                   <object class="GtkLabel" id="lblItems">
                     <property name="label" translatable="yes">Items</property>
                     <property name="attributes">
                       0 -1 weight bold
                     </property>
                   </object>
-                </child>
+                </property>
                 <layout>
                   <property name="column">0</property>
                   <property name="row">2</property>
