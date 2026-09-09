@@ -165,15 +165,21 @@
             <property name="hexpand">1</property>
             <property name="child">
               <object class="GtkInfoBar" id="infoBarRestartWarning">
+                <property name="hexpand">1</property>
                 <property name="message-type">warning</property>
                 <child>
                   <object class="GtkBox" id="vbRestartWarning">
-                    <property name="visible">0</property>
+                    <property name="hexpand">1</property>
                     <property name="spacing">16</property>
+                    <property name="margin-start">12</property>
+                    <property name="margin-end">12</property>
+                    <property name="margin-top">6</property>
+                    <property name="margin-bottom">6</property>
                     <child>
                       <object class="GtkImage" id="imgRestartWarning">
                         <property name="icon-name">dialog-warning</property>
                         <property name="pixel-size">48</property>
+                        <property name="valign">center</property>
                       </object>
                     </child>
                     <child>
@@ -183,6 +189,8 @@ If you have any games running, restarting emulation will "unplug"
 virtual gamepad, what may cause them to ignore future inputs
 or even crash.</property>
                         <property name="wrap">1</property>
+                        <property name="hexpand">1</property>
+                        <property name="xalign">0</property>
                       </object>
                     </child>
                     <child>
@@ -193,6 +201,7 @@ or even crash.</property>
                         <property name="label" translatable="yes">Restart Emulation</property>
                         <property name="focusable">1</property>
                         <property name="receives-default">1</property>
+                        <property name="valign">center</property>
                         <signal name="clicked" handler="on_btRestartEmulation_clicked" swapped="no"/>
                       </object>
                     </child>
