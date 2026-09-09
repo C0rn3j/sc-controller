@@ -1166,7 +1166,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		combo.connect("changed", self.on_controller_selected)
 		combo.connect("notify::popup-shown", self._refresh_selector_profiles)
 		vbSwitchers = self.builder.get_object("vbSwitchers")
-		vbSwitchers.pack_start(combo, False, False, 0)
+		vbSwitchers.append(combo)
 		# Layout top-to-bottom: [ selector ][ separator ][ profile switcher ]
 		vbSwitchers.reorder_child(combo, 0)
 		vbSwitchers.reorder_child(self.builder.get_object("sepSwitchers"), 1)
