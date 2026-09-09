@@ -1168,8 +1168,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		vbSwitchers = self.builder.get_object("vbSwitchers")
 		vbSwitchers.append(combo)
 		# Layout top-to-bottom: [ selector ][ separator ][ profile switcher ]
-		vbSwitchers.reorder_child(combo, 0)
-		vbSwitchers.reorder_child(self.builder.get_object("sepSwitchers"), 1)
+		vbSwitchers.reorder_child_after(combo, None)
+		vbSwitchers.reorder_child_after(self.builder.get_object("sepSwitchers"), vbSwitchers.get_first_child())
 		combo.set_no_show_all(True)
 		combo.set_visible(False)
 		return combo
