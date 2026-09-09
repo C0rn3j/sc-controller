@@ -709,7 +709,7 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                         <signal name="response" handler="on_ibHIDWarning_response" swapped="no"/>
                         <child>
                           <object class="GtkBox" id="box2HIDWarning">
-                            <property name="visible">0</property>
+                            <property name="hexpand">1</property>
                             <property name="spacing">16</property>
                             <child>
                               <object class="GtkImage" id="imgHIDWarning">
