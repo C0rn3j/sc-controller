@@ -37,6 +37,15 @@ except Exception:
 	pass
 
 
+def _is_same_or_child(parent: str, path: str) -> bool:
+	parent = os.path.realpath(parent)
+	path = os.path.realpath(path)
+	try:
+		return os.path.commonpath((parent, path)) == parent
+	except ValueError:
+		return False
+
+
 def _disconnect_bluez(device_path: str) -> None:
 	# Import lazily so importing DeviceMonitor does not require PyGObject.
 	from gi.repository import Gio
@@ -58,6 +67,7 @@ def _disconnect_bluez(device_path: str) -> None:
 class DeviceMonitor(Monitor):
 	BT_DISCOVERY_RETRY_DELAY = 0.25
 	BT_DISCOVERY_RETRY_COUNT = 20
+	FLATPAK_RESCAN_INTERVAL = 1.0
 
 	def __init__(self, *a) -> None:
 		Monitor.__init__(self, *a)
@@ -100,6 +110,20 @@ class DeviceMonitor(Monitor):
 		poller = self.daemon.poller
 		poller.register(self.fileno(), poller.POLLIN, self.on_data_ready)
 		Monitor.start(self)
+		if os.path.exists("/.flatpak-info"):
+			self._schedule_flatpak_rescan()
+
+	def _schedule_flatpak_rescan(self) -> None:
+		self.daemon.get_scheduler().schedule(self.FLATPAK_RESCAN_INTERVAL, self._flatpak_rescan)
+
+	def _flatpak_rescan(self) -> None:
+		"""Compensate for udev netlink events which Flatpak does not forward."""
+		try:
+			self.rescan()
+		except Exception:
+			log.exception("Failed to rescan devices in Flatpak")
+		finally:
+			self._schedule_flatpak_rescan()
 
 	def _on_new_syspath(self, subsystem: str, syspath: str) -> None:
 		# Bluetooth adapters are reported as e.g. hci0, while actual device
@@ -189,6 +213,16 @@ class DeviceMonitor(Monitor):
 		link_name = os.path.basename(syspath)
 		address = self.bt_addresses.get(link_name)
 		if address is None:
+			# The HID device exposes the Bluetooth address as its ``uniq`` sysfs
+			# attribute.  This remains available in Flatpak even when opening an
+			# HCI socket for HCIGETCONNLIST is not permitted.
+			node = self._dev_for_hci(syspath)
+			if node is not None:
+				address = self._find_bt_address(node)
+				if address:
+					address = address.upper()
+					self.bt_addresses[link_name] = address
+		if address is None:
 			self._get_hci_addresses()
 			address = self.bt_addresses.get(link_name)
 		if address is None:
@@ -216,6 +250,21 @@ class DeviceMonitor(Monitor):
 		name = sys_bus_path.rsplit("/", maxsplit=1)[-1]
 		if ":" not in name:
 			return None
+
+		# BlueZ's UHID device normally lives below the Bluetooth connection in
+		# sysfs.  Prefer that relationship over querying the controller address
+		# through an HCI socket: sandboxes such as Flatpak expose the device and
+		# its sysfs hierarchy, but do not necessarily allow HCIGETCONNLIST.
+		for fname in os.listdir("/sys/bus/hid/devices/"):
+			node = os.path.join("/sys/bus/hid/devices/", fname)
+			try:
+				if _is_same_or_child(sys_bus_path, node):
+					return node
+			except OSError:
+				continue
+
+		# Fall back to matching the Bluetooth address for kernels/sysfs layouts
+		# where the HID device is not nested below the connection device.
 		addr = self.bt_addresses.get(name)
 		for fname in os.listdir("/sys/bus/hid/devices/"):
 			node = os.path.join("/sys/bus/hid/devices/", fname)
@@ -268,7 +317,15 @@ class DeviceMonitor(Monitor):
 				subsystem_to_vp_to_callback[subsystem] = {}
 			subsystem_to_vp_to_callback[subsystem][vendor_id, product_id] = cb
 
-		for syspath in enumerator:
+		current_syspaths = set(enumerator)
+		for syspath in tuple(self.known_devs):
+			if syspath not in current_syspaths:
+				self._cancel_bt_retry(syspath)
+				_vendor, _product, cb = self.known_devs.pop(syspath)
+				if cb:
+					cb(syspath, _vendor, _product)
+
+		for syspath in current_syspaths:
 			if syspath not in self.known_devs:
 				try:
 					subsystem = DeviceMonitor.get_subsystem(syspath)
