@@ -500,8 +500,12 @@ class ControllerRegistration(Editor):
 			tester.connect("button", self.on_tester_button),
 		]
 
-		self._controller_image.get_parent().remove(self._controller_image)
-		fxController.add(self._controller_image)
+		parent = self._controller_image.get_parent()
+		if isinstance(parent, Gtk.Revealer):
+			parent.set_child(None)
+		else:
+			parent.remove(self._controller_image)
+		fxController.put(self._controller_image, 0, 0)
 		pages = list(stDialog.observe_children())
 		stDialog.set_visible_child(pages[2])
 		cbEmulateC.grab_focus()
@@ -638,7 +642,7 @@ class ControllerRegistration(Editor):
 			parent = cursor.get_parent()
 			if parent is None:
 				parent = self._controller_image.get_parent()
-				parent.add(cursor)
+				parent.put(cursor, 0, 0)
 				cursor.show()
 			# Make position
 			changed, value = axis.set_position(value)
