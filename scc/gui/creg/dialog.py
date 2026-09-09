@@ -19,6 +19,7 @@ from gi.repository import GdkPixbuf, GLib, Gtk
 
 from scc.config import Config
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, SCButtons
+from scc.device_config import DEVICE_CONFIG_VERSION
 from scc.gui import BUTTON_ORDER
 from scc.gui.app import App
 from scc.gui.controller_image import ControllerImage
@@ -265,11 +266,12 @@ class ControllerRegistration(Editor):
 		cbControllerButtons = self.builder.get_object("cbControllerButtons")
 		cbControllerType = self.builder.get_object("cbControllerType")
 		buffRawData = self.builder.get_object("buffRawData")
-		config = dict(
-			buttons={},
-			axes={},
-			dpads={},
-		)
+		config = {
+			"version": DEVICE_CONFIG_VERSION,
+			"buttons": {},
+			"axes": {},
+			"dpads": {},
+		}
 
 		def axis_to_json(axisdata: AxisData) -> dict[str, str | float | int]:
 			index = self._axis_data.index(axisdata)

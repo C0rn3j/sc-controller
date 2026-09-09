@@ -6,7 +6,6 @@ Borrows bit of code and configuration from evdevdrv.
 from __future__ import annotations
 
 import ctypes
-import json
 import logging
 import os
 import sys
@@ -22,6 +21,7 @@ if TYPE_CHECKING:
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons
 from scc.controller import Controller
+from scc.device_config import load_device_config
 from scc.drivers.evdevdrv import FIRST_BUTTON, TRIGGERS, parse_axis
 from scc.drivers.usb import (
 	SCUSBDevice,
@@ -625,8 +625,7 @@ class HIDDrv:
 				pid = int(pid, 16)
 				config_file = os.path.join(path, name)
 				try:
-					with open(config_file) as file:
-						config = json.loads(file.read())
+					config = load_device_config(config_file)
 				except Exception:
 					log.warning("Ignoring file that cannot be parsed: %s", name)
 					continue

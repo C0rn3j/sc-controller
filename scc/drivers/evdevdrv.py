@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import binascii
 import errno
-import json
 import logging
 import os
 import sys
@@ -16,6 +15,7 @@ from typing import TYPE_CHECKING, NamedTuple
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, TRIGGER_MAX, TRIGGER_MIN, ControllerFlags, SCButtons
 from scc.controller import Controller
+from scc.device_config import load_device_config
 from scc.paths import get_config_path
 from scc.tools import clamp
 
@@ -122,24 +122,10 @@ class EvdevController(Controller):
 		self._axis_map = {}
 		self._dpad_map = {}
 		self._calibrations = {}
-		legacy_axes = {
-			"stick_x": "lstick_x",
-			"stick_y": "lstick_y",
-			# Evdev profiles predate the dedicated d-pad and right-stick axes
-			# and used the touchpads - real touchpads should never be assigned to an evdev device
-			# so just rewrite it.
-			# TODO(Martin): Ideally we should version saved profiles and migrate this proper
-			"lpad_x": "dpad_x",
-			"lpad_y": "dpad_y",
-			"rpad_x": "rstick_x",
-			"rpad_y": "rstick_y",
-		}
 
 		for x, value in config.get("buttons", {}).items():
 			try:
 				keycode = int(x)
-				# TODO(Martin): The following is a compat crutch for saved devices - change it to autoconvert it to current standard instead
-				value = {"STICKPRESS": "LSTICKPRESS", "STICK": "LSTICKPRESS"}.get(value, value)
 				if value in TRIGGERS:
 					self._axis_map[keycode] = value
 				else:
@@ -149,15 +135,11 @@ class EvdevController(Controller):
 				pass
 		for x, value in config.get("axes", {}).items():
 			code, axis = int(x), value.get("axis")
-			# TODO(Martin): The following is a compat crutch for saved devices - change it to autoconvert it to current standard instead
-			axis = legacy_axes.get(axis, axis)
 			if axis in EvdevControllerInput._fields:
 				self._calibrations[code] = parse_axis(value)
 				self._axis_map[code] = axis
 		for x, value in config.get("dpads", {}).items():
 			code, axis = int(x), value.get("axis")
-			# TODO(Martin): The following is a compat crutch for saved devices - change it to autoconvert it to current standard instead
-			axis = legacy_axes.get(axis, axis)
 			if axis in EvdevControllerInput._fields:
 				self._calibrations[code] = parse_axis(value)
 				self._dpad_map[code] = value.get("positive", False)
@@ -454,8 +436,7 @@ class EvdevDriver:
 		if os.path.exists(config_file):
 			config = None
 			try:
-				with open(config_file) as file:
-					config = json.loads(file.read())
+				config = load_device_config(config_file)
 			except Exception:
 				log.exception("Unknown exception loading config, skipping evdev node %s", eventnode)
 				return False
