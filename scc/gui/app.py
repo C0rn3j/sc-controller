@@ -399,9 +399,12 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			wa = self.builder.get_object(above)
 			wb = self.builder.get_object(below)
 			if wa and wb and wa.get_parent() is wb.get_parent():
-				kids = wa.get_parent().get_children()
-				if kids.index(wa) > kids.index(wb):
-					wa.get_parent().reorder_child(wa, kids.index(wb))
+				parent = wa.get_parent()
+				current = wa.get_next_sibling()
+				while current is not None and current is not wb:
+					current = current.get_next_sibling()
+				if current is None:
+					parent.reorder_child_after(wa, wb.get_prev_sibling())
 
 		stckEditor.set_visible_child(grEditor)
 		GLib.idle_add(self.on_c_size_allocate)
@@ -414,13 +417,13 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			# to mirror the Deck's physical layout: D-Pad, L4, L5, View, Steam.
 			btDPAD: Gtk.Button | None = self.builder.get_object("btDPAD")
 			btDPAD.get_parent().remove(btDPAD)
-			btLGRIP.get_parent().pack_start(btDPAD, False, True, 6)
-			btLGRIP.get_parent().reorder_child(btDPAD, 2)
+			btLGRIP.get_parent().append(btDPAD)
+			reorder_box_child(btLGRIP.get_parent(), btDPAD, 2)
 			# Move 'C' (Steam) to the bottom of the LEFT column (was the right)
 			btC: Gtk.Button | None = self.builder.get_object("btC")
 			btC.get_parent().remove(btC)
 			btC.set_margin_end(0)
-			btLGRIP.get_parent().pack_start(btC, False, True, 0)
+			btLGRIP.get_parent().append(btC)
 			# Move 'GYRO' button to middle of image (where C was)
 			btGYRO: Gtk.Button | None = self.builder.get_object("btGYRO")
 			btGYRO.get_parent().remove(btGYRO)
