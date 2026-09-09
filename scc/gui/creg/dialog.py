@@ -521,9 +521,13 @@ class ControllerRegistration(Editor):
 			buttons=Gtk.ButtonsType.OK,
 			text=_("Failed to open device"),
 		)
-		d.run()
-		d.close()
-		self.window.close()
+
+		def on_response(dialog, _response_id) -> None:
+			dialog.close()
+			self.window.close()
+
+		d.connect("response", on_response)
+		d.present()
 
 	def kill_tester(self, *a):
 		"""Called when window is closed"""

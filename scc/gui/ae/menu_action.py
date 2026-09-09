@@ -189,7 +189,10 @@ class MenuActionCofC(UserDataManager):
 		if MenuEditor.menu_is_global(id):
 			d.set_property("secondary-text", _("This action is not undoable!"))
 
-		if d.run() == -5:  # OK button, no idea where is this defined...
+		def on_response(dialog, response_id) -> None:
+			dialog.close()
+			if response_id != Gtk.ResponseType.OK:
+				return
 			if MenuEditor.menu_is_global(id):
 				fname = os.path.join(get_menus_path(), id)
 				try:
@@ -200,7 +203,9 @@ class MenuActionCofC(UserDataManager):
 				del self.app.current.menus[id]
 				self.app.on_profile_modified()
 			self.load_menu_list()
-		d.close()
+
+		d.connect("response", on_response)
+		d.present()
 
 	def on_menus_loaded(self, menus):
 		cb = self.builder.get_object("cbMenus")

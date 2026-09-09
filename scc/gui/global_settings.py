@@ -774,6 +774,10 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 
 	def on_btRemoveController_clicked(self, *a):
 		tvControllers = self.builder.get_object("tvControllers")
+		model, treeiter = tvControllers.get_selection().get_selected()
+		if treeiter is None:
+			return
+		path = model[treeiter][0]
 		d = Gtk.MessageDialog(
 			transient_for=self.window,
 			modal=True,
@@ -782,17 +786,19 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			text=_("Unregister controller?"),
 		)
 		d.set_property("secondary-text", _("You'll lose all settings for it"))
-		if d.run() == -8:
-			# Yes
-			model, iter = tvControllers.get_selection().get_selected()
-			path = model[iter][0]
-			try:
-				os.unlink(path)
-			except Exception as e:
-				log.exception(e)
-			self._needs_restart()
-			self.load_controllers()
-		d.close()
+
+		def on_response(dialog, response_id) -> None:
+			if response_id == Gtk.ResponseType.YES:
+				try:
+					os.unlink(path)
+				except Exception as e:
+					log.exception(e)
+				self._needs_restart()
+				self.load_controllers()
+			dialog.close()
+
+		d.connect("response", on_response)
+		d.present()
 
 	def load_controllers(self, *a):
 		lstControllers = self.builder.get_object("lstControllers")
