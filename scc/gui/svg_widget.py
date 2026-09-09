@@ -100,6 +100,9 @@ class SVGWidget(Gtk.EventBox):
 		self.cache = OrderedDict()
 
 	def on_mouse_click(self, trash, event) -> None:
+		if event.button != Gdk.BUTTON_PRIMARY:
+			return
+
 		area = self.on_mouse_moved(trash, event)
 		if area is not None:
 			self.emit("click", area)
