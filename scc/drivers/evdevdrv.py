@@ -10,6 +10,7 @@ import binascii
 import errno
 import logging
 import os
+import re
 import sys
 from typing import TYPE_CHECKING, NamedTuple
 
@@ -40,6 +41,10 @@ if TYPE_CHECKING:
 	from scc.sccdaemon import SCCDaemon
 
 log = logging.getLogger("evdev")
+
+RE_EVENT_NODE = re.compile(r"event\d+")
+SYS_CLASS_HIDRAW = "/sys/class/hidraw"
+DEV_INPUT = "/dev/input"
 
 TRIGGERS = "ltrig", "rtrig"
 FIRST_BUTTON = 288
@@ -547,6 +552,74 @@ def get_evdev_devices_from_syspath(syspath: str) -> list[evdev.InputDevice[str]]
 		elif os.path.isdir(path) and not os.path.islink(path):
 			rv += get_evdev_devices_from_syspath(path)
 	return rv
+
+
+def evdev_nodes_from_hidraw(hidraw_path: str) -> list[str]:
+	"""Return the evdev nodes belonging to a hidraw device."""
+	name = os.path.basename(hidraw_path.rstrip("/"))
+	device = os.path.realpath(os.path.join(SYS_CLASS_HIDRAW, name, "device"))
+	inputs = os.path.join(device, "input")
+	if not os.path.isdir(inputs):
+		return []
+
+	nodes = []
+	for entry in sorted(os.listdir(inputs)):
+		subdir = os.path.join(inputs, entry)
+		if not os.path.isdir(subdir):
+			continue
+		for node in sorted(os.listdir(subdir)):
+			if RE_EVENT_NODE.fullmatch(node):
+				nodes.append(os.path.join(DEV_INPUT, node))
+	return nodes
+
+
+def grab_evdev_nodes(hidraw_path: str) -> list[evdev.InputDevice[str]]:
+	"""Exclusively grab every evdev node belonging to a hidraw device."""
+	if not HAVE_EVDEV:
+		log.warning("evdev not available; kernel input nodes remain active for %s", hidraw_path)
+		return []
+
+	try:
+		paths = evdev_nodes_from_hidraw(hidraw_path)
+	except Exception as error:
+		log.warning("Could not enumerate evdev nodes for %s: %s", hidraw_path, error)
+		return []
+
+	if not paths:
+		log.warning("Found no kernel evdev nodes for %s; its physical input may remain active", hidraw_path)
+
+	grabbed = []
+	for path in paths:
+		try:
+			device = evdev.InputDevice(path)
+		except Exception as error:
+			log.warning("Could not open %s: %s", path, error)
+			continue
+
+		try:
+			device.grab()
+			grabbed.append(device)
+			log.info("Grabbed kernel evdev node %s (%s)", device.path, device.name)
+		except Exception as error:
+			log.warning("Could not grab %s (%s): %s", device.path, device.name, error)
+			try:
+				device.close()
+			except Exception as error2:
+				log.debug("Failed to close device after a failed grab %s (%s): %s", device.path, device.name, error2)
+	return grabbed
+
+
+def ungrab_evdev_nodes(devices: list[evdev.InputDevice[str]] | None) -> None:
+	"""Release and close nodes previously returned by grab_evdev_nodes()."""
+	for device in devices or ():
+		try:
+			device.ungrab()
+		except Exception as error:
+			log.debug("Could not ungrab %s (%s): %s", device.path, device.name, error)
+		try:
+			device.close()
+		except Exception as error:
+			log.debug("Could not close %s (%s): %s", device.path, device.name, error)
 
 
 def get_axes(dev):

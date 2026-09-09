@@ -44,7 +44,9 @@ from scc.drivers.evdevdrv import (
 	EvdevController,
 	get_axes,
 	get_evdev_devices_from_syspath,
+	grab_evdev_nodes,
 	make_new_device,
+	ungrab_evdev_nodes,
 )
 from scc.drivers.hiddrv import (
 	BUTTON_COUNT,
@@ -572,6 +574,7 @@ class DS5BluetoothHIDRawController(Controller):
 		# time.sleep(1)
 		self._set_operational()
 		self.read_serial()
+		self._grabbed_evdev = grab_evdev_nodes(self._device_file.name)
 		# self.configure()
 		self._poller = self.daemon.get_poller()
 		if self._poller:
@@ -922,6 +925,8 @@ class DS5BluetoothHIDRawController(Controller):
 		if self._poller:
 			self._poller.unregister(self._fileno)
 
+		ungrab_evdev_nodes(getattr(self, "_grabbed_evdev", None))
+		self._grabbed_evdev = []
 		self.daemon.remove_controller(self)
 		self._device_file.close()
 		# log.debug("CLOSING")
