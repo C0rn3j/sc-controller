@@ -1127,7 +1127,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			# switcher is created.
 			vbSwitchers.reorder_child_after(sepSwitchers, None)
 			sepSwitchers.set_visible(True)
-		vbSwitchers.show_all()
+		vbSwitchers.set_visible(True)
 
 		if len(self.profile_switchers) > 0:
 			ps.set_profile_list(self.profile_switchers[0].get_profile_list())
