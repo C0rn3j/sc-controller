@@ -459,7 +459,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		)
 
 		def on_response(dialog, response_id) -> None:
-			if response_id == -5:  # OK button, not defined anywhere
+			if response_id == Gtk.ResponseType.OK:
 				sudo = Gio.Subprocess.new(shell_command, 0)
 				sudo.communicate(None, None)
 				if sudo.get_exit_status() == 0:
@@ -472,9 +472,9 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 						buttons=Gtk.ButtonsType.OK,
 						text=_("Command Failed"),
 					)
-					d2.run()
-					d2.close()
-			d.close()
+					d2.connect("response", lambda failed_dialog, _response: failed_dialog.close())
+					d2.present()
+			dialog.close()
 
 		d.connect("response", on_response)
 		d.set_property(
@@ -784,18 +784,19 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			NEW_PROFILE_BUTTON = 7
 			d.add_button(_("Create New Profile"), NEW_PROFILE_BUTTON)
 
-			r = d.run()
-			d.close()
-			if r == NEW_PROFILE_BUTTON:
-				# New profile button clicked
-				ps = self.profile_switchers[0]
-				rbCopyProfile = self.builder.get_object("rbCopyProfile")
-				self.on_new_clicked(ps, ps.get_profile_name())
-				rbCopyProfile.set_active(True)
-				return
-			if r != -8:
-				# Bail out if user answers anything but yes
-				return
+			def on_response(dialog, response_id) -> None:
+				dialog.close()
+				if response_id == NEW_PROFILE_BUTTON:
+					ps = self.profile_switchers[0]
+					rbCopyProfile = self.builder.get_object("rbCopyProfile")
+					self.on_new_clicked(ps, ps.get_profile_name())
+					rbCopyProfile.set_active(True)
+				elif response_id == Gtk.ResponseType.YES:
+					self.save_profile(self.current_file, self.current)
+
+			d.connect("response", on_response)
+			d.present()
+			return
 
 		self.save_profile(self.current_file, self.current)
 
