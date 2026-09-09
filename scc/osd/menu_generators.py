@@ -5,6 +5,7 @@ Auto-generated menus with stuff like list of all available profiles...
 
 import logging
 import os
+import subprocess
 import sys
 import traceback
 from ctypes import POINTER, cast
@@ -13,7 +14,9 @@ import gi
 
 gi.require_version("Gdk", "4.0")
 gi.require_version("Gio", "2.0")
-from gi.repository import Gdk, Gio
+gi.require_version("GioUnix", "2.0")
+gi.require_version("GLib", "2.0")
+from gi.repository import Gdk, Gio, GioUnix, GLib
 
 if sys.platform == "linux":
 	gi.require_version("GdkX11", "4.0")
@@ -158,7 +161,12 @@ class GameListMenuGenerator(MenuGenerator):
 	GENERATOR_NAME = "games"
 	MAX_LENGHT = 50
 
-	_games = None  # Static list of know games
+	HOST_APPLICATION_DIRS = (
+		"~/.local/share/applications",
+		"~/.local/share/flatpak/exports/share/applications",
+		"/var/lib/flatpak/exports/share/applications",
+		"/run/host/usr/share/applications",
+	)
 
 	# def generate(self, menuhandler):
 	# return _("[ Games ]")
@@ -168,23 +176,69 @@ class GameListMenuGenerator(MenuGenerator):
 
 	@staticmethod
 	def callback(menu, daemon, controller, menuitem) -> None:
-		menuitem._desktop_file.launch()
+		desktop_id = getattr(menuitem._desktop_file, "_scc_host_desktop_id", None)
+		if os.environ.get("FLATPAK_ID") and desktop_id:
+			subprocess.Popen(
+				["flatpak-spawn", "--host", "gtk-launch", desktop_id],
+				start_new_session=True,
+			)
+		else:
+			menuitem._desktop_file.launch()
 		menu.quit(-2)
 
+	@staticmethod
+	def _load_host_application(filename: str) -> Gio.AppInfo | None:
+		keyfile = GLib.KeyFile()
+		try:
+			keyfile.load_from_file(filename, GLib.KeyFileFlags.NONE)
+			# GDesktopAppInfo rejects entries whose host Exec/TryExec binaries are
+			# absent in the sandbox.  Launching is done by desktop ID on the host,
+			# so use a valid placeholder only for constructing the metadata object.
+			keyfile.set_string("Desktop Entry", "Exec", "/bin/true")
+			try:
+				keyfile.remove_key("Desktop Entry", "TryExec")
+			except GLib.Error:
+				pass
+			app = GioUnix.DesktopAppInfo.new_from_keyfile(keyfile)
+		except (GLib.Error, TypeError):
+			return None
+		if app is not None:
+			app._scc_host_desktop_id = os.path.basename(filename)
+		return app
+
+	@classmethod
+	def _get_applications(cls) -> list[Gio.AppInfo]:
+		if not os.environ.get("FLATPAK_ID"):
+			return Gio.AppInfo.get_all()
+
+		apps = {}
+		for dirname in cls.HOST_APPLICATION_DIRS:
+			dirname = os.path.expanduser(dirname)
+			try:
+				filenames = os.listdir(dirname)
+			except OSError:
+				continue
+			for filename in filenames:
+				if not filename.endswith(".desktop") or filename in apps:
+					continue
+				app = cls._load_host_application(os.path.join(dirname, filename))
+				if app is not None and app.should_show():
+					apps[filename] = app
+		return list(apps.values())
+
 	def generate(self, menuhandler) -> list[MenuItem]:
-		if GameListMenuGenerator._games is None:
-			GameListMenuGenerator._games = []
-			games = [
-				x
-				for x in Gio.AppInfo.get_all()
-				if x.get_categories() and "Game" in x.get_categories().split(";")
-			]
-			for item_id, game in enumerate(sorted(games, key=lambda x: x.get_display_name().casefold())):
-				menuitem = MenuItem(str(item_id), game.get_display_name(), icon=game.get_icon())
-				menuitem.callback = GameListMenuGenerator.callback
-				menuitem._desktop_file = game
-				GameListMenuGenerator._games.append(menuitem)
-		return GameListMenuGenerator._games
+		items = []
+		games = [
+			x
+			for x in self._get_applications()
+			if x.get_categories() and "Game" in x.get_categories().split(";")
+		]
+		for item_id, game in enumerate(sorted(games, key=lambda x: x.get_display_name().casefold())):
+			menuitem = MenuItem(str(item_id), game.get_display_name(), icon=game.get_icon())
+			menuitem.callback = GameListMenuGenerator.callback
+			menuitem._desktop_file = game
+			items.append(menuitem)
+		return items
 
 
 def register_menu_generators() -> None:
