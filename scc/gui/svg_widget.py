@@ -64,6 +64,7 @@ class SVGWidget(Gtk.Box):
 		motion.connect("motion", self.on_mouse_moved)
 		self.add_controller(motion)
 		click = Gtk.GestureClick.new()
+		click.set_button(Gdk.BUTTON_PRIMARY)
 		click.connect("pressed", self.on_mouse_click)
 		self.add_controller(click)
 		self.size_override: tuple[int, int] | None = None
