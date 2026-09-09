@@ -667,7 +667,13 @@ class MenuIcon(Gtk.DrawingArea):
 		if filename is None:
 			self.pb = None
 		else:
-			self.pb = GdkPixbuf.Pixbuf.new_from_file(filename)
+			try:
+				self.pb = GdkPixbuf.Pixbuf.new_from_file(filename)
+			except GLib.Error as error:
+				# Application icons can disappear while a generated game menu is open,
+				# for example when a game is uninstalled.
+				log.warning("Failed to load menu icon %s: %s", filename, error.message)
+				self.pb = None
 
 	def on_size_allocate(self, trash, allocation):
 		if allocation.width < allocation.height:
