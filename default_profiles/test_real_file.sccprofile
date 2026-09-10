@@ -1,0 +1,131 @@
+{
+    "_": "",
+    "buttons": {
+        "A": {
+            "action": "hold(mode(LB, name('Use+Item Use (LB+Hold)', press(button(Keys.KEY_BACKSPACE)); button(Keys.KEY_LEFTALT); release(button(Keys.KEY_BACKSPACE))), None), mode(LB, name('Activate Item (LB)', button(Keys.KEY_ENTER)), None))"
+        },
+        "B": {
+            "action": "hold(mode(Y, button(Keys.KEY_LEFTCTRL), LB, name('Lean Right', button(Keys.KEY_RIGHTBRACE)), LT >= 0.01, name('Firemode (Weapon zoom)', button(Keys.KEY_EQUAL)), name('Medkit (Hold)', button(Keys.KEY_W))), mode(LB, name('Cycle Inv. Right (LB)', button(Keys.KEY_RIGHT)), name('Bandages', button(Keys.KEY_Q))))"
+        },
+        "BACK": {
+            "action": "hold(name('Spycam', button(Keys.KEY_O)), name('Co-op Spy', button(Keys.KEY_F12)))"
+        },
+        "C": {
+            "action": "hold(menu('Default.menu'), menu('Default.menu'))"
+        },
+        "CPADPRESS": {
+            "action": "hold(button(Keys.KEY_H), button(Keys.KEY_N), 0.5)"
+        },
+        "LB": {
+            "action": "name('Modeshift', None)",
+            "name": "Modeshift"
+        },
+        "LGRIP": {
+            "action": "mode(LT, name('Drop One (Hold LTrig)', button(Keys.KEY_SEMICOLON)), name('Lean Left', button(Keys.KEY_LEFTBRACE)))"
+        },
+        "RB": {
+            "action": "button(Keys.BTN_MOUSE)"
+        },
+        "RGRIP": {
+            "action": "mode(LT, name('Use/Pick Up (Hold LTrig)', button(Keys.KEY_BACKSPACE)), name('Lean Right', button(Keys.KEY_RIGHTBRACE)))"
+        },
+        "RPAD": {
+            "action": "mode(LB, name('Crouch', button(Keys.KEY_C)), button(Keys.KEY_SPACE))"
+        },
+        "RSTICKPRESS": {
+            "action": "mode(LB, name('Crouch', button(Keys.KEY_C)), button(Keys.KEY_SPACE))"
+        },
+        "START": {
+            "action": "hold(name('Map (Hold)', button(Keys.KEY_TAB)), button(Keys.KEY_ESC))"
+        },
+        "STICKPRESS": {
+            "action": "button(Keys.KEY_LEFTSHIFT)",
+            "name": "Sprint"
+        },
+        "X": {
+            "action": "hold(mode(LB, name('Lean Left', button(Keys.KEY_LEFTBRACE)), name('Drop Armor (Hold)', button(Keys.KEY_APOSTROPHE))), mode(LB, name('Cycle Inv. Left (LB)', button(Keys.KEY_LEFT)), name('Drop Weapon', button(Keys.KEY_Z))))"
+        },
+        "Y": {
+            "action": "mode(LB, name('Unload', button(Keys.KEY_V)), RT >= 0.01, name('Reload (Chamber)', button(Keys.KEY_T)), name('Use/Take', button(Keys.KEY_BACKSPACE)))"
+        }
+    },
+    "cpad": {},
+    "dpad": {},
+    "gyro": {
+        "action": "mode(A, None, sens(4.0, -2.6, 3.5, mouse(YAW)))"
+    },
+    "is_template": false,
+    "menus": {
+        "Extra Actions": [
+            {
+                "action": "button(Keys.KEY_N)",
+                "id": "item1",
+                "name": "Taunt"
+            },
+            {
+                "action": "button(Keys.KEY_H)",
+                "id": "item2",
+                "name": "Play Dead"
+            },
+            {
+                "action": "button(Keys.KEY_L)",
+                "id": "item3",
+                "name": "LLM"
+            }
+        ],
+        "Misc": [
+            {
+                "action": "button(Keys.KEY_U)",
+                "id": "item1",
+                "name": "Purge Useless Ammo"
+            },
+            {
+                "action": "button(Keys.KEY_Y)",
+                "id": "item2",
+                "name": "HERP/DERP Hack"
+            },
+            {
+                "action": "button(Keys.KEY_I)",
+                "id": "item3",
+                "name": "DERP Return"
+            },
+            {
+                "action": "button(Keys.KEY_K)",
+                "id": "item4",
+                "name": "Touch off Doorbuster"
+            },
+            {
+                "action": "button(Keys.KEY_K)",
+                "id": "item5",
+                "name": "Detonate IEDs"
+            },
+            {
+                "separator": true
+            },
+            {
+                "action": "button(Keys.KEY_GRAVE)",
+                "id": "item7",
+                "name": "Open Console"
+            }
+        ]
+    },
+    "pad_left": {
+        "action": "dpad(1, doubleclick(menu('Misc'), hold(name('Save Replay', shell('obs-cli -P 4444 -p nT2ClupGclzeR3ZF replay save')), mode(LB, name('Mousewheel Up', mouse(Rels.REL_WHEEL, 1)), name('Rangefinder', button(Keys.KEY_R))))), hold(mode(LB, name('Mag Manager', button(Keys.KEY_B)), name('Unload', button(Keys.KEY_V))), mode(LB, mouse(Rels.REL_WHEEL, -1), name('Unload', button(Keys.KEY_V)))), mode(LB, name('Drop One (LB)', button(Keys.KEY_SEMICOLON)), A, name('Reduce Music', button(Keys.KEY_BACKSLASH)), name('Drop Item', button(Keys.KEY_X))), hold(name('Start Recording', shell('obs-cli -P 4444 -p nT2ClupGclzeR3ZF record toggle')), mode(LB, name('Grenades (LB)', button(Keys.KEY_G)), A, name('Raise Music', button(Keys.KEY_MINUS)), name('Cycle Medical', button(Keys.KEY_9)))))"
+    },
+    "pad_right": {
+        "action": "mode(LB, deadzone(ROUND, 31070, dpad8(hold(button(Keys.KEY_5), button(Keys.KEY_1)), hold(button(Keys.KEY_7), button(Keys.KEY_3)), hold(button(Keys.KEY_8), button(Keys.KEY_4)), hold(button(Keys.KEY_6), button(Keys.KEY_2)), button(Keys.KEY_DOT), button(Keys.KEY_L), button(Keys.KEY_COMMA))), deadzone(LINEAR, 32039, smooth(20, 0.8, 18, sens(8.0, 8.0, circular(mouse(Rels.REL_X, 1))))))"
+    },
+    "rstick": {
+        "action": "mode(LB, dpad8(hold(button(Keys.KEY_5), button(Keys.KEY_1)), hold(button(Keys.KEY_7), button(Keys.KEY_3)), hold(button(Keys.KEY_8), button(Keys.KEY_4)), hold(button(Keys.KEY_6), button(Keys.KEY_2)), None, button(Keys.KEY_L), None, button(Keys.KEY_O)), sens(9.0, 9.0, circular(mouse(Rels.REL_X, 1))))"
+    },
+    "stick": {
+        "action": "deadzone(ROUND, 4118, dpad(axis(Axes.ABS_Y, 0, -32767), axis(Axes.ABS_Y, 0, 32767), axis(Axes.ABS_X, 0, -32767), axis(Axes.ABS_X, 0, 32767))) and ring(0.8, button(Keys.KEY_A))"
+    },
+    "trigger_left": {
+        "action": "feedback(LEFT, 3090, hipfire(1, 254, button(Keys.BTN_RIGHT), button(Keys.KEY_EQUAL), EXCLUSIVE, 0.05))"
+    },
+    "trigger_right": {
+        "action": "mode(LB, hipfire(1, 254, button(Keys.KEY_T), button(Keys.KEY_END), EXCLUSIVE, 0.02), button(Keys.BTN_MIDDLE))"
+    },
+    "version": 1.5
+}
