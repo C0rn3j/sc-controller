@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """SC-Controller - RIBar
 
 Infobar wrapped in Revealer, looks better than sounds.
@@ -24,10 +23,8 @@ class RIBar(Gtk.Revealer):
 	}
 
 	### Initialization
-	def __init__(self, label, message_type=Gtk.MessageType.INFO, infobar=None, *buttons):
-		"""... where label can be Gtk.Widget or str and buttons are tuples
-		of (Gtk.Button, response_id)
-		"""
+	def __init__(self, label, message_type: Gtk.MessageType = Gtk.MessageType.INFO, infobar=None, *buttons) -> None:
+		"""... where label can be Gtk.Widget or str and buttons are tuples of (Gtk.Button, response_id)"""
 		# Init
 		Gtk.Revealer.__init__(self)
 		self._infobar = infobar or Gtk.InfoBar()
@@ -72,22 +69,22 @@ class RIBar(Gtk.Revealer):
 		self.set_child(self._infobar)
 		self.show()
 
-	def _cb_close(self, ib):
+	def _cb_close(self, ib) -> None:
 		self.emit("close")
 
-	def _cb_response(self, ib, response_id):
+	def _cb_response(self, ib, response_id) -> None:
 		self.emit("response", response_id)
 
-	def disable_close_button(self):
+	def disable_close_button(self) -> None:
 		if hasattr(self._infobar, "set_show_close_button"):
 			self._infobar.set_show_close_button(False)
 
-	def add_widget(self, widget, expand=False, fill=True):
+	def add_widget(self, widget, expand: bool = False, fill: bool = True) -> None:
 		widget.set_hexpand(expand)
 		self._infobar.add_child(widget)
 		widget.show()
 
-	def add_button(self, button, response_id):
+	def add_button(self, button, response_id) -> None:
 		self._infobar.add_action_widget(button, response_id)
 		self._infobar.show()
 
@@ -95,26 +92,22 @@ class RIBar(Gtk.Revealer):
 		"""Returns label widget"""
 		return self._label
 
-	def close_on_close(self):
-		"""Setups revealer so it will be automaticaly closed, removed and
-		destroyed when user clicks to any button, including 'X'
-		"""
+	def close_on_close(self) -> None:
+		"""Setups revealer so it will be automaticaly closed, removed and destroyed when user clicks to any button, including 'X'"""
 		self.connect("close", self.close)
 		self.connect("response", self.close)
 
-	def close(self, *a):
-		"""Closes revealer (with animation), removes it from parent and
-		calls destroy()
-		"""
+	def close(self, *a) -> None:
+		"""Closes revealer (with animation), removes it from parent and calls destroy()"""
 		self.set_reveal_child(False)
 		GLib.timeout_add(self.get_transition_duration() + 50, self._cb_destroy)
 
-	def _cb_destroy(self, *a):
+	def _cb_destroy(self, *a) -> None:
 		"""Remove the revealer after its closing animation."""
 		if self.get_parent() is not None:
 			self.get_parent().remove(self)
 
-	def set_value(self, key, value):
+	def set_value(self, key, value) -> None:
 		"""Stores some metadata"""
 		self._values[key] = value
 
@@ -126,12 +119,12 @@ class RIBar(Gtk.Revealer):
 		"""Shortcut to get_value"""
 		return self._values[key]
 
-	def __setitem__(self, key, value):
+	def __setitem__(self, key, value) -> None:
 		"""Shortcut to set_value"""
 		self.set_value(key, value)
 
 	@staticmethod
-	def build_button(label, icon_name=None, icon_widget=None, use_stock=False):
+	def build_button(label, icon_name=None, icon_widget=None, use_stock: bool = False)-> Gtk.Button:
 		"""Builds button situable for action area"""
 		b = Gtk.Button.new_with_mnemonic(label)
 		if icon_name is not None:
