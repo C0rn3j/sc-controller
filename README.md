@@ -1,67 +1,155 @@
-# SC Controller
+<p align="center">
+	<img src="images/sc-controller.svg?raw=true" width="192" alt="SC Controller icon">
+</p>
 
-[![SCC Linux CI](https://github.com/C0rn3j/sc-controller/actions/workflows/scc-linux.yml/badge.svg?branch=python3)](https://github.com/C0rn3j/sc-controller/actions/workflows/scc-linux.yml)
-[![Build and publish AppImages](https://github.com/C0rn3j/sc-controller/actions/workflows/appimage.yml/badge.svg?event=release)](https://github.com/C0rn3j/sc-controller/actions/workflows/appimage.yml)
+<p align="center">
+	<b>SC Controller</b>　// A powerful tool for all of your game controllers
+</p>
 
-User-mode driver, mapper, and GTK 4 based GUI for game controllers, including but not limited to the Steam Controller (2015 & 2026).
+<p align="center">
+	<a href="https://ko-fi.com/martinrys">
+		<img src="https://img.shields.io/badge/Ko--fi-Support%20development-8B5CF6?style=for-the-badge&logo=ko-fi&logoColor=white" alt="Ko-Fi">
+	</a>
+	<a href="https://discord.gg/Np7pgfTX6">
+		<img src="https://img.shields.io/discord/1540822420104028200.svg?color=a483ef&style=for-the-badge" alt="Discord">
+	</a>
+	<a href="https://github.com/C0rn3j/sc-controller/actions/workflows/scc-linux.yml">
+		<img src="https://img.shields.io/github/actions/workflow/status/C0rn3j/sc-controller/scc-linux.yml?branch=main&amp;style=for-the-badge&amp;label=CI%20tests" alt="CI tests">
+	</a>
+	<a href="https://github.com/C0rn3j/sc-controller/actions/workflows/appimage.yml">
+		<img src="https://img.shields.io/github/actions/workflow/status/C0rn3j/sc-controller/appimage.yml?event=release&amp;style=for-the-badge&amp;label=AppImage" alt="Build and publish AppImages">
+	</a>
+</p>
 
-[![screenshot1](docs/screenshot1-tn.png?raw=true)](docs/screenshot1.png?raw=true)
-[![screenshot2](docs/screenshot2-tn.png?raw=true)](docs/screenshot2.png?raw=true)
-[![screenshot3](docs/screenshot3-tn.png?raw=true)](docs/screenshot3.png?raw=true)
-[![screenshot3](docs/screenshot4-tn.png?raw=true)](docs/screenshot4.png?raw=true)
-
-*Based on [Standalone Steam Controller Driver](https://github.com/ynsta/steamcontroller) by [Ynsta](https://github.com/ynsta).*
+<p align="center">
+	<a href="docs/screenshot1.png?raw=true">
+		<img src="docs/screenshot1.png?raw=true" width="320" alt="Screenshot 1">
+	</a>
+	<a href="docs/screenshot2.png?raw=true">
+		<img src="docs/screenshot2.png?raw=true" width="320" alt="Screenshot 2">
+	</a>
+	<a href="docs/screenshot3.png?raw=true">
+		<img src="docs/screenshot3.png?raw=true" width="320" alt="Screenshot 3">
+	</a>
+	<a href="docs/screenshot4.png?raw=true">
+		<img src="docs/screenshot4.png?raw=true" width="320" alt="Screenshot 4">
+	</a>
+</p>
 
 ## Features
+User-mode driver, mapper, and GTK 4 based GUI for game controllers, including but not limited to the Steam Controller (2015 &amp; 2026).
+
 - Allows to setup, configure and use the Steam Controller (2015 & 2026) without ever launching Steam
+- Emulates the Xbox 360 controller, mouse, trackball and keyboard
 - Connect multiple controllers at the same time
-- Supports profiles switchable in GUI or with controller button
+- Supports profiles, switchable in the GUI, or with a controller button
 - Joystick, Touchpad and Gyroscope input
 - Haptic Feedback and in-game Rumble support
-- OSD, Menus, On-Screen Keyboard for desktop *and* in games
-- Automatic profile switching based on the active window
 - Macros, button cycling, rapid fire, modeshift, mouse regions, …
-- Emulates the Xbox 360 controller, mouse, trackball and keyboard
+- OSD, Menus, On-Screen Keyboard for desktop *and* in games - *except in [GNOME](https://github.com/C0rn3j/sc-controller/issues/18)*
+- Automatic profile switching based on the active window - *X11 only for now*
 
+### Supported controllers
+All controllers *should* be supported at some level, either fully by a custom SC Controller driver, or best-effort by means of generic interfaces like evdev.
 
-### List of supported controllers
-Controllers supported via custom drivers:
+Controllers supported via a custom driver:
 * Steam Controller (2015, 2026)
 * Steam Deck
 * DualShock 4 (v1, v2)
 * DualSense
 * DualSense Edge - untested, lacks support for the [4 extra buttons](https://github.com/C0rn3j/sc-controller/issues/89) at the moment
 
-Controllers without a custom driver work too, you can add one via `Settings -> Controllers -> Register New Controller`.</br>
-Your controller will be automatically mapped via SDL's [GameControllerDB](https://github.com/mdqinc/SDL_GameControllerDB), which has hundreds of supported devices.</br>
-In case support for yours is missing, you should [contribute](https://github.com/mdqinc/SDL_GameControllerDB#contributing) a layout for your controller to it.</br>
-Beware that even when you do use the automap feature, instead of the manual option, you still have to go through pressing all the buttons, to set up deadzones and thresholds for inputs like triggers and joysticks.
+The controllers above will be autodetected and used without having to explicitly configure them.
 
-Note that there is no automatic discovery of connected gyro/touchpad evdev nodes on controllers that do have a gyroscope or a touchpad(s), so if your controller has one of those, it currently needs SCC to implement a custom driver for it.</br>
-That does mean that devices like Nintendo controllers do not have a working gyroscope, as I do not own any.
+#### Registering other controllers
+
+If your controller is not in the list above, you have to add it via `Settings -> Controllers -> Register New Controller`.
+
+Upon starting the registration process, your controller will be automatically mapped via SDL's [GameControllerDB](https://github.com/mdqinc/SDL_GameControllerDB), which has hundreds of supported devices.</br>
+In case your controller is missing from the database, you will have to manually map each button in the UI, and afterwards you should [contribute](https://github.com/mdqinc/SDL_GameControllerDB#contributing) the layout.</br>
+
+Beware that even when you do use automapper instead of manual assignment, you still have to press all the buttons as instructed, to automatically set up deadzones and thresholds for inputs like triggers and joysticks.
+
+*Note that there is no automatic discovery of evdev nodes for gyroscope/touchpad, so if your controller has one of those, it currently needs SCC to implement a custom driver for it.*</br>
+*That does mean that devices like Nintendo controllers do not have a working gyroscope, as I do not own any.*
 
 ## Like what I'm doing?
 
 You can check out the ways to donate on [my website](https://rys.rs/donate), or just go straight to my [Ko-Fi](https://ko-fi.com/martinrys).
 
-*Donation links for kozec, who is the original developer, can be found on the [old upstream repository](https://github.com/kozec/sc-controller?tab=readme-ov-file#like-what-im-doing).*
+## Community
+
+For reporting bugs or having feature suggestions, head to the [Issues](https://github.com/C0rn3j/sc-controller/issues) tab.</br>
+If you're not sure your topic belongs there, you can always head to [Discussions](https://github.com/C0rn3j/sc-controller/discussions) instead.
+
+We also have a [Discord](https://discord.gg/Np7pgfTX6) available.
 
 ## Packages
 
-[![Packaging status](https://repology.org/badge/vertical-allrepos/sc-controller.svg?exclude_unsupported=1)](https://repology.org/project/sc-controller/versions)
-
-Linux:
-  - **Arch Linux:** Found in the official [extra](https://archlinux.org/packages/extra/x86_64/sc-controller/) repository and [AUR/sc-controller-git](https://aur.archlinux.org/packages/sc-controller-git/) - Install via `pacman -Syu sc-controller`
-  - **Debian:** [Packaged](https://packages.debian.org/sid/sc-controller), but not yet released as stable. Also packaged as an [AppImage](https://github.com/C0rn3j/sc-controller/releases).
-  - **Ubuntu (24.04-noble, 26.04-resolute):** Packaged as [AppImage](https://github.com/C0rn3j/sc-controller/releases), ***which usually runs fine on other operating systems - noble image is currently the most compatible one***
-  - **Gentoo:** Packaged as [game-util/sc-controller](https://packages.gentoo.org/packages/games-util/sc-controller)
-  - **Void Linux:** Packaged as [sc-controller](https://github.com/void-linux/void-packages/blob/master/srcpkgs/sc-controller/template) - Install via `xbps-install -S sc-controller`
-  - **Others:** You can attempt to use one of the AppImages (try all, AppImages built on older distributions have better compatibility), or a package meant for your parent distribution if applicable.
-  - **Flatpak is planned.**
-
-Windows/macOS:
-  - Not planned, the half-finished C rewrite has Windows support but it has been abandoned, see https://github.com/C0rn3j/sc-controller/issues/44 for more info
-
+<table>
+	<tr>
+		<td width="267" valign="top">
+			<a href="https://repology.org/project/sc-controller/versions">
+				<img src="https://repology.org/badge/vertical-allrepos/sc-controller.svg?exclude_unsupported=1&header=" width="240" alt="Packaging status">
+			</a>
+		</td>
+		<td valign="top">
+			<strong>Linux:</strong>
+			<ul>
+				<li>
+					<strong>Arch Linux:</strong>
+					Found in the official <a href="https://archlinux.org/packages/extra/x86_64/sc-controller/">extra</a> repository and
+					<a href="https://aur.archlinux.org/packages/sc-controller-git/">AUR/sc-controller-git</a>.
+					Install via <code>pacman -Syu sc-controller</code>.
+				</li>
+				<li>
+					<strong>Debian:</strong>
+					<a href="https://packages.debian.org/sid/sc-controller">Packaged</a>, but not yet released as stable. Also packaged as an
+					<a href="https://github.com/C0rn3j/sc-controller/releases">AppImage</a>.
+				</li>
+				<li>
+					<strong>Ubuntu (24.04 Noble, 26.04 Resolute):</strong> Packaged as an
+					<a href="https://github.com/C0rn3j/sc-controller/releases">AppImage</a>,
+					<em>which usually runs fine on other operating systems—the Noble
+					image is currently the most compatible one.</em>
+				</li>
+				<li>
+					<strong>Gentoo:</strong>
+					Packaged as
+					<a href="https://packages.gentoo.org/packages/games-util/sc-controller">games-util/sc-controller</a>.
+				</li>
+				<li>
+					<strong>Void Linux:</strong>
+					Packaged as
+					<a href="https://github.com/void-linux/void-packages/blob/master/srcpkgs/sc-controller/template">sc-controller</a>.
+					Install via <code>xbps-install -S sc-controller</code>.
+				</li>
+				<li>
+					<strong>Others:</strong>
+					You can attempt to use one of the AppImages (try all of them; AppImages
+					built on older distributions have better compatibility), or a package
+					intended for your parent distribution, if applicable.
+				</li>
+				<li><strong>Flatpak is planned.</strong></li>
+			</ul>
+			<strong>Windows:</strong>
+			<ul>
+				<li>
+					Not planned. The half-finished C rewrite had Windows support, but it has
+					been abandoned. See
+					<a href="https://github.com/C0rn3j/sc-controller/issues/44">issue #44</a>
+					for more information.
+				</li>
+			</ul>
+			<strong>macOS:</strong>
+			<ul>
+				<li>
+					Not planned.
+				</li>
+			</ul>
+		</td>
+	</tr>
+</table>
 
 ## Building the package by yourself
 
@@ -113,3 +201,9 @@ If you wish to include context from an interaction with AI in your comments, it 
 This project uses AI tools to assist with debugging and writing code. AI output is reviewed, usually edited, and tested before being committed. In short, AI is treated as a development tool.
 
 The exception to this is the contributed Steam Controller (2026) driver, which lives in its separate file, and its associated reverse engineering documentation.
+
+---
+
+*Based on [Standalone Steam Controller Driver](https://github.com/ynsta/steamcontroller) by [Ynsta](https://github.com/ynsta).*
+
+*Donation links for kozec, who is the original developer, can be found on the [old upstream repository](https://github.com/kozec/sc-controller?tab=readme-ov-file#like-what-im-doing).*
