@@ -325,6 +325,14 @@ A button whenever physical button is pressed.
 #### <a name="released"></a> released(action)
 Creates action that occurs for brief moment when button is released.
 
+#### <a name="inverted"></a> inverted(action)
+Acts on release: swaps press and release, so the wrapped action is held while
+the physical button is NOT pressed and released while it is. Meant for
+always-on sensors such as the capacitive handle grips, which read "on" the
+whole time the controller is held - inverting them fires the action when you
+let go. Unlike `pressed`/`released`, which emit a momentary tap, this is a
+true held inversion of the button state.
+
 #### <a name="touched"></a> pressed(action)
 Creates action that occurs for brief moment when finger touches pad.
 
@@ -385,6 +393,29 @@ running feedback that you may not be able to stop.
 
 'frequency' is used only when emulating touchpad and describes how many pixels
 should mouse travel between two feedback ticks.
+
+
+#### <a name="feedbacktone"></a> feedbacktone(side, [amplitude=512 [, tone_frequency=160 [, duration=200 [, lfo_frequency=0 [, lfo_depth=0 ]]]]], action)
+Like feedback(), but plays a sine tone instead of a click. 'tone_frequency' and
+'lfo_frequency' are in Hz, 'duration' in milliseconds and 'lfo_depth' is 0 to
+255; leave 'lfo_frequency' at 0 for a steady tone.
+
+Needs a controller that can synthesise waveforms, currently only the Steam
+Controller 2. Anything else falls back to a plain click, so a profile written
+for one controller still does something on another.
+
+
+#### <a name="feedbacksweep"></a> feedbacksweep(side, [amplitude=512 [, tone_frequency=160 [, end_frequency=40 [, duration=200 ]]]], action)
+Like feedback(), but sweeps logarithmically from 'tone_frequency' to
+'end_frequency' (both Hz) over 'duration' milliseconds. Same hardware
+requirement, and the same fallback, as feedbacktone().
+
+
+#### <a name="feedbackscript"></a> feedbackscript(side, [amplitude=512 [, script_id=0 ]], action)
+Like feedback(), but plays an effect stored in the controller's own firmware,
+selected by 'script_id'. Which ids exist and what each one feels like is
+hardware specific and not yet catalogued. Same hardware requirement, and the
+same fallback, as feedbacktone().
 
 
 #### <a name="ball"></a> ball([friction=10.0, [mass=80.0, ]] action)

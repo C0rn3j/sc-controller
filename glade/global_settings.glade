@@ -1799,7 +1799,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                         <signal name="toggled" handler="on_random_checkbox_toggled"/>
                         <child>
                           <object class="GtkLabel" id="label31">
-                            <property name="label" translatable="yes">Minimize to status icon instead closing</property>
+                            <property name="label" translatable="yes">Minimize to status icon instead of closing</property>
                             <property name="mnemonic-widget">cbShowOSD</property>
                             <property name="use-underline">1</property>
                           </object>

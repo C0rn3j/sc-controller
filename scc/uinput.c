@@ -47,6 +47,12 @@ struct feedback_effect {
 	int32_t repetitions;
 	uint16_t type;
 	int16_t level;
+	// FF_RUMBLE's two magnitudes, kept unmerged. 'level' above averages them
+	// for drivers that can only do one intensity (the v1 emulates rumble as a
+	// click train); hardware with real motors wants them apart, or the heavy
+	// and light effects feel identical.
+	uint16_t strong;
+	uint16_t weak;
 };
 
 int uinput_init(
@@ -292,6 +298,11 @@ int uinput_ff_read(int fd, int ff_effects_max, struct feedback_effect** ff_effec
 							ff_effects[eid]->repetitions = 0;
 							ff_effects[eid]->type = upload.effect.type;
 							ff_effects[eid]->level = 0x4FFF;
+							// Only FF_RUMBLE fills these; default them so a slot
+							// reused from a previous rumble cannot leak its
+							// magnitudes into an effect of another type.
+							ff_effects[eid]->strong = 0;
+							ff_effects[eid]->weak = 0;
 							// This part converts all possible event types to one that
 							// SCC and controller really supports. Only output level is used.
 							switch (upload.effect.type) {
@@ -324,6 +335,8 @@ int uinput_ff_read(int fd, int ff_effects_max, struct feedback_effect** ff_effec
 									avg = upload.effect.u.rumble.strong_magnitude / 3 +
 										upload.effect.u.rumble.weak_magnitude / 6;
 									ff_effects[eid]->level = (int32_t)MIN(avg, 0x7FFF);
+									ff_effects[eid]->strong = upload.effect.u.rumble.strong_magnitude;
+									ff_effects[eid]->weak = upload.effect.u.rumble.weak_magnitude;
 									if (ff_effects[eid]->continuous_rumble) {
 										// See comment in case EV_FF: block
 										ff_effects[eid]->duration = INFINITE_RUMBLE;

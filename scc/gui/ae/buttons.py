@@ -15,6 +15,7 @@ from scc.gui.chooser import Chooser
 from scc.gui.key_grabber import KeyGrabber
 from scc.gui.parser import InvalidAction
 from scc.macros import Cycle, Macro, PressAction, ReleaseAction
+from scc.modifiers import InvertedButtonModifier
 from scc.tools import _
 from scc.uinput import Keys, Rels
 
@@ -50,18 +51,22 @@ class ButtonsComponent(AEComponent, Chooser):
 		if not self.loaded:
 			AEComponent.load(self)
 			self.setup_image()
-			if self.app.osd_mode:
-				self.builder.get_object("btnGrabKey").set_sensitive(False)
-				self.builder.get_object("btnGrabAnother").set_sensitive(False)
 
 	def area_action_selected(self, area, action):
 		self.set_active_area(area)
+		if self.builder.get_object("cbActOnRelease").get_active():
+			action = InvertedButtonModifier(action)
 		self.editor.set_action(action)
 
 	def set_action(self, mode, action):
 		cbToggle = self.builder.get_object("cbToggle")
 		cbRepeat = self.builder.get_object("cbRepeat")
+		cbActOnRelease = self.builder.get_object("cbActOnRelease")
 		if self.handles(mode, action):
+			# "Act on release" wraps the action in an InvertedButtonModifier
+			is_inverted = isinstance(action, InvertedButtonModifier)
+			if is_inverted:
+				action = action.action
 			self.keys = set()
 			is_togle, is_repeat = False, False
 			if isinstance(action, MultiAction):
@@ -80,6 +85,7 @@ class ButtonsComponent(AEComponent, Chooser):
 				is_togle = True
 			cbToggle.set_active(is_togle)
 			cbRepeat.set_active(is_repeat)
+			cbActOnRelease.set_active(is_inverted)
 			area = action_to_area(action)
 			if area is not None:
 				self.set_active_area(area)
@@ -90,6 +96,10 @@ class ButtonsComponent(AEComponent, Chooser):
 		return _("Key or Button")
 
 	def handles(self, mode, action):
+		# "Act on release" wraps the real action in an InvertedButtonModifier;
+		# look through it to the wrapped action.
+		if isinstance(action, InvertedButtonModifier):
+			return self.handles(mode, action.action)
 		# Handles ButtonAction and MultiAction if all subactions are ButtonAction
 		if isinstance(action, (ButtonAction, NoAction, InvalidAction)):
 			return True
@@ -127,8 +137,11 @@ class ButtonsComponent(AEComponent, Chooser):
 
 	def apply_keys(self, *a):
 		"""Common part of on_*key_grabbed"""
+		if not self.keys:
+			return
 		cbToggle = self.builder.get_object("cbToggle")
 		cbRepeat = self.builder.get_object("cbRepeat")
+		cbActOnRelease = self.builder.get_object("cbActOnRelease")
 		keys = sorted(self.keys, key=ButtonsComponent.modifiers_first)
 		action = ButtonAction(keys[0])
 		if len(keys) > 1:
@@ -139,6 +152,8 @@ class ButtonsComponent(AEComponent, Chooser):
 			action.repeat = True
 		elif cbToggle.get_active():
 			action = Cycle(PressAction(action), ReleaseAction(action))
+		if cbActOnRelease.get_active():
+			action = InvertedButtonModifier(action)
 		self.editor.set_action(action)
 
 	def on_btnGrabKey_clicked(self, *a):
@@ -164,6 +179,9 @@ class ButtonsComponent(AEComponent, Chooser):
 		cbToggle = self.builder.get_object("cbToggle")
 		if cbToggle.get_active() and cbRepeat.get_active():
 			cbToggle.set_active(False)
+		self.apply_keys()
+
+	def on_cbActOnRelease_toggled(self, cb: Gtk.CheckButton) -> None:
 		self.apply_keys()
 
 	def hide_toggle(self):
