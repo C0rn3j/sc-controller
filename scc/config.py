@@ -29,10 +29,11 @@ class Config:
 		"drivers": {  # Map of drivers with values of True, Flase
 			# or additional driver config where needed.
 			# Anything but False means enabled here.
-			"sc_dongle": True,
-			"sc_by_cable": True,
-			"sc_by_bt": True,
+			"sc_dongle": True,   # Steam Controller (2015)
+			"sc_by_cable": True, # Steam Controller (2015)
+			"sc_by_bt": True,    # Steam Controller (2015)
 			"steamdeck": True,
+			"sc2": True,  # Steam Controller (2026)
 			"fake": False,  # Used for developement
 			"hiddrv": True,
 			"evdevdrv": True,
@@ -50,7 +51,7 @@ class Config:
 			"news": {
 				# Controls "new in this version" message
 				"enabled": True,  # if disabled, no querying is done
-				"last_version": "0.3.12",  # last version for which message was displayed
+				"last_version": "1.0.0",  # last version for which message was displayed
 			},
 		},
 		"controllers": {},
