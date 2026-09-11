@@ -20,7 +20,7 @@ jobs:
           - os: ubuntu
             codename: noble
             pubkey: 871920D1991BC93C
-            recipe: AppImageBuilder.yml
+            recipe: AppImageBuilder.noble.yml
           - os: ubuntu
             codename: resolute
             pubkey: 871920D1991BC93C
