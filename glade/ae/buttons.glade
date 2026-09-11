@@ -1,16 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <!-- interface-name buttons.glade -->
+  <requires lib="gtk" version="4.14"/>
   <object class="GtkCenterBox" id="buttons">
-    <property name="orientation">vertical</property>
-    <property name="start-widget">
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <child>
-          <placeholder/>
-        </child>
-      </object>
-    </property>
     <property name="end-widget">
       <object class="GtkBox">
         <property name="orientation">vertical</property>
@@ -18,42 +11,42 @@
           <object class="GtkBox" id="vbWeirdSetOfBoxes1">
             <child>
               <object class="GtkCenterBox" id="vbRandomBox48">
-                <property name="orientation">vertical</property>
                 <property name="end-widget">
                   <object class="GtkBox">
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkCheckButton" id="cbToggle">
-                        <property name="width-request">150</property>
-                        <property name="focusable">1</property>
-                        <property name="halign">start</property>
-                        <property name="valign">end</property>
-                        <signal name="toggled" handler="on_cbToggle_toggled" swapped="no"/>
                         <property name="child">
                           <object class="GtkLabel" id="lblToggle">
                             <property name="label" translatable="yes">Toggle Button</property>
                             <property name="xalign">0</property>
                           </object>
                         </property>
+                        <property name="focusable">1</property>
+                        <property name="halign">start</property>
+                        <property name="valign">end</property>
+                        <property name="width-request">150</property>
+                        <signal name="toggled" handler="on_cbToggle_toggled"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkCheckButton" id="cbRepeat">
-                        <property name="width-request">150</property>
-                        <property name="focusable">1</property>
-                        <property name="halign">start</property>
-                        <property name="valign">end</property>
-                        <signal name="toggled" handler="on_cbRepeat_toggled" swapped="no"/>
                         <property name="child">
                           <object class="GtkLabel" id="lblRepeat">
                             <property name="label" translatable="yes">Repeat</property>
                             <property name="xalign">0</property>
                           </object>
                         </property>
+                        <property name="focusable">1</property>
+                        <property name="halign">start</property>
+                        <property name="valign">end</property>
+                        <property name="width-request">150</property>
+                        <signal name="toggled" handler="on_cbRepeat_toggled"/>
                       </object>
                     </child>
                   </object>
                 </property>
+                <property name="orientation">vertical</property>
               </object>
             </child>
             <child>
@@ -62,38 +55,38 @@
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkLabel" id="lblClickAnyButton">
-                    <property name="vexpand">1</property>
-                    <property name="margin-top">5</property>
-                    <property name="margin-bottom">5</property>
-                    <property name="label" translatable="yes">click any button or...</property>
                     <property name="attributes">
                       0 -1 style italic
                     </property>
+                    <property name="label" translatable="yes">click any button or...</property>
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-top">5</property>
+                    <property name="vexpand">1</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkBox" id="vbWeirdSetOfBoxes3">
                     <child>
                       <object class="GtkButton" id="btnGrabKey">
-                        <property name="label" translatable="yes">Grab a key</property>
                         <property name="focusable">1</property>
-                        <property name="receives-default">1</property>
                         <property name="hexpand">1</property>
-                        <signal name="clicked" handler="on_btnGrabKey_clicked" swapped="no"/>
+                        <property name="label" translatable="yes">Grab a key</property>
+                        <property name="receives-default">1</property>
+                        <signal name="clicked" handler="on_btnGrabKey_clicked"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkButton" id="btnGrabAnother">
-                        <property name="focusable">1</property>
-                        <property name="receives-default">1</property>
-                        <property name="halign">start</property>
-                        <property name="margin-start">5</property>
-                        <signal name="clicked" handler="on_btnGrabAnother_clicked" swapped="no"/>
                         <property name="child">
                           <object class="GtkImage" id="imgPlus">
                             <property name="icon-name">list-add-symbolic</property>
                           </object>
                         </property>
+                        <property name="focusable">1</property>
+                        <property name="halign">start</property>
+                        <property name="margin-start">5</property>
+                        <property name="receives-default">1</property>
+                        <signal name="clicked" handler="on_btnGrabAnother_clicked"/>
                       </object>
                     </child>
                   </object>
@@ -107,6 +100,12 @@
             </child>
           </object>
         </child>
+      </object>
+    </property>
+    <property name="orientation">vertical</property>
+    <property name="start-widget">
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
       </object>
     </property>
   </object>

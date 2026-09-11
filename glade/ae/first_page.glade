@@ -1,44 +1,22 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <!-- interface-name first_page.glade -->
+  <requires lib="gtk" version="4.14"/>
   <object class="GtkGrid" id="first_page">
     <child>
       <object class="GtkLabel" id="lblMarkup">
-        <property name="margin-start">20</property>
         <property name="label" translatable="yes">(markup goes here)</property>
+        <property name="margin-start">20</property>
         <property name="use-markup">1</property>
         <property name="xalign">0</property>
         <property name="yalign">0</property>
-        <signal name="activate-link" handler="on_lblMarkup_activate_link" swapped="no"/>
+        <signal name="activate-link" handler="on_lblMarkup_activate_link"/>
         <layout>
           <property name="column">0</property>
           <property name="row">0</property>
         </layout>
       </object>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
     </child>
   </object>
 </interface>

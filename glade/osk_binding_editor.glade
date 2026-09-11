@@ -1,23 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <!-- interface-name osk_binding_editor.glade -->
+  <requires lib="gtk" version="4.14"/>
   <object class="GtkWindow" id="Dialog">
-    <property name="resizable">0</property>
-    <property name="modal">1</property>
-    <property name="destroy-with-parent">1</property>
-    <child>
-      <object class="GtkEventControllerKey">
-        <signal name="key-pressed" handler="on_window_key_press_event" swapped="no"/>
-      </object>
-    </child>
     <property name="child">
       <object class="GtkGrid" id="gruid7">
-        <property name="margin-start">20</property>
-        <property name="margin-end">20</property>
-        <property name="margin-top">20</property>
-        <property name="margin-bottom">20</property>
-        <property name="row-spacing">2</property>
         <property name="column-spacing">20</property>
+        <property name="margin-bottom">20</property>
+        <property name="margin-end">20</property>
+        <property name="margin-start">20</property>
+        <property name="margin-top">20</property>
+        <property name="row-spacing">2</property>
         <child>
           <object class="GtkLabel" id="grid8">
             <property name="label" translatable="yes">A</property>
@@ -60,8 +54,8 @@
         </child>
         <child>
           <object class="GtkLabel" id="label12">
-            <property name="margin-top">10</property>
             <property name="label" translatable="yes">Back</property>
+            <property name="margin-top">10</property>
             <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
@@ -81,8 +75,8 @@
         </child>
         <child>
           <object class="GtkLabel" id="label14">
-            <property name="margin-top">10</property>
             <property name="label" translatable="yes">Left Trigger</property>
+            <property name="margin-top">10</property>
             <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
@@ -102,8 +96,8 @@
         </child>
         <child>
           <object class="GtkLabel" id="label16">
-            <property name="margin-top">10</property>
             <property name="label" translatable="yes">Right Trigger</property>
+            <property name="margin-top">10</property>
             <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
@@ -123,13 +117,10 @@
         </child>
         <child>
           <object class="GtkButton" id="btA">
-            <property name="width-request">300</property>
             <property name="focusable">1</property>
-            <property name="receives-default">1</property>
             <property name="hexpand">1</property>
-            <child>
-              <placeholder/>
-            </child>
+            <property name="receives-default">1</property>
+            <property name="width-request">300</property>
             <layout>
               <property name="column">1</property>
               <property name="row">0</property>
@@ -139,11 +130,8 @@
         <child>
           <object class="GtkButton" id="btB">
             <property name="focusable">1</property>
-            <property name="receives-default">1</property>
             <property name="hexpand">1</property>
-            <child>
-              <placeholder/>
-            </child>
+            <property name="receives-default">1</property>
             <layout>
               <property name="column">1</property>
               <property name="row">1</property>
@@ -153,11 +141,8 @@
         <child>
           <object class="GtkButton" id="btX">
             <property name="focusable">1</property>
-            <property name="receives-default">1</property>
             <property name="hexpand">1</property>
-            <child>
-              <placeholder/>
-            </child>
+            <property name="receives-default">1</property>
             <layout>
               <property name="column">1</property>
               <property name="row">2</property>
@@ -167,11 +152,8 @@
         <child>
           <object class="GtkButton" id="btY">
             <property name="focusable">1</property>
-            <property name="receives-default">1</property>
             <property name="hexpand">1</property>
-            <child>
-              <placeholder/>
-            </child>
+            <property name="receives-default">1</property>
             <layout>
               <property name="column">1</property>
               <property name="row">3</property>
@@ -181,11 +163,8 @@
         <child>
           <object class="GtkButton" id="btSTART">
             <property name="focusable">1</property>
-            <property name="receives-default">1</property>
             <property name="hexpand">1</property>
-            <child>
-              <placeholder/>
-            </child>
+            <property name="receives-default">1</property>
             <layout>
               <property name="column">1</property>
               <property name="row">6</property>
@@ -195,12 +174,9 @@
         <child>
           <object class="GtkButton" id="btBACK">
             <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <property name="margin-top">10</property>
             <property name="hexpand">1</property>
-            <child>
-              <placeholder/>
-            </child>
+            <property name="margin-top">10</property>
+            <property name="receives-default">1</property>
             <layout>
               <property name="column">1</property>
               <property name="row">4</property>
@@ -210,12 +186,9 @@
         <child>
           <object class="GtkButton" id="btLT">
             <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <property name="margin-top">10</property>
             <property name="hexpand">1</property>
-            <child>
-              <placeholder/>
-            </child>
+            <property name="margin-top">10</property>
+            <property name="receives-default">1</property>
             <layout>
               <property name="column">1</property>
               <property name="row">7</property>
@@ -225,12 +198,9 @@
         <child>
           <object class="GtkButton" id="btRT">
             <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <property name="margin-top">10</property>
             <property name="hexpand">1</property>
-            <child>
-              <placeholder/>
-            </child>
+            <property name="margin-top">10</property>
+            <property name="receives-default">1</property>
             <layout>
               <property name="column">1</property>
               <property name="row">9</property>
@@ -240,11 +210,8 @@
         <child>
           <object class="GtkButton" id="btLB">
             <property name="focusable">1</property>
-            <property name="receives-default">1</property>
             <property name="hexpand">1</property>
-            <child>
-              <placeholder/>
-            </child>
+            <property name="receives-default">1</property>
             <layout>
               <property name="column">1</property>
               <property name="row">8</property>
@@ -254,11 +221,8 @@
         <child>
           <object class="GtkButton" id="btRB">
             <property name="focusable">1</property>
-            <property name="receives-default">1</property>
             <property name="hexpand">1</property>
-            <child>
-              <placeholder/>
-            </child>
+            <property name="receives-default">1</property>
             <layout>
               <property name="column">1</property>
               <property name="row">10</property>
@@ -277,13 +241,10 @@
         </child>
         <child>
           <object class="GtkButton" id="btC">
-            <property name="sensitive">0</property>
             <property name="focusable">1</property>
-            <property name="receives-default">1</property>
             <property name="hexpand">1</property>
-            <child>
-              <placeholder/>
-            </child>
+            <property name="receives-default">1</property>
+            <property name="sensitive">0</property>
             <layout>
               <property name="column">1</property>
               <property name="row">5</property>
@@ -292,8 +253,8 @@
         </child>
         <child>
           <object class="GtkLabel" id="label2">
-            <property name="margin-top">10</property>
             <property name="label" translatable="yes">Stick Movement</property>
+            <property name="margin-top">10</property>
             <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
@@ -304,12 +265,9 @@
         <child>
           <object class="GtkButton" id="btLSTICK">
             <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <property name="margin-top">10</property>
             <property name="hexpand">1</property>
-            <child>
-              <placeholder/>
-            </child>
+            <property name="margin-top">10</property>
+            <property name="receives-default">1</property>
             <layout>
               <property name="column">1</property>
               <property name="row">11</property>
@@ -318,8 +276,8 @@
         </child>
         <child>
           <object class="GtkLabel" id="label1">
-            <property name="margin-top">10</property>
             <property name="label" translatable="yes">Stick Press</property>
+            <property name="margin-top">10</property>
             <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
@@ -330,56 +288,20 @@
         <child>
           <object class="GtkButton" id="btLSTICKPRESS">
             <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <property name="margin-top">10</property>
             <property name="hexpand">1</property>
+            <property name="margin-top">10</property>
+            <property name="receives-default">1</property>
             <layout>
               <property name="column">1</property>
               <property name="row">12</property>
             </layout>
           </object>
         </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
       </object>
     </property>
+    <property name="destroy-with-parent">1</property>
+    <property name="modal">1</property>
+    <property name="resizable">0</property>
     <property name="titlebar">
       <object class="GtkHeaderBar" id="header3">
         <property name="title-widget">
@@ -390,10 +312,12 @@
             </style>
           </object>
         </property>
-        <child>
-          <placeholder/>
-        </child>
       </object>
     </property>
+    <child>
+      <object class="GtkEventControllerKey">
+        <signal name="key-pressed" handler="on_window_key_press_event"/>
+      </object>
+    </child>
   </object>
 </interface>

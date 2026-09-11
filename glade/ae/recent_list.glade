@@ -1,29 +1,31 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <!-- interface-name recent_list.glade -->
+  <requires lib="gtk" version="4.14"/>
   <object class="GtkAdjustment" id="adjNumOfProfiles">
     <property name="lower">2</property>
+    <property name="page-increment">10</property>
+    <property name="step-increment">1</property>
     <property name="upper">10</property>
     <property name="value">2</property>
-    <property name="step-increment">1</property>
-    <property name="page-increment">10</property>
   </object>
   <object class="GtkGrid" id="recent_list">
-    <property name="margin-start">20</property>
-    <property name="margin-end">20</property>
-    <property name="margin-top">10</property>
-    <property name="margin-bottom">10</property>
     <property name="hexpand">1</property>
+    <property name="margin-bottom">10</property>
+    <property name="margin-end">20</property>
+    <property name="margin-start">20</property>
+    <property name="margin-top">10</property>
     <property name="vexpand">1</property>
     <child>
       <object class="GtkLabel" id="lbl67">
-        <property name="margin-end">10</property>
-        <property name="hexpand">1</property>
-        <property name="label" translatable="yes">Number of Profiles to Display</property>
-        <property name="xalign">0</property>
         <property name="attributes">
           0 -1 weight bold
         </property>
+        <property name="hexpand">1</property>
+        <property name="label" translatable="yes">Number of Profiles to Display</property>
+        <property name="margin-end">10</property>
+        <property name="xalign">0</property>
         <layout>
           <property name="column">0</property>
           <property name="row">0</property>
@@ -32,35 +34,14 @@
     </child>
     <child>
       <object class="GtkSpinButton" id="sclNumOfProfiles">
-        <property name="width-request">150</property>
-        <property name="focusable">1</property>
         <property name="adjustment">adjNumOfProfiles</property>
+        <property name="focusable">1</property>
+        <property name="width-request">150</property>
         <layout>
           <property name="column">1</property>
           <property name="row">0</property>
         </layout>
       </object>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
     </child>
   </object>
 </interface>

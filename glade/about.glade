@@ -1,22 +1,22 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.1.0 -->
 <interface domain="">
-  <requires lib="gtk" version="4.0"/>
+  <!-- interface-name about.glade -->
+  <requires lib="gtk" version="4.14"/>
   <object class="GtkDialog" id="Dialog">
-    <property name="title" translatable="yes">About SC Controller</property>
-    <signal name="response" handler="on_dialog_response" swapped="no"/>
     <property name="child">
       <object class="GtkBox" id="vb1">
-        <property name="visible">1</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
+        <property name="visible">1</property>
         <child>
           <object class="GtkBox" id="vb3">
-            <property name="vexpand">1</property>
-            <property name="margin-start">50</property>
-            <property name="margin-end">50</property>
-            <property name="margin-top">10</property>
             <property name="margin-bottom">10</property>
+            <property name="margin-end">50</property>
+            <property name="margin-start">50</property>
+            <property name="margin-top">10</property>
             <property name="orientation">vertical</property>
+            <property name="vexpand">1</property>
             <child>
               <object class="GtkPicture" id="image1">
                 <property name="content-fit">scale-down</property>
@@ -26,30 +26,30 @@
             </child>
             <child>
               <object class="GtkLabel" id="label1">
+                <property name="justify">center</property>
                 <property name="label" translatable="yes">&lt;span size="large"&gt;&lt;b&gt;SC Controller&lt;/b&gt;&lt;/span&gt;</property>
                 <property name="use-markup">1</property>
-                <property name="justify">center</property>
               </object>
             </child>
             <child>
               <object class="GtkLabel" id="lblVersion">
-                <property name="margin-top">5</property>
-                <property name="margin-bottom">10</property>
                 <property name="label" translatable="yes">(version)</property>
+                <property name="margin-bottom">10</property>
+                <property name="margin-top">5</property>
               </object>
             </child>
             <child>
               <object class="GtkLabel" id="label4">
-                <property name="margin-bottom">20</property>
-                <property name="label" translatable="yes">User-mode driver and GTK4 based GUI for the Steam Controller, DS4 and similar controllers</property>
-                <property name="use-markup">1</property>
                 <property name="justify">center</property>
+                <property name="label" translatable="yes">User-mode driver and GTK4 based GUI for the Steam Controller, DS4 and similar controllers</property>
+                <property name="margin-bottom">20</property>
+                <property name="use-markup">1</property>
               </object>
             </child>
             <child>
               <object class="GtkLabel" id="label3">
                 <property name="focusable">1</property>
-                <property name="margin-bottom">25</property>
+                <property name="justify">center</property>
                 <property name="label" translatable="yes">
 &lt;b&gt;Code&amp;amp;UI © 2016-2023 Kozec&lt;/b&gt;
 &lt;b&gt;Python 3 port&amp;amp;Maintenance © 2020-2024 Ryochan7&lt;/b&gt;
@@ -62,20 +62,20 @@ If you like what I am doing, you can become a supporter on &lt;a href="https://k
 Donation links for Kozec, who is the original developer, can be found &lt;a href="https://github.com/kozec/sc-controller?tab=readme-ov-file#like-what-im-doing"&gt;here&lt;/a&gt;
 
 </property>
+                <property name="margin-bottom">25</property>
                 <property name="use-markup">1</property>
-                <property name="justify">center</property>
                 <property name="yalign">0</property>
               </object>
             </child>
             <child>
               <object class="GtkLabel" id="label2">
-                <property name="vexpand">1</property>
                 <property name="focusable">1</property>
-                <property name="margin-top">10</property>
+                <property name="justify">center</property>
                 <property name="label" translatable="yes">&lt;small&gt;This program comes with absolutely no warranty.
 See the &lt;a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html"&gt;GNU General Public License, version 2&lt;/a&gt; for details.&lt;/small&gt;</property>
+                <property name="margin-top">10</property>
                 <property name="use-markup">1</property>
-                <property name="justify">center</property>
+                <property name="vexpand">1</property>
                 <property name="yalign">1</property>
               </object>
             </child>
@@ -83,9 +83,6 @@ See the &lt;a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html"&gt;GN
         </child>
         <child>
           <object class="GtkButton" id="btnClose">
-            <property name="halign">end</property>
-            <property name="margin-end">10</property>
-            <property name="margin-bottom">10</property>
             <property name="child">
               <object class="GtkBox">
                 <property name="spacing">6</property>
@@ -103,11 +100,16 @@ See the &lt;a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html"&gt;GN
               </object>
             </property>
             <property name="focusable">1</property>
+            <property name="halign">end</property>
+            <property name="margin-bottom">10</property>
+            <property name="margin-end">10</property>
             <property name="receives-default">1</property>
-            <signal name="clicked" handler="on_dialog_response" swapped="no"/>
+            <signal name="clicked" handler="on_dialog_response"/>
           </object>
         </child>
       </object>
     </property>
+    <property name="title" translatable="yes">About SC Controller</property>
+    <signal name="response" handler="on_dialog_response"/>
   </object>
 </interface>

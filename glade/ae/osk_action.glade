@@ -1,6 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <!-- interface-name osk_action.glade -->
+  <requires lib="gtk" version="4.14"/>
   <object class="GtkListStore" id="lstActionType">
     <columns>
       <column type="gchararray"/>
@@ -53,24 +55,25 @@
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkLabel" id="label5">
-        <property name="margin-top">10</property>
-        <property name="margin-bottom">10</property>
-        <property name="label" translatable="yes">Action</property>
-        <property name="xalign">0</property>
         <property name="attributes">
           0 -1 weight bold
         </property>
+        <property name="label" translatable="yes">Action</property>
+        <property name="margin-bottom">10</property>
+        <property name="margin-top">10</property>
+        <property name="xalign">0</property>
       </object>
     </child>
     <child>
       <object class="GtkComboBox" id="cbActionType">
-        <property name="margin-start">10</property>
-        <property name="margin-end">10</property>
-        <property name="model">lstActionType</property>
         <property name="active">0</property>
-        <signal name="changed" handler="on_cbActionType_changed" swapped="no"/>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <property name="model">lstActionType</property>
+        <signal name="changed" handler="on_cbActionType_changed"/>
         <child>
           <object class="GtkCellRendererText" id="text"/>
+          <!-- Custom child fragments -->
           <attributes>
             <attribute name="text">1</attribute>
           </attributes>

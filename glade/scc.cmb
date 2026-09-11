@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<!DOCTYPE cambalache-project SYSTEM "cambalache-project.dtd">
+<!-- Created with Cambalache 1.1.0 -->
+<cambalache-project version="1.0.0" target_tk="gtk-4.0">
+  <ui filename="about.glade"/>
+  <ui filename="action_editor.glade"/>
+  <ui filename="app.glade"/>
+  <ui filename="controller_settings.glade"/>
+  <ui filename="creg.glade"/>
+  <ui filename="global_settings.glade"/>
+  <ui filename="icon_chooser.glade"/>
+  <ui filename="import_export.glade"/>
+  <ui filename="key_grabber.glade"/>
+  <ui filename="macro_editor.glade"/>
+  <ui filename="menu_editor.glade"/>
+  <ui filename="modeshift_editor.glade"/>
+  <ui filename="osk_binding_editor.glade"/>
+  <ui filename="ring_editor.glade"/>
+  <ui filename="simple_chooser.glade"/>
+  <ui filename="ae/axis_action.glade"/>
+  <ui filename="ae/axis.glade"/>
+  <ui filename="ae/buttons.glade"/>
+  <ui filename="ae/custom.glade"/>
+  <ui filename="ae/dpad.glade"/>
+  <ui filename="ae/first_page.glade"/>
+  <ui filename="ae/gesture.glade"/>
+  <ui filename="ae/gyro_action.glade"/>
+  <ui filename="ae/gyro.glade"/>
+  <ui filename="ae/menu_only.glade"/>
+  <ui filename="ae/osk_action.glade"/>
+  <ui filename="ae/per_axis.glade"/>
+  <ui filename="ae/recent_list.glade"/>
+  <ui filename="ae/special_action.glade"/>
+  <ui filename="ae/tilt.glade"/>
+  <ui filename="ae/trigger.glade"/>
+</cambalache-project>

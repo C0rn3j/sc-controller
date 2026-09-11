@@ -1,6 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <!-- interface-name icon_chooser.glade -->
+  <requires lib="gtk" version="4.14"/>
   <object class="GtkListStore" id="lstDirs">
     <columns>
       <column type="gchararray"/>
@@ -15,57 +17,41 @@
     </columns>
   </object>
   <object class="GtkWindow" id="Dialog">
-    <property name="default-widget">btOK</property>
-    <property name="width-request">650</property>
-    <property name="destroy-with-parent">1</property>
-    <child>
-      <object class="GtkEventControllerKey">
-        <signal name="key-pressed" handler="on_window_key_press_event" swapped="no"/>
-      </object>
-    </child>
     <property name="child">
       <object class="GtkBox" id="iHateUselessIDs">
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkGrid" id="grid1">
-            <property name="margin-start">10</property>
-            <property name="margin-end">10</property>
-            <property name="margin-top">10</property>
-            <property name="margin-bottom">5</property>
             <property name="column-homogeneous">1</property>
+            <property name="margin-bottom">5</property>
+            <property name="margin-end">10</property>
+            <property name="margin-start">10</property>
+            <property name="margin-top">10</property>
             <child>
               <object class="GtkEntry" id="entName">
-                <property name="focusable">1</property>
-                <property name="margin-bottom">2</property>
-                <property name="hexpand">1</property>
-                <property name="editable">0</property>
                 <property name="activates-default">1</property>
-                <signal name="changed" handler="on_entName_changed" swapped="no"/>
+                <property name="editable">0</property>
+                <property name="focusable">1</property>
+                <property name="hexpand">1</property>
+                <property name="margin-bottom">2</property>
+                <signal name="changed" handler="on_entName_changed"/>
                 <layout>
                   <property name="column">0</property>
-                  <property name="row">0</property>
                   <property name="column-span">3</property>
+                  <property name="row">0</property>
                 </layout>
               </object>
             </child>
             <child>
               <object class="GtkScrolledWindow" id="swIcons">
-                <property name="name">sw</property>
-                <property name="height-request">400</property>
-                <property name="focusable">1</property>
-                <property name="margin-start">5</property>
-                <property name="margin-top">5</property>
-                <property name="hexpand">1</property>
-                <property name="vexpand">1</property>
-                <property name="has-frame">1</property>
                 <property name="child">
                   <object class="GtkTreeView" id="tvIcons">
                     <property name="focusable">1</property>
-                    <property name="model">lstIcons</property>
                     <property name="headers-clickable">0</property>
+                    <property name="model">lstIcons</property>
                     <property name="rubber-banding">1</property>
-                    <signal name="cursor-changed" handler="on_tvItems_cursor_changed" swapped="no"/>
-                    <signal name="row-activated" handler="on_btOk_clicked" swapped="no"/>
+                    <signal name="cursor-changed" handler="on_tvItems_cursor_changed"/>
+                    <signal name="row-activated" handler="on_btOk_clicked"/>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection" id="tsIcons"/>
                     </child>
@@ -74,6 +60,7 @@
                         <property name="title" translatable="yes">Icon</property>
                         <child>
                           <object class="GtkCellRendererText" id="crIconName"/>
+                          <!-- Custom child fragments -->
                           <attributes>
                             <attribute name="text">0</attribute>
                           </attributes>
@@ -82,26 +69,30 @@
                     </child>
                   </object>
                 </property>
+                <property name="focusable">1</property>
+                <property name="has-frame">1</property>
+                <property name="height-request">400</property>
+                <property name="hexpand">1</property>
+                <property name="margin-start">5</property>
+                <property name="margin-top">5</property>
+                <property name="name">sw</property>
+                <property name="vexpand">1</property>
                 <layout>
                   <property name="column">1</property>
-                  <property name="row">1</property>
                   <property name="column-span">2</property>
+                  <property name="row">1</property>
                 </layout>
               </object>
             </child>
             <child>
               <object class="GtkScrolledWindow" id="swCategories">
-                <property name="focusable">1</property>
-                <property name="margin-end">5</property>
-                <property name="margin-top">5</property>
-                <property name="has-frame">1</property>
                 <property name="child">
                   <object class="GtkTreeView" id="tvCategories">
                     <property name="focusable">1</property>
-                    <property name="model">lstDirs</property>
                     <property name="headers-clickable">0</property>
+                    <property name="model">lstDirs</property>
                     <property name="rubber-banding">1</property>
-                    <signal name="cursor-changed" handler="on_tvCategories_cursor_changed" swapped="no"/>
+                    <signal name="cursor-changed" handler="on_tvCategories_cursor_changed"/>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection" id="tsCategories"/>
                     </child>
@@ -110,6 +101,7 @@
                         <property name="title" translatable="yes">Category</property>
                         <child>
                           <object class="GtkCellRendererText" id="crCategory"/>
+                          <!-- Custom child fragments -->
                           <attributes>
                             <attribute name="text">1</attribute>
                           </attributes>
@@ -118,37 +110,34 @@
                     </child>
                   </object>
                 </property>
+                <property name="focusable">1</property>
+                <property name="has-frame">1</property>
+                <property name="margin-end">5</property>
+                <property name="margin-top">5</property>
                 <layout>
                   <property name="column">0</property>
                   <property name="row">1</property>
                 </layout>
               </object>
             </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
           </object>
         </child>
         <child>
           <object class="GtkRevealer" id="rvLicense">
-            <property name="margin-start">10</property>
-            <property name="margin-end">10</property>
-            <property name="margin-bottom">5</property>
             <property name="child">
               <object class="GtkLabel" id="lblLicense">
                 <property name="xalign">0</property>
               </object>
             </property>
+            <property name="margin-bottom">5</property>
+            <property name="margin-end">10</property>
+            <property name="margin-start">10</property>
           </object>
         </child>
       </object>
     </property>
+    <property name="default-widget">btOK</property>
+    <property name="destroy-with-parent">1</property>
     <property name="titlebar">
       <object class="GtkHeaderBar" id="header">
         <property name="title-widget">
@@ -161,14 +150,14 @@
         </property>
         <child>
           <object class="GtkLinkButton" id="btUserFolder">
-            <property name="label" translatable="yes">button</property>
             <property name="focusable">1</property>
+            <property name="label" translatable="yes">button</property>
             <property name="receives-default">1</property>
+            <property name="uri">file:///</property>
+            <signal name="activate-link" handler="on_btUserFolder_activate_link"/>
             <style>
               <class name="flat"/>
             </style>
-            <property name="uri">file:///</property>
-            <signal name="activate-link" handler="on_btUserFolder_activate_link" swapped="no"/>
           </object>
         </child>
         <child type="end">
@@ -191,7 +180,7 @@
             </property>
             <property name="focusable">1</property>
             <property name="receives-default">1</property>
-            <signal name="clicked" handler="on_btOk_clicked" swapped="no"/>
+            <signal name="clicked" handler="on_btOk_clicked"/>
             <style>
               <class name="suggested-action"/>
             </style>
@@ -199,5 +188,11 @@
         </child>
       </object>
     </property>
+    <property name="width-request">650</property>
+    <child>
+      <object class="GtkEventControllerKey">
+        <signal name="key-pressed" handler="on_window_key_press_event"/>
+      </object>
+    </child>
   </object>
 </interface>

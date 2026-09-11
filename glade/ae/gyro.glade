@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <!-- interface-name gyro.glade -->
+  <requires lib="gtk" version="4.14"/>
   <object class="GtkAdjustment" id="adjSoftLevel">
     <property name="lower">0.01</property>
+    <property name="page-increment">0.01</property>
+    <property name="step-increment">0.01</property>
     <property name="upper">1</property>
     <property name="value">0.69999999999999996</property>
-    <property name="step-increment">0.01</property>
-    <property name="page-increment">0.01</property>
   </object>
   <object class="GtkListStore" id="lstGyroButton">
     <columns>
@@ -15,25 +17,21 @@
     </columns>
   </object>
   <object class="GtkBox" id="gyro">
-    <property name="margin-start">30</property>
     <property name="margin-end">30</property>
+    <property name="margin-start">30</property>
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkGrid" id="whatthefuckubuntu">
-        <property name="row-spacing">2</property>
         <property name="column-spacing">10</property>
+        <property name="row-spacing">2</property>
         <child>
           <object class="GtkButton" id="btPitch">
-            <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <property name="hexpand">1</property>
-            <signal name="clicked" handler="on_select_axis" swapped="no"/>
             <property name="child">
               <object class="GtkBox" id="box8">
                 <child>
                   <object class="GtkLabel" id="label6">
-                    <property name="width-request">100</property>
                     <property name="label" translatable="yes">Pitch</property>
+                    <property name="width-request">100</property>
                     <property name="xalign">0</property>
                   </object>
                 </child>
@@ -48,6 +46,10 @@
                 </child>
               </object>
             </property>
+            <property name="focusable">1</property>
+            <property name="hexpand">1</property>
+            <property name="receives-default">1</property>
+            <signal name="clicked" handler="on_select_axis"/>
             <layout>
               <property name="column">0</property>
               <property name="row">0</property>
@@ -56,16 +58,12 @@
         </child>
         <child>
           <object class="GtkButton" id="btYaw">
-            <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <property name="hexpand">1</property>
-            <signal name="clicked" handler="on_select_axis" swapped="no"/>
             <property name="child">
               <object class="GtkBox" id="box9">
                 <child>
                   <object class="GtkLabel" id="label8">
-                    <property name="width-request">100</property>
                     <property name="label" translatable="yes">Yaw</property>
+                    <property name="width-request">100</property>
                     <property name="xalign">0</property>
                   </object>
                 </child>
@@ -80,6 +78,10 @@
                 </child>
               </object>
             </property>
+            <property name="focusable">1</property>
+            <property name="hexpand">1</property>
+            <property name="receives-default">1</property>
+            <signal name="clicked" handler="on_select_axis"/>
             <layout>
               <property name="column">0</property>
               <property name="row">1</property>
@@ -88,16 +90,12 @@
         </child>
         <child>
           <object class="GtkButton" id="btRoll">
-            <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <property name="hexpand">1</property>
-            <signal name="clicked" handler="on_select_axis" swapped="no"/>
             <property name="child">
               <object class="GtkBox" id="box1">
                 <child>
                   <object class="GtkLabel" id="label1">
-                    <property name="width-request">100</property>
                     <property name="label" translatable="yes">Roll</property>
+                    <property name="width-request">100</property>
                     <property name="xalign">0</property>
                   </object>
                 </child>
@@ -112,6 +110,10 @@
                 </child>
               </object>
             </property>
+            <property name="focusable">1</property>
+            <property name="hexpand">1</property>
+            <property name="receives-default">1</property>
+            <signal name="clicked" handler="on_select_axis"/>
             <layout>
               <property name="column">0</property>
               <property name="row">2</property>
@@ -120,9 +122,9 @@
         </child>
         <child>
           <object class="GtkCheckButton" id="cbPitchAbs">
-            <property name="label" translatable="yes">Absolute</property>
             <property name="focusable">1</property>
-            <signal name="toggled" handler="on_abs_changed" swapped="no"/>
+            <property name="label" translatable="yes">Absolute</property>
+            <signal name="toggled" handler="on_abs_changed"/>
             <layout>
               <property name="column">1</property>
               <property name="row">0</property>
@@ -131,9 +133,9 @@
         </child>
         <child>
           <object class="GtkCheckButton" id="cbYawAbs">
-            <property name="label" translatable="yes">Absolute</property>
             <property name="focusable">1</property>
-            <signal name="toggled" handler="on_abs_changed" swapped="no"/>
+            <property name="label" translatable="yes">Absolute</property>
+            <signal name="toggled" handler="on_abs_changed"/>
             <layout>
               <property name="column">1</property>
               <property name="row">1</property>
@@ -142,23 +144,14 @@
         </child>
         <child>
           <object class="GtkCheckButton" id="cbRollAbs">
-            <property name="label" translatable="yes">Absolute</property>
             <property name="focusable">1</property>
-            <signal name="toggled" handler="on_abs_changed" swapped="no"/>
+            <property name="label" translatable="yes">Absolute</property>
+            <signal name="toggled" handler="on_abs_changed"/>
             <layout>
               <property name="column">1</property>
               <property name="row">2</property>
             </layout>
           </object>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
         </child>
       </object>
     </child>
@@ -168,21 +161,22 @@
         <property name="spacing">10</property>
         <child>
           <object class="GtkLabel" id="lblGyroEnable">
-            <property name="label" translatable="yes">Gyro Enable Button</property>
-            <property name="xalign">0</property>
             <property name="attributes">
               0 -1 weight bold
             </property>
+            <property name="label" translatable="yes">Gyro Enable Button</property>
+            <property name="xalign">0</property>
           </object>
         </child>
         <child>
           <object class="GtkComboBox" id="cbGyroButton">
+            <property name="active">1</property>
             <property name="hexpand">1</property>
             <property name="model">lstGyroButton</property>
-            <property name="active">1</property>
-            <signal name="changed" handler="send" swapped="no"/>
+            <signal name="changed" handler="send"/>
             <child>
               <object class="GtkCellRendererText" id="text2"/>
+              <!-- Custom child fragments -->
               <attributes>
                 <attribute name="text">1</attribute>
               </attributes>
@@ -193,45 +187,45 @@
     </child>
     <child>
       <object class="GtkRevealer" id="rvSoftLevel">
-        <property name="margin-top">5</property>
-        <property name="margin-bottom">10</property>
         <property name="child">
           <object class="GtkBox" id="vbSoftLevel">
             <child>
               <object class="GtkLabel" id="lblSoftLevel">
-                <property name="margin-start">20</property>
                 <property name="label" translatable="yes">Trigger Pull Level</property>
+                <property name="margin-start">20</property>
               </object>
             </child>
             <child>
               <object class="GtkScale" id="sclSoftLevel">
-                <property name="draw-value">1</property>
-                <property name="hexpand">1</property>
-                <property name="focusable">1</property>
-                <property name="margin-start">5</property>
-                <property name="margin-end">20</property>
                 <property name="adjustment">adjSoftLevel</property>
+                <property name="draw-value">1</property>
+                <property name="focusable">1</property>
+                <property name="hexpand">1</property>
+                <property name="margin-end">20</property>
+                <property name="margin-start">5</property>
                 <property name="round-digits">2</property>
                 <property name="value-pos">right</property>
-                <signal name="value-changed" handler="send" swapped="no"/>
+                <signal name="value-changed" handler="send"/>
               </object>
             </child>
           </object>
         </property>
+        <property name="margin-bottom">10</property>
+        <property name="margin-top">5</property>
       </object>
     </child>
     <child>
       <object class="GtkCheckButton" id="cbInvertGyro">
-        <property name="focusable">1</property>
-        <signal name="toggled" handler="on_cbInvertGyro_toggled" swapped="no"/>
         <property name="child">
           <object class="GtkLabel" id="label9414">
-            <property name="label" translatable="yes">Button disables Gyro</property>
             <property name="attributes">
               0 -1 weight bold
             </property>
+            <property name="label" translatable="yes">Button disables Gyro</property>
           </object>
         </property>
+        <property name="focusable">1</property>
+        <signal name="toggled" handler="on_cbInvertGyro_toggled"/>
       </object>
     </child>
   </object>

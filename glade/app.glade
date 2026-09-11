@@ -1,16 +1,16 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <!-- interface-name app.glade -->
+  <requires lib="gio" version="2.0"/>
+  <requires lib="gtk" version="4.14"/>
   <object class="GtkWindow" id="OsdmodeMappings">
-    <property name="resizable">0</property>
-    <property name="decorated">0</property>
-    <property name="deletable">0</property>
     <property name="child">
       <object class="GtkBox" id="vb86">
-        <property name="margin-start">7</property>
-        <property name="margin-end">7</property>
-        <property name="margin-top">7</property>
         <property name="margin-bottom">7</property>
+        <property name="margin-end">7</property>
+        <property name="margin-start">7</property>
+        <property name="margin-top">7</property>
         <child>
           <object class="GtkBox" id="vbOsdmodeExit">
             <property name="width-request">75</property>
@@ -22,11 +22,11 @@
             </child>
             <child>
               <object class="GtkLabel" id="lblOsdmodeExit">
-                <property name="label" translatable="yes">Exit</property>
                 <property name="attributes">
                   0 -1 weight bold
                   0 -1 scale 1.5
                 </property>
+                <property name="label" translatable="yes">Exit</property>
               </object>
             </child>
           </object>
@@ -43,11 +43,11 @@
             </child>
             <child>
               <object class="GtkLabel" id="lblOsdmodeAct">
-                <property name="label" translatable="yes">Activate</property>
                 <property name="attributes">
                   0 -1 weight bold
                   0 -1 scale 1.5
                 </property>
+                <property name="label" translatable="yes">Activate</property>
               </object>
             </child>
           </object>
@@ -63,11 +63,11 @@
             </child>
             <child>
               <object class="GtkLabel" id="lblOsdmodeOK">
-                <property name="label" translatable="yes">OK</property>
                 <property name="attributes">
                   0 -1 weight bold
                   0 -1 scale 1.5
                 </property>
+                <property name="label" translatable="yes">OK</property>
               </object>
             </child>
           </object>
@@ -84,11 +84,11 @@
             </child>
             <child>
               <object class="GtkLabel" id="lblOsdmodeClose">
-                <property name="label" translatable="yes">Close</property>
                 <property name="attributes">
                   0 -1 weight bold
                   0 -1 scale 1.5
                 </property>
+                <property name="label" translatable="yes">Close</property>
               </object>
             </child>
           </object>
@@ -104,11 +104,11 @@
             </child>
             <child>
               <object class="GtkLabel" id="lblOsdmodeSave">
-                <property name="label" translatable="yes">Save</property>
                 <property name="attributes">
                   0 -1 weight bold
                   0 -1 scale 1.5
                 </property>
+                <property name="label" translatable="yes">Save</property>
               </object>
             </child>
           </object>
@@ -125,24 +125,23 @@
         </child>
       </object>
     </property>
+    <property name="decorated">0</property>
+    <property name="deletable">0</property>
+    <property name="resizable">0</property>
   </object>
   <object class="GtkTextBuffer" id="buffProfileDescription">
-    <signal name="changed" handler="on_buffProfileDescription_changed" swapped="no"/>
+    <signal name="changed" handler="on_buffProfileDescription_changed"/>
   </object>
   <object class="GtkDialog" id="dlgNewProfile">
-    <property name="width-request">600</property>
-    <property name="resizable">0</property>
-    <property name="modal">1</property>
-    <signal name="close-request" handler="undeletable_dialog" swapped="no"/>
     <property name="child">
       <object class="GtkBox" id="dialog-vbox1">
-        <property name="visible">1</property>
-        <property name="margin-start">18</property>
-        <property name="margin-end">18</property>
-        <property name="margin-top">18</property>
         <property name="margin-bottom">18</property>
+        <property name="margin-end">18</property>
+        <property name="margin-start">18</property>
+        <property name="margin-top">18</property>
         <property name="orientation">vertical</property>
         <property name="spacing">12</property>
+        <property name="visible">1</property>
         <child>
           <object class="GtkBox" id="profileNameBox">
             <property name="orientation">vertical</property>
@@ -156,7 +155,7 @@
             <child>
               <object class="GtkEntry" id="txNewProfile">
                 <property name="focusable">1</property>
-                <signal name="changed" handler="on_txNewProfile_changed" swapped="no"/>
+                <signal name="changed" handler="on_txNewProfile_changed"/>
               </object>
             </child>
           </object>
@@ -166,24 +165,26 @@
             <property name="homogeneous">1</property>
             <child>
               <object class="GtkCheckButton" id="rbNewProfile">
-                <property name="label" translatable="yes">Empty profile</property>
-                <property name="focusable">1</property>
                 <property name="active">1</property>
-                <signal name="toggled" handler="on_rbNewProfile_group_changed" swapped="no"/>
+                <property name="focusable">1</property>
+                <property name="label" translatable="yes">Empty profile</property>
+                <signal name="toggled" handler="on_rbNewProfile_group_changed"/>
               </object>
             </child>
             <child>
               <object class="GtkCheckButton" id="rbCopyProfile">
-                <property name="label" translatable="yes">Copy current profile</property>
                 <property name="focusable">1</property>
                 <property name="group">rbNewProfile</property>
-                <signal name="toggled" handler="on_rbNewProfile_group_changed" swapped="no"/>
+                <property name="label" translatable="yes">Copy current profile</property>
+                <signal name="toggled" handler="on_rbNewProfile_group_changed"/>
               </object>
             </child>
           </object>
         </child>
       </object>
     </property>
+    <property name="modal">1</property>
+    <property name="resizable">0</property>
     <property name="titlebar">
       <object class="GtkHeaderBar" id="headerbar2">
         <property name="title-widget">
@@ -214,7 +215,7 @@
             </property>
             <property name="focusable">1</property>
             <property name="receives-default">1</property>
-            <signal name="clicked" handler="on_btNewProfile_clicked" swapped="no"/>
+            <signal name="clicked" handler="on_btNewProfile_clicked"/>
             <style>
               <class name="suggested-action"/>
             </style>
@@ -222,21 +223,19 @@
         </child>
       </object>
     </property>
+    <property name="width-request">600</property>
+    <signal name="close-request" handler="undeletable_dialog"/>
   </object>
   <object class="GtkDialog" id="dlgRenameProfile">
-    <property name="width-request">600</property>
-    <property name="resizable">0</property>
-    <property name="modal">1</property>
-    <signal name="close-request" handler="undeletable_dialog" swapped="no"/>
     <property name="child">
       <object class="GtkBox" id="dialog-vbox2">
-        <property name="visible">1</property>
-        <property name="margin-start">18</property>
-        <property name="margin-end">18</property>
-        <property name="margin-top">18</property>
         <property name="margin-bottom">18</property>
+        <property name="margin-end">18</property>
+        <property name="margin-start">18</property>
+        <property name="margin-top">18</property>
         <property name="orientation">vertical</property>
         <property name="spacing">6</property>
+        <property name="visible">1</property>
         <child>
           <object class="GtkLabel" id="label3">
             <property name="halign">start</property>
@@ -246,11 +245,13 @@
         <child>
           <object class="GtkEntry" id="txRename">
             <property name="focusable">1</property>
-            <signal name="changed" handler="on_txRename_changed" swapped="no"/>
+            <signal name="changed" handler="on_txRename_changed"/>
           </object>
         </child>
       </object>
     </property>
+    <property name="modal">1</property>
+    <property name="resizable">0</property>
     <property name="titlebar">
       <object class="GtkHeaderBar" id="headerbar1">
         <property name="title-widget">
@@ -281,7 +282,7 @@
             </property>
             <property name="focusable">1</property>
             <property name="receives-default">1</property>
-            <signal name="clicked" handler="on_btRenameProfile_clicked" swapped="no"/>
+            <signal name="clicked" handler="on_btRenameProfile_clicked"/>
             <style>
               <class name="suggested-action"/>
             </style>
@@ -289,6 +290,8 @@
         </child>
       </object>
     </property>
+    <property name="width-request">600</property>
+    <signal name="close-request" handler="undeletable_dialog"/>
   </object>
   <object class="GtkListStore" id="lstProfile">
     <columns>
@@ -305,7 +308,7 @@
           <object class="GtkCheckButton" id="mnuEmulationEnabled">
             <property name="label" translatable="yes">_Emulation Enabled</property>
             <property name="use-underline">True</property>
-            <signal name="toggled" handler="on_mnuEmulationEnabled_toggled" swapped="no"/>
+            <signal name="toggled" handler="on_mnuEmulationEnabled_toggled"/>
           </object>
         </child>
         <child>
@@ -313,7 +316,7 @@
             <property name="css-name">modelbutton</property>
             <property name="label" translatable="yes">_Settings</property>
             <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuGlobalSettings_activate" swapped="no"/>
+            <signal name="clicked" handler="on_mnuGlobalSettings_activate"/>
           </object>
         </child>
         <child>
@@ -321,7 +324,7 @@
             <property name="css-name">modelbutton</property>
             <property name="label" translatable="yes">Import/Export _Profile...</property>
             <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuImport_activate" swapped="no"/>
+            <signal name="clicked" handler="on_mnuImport_activate"/>
           </object>
         </child>
         <child>
@@ -334,7 +337,7 @@
             <property name="css-name">modelbutton</property>
             <property name="label" translatable="yes">About</property>
             <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuAbout_activate" swapped="no"/>
+            <signal name="clicked" handler="on_mnuAbout_activate"/>
           </object>
         </child>
         <child>
@@ -342,20 +345,13 @@
             <property name="css-name">modelbutton</property>
             <property name="label" translatable="yes">Quit</property>
             <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuExit_activate" swapped="no"/>
+            <signal name="clicked" handler="on_mnuExit_activate"/>
           </object>
         </child>
       </object>
     </property>
   </object>
   <object class="GtkWindow" id="window">
-    <property name="resizable">0</property>
-    <signal name="close-request" handler="on_window_close_request" swapped="no"/>
-    <child>
-      <object class="GtkEventControllerKey">
-        <signal name="key-pressed" handler="on_window_key_press_event" swapped="no"/>
-      </object>
-    </child>
     <property name="child">
       <object class="GtkBox" id="content">
         <property name="orientation">vertical</property>
@@ -373,174 +369,172 @@
         </child>
         <child>
           <object class="GtkStack" id="stckEditor">
-            <property name="margin-start">12</property>
-            <property name="margin-end">12</property>
+            <property name="interpolate-size">1</property>
             <property name="margin-bottom">12</property>
+            <property name="margin-end">12</property>
+            <property name="margin-start">12</property>
             <property name="transition-duration">500</property>
             <property name="transition-type">crossfade</property>
-            <property name="interpolate-size">1</property>
             <child>
               <object class="GtkStackPage">
-                <property name="name">page0</property>
-                <property name="title" translatable="yes">page0</property>
                 <property name="child">
                   <object class="GtkGrid" id="grEditor">
-                    <property name="row-spacing">12</property>
                     <property name="column-spacing">12</property>
+                    <property name="row-spacing">12</property>
                     <child>
                       <object class="GtkBox" id="vbLeft">
                         <property name="orientation">vertical</property>
                         <property name="spacing">6</property>
-                        <layout>
-                          <property name="column">0</property>
-                          <property name="row">0</property>
-                        </layout>
                         <child>
                           <object class="GtkButton" id="btLT">
-                            <property name="width-request">170</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
+                            <property name="width-request">170</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkButton" id="btLB">
-                            <property name="width-request">170</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
+                            <property name="width-request">170</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkButton" id="btLGRIP2">
-                            <property name="visible">0</property>
-                            <property name="width-request">170</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
+                            <property name="visible">0</property>
+                            <property name="width-request">170</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkButton" id="btLGRIP">
-                            <property name="width-request">170</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
+                            <property name="width-request">170</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkButton" id="btBACK">
-                            <property name="width-request">170</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
+                            <property name="width-request">170</property>
                           </object>
                         </child>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">0</property>
+                        </layout>
                       </object>
                     </child>
                     <child>
                       <object class="GtkBox" id="vbRight">
                         <property name="orientation">vertical</property>
                         <property name="spacing">6</property>
-                        <layout>
-                          <property name="column">2</property>
-                          <property name="row">0</property>
-                        </layout>
                         <child>
                           <object class="GtkButton" id="btRT">
-                            <property name="width-request">170</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
+                            <property name="width-request">170</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkButton" id="btRB">
-                            <property name="width-request">170</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
+                            <property name="width-request">170</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkButton" id="btRGRIP2">
-                            <property name="visible">0</property>
-                            <property name="width-request">170</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
+                            <property name="visible">0</property>
+                            <property name="width-request">170</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkButton" id="btRGRIP">
-                            <property name="width-request">170</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
+                            <property name="width-request">170</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkButton" id="btSTART">
-                            <property name="width-request">170</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
+                            <property name="width-request">170</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkButton" id="btDOTS">
-                            <property name="visible">0</property>
-                            <property name="height-request">42</property>
                             <property name="focusable">1</property>
-                            <property name="receives-default">1</property>
+                            <property name="height-request">42</property>
                             <property name="margin-start">6</property>
+                            <property name="receives-default">1</property>
+                            <property name="visible">0</property>
                           </object>
                         </child>
+                        <layout>
+                          <property name="column">2</property>
+                          <property name="row">0</property>
+                        </layout>
                       </object>
                     </child>
                     <child>
                       <object class="GtkBox" id="vbPads">
-                        <property name="spacing">12</property>
                         <property name="baseline-position">bottom</property>
-                        <layout>
-                          <property name="column">0</property>
-                          <property name="row">2</property>
-                          <property name="column-span">3</property>
-                        </layout>
+                        <property name="spacing">12</property>
                         <child>
                           <object class="GtkButton" id="btLPAD">
-                            <property name="width-request">220</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
+                            <property name="width-request">220</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkButton" id="btDPAD">
-                            <property name="visible">0</property>
-                            <property name="width-request">220</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
+                            <property name="visible">0</property>
+                            <property name="width-request">220</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkButton" id="btLSTICK">
-                            <property name="visible">0</property>
-                            <property name="width-request">220</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
+                            <property name="visible">0</property>
+                            <property name="width-request">220</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkButton" id="btRSTICK">
-                            <property name="width-request">220</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
+                            <property name="width-request">220</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkButton" id="btGYRO">
-                            <property name="width-request">220</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
+                            <property name="width-request">220</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkButton" id="btRPAD">
-                            <property name="width-request">220</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
+                            <property name="width-request">220</property>
                           </object>
                         </child>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="column-span">3</property>
+                          <property name="row">2</property>
+                        </layout>
                       </object>
                     </child>
                     <child>
@@ -548,24 +542,24 @@
                         <property name="halign">center</property>
                         <child>
                           <object class="GtkBox" id="vbC">
-                            <property name="width-request">150</property>
                             <property name="height-request">90</property>
-                            <property name="valign">end</property>
                             <property name="orientation">vertical</property>
+                            <property name="valign">end</property>
+                            <property name="width-request">150</property>
                             <child>
                               <object class="GtkButton" id="btC">
                                 <property name="focusable">1</property>
-                                <property name="receives-default">1</property>
-                                <property name="margin-start">6</property>
                                 <property name="margin-end">6</property>
+                                <property name="margin-start">6</property>
+                                <property name="receives-default">1</property>
                               </object>
                             </child>
                             <child>
                               <object class="GtkButton" id="btCPAD">
-                                <property name="height-request">40</property>
                                 <property name="focusable">1</property>
-                                <property name="receives-default">1</property>
+                                <property name="height-request">40</property>
                                 <property name="margin-top">6</property>
+                                <property name="receives-default">1</property>
                               </object>
                             </child>
                           </object>
@@ -581,81 +575,81 @@
                       <object class="GtkBox" id="vbXY">
                         <property name="orientation">vertical</property>
                         <property name="spacing">6</property>
-                        <layout>
-                          <property name="column">0</property>
-                          <property name="row">1</property>
-                        </layout>
                         <child>
                           <object class="GtkButton" id="btY">
-                            <property name="width-request">170</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
+                            <property name="width-request">170</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkButton" id="btX">
-                            <property name="width-request">170</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
+                            <property name="width-request">170</property>
                           </object>
                         </child>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">1</property>
+                        </layout>
                       </object>
                     </child>
                     <child>
                       <object class="GtkBox" id="vbAB">
                         <property name="orientation">vertical</property>
                         <property name="spacing">6</property>
-                        <layout>
-                          <property name="column">2</property>
-                          <property name="row">1</property>
-                        </layout>
                         <child>
                           <object class="GtkButton" id="btB">
-                            <property name="width-request">170</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
+                            <property name="width-request">170</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkButton" id="btA">
-                            <property name="width-request">170</property>
                             <property name="focusable">1</property>
                             <property name="receives-default">1</property>
+                            <property name="width-request">170</property>
                           </object>
                         </child>
+                        <layout>
+                          <property name="column">2</property>
+                          <property name="row">1</property>
+                        </layout>
                       </object>
                     </child>
                   </object>
                 </property>
+                <property name="name">page0</property>
+                <property name="title" translatable="yes">page0</property>
               </object>
             </child>
             <child>
               <object class="GtkStackPage">
-                <property name="name">page1</property>
-                <property name="title" translatable="yes">page1</property>
                 <property name="child">
                   <object class="GtkLabel" id="lblEmpty"/>
                 </property>
+                <property name="name">page1</property>
+                <property name="title" translatable="yes">page1</property>
               </object>
             </child>
           </object>
         </child>
       </object>
     </property>
+    <property name="resizable">0</property>
     <property name="titlebar">
       <object class="GtkHeaderBar" id="hbWindow">
         <property name="decoration-layout">menu:minimize,close</property>
         <child>
           <object class="GtkMenuButton" id="btDaemon">
-            <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <property name="popover">mnuDaemon</property>
             <property name="child">
               <object class="GtkBox" id="boxDaemon">
                 <child>
                   <object class="GtkImage" id="imgDaemonStatus">
-                    <property name="width-request">24</property>
                     <property name="height-request">24</property>
+                    <property name="width-request">24</property>
                   </object>
                 </child>
                 <child>
@@ -665,6 +659,9 @@
                 </child>
               </object>
             </property>
+            <property name="focusable">1</property>
+            <property name="popover">mnuDaemon</property>
+            <property name="receives-default">1</property>
             <style>
               <class name="flat"/>
             </style>
@@ -672,49 +669,51 @@
         </child>
         <child>
           <object class="GtkButton" id="btUndo">
-            <property name="sensitive">0</property>
-            <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <property name="tooltip-text" translatable="yes">Undo</property>
-            <signal name="clicked" handler="on_btUndo_clicked" swapped="no"/>
             <property name="child">
               <object class="GtkImage" id="image1">
                 <property name="icon-name">edit-undo-symbolic</property>
               </object>
             </property>
+            <property name="focusable">1</property>
+            <property name="receives-default">1</property>
+            <property name="sensitive">0</property>
+            <property name="tooltip-text" translatable="yes">Undo</property>
+            <signal name="clicked" handler="on_btUndo_clicked"/>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="btRedo">
-            <property name="sensitive">0</property>
-            <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <property name="tooltip-text" translatable="yes">Redo</property>
-            <signal name="clicked" handler="on_btRedo_clicked" swapped="no"/>
             <property name="child">
               <object class="GtkImage" id="image3">
                 <property name="icon-name">edit-redo-symbolic</property>
               </object>
             </property>
+            <property name="focusable">1</property>
+            <property name="receives-default">1</property>
+            <property name="sensitive">0</property>
+            <property name="tooltip-text" translatable="yes">Redo</property>
+            <signal name="clicked" handler="on_btRedo_clicked"/>
           </object>
         </child>
       </object>
     </property>
+    <signal name="close-request" handler="on_window_close_request"/>
+    <child>
+      <object class="GtkEventControllerKey">
+        <signal name="key-pressed" handler="on_window_key_press_event"/>
+      </object>
+    </child>
   </object>
   <object class="GtkDialog" id="dlgProfileDetails">
-    <property name="resizable">0</property>
-    <property name="modal">1</property>
-    <property name="transient-for">window</property>
-    <signal name="close-request" handler="undeletable_dialog" swapped="no"/>
     <property name="child">
       <object class="GtkBox" id="dlgProfileDetailsVB">
-        <property name="visible">1</property>
-        <property name="margin-start">18</property>
-        <property name="margin-end">18</property>
-        <property name="margin-top">18</property>
         <property name="margin-bottom">18</property>
+        <property name="margin-end">18</property>
+        <property name="margin-start">18</property>
+        <property name="margin-top">18</property>
         <property name="orientation">vertical</property>
         <property name="spacing">12</property>
+        <property name="visible">1</property>
         <child>
           <object class="GtkBox" id="profileFilenameBox">
             <property name="orientation">vertical</property>
@@ -741,36 +740,38 @@
               <object class="GtkLabel" id="lblProfileDescription">
                 <property name="halign">start</property>
                 <property name="label" translatable="yes">_Description</property>
-                <property name="use-underline">1</property>
                 <property name="mnemonic-widget">txProfileDescription</property>
+                <property name="use-underline">1</property>
               </object>
             </child>
             <child>
               <object class="GtkScrolledWindow" id="swProfileDescription">
-                <property name="width-request">500</property>
-                <property name="height-request">75</property>
-                <property name="focusable">1</property>
-                <property name="has-frame">1</property>
                 <property name="child">
                   <object class="GtkTextView" id="txProfileDescription">
-                    <property name="focusable">1</property>
                     <property name="buffer">buffProfileDescription</property>
+                    <property name="focusable">1</property>
                   </object>
                 </property>
+                <property name="focusable">1</property>
+                <property name="has-frame">1</property>
+                <property name="height-request">75</property>
+                <property name="width-request">500</property>
               </object>
             </child>
           </object>
         </child>
         <child>
           <object class="GtkCheckButton" id="cbProfileIsTemplate">
-            <property name="label" translatable="yes">Profile is _template</property>
             <property name="focusable">1</property>
+            <property name="label" translatable="yes">Profile is _template</property>
             <property name="use-underline">1</property>
-            <signal name="toggled" handler="on_cbProfileIsTemplate_toggled" swapped="no"/>
+            <signal name="toggled" handler="on_cbProfileIsTemplate_toggled"/>
           </object>
         </child>
       </object>
     </property>
+    <property name="modal">1</property>
+    <property name="resizable">0</property>
     <property name="titlebar">
       <object class="GtkHeaderBar" id="hbProfileDetails">
         <property name="title-widget">
@@ -783,20 +784,46 @@
         </property>
       </object>
     </property>
+    <property name="transient-for">window</property>
+    <signal name="close-request" handler="undeletable_dialog"/>
   </object>
   <menu id="mnuImageModel">
     <submenu>
       <attribute name="label" translatable="yes">Change Sticks and Background</attribute>
-      <item><attribute name="label" translatable="yes">Symetrical</attribute><attribute name="action">app.change-controller-image</attribute><attribute name="target">background,ds4-config</attribute></item>
-      <item><attribute name="label" translatable="yes">Asymmetrical</attribute><attribute name="action">app.change-controller-image</attribute><attribute name="target">background,x360-config</attribute></item>
-      <item><attribute name="label" translatable="yes">Touchpads</attribute><attribute name="action">app.change-controller-image</attribute><attribute name="target">background,sc-config</attribute></item>
+      <item>
+        <attribute name="action">app.change-controller-image</attribute>
+        <attribute name="label" translatable="yes">Symetrical</attribute>
+        <attribute name="target">background,ds4-config</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.change-controller-image</attribute>
+        <attribute name="label" translatable="yes">Asymmetrical</attribute>
+        <attribute name="target">background,x360-config</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.change-controller-image</attribute>
+        <attribute name="label" translatable="yes">Touchpads</attribute>
+        <attribute name="target">background,sc-config</attribute>
+      </item>
     </submenu>
     <submenu>
       <attribute name="label" translatable="yes">Change Buttons</attribute>
-      <item><attribute name="label" translatable="yes">PSx</attribute><attribute name="action">app.change-controller-image</attribute><attribute name="target">buttons,ds4-config</attribute></item>
-      <item><attribute name="label" translatable="yes">ABXY</attribute><attribute name="action">app.change-controller-image</attribute><attribute name="target">buttons,x360-config</attribute></item>
+      <item>
+        <attribute name="action">app.change-controller-image</attribute>
+        <attribute name="label" translatable="yes">PSx</attribute>
+        <attribute name="target">buttons,ds4-config</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.change-controller-image</attribute>
+        <attribute name="label" translatable="yes">ABXY</attribute>
+        <attribute name="target">buttons,x360-config</attribute>
+      </item>
     </submenu>
-    <item><attribute name="label" translatable="yes">Clear Above Settings</attribute><attribute name="action">app.change-controller-image</attribute><attribute name="target">undo,undo</attribute></item>
+    <item>
+      <attribute name="action">app.change-controller-image</attribute>
+      <attribute name="label" translatable="yes">Clear Above Settings</attribute>
+      <attribute name="target">undo,undo</attribute>
+    </item>
   </menu>
   <object class="GtkPopoverMenu" id="mnuImage">
     <property name="menu-model">mnuImageModel</property>
@@ -809,14 +836,14 @@
           <object class="GtkButton" id="mnuConfigureController">
             <property name="label" translatable="yes">_Configure Controller</property>
             <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuConfigureController_activate" swapped="no"/>
+            <signal name="clicked" handler="on_mnuConfigureController_activate"/>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="mnuTurnoffController">
             <property name="label" translatable="yes">_Turn Off Controller</property>
             <property name="use-underline">True</property>
-            <signal name="clicked" handler="mnuTurnoffController_activate" swapped="no"/>
+            <signal name="clicked" handler="mnuTurnoffController_activate"/>
           </object>
         </child>
         <child>
@@ -828,35 +855,35 @@
           <object class="GtkButton" id="mnuProfileNew">
             <property name="label" translatable="yes">_New Profile</property>
             <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuProfileNew_activate" swapped="no"/>
+            <signal name="clicked" handler="on_mnuProfileNew_activate"/>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="mnuProfileCopy">
             <property name="label" translatable="yes">_Copy Profile</property>
             <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuProfileCopy_activate" swapped="no"/>
+            <signal name="clicked" handler="on_mnuProfileCopy_activate"/>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="mnuProfileRename">
             <property name="label" translatable="yes">_Rename Profile</property>
             <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuProfileRename_activate" swapped="no"/>
+            <signal name="clicked" handler="on_mnuProfileRename_activate"/>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="mnuProfileDelete">
             <property name="label" translatable="yes">_Delete Profile</property>
             <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuProfileDelete_activate" swapped="no"/>
+            <signal name="clicked" handler="on_mnuProfileDelete_activate"/>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="mnuProfileRevert">
             <property name="label" translatable="yes">_Revert Profile to Defaults</property>
             <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuProfileDelete_activate" swapped="no"/>
+            <signal name="clicked" handler="on_mnuProfileDelete_activate"/>
           </object>
         </child>
         <child>
@@ -868,16 +895,25 @@
           <object class="GtkButton" id="mnuProfileDetails">
             <property name="label" translatable="yes">Profile D_etails</property>
             <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuProfileDetails_activate" swapped="no"/>
+            <signal name="clicked" handler="on_mnuProfileDetails_activate"/>
           </object>
         </child>
       </object>
     </property>
   </object>
   <menu id="mnuPopupModel">
-    <item><attribute name="label" translatable="yes">C_lear</attribute><attribute name="action">app.context-clear</attribute></item>
-    <item><attribute name="label" translatable="yes">_Copy</attribute><attribute name="action">app.context-copy</attribute></item>
-    <item><attribute name="label" translatable="yes">_Paste</attribute><attribute name="action">app.context-paste</attribute></item>
+    <item>
+      <attribute name="action">app.context-clear</attribute>
+      <attribute name="label" translatable="yes">C_lear</attribute>
+    </item>
+    <item>
+      <attribute name="action">app.context-copy</attribute>
+      <attribute name="label" translatable="yes">_Copy</attribute>
+    </item>
+    <item>
+      <attribute name="action">app.context-paste</attribute>
+      <attribute name="label" translatable="yes">_Paste</attribute>
+    </item>
   </menu>
   <object class="GtkPopoverMenu" id="mnuPopup">
     <property name="menu-model">mnuPopupModel</property>
@@ -890,14 +926,14 @@
           <object class="GtkButton" id="mnuShowWindowTray">
             <property name="label" translatable="yes">Show/Hide _Window</property>
             <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_statusicon_clicked" swapped="no"/>
+            <signal name="clicked" handler="on_statusicon_clicked"/>
           </object>
         </child>
         <child>
           <object class="GtkCheckButton" id="mnuEmulationEnabledTray">
             <property name="label" translatable="yes">_Emulation Enabled</property>
             <property name="use-underline">True</property>
-            <signal name="toggled" handler="on_mnuEmulationEnabled_toggled" swapped="no"/>
+            <signal name="toggled" handler="on_mnuEmulationEnabled_toggled"/>
           </object>
         </child>
         <child>
@@ -909,27 +945,27 @@
           <object class="GtkButton" id="mnuAboutTray">
             <property name="label" translatable="yes">About</property>
             <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuAbout_activate" swapped="no"/>
+            <signal name="clicked" handler="on_mnuAbout_activate"/>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="mnuExitTray">
             <property name="label" translatable="yes">Quit</property>
             <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuExit_activate" swapped="no"/>
+            <signal name="clicked" handler="on_mnuExit_activate"/>
           </object>
         </child>
       </object>
     </property>
   </object>
   <object class="GtkInfoBar" id="riNewRelease">
-    <signal name="close" handler="hide_error" swapped="no"/>
-    <signal name="response" handler="hide_error" swapped="no"/>
+    <signal name="close" handler="hide_error"/>
+    <signal name="response" handler="hide_error"/>
     <child>
       <object class="GtkBox" id="riNewReleaseVB">
         <property name="hexpand">1</property>
-        <property name="vexpand">0</property>
         <property name="spacing">16</property>
+        <property name="vexpand">0</property>
         <child>
           <object class="GtkImage" id="image6">
             <property name="icon-name">dialog-information</property>
@@ -947,18 +983,18 @@
                 <property name="yalign">0</property>
                 <layout>
                   <property name="column">0</property>
-                  <property name="row">1</property>
                   <property name="column-span">2</property>
+                  <property name="row">1</property>
                 </layout>
               </object>
             </child>
             <child>
               <object class="GtkLabel" id="cbNewReleaseHeader">
-                <property name="label" translatable="yes">SC Controller was upgraded</property>
-                <property name="xalign">0</property>
                 <property name="attributes">
                   0 -1 weight bold
                 </property>
+                <property name="label" translatable="yes">SC Controller was upgraded</property>
+                <property name="xalign">0</property>
                 <layout>
                   <property name="column">0</property>
                   <property name="row">0</property>
@@ -967,39 +1003,21 @@
             </child>
             <child>
               <object class="GtkCheckButton" id="cbNewRelease">
-                <property name="label" translatable="yes">Display with each new version</property>
+                <property name="active">1</property>
                 <property name="focusable">1</property>
                 <property name="halign">end</property>
                 <property name="hexpand">1</property>
-                <property name="active">1</property>
-                <signal name="toggled" handler="on_cbNewRelease_toggled" swapped="no"/>
+                <property name="label" translatable="yes">Display with each new version</property>
+                <signal name="toggled" handler="on_cbNewRelease_toggled"/>
                 <layout>
                   <property name="column">1</property>
                   <property name="row">0</property>
                 </layout>
               </object>
             </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
           </object>
         </child>
       </object>
-    </child>
-    <child>
-      <placeholder/>
     </child>
   </object>
 </interface>

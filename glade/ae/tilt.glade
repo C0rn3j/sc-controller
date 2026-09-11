@@ -1,6 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <!-- interface-name tilt.glade -->
+  <requires lib="gtk" version="4.14"/>
   <object class="GtkListStore" id="lstMenu">
     <columns>
       <column type="gchararray"/>
@@ -58,26 +60,26 @@
   <object class="GtkGrid" id="tilt">
     <child>
       <object class="GtkGrid" id="grTilt">
-        <property name="margin-start">10</property>
-        <property name="margin-end">10</property>
-        <property name="margin-top">10</property>
-        <property name="margin-bottom">10</property>
-        <property name="row-spacing">5</property>
         <property name="column-spacing">5</property>
+        <property name="margin-bottom">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">10</property>
+        <property name="row-spacing">5</property>
         <child>
           <object class="GtkButton" id="btTilt2">
-            <property name="name">2</property>
-            <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <property name="valign">start</property>
-            <property name="margin-top">20</property>
-            <property name="hexpand">1</property>
-            <signal name="clicked" handler="on_btTilt_clicked" swapped="no"/>
             <property name="child">
               <object class="GtkLabel" id="lblTilt2">
                 <property name="label" translatable="yes">(...)</property>
               </object>
             </property>
+            <property name="focusable">1</property>
+            <property name="hexpand">1</property>
+            <property name="margin-top">20</property>
+            <property name="name">2</property>
+            <property name="receives-default">1</property>
+            <property name="valign">start</property>
+            <signal name="clicked" handler="on_btTilt_clicked"/>
             <layout>
               <property name="column">0</property>
               <property name="row">1</property>
@@ -86,18 +88,18 @@
         </child>
         <child>
           <object class="GtkButton" id="btTilt3">
-            <property name="name">3</property>
-            <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <property name="valign">start</property>
-            <property name="margin-top">20</property>
-            <property name="hexpand">1</property>
-            <signal name="clicked" handler="on_btTilt_clicked" swapped="no"/>
             <property name="child">
               <object class="GtkLabel" id="lblTilt3">
                 <property name="label" translatable="yes">(...)</property>
               </object>
             </property>
+            <property name="focusable">1</property>
+            <property name="hexpand">1</property>
+            <property name="margin-top">20</property>
+            <property name="name">3</property>
+            <property name="receives-default">1</property>
+            <property name="valign">start</property>
+            <signal name="clicked" handler="on_btTilt_clicked"/>
             <layout>
               <property name="column">3</property>
               <property name="row">1</property>
@@ -106,19 +108,19 @@
         </child>
         <child>
           <object class="GtkButton" id="btTilt0">
-            <property name="name">0</property>
-            <property name="width-request">200</property>
-            <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <property name="valign">start</property>
-            <property name="margin-top">50</property>
-            <property name="hexpand">1</property>
-            <signal name="clicked" handler="on_btTilt_clicked" swapped="no"/>
             <property name="child">
               <object class="GtkLabel" id="lblTilt0">
                 <property name="label" translatable="yes">(...)</property>
               </object>
             </property>
+            <property name="focusable">1</property>
+            <property name="hexpand">1</property>
+            <property name="margin-top">50</property>
+            <property name="name">0</property>
+            <property name="receives-default">1</property>
+            <property name="valign">start</property>
+            <property name="width-request">200</property>
+            <signal name="clicked" handler="on_btTilt_clicked"/>
             <layout>
               <property name="column">0</property>
               <property name="row">0</property>
@@ -127,19 +129,19 @@
         </child>
         <child>
           <object class="GtkButton" id="btTilt1">
-            <property name="name">1</property>
-            <property name="width-request">200</property>
-            <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <property name="valign">start</property>
-            <property name="margin-top">50</property>
-            <property name="hexpand">1</property>
-            <signal name="clicked" handler="on_btTilt_clicked" swapped="no"/>
             <property name="child">
               <object class="GtkLabel" id="lblTilt">
                 <property name="label" translatable="yes">(...)</property>
               </object>
             </property>
+            <property name="focusable">1</property>
+            <property name="hexpand">1</property>
+            <property name="margin-top">50</property>
+            <property name="name">1</property>
+            <property name="receives-default">1</property>
+            <property name="valign">start</property>
+            <property name="width-request">200</property>
+            <signal name="clicked" handler="on_btTilt_clicked"/>
             <layout>
               <property name="column">3</property>
               <property name="row">0</property>
@@ -148,13 +150,13 @@
         </child>
         <child>
           <object class="GtkImage" id="image1">
-            <property name="margin-start">10</property>
-            <property name="margin-end">10</property>
             <property name="file">../../images/controller-side.svg</property>
+            <property name="margin-end">10</property>
+            <property name="margin-start">10</property>
             <layout>
               <property name="column">1</property>
-              <property name="row">0</property>
               <property name="column-span">2</property>
+              <property name="row">0</property>
               <property name="row-span">2</property>
             </layout>
           </object>
@@ -177,17 +179,17 @@
         </child>
         <child>
           <object class="GtkButton" id="btTilt4">
-            <property name="name">4</property>
-            <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <property name="valign">start</property>
-            <property name="hexpand">1</property>
-            <signal name="clicked" handler="on_btTilt_clicked" swapped="no"/>
             <property name="child">
               <object class="GtkLabel" id="lblTilt4">
                 <property name="label" translatable="yes">(...)</property>
               </object>
             </property>
+            <property name="focusable">1</property>
+            <property name="hexpand">1</property>
+            <property name="name">4</property>
+            <property name="receives-default">1</property>
+            <property name="valign">start</property>
+            <signal name="clicked" handler="on_btTilt_clicked"/>
             <layout>
               <property name="column">1</property>
               <property name="row">2</property>
@@ -196,17 +198,17 @@
         </child>
         <child>
           <object class="GtkButton" id="btTilt5">
-            <property name="name">5</property>
-            <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <property name="valign">start</property>
-            <property name="hexpand">1</property>
-            <signal name="clicked" handler="on_btTilt_clicked" swapped="no"/>
             <property name="child">
               <object class="GtkLabel" id="lblTilt5">
                 <property name="label" translatable="yes">(...)</property>
               </object>
             </property>
+            <property name="focusable">1</property>
+            <property name="hexpand">1</property>
+            <property name="name">5</property>
+            <property name="receives-default">1</property>
+            <property name="valign">start</property>
+            <signal name="clicked" handler="on_btTilt_clicked"/>
             <layout>
               <property name="column">2</property>
               <property name="row">2</property>
@@ -215,31 +217,10 @@
         </child>
         <layout>
           <property name="column">0</property>
-          <property name="row">0</property>
           <property name="column-span">2</property>
+          <property name="row">0</property>
         </layout>
       </object>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
     </child>
   </object>
 </interface>

@@ -1,19 +1,21 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <!-- interface-name gesture.glade -->
+  <requires lib="gtk" version="4.14"/>
   <object class="GtkAdjustment" id="adjPrecision">
+    <property name="page-increment">0.10</property>
+    <property name="step-increment">0.10</property>
     <property name="upper">1</property>
     <property name="value">1</property>
-    <property name="step-increment">0.10</property>
-    <property name="page-increment">0.10</property>
   </object>
   <object class="GtkGrid" id="gesture_editor">
     <child>
       <object class="GtkEntry" id="txGesture">
-        <property name="focusable">1</property>
-        <property name="margin-end">10</property>
-        <property name="hexpand">1</property>
         <property name="editable">0</property>
+        <property name="focusable">1</property>
+        <property name="hexpand">1</property>
+        <property name="margin-end">10</property>
         <layout>
           <property name="column">0</property>
           <property name="row">0</property>
@@ -22,8 +24,6 @@
     </child>
     <child>
       <object class="GtkButton" id="btChangeGesture">
-        <property name="focusable">1</property>
-        <property name="receives-default">1</property>
         <property name="child">
           <object class="GtkBox">
             <property name="spacing">6</property>
@@ -40,7 +40,9 @@
             </child>
           </object>
         </property>
-        <signal name="clicked" handler="on_btChangeGesture_clicked" swapped="no"/>
+        <property name="focusable">1</property>
+        <property name="receives-default">1</property>
+        <signal name="clicked" handler="on_btChangeGesture_clicked"/>
         <layout>
           <property name="column">1</property>
           <property name="row">0</property>
@@ -49,58 +51,41 @@
     </child>
     <child>
       <object class="GtkCheckButton" id="cbIgnoreStroke">
-        <property name="label" translatable="yes">Ignore Stroke _Length</property>
         <property name="focusable">1</property>
+        <property name="label" translatable="yes">Ignore Stroke _Length</property>
         <property name="margin-top">5</property>
         <property name="use-underline">1</property>
-        <signal name="toggled" handler="on_cbIgnoreStroke_toggled" swapped="no"/>
+        <signal name="toggled" handler="on_cbIgnoreStroke_toggled"/>
         <layout>
           <property name="column">0</property>
-          <property name="row">1</property>
           <property name="column-span">2</property>
+          <property name="row">1</property>
         </layout>
       </object>
     </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
   </object>
   <object class="GtkWindow" id="gesture_grabber">
-    <property name="resizable">0</property>
-    <property name="modal">1</property>
     <property name="child">
       <object class="GtkGrid" id="grid2">
-        <property name="margin-start">10</property>
-        <property name="margin-end">10</property>
-        <property name="margin-bottom">10</property>
         <property name="hexpand">1</property>
+        <property name="margin-bottom">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
         <property name="vexpand">1</property>
         <child>
           <object class="GtkEntry" id="txGestureGrab">
-            <property name="width-request">400</property>
-            <property name="focusable">1</property>
-            <property name="margin-start">20</property>
-            <property name="margin-end">20</property>
-            <property name="margin-top">20</property>
-            <property name="margin-bottom">20</property>
-            <property name="hexpand">1</property>
             <property name="editable">0</property>
+            <property name="focusable">1</property>
+            <property name="hexpand">1</property>
+            <property name="margin-bottom">20</property>
+            <property name="margin-end">20</property>
+            <property name="margin-start">20</property>
+            <property name="margin-top">20</property>
+            <property name="width-request">400</property>
             <layout>
               <property name="column">0</property>
-              <property name="row">0</property>
               <property name="column-span">2</property>
+              <property name="row">0</property>
             </layout>
           </object>
         </child>
@@ -116,8 +101,6 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="btnStartGestureOver">
-                    <property name="focusable">1</property>
-                    <property name="receives-default">1</property>
                     <property name="child">
                       <object class="GtkBox">
                         <property name="spacing">6</property>
@@ -134,13 +117,12 @@
                         </child>
                       </object>
                     </property>
+                    <property name="focusable">1</property>
+                    <property name="receives-default">1</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkButton" id="btnConfirmGesutre">
-                    <property name="focusable">1</property>
-                    <property name="receives-default">1</property>
-                    <property name="margin-start">10</property>
                     <property name="child">
                       <object class="GtkBox">
                         <property name="spacing">6</property>
@@ -157,47 +139,34 @@
                         </child>
                       </object>
                     </property>
+                    <property name="focusable">1</property>
+                    <property name="margin-start">10</property>
+                    <property name="receives-default">1</property>
                   </object>
                 </child>
               </object>
             </property>
             <layout>
               <property name="column">0</property>
-              <property name="row">1</property>
               <property name="column-span">2</property>
+              <property name="row">1</property>
             </layout>
           </object>
         </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
       </object>
     </property>
+    <property name="modal">1</property>
+    <property name="resizable">0</property>
     <property name="titlebar">
       <object class="GtkHeaderBar" id="hb1">
         <property name="title-widget">
           <object class="GtkLabel" id="lblGestureGrabberTitle">
-            <property name="label" translatable="yes">Draw gesture on LEFT pad...</property>
             <property name="attributes">
               0 -1 weight bold
             </property>
+            <property name="label" translatable="yes">Draw gesture on LEFT pad...</property>
           </object>
         </property>
-        <child>
-          <placeholder/>
-        </child>
       </object>
     </property>
   </object>
@@ -215,64 +184,61 @@
         <property name="margin-bottom">5</property>
         <child>
           <object class="GtkLabel" id="lblPrecision">
-            <property name="label" translatable="yes">Matching Precision</property>
             <property name="attributes">
               0 -1 weight bold
             </property>
+            <property name="label" translatable="yes">Matching Precision</property>
           </object>
         </child>
         <child>
           <object class="GtkScale" id="sclPrecision">
-            <property name="draw-value">1</property>
-            <property name="hexpand">1</property>
-            <property name="focusable">1</property>
-            <property name="margin-start">10</property>
-            <property name="margin-end">10</property>
             <property name="adjustment">adjPrecision</property>
+            <property name="draw-value">1</property>
+            <property name="focusable">1</property>
+            <property name="hexpand">1</property>
+            <property name="margin-end">10</property>
+            <property name="margin-start">10</property>
             <property name="round-digits">2</property>
             <property name="value-pos">right</property>
-            <signal name="value-changed" handler="on_sclPrecision_value_changed" swapped="no"/>
+            <signal name="value-changed" handler="on_sclPrecision_value_changed"/>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="btClearTolerance">
-            <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <signal name="clicked" handler="on_btClearTolerance_clicked" swapped="no"/>
             <property name="child">
               <object class="GtkImage" id="imgBtClearTolerance">
                 <property name="icon-name">edit-clear-symbolic</property>
               </object>
             </property>
+            <property name="focusable">1</property>
+            <property name="receives-default">1</property>
+            <signal name="clicked" handler="on_btClearTolerance_clicked"/>
           </object>
         </child>
       </object>
     </child>
     <child>
       <object class="GtkLabel" id="lblGestureMessage">
-        <property name="visible">0</property>
-        <property name="margin-start">10</property>
-        <property name="margin-end">10</property>
-        <property name="margin-top">10</property>
-        <property name="margin-bottom">10</property>
-        <property name="label" translatable="yes">message</property>
-        <property name="xalign">0</property>
         <property name="attributes">
           0 -1 weight semibold
         </property>
+        <property name="label" translatable="yes">message</property>
+        <property name="margin-bottom">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">10</property>
+        <property name="visible">0</property>
+        <property name="xalign">0</property>
       </object>
     </child>
     <child>
       <object class="GtkScrolledWindow" id="scGestures">
-        <property name="vexpand">1</property>
-        <property name="focusable">1</property>
-        <property name="has-frame">1</property>
         <property name="child">
           <object class="GtkTreeView" id="tvGestures">
             <property name="focusable">1</property>
             <property name="model">lstGestures</property>
-            <signal name="cursor-changed" handler="on_tvGestures_cursor_changed" swapped="no"/>
-            <signal name="row-activated" handler="on_btEditAction_clicked" swapped="no"/>
+            <signal name="cursor-changed" handler="on_tvGestures_cursor_changed"/>
+            <signal name="row-activated" handler="on_btEditAction_clicked"/>
             <child internal-child="selection">
               <object class="GtkTreeSelection" id="tvGesturesSelection"/>
             </child>
@@ -281,6 +247,7 @@
                 <property name="title" translatable="yes">Gesture</property>
                 <child>
                   <object class="GtkCellRendererText" id="crGesture"/>
+                  <!-- Custom child fragments -->
                   <attributes>
                     <attribute name="text">0</attribute>
                   </attributes>
@@ -292,6 +259,7 @@
                 <property name="title" translatable="yes">Action</property>
                 <child>
                   <object class="GtkCellRendererText" id="crAction"/>
+                  <!-- Custom child fragments -->
                   <attributes>
                     <attribute name="text">1</attribute>
                   </attributes>
@@ -300,6 +268,9 @@
             </child>
           </object>
         </property>
+        <property name="focusable">1</property>
+        <property name="has-frame">1</property>
+        <property name="vexpand">1</property>
       </object>
     </child>
     <child>
@@ -307,34 +278,34 @@
         <property name="css-classes">toolbar</property>
         <child>
           <object class="GtkButton" id="btEditAction">
-            <property name="sensitive">0</property>
-            <property name="label" translatable="yes">Edit</property>
-            <property name="use-underline">1</property>
             <property name="icon-name">document-edit-symbolic</property>
-            <signal name="clicked" handler="on_btEditAction_clicked" swapped="no"/>
+            <property name="label" translatable="yes">Edit</property>
+            <property name="sensitive">0</property>
+            <property name="use-underline">1</property>
+            <signal name="clicked" handler="on_btEditAction_clicked"/>
           </object>
         </child>
         <child>
           <object class="GtkSeparator" id="separator45">
-            <property name="orientation">vertical</property>
             <property name="opacity">0</property>
+            <property name="orientation">vertical</property>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="btRemove">
-            <property name="sensitive">0</property>
-            <property name="label" translatable="yes">_Remove</property>
-            <property name="use-underline">1</property>
             <property name="icon-name">list-remove-symbolic</property>
-            <signal name="clicked" handler="on_btRemove_clicked" swapped="no"/>
+            <property name="label" translatable="yes">_Remove</property>
+            <property name="sensitive">0</property>
+            <property name="use-underline">1</property>
+            <signal name="clicked" handler="on_btRemove_clicked"/>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="btAdd">
+            <property name="icon-name">list-add-symbolic</property>
             <property name="label" translatable="yes">_Add</property>
             <property name="use-underline">1</property>
-            <property name="icon-name">list-add-symbolic</property>
-            <signal name="clicked" handler="on_btAdd_clicked" swapped="no"/>
+            <signal name="clicked" handler="on_btAdd_clicked"/>
           </object>
         </child>
       </object>

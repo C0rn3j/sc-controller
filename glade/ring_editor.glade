@@ -1,13 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <!-- interface-name ring_editor.glade -->
+  <requires lib="gtk" version="4.14"/>
   <object class="GtkAdjustment" id="adjRadius">
     <property name="lower">0.10</property>
-    <property name="upper">0.98999999999999999</property>
-    <property name="step-increment">0.10</property>
     <property name="page-increment">0.20</property>
     <property name="page-size">0.10</property>
-    <signal name="value-changed" handler="on_adjRadius_value_changed" swapped="no"/>
+    <property name="step-increment">0.10</property>
+    <property name="upper">0.98999999999999999</property>
+    <signal name="value-changed" handler="on_adjRadius_value_changed"/>
   </object>
   <object class="GtkListStore" id="lstMode">
     <columns>
@@ -30,33 +32,23 @@
     </data>
   </object>
   <object class="GtkWindow" id="Dialog">
-    <property name="default-widget">btOK</property>
-    <property name="width-request">600</property>
-    <property name="resizable">0</property>
-    <property name="destroy-with-parent">1</property>
-    <signal name="destroy" handler="on_Dialog_destroy" swapped="no"/>
-    <child>
-      <object class="GtkEventControllerKey">
-        <signal name="key-pressed" handler="on_window_key_press_event" swapped="no"/>
-      </object>
-    </child>
     <property name="child">
       <object class="GtkGrid" id="grid1">
-        <property name="margin-start">10</property>
-        <property name="margin-end">10</property>
-        <property name="margin-top">10</property>
         <property name="margin-bottom">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">10</property>
         <child>
           <object class="GtkLabel" id="label1">
-            <property name="visible">0</property>
-            <property name="margin-end">20</property>
-            <property name="margin-bottom">4</property>
-            <property name="label" translatable="yes">Action Name</property>
-            <property name="ellipsize">end</property>
-            <property name="xalign">0</property>
             <property name="attributes">
               0 -1 weight bold
             </property>
+            <property name="ellipsize">end</property>
+            <property name="label" translatable="yes">Action Name</property>
+            <property name="margin-bottom">4</property>
+            <property name="margin-end">20</property>
+            <property name="visible">0</property>
+            <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
               <property name="row">1</property>
@@ -65,11 +57,11 @@
         </child>
         <child>
           <object class="GtkEntry" id="entry1">
-            <property name="visible">0</property>
-            <property name="focusable">1</property>
-            <property name="margin-bottom">2</property>
-            <property name="hexpand">1</property>
             <property name="activates-default">1</property>
+            <property name="focusable">1</property>
+            <property name="hexpand">1</property>
+            <property name="margin-bottom">2</property>
+            <property name="visible">0</property>
             <layout>
               <property name="column">1</property>
               <property name="row">1</property>
@@ -78,15 +70,15 @@
         </child>
         <child>
           <object class="GtkLabel" id="lblAddedWidget">
-            <property name="visible">0</property>
-            <property name="margin-end">20</property>
-            <property name="margin-bottom">5</property>
-            <property name="label" translatable="yes">(Widget)</property>
-            <property name="xalign">0</property>
-            <property name="yalign">0</property>
             <property name="attributes">
               0 -1 weight bold
             </property>
+            <property name="label" translatable="yes">(Widget)</property>
+            <property name="margin-bottom">5</property>
+            <property name="margin-end">20</property>
+            <property name="visible">0</property>
+            <property name="xalign">0</property>
+            <property name="yalign">0</property>
             <layout>
               <property name="column">0</property>
               <property name="row">0</property>
@@ -95,30 +87,27 @@
         </child>
         <child>
           <object class="GtkBox" id="vbAddedWidget">
-            <property name="visible">0</property>
-            <property name="margin-bottom">5</property>
             <property name="hexpand">1</property>
+            <property name="margin-bottom">5</property>
             <property name="orientation">vertical</property>
+            <property name="visible">0</property>
             <layout>
               <property name="column">1</property>
               <property name="row">0</property>
             </layout>
-            <child>
-              <placeholder/>
-            </child>
           </object>
         </child>
         <child>
           <object class="GtkGrid" id="grActions">
-            <property name="margin-start">10</property>
+            <property name="column-spacing">15</property>
             <property name="margin-end">10</property>
+            <property name="margin-start">10</property>
             <property name="margin-top">10</property>
             <property name="row-spacing">4</property>
-            <property name="column-spacing">15</property>
             <child>
               <object class="GtkLabel" id="lblRadius">
-                <property name="width-request">150</property>
                 <property name="label" translatable="yes">Inner Ring Radius</property>
+                <property name="width-request">150</property>
                 <property name="xalign">0</property>
                 <layout>
                   <property name="column">0</property>
@@ -128,9 +117,9 @@
             </child>
             <child>
               <object class="GtkScale" id="sclRadius">
+                <property name="adjustment">adjRadius</property>
                 <property name="draw-value">1</property>
                 <property name="focusable">1</property>
-                <property name="adjustment">adjRadius</property>
                 <property name="round-digits">2</property>
                 <property name="value-pos">right</property>
                 <layout>
@@ -141,14 +130,14 @@
             </child>
             <child>
               <object class="GtkButton" id="btClearRadius">
-                <property name="focusable">1</property>
-                <property name="receives-default">1</property>
-                <signal name="clicked" handler="on_btClearRadius_clicked" swapped="no"/>
                 <property name="child">
                   <object class="GtkImage" id="image3">
                     <property name="icon-name">edit-clear-symbolic</property>
                   </object>
                 </property>
+                <property name="focusable">1</property>
+                <property name="receives-default">1</property>
+                <signal name="clicked" handler="on_btClearRadius_clicked"/>
                 <layout>
                   <property name="column">2</property>
                   <property name="row">3</property>
@@ -157,30 +146,30 @@
             </child>
             <child>
               <object class="GtkCheckButton" id="cbPreview">
-                <property name="visible">0</property>
                 <property name="focusable">1</property>
                 <property name="margin-top">20</property>
+                <property name="visible">0</property>
                 <child>
                   <object class="GtkLabel" id="label2">
-                    <property name="label" translatable="yes">Preview Immediately</property>
-                    <property name="ellipsize">end</property>
-                    <property name="xalign">0</property>
                     <property name="attributes">
                       0 -1 weight bold
                     </property>
+                    <property name="ellipsize">end</property>
+                    <property name="label" translatable="yes">Preview Immediately</property>
+                    <property name="xalign">0</property>
                   </object>
                 </child>
                 <layout>
                   <property name="column">0</property>
-                  <property name="row">4</property>
                   <property name="column-span">3</property>
+                  <property name="row">4</property>
                 </layout>
               </object>
             </child>
             <child>
               <object class="GtkLabel" id="lblInner">
-                <property name="width-request">150</property>
                 <property name="label" translatable="yes">Inner Ring</property>
+                <property name="width-request">150</property>
                 <property name="xalign">0</property>
                 <layout>
                   <property name="column">0</property>
@@ -191,9 +180,9 @@
             <child>
               <object class="GtkButton" id="btInner">
                 <property name="focusable">1</property>
-                <property name="receives-default">1</property>
                 <property name="hexpand">1</property>
-                <signal name="clicked" handler="on_actionb_clicked" swapped="no"/>
+                <property name="receives-default">1</property>
+                <signal name="clicked" handler="on_actionb_clicked"/>
                 <layout>
                   <property name="column">1</property>
                   <property name="row">1</property>
@@ -202,14 +191,14 @@
             </child>
             <child>
               <object class="GtkButton" id="btClearInner">
-                <property name="focusable">1</property>
-                <property name="receives-default">1</property>
-                <signal name="clicked" handler="on_clearb_clicked" swapped="no"/>
                 <property name="child">
                   <object class="GtkImage" id="image2">
                     <property name="icon-name">edit-clear-symbolic</property>
                   </object>
                 </property>
+                <property name="focusable">1</property>
+                <property name="receives-default">1</property>
+                <signal name="clicked" handler="on_clearb_clicked"/>
                 <layout>
                   <property name="column">2</property>
                   <property name="row">1</property>
@@ -218,14 +207,14 @@
             </child>
             <child>
               <object class="GtkButton" id="btClearOuter">
-                <property name="focusable">1</property>
-                <property name="receives-default">1</property>
-                <signal name="clicked" handler="on_clearb_clicked" swapped="no"/>
                 <property name="child">
                   <object class="GtkImage" id="image1">
                     <property name="icon-name">edit-clear-symbolic</property>
                   </object>
                 </property>
+                <property name="focusable">1</property>
+                <property name="receives-default">1</property>
+                <signal name="clicked" handler="on_clearb_clicked"/>
                 <layout>
                   <property name="column">2</property>
                   <property name="row">2</property>
@@ -235,9 +224,9 @@
             <child>
               <object class="GtkButton" id="btOuter">
                 <property name="focusable">1</property>
-                <property name="receives-default">1</property>
                 <property name="hexpand">1</property>
-                <signal name="clicked" handler="on_actionb_clicked" swapped="no"/>
+                <property name="receives-default">1</property>
+                <signal name="clicked" handler="on_actionb_clicked"/>
                 <layout>
                   <property name="column">1</property>
                   <property name="row">2</property>
@@ -246,8 +235,8 @@
             </child>
             <child>
               <object class="GtkLabel" id="lblOuter">
-                <property name="width-request">150</property>
                 <property name="label" translatable="yes">Outer Ring</property>
+                <property name="width-request">150</property>
                 <property name="xalign">0</property>
                 <layout>
                   <property name="column">0</property>
@@ -257,8 +246,8 @@
             </child>
             <child>
               <object class="GtkLabel" id="lblPressAlone3">
-                <property name="width-request">150</property>
                 <property name="label" translatable="yes">Mode</property>
+                <property name="width-request">150</property>
                 <property name="xalign">0</property>
                 <layout>
                   <property name="column">0</property>
@@ -268,40 +257,35 @@
             </child>
             <child>
               <object class="GtkComboBox" id="cbMode">
-                <property name="model">lstMode</property>
                 <property name="active">0</property>
-                <signal name="changed" handler="on_cbMode_changed" swapped="no"/>
+                <property name="model">lstMode</property>
+                <signal name="changed" handler="on_cbMode_changed"/>
                 <child>
                   <object class="GtkCellRendererText" id="crMode"/>
+                  <!-- Custom child fragments -->
                   <attributes>
                     <attribute name="text">1</attribute>
                   </attributes>
                 </child>
                 <layout>
                   <property name="column">1</property>
-                  <property name="row">0</property>
                   <property name="column-span">2</property>
+                  <property name="row">0</property>
                 </layout>
               </object>
             </child>
             <layout>
               <property name="column">0</property>
-              <property name="row">2</property>
               <property name="column-span">2</property>
+              <property name="row">2</property>
             </layout>
           </object>
         </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
       </object>
     </property>
+    <property name="default-widget">btOK</property>
+    <property name="destroy-with-parent">1</property>
+    <property name="resizable">0</property>
     <property name="titlebar">
       <object class="GtkHeaderBar" id="header">
         <child type="end">
@@ -324,7 +308,7 @@
             </property>
             <property name="focusable">1</property>
             <property name="receives-default">1</property>
-            <signal name="clicked" handler="on_btOK_clicked" swapped="no"/>
+            <signal name="clicked" handler="on_btOK_clicked"/>
             <style>
               <class name="suggested-action"/>
             </style>
@@ -350,18 +334,25 @@
             </property>
             <property name="focusable">1</property>
             <property name="receives-default">1</property>
-            <signal name="clicked" handler="on_btClear_clicked" swapped="no"/>
+            <signal name="clicked" handler="on_btClear_clicked"/>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="btCustomActionEditor">
-            <property name="label" translatable="yes">Custom Editor</property>
             <property name="focusable">1</property>
+            <property name="label" translatable="yes">Custom Editor</property>
             <property name="receives-default">1</property>
-            <signal name="clicked" handler="on_btCustomActionEditor_clicked" swapped="no"/>
+            <signal name="clicked" handler="on_btCustomActionEditor_clicked"/>
           </object>
         </child>
       </object>
     </property>
+    <property name="width-request">600</property>
+    <signal name="destroy" handler="on_Dialog_destroy"/>
+    <child>
+      <object class="GtkEventControllerKey">
+        <signal name="key-pressed" handler="on_window_key_press_event"/>
+      </object>
+    </child>
   </object>
 </interface>

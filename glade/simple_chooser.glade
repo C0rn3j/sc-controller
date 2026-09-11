@@ -1,25 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <!-- interface-name simple_chooser.glade -->
+  <requires lib="gtk" version="4.14"/>
   <object class="GtkWindow" id="Dialog">
     <property name="resizable">0</property>
+    <property name="titlebar">
+      <object class="GtkHeaderBar" id="header"/>
+    </property>
     <child>
       <object class="GtkEventControllerKey">
-        <signal name="key-pressed" handler="on_window_key_press_event" swapped="no"/>
+        <signal name="key-pressed" handler="on_window_key_press_event"/>
       </object>
     </child>
-    <child>
-      <placeholder/>
-    </child>
-    <property name="titlebar">
-      <object class="GtkHeaderBar" id="header">
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-      </object>
-    </property>
   </object>
 </interface>

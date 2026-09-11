@@ -1,38 +1,40 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <!-- interface-name custom.glade -->
+  <requires lib="gtk" version="4.14"/>
   <object class="GtkTextBuffer" id="tbCustomAction">
-    <signal name="changed" handler="on_tbCustomAction_changed" swapped="no"/>
+    <signal name="changed" handler="on_tbCustomAction_changed"/>
   </object>
   <object class="GtkBox" id="custom">
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkLabel" id="label4">
-        <property name="label" translatable="yes">Custom Action</property>
-        <property name="max-width-chars">4</property>
-        <property name="xalign">0</property>
         <property name="attributes">
           0 -1 weight bold
         </property>
+        <property name="label" translatable="yes">Custom Action</property>
+        <property name="max-width-chars">4</property>
+        <property name="xalign">0</property>
       </object>
     </child>
     <child>
       <object class="GtkScrolledWindow" id="scrolledwindow1">
-        <property name="vexpand">1</property>
-        <property name="height-request">150</property>
-        <property name="focusable">1</property>
-        <property name="margin-top">5</property>
-        <property name="has-frame">1</property>
         <property name="child">
           <object class="GtkTextView" id="txCustomAction">
+            <property name="buffer">tbCustomAction</property>
             <property name="focusable">1</property>
+            <property name="left-margin">5</property>
             <property name="pixels-above-lines">5</property>
             <property name="pixels-below-lines">5</property>
-            <property name="left-margin">5</property>
             <property name="right-margin">5</property>
-            <property name="buffer">tbCustomAction</property>
           </object>
         </property>
+        <property name="focusable">1</property>
+        <property name="has-frame">1</property>
+        <property name="height-request">150</property>
+        <property name="margin-top">5</property>
+        <property name="vexpand">1</property>
       </object>
     </child>
   </object>

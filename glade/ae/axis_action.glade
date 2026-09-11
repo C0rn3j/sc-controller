@@ -1,39 +1,41 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <!-- interface-name axis_action.glade -->
+  <requires lib="gtk" version="4.14"/>
   <object class="GtkAdjustment" id="adjAreaX1">
-    <property name="upper">9999</property>
-    <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="upper">9999</property>
   </object>
   <object class="GtkAdjustment" id="adjAreaX2">
-    <property name="upper">9999</property>
-    <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="upper">9999</property>
   </object>
   <object class="GtkAdjustment" id="adjAreaY1">
-    <property name="upper">9999</property>
-    <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="upper">9999</property>
   </object>
   <object class="GtkAdjustment" id="adjAreaY2">
-    <property name="upper">9999</property>
-    <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="upper">9999</property>
   </object>
   <object class="GtkAdjustment" id="adjFriction">
+    <property name="page-increment">10</property>
+    <property name="step-increment">1</property>
     <property name="upper">6</property>
     <property name="value">4</property>
-    <property name="step-increment">1</property>
-    <property name="page-increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjSensitivity">
     <property name="lower">0.01</property>
-    <property name="upper">10.01</property>
-    <property name="value">1</property>
-    <property name="step-increment">0.01</property>
     <property name="page-increment">0.10</property>
     <property name="page-size">0.01</property>
+    <property name="step-increment">0.01</property>
+    <property name="upper">10.01</property>
+    <property name="value">1</property>
   </object>
   <object class="GtkListStore" id="lstAreaType">
     <columns>
@@ -188,24 +190,25 @@
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkLabel" id="label5">
-        <property name="margin-top">10</property>
-        <property name="margin-bottom">10</property>
-        <property name="label" translatable="yes">Output</property>
-        <property name="xalign">0</property>
         <property name="attributes">
           0 -1 weight bold
         </property>
+        <property name="label" translatable="yes">Output</property>
+        <property name="margin-bottom">10</property>
+        <property name="margin-top">10</property>
+        <property name="xalign">0</property>
       </object>
     </child>
     <child>
       <object class="GtkComboBox" id="cbAxisOutput">
-        <property name="margin-start">20</property>
-        <property name="margin-end">20</property>
-        <property name="model">lstOutputMode</property>
         <property name="active">1</property>
-        <signal name="changed" handler="on_cbAxisOutput_changed" swapped="no"/>
+        <property name="margin-end">20</property>
+        <property name="margin-start">20</property>
+        <property name="model">lstOutputMode</property>
+        <signal name="changed" handler="on_cbAxisOutput_changed"/>
         <child>
           <object class="GtkCellRendererText" id="text"/>
+          <!-- Custom child fragments -->
           <attributes>
             <attribute name="text">1</attribute>
           </attributes>
@@ -214,79 +217,77 @@
     </child>
     <child>
       <object class="GtkStack" id="stActionData">
-        <property name="margin-top">10</property>
         <property name="margin-bottom">10</property>
+        <property name="margin-top">10</property>
         <property name="transition-type">crossfade</property>
         <child>
           <object class="GtkStackPage">
-            <property name="name">page4</property>
-            <property name="title" translatable="yes">page4</property>
             <property name="child">
               <object class="GtkFixed" id="nothing"/>
             </property>
+            <property name="name">page4</property>
+            <property name="title" translatable="yes">page4</property>
           </object>
         </child>
         <child>
           <object class="GtkStackPage">
-            <property name="name">page21</property>
-            <property name="title" translatable="yes">page21</property>
             <property name="child">
               <object class="GtkBox" id="vbButton">
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkLabel" id="label91">
-                    <property name="margin-bottom">10</property>
-                    <property name="label" translatable="yes">Button</property>
-                    <property name="xalign">0</property>
                     <property name="attributes">
                       0 -1 weight bold
                     </property>
+                    <property name="label" translatable="yes">Button</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="xalign">0</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkButton" id="btSingleButton">
-                    <property name="label" translatable="yes">A</property>
                     <property name="focusable">1</property>
-                    <property name="receives-default">1</property>
-                    <property name="margin-start">150</property>
+                    <property name="label" translatable="yes">A</property>
                     <property name="margin-end">150</property>
-                    <signal name="clicked" handler="on_btSingleButton_clicked" swapped="no"/>
+                    <property name="margin-start">150</property>
+                    <property name="receives-default">1</property>
+                    <signal name="clicked" handler="on_btSingleButton_clicked"/>
                   </object>
                 </child>
               </object>
             </property>
+            <property name="name">page21</property>
+            <property name="title" translatable="yes">page21</property>
           </object>
         </child>
         <child>
           <object class="GtkStackPage">
-            <property name="name">page0</property>
-            <property name="title" translatable="yes">page0</property>
             <property name="child">
               <object class="GtkGrid" id="grArea">
                 <child>
                   <object class="GtkLabel" id="lblArea">
-                    <property name="label" translatable="yes">Region Options</property>
-                    <property name="xalign">0</property>
                     <property name="attributes">
                       0 -1 weight bold
                     </property>
+                    <property name="label" translatable="yes">Region Options</property>
+                    <property name="xalign">0</property>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">0</property>
                       <property name="column-span">2</property>
+                      <property name="row">0</property>
                     </layout>
                   </object>
                 </child>
                 <child>
                   <object class="GtkLabel" id="label_n1">
-                    <property name="margin-start">10</property>
-                    <property name="margin-end">10</property>
-                    <property name="margin-top">10</property>
-                    <property name="label" translatable="yes">Type</property>
-                    <property name="xalign">0</property>
                     <property name="attributes">
                       0 -1 weight bold
                     </property>
+                    <property name="label" translatable="yes">Type</property>
+                    <property name="margin-end">10</property>
+                    <property name="margin-start">10</property>
+                    <property name="margin-top">10</property>
+                    <property name="xalign">0</property>
                     <layout>
                       <property name="column">0</property>
                       <property name="row">1</property>
@@ -295,13 +296,14 @@
                 </child>
                 <child>
                   <object class="GtkComboBox" id="cbAreaType">
+                    <property name="active">1</property>
                     <property name="margin-end">10</property>
                     <property name="margin-top">10</property>
                     <property name="model">lstAreaType</property>
-                    <property name="active">1</property>
-                    <signal name="changed" handler="on_area_options_changed" swapped="no"/>
+                    <signal name="changed" handler="on_area_options_changed"/>
                     <child>
                       <object class="GtkCellRendererText" id="text1"/>
+                      <!-- Custom child fragments -->
                       <attributes>
                         <attribute name="text">0</attribute>
                       </attributes>
@@ -314,14 +316,14 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="label_n2">
-                    <property name="margin-start">10</property>
-                    <property name="margin-end">10</property>
-                    <property name="margin-top">10</property>
-                    <property name="label" translatable="yes">Coordinates</property>
-                    <property name="xalign">0</property>
                     <property name="attributes">
                       0 -1 weight bold
                     </property>
+                    <property name="label" translatable="yes">Coordinates</property>
+                    <property name="margin-end">10</property>
+                    <property name="margin-start">10</property>
+                    <property name="margin-top">10</property>
+                    <property name="xalign">0</property>
                     <layout>
                       <property name="column">0</property>
                       <property name="row">2</property>
@@ -330,51 +332,51 @@
                 </child>
                 <child>
                   <object class="GtkBox" id="vbAreaOptions">
+                    <property name="homogeneous">1</property>
                     <property name="margin-start">10</property>
                     <property name="margin-top">10</property>
-                    <property name="homogeneous">1</property>
-                    <layout>
-                      <property name="column">0</property>
-                      <property name="row">3</property>
-                      <property name="column-span">2</property>
-                    </layout>
                     <child>
                       <object class="GtkCheckButton" id="cbAreaClickEnabled">
-                        <property name="focusable">1</property>
                         <property name="child">
                           <object class="GtkLabel" id="label_n3">
-                            <property name="label" translatable="yes">Pressing the Pad Clicks</property>
-                            <property name="xalign">0</property>
                             <property name="attributes">
                               0 -1 weight bold
                             </property>
+                            <property name="label" translatable="yes">Pressing the Pad Clicks</property>
+                            <property name="xalign">0</property>
                           </object>
                         </property>
+                        <property name="focusable">1</property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkCheckButton" id="cbAreaOSDEnabled">
-                        <property name="focusable">1</property>
-                        <signal name="toggled" handler="on_cbAreaOSDEnabled_toggled" swapped="no"/>
                         <property name="child">
                           <object class="GtkLabel" id="label_n4">
-                            <property name="label" translatable="yes">Display Area While Pad is Being Touched</property>
-                            <property name="xalign">0</property>
                             <property name="attributes">
                               0 -1 weight bold
                             </property>
+                            <property name="label" translatable="yes">Display Area While Pad is Being Touched</property>
+                            <property name="xalign">0</property>
                           </object>
                         </property>
+                        <property name="focusable">1</property>
+                        <signal name="toggled" handler="on_cbAreaOSDEnabled_toggled"/>
                       </object>
                     </child>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="column-span">2</property>
+                      <property name="row">3</property>
+                    </layout>
                   </object>
                 </child>
                 <child>
                   <object class="GtkGrid" id="grCoordinates">
                     <child>
                       <object class="GtkLabel" id="label_n6">
-                        <property name="margin-top">10</property>
                         <property name="label" translatable="yes">X1</property>
+                        <property name="margin-top">10</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">0</property>
@@ -384,21 +386,21 @@
                     </child>
                     <child>
                       <object class="GtkSpinButton" id="sbAreaX1">
-                        <property name="width-request">150</property>
-                        <property name="focusable">1</property>
-                        <property name="margin-start">5</property>
-                        <property name="margin-end">5</property>
-                        <property name="margin-top">10</property>
-                        <property name="hexpand">1</property>
-                        <property name="text" translatable="yes">0</property>
                         <property name="adjustment">adjAreaX1</property>
+                        <property name="focusable">1</property>
+                        <property name="hexpand">1</property>
+                        <property name="margin-end">5</property>
+                        <property name="margin-start">5</property>
+                        <property name="margin-top">10</property>
+                        <property name="text" translatable="yes">0</property>
+                        <property name="width-request">150</property>
+                        <signal name="output" handler="on_sbArea_output"/>
+                        <signal name="value-changed" handler="on_sbArea_changed"/>
                         <child>
                           <object class="GtkEventControllerFocus">
-                            <signal name="leave" handler="on_sbArea_focus_out_event" swapped="no"/>
+                            <signal name="leave" handler="on_sbArea_focus_out_event"/>
                           </object>
                         </child>
-                        <signal name="output" handler="on_sbArea_output" swapped="no"/>
-                        <signal name="value-changed" handler="on_sbArea_changed" swapped="no"/>
                         <layout>
                           <property name="column">1</property>
                           <property name="row">0</property>
@@ -407,8 +409,8 @@
                     </child>
                     <child>
                       <object class="GtkLabel" id="label_n9">
-                        <property name="margin-top">10</property>
                         <property name="label" translatable="yes">X2</property>
+                        <property name="margin-top">10</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">2</property>
@@ -418,20 +420,20 @@
                     </child>
                     <child>
                       <object class="GtkSpinButton" id="sbAreaX2">
-                        <property name="width-request">150</property>
+                        <property name="adjustment">adjAreaX2</property>
                         <property name="focusable">1</property>
-                        <property name="margin-start">5</property>
                         <property name="margin-end">5</property>
+                        <property name="margin-start">5</property>
                         <property name="margin-top">10</property>
                         <property name="text" translatable="yes">0</property>
-                        <property name="adjustment">adjAreaX2</property>
+                        <property name="width-request">150</property>
+                        <signal name="output" handler="on_sbArea_output"/>
+                        <signal name="value-changed" handler="on_sbArea_changed"/>
                         <child>
                           <object class="GtkEventControllerFocus">
-                            <signal name="leave" handler="on_sbArea_focus_out_event" swapped="no"/>
+                            <signal name="leave" handler="on_sbArea_focus_out_event"/>
                           </object>
                         </child>
-                        <signal name="output" handler="on_sbArea_output" swapped="no"/>
-                        <signal name="value-changed" handler="on_sbArea_changed" swapped="no"/>
                         <layout>
                           <property name="column">3</property>
                           <property name="row">0</property>
@@ -440,8 +442,8 @@
                     </child>
                     <child>
                       <object class="GtkLabel" id="label_n10">
-                        <property name="margin-top">10</property>
                         <property name="label" translatable="yes">Y1</property>
+                        <property name="margin-top">10</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">4</property>
@@ -451,21 +453,21 @@
                     </child>
                     <child>
                       <object class="GtkSpinButton" id="sbAreaY1">
-                        <property name="width-request">150</property>
-                        <property name="focusable">1</property>
-                        <property name="margin-start">5</property>
-                        <property name="margin-end">5</property>
-                        <property name="margin-top">10</property>
-                        <property name="hexpand">1</property>
-                        <property name="text" translatable="yes">0</property>
                         <property name="adjustment">adjAreaY1</property>
+                        <property name="focusable">1</property>
+                        <property name="hexpand">1</property>
+                        <property name="margin-end">5</property>
+                        <property name="margin-start">5</property>
+                        <property name="margin-top">10</property>
+                        <property name="text" translatable="yes">0</property>
+                        <property name="width-request">150</property>
+                        <signal name="output" handler="on_sbArea_output"/>
+                        <signal name="value-changed" handler="on_sbArea_changed"/>
                         <child>
                           <object class="GtkEventControllerFocus">
-                            <signal name="leave" handler="on_sbArea_focus_out_event" swapped="no"/>
+                            <signal name="leave" handler="on_sbArea_focus_out_event"/>
                           </object>
                         </child>
-                        <signal name="output" handler="on_sbArea_output" swapped="no"/>
-                        <signal name="value-changed" handler="on_sbArea_changed" swapped="no"/>
                         <layout>
                           <property name="column">5</property>
                           <property name="row">0</property>
@@ -474,8 +476,8 @@
                     </child>
                     <child>
                       <object class="GtkLabel" id="label_n15">
-                        <property name="margin-top">10</property>
                         <property name="label" translatable="yes">Y2</property>
+                        <property name="margin-top">10</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">6</property>
@@ -485,73 +487,25 @@
                     </child>
                     <child>
                       <object class="GtkSpinButton" id="sbAreaY2">
-                        <property name="width-request">150</property>
+                        <property name="adjustment">adjAreaY2</property>
                         <property name="focusable">1</property>
-                        <property name="margin-start">5</property>
                         <property name="margin-end">10</property>
+                        <property name="margin-start">5</property>
                         <property name="margin-top">10</property>
                         <property name="text" translatable="yes">0</property>
-                        <property name="adjustment">adjAreaY2</property>
+                        <property name="width-request">150</property>
+                        <signal name="output" handler="on_sbArea_output"/>
+                        <signal name="value-changed" handler="on_sbArea_changed"/>
                         <child>
                           <object class="GtkEventControllerFocus">
-                            <signal name="leave" handler="on_sbArea_focus_out_event" swapped="no"/>
+                            <signal name="leave" handler="on_sbArea_focus_out_event"/>
                           </object>
                         </child>
-                        <signal name="output" handler="on_sbArea_output" swapped="no"/>
-                        <signal name="value-changed" handler="on_sbArea_changed" swapped="no"/>
                         <layout>
                           <property name="column">7</property>
                           <property name="row">0</property>
                         </layout>
                       </object>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
                     </child>
                     <layout>
                       <property name="column">1</property>
@@ -559,48 +513,37 @@
                     </layout>
                   </object>
                 </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
               </object>
             </property>
+            <property name="name">page0</property>
+            <property name="title" translatable="yes">page0</property>
           </object>
         </child>
         <child>
           <object class="GtkStackPage">
-            <property name="name">page1</property>
-            <property name="title" translatable="yes">page1</property>
             <property name="child">
               <object class="GtkBox" id="vbMose">
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkLabel" id="label2">
-                    <property name="margin-bottom">10</property>
-                    <property name="label" translatable="yes">Output As</property>
-                    <property name="xalign">0</property>
                     <property name="attributes">
                       0 -1 weight bold
                     </property>
+                    <property name="label" translatable="yes">Output As</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="xalign">0</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkComboBox" id="cbMouseOutput">
-                    <property name="margin-start">20</property>
-                    <property name="margin-end">20</property>
-                    <property name="model">lstMouseOutput</property>
                     <property name="active">0</property>
-                    <signal name="changed" handler="on_mouse_options_changed" swapped="no"/>
+                    <property name="margin-end">20</property>
+                    <property name="margin-start">20</property>
+                    <property name="model">lstMouseOutput</property>
+                    <signal name="changed" handler="on_mouse_options_changed"/>
                     <child>
                       <object class="GtkCellRendererText" id="text2"/>
+                      <!-- Custom child fragments -->
                       <attributes>
                         <attribute name="text">0</attribute>
                       </attributes>
@@ -609,41 +552,38 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lblSetupTrackball">
-                    <property name="margin-start">20</property>
+                    <property name="label" translatable="yes">&lt;a href="advanced://0#cbBallMode"&gt;Setup or disable Trackball Mode&lt;/a&gt;</property>
                     <property name="margin-end">20</property>
+                    <property name="margin-start">20</property>
                     <property name="margin-top">5</property>
-                    <property name="label" translatable="yes">&lt;a href=&quot;advanced://0#cbBallMode&quot;&gt;Setup or disable Trackball Mode&lt;/a&gt;</property>
                     <property name="use-markup">1</property>
                     <property name="xalign">0</property>
-                    <signal name="activate-link" handler="on_lblSetupTrackball_activate_link" swapped="no"/>
+                    <signal name="activate-link" handler="on_lblSetupTrackball_activate_link"/>
                   </object>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
               </object>
             </property>
+            <property name="name">page1</property>
+            <property name="title" translatable="yes">page1</property>
           </object>
         </child>
         <child>
           <object class="GtkStackPage">
-            <property name="name">grCircular</property>
-            <property name="title" translatable="yes">page2</property>
             <property name="child">
               <object class="GtkGrid" id="grCircular">
                 <property name="hexpand">0</property>
                 <child>
                   <object class="GtkButton" id="btClearCircularAxis">
-                    <property name="focusable">1</property>
-                    <property name="receives-default">1</property>
-                    <property name="margin-start">10</property>
-                    <property name="margin-end">100</property>
-                    <signal name="clicked" handler="on_btClearCircularAxis_clicked" swapped="no"/>
                     <property name="child">
                       <object class="GtkImage" id="image1">
                         <property name="icon-name">edit-clear-symbolic</property>
                       </object>
                     </property>
+                    <property name="focusable">1</property>
+                    <property name="margin-end">100</property>
+                    <property name="margin-start">10</property>
+                    <property name="receives-default">1</property>
+                    <signal name="clicked" handler="on_btClearCircularAxis_clicked"/>
                     <layout>
                       <property name="column">2</property>
                       <property name="row">1</property>
@@ -652,16 +592,16 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="btClearCircularButtons">
-                    <property name="focusable">1</property>
-                    <property name="receives-default">1</property>
-                    <property name="margin-start">10</property>
-                    <property name="margin-end">100</property>
-                    <signal name="clicked" handler="on_btClearCircularButtons_clicked" swapped="no"/>
                     <property name="child">
                       <object class="GtkImage" id="image2">
                         <property name="icon-name">edit-clear-symbolic</property>
                       </object>
                     </property>
+                    <property name="focusable">1</property>
+                    <property name="margin-end">100</property>
+                    <property name="margin-start">10</property>
+                    <property name="receives-default">1</property>
+                    <signal name="clicked" handler="on_btClearCircularButtons_clicked"/>
                     <layout>
                       <property name="column">2</property>
                       <property name="row">3</property>
@@ -670,60 +610,60 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="label1">
-                    <property name="margin-bottom">10</property>
-                    <property name="hexpand">0</property>
-                    <property name="label" translatable="yes">Output Axis</property>
-                    <property name="xalign">0</property>
                     <property name="attributes">
                       0 -1 weight bold
                     </property>
+                    <property name="hexpand">0</property>
+                    <property name="label" translatable="yes">Output Axis</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="xalign">0</property>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">0</property>
                       <property name="column-span">3</property>
+                      <property name="row">0</property>
                     </layout>
                   </object>
                 </child>
                 <child>
                   <object class="GtkLabel" id="label4">
-                    <property name="margin-top">5</property>
-                    <property name="margin-bottom">10</property>
-                    <property name="hexpand">0</property>
-                    <property name="label" translatable="yes">Output Buttons</property>
-                    <property name="xalign">0</property>
                     <property name="attributes">
                       0 -1 weight bold
                     </property>
+                    <property name="hexpand">0</property>
+                    <property name="label" translatable="yes">Output Buttons</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="margin-top">5</property>
+                    <property name="xalign">0</property>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">2</property>
                       <property name="column-span">3</property>
+                      <property name="row">2</property>
                     </layout>
                   </object>
                 </child>
                 <child>
                   <object class="GtkButton" id="btCircularAxis">
-                    <property name="label" translatable="yes">Mouse Wheel</property>
                     <property name="focusable">1</property>
-                    <property name="receives-default">1</property>
-                    <property name="margin-start">100</property>
                     <property name="hexpand">1</property>
-                    <signal name="clicked" handler="on_btCircularAxis_clicked" swapped="no"/>
+                    <property name="label" translatable="yes">Mouse Wheel</property>
+                    <property name="margin-start">100</property>
+                    <property name="receives-default">1</property>
+                    <signal name="clicked" handler="on_btCircularAxis_clicked"/>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">1</property>
                       <property name="column-span">2</property>
+                      <property name="row">1</property>
                     </layout>
                   </object>
                 </child>
                 <child>
                   <object class="GtkButton" id="btCircularButton0">
-                    <property name="label" translatable="yes">(not set)</property>
                     <property name="focusable">1</property>
-                    <property name="receives-default">1</property>
-                    <property name="margin-start">100</property>
+                    <property name="label" translatable="yes">(not set)</property>
                     <property name="margin-end">5</property>
-                    <signal name="clicked" handler="on_btCircularButton_clicked" swapped="no"/>
+                    <property name="margin-start">100</property>
+                    <property name="receives-default">1</property>
+                    <signal name="clicked" handler="on_btCircularButton_clicked"/>
                     <layout>
                       <property name="column">0</property>
                       <property name="row">3</property>
@@ -732,11 +672,11 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="btCircularButton1">
-                    <property name="label" translatable="yes">(not set)</property>
                     <property name="focusable">1</property>
-                    <property name="receives-default">1</property>
+                    <property name="label" translatable="yes">(not set)</property>
                     <property name="margin-start">5</property>
-                    <signal name="clicked" handler="on_btCircularButton_clicked" swapped="no"/>
+                    <property name="receives-default">1</property>
+                    <signal name="clicked" handler="on_btCircularButton_clicked"/>
                     <layout>
                       <property name="column">1</property>
                       <property name="row">3</property>
@@ -745,6 +685,8 @@
                 </child>
               </object>
             </property>
+            <property name="name">grCircular</property>
+            <property name="title" translatable="yes">page2</property>
           </object>
         </child>
       </object>

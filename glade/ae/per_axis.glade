@@ -1,24 +1,22 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <!-- interface-name per_axis.glade -->
+  <requires lib="gtk" version="4.14"/>
   <object class="GtkBox" id="per_axis">
-    <property name="margin-start">50</property>
     <property name="margin-end">50</property>
+    <property name="margin-start">50</property>
     <property name="margin-top">20</property>
     <property name="orientation">vertical</property>
     <property name="spacing">10</property>
     <child>
       <object class="GtkButton" id="btAxisX">
-        <property name="focusable">1</property>
-        <property name="receives-default">1</property>
-        <property name="hexpand">1</property>
-        <signal name="clicked" handler="on_btAxisX_clicked" swapped="no"/>
         <property name="child">
           <object class="GtkBox" id="box8">
             <child>
               <object class="GtkLabel" id="label6">
-                <property name="width-request">200</property>
                 <property name="label" translatable="yes">X Axis</property>
+                <property name="width-request">200</property>
                 <property name="xalign">0</property>
               </object>
             </child>
@@ -33,20 +31,20 @@
             </child>
           </object>
         </property>
+        <property name="focusable">1</property>
+        <property name="hexpand">1</property>
+        <property name="receives-default">1</property>
+        <signal name="clicked" handler="on_btAxisX_clicked"/>
       </object>
     </child>
     <child>
       <object class="GtkButton" id="btAxisY">
-        <property name="focusable">1</property>
-        <property name="receives-default">1</property>
-        <property name="hexpand">1</property>
-        <signal name="clicked" handler="on_btAxisY_clicked" swapped="no"/>
         <property name="child">
           <object class="GtkBox" id="box9">
             <child>
               <object class="GtkLabel" id="label8">
-                <property name="width-request">200</property>
                 <property name="label" translatable="yes">Y Axis</property>
+                <property name="width-request">200</property>
                 <property name="xalign">0</property>
               </object>
             </child>
@@ -61,6 +59,10 @@
             </child>
           </object>
         </property>
+        <property name="focusable">1</property>
+        <property name="hexpand">1</property>
+        <property name="receives-default">1</property>
+        <signal name="clicked" handler="on_btAxisY_clicked"/>
       </object>
     </child>
   </object>

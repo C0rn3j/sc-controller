@@ -1,28 +1,30 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <!-- interface-name controller_settings.glade -->
+  <requires lib="gtk" version="4.14"/>
   <object class="GtkAdjustment" id="adjIdleTimeout">
     <property name="lower">60</property>
-    <property name="upper">7200</property>
-    <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="upper">7200</property>
   </object>
   <object class="GtkAdjustment" id="adjLED">
-    <property name="upper">100</property>
-    <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="upper">100</property>
   </object>
   <object class="GtkAdjustment" id="adjLeftRotation">
     <property name="lower">-180</property>
-    <property name="upper">180</property>
-    <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="upper">180</property>
   </object>
   <object class="GtkAdjustment" id="adjRightRotation">
     <property name="lower">-180</property>
-    <property name="upper">180</property>
-    <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="upper">180</property>
   </object>
   <object class="GtkListStore" id="lstButton">
     <columns>
@@ -149,29 +151,20 @@
     </columns>
   </object>
   <object class="GtkWindow" id="Dialog">
-    <property name="width-request">650</property>
-    <property name="resizable">0</property>
-    <property name="destroy-with-parent">1</property>
-    <signal name="destroy" handler="on_Dialog_destroy" swapped="no"/>
-    <child>
-      <object class="GtkEventControllerKey">
-        <signal name="key-pressed" handler="on_window_key_press_event" swapped="no"/>
-      </object>
-    </child>
     <property name="child">
       <object class="GtkGrid" id="grid12">
-        <property name="margin-start">10</property>
-        <property name="margin-end">10</property>
-        <property name="margin-top">10</property>
         <property name="margin-bottom">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">10</property>
         <child>
           <object class="GtkLabel" id="label30">
-            <property name="margin-top">10</property>
-            <property name="label" translatable="yes">LED brightness</property>
-            <property name="xalign">0</property>
             <property name="attributes">
               0 -1 weight bold
             </property>
+            <property name="label" translatable="yes">LED brightness</property>
+            <property name="margin-top">10</property>
+            <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
               <property name="row">4</property>
@@ -180,17 +173,17 @@
         </child>
         <child>
           <object class="GtkScale" id="sclLED">
+            <property name="adjustment">adjLED</property>
+            <property name="digits">0</property>
             <property name="draw-value">1</property>
             <property name="focusable">1</property>
-            <property name="margin-start">10</property>
-            <property name="margin-end">10</property>
-            <property name="margin-top">5</property>
             <property name="hexpand">1</property>
-            <property name="adjustment">adjLED</property>
+            <property name="margin-end">10</property>
+            <property name="margin-start">10</property>
+            <property name="margin-top">5</property>
             <property name="round-digits">0</property>
-            <property name="digits">0</property>
             <property name="value-pos">right</property>
-            <signal name="value-changed" handler="on_sclLED_value_changed" swapped="no"/>
+            <signal name="value-changed" handler="on_sclLED_value_changed"/>
             <layout>
               <property name="column">0</property>
               <property name="row">5</property>
@@ -199,11 +192,11 @@
         </child>
         <child>
           <object class="GtkLabel" id="label1">
-            <property name="label" translatable="yes">Controller Name</property>
-            <property name="xalign">0</property>
             <property name="attributes">
               0 -1 weight bold
             </property>
+            <property name="label" translatable="yes">Controller Name</property>
+            <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
               <property name="row">0</property>
@@ -212,12 +205,12 @@
         </child>
         <child>
           <object class="GtkLabel" id="label2">
-            <property name="margin-top">5</property>
-            <property name="label" translatable="yes">Icon</property>
-            <property name="xalign">0</property>
             <property name="attributes">
               0 -1 weight bold
             </property>
+            <property name="label" translatable="yes">Icon</property>
+            <property name="margin-top">5</property>
+            <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
               <property name="row">2</property>
@@ -227,9 +220,9 @@
         <child>
           <object class="GtkEntry" id="txName">
             <property name="focusable">1</property>
-            <property name="margin-start">20</property>
             <property name="margin-end">20</property>
-            <signal name="changed" handler="save_config" swapped="no"/>
+            <property name="margin-start">20</property>
+            <signal name="changed" handler="save_config"/>
             <layout>
               <property name="column">0</property>
               <property name="row">1</property>
@@ -238,18 +231,20 @@
         </child>
         <child>
           <object class="GtkComboBox" id="cbIcon">
-            <property name="margin-start">20</property>
             <property name="margin-end">20</property>
+            <property name="margin-start">20</property>
             <property name="model">lstIcons</property>
-            <signal name="changed" handler="save_config" swapped="no"/>
+            <signal name="changed" handler="save_config"/>
             <child>
               <object class="GtkCellRendererPixbuf" id="crIcon"/>
+              <!-- Custom child fragments -->
               <attributes>
                 <attribute name="pixbuf">3</attribute>
               </attributes>
             </child>
             <child>
               <object class="GtkCellRendererText" id="crText"/>
+              <!-- Custom child fragments -->
               <attributes>
                 <attribute name="text">2</attribute>
               </attributes>
@@ -262,18 +257,18 @@
         </child>
         <child>
           <object class="GtkCheckButton" id="cbAlignOSD">
-            <property name="visible">0</property>
-            <property name="name">0</property>
             <property name="focusable">1</property>
             <property name="margin-top">5</property>
-            <signal name="toggled" handler="save_config" swapped="no"/>
+            <property name="name">0</property>
+            <property name="visible">0</property>
+            <signal name="toggled" handler="save_config"/>
             <child>
               <object class="GtkLabel" id="label3">
-                <property name="label" translatable="yes">Right-aligned OSD</property>
-                <property name="xalign">0</property>
                 <property name="attributes">
                   0 -1 weight bold
                 </property>
+                <property name="label" translatable="yes">Right-aligned OSD</property>
+                <property name="xalign">0</property>
               </object>
             </child>
             <layout>
@@ -284,11 +279,11 @@
         </child>
         <child>
           <object class="GtkLabel" id="label8">
-            <property name="label" translatable="yes">Automatically turn off when inactive for</property>
-            <property name="xalign">0</property>
             <property name="attributes">
               0 -1 weight bold
             </property>
+            <property name="label" translatable="yes">Automatically turn off when inactive for</property>
+            <property name="xalign">0</property>
             <layout>
               <property name="column">0</property>
               <property name="row">6</property>
@@ -297,15 +292,15 @@
         </child>
         <child>
           <object class="GtkScale" id="sclIdleTimeout">
+            <property name="adjustment">adjIdleTimeout</property>
+            <property name="digits">0</property>
             <property name="draw-value">1</property>
             <property name="focusable">1</property>
-            <property name="margin-top">5</property>
             <property name="hexpand">1</property>
-            <property name="adjustment">adjIdleTimeout</property>
+            <property name="margin-top">5</property>
             <property name="round-digits">0</property>
-            <property name="digits">0</property>
             <property name="value-pos">right</property>
-            <signal name="value-changed" handler="on_sclIdleTimeout_value_changed" swapped="no"/>
+            <signal name="value-changed" handler="on_sclIdleTimeout_value_changed"/>
             <layout>
               <property name="column">0</property>
               <property name="row">7</property>
@@ -315,21 +310,18 @@
         <child>
           <object class="GtkExpander" id="exTouchpadRotation">
             <property name="focusable">1</property>
-            <property name="margin-top">5</property>
-            <signal name="activate" handler="on_exTouchpadRotation_activate" swapped="no"/>
-            <child>
-              <placeholder/>
-            </child>
             <property name="label-widget">
               <object class="GtkLabel" id="label4">
-                <property name="margin-top">5</property>
-                <property name="label" translatable="yes">Touchpad Input Rotation</property>
-                <property name="xalign">0</property>
                 <property name="attributes">
                   0 -1 weight bold
                 </property>
+                <property name="label" translatable="yes">Touchpad Input Rotation</property>
+                <property name="margin-top">5</property>
+                <property name="xalign">0</property>
               </object>
             </property>
+            <property name="margin-top">5</property>
+            <signal name="activate" handler="on_exTouchpadRotation_activate"/>
             <layout>
               <property name="column">0</property>
               <property name="row">11</property>
@@ -340,27 +332,27 @@
           <object class="GtkRevealer" id="rvTouchpadRotation">
             <property name="child">
               <object class="GtkGrid" id="grTouchpadRotation">
-                <property name="margin-start">20</property>
                 <property name="margin-end">20</property>
+                <property name="margin-start">20</property>
                 <child>
                   <object class="GtkLabel" id="label5">
-                    <property name="margin-top">5</property>
                     <property name="label" translatable="yes">Applied to everything, even if profile sets no rotation on its actions.</property>
+                    <property name="margin-top">5</property>
                     <property name="xalign">0</property>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">0</property>
                       <property name="column-span">3</property>
+                      <property name="row">0</property>
                     </layout>
                   </object>
                 </child>
                 <child>
                   <object class="GtkLabel" id="label6">
-                    <property name="label" translatable="yes">Left Pad Angle</property>
-                    <property name="xalign">0</property>
                     <property name="attributes">
                       0 -1 weight bold
                     </property>
+                    <property name="label" translatable="yes">Left Pad Angle</property>
+                    <property name="xalign">0</property>
                     <layout>
                       <property name="column">0</property>
                       <property name="row">1</property>
@@ -369,11 +361,11 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="label7">
-                    <property name="label" translatable="yes">Right Pad Angle</property>
-                    <property name="xalign">0</property>
                     <property name="attributes">
                       0 -1 weight bold
                     </property>
+                    <property name="label" translatable="yes">Right Pad Angle</property>
+                    <property name="xalign">0</property>
                     <layout>
                       <property name="column">0</property>
                       <property name="row">2</property>
@@ -382,13 +374,13 @@
                 </child>
                 <child>
                   <object class="GtkScale" id="sclLeftRotation">
+                    <property name="adjustment">adjLeftRotation</property>
                     <property name="draw-value">1</property>
                     <property name="focusable">1</property>
                     <property name="hexpand">1</property>
-                    <property name="adjustment">adjLeftRotation</property>
                     <property name="round-digits">1</property>
                     <property name="value-pos">right</property>
-                    <signal name="value-changed" handler="on_rotation_value_changed" swapped="no"/>
+                    <signal name="value-changed" handler="on_rotation_value_changed"/>
                     <layout>
                       <property name="column">1</property>
                       <property name="row">1</property>
@@ -397,13 +389,13 @@
                 </child>
                 <child>
                   <object class="GtkScale" id="sclRightRotation">
+                    <property name="adjustment">adjRightRotation</property>
                     <property name="draw-value">1</property>
                     <property name="focusable">1</property>
                     <property name="hexpand">1</property>
-                    <property name="adjustment">adjRightRotation</property>
                     <property name="round-digits">1</property>
                     <property name="value-pos">right</property>
-                    <signal name="value-changed" handler="on_rotation_value_changed" swapped="no"/>
+                    <signal name="value-changed" handler="on_rotation_value_changed"/>
                     <layout>
                       <property name="column">1</property>
                       <property name="row">2</property>
@@ -412,14 +404,14 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="btClearLeftRotation">
-                    <property name="focusable">1</property>
-                    <property name="receives-default">1</property>
-                    <signal name="clicked" handler="on_btClearLeftRotation_clicked" swapped="no"/>
                     <property name="child">
                       <object class="GtkImage" id="image48">
                         <property name="icon-name">edit-clear-symbolic</property>
                       </object>
                     </property>
+                    <property name="focusable">1</property>
+                    <property name="receives-default">1</property>
+                    <signal name="clicked" handler="on_btClearLeftRotation_clicked"/>
                     <layout>
                       <property name="column">2</property>
                       <property name="row">1</property>
@@ -428,14 +420,14 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="btClearRightRotation">
-                    <property name="focusable">1</property>
-                    <property name="receives-default">1</property>
-                    <signal name="clicked" handler="on_btClearRightRotation_clicked" swapped="no"/>
                     <property name="child">
                       <object class="GtkImage" id="image56">
                         <property name="icon-name">edit-clear-symbolic</property>
                       </object>
                     </property>
+                    <property name="focusable">1</property>
+                    <property name="receives-default">1</property>
+                    <signal name="clicked" handler="on_btClearRightRotation_clicked"/>
                     <layout>
                       <property name="column">2</property>
                       <property name="row">2</property>
@@ -453,21 +445,18 @@
         <child>
           <object class="GtkExpander" id="exMenuButtons">
             <property name="focusable">1</property>
-            <property name="margin-top">5</property>
-            <signal name="activate" handler="on_exMenuButtons_activate" swapped="no"/>
-            <child>
-              <placeholder/>
-            </child>
             <property name="label-widget">
               <object class="GtkLabel" id="label9">
-                <property name="margin-top">5</property>
-                <property name="label" translatable="yes">Default Menu Controls</property>
-                <property name="xalign">0</property>
                 <property name="attributes">
                   0 -1 weight bold
                 </property>
+                <property name="label" translatable="yes">Default Menu Controls</property>
+                <property name="margin-top">5</property>
+                <property name="xalign">0</property>
               </object>
             </property>
+            <property name="margin-top">5</property>
+            <signal name="activate" handler="on_exMenuButtons_activate"/>
             <layout>
               <property name="column">0</property>
               <property name="row">9</property>
@@ -476,21 +465,19 @@
         </child>
         <child>
           <object class="GtkRevealer" id="rvMenuButtons">
-            <property name="margin-start">20</property>
-            <property name="margin-end">20</property>
             <property name="child">
               <object class="GtkGrid" id="grMenuButtons">
-                <property name="row-spacing">2</property>
                 <property name="column-spacing">5</property>
+                <property name="row-spacing">2</property>
                 <child>
                   <object class="GtkLabel" id="label10">
-                    <property name="margin-top">5</property>
                     <property name="label" translatable="yes">Used to control menus unless profile sets something different</property>
+                    <property name="margin-top">5</property>
                     <property name="xalign">0</property>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">0</property>
                       <property name="column-span">3</property>
+                      <property name="row">0</property>
                     </layout>
                   </object>
                 </child>
@@ -507,12 +494,13 @@
                 </child>
                 <child>
                   <object class="GtkComboBox" id="cbControlWith">
+                    <property name="active">0</property>
                     <property name="hexpand">1</property>
                     <property name="model">lstControlWith</property>
-                    <property name="active">0</property>
-                    <signal name="changed" handler="save_config" swapped="no"/>
+                    <signal name="changed" handler="save_config"/>
                     <child>
                       <object class="GtkCellRendererText" id="cellrenderertext5"/>
+                      <!-- Custom child fragments -->
                       <attributes>
                         <attribute name="text">0</attribute>
                       </attributes>
@@ -547,12 +535,13 @@
                 </child>
                 <child>
                   <object class="GtkComboBox" id="cbConfirmWith">
+                    <property name="active">0</property>
                     <property name="hexpand">1</property>
                     <property name="model">lstButton</property>
-                    <property name="active">0</property>
-                    <signal name="changed" handler="save_config" swapped="no"/>
+                    <signal name="changed" handler="save_config"/>
                     <child>
                       <object class="GtkCellRendererText" id="cellrenderertext6"/>
+                      <!-- Custom child fragments -->
                       <attributes>
                         <attribute name="text">0</attribute>
                       </attributes>
@@ -565,12 +554,13 @@
                 </child>
                 <child>
                   <object class="GtkComboBox" id="cbCancelWith">
+                    <property name="active">1</property>
                     <property name="hexpand">1</property>
                     <property name="model">lstButton</property>
-                    <property name="active">1</property>
-                    <signal name="changed" handler="save_config" swapped="no"/>
+                    <signal name="changed" handler="save_config"/>
                     <child>
                       <object class="GtkCellRendererText" id="cellrenderertext7"/>
+                      <!-- Custom child fragments -->
                       <attributes>
                         <attribute name="text">0</attribute>
                       </attributes>
@@ -583,14 +573,14 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="btClearControlWith">
-                    <property name="focusable">1</property>
-                    <property name="receives-default">1</property>
-                    <signal name="clicked" handler="on_btClearControlWith_clicked" swapped="no"/>
                     <property name="child">
                       <object class="GtkImage" id="image1">
                         <property name="icon-name">edit-clear-symbolic</property>
                       </object>
                     </property>
+                    <property name="focusable">1</property>
+                    <property name="receives-default">1</property>
+                    <signal name="clicked" handler="on_btClearControlWith_clicked"/>
                     <layout>
                       <property name="column">2</property>
                       <property name="row">1</property>
@@ -599,14 +589,14 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="btClearConfirmWith">
-                    <property name="focusable">1</property>
-                    <property name="receives-default">1</property>
-                    <signal name="clicked" handler="on_btClearConfirmWith_clicked" swapped="no"/>
                     <property name="child">
                       <object class="GtkImage" id="image2">
                         <property name="icon-name">edit-clear-symbolic</property>
                       </object>
                     </property>
+                    <property name="focusable">1</property>
+                    <property name="receives-default">1</property>
+                    <signal name="clicked" handler="on_btClearConfirmWith_clicked"/>
                     <layout>
                       <property name="column">2</property>
                       <property name="row">2</property>
@@ -615,14 +605,14 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="btClearCancelWith">
-                    <property name="focusable">1</property>
-                    <property name="receives-default">1</property>
-                    <signal name="clicked" handler="on_btClearCancelWith_clicked" swapped="no"/>
                     <property name="child">
                       <object class="GtkImage" id="image3">
                         <property name="icon-name">edit-clear-symbolic</property>
                       </object>
                     </property>
+                    <property name="focusable">1</property>
+                    <property name="receives-default">1</property>
+                    <signal name="clicked" handler="on_btClearCancelWith_clicked"/>
                     <layout>
                       <property name="column">2</property>
                       <property name="row">3</property>
@@ -631,92 +621,18 @@
                 </child>
               </object>
             </property>
+            <property name="margin-end">20</property>
+            <property name="margin-start">20</property>
             <layout>
               <property name="column">0</property>
               <property name="row">10</property>
             </layout>
           </object>
         </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
       </object>
     </property>
+    <property name="destroy-with-parent">1</property>
+    <property name="resizable">0</property>
     <property name="titlebar">
       <object class="GtkHeaderBar" id="header">
         <property name="title-widget">
@@ -729,5 +645,12 @@
         </property>
       </object>
     </property>
+    <property name="width-request">650</property>
+    <signal name="destroy" handler="on_Dialog_destroy"/>
+    <child>
+      <object class="GtkEventControllerKey">
+        <signal name="key-pressed" handler="on_window_key_press_event"/>
+      </object>
+    </child>
   </object>
 </interface>

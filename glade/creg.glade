@@ -1,8 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <!-- interface-name creg.glade -->
+  <requires lib="gtk" version="4.14"/>
   <object class="GtkTextBuffer" id="buffRawData">
-    <signal name="changed" handler="on_buffRawData_changed" swapped="no"/>
+    <signal name="changed" handler="on_buffRawData_changed"/>
   </object>
   <object class="GtkListStore" id="lstAccessMode">
     <columns>
@@ -64,75 +66,55 @@
     </columns>
   </object>
   <object class="GtkWindow" id="Dialog">
-    <property name="width-request">650</property>
-    <property name="resizable">0</property>
-    <property name="destroy-with-parent">1</property>
-    <signal name="destroy" handler="kill_tester" swapped="no"/>
-    <child>
-      <object class="GtkEventControllerKey">
-        <signal name="key-pressed" handler="on_window_key_press_event" swapped="no"/>
-      </object>
-    </child>
     <property name="child">
       <object class="GtkStack" id="stDialog">
-        <property name="transition-type">slide-left</property>
         <property name="interpolate-size">1</property>
+        <property name="transition-type">slide-left</property>
         <child>
           <object class="GtkStackPage">
-            <property name="name">page0</property>
-            <property name="title" translatable="yes">page0</property>
             <property name="child">
               <object class="GtkGrid" id="grDevices">
-                <property name="margin-start">10</property>
-                <property name="margin-end">10</property>
-                <property name="margin-top">10</property>
                 <property name="margin-bottom">10</property>
+                <property name="margin-end">10</property>
+                <property name="margin-start">10</property>
+                <property name="margin-top">10</property>
                 <child>
                   <object class="GtkLabel" id="label1">
-                    <property name="label" translatable="yes">Controller Device</property>
-                    <property name="xalign">0</property>
                     <property name="attributes">
                       0 -1 weight bold
                     </property>
+                    <property name="label" translatable="yes">Controller Device</property>
+                    <property name="xalign">0</property>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">1</property>
                       <property name="column-span">2</property>
+                      <property name="row">1</property>
                     </layout>
                   </object>
                 </child>
                 <child>
                   <object class="GtkLabel" id="label5">
-                    <property name="margin-start">20</property>
-                    <property name="margin-end">20</property>
-                    <property name="margin-bottom">10</property>
                     <property name="label" translatable="yes">This dialog allows to setup traditional controllers to be used with SC Controller.
 
 Please, select your controller from list bellow and click Next.</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="margin-end">20</property>
+                    <property name="margin-start">20</property>
                     <property name="xalign">0</property>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">0</property>
                       <property name="column-span">2</property>
+                      <property name="row">0</property>
                     </layout>
                   </object>
                 </child>
                 <child>
                   <object class="GtkScrolledWindow" id="swDevices">
-                    <property name="height-request">200</property>
-                    <property name="focusable">1</property>
-                    <property name="margin-start">1</property>
-                    <property name="margin-end">1</property>
-                    <property name="margin-top">1</property>
-                    <property name="margin-bottom">6</property>
-                    <property name="hexpand">1</property>
-                    <property name="vexpand">1</property>
-                    <property name="has-frame">1</property>
                     <property name="child">
                       <object class="GtkTreeView" id="tvDevices">
                         <property name="focusable">1</property>
-                        <property name="model">lstDevices</property>
                         <property name="headers-visible">0</property>
+                        <property name="model">lstDevices</property>
                         <child internal-child="selection">
                           <object class="GtkTreeSelection" id="tsDevices"/>
                         </child>
@@ -141,12 +123,14 @@ Please, select your controller from list bellow and click Next.</property>
                             <property name="title" translatable="yes">column</property>
                             <child>
                               <object class="GtkCellRendererPixbuf" id="tcDeviceIcon"/>
+                              <!-- Custom child fragments -->
                               <attributes>
                                 <attribute name="pixbuf">2</attribute>
                               </attributes>
                             </child>
                             <child>
                               <object class="GtkCellRendererText" id="tcDeviceName"/>
+                              <!-- Custom child fragments -->
                               <attributes>
                                 <attribute name="text">1</attribute>
                               </attributes>
@@ -155,10 +139,19 @@ Please, select your controller from list bellow and click Next.</property>
                         </child>
                       </object>
                     </property>
+                    <property name="focusable">1</property>
+                    <property name="has-frame">1</property>
+                    <property name="height-request">200</property>
+                    <property name="hexpand">1</property>
+                    <property name="margin-bottom">6</property>
+                    <property name="margin-end">1</property>
+                    <property name="margin-start">1</property>
+                    <property name="margin-top">1</property>
+                    <property name="vexpand">1</property>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">2</property>
                       <property name="column-span">2</property>
+                      <property name="row">2</property>
                     </layout>
                   </object>
                 </child>
@@ -167,7 +160,7 @@ Please, select your controller from list bellow and click Next.</property>
                     <property name="focusable">1</property>
                     <property name="halign">end</property>
                     <property name="hexpand">1</property>
-                    <signal name="toggled" handler="refresh_devices" swapped="no"/>
+                    <signal name="toggled" handler="refresh_devices"/>
                     <child>
                       <object class="GtkLabel" id="lblShowAllDevices">
                         <property name="label" translatable="yes">Show All Devices</property>
@@ -200,39 +193,27 @@ Please, select your controller from list bellow and click Next.</property>
                     </property>
                     <property name="focusable">1</property>
                     <property name="receives-default">1</property>
-                    <signal name="clicked" handler="refresh_devices" swapped="no"/>
+                    <signal name="clicked" handler="refresh_devices"/>
                     <layout>
                       <property name="column">0</property>
                       <property name="row">3</property>
                     </layout>
                   </object>
                 </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
               </object>
             </property>
+            <property name="name">page0</property>
+            <property name="title" translatable="yes">page0</property>
           </object>
         </child>
         <child>
           <object class="GtkStackPage">
-            <property name="name">page1</property>
-            <property name="title" translatable="yes">page1</property>
             <property name="child">
               <object class="GtkGrid" id="grSettings">
-                <property name="margin-start">10</property>
-                <property name="margin-end">10</property>
-                <property name="margin-top">10</property>
                 <property name="margin-bottom">10</property>
+                <property name="margin-end">10</property>
+                <property name="margin-start">10</property>
+                <property name="margin-top">10</property>
                 <child>
                   <object class="GtkLabel" id="label2">
                     <property name="hexpand">1</property>
@@ -242,70 +223,72 @@ Please, select options that are best describing controller you are configuring.<
                     <property name="xalign">0</property>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">0</property>
                       <property name="column-span">2</property>
+                      <property name="row">0</property>
                     </layout>
                   </object>
                 </child>
                 <child>
                   <object class="GtkComboBox" id="cbControllerType">
-                    <property name="model">lstControllerType</property>
                     <property name="active">0</property>
-                    <signal name="changed" handler="refresh_controller_image" swapped="no"/>
+                    <property name="model">lstControllerType</property>
+                    <signal name="changed" handler="refresh_controller_image"/>
                     <child>
                       <object class="GtkCellRendererText" id="crControllerType"/>
+                      <!-- Custom child fragments -->
                       <attributes>
                         <attribute name="text">1</attribute>
                       </attributes>
                     </child>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">2</property>
                       <property name="column-span">2</property>
+                      <property name="row">2</property>
                     </layout>
                   </object>
                 </child>
                 <child>
                   <object class="GtkLabel" id="label3">
-                    <property name="margin-top">20</property>
-                    <property name="label" translatable="yes">Sticks</property>
-                    <property name="xalign">0</property>
                     <property name="attributes">
                       0 -1 weight bold
                     </property>
+                    <property name="label" translatable="yes">Sticks</property>
+                    <property name="margin-top">20</property>
+                    <property name="xalign">0</property>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">1</property>
                       <property name="column-span">2</property>
+                      <property name="row">1</property>
                     </layout>
                   </object>
                 </child>
                 <child>
                   <object class="GtkLabel" id="label4">
-                    <property name="margin-end">10</property>
-                    <property name="margin-top">20</property>
-                    <property name="label" translatable="yes">Labels</property>
-                    <property name="xalign">0</property>
                     <property name="attributes">
                       0 -1 weight bold
                     </property>
+                    <property name="label" translatable="yes">Labels</property>
+                    <property name="margin-end">10</property>
+                    <property name="margin-top">20</property>
+                    <property name="xalign">0</property>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">3</property>
                       <property name="column-span">2</property>
+                      <property name="row">3</property>
                     </layout>
                   </object>
                 </child>
                 <child>
                   <object class="GtkComboBox" id="cbControllerButtons">
+                    <property name="active">0</property>
                     <property name="margin-end">10</property>
                     <property name="model">lstButtons</property>
-                    <property name="active">0</property>
-                    <signal name="changed" handler="refresh_controller_image" swapped="no"/>
+                    <signal name="changed" handler="refresh_controller_image"/>
                     <child>
                       <object class="GtkCellRendererPixbuf" id="crControllerButtonsA">
                         <property name="width">30</property>
                       </object>
+                      <!-- Custom child fragments -->
                       <attributes>
                         <attribute name="pixbuf">1</attribute>
                       </attributes>
@@ -314,6 +297,7 @@ Please, select options that are best describing controller you are configuring.<
                       <object class="GtkCellRendererPixbuf" id="crControllerButtonsB">
                         <property name="width">30</property>
                       </object>
+                      <!-- Custom child fragments -->
                       <attributes>
                         <attribute name="pixbuf">2</attribute>
                       </attributes>
@@ -322,6 +306,7 @@ Please, select options that are best describing controller you are configuring.<
                       <object class="GtkCellRendererPixbuf" id="crControllerButtonsX">
                         <property name="width">30</property>
                       </object>
+                      <!-- Custom child fragments -->
                       <attributes>
                         <attribute name="pixbuf">3</attribute>
                       </attributes>
@@ -330,6 +315,7 @@ Please, select options that are best describing controller you are configuring.<
                       <object class="GtkCellRendererPixbuf" id="crControllerButtonsY">
                         <property name="width">30</property>
                       </object>
+                      <!-- Custom child fragments -->
                       <attributes>
                         <attribute name="pixbuf">4</attribute>
                       </attributes>
@@ -339,148 +325,125 @@ Please, select options that are best describing controller you are configuring.<
                     </child>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">4</property>
                       <property name="column-span">2</property>
+                      <property name="row">4</property>
                     </layout>
                   </object>
                 </child>
                 <child>
                   <object class="GtkRevealer" id="rvController">
-                    <property name="margin-start">10</property>
-                    <property name="margin-end">10</property>
-                    <property name="margin-top">20</property>
-                    <property name="margin-bottom">10</property>
                     <property name="hexpand">1</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="margin-end">10</property>
+                    <property name="margin-start">10</property>
+                    <property name="margin-top">20</property>
                     <property name="vexpand">1</property>
-                    <child>
-                      <placeholder/>
-                    </child>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">5</property>
                       <property name="column-span">2</property>
+                      <property name="row">5</property>
                     </layout>
                   </object>
                 </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
               </object>
             </property>
+            <property name="name">page1</property>
+            <property name="title" translatable="yes">page1</property>
           </object>
         </child>
         <child>
           <object class="GtkStackPage">
-            <property name="name">page2</property>
-            <property name="title" translatable="yes">page2</property>
             <property name="child">
               <object class="GtkGrid" id="grBindings">
                 <property name="margin-bottom">10</property>
                 <child>
                   <object class="GtkLabel" id="label6">
-                    <property name="margin-start">10</property>
-                    <property name="margin-end">10</property>
-                    <property name="margin-top">10</property>
                     <property name="hexpand">1</property>
                     <property name="label" translatable="yes">&lt;b&gt;Input Mappings&lt;/b&gt;
 
 Please, press every button on the controller, push every trigger at least twice and move every stick. Make sure that correct buttons, sticks and triggers on image blinks blue when you do so.
 
 If anything is assigned incorrectly, click on button on image to (re)assign physical button to it.</property>
+                    <property name="margin-end">10</property>
+                    <property name="margin-start">10</property>
+                    <property name="margin-top">10</property>
+                    <property name="max-width-chars">60</property>
                     <property name="use-markup">1</property>
                     <property name="wrap">1</property>
-                    <property name="max-width-chars">60</property>
                     <property name="xalign">0</property>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">1</property>
                       <property name="column-span">3</property>
+                      <property name="row">1</property>
                     </layout>
                   </object>
                 </child>
                 <child>
                   <object class="GtkLabel" id="label7">
-                    <property name="margin-start">10</property>
-                    <property name="margin-end">10</property>
-                    <property name="hexpand">1</property>
-                    <property name="label" translatable="yes">Red colored controls are not assigned.</property>
-                    <property name="wrap">1</property>
-                    <property name="max-width-chars">60</property>
-                    <property name="xalign">1</property>
                     <property name="attributes">
                       0 -1 style italic
                     </property>
+                    <property name="hexpand">1</property>
+                    <property name="label" translatable="yes">Red colored controls are not assigned.</property>
+                    <property name="margin-end">10</property>
+                    <property name="margin-start">10</property>
+                    <property name="max-width-chars">60</property>
+                    <property name="wrap">1</property>
+                    <property name="xalign">1</property>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">3</property>
                       <property name="column-span">3</property>
+                      <property name="row">3</property>
                     </layout>
                   </object>
                 </child>
                 <child>
                   <object class="GtkFixed" id="fxController">
-                    <property name="width-request">32</property>
-                    <property name="height-request">32</property>
                     <property name="halign">center</property>
+                    <property name="height-request">32</property>
+                    <property name="width-request">32</property>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">2</property>
                       <property name="column-span">3</property>
+                      <property name="row">2</property>
                     </layout>
                   </object>
                 </child>
                 <child>
                   <object class="GtkRevealer" id="rvAdditionalOptions">
-                    <property name="margin-start">10</property>
-                    <property name="margin-end">10</property>
                     <property name="child">
                       <object class="GtkGrid" id="grAdditionalOptions">
-                        <property name="margin-start">20</property>
                         <property name="margin-end">20</property>
+                        <property name="margin-start">20</property>
                         <child>
                           <object class="GtkCheckButton" id="cbEmulateC">
-                            <property name="label" translatable="yes">Emulate center (guide) button by pressing Back + Start at once</property>
                             <property name="focusable">1</property>
                             <property name="hexpand">1</property>
+                            <property name="label" translatable="yes">Emulate center (guide) button by pressing Back + Start at once</property>
                             <layout>
                               <property name="column">0</property>
-                              <property name="row">0</property>
                               <property name="column-span">3</property>
+                              <property name="row">0</property>
                             </layout>
                           </object>
                         </child>
                         <child>
                           <object class="GtkLabel" id="lblInvertAxes">
-                            <property name="margin-top">5</property>
                             <property name="hexpand">1</property>
                             <property name="label" translatable="yes">Invert Axes</property>
+                            <property name="margin-top">5</property>
                             <property name="xalign">0</property>
                             <layout>
                               <property name="column">0</property>
-                              <property name="row">1</property>
                               <property name="column-span">3</property>
+                              <property name="row">1</property>
                             </layout>
                           </object>
                         </child>
                         <child>
                           <object class="GtkLabel" id="lblLeftStick">
-                            <property name="margin-start">40</property>
                             <property name="label" translatable="yes">Left stick</property>
+                            <property name="margin-start">40</property>
                             <property name="xalign">0</property>
                             <layout>
                               <property name="column">0</property>
@@ -490,8 +453,8 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                         </child>
                         <child>
                           <object class="GtkLabel" id="lblRightStick">
-                            <property name="margin-start">40</property>
                             <property name="label" translatable="yes">Right stick (right pad)</property>
+                            <property name="margin-start">40</property>
                             <property name="xalign">0</property>
                             <layout>
                               <property name="column">0</property>
@@ -501,8 +464,8 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                         </child>
                         <child>
                           <object class="GtkLabel" id="lblDPAD">
-                            <property name="margin-start">40</property>
                             <property name="label" translatable="yes">DPAD (left pad)</property>
+                            <property name="margin-start">40</property>
                             <property name="xalign">0</property>
                             <layout>
                               <property name="column">0</property>
@@ -512,10 +475,10 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                         </child>
                         <child>
                           <object class="GtkCheckButton" id="cbInvert_0">
+                            <property name="focusable">1</property>
                             <property name="label" translatable="yes">X</property>
                             <property name="name">cbInvert_0</property>
-                            <property name="focusable">1</property>
-                            <signal name="toggled" handler="cbInvert_toggled_cb" swapped="no"/>
+                            <signal name="toggled" handler="cbInvert_toggled_cb"/>
                             <layout>
                               <property name="column">1</property>
                               <property name="row">2</property>
@@ -524,10 +487,10 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                         </child>
                         <child>
                           <object class="GtkCheckButton" id="cbInvert_1">
+                            <property name="focusable">1</property>
                             <property name="label" translatable="yes">Y</property>
                             <property name="name">cbInvert_1</property>
-                            <property name="focusable">1</property>
-                            <signal name="toggled" handler="cbInvert_toggled_cb" swapped="no"/>
+                            <signal name="toggled" handler="cbInvert_toggled_cb"/>
                             <layout>
                               <property name="column">2</property>
                               <property name="row">2</property>
@@ -536,10 +499,10 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                         </child>
                         <child>
                           <object class="GtkCheckButton" id="cbInvert_2">
+                            <property name="focusable">1</property>
                             <property name="label" translatable="yes">X</property>
                             <property name="name">cbInvert_2</property>
-                            <property name="focusable">1</property>
-                            <signal name="toggled" handler="cbInvert_toggled_cb" swapped="no"/>
+                            <signal name="toggled" handler="cbInvert_toggled_cb"/>
                             <layout>
                               <property name="column">1</property>
                               <property name="row">3</property>
@@ -548,10 +511,10 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                         </child>
                         <child>
                           <object class="GtkCheckButton" id="cbInvert_4">
+                            <property name="focusable">1</property>
                             <property name="label" translatable="yes">X</property>
                             <property name="name">cbInvert_4</property>
-                            <property name="focusable">1</property>
-                            <signal name="toggled" handler="cbInvert_toggled_cb" swapped="no"/>
+                            <signal name="toggled" handler="cbInvert_toggled_cb"/>
                             <layout>
                               <property name="column">1</property>
                               <property name="row">4</property>
@@ -560,10 +523,10 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                         </child>
                         <child>
                           <object class="GtkCheckButton" id="cbInvert_3">
+                            <property name="focusable">1</property>
                             <property name="label" translatable="yes">Y</property>
                             <property name="name">cbInvert_3</property>
-                            <property name="focusable">1</property>
-                            <signal name="toggled" handler="cbInvert_toggled_cb" swapped="no"/>
+                            <signal name="toggled" handler="cbInvert_toggled_cb"/>
                             <layout>
                               <property name="column">2</property>
                               <property name="row">3</property>
@@ -572,10 +535,10 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                         </child>
                         <child>
                           <object class="GtkCheckButton" id="cbInvert_5">
+                            <property name="focusable">1</property>
                             <property name="label" translatable="yes">Y</property>
                             <property name="name">cbInvert_5</property>
-                            <property name="focusable">1</property>
-                            <signal name="toggled" handler="cbInvert_toggled_cb" swapped="no"/>
+                            <signal name="toggled" handler="cbInvert_toggled_cb"/>
                             <layout>
                               <property name="column">2</property>
                               <property name="row">4</property>
@@ -584,8 +547,8 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                         </child>
                         <child>
                           <object class="GtkLabel" id="lblAccessMode">
-                            <property name="margin-top">10</property>
                             <property name="label" translatable="yes">Access Mode</property>
+                            <property name="margin-top">10</property>
                             <property name="xalign">0</property>
                             <layout>
                               <property name="column">0</property>
@@ -595,11 +558,12 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                         </child>
                         <child>
                           <object class="GtkComboBox" id="cbAccessMode">
-                            <property name="model">lstAccessMode</property>
                             <property name="active">1</property>
-                            <signal name="changed" handler="on_cbAccessMode_changed" swapped="no"/>
+                            <property name="model">lstAccessMode</property>
+                            <signal name="changed" handler="on_cbAccessMode_changed"/>
                             <child>
                               <object class="GtkCellRendererText" id="crAccessMode1"/>
+                              <!-- Custom child fragments -->
                               <attributes>
                                 <attribute name="sensitive">2</attribute>
                                 <attribute name="markup">1</attribute>
@@ -607,97 +571,93 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                             </child>
                             <layout>
                               <property name="column">1</property>
-                              <property name="row">5</property>
                               <property name="column-span">2</property>
+                              <property name="row">5</property>
                             </layout>
                           </object>
                         </child>
                       </object>
                     </property>
+                    <property name="margin-end">10</property>
+                    <property name="margin-start">10</property>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">5</property>
                       <property name="column-span">3</property>
+                      <property name="row">5</property>
                     </layout>
                   </object>
                 </child>
                 <child>
                   <object class="GtkExpander" id="exAdditionalOptions">
                     <property name="focusable">1</property>
-                    <property name="margin-start">10</property>
-                    <property name="margin-end">10</property>
-                    <property name="margin-top">20</property>
-                    <signal name="activate" handler="on_exAdditionalOptions_activate" swapped="no"/>
-                    <child>
-                      <placeholder/>
-                    </child>
                     <property name="label-widget">
                       <object class="GtkLabel" id="lblAdditionalOptions">
-                        <property name="label" translatable="yes">Advanced Options</property>
                         <property name="attributes">
                           0 -1 weight bold
                         </property>
+                        <property name="label" translatable="yes">Advanced Options</property>
                       </object>
                     </property>
+                    <property name="margin-end">10</property>
+                    <property name="margin-start">10</property>
+                    <property name="margin-top">20</property>
+                    <signal name="activate" handler="on_exAdditionalOptions_activate"/>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">4</property>
                       <property name="column-span">3</property>
+                      <property name="row">4</property>
                     </layout>
                   </object>
                 </child>
                 <child>
                   <object class="GtkExpander" id="exRawData">
                     <property name="focusable">1</property>
-                    <property name="margin-start">10</property>
-                    <property name="margin-end">10</property>
-                    <property name="margin-top">5</property>
-                    <signal name="activate" handler="on_exRawData_activate" swapped="no"/>
-                    <child>
-                      <placeholder/>
-                    </child>
                     <property name="label-widget">
                       <object class="GtkLabel" id="lblRawData">
-                        <property name="label" translatable="yes">Display Raw Data</property>
                         <property name="attributes">
                           0 -1 weight bold
                         </property>
+                        <property name="label" translatable="yes">Display Raw Data</property>
                       </object>
                     </property>
+                    <property name="margin-end">10</property>
+                    <property name="margin-start">10</property>
+                    <property name="margin-top">5</property>
+                    <signal name="activate" handler="on_exRawData_activate"/>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">6</property>
                       <property name="column-span">3</property>
+                      <property name="row">6</property>
                     </layout>
                   </object>
                 </child>
                 <child>
                   <object class="GtkRevealer" id="rvRawData">
-                    <property name="margin-start">10</property>
-                    <property name="margin-end">10</property>
-                    <property name="vexpand">1</property>
                     <property name="child">
                       <object class="GtkScrolledWindow" id="swRawData">
-                        <property name="height-request">300</property>
-                        <property name="focusable">1</property>
-                        <property name="margin-start">1</property>
-                        <property name="margin-end">1</property>
-                        <property name="margin-top">1</property>
-                        <property name="margin-bottom">1</property>
-                        <property name="has-frame">1</property>
                         <property name="child">
                           <object class="GtkTextView" id="txtRawData">
-                            <property name="focusable">1</property>
                             <property name="buffer">buffRawData</property>
+                            <property name="focusable">1</property>
                             <property name="monospace">1</property>
                           </object>
                         </property>
+                        <property name="focusable">1</property>
+                        <property name="has-frame">1</property>
+                        <property name="height-request">300</property>
+                        <property name="margin-bottom">1</property>
+                        <property name="margin-end">1</property>
+                        <property name="margin-start">1</property>
+                        <property name="margin-top">1</property>
                       </object>
                     </property>
+                    <property name="margin-end">10</property>
+                    <property name="margin-start">10</property>
+                    <property name="vexpand">1</property>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">7</property>
                       <property name="column-span">3</property>
+                      <property name="row">7</property>
                     </layout>
                   </object>
                 </child>
@@ -706,7 +666,7 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                     <property name="child">
                       <object class="GtkInfoBar" id="ibHIDWarning">
                         <property name="show-close-button">1</property>
-                        <signal name="response" handler="on_ibHIDWarning_response" swapped="no"/>
+                        <signal name="response" handler="on_ibHIDWarning_response"/>
                         <child>
                           <object class="GtkBox" id="box2HIDWarning">
                             <property name="hexpand">1</property>
@@ -719,19 +679,16 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                             </child>
                             <child>
                               <object class="GtkLabel" id="lblHIDWarning">
+                                <property name="justify">fill</property>
                                 <property name="label" translatable="yes">Warning: evdev access mode was auto-selected for HID device.
 
 That means your account lacks permissons needed to read controller exclusively. You can still use controller in evdev mode, but you may have trouble with some games detecting it twice.
 
 &lt;a href="https://github.com/C0rn3j/sc-controller/wiki/Evdev-and-HID-mode-for-non-steam-controllers"&gt;Click here&lt;/a&gt; for more info.</property>
-                                <property name="use-markup">1</property>
-                                <property name="justify">fill</property>
-                                <property name="wrap">1</property>
                                 <property name="max-width-chars">60</property>
+                                <property name="use-markup">1</property>
+                                <property name="wrap">1</property>
                               </object>
-                            </child>
-                            <child>
-                              <placeholder/>
                             </child>
                           </object>
                         </child>
@@ -739,25 +696,25 @@ That means your account lacks permissons needed to read controller exclusively. 
                     </property>
                     <layout>
                       <property name="column">0</property>
-                      <property name="row">0</property>
                       <property name="column-span">3</property>
+                      <property name="row">0</property>
                     </layout>
                   </object>
                 </child>
               </object>
             </property>
+            <property name="name">page2</property>
+            <property name="title" translatable="yes">page2</property>
           </object>
         </child>
         <child>
           <object class="GtkStackPage">
-            <property name="name">page3</property>
-            <property name="title" translatable="yes">page3</property>
             <property name="child">
               <object class="GtkGrid" id="grDS4">
-                <property name="name">01</property>
-                <property name="margin-start">20</property>
                 <property name="margin-end">20</property>
+                <property name="margin-start">20</property>
                 <property name="margin-top">20</property>
+                <property name="name">01</property>
                 <child>
                   <object class="GtkLabel" id="label8">
                     <property name="hexpand">1</property>
@@ -779,19 +736,19 @@ is enabled in the Settings or here:</property>
                 <child>
                   <object class="GtkCheckButton" id="cbDS4">
                     <property name="focusable">1</property>
+                    <property name="margin-bottom">20</property>
                     <property name="margin-start">20</property>
                     <property name="margin-top">20</property>
-                    <property name="margin-bottom">20</property>
-                    <signal name="toggled" handler="on_cbDS4_toggled" swapped="no"/>
+                    <signal name="toggled" handler="on_cbDS4_toggled"/>
                     <child>
                       <object class="GtkLabel" id="lblDS4">
-                        <property name="label" translatable="yes">_Enable DS4 Controller Support</property>
-                        <property name="use-underline">1</property>
-                        <property name="mnemonic-widget">cbDS4</property>
-                        <property name="xalign">0</property>
                         <property name="attributes">
                           0 -1 weight bold
                         </property>
+                        <property name="label" translatable="yes">_Enable DS4 Controller Support</property>
+                        <property name="mnemonic-widget">cbDS4</property>
+                        <property name="use-underline">1</property>
+                        <property name="xalign">0</property>
                       </object>
                     </child>
                     <layout>
@@ -818,12 +775,12 @@ future inputs or even crash.</property>
                 </child>
                 <child>
                   <object class="GtkImage" id="imgDS4">
-                    <property name="margin-start">5</property>
-                    <property name="margin-end">30</property>
                     <property name="halign">center</property>
-                    <property name="valign">start</property>
                     <property name="icon-name">image-missing</property>
+                    <property name="margin-end">30</property>
+                    <property name="margin-start">5</property>
                     <property name="pixel-size">48</property>
+                    <property name="valign">start</property>
                     <layout>
                       <property name="column">0</property>
                       <property name="row">0</property>
@@ -831,21 +788,16 @@ future inputs or even crash.</property>
                     </layout>
                   </object>
                 </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
               </object>
             </property>
+            <property name="name">page3</property>
+            <property name="title" translatable="yes">page3</property>
           </object>
         </child>
       </object>
     </property>
+    <property name="destroy-with-parent">1</property>
+    <property name="resizable">0</property>
     <property name="titlebar">
       <object class="GtkHeaderBar" id="header">
         <property name="title-widget">
@@ -858,47 +810,50 @@ future inputs or even crash.</property>
         </property>
         <child>
           <object class="GtkButton" id="btBack">
-            <property name="label" translatable="yes">_Back</property>
-            <property name="sensitive">0</property>
             <property name="focusable">1</property>
+            <property name="label" translatable="yes">_Back</property>
             <property name="receives-default">1</property>
+            <property name="sensitive">0</property>
             <property name="use-underline">1</property>
-            <signal name="clicked" handler="on_btBack_clicked" swapped="no"/>
+            <signal name="clicked" handler="on_btBack_clicked"/>
           </object>
         </child>
         <child type="end">
           <object class="GtkButton" id="btNext">
-            <property name="label" translatable="yes">_Next</property>
             <property name="focusable">1</property>
+            <property name="label" translatable="yes">_Next</property>
             <property name="receives-default">1</property>
             <property name="use-underline">1</property>
-            <signal name="clicked" handler="on_btNext_clicked" swapped="no"/>
+            <signal name="clicked" handler="on_btNext_clicked"/>
           </object>
         </child>
       </object>
     </property>
+    <property name="width-request">650</property>
+    <signal name="destroy" handler="kill_tester"/>
+    <child>
+      <object class="GtkEventControllerKey">
+        <signal name="key-pressed" handler="on_window_key_press_event"/>
+      </object>
+    </child>
   </object>
   <object class="GtkWindow" id="dlgPressButton">
-    <property name="resizable">0</property>
-    <property name="modal">1</property>
-    <property name="deletable">0</property>
-    <property name="transient-for">Dialog</property>
     <property name="child">
       <object class="GtkBox" id="vbJustFuckingBox">
-        <property name="name">vb687i</property>
-        <property name="margin-start">10</property>
-        <property name="margin-end">10</property>
-        <property name="margin-top">10</property>
         <property name="margin-bottom">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">10</property>
+        <property name="name">vb687i</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkLabel" id="lblPressButton">
-            <property name="margin-top">25</property>
-            <property name="margin-bottom">25</property>
-            <property name="label" translatable="yes">Press button...</property>
             <property name="attributes">
               0 -1 weight bold
             </property>
+            <property name="label" translatable="yes">Press button...</property>
+            <property name="margin-bottom">25</property>
+            <property name="margin-top">25</property>
           </object>
         </child>
         <child>
@@ -920,16 +875,19 @@ future inputs or even crash.</property>
               </object>
             </property>
             <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <property name="margin-start">50</property>
-            <property name="margin-end">50</property>
-            <property name="margin-top">10</property>
             <property name="margin-bottom">10</property>
-            <signal name="clicked" handler="on_btCancelInput_clicked" swapped="no"/>
+            <property name="margin-end">50</property>
+            <property name="margin-start">50</property>
+            <property name="margin-top">10</property>
+            <property name="receives-default">1</property>
+            <signal name="clicked" handler="on_btCancelInput_clicked"/>
           </object>
         </child>
       </object>
     </property>
+    <property name="deletable">0</property>
+    <property name="modal">1</property>
+    <property name="resizable">0</property>
     <property name="titlebar">
       <object class="GtkHeaderBar" id="hb485">
         <property name="title-widget">
@@ -940,11 +898,9 @@ future inputs or even crash.</property>
             </style>
           </object>
         </property>
-        <child>
-          <placeholder/>
-        </child>
       </object>
     </property>
+    <property name="transient-for">Dialog</property>
   </object>
   <object class="GtkListStore" id="lstTriggers">
     <columns>
@@ -974,14 +930,14 @@ future inputs or even crash.</property>
           <object class="GtkButton" id="mnuStickPress">
             <property name="label" translatable="yes">Change mapping for _Pressing stick</property>
             <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuStickPress_activate" swapped="no"/>
+            <signal name="clicked" handler="on_mnuStickPress_activate"/>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="mnuStickmove">
             <property name="label" translatable="yes">Change mapping for _Moving stick</property>
             <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuStickmove_activate" swapped="no"/>
+            <signal name="clicked" handler="on_mnuStickmove_activate"/>
           </object>
         </child>
       </object>
