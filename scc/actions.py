@@ -1422,11 +1422,18 @@ class ButtonAction(HapticEnabledAction, Action):
 		Keys.BTN_THUMBR: "RStick Click",
 		Keys.BTN_START: "Start >",
 		Keys.BTN_SELECT: "< Select",
+		# Linux defines:
+		# - NORTH and WEST corresponding to the Nintendo Switch layout
+		# - SOUTH and EAST corresponding to the X360 layout
+		#
+		# BTN_X == BTN_NORTH == 307  # Xbox Y | Nintendo X
+		# BTN_Y == BTN_WEST  == 308  # Xbox X | Nintendo Y
+		# BTN_A == BTN_SOUTH == 304  # Xbox A | Nintendo B
+		# BTN_B == BTN_EAST  == 305  # Xbox B | Nintendo A
 		Keys.BTN_A: "A Button",
 		Keys.BTN_B: "B Button",
-		# Work around busted Linux btn aliases
-		Keys.BTN_NORTH: "X Button",
-		Keys.BTN_WEST: "Y Button",
+		Keys.BTN_WEST: "X Button",
+		Keys.BTN_NORTH: "Y Button",
 		Keys.KEY_PREVIOUSSONG: "<< Song",
 		Keys.KEY_STOP: "Stop",
 		Keys.KEY_PLAYPAUSE: "Play/Pause",
