@@ -38,10 +38,10 @@
             "action": "button(Keys.BTN_THUMBR)"
         },
         "X": {
-            "action": "button(Keys.BTN_NORTH)"
+            "action": "button(Keys.BTN_WEST)"
         },
         "Y": {
-            "action": "button(Keys.BTN_WEST)"
+            "action": "button(Keys.BTN_NORTH)"
         }
     },
     "cpad": {},
