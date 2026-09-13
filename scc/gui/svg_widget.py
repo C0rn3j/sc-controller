@@ -300,14 +300,15 @@ class Area:
 
 	def __init__(self, element: ET.Element, transform: list[list[float]]) -> None:
 		self.color: tuple[float, float, float, float] | None
+		# We are starting with a name such as:
+		#   AREA_MOUSE_UP || AREA_TL_1 || AREA_ABS_Z_1
+		# Get only the second element
 		self.name: str = element.attrib["id"].split("_")[1]
+		# Get the second and third element in case it's a directional key
+		directional_name = "_".join(element.attrib["id"].split("_")[1:3])
 		# Check if this is an area name that images/buttons.svg uses
-		#
-		# LSTICK, RSTICK and DPAD are explicitly catching with all possible movements to allow them being used as
-		#  buttons throughout the code without conflicting with buttons.svg
-		# Hopefully this isn't used anywhere else
-		if self.name in Area.SPECIAL_CASES:
-			self.name = "_".join(element.attrib["id"].split("_")[1:3])
+		if self.name in Area.SPECIAL_CASES or directional_name in Area.SPECIAL_CASES:
+			self.name = directional_name
 		width = float(element.attrib.get("width", 0))
 		height = float(element.attrib.get("height", 0))
 		corners = (
