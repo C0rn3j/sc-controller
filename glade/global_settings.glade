@@ -1216,7 +1216,7 @@ or even crash.</property>
                             <property name="attributes">
                               0 -1 weight bold
                             </property>
-                            <property name="label" translatable="yes">Enable Dualshock4 (PS4 controller) support</property>
+                            <property name="label" translatable="yes">Enable DualShock 4 (PS4 controller) support</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>
@@ -1279,7 +1279,7 @@ or even crash.</property>
                     </child>
                     <child>
                       <object class="GtkLabel" id="lblKuaa14">
-                        <property name="label" translatable="yes">If enabled, any connected Dualshock4 controller will be automatically used by SC Controller</property>
+                        <property name="label" translatable="yes">If enabled, any connected DualShock 4 controller will be automatically used by SC Controller</property>
                         <property name="margin-start">30</property>
                         <property name="xalign">0</property>
                         <property name="yalign">0</property>

@@ -1,4 +1,4 @@
-"""SC Controller - Dualshock 4 Driver.
+"""SC Controller - DualShock 4 Driver.
 
 Extends HID driver with DS4-specific options.
 """
@@ -471,7 +471,7 @@ class DS4BluetoothHIDRawDriver:
 			return None
 
 	def get_device_name(self) -> str:
-		return "Dualshock 4 over Bluetooth HIDRaw"
+		return "DualShock 4 over Bluetooth HIDRaw"
 
 	def get_type(self) -> str:
 		return "ds4bt_hidraw"
