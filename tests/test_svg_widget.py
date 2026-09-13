@@ -10,6 +10,31 @@ gi.require_version("Rsvg", "2.0")
 from scc.gui.svg_widget import SVGEditor, SVGWidget
 
 
+@pytest.mark.parametrize("control", ["LSTICK", "RSTICK", "DPAD"])
+@pytest.mark.parametrize("direction", ["LEFT", "RIGHT", "UP", "DOWN"])
+def test_directional_area_names_map_to_actions(control, direction):
+	from scc.gui.area_to_action import AREA_TO_ACTION
+
+	name = f"{control}_{direction}"
+	tree = ET.fromstring(
+		f'<svg><rect id="AREA_{name}" width="20" height="20" /></svg>',
+	)
+	areas = []
+	SVGWidget.find_areas(tree, None, areas)
+	assert areas[0].name == name
+	assert areas[0].name in AREA_TO_ACTION
+
+
+@pytest.mark.parametrize("name", ["LSTICK", "RSTICK", "DPAD"])
+def test_whole_control_area_names_still_ignore_suffixes(name):
+	tree = ET.fromstring(
+		f'<svg><rect id="AREA_{name}_2" width="20" height="20" /></svg>',
+	)
+	areas = []
+	SVGWidget.find_areas(tree, None, areas)
+	assert areas[0].name == name
+
+
 def test_area_bounds_apply_nonuniform_parent_scale() -> None:
 	tree = ET.fromstring(
 		'<svg><g transform="matrix(2,0,0,3,10,20)">'
