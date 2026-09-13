@@ -10,8 +10,8 @@
   </developer>
   <description>
     <p>
-      User-mode driver and GTK3 based GUI for the Steam Controller and other
-      game controllers.
+      User-mode driver, mapper, and GTK 4 based GUI for game controllers,
+      including but not limited to the Steam Controller (2015 & 2026).
     </p>
   </description>
   <launchable type="desktop-id">sc-controller.desktop</launchable>
