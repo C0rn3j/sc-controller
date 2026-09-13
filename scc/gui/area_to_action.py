@@ -27,10 +27,13 @@ AREA_TO_ACTION = {
 	"SELECT": (ButtonAction, Keys.BTN_SELECT),
 	"MODE": (ButtonAction, Keys.BTN_MODE),
 	"START": (ButtonAction, Keys.BTN_START),
-	"A": (ButtonAction, Keys.BTN_A),
-	"B": (ButtonAction, Keys.BTN_B),
-	"X": (ButtonAction, Keys.BTN_X),
-	"Y": (ButtonAction, Keys.BTN_Y),
+	"A": (ButtonAction, Keys.BTN_SOUTH),
+	"B": (ButtonAction, Keys.BTN_EAST),
+	# The SVG that uses this uses Xbox labels
+	# Linux BTN_X/BTN_Y alias NORTH/WEST
+	# This will need to be re-done for Nintendo controllers :/
+	"X": (ButtonAction, Keys.BTN_WEST),
+	"Y": (ButtonAction, Keys.BTN_NORTH),
 	# Media keys
 	"KEY_PREVIOUSSONG": (ButtonAction, Keys.KEY_PREVIOUSSONG),
 	"KEY_STOP": (ButtonAction, Keys.KEY_STOP),
