@@ -82,7 +82,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 	def __init__(self, gladepath: str = "/usr/share/scc", imagepath: str = "/usr/share/scc/images"):
 		Gtk.Application.__init__(
 			self,
-			application_id="me.c0rn3j.scc",
+			application_id="io.github.c0rn3j.sc-controller",
 			flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE | Gio.ApplicationFlags.NON_UNIQUE,
 		)
 		UserDataManager.__init__(self)
