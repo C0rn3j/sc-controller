@@ -1422,7 +1422,7 @@ class ButtonAction(HapticEnabledAction, Action):
 		Keys.BTN_THUMBR: "RStick Click",
 		Keys.BTN_START: "Start >",
 		Keys.BTN_SELECT: "< Select",
-		# Linux arbitrarily defines:
+		# Linux arbitrarily defines BTN_{X|Y|A|B} as:
 		# - NORTH and WEST corresponding to the Nintendo Switch layout
 		# - SOUTH and EAST corresponding to the X360 layout
 		#
@@ -1430,8 +1430,12 @@ class ButtonAction(HapticEnabledAction, Action):
 		# BTN_Y == BTN_WEST  == 308  # Xbox X | Nintendo Y
 		# BTN_A == BTN_SOUTH == 304  # Xbox A | Nintendo B
 		# BTN_B == BTN_EAST  == 305  # Xbox B | Nintendo A
-		Keys.BTN_A: "A Button",
-		Keys.BTN_B: "B Button",
+		#
+		# Since we're rendering this in the UI we need to handle this carefully
+		# We currently cannot handle Nintendo controller layouts this way
+		# scc/gui/area_to_action.py has the counterpart GUI bits
+		Keys.BTN_SOUTH: "A Button",
+		Keys.BTN_EAST: "B Button",
 		Keys.BTN_WEST: "X Button",
 		Keys.BTN_NORTH: "Y Button",
 		Keys.KEY_PREVIOUSSONG: "<< Song",
