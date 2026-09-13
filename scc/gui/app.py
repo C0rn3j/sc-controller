@@ -123,6 +123,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self._controller_shown: bool = False
 		self.current = Profile(GuiActionParser())
 		self.just_started = True
+		self._activated: bool = False
+		self._startup_tray_timeout: int | None = None
 		self.button_widgets = {}
 		self.hilights: dict[str, set[str]] = {App.HILIGHT_COLOR: set(), App.OBSERVE_COLOR: set()}
 		self.undo = []
@@ -366,6 +368,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			menu = self.builder.get_object("mnuTray")
 			self.statusicon = get_status_icon(self.imagepath, menu)
 			self.statusicon.connect("clicked", self.on_statusicon_clicked)
+			self.statusicon.connect("notify::active", self.on_startup_tray_active)
 		else:
 			self.statusicon.show()
 
@@ -566,6 +569,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 	def on_statusicon_clicked(self, *a) -> None:
 		"""Handler for user clicking on tray icon button."""
+		self._cancel_startup_tray_wait()
 		self.window.set_visible(not self.window.get_visible())
 
 	def on_window_close_request(self, *a) -> bool:
@@ -1556,11 +1560,31 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		return 0
 
 	def do_activate(self, *a) -> None:
-		self.builder.get_object("window").set_visible(True)
-		if self.config["gui"]["minimize_on_start"] and self.statusicon and self.statusicon.get_property("active"):
-			self.builder.get_object("window").set_visible(False)
-		else:
-			self.builder.get_object("window").set_visible(True)
+		first_activation = not self._activated
+		self._activated = True
+		self._cancel_startup_tray_wait()
+		if first_activation and not self.osd_mode and self.config["gui"]["minimize_on_start"] and self.statusicon:
+			self.window.set_visible(False)
+			if not self.statusicon.get_property("active"):
+				# Fall back to a window if the desktop cannot provide a tray within 3 seconds
+				# For exmaple on default GNOME
+				self._startup_tray_timeout = GLib.timeout_add_seconds(3, self._startup_tray_unavailable)
+			return
+		self.window.present()
+
+	def _cancel_startup_tray_wait(self):
+		if self._startup_tray_timeout is not None:
+			GLib.source_remove(self._startup_tray_timeout)
+			self._startup_tray_timeout = None
+
+	def on_startup_tray_active(self, icon, *args):
+		if icon.get_property("active"):
+			self._cancel_startup_tray_wait()
+
+	def _startup_tray_unavailable(self):
+		self._startup_tray_timeout = None
+		self.window.present()
+		return GLib.SOURCE_REMOVE
 
 	def remove_dot_profile(self) -> None:
 		"""Checks if first profile in list begins with dot and if yes, removes it.
