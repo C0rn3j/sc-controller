@@ -386,6 +386,7 @@ class StickController(GObject.GObject, TimerManager):
 		GObject.GObject.__init__(self)
 		TimerManager.__init__(self)
 		self._direction = 0
+		self._positions = {}
 
 	def _move(self, *a):
 		self.emit("direction", *self.DIRECTION_TO_XY[self._direction])
@@ -394,7 +395,24 @@ class StickController(GObject.GObject, TimerManager):
 		else:
 			self.cancel_timer("move")
 
-	def set_stick(self, *data):
+	def set_stick(self, *data, source=None):
+		"""Feed a position in. 'source' names the input it came from, for
+		callers that accept more than one.
+
+		Without it, every input shares one direction and a neutral reading
+		cancels whatever another input is driving: _move() emits on each change
+		and cancels the repeat timer when the direction reaches 0, so a menu fed
+		by both a stick and a d-pad advanced once per event -- at the controller
+		report rate rather than the intended interval -- and then stopped dead as
+		soon as the stick was held still and stopped producing events.
+		"""
+		if source is not None:
+			self._positions[source] = (data[0], data[1])
+			# whichever input is actually deflected decides; an idle one
+			# reading (0, 0) must not cancel a repeat another is driving
+			data = max(self._positions.values(),
+				key=lambda p: max(abs(p[0]), abs(p[1])))
+
 		direction = 0
 		# Y
 		if data[1] < STICK_PAD_MIN / 2:
