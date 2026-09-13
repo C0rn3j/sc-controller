@@ -26,7 +26,7 @@ __all__ = ["ButtonsComponent"]
 class ButtonsComponent(AEComponent, Chooser):
 	GLADE = "ae/buttons.glade"
 	NAME = "buttons"
-	IMAGES = {"buttons": "buttons.svg"}
+	IMAGES = {"buttons_image": "buttons.svg"}
 	CTXS = Action.AC_BUTTON | Action.AC_MENU
 	PRIORITY = 1
 	MODIFIER_KEYS = (

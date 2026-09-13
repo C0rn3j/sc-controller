@@ -3,15 +3,26 @@
 <interface>
   <!-- interface-name buttons.glade -->
   <requires lib="gtk" version="4.14"/>
-  <object class="GtkCenterBox" id="buttons">
-    <property name="end-widget">
+  <object class="GtkBox" id="buttons">
+    <property name="orientation">vertical</property>
+    <property name="valign">start</property>
+    <child>
+      <object class="GtkBox" id="buttons_image">
+        <property name="halign">center</property>
+        <property name="orientation">vertical</property>
+        <property name="valign">center</property>
+      </object>
+    </child>
+    <child>
       <object class="GtkBox">
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkBox" id="vbWeirdSetOfBoxes1">
             <child>
-              <object class="GtkCenterBox" id="vbRandomBox48">
-                <property name="end-widget">
+              <object class="GtkBox" id="vbRandomBox48">
+                <property name="orientation">vertical</property>
+                <property name="valign">end</property>
+                <child>
                   <object class="GtkBox">
                     <property name="orientation">vertical</property>
                     <child>
@@ -45,8 +56,7 @@
                       </object>
                     </child>
                   </object>
-                </property>
-                <property name="orientation">vertical</property>
+                </child>
               </object>
             </child>
             <child>
@@ -61,7 +71,6 @@
                     <property name="label" translatable="yes">click any button or...</property>
                     <property name="margin-bottom">5</property>
                     <property name="margin-top">5</property>
-                    <property name="vexpand">1</property>
                   </object>
                 </child>
                 <child>
@@ -101,12 +110,6 @@
           </object>
         </child>
       </object>
-    </property>
-    <property name="orientation">vertical</property>
-    <property name="start-widget">
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-      </object>
-    </property>
+    </child>
   </object>
 </interface>

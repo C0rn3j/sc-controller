@@ -114,8 +114,31 @@ class SVGWidget(Gtk.Box):
 		return self.get_area_at(x, y)
 
 	def get_area_at(self, x, y) -> str | None:
+		# NOTE(Martin): Keeping this around in case we want to switch to it later
+		#               For now the simple assumption about a centered image is good enough
+		# Map through the picture's actual allocation and its contained image
+		#point = self.translate_coordinates(self.image, x, y)
+		#pixbuf = self.get_pixbuf()
+		#if point is None or pixbuf is None:
+		#	self.emit("leave")
+		#	return None
+		#width, height = self.image.get_width(), self.image.get_height()
+		#scale = min(width / pixbuf.get_width(), height / pixbuf.get_height())
+		#if scale <= 0:
+		#	self.emit("leave")
+		#	return None
+		#x = (point[0] - (width - pixbuf.get_width() * scale) / 2) / scale
+		#y = (point[1] - (height - pixbuf.get_height() * scale) / 2) / scale
+		#if not (0 <= x < pixbuf.get_width() and 0 <= y < pixbuf.get_height()):
+		#	self.emit("leave")
+		#	return None
+		#x *= self.image_width / pixbuf.get_width()
+		#y *= self.image_height / pixbuf.get_height()
+
+		# Map through the picture assuming(!) it is centered
 		x_offset = (self.get_allocation().width - self.image_width) / 2
 		x = x - x_offset
+
 		for a in self.areas:
 			# *TEST areas exist only to bound the Input Test cursor (looked up
 			# by id via get_area_position), not as hover targets. Skip them so
