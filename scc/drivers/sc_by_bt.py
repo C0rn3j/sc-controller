@@ -73,7 +73,7 @@ class SCByBtC(ctypes.Structure):
 	_fields_ = [
 		("fileno", ctypes.c_int),
 		("buffer", ctypes.c_char * 256),
-		("long_packet", ctypes.c_uint8),
+		("long_packet", ctypes.c_uint8),  # Next expected fragment number, or zero when idle.
 		("state", SCByBtControllerInput),
 		("old_state", SCByBtControllerInput),
 	]

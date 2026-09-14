@@ -71,7 +71,7 @@ struct SCByBtControllerInput {
 struct SCByBtC {
 	int fileno;
 	char buffer[256];
-	uint8_t long_packet;
+	uint8_t long_packet; // Next expected fragment number; zero means idle.
 	struct SCByBtControllerInput state;
 	struct SCByBtControllerInput old_state;
 };
@@ -123,62 +123,64 @@ int read_input(SCByBtCPtr ptr) {
 		return 2;
 	}
 
-	bool inLongPacket = false;
-	bool endPayload = false;
-	bool resetBufferData = false;
-	{
-		char checkPayloadByte = tmp_buffer[1];
-		int currentPacketNum = (int)(checkPayloadByte & 0x0F);
-		//printf("%i\n", currentPacketNum);
-		//bool processPayload = false;
+	uint8_t header = (uint8_t)tmp_buffer[1];
+	unsigned int packet = header & 0x0f;
+	bool complete = (header & SINGLE_PACKET_PAYLOAD_PREFIX) != 0;
+	size_t offset = 2 + (PACKET_SIZE - 2) * (size_t)packet;
 
-		inLongPacket = ptr->long_packet;
+	if ((uint8_t)tmp_buffer[0] != 3) {
+		fprintf(stderr, "SCBT: rejected unexpected report ID: fd=%d id=0x%02x\n",
+			ptr->fileno, (unsigned int)(uint8_t)tmp_buffer[0]);
+		ptr->long_packet = 0;
+		memset(ptr->buffer, 0, sizeof(ptr->buffer));
+		return 0;
+	}
+	if (packet == 0) {
+		// A new message resynchronizes after a lost final fragment.
 		if (ptr->long_packet)
-		{
-			// Will grab 18 bytes from each partial input. Start idx
-			// offset from 20.
-			size_t offset = ((PACKET_SIZE - 2) * (size_t)currentPacketNum) + 2;
+			fprintf(stderr, "SCBT: discarded incomplete message: fd=%d expected=%u got=0\n",
+				ptr->fileno, (unsigned int)ptr->long_packet);
+		ptr->long_packet = 0;
+		memset(ptr->buffer, 0, sizeof(ptr->buffer));
+	} else if (!ptr->long_packet || packet != ptr->long_packet) {
+		fprintf(stderr, "SCBT: rejected out-of-sequence fragment: fd=%d expected=%u got=%u\n",
+			ptr->fileno, (unsigned int)ptr->long_packet, packet);
+		ptr->long_packet = 0;
+		memset(ptr->buffer, 0, sizeof(ptr->buffer));
+		return 0;
+	}
+	if (offset + (PACKET_SIZE - 2) > sizeof(ptr->buffer)) {
+		fprintf(stderr,
+			"SCBT: rejected packet buffer overflow: fd=%d packet=%u header=0x%02x "
+			"offset=%zu copy_size=%zu buffer_size=%zu\n",
+			ptr->fileno, packet, (unsigned int)header,
+			offset, (size_t)(PACKET_SIZE - 2), sizeof(ptr->buffer));
+		ptr->long_packet = 0;
+		memset(ptr->buffer, 0, sizeof(ptr->buffer));
+		return 0;
+	}
+	memcpy(ptr->buffer + offset, tmp_buffer + 2, PACKET_SIZE - 2);
+	ptr->long_packet = complete ? 0 : packet + 1;
+	if (!complete)
+		return 0;
 
-			// If we get more than 13 packets(likely not possible under normal conditions), we overflow
-			// throw an error instead if that happens
-			if (offset + (PACKET_SIZE - 2) > sizeof(ptr->buffer)) {
-				fprintf(stderr,
-					"SCBT: rejected packet buffer overflow: fd=%d packet=%d header=0x%02x "
-					"offset=%zu copy_size=%zu buffer_size=%zu\n",
-					ptr->fileno, currentPacketNum, (unsigned int)(uint8_t)checkPayloadByte,
-					offset, (size_t)(PACKET_SIZE - 2), sizeof(ptr->buffer));
-				// Currently we force a connection reset in the Python code,
-				// do a cleanup just in case we stop doing that in the future
-				ptr->long_packet = 0;
-				memset(ptr->buffer, 0, sizeof(ptr->buffer));
-				return 2;
-			}
-
-			// Skip copying first two bytes in partial input
-			// (report ID and packet payload byte)
-			memcpy(ptr->buffer + offset, tmp_buffer + 2, PACKET_SIZE - 2);
-		}
-		else
-		{
-			memcpy(ptr->buffer, tmp_buffer, PACKET_SIZE);
-		}
-
-		endPayload = (checkPayloadByte & SINGLE_PACKET_PAYLOAD_PREFIX) == SINGLE_PACKET_PAYLOAD_PREFIX;
-		ptr->long_packet = !endPayload;
-
-		if (!endPayload)
-		{
-			return 0;
-		}
-		else if (inLongPacket && endPayload)
-		{
-			resetBufferData = true;
-		}
-
-		//if (endPayload)
-		//{
-		//	debug_packet(ptr->buffer, PACKET_SIZE * (currentPacketNum+1));
-		//}
+	// Do not decode fields that were never received, even if the buffer fits.
+	size_t received = offset + (PACKET_SIZE - 2) - 4;
+	uint16_t type = (uint8_t)ptr->buffer[2] | ((uint16_t)(uint8_t)ptr->buffer[3] << 8);
+	if ((type & PING) == PING)
+		return 0;
+	size_t required = 0;
+	if (type & BUTTON) required += 3;
+	if (type & TRIGGERS) required += 2;
+	if (type & LSTICK) required += 4;
+	if (type & LPAD) required += 4;
+	if (type & RPAD) required += 4;
+	if ((type & GYRO) == GYRO) required += 20;
+	if (required > received) {
+		fprintf(stderr, "SCBT: rejected truncated message: fd=%d type=0x%04x required=%zu received=%zu\n",
+			ptr->fileno, (unsigned int)type, required, received);
+		memset(ptr->buffer, 0, sizeof(ptr->buffer));
+		return 0;
 	}
 
 	struct SCByBtControllerInput* state = &(ptr->state);
@@ -186,20 +188,10 @@ int read_input(SCByBtCPtr ptr) {
 
 	int rv = 0;
 	int bit;
-	uint16_t type = *((uint16_t*)(ptr->buffer + 2));
 	char* data = &ptr->buffer[4];
-	if ((type & PING) == PING) {
-		// PING packet does nothing
-
-		if (resetBufferData)
-		{
-			memset(ptr->buffer, 0, 256);
-		}
-
-		return 0;
-	}
 	if ((type & BUTTON) == BUTTON) {
-		uint32_t bt_buttons = *((uint32_t*)data);
+		uint32_t bt_buttons = (uint8_t)data[0] | ((uint32_t)(uint8_t)data[1] << 8)
+			| ((uint32_t)(uint8_t)data[2] << 16);
 		uint32_t sc_buttons = 0;
 		for (bit=0; bit<BT_BUTTONS_BITS; bit++) {
 			if ((bt_buttons & 1) != 0)
@@ -259,10 +251,6 @@ int read_input(SCByBtCPtr ptr) {
 		*/
 	}
 
-	if (resetBufferData)
-	{
-		memset(ptr->buffer, 0, 256);
-	}
 
 	return rv;
 }
