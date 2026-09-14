@@ -18,7 +18,6 @@
   <object class="GtkAdjustment" id="adjFAmplitude">
     <property name="lower">16</property>
     <property name="page-increment">128</property>
-    <property name="page-size">128</property>
     <property name="step-increment">32</property>
     <property name="upper">32767</property>
     <property name="value">512</property>
