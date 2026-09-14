@@ -3,6 +3,7 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <limits.h>
+#include <stdio.h>
 
 #define SC_BY_BT_MODULE_VERSION 3
 
@@ -136,7 +137,23 @@ int read_input(SCByBtCPtr ptr) {
 		{
 			// Will grab 18 bytes from each partial input. Start idx
 			// offset from 20.
-			int offset = ((PACKET_SIZE - 2) * currentPacketNum) + 2;
+			size_t offset = ((PACKET_SIZE - 2) * (size_t)currentPacketNum) + 2;
+
+			// If we get more than 13 packets(likely not possible under normal conditions), we overflow
+			// throw an error instead if that happens
+			if (offset + (PACKET_SIZE - 2) > sizeof(ptr->buffer)) {
+				fprintf(stderr,
+					"SCBT: rejected packet buffer overflow: fd=%d packet=%d header=0x%02x "
+					"offset=%zu copy_size=%zu buffer_size=%zu\n",
+					ptr->fileno, currentPacketNum, (unsigned int)(uint8_t)checkPayloadByte,
+					offset, (size_t)(PACKET_SIZE - 2), sizeof(ptr->buffer));
+				// Currently we force a connection reset in the Python code,
+				// do a cleanup just in case we stop doing that in the future
+				ptr->long_packet = 0;
+				memset(ptr->buffer, 0, sizeof(ptr->buffer));
+				return 2;
+			}
+
 			// Skip copying first two bytes in partial input
 			// (report ID and packet payload byte)
 			memcpy(ptr->buffer + offset, tmp_buffer + 2, PACKET_SIZE - 2);
