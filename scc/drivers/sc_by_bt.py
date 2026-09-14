@@ -258,7 +258,14 @@ class SCByBt(SCController):
 			# Feature report data must be sent with report ID 3
 			# or Input/output error will occur with later BlueZ versions (5.64)
 			# Does not affect older BlueZ versions
-			self._hidrawdev.sendFeatureReport(msg, 3)
+			try:
+				self._hidrawdev.sendFeatureReport(msg, 3)
+			except OSError:
+				log.error(
+					"Bluetooth HID write failed: device=%s report_id=3 payload_length=%d payload=%s pending=%d",
+					self.syspath, len(msg), msg.hex(" "), len(self._cmsg),
+				)
+				raise
 
 	def input(self, idata):
 		raise RuntimeError("This shouldn't be called, ever")
