@@ -1,120 +1,25 @@
-"""SC Controller - OSD Mode Mapper
+"""Controller navigation for the profile editor's OSD mode.
 
-Very special case of mapper used when main application is launched in "odd mode".
-That means it's drawn in OSD layer, cannot be clicked and cannot react to
-keyboard. This mapper emulates input events on it using GTK methods.
-
-Mouse movement (but not buttons) are passed to uinput as usuall.
+Use the same virtual input devices as the daemon so GTK4 receives ordinary
+keyboard and pointer events on both Wayland and X11.
 """
 
-import logging
-
-from gi.repository import Gdk, GLib, Gtk
+from gi.repository import Gtk
 
 from scc.constants import SCButtons
-from scc.gui.gdk_to_key import KEY_TO_GDK, KEY_TO_KEYCODE
 from scc.osd.slave_mapper import SlaveMapper
-from scc.uinput import Keys
-
-log = logging.getLogger("OSDModMapper")
 
 
 class OSDModeMapper(SlaveMapper):
 	def __init__(self, app, profile):
-		SlaveMapper.__init__(self, profile, None, keyboard="osd", mouse="osd")
+		super().__init__(profile, None,
+			keyboard=b"SCController OSD Keyboard", mouse=b"SCController OSD Mouse")
 		self.app = app
 		self.set_special_actions_handler(self)
-		self.target_window = None
 
 	def on_sa_restart(self, *a):
 		"""Restart / exit handler"""
 		self.app.quit()
-
-	def set_target_window(self, w):
-		self.target_window = w
-
-	def create_keyboard(self, name):
-		return OSDModeKeyboard(self)
-
-	def create_mouse(self, name):
-		return OSDModeMouse(self)
-
-
-class OSDModeKeyboard:
-	"""Emulates uinput keyboard emulator"""
-
-	def __init__(self, mapper):
-		self.mapper = mapper
-		self.display = Gdk.Display.get_default()
-		self.manager = self.display.get_device_manager()
-		self.device = [
-			x for x in self.manager.list_devices(Gdk.DeviceType.MASTER) if x.get_source() == Gdk.InputSource.KEYBOARD
-		][0]
-
-	def pressEvent(self, keys):
-		for k in keys:
-			event = Gdk.Event.new(Gdk.EventType.KEY_PRESS)
-			event.time = Gtk.get_current_event_time()
-			event.hardware_keycode = KEY_TO_KEYCODE[k]
-			event.keyval = KEY_TO_GDK[k]
-			event.window = self.mapper.target_window
-			event.set_device(self.device)
-			Gtk.main_do_event(event)
-
-	def releaseEvent(self, keys=[]):
-		for k in keys:
-			event = Gdk.Event.new(Gdk.EventType.KEY_RELEASE)
-			event.time = Gtk.get_current_event_time()
-			event.hardware_keycode = KEY_TO_KEYCODE[k]
-			event.keyval = KEY_TO_GDK[k]
-			event.window = self.mapper.target_window
-			event.set_device(self.device)
-			Gtk.main_do_event(event)
-
-
-class OSDModeMouse:
-	"""Emulates uinput keyboard emulator too"""
-
-	def __init__(self, mapper):
-		self.mapper = mapper
-		self.display = Gdk.Display.get_default()
-		self.manager = self.display.get_device_manager()
-		self.device = [
-			x for x in self.manager.list_devices(Gdk.DeviceType.MASTER) if x.get_source() == Gdk.InputSource.MOUSE
-		][0]
-
-	def synEvent(self, *a):
-		pass
-
-	def keyEvent(self, key, val) -> None:
-		tp = Gdk.EventType.BUTTON_PRESS if val else Gdk.EventType.BUTTON_RELEASE
-		event = Gdk.Event.new(tp)
-		event.button = int(key) - Keys.BTN_LEFT + 1
-		window, event.x, event.y = Gdk.Window.at_pointer()
-		screen, x, y, mask = Gdk.Display.get_default().get_pointer()
-		event.x_root, event.y_root = x, y
-
-		gtk_window = None
-		for w in Gtk.Window.list_toplevels():
-			if w.get_window():
-				if window.get_toplevel().get_xid() == w.get_window().get_xid():
-					gtk_window = w
-					break
-		if gtk_window:
-			if gtk_window.get_type_hint() == Gdk.WindowTypeHint.COMBO:
-				# Special case, clicking on combo does nothing, so
-				# pressing "space" is emulated instead.
-				if not val:
-					return
-				event = Gdk.Event.new(Gdk.EventType.KEY_PRESS)
-				event.time = Gtk.get_current_event_time()
-				event.hardware_keycode = 65
-				event.keyval = Gdk.KEY_space
-				event.window = self.mapper.target_window
-		event.time = Gtk.get_current_event_time()
-		event.window = window
-		event.set_device(self.device)
-		Gtk.main_do_event(event)
 
 
 class OSDModeMappings:
@@ -134,8 +39,6 @@ class OSDModeMappings:
 		self.mapper = mapper
 		self.window = window
 		self.parent = app.window
-		self.first_window = None
-		GLib.timeout_add(10, self.move_around)
 		focus = Gtk.EventControllerFocus.new()
 		focus.connect("enter", self.on_main_window_focus_in_event)
 		focus.connect("leave", self.on_main_window_focus_out_event)
@@ -161,28 +64,14 @@ class OSDModeMappings:
 		for x in self.OTHER_WINDOW_BUTTONS:
 			self.app.builder.get_object(x).set_visible(True)
 
-	def get_target_position(self):
-		pos = self.first_window.get_position()
-		size = self.first_window.get_geometry()
-		my_size = self.window.get_window().get_geometry()
-		tx = pos.x + 0.5 * (size.width - my_size.width)
-		ty = pos.y + size.height + 100
-		return tx, ty
-
 	def show(self):
-		self.window.set_visible(True)
-		self.window.get_window().set_override_redirect(True)
-
-	def move_around(self, *a):
-		if self.first_window is None:
-			active = self.window.get_window().get_screen().get_active_window()
-			if active is None:
-				return None
-			self.first_window = active
-
-		tx, ty = self.get_target_position()
-		self.window.get_window().move(tx, ty)
-		return True
+		# GTK4/Wayland cannot position a separate hints window beneath the
+		# editor. Keep the hints in its layout, where they cannot steal focus.
+		hints = self.window.get_child()
+		if hints is not None:
+			self.window.set_child(None)
+			self.app.builder.get_object("content").append(hints)
+			hints.set_visible(True)
 
 
 def direction(x):
