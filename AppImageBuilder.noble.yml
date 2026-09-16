@@ -88,8 +88,11 @@ AppDir:
 
     # Noble's GdkPixbuf loader cache uses the historical hyphenated module
     # name, while the backported librsvg package installs an underscored name.
+    # On top of that, resolute's rsvg does not use this directory to load the .so,
+    # so place it elsewhere to the appropriate generic lib folder
     find "${TARGET_APPDIR}" -name 'libpixbufloader_svg.so' | while read -r file; do
-      link="${file%_svg.so}-svg.so"
+      arch_lib=$(dirname "$(dirname "$(dirname "$(dirname "${file}")")")")
+      link="${arch_lib}/libpixbufloader-svg.so"
       [ -e "${link}" ] || ln -sr "${file}" "${link}"
     done
 
