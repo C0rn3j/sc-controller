@@ -359,23 +359,17 @@ class EvdevController(Controller):
 
 
 def parse_axis(axis: dict[str, str | int]) -> AxisCalibrationData:
-	min = axis.get("min", -127)
-	max = axis.get("max", 128)
+	min: int = axis.get("min", -127)
+	max: int = axis.get("max", 128)
 	is_trigger = axis.get("axis") in TRIGGERS
 	center = axis.get("center", 0)
 	clamp_min = STICK_PAD_MIN
 	clamp_max = STICK_PAD_MAX
 	deadzone = axis.get("deadzone", 0)
-	offset = 0
-	if max >= 0 and min >= 0:
-		offset = 1
-	if max > min:
-		scale = (-2.0 / (min - max)) if min != max else 1.0
-		deadzone = abs(float(deadzone) * scale)
-		offset *= -1.0
-	else:
-		scale = (-2.0 / (min - max)) if min != max else 1.0
-		deadzone = abs(float(deadzone) * scale)
+	# Map stick endpoints to -1..1
+	scale = 2.0 / (max - min) if min != max else 1.0
+	offset = -1.0 - float(min) * scale
+	deadzone = abs(float(deadzone) * scale)
 	if is_trigger:
 		clamp_min = TRIGGER_MIN
 		clamp_max = TRIGGER_MAX

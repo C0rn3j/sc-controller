@@ -1,6 +1,8 @@
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, TRIGGER_MAX, TRIGGER_MIN
 from unittest.mock import Mock
 
+import pytest
+
 from scc.drivers.evdevdrv import AxisCalibrationData, EvdevController, EvdevDriver, parse_axis
 from scc.tools import clamp
 
@@ -40,6 +42,32 @@ def test_parse_stick_axis_remains_bipolar() -> None:
 	# Bipolar scaling uses the positive magnitude for both endpoints.
 	assert calibrated_value(calibration, 0) == -STICK_PAD_MAX
 	assert calibrated_value(calibration, 255) == STICK_PAD_MAX
+
+
+@pytest.mark.parametrize("minimum, maximum", [
+	(-32767, -120),
+	(32767, 120),
+	(-32767, 32767),
+	(32767, -32767),
+	(0, 255),
+	(255, 0),
+	(120, 32767),
+])
+def test_parse_stick_axis_centers_observed_range(minimum: int, maximum: int) -> None:
+	calibration = parse_axis({"axis": "rstick_x", "min": minimum, "max": maximum, "deadzone": 131})
+
+	assert minimum * calibration.scale + calibration.offset == pytest.approx(-1)
+	assert maximum * calibration.scale + calibration.offset == pytest.approx(1)
+	midpoint = (minimum + maximum) / 2
+	assert midpoint * calibration.scale + calibration.offset == pytest.approx(0)
+	assert calibration.deadzone == pytest.approx(262 / abs(maximum - minimum))
+
+
+def test_parse_inverted_trigger_axis() -> None:
+	calibration = parse_axis({"axis": "rtrig", "min": 255, "max": 0})
+
+	assert calibrated_value(calibration, 255) == 0
+	assert calibrated_value(calibration, 0) == TRIGGER_MAX
 
 
 def test_get_event_node_accepts_kernel_event_device() -> None:
