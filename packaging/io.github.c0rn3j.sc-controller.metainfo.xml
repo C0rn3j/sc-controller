@@ -14,7 +14,7 @@
       including but not limited to the Steam Controller (2015 & 2026).
     </p>
   </description>
-  <launchable type="desktop-id">sc-controller.desktop</launchable>
+  <launchable type="desktop-id">io.github.c0rn3j.sc-controller.desktop</launchable>
   <content_rating type="oars-1.1" />
   <provides>
     <modalias>usb:v28DEp*</modalias>
