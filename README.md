@@ -190,7 +190,7 @@ docker build -o build-output --build-arg BASE_CODENAME=noble .
 
 ## AI notice
 
-If you contribute AI-assisted work, please disclose it, ensure you have tested the changes, and do not use unreviewed AI-generated text to communicate with maintainers.
+If you contribute AI-assisted work, please disclose it, make certain you have reviewed it, and ensure that you have tested the changes.
 
 Do **not** use AI-generated text to communicate with maintainers. You should understand and be able to explain your own work. Using AI to improve grammar or clarity is fine, but the substance of your responses must be your own.
 
