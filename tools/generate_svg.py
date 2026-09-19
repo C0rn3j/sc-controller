@@ -232,7 +232,8 @@ class Generator:
 	PADDING = 10
 
 	def __init__(self) -> None:
-		svg = SVGEditor(file("../images/binding-display.svg").read())
+		with open("../images/binding-display.svg") as f:
+			svg = SVGEditor(f.read())
 		background = SVGEditor.get_element(svg, "background")
 		self.label_template = SVGEditor.get_element(svg, "label_template")
 		self.line_height = int(float(self.label_template.attrib.get("height") or 8))
@@ -310,7 +311,8 @@ class Generator:
 		for b in boxes:
 			b.place(self, root)
 
-		file("out.svg", "w").write(svg.to_string())
+		with open("out.svg", "wb") as file:
+			file.write(svg.to_string())
 
 	def equal_width(self, *boxes):
 		"""Sets width of all passed boxes to width of widest box"""
