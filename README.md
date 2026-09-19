@@ -13,11 +13,11 @@
 	<a href="https://discord.gg/Np7pgfTX6">
 		<img src="https://img.shields.io/discord/1540822420104028200.svg?color=a483ef&style=for-the-badge" alt="Discord">
 	</a>
-	<a href="https://github.com/C0rn3j/sc-controller/actions/workflows/scc-linux.yml">
-		<img src="https://img.shields.io/github/actions/workflow/status/C0rn3j/sc-controller/scc-linux.yml?branch=main&amp;style=for-the-badge&amp;label=CI%20tests" alt="CI tests">
+	<a href="https://github.com/C0rn3j/sc-controller/actions/workflows/scc-linux.yaml">
+		<img src="https://img.shields.io/github/actions/workflow/status/C0rn3j/sc-controller/scc-linux.yaml?branch=main&amp;style=for-the-badge&amp;label=CI%20tests" alt="CI tests">
 	</a>
-	<a href="https://github.com/C0rn3j/sc-controller/actions/workflows/appimage.yml">
-		<img src="https://img.shields.io/github/actions/workflow/status/C0rn3j/sc-controller/appimage.yml?event=release&amp;style=for-the-badge&amp;label=AppImage" alt="Build and publish AppImages">
+	<a href="https://github.com/C0rn3j/sc-controller/actions/workflows/appimage.yaml">
+		<img src="https://img.shields.io/github/actions/workflow/status/C0rn3j/sc-controller/appimage.yaml?event=release&amp;style=for-the-badge&amp;label=AppImage" alt="Build and publish AppImages">
 	</a>
 </p>
 
