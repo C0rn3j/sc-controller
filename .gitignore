@@ -6,20 +6,19 @@
 !scc/*tester*
 test.*
 test[0-9].*
-build/
-build-output/
-venv/
+/build/
+/build-output/
 .atomignore
 commit*
 profiles
 .idea/
 out.svg
 *.AppImage
-appimage/
+/appimage/
 *.cpp
 *.vdf
 .kateconfig
 
-dist/
+/dist/
 sccontroller.egg-info/
 !.github
