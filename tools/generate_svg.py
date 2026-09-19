@@ -27,7 +27,7 @@ class Align(IntEnum):
 
 def find_image(name):
 	# TODO: This
-	filename = "images/" + name + ".svg"
+	filename = "../images/" + name + ".svg"
 	if os.path.exists(filename):
 		return filename
 	return None
@@ -232,7 +232,7 @@ class Generator:
 	PADDING = 10
 
 	def __init__(self) -> None:
-		svg = SVGEditor(file("images/binding-display.svg").read())
+		svg = SVGEditor(file("../images/binding-display.svg").read())
 		background = SVGEditor.get_element(svg, "background")
 		self.label_template = SVGEditor.get_element(svg, "label_template")
 		self.line_height = int(float(self.label_template.attrib.get("height") or 8))
@@ -240,7 +240,7 @@ class Generator:
 		self.full_width = int(float(background.attrib.get("width") or 800))
 		self.full_height = int(float(background.attrib.get("height") or 800))
 
-		profile = Profile(TalkingActionParser()).load("test.sccprofile")
+		profile = Profile(TalkingActionParser()).load("../default_profiles/test.sccprofile")
 		boxes = []
 
 		box_bcs = Box(0, self.PADDING, Align.TOP, "bcs")

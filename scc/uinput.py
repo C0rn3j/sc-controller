@@ -55,7 +55,7 @@ else:
 if TYPE_CHECKING:
 	# Static analyzers cannot see enum members added through locals().update().
 	# We also use this as a fallback if kernel headers are missing.
-	# Regenerate this stub with scripts/generate-uinput-fallback.py when the canonical Linux input header changes.
+	# Regenerate this stub with tools/generate-uinput-fallback.py when the canonical Linux input header changes.
 	__all__ = ["Axes", "Keys", "KeysOnly", "Rels"]
 	from scc.uinput_codes import Axes, Keys, KeysOnly, Rels
 elif CHEAD is None:

@@ -44,7 +44,7 @@ def main() -> None:
 	try_run("git reset master")
 
 	merge(
-		"../docs/actions.md",
+		"../../docs/actions.md",
 		"Custom-Action-Examples-and-Explanations.md",
 		'# <a name="actions">',
 		'# <a name="examples2">',

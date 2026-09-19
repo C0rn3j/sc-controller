@@ -72,7 +72,7 @@ RUN <<EOR
 
 	# Build the Glycin sandbox workaround for the target AppImage architecture.
 	mkdir -p "${TARGET}/usr/lib"
-	cc -O2 -fPIC -shared scripts/appimage-glycin-anylinux-hack.c \
+	cc -O2 -fPIC -shared packaging/appimage/appimage-glycin-anylinux-hack.c \
 		-o "${TARGET}/usr/lib/appimage-glycin-anylinux-hack.so" -ldl
 
 	# Save version

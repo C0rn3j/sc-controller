@@ -9,7 +9,7 @@ It passively reads report `0x42` from the puck's HID slots
 device. Captures are saved to `/tmp/sc2_<label>.bin` (raw 54-byte frames).
 
 Requires read access to the `hidraw` nodes (e.g. membership in the `input`
-group, or the udev rule in `scripts/69-sc-controller.rules`). No root needed.
+group, or the udev rule in `packaging/69-sc-controller.rules`). No root needed.
 
 ## Usage
 

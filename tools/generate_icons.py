@@ -7,8 +7,8 @@ from xml.etree import ElementTree as ET
 
 import oxipng
 
-ICODIR = "./images/"  # Directory with icons
-CICONS = "./images/controller-icons/"  # Directory controller-icons
+ICODIR = "../images/"  # Directory with icons
+CICONS = "../images/controller-icons/"  # Directory controller-icons
 RECOLORS = {
 	# Defines set of hue shifts for controller-icons
 	# "0" : 0.0,	# Green - original

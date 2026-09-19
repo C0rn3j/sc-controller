@@ -20,22 +20,22 @@ jobs:
           - os: ubuntu
             codename: noble
             pubkey: 871920D1991BC93C
-            recipe: AppImageBuilder.noble.yml
+            recipe: packaging/appimage/AppImageBuilder.ubuntu.noble.yaml
           - os: ubuntu
             codename: resolute
             pubkey: 871920D1991BC93C
-            recipe: AppImageBuilder.yml
+            recipe: packaging/appimage/AppImageBuilder.ubuntu.resolute.yaml
           # - os: debian
           #   codename: bookworm
           #   pubkey: 54404762BBB6E853
           #   pubkey_security: 6ED0E7B82643E131
-          #   recipe: AppImageBuilder.debian.yml
+          #   recipe: packaging/appimage/AppImageBuilder.debian.bookworm.yaml
           - os: debian
             codename: trixie
             pubkey: BDE6D2B9216EC7A8
             pubkey_security: 8E9F831205B4BA95
             pubkey_updates: 78DBA3BC47EF2265
-            recipe: AppImageBuilder.debian.yml
+            recipe: packaging/appimage/AppImageBuilder.debian.trixie.yaml
 
     steps:
       - uses: actions/checkout@v7
@@ -152,7 +152,7 @@ jobs:
       - name: Test AppImages
         uses: docker/build-push-action@v7
         with:
-          file: AppImageBuilder.test.Dockerfile
+          file: packaging/appimage/AppImageBuilder.test.Dockerfile
           context: appimages
           platforms: ${{ matrix.target.platform }}
           build-args: |
