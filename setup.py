@@ -24,6 +24,7 @@ data_files = [
 	("share/scc/osd-styles", glob.glob("osd-styles/*.css")),
 	("share/scc/", ["gamecontrollerdb.txt"]),
 	("share/pixmaps", ["packaging/io.github.c0rn3j.sc-controller.svg"]),
+	("share/metainfo", ["packaging/io.github.c0rn3j.sc-controller.metainfo.xml"]),
 	("share/mime/packages", ["packaging/io.github.c0rn3j.sc-controller.mimetypes.xml"]),
 	("share/applications", ["packaging/io.github.c0rn3j.sc-controller.desktop"]),
 	("lib/udev/rules.d", glob.glob("packaging/*.rules")),

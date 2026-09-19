@@ -94,11 +94,6 @@ RUN <<EOR
 
 	share="${TARGET}/usr/share"
 
-	# Put AppStream metadata to required location according to https://wiki.debian.org/AppStream/Guidelines
-	metainfo="${share}/metainfo"
-	mkdir -p "${metainfo}"
-	cp -a scripts/io.github.c0rn3j.sc-controller.metainfo.xml "${metainfo}"
-
 	# Convert icon to png format (required for icons in .desktop file)
 	iconpath="${share}/icons/hicolor/512x512/apps"
 	mkdir -p "${iconpath}"
