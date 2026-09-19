@@ -19,7 +19,7 @@ AppDir:
     id: io.github.c0rn3j.sc-controller
     name: sc-controller
     version: "{{APPIMAGE_VERSION}}"
-    icon: sc-controller
+    icon: io.github.c0rn3j.sc-controller
     exec: usr/bin/python3
     exec_args: -c "import os, sys; os.execvp('$APPDIR/usr/bin/scc', ['$APPDIR/usr/bin/scc'] + (sys.argv[1:] if len(sys.argv) > 1 else ['gui']))" $@
 
@@ -37,10 +37,8 @@ AppDir:
     test -n "${scc_site_packages}"
     ln -sfr "${scc_site_packages}" "${TARGET_APPDIR}/usr/lib/scc-site-packages"
 
-    # appimage-builder expects .desktop file to start with appinfo-id
-    desktop="$(find "${TARGET_APPDIR}/usr" -name sc-controller.desktop)"
-    sed -i "s:Exec=.*:Exec=./usr/bin/scc gui:g" "${desktop}"
-    ln -sr "${desktop}" "${TARGET_APPDIR}/usr/share/applications/io.github.c0rn3j.sc-controller.desktop"
+    # .desktop file exec fix
+    sed -i "s:Exec=.*:Exec=./usr/bin/scc gui:g" "${TARGET_APPDIR}/usr/share/applications/io.github.c0rn3j.sc-controller.desktop"
 
     # appimage-builder expects utf-8 encoding when patching shebangs,
     # but pygettext3 has iso-8859-1 encoding
