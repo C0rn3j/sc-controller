@@ -18,7 +18,6 @@
   <object class="GtkAdjustment" id="adjFAmplitude">
     <property name="lower">16</property>
     <property name="page-increment">128</property>
-    <property name="page-size">128</property>
     <property name="step-increment">32</property>
     <property name="upper">32767</property>
     <property name="value">512</property>
@@ -1382,7 +1381,7 @@
     <signal name="destroy" handler="on_Dialog_destroy"/>
     <child>
       <object class="GtkEventControllerKey">
-        <signal name="key-pressed" handler="on_Dialog_key_press_event"/>
+        <signal name="key-pressed" handler="on_window_key_press_event"/>
       </object>
     </child>
   </object>
