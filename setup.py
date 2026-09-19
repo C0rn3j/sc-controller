@@ -2,6 +2,7 @@
 """Installation script for everything that could not be migrated to pyproject.toml so far."""
 
 import glob
+from pathlib import Path
 
 from setuptools import Extension, setup
 
@@ -31,6 +32,9 @@ data_files = [
 ] + [  # menu icons subfolders
 	("share/scc/images/menu-icons/" + x.split("/")[-1], [x + "/LICENSES"] + glob.glob(x + "/*.png"))
 	for x in glob.glob("images/menu-icons/*")
+] + [
+	(f"share/locale/{path.parent.parent.name}/LC_MESSAGES", [str(path)])
+	for path in Path("scc/locale").glob("*/LC_MESSAGES/*.mo")
 ]
 
 extensions = [

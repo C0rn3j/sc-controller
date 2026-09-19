@@ -20,7 +20,6 @@ if TYPE_CHECKING:
 	from scc.mapper import Mapper
 
 log = logging.getLogger("OSDKeyActs")
-_ = lambda x: x
 
 
 class OSKAction(Action, SpecialAction):

@@ -10,7 +10,6 @@ from scc.actions import Action, ButtonAction
 from scc.uinput import Keys
 
 log = logging.getLogger("Macros")
-_ = lambda x: x
 
 
 class Macro(Action):

@@ -53,7 +53,6 @@ if TYPE_CHECKING:
 	from scc.mapper import Mapper
 
 log = logging.getLogger("Modifiers")
-_ = lambda x: x
 
 
 class Modifier(Action):

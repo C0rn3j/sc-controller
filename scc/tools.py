@@ -15,6 +15,9 @@ from math import atan2, cos, sin, sqrt
 from math import pi as PI
 from typing import TYPE_CHECKING
 
+# TODO(Martin): Remove this along with rewriting "from scc.tools import _" to i18n everywhere
+from scc.i18n import _ as _
+
 if TYPE_CHECKING:
 	from collections.abc import Callable
 	from typing import Any
@@ -40,8 +43,6 @@ except ImportError:
 	pass
 
 log = logging.getLogger("tools.py")
-def _(x: str) -> str:
-	return x
 
 LOG_FORMAT = "%(asctime)s.%(msecs)03d %(levelname)s %(name)-13s %(message)s"
 LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -52,7 +53,7 @@ def init_logging(prefix: str = "", suffix: str = ""):
 
 	prefix and suffix arguments can be used to modify log level prefixes.
 	"""
-	logging.basicConfig(format=LOG_FORMAT, datefmt=LOG_DATE_FORMAT)
+	logging.basicConfig(level=logging.INFO, format=LOG_FORMAT, datefmt=LOG_DATE_FORMAT)
 	logger = logging.getLogger()
 	# Rename levels
 	logging.addLevelName(10, prefix + "D" + suffix)  # Debug
@@ -76,6 +77,12 @@ def init_logging(prefix: str = "", suffix: str = ""):
 		old_log(self, level, msg, args, exc_info, extra)
 
 	logging.Logger._log = _log
+
+	# Log the language and stuff
+	# While it is logged from within the module, that runs before logging is configured
+	# So run it here too again, to get it into the output
+	from scc.i18n import log_selection
+	log_selection()
 
 
 def set_logging_level(verbose: bool, debug: bool) -> None:

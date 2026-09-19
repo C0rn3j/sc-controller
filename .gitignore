@@ -2,6 +2,7 @@
 .*
 *~
 *.so
+*.mo
 *.patch
 !scc/*tester*
 test.*

@@ -94,6 +94,14 @@ AppDir:
       [ -e "${link}" ] || ln -sr "${file}" "${link}"
     done
 
+    # Remove all localization files except ours
+    locale_dir="${TARGET_APPDIR}/usr/share/locale"
+    if [ -d "$locale_dir" ]; then
+        find "$locale_dir" \( -type f -o -type l \) \
+            ! -name 'sc-controller.mo' -delete
+        find "$locale_dir" -depth -type d -empty -delete
+    fi
+
   after_runtime: |
     set -eu
 
@@ -206,7 +214,6 @@ AppDir:
       - usr/share/glib-2.0
       - usr/share/gtk-doc
       - usr/share/icu
-      - usr/share/locale
       - usr/share/man
       - usr/share/python3/runtime.d
       - usr/share/thumbnailers

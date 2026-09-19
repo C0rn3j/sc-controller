@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 1.1.0 -->
-<interface>
+<interface domain="sc-controller">
   <!-- interface-name modeshift_editor.ui -->
   <requires lib="gtk" version="4.14"/>
   <object class="GtkAdjustment" id="adjHoldFeedback">
