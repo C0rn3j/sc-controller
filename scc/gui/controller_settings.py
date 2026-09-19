@@ -18,7 +18,7 @@ log = logging.getLogger("GS")
 
 
 class ControllerSettings(Editor, UserDataManager, ComboSetter):
-	GLADE = "controller_settings.glade"
+	GLADE = "controller_settings.ui"
 
 	def __init__(self, app, controller, profile_switcher=None):
 		UserDataManager.__init__(self)

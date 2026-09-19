@@ -32,7 +32,7 @@ def merge_modifiers(mods):
 
 # Just to speed shit up, KeyGrabber is singleton
 class KeyGrabber:
-	GLADE = "key_grabber.glade"
+	GLADE = "key_grabber.ui"
 	_singleton = None
 
 	def __new__(cls, *a):

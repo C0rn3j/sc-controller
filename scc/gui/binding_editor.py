@@ -46,7 +46,7 @@ class BindingEditor:
 		self.app = app
 
 	def create_binding_buttons(self, use_icons: bool = True, enable_press: bool = True) -> None:
-		"""Create ControllerWidget instances for available Gtk.Buttons defined in glade file."""
+		"""Create ControllerWidget instances for available Gtk.Buttons defined in ui file."""
 		for b in BUTTONS:
 			w = self.builder.get_object("bt" + b.name)
 			if w:

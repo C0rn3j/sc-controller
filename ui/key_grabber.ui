@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <!-- interface-name key_grabber.glade -->
+  <!-- interface-name key_grabber.ui -->
   <requires lib="gtk" version="4.14"/>
   <object class="GtkWindow" id="KeyGrab">
     <property name="child">

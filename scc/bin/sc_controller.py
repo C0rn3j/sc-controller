@@ -24,13 +24,13 @@ def main() -> None:
 
 	from gi.repository import Gtk
 
-	glades = os.path.join(get_share_path(), "glade")
+	ui_files = os.path.join(get_share_path(), "ui")
 	images = os.path.join(get_share_path(), "images")
 	# GObject.threads_init()
 
 	from scc.gui.app import App
 
-	App(glades, images).run(sys.argv)
+	App(ui_files, images).run(sys.argv)
 
 
 if __name__ == "__main__":

@@ -67,7 +67,7 @@ DEADZONE_MODES = [CUT, ROUND, LINEAR, MINIMUM]
 
 
 class ActionEditor(Editor):
-	GLADE = "action_editor.glade"
+	GLADE = "action_editor.ui"
 	ERROR_CSS = " #error {background-color:green; color:red;} "
 
 	AEC_MENUITEM = -1

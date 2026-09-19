@@ -19,7 +19,7 @@ __all__ = ["GyroComponent"]
 
 
 class GyroComponent(AEComponent):
-	GLADE = "ae/gyro.glade"
+	GLADE = "ae/gyro.ui"
 	NAME = "gyro"
 	CTXS = Action.AC_GYRO
 	PRIORITY = 2

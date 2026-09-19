@@ -21,7 +21,7 @@ DEFAULT_ICON_CATEGORIES = ("items", "media", "weapons", "system")
 
 
 class IconChooser(Editor, UserDataManager):
-	GLADE = "icon_chooser.glade"
+	GLADE = "icon_chooser.ui"
 
 	def __init__(self, app, callback):
 		UserDataManager.__init__(self)

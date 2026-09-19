@@ -21,7 +21,7 @@ __all__ = ["GestureComponent"]
 
 
 class GestureComponent(AEComponent):
-	GLADE = "ae/gesture.glade"
+	GLADE = "ae/gesture.ui"
 	NAME = "gesture"
 	CTXS = Action.AC_STICK | Action.AC_PAD
 	PRIORITY = 1

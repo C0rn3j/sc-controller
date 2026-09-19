@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <!-- interface-name custom.glade -->
+  <!-- interface-name custom.ui -->
   <requires lib="gtk" version="4.14"/>
   <object class="GtkTextBuffer" id="tbCustomAction">
     <signal name="changed" handler="on_tbCustomAction_changed"/>

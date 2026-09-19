@@ -15,7 +15,7 @@ __all__ = ["RecentListGenComponent"]
 
 
 class RecentListGenComponent(AEComponent):
-	GLADE = "ae/recent_list.glade"
+	GLADE = "ae/recent_list.ui"
 	NAME = "recent_list"
 	CTXS = 0
 	PRIORITY = 0

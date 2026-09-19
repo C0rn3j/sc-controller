@@ -25,7 +25,7 @@ __all__ = ["SpecialActionComponent"]
 
 
 class SpecialActionComponent(AEComponent, MenuActionCofC):
-	GLADE = "ae/special_action.glade"
+	GLADE = "ae/special_action.ui"
 	NAME = "special_action"
 	CTXS = Action.AC_BUTTON | Action.AC_MENU
 	PRIORITY = 0

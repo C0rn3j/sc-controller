@@ -16,7 +16,7 @@ log = logging.getLogger("SimpleChooser")
 
 
 class SimpleChooser(Editor):
-	GLADE = "simple_chooser.glade"
+	GLADE = "simple_chooser.ui"
 
 	def __init__(self, app, component_name, callback):
 		self.app = app

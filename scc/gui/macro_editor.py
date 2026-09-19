@@ -19,7 +19,7 @@ log = logging.getLogger("MacroEditor")
 
 
 class MacroEditor(Editor):
-	GLADE = "macro_editor.glade"
+	GLADE = "macro_editor.ui"
 
 	def __init__(self, app, callback):
 		Editor.__init__(self)

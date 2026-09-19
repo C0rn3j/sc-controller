@@ -23,7 +23,7 @@ log = logging.getLogger("IE.Dialog")
 
 
 class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
-	GLADE = "import_export.glade"
+	GLADE = "import_export.ui"
 
 	def __init__(self, app) -> None:
 		self.app = app

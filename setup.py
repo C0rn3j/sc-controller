@@ -6,8 +6,8 @@ import glob
 from setuptools import Extension, setup
 
 data_files = [
-	("share/scc/glade", glob.glob("glade/*.glade")),
-	("share/scc/glade/ae", glob.glob("glade/ae/*.glade")),
+	("share/scc/ui", glob.glob("ui/*.ui")),
+	("share/scc/ui/ae", glob.glob("ui/ae/*.ui")),
 	("share/scc/images", glob.glob("images/*.svg")),
 	("share/scc/images", glob.glob("images/*.json")),
 	("share/scc/images/button-images", glob.glob("images/button-images/*.svg")),

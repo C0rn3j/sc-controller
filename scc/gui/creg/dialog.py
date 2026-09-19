@@ -42,7 +42,7 @@ log = logging.getLogger("CRegistration")
 
 
 class ControllerRegistration(Editor):
-	GLADE = "creg.glade"
+	GLADE = "creg.ui"
 	UNASSIGNED_COLOR = "#FFFF0000"  # ARGB
 	OBSERVE_COLORS = (
 		App.OBSERVE_COLOR,

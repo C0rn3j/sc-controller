@@ -133,7 +133,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 	def setup_widgets(self) -> None:
 		# Important stuff
 		self.builder = Gtk.Builder(self)
-		self.builder.add_from_file(os.path.join(self.gladepath, "app.glade"))
+		self.builder.add_from_file(os.path.join(self.gladepath, "app.ui"))
 		self.window = self.builder.get_object("window")
 		for menu_id in ("mnuTray",):
 			self.builder.get_object(menu_id).set_parent(self.window)

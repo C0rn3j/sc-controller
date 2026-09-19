@@ -69,7 +69,7 @@ MARKUP_GYRO = """
 
 
 class FirstPage(AEComponent):
-	GLADE = "ae/first_page.glade"
+	GLADE = "ae/first_page.ui"
 	NAME = "first_page"
 	CTXS = 0
 	PRIORITY = 999

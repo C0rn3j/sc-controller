@@ -18,7 +18,7 @@ __all__ = ["MenuOnlyComponent"]
 
 
 class MenuOnlyComponent(AEComponent, MenuActionCofC):
-	GLADE = "ae/menu_only.glade"
+	GLADE = "ae/menu_only.ui"
 	NAME = "menu_only"
 	CTXS = Action.AC_MENU
 	PRIORITY = 0

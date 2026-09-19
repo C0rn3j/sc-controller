@@ -8,7 +8,7 @@ from scc.gui.editor import Editor
 class AboutDialog(Editor):
 	"""Standard looking about dialog."""
 
-	GLADE = "about.glade"
+	GLADE = "about.ui"
 
 	def __init__(self, app) -> None:
 		self.app = app

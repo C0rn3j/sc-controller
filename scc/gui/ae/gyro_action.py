@@ -20,7 +20,7 @@ TRIGGERS = (nameof(SCButtons.LT), nameof(SCButtons.RT))
 
 
 class GyroActionComponent(AEComponent):
-	GLADE = "ae/gyro_action.glade"
+	GLADE = "ae/gyro_action.ui"
 	NAME = "gyro_action"
 	CTXS = Action.AC_GYRO
 	PRIORITY = 3

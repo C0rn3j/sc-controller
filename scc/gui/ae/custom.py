@@ -17,7 +17,7 @@ __all__ = ["CustomActionComponent"]
 
 
 class CustomActionComponent(AEComponent):
-	GLADE = "ae/custom.glade"
+	GLADE = "ae/custom.ui"
 	NAME = "custom"
 	PRIORITY = -1
 	CTXS = Action.AC_ALL

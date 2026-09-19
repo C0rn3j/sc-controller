@@ -7,7 +7,7 @@ import pytest
 
 
 def _get_files():
-	"""Generates list of all glade files in glade/ directory."""
+	"""Generates list of all ui files in ui/ directory."""
 	# TODO: Caching, when there is more than one test using this
 	rv = []
 
@@ -16,15 +16,15 @@ def _get_files():
 			filename = os.path.join(path, f)
 			if os.path.isdir(filename):
 				recursive(filename)
-			elif filename.endswith((".glade", ".ui")):
+			elif filename.endswith(".ui"):
 				rv.append(filename)
 
-	recursive("glade/")
+	recursive("ui/")
 	return sorted(rv)
 
 
-class TestGlade:
-	"""Tests every glade file in glade/ directory (and subdirectories) for known problems that may cause GUI to crash in some environments.
+class TestUI:
+	"""Tests every ui file in ui/ directory (and subdirectories) for known problems that may cause GUI to crash in some environments.
 
 	(one case on one environment so far)
 	"""

@@ -29,7 +29,7 @@ __all__ = ["DPADComponent"]
 
 
 class DPADComponent(AEComponent, MenuActionCofC, BindingEditor):
-	GLADE = "ae/dpad.glade"
+	GLADE = "ae/dpad.ui"
 	NAME = "dpad"
 	CTXS = Action.AC_STICK | Action.AC_PAD
 	PRIORITY = 2

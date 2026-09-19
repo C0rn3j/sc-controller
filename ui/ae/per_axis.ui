@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <!-- interface-name per_axis.glade -->
+  <!-- interface-name per_axis.ui -->
   <requires lib="gtk" version="4.14"/>
   <object class="GtkBox" id="per_axis">
     <property name="margin-end">50</property>

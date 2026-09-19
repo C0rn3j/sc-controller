@@ -41,7 +41,7 @@ log = logging.getLogger("GS")
 
 
 class GlobalSettings(Editor, UserDataManager, ComboSetter):
-	GLADE = "global_settings.glade"
+	GLADE = "global_settings.ui"
 
 	DEFAULT_MENU_OPTIONS = [
 		# label,				order, class, icon, parameter

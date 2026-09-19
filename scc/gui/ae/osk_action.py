@@ -19,7 +19,7 @@ __all__ = ["OSKActionComponent"]
 
 
 class OSKActionComponent(AEComponent):
-	GLADE = "ae/osk_action.glade"
+	GLADE = "ae/osk_action.ui"
 	NAME = "osk_action"
 	CTXS = Action.AC_OSK
 	PRIORITY = 2

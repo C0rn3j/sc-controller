@@ -17,7 +17,7 @@ __all__ = ["TiltComponent"]
 
 
 class TiltComponent(AEComponent, BindingEditor):
-	GLADE = "ae/tilt.glade"
+	GLADE = "ae/tilt.ui"
 	NAME = "tilt"
 	CTXS = Action.AC_GYRO
 	PRIORITY = 2

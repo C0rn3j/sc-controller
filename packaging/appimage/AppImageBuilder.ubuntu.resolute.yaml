@@ -62,7 +62,7 @@ AppDir:
     keep=$(
       # Subset of: `wget -q https://specifications.freedesktop.org/icon-naming-spec/latest -O- | sed -nE 's:.*</td></tr><tr><td>([^<]+).*:\1:p' | sort`
       printf '%s\n' index.theme io.github.c0rn3j.sc-controller close- edit- go- list- pan- window-
-      grep -rhoP '"icon_name">\K[^<]+(?=<)' glade
+      grep -rhoP '"icon_name">\K[^<]+(?=<)' ui
       grep -rhoP 'icon_name *= *"\K[^"]+(?=")' scc
     )
     map_item() { echo "${1}" | while read -r item; do printf -- "${2}" "${item}"; done; }

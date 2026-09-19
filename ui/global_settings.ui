@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 1.1.0 -->
 <interface>
-  <!-- interface-name global_settings.glade -->
+  <!-- interface-name global_settings.ui -->
   <requires lib="gtk" version="4.14"/>
   <object class="GtkAdjustment" id="adjLED">
     <property name="page-increment">10</property>

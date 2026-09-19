@@ -18,7 +18,7 @@ __all__ = ["PerAxisComponent"]
 
 
 class PerAxisComponent(AEComponent):
-	GLADE = "ae/per_axis.glade"
+	GLADE = "ae/per_axis.ui"
 	NAME = "per_axis"
 	CTXS = Action.AC_STICK | Action.AC_PAD
 	PRIORITY = 1

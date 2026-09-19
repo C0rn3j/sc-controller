@@ -27,7 +27,7 @@ log = logging.getLogger("MenuEditor")
 
 
 class MenuEditor(Editor):
-	GLADE = "menu_editor.glade"
+	GLADE = "menu_editor.ui"
 	TYPE_INTERNAL = 1
 	TYPE_GLOBAL = 2
 

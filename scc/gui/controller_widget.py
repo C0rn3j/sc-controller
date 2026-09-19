@@ -3,7 +3,7 @@
 Button that user can click to choose emulated action for physical button, axis
 or pad.
 
-Wraps around actual button defined in glade file.
+Wraps around actual button defined in ui file.
 """
 
 import itertools

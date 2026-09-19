@@ -45,7 +45,7 @@ __all__ = ["AxisActionComponent"]
 
 
 class AxisActionComponent(AEComponent, TimerManager):
-	GLADE = "ae/axis_action.glade"
+	GLADE = "ae/axis_action.ui"
 	NAME = "axis_action"
 	CTXS = Action.AC_STICK | Action.AC_PAD
 	PRIORITY = 3

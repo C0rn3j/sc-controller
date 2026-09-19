@@ -18,7 +18,7 @@ __all__ = ["AxisComponent"]
 
 
 class AxisComponent(AEComponent, Chooser):
-	GLADE = "ae/axis.glade"
+	GLADE = "ae/axis.ui"
 	NAME = "axis"
 	IMAGES = {"axis": "axistrigger.svg"}
 	CTXS = 0

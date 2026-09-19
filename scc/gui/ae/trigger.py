@@ -35,7 +35,7 @@ __all__ = ["TriggerComponent"]
 
 
 class TriggerComponent(AEComponent, BindingEditor):
-	GLADE = "ae/trigger.glade"
+	GLADE = "ae/trigger.ui"
 	NAME = "trigger"
 	CTXS = Action.AC_TRIGGER
 

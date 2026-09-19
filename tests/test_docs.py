@@ -2,7 +2,7 @@ from scc.actions import Action
 
 
 class TestDocs:
-	"""Tests every glade file in glade/ directory (and subdirectories) for known
+	"""Tests every ui file in ui/ directory (and subdirectories) for known
 	problems that may cause GUI to crash in some environments.
 
 	(one case on one environment so far)

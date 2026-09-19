@@ -16,7 +16,7 @@ log = logging.getLogger("RingEditor")
 
 
 class RingEditor(Editor, ComboSetter):
-	GLADE = "ring_editor.glade"
+	GLADE = "ring_editor.ui"
 
 	def __init__(self, app, callback):
 		Editor.__init__(self)

@@ -21,7 +21,7 @@ log = logging.getLogger("OSKEdit")
 
 
 class OSKBindingEditor(Editor, BindingEditor):
-	GLADE = "osk_binding_editor.glade"
+	GLADE = "osk_binding_editor.ui"
 
 	def __init__(self, app) -> None:
 		BindingEditor.__init__(self, app)

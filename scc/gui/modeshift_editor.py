@@ -21,7 +21,7 @@ log = logging.getLogger("ModeshiftEditor")
 
 
 class ModeshiftEditor(Editor):
-	GLADE = "modeshift_editor.glade"
+	GLADE = "modeshift_editor.ui"
 	BUTTONS = (  # in order as displayed in combobox
 		(SCButtons.A, _("A")),
 		(SCButtons.B, _("B")),
