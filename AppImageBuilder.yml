@@ -21,10 +21,17 @@ AppDir:
     version: "{{APPIMAGE_VERSION}}"
     icon: sc-controller
     exec: usr/bin/python3
-    exec_args: -c "import os, sys; os.execvp('$APPDIR/usr/bin/scc', ['$APPDIR/usr/bin/scc'] + (sys.argv[1:] if len(sys.argv) > 1 else ['gui']))" $@
+    # Everything after the import and before os.execvp() are hacks to make Glycin work
+    exec_args: -c 'import os, sys; appdir = os.environ["APPDIR"]; library_path = os.environ.get("LD_LIBRARY_PATH", ""); os.environ["LD_LIBRARY_PATH"] = (f"{appdir}/usr/lib" + (f":{library_path}" if library_path else "")); preload = os.environ.get("LD_PRELOAD", "");os.environ["LD_PRELOAD"] = ("appimage-glycin-anylinux-hack.so" + (f":{preload}" if preload else ""));os.execvp("$APPDIR/usr/bin/scc", ["$APPDIR/usr/bin/scc"] + (sys.argv[1:] if len(sys.argv) > 1 else ["gui"]))' $@
 
   after_bundle: |
     set -eu
+
+    # Remove host-specific absolute paths from bundled Glycin loader commands.
+    glycin_conf_dir="${TARGET_APPDIR}/usr/share/glycin-loaders"
+    if [ -d "${glycin_conf_dir}" ]; then
+      find "${glycin_conf_dir}" -type f -name '*.conf' -exec sed -i -e 's|/usr/lib.*/||g' {} +
+    fi
 
     # install python-hidraw-pure and python-ioctl-opt manually as they were only packaged in Debian 14
     # TODO(Martin): Replace URL with just 'hidraw-pure' when https://github.com/vpelletier/python-hidraw/issues/7 is resolved
@@ -94,6 +101,41 @@ AppDir:
     if [ ! -e "${compat}/lib64" ] && [ -d "${compat}/usr/lib64" ]; then
       ln -s "usr/lib64" "${compat}/"
     fi
+
+    # Glycin clears its environment and bypasses AppRun's working-directory
+    # setup. Invoke the bundled linker explicitly to handle relative ELF
+    # interpreters and supply library paths without relying on LD_LIBRARY_PATH.
+    # Install after runtime patching so the wrappers keep their /bin/sh shebang.
+    case "{{APPIMAGE_APT_ARCH}}" in
+      amd64) triplet=x86_64-linux-gnu; linker_name=ld-linux-x86-64.so.2 ;;
+      arm64) triplet=aarch64-linux-gnu; linker_name=ld-linux-aarch64.so.1 ;;
+      *) echo "Unsupported Glycin loader architecture" >&2; exit 1 ;;
+    esac
+    for loader in "${TARGET_APPDIR}"/usr/libexec/glycin-loaders/*/glycin-*; do
+      [ -f "${loader}" ] && [ -x "${loader}" ] || continue
+      linker=$(find "${compat}" -name "${linker_name}" -exec test -f '{}' ';' -print -quit)
+      # appimage-builder 1.1.0 does not move the arm64 linker into compat.
+      # Look for the bundled file, excluding runtime links to host libraries.
+      if [ -z "${linker}" ]; then
+        linker=$(find "${TARGET_APPDIR}" -path "${TARGET_APPDIR}/runtime" -prune -o -type f -name "${linker_name}" -print -quit)
+      fi
+      if [ -z "${linker}" ]; then
+        echo "Bundled linker ${linker_name} not found in ${TARGET_APPDIR}" >&2
+        exit 1
+      fi
+      mkdir -p "${TARGET_APPDIR}/bin"
+      wrapper=$(mktemp "${TARGET_APPDIR}/bin/.glycin-wrapper.XXXXXX")
+      cat >"${wrapper}" <<EOF
+    #!/bin/sh
+    set -eu
+    appdir=\$(CDPATH= cd -- "\${0%/*}/.." && pwd -P)
+    exec "\$appdir/${linker#"${TARGET_APPDIR}/"}" \\
+      --library-path "\$appdir/usr/lib/${triplet}:\$appdir/runtime/compat/usr/lib/${triplet}" \\
+      "\$appdir/${loader#"${TARGET_APPDIR}/"}" "\$@"
+    EOF
+      chmod 755 "${wrapper}"
+      mv -fT "${wrapper}" "${TARGET_APPDIR}/bin/${loader##*/}"
+    done
 
   apt:
     arch:

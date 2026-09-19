@@ -70,6 +70,11 @@ RUN <<EOR
 
 	pip install --prefix "${TARGET}/usr" --no-warn-script-location --force-reinstall dist/*.whl
 
+	# Build the Glycin sandbox workaround for the target AppImage architecture.
+	mkdir -p "${TARGET}/usr/lib"
+	cc -O2 -fPIC -shared scripts/appimage-glycin-anylinux-hack.c \
+		-o "${TARGET}/usr/lib/appimage-glycin-anylinux-hack.so" -ldl
+
 	# Save version
 	PYTHONPATH=$(find "${TARGET}" -type d -name site-packages) \
 	python -c "from scc.constants import DAEMON_VERSION; print('VERSION=' + DAEMON_VERSION)" >>/build/.build-metadata.env

@@ -38,6 +38,7 @@
 #include <string.h>
 #include <sys/param.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -325,6 +326,47 @@ static void env_free(char* const *env) {
 	free((char**)env);
 }
 
+// Only the *p variants search PATH. Resolve their target before deciding
+// whether to remove the bundled environment; a bare name is not external.
+static char *resolve_executable(const char *filename, int search_path) {
+	if (!search_path || strchr(filename, '/'))
+		return canonicalize_file_name(filename);
+
+	const char *path = getenv("PATH");
+	char *default_path = NULL;
+	if (!path) {
+		size_t size = confstr(_CS_PATH, NULL, 0);
+		if (!size || !(default_path = malloc(size)))
+			return NULL;
+		confstr(_CS_PATH, default_path, size);
+		path = default_path;
+	}
+
+	char *resolved = NULL;
+	const char *entry = path;
+	do {
+		const char *end = strchr(entry, ':');
+		size_t length = end ? (size_t)(end - entry) : strlen(entry);
+		char *candidate = malloc(length + strlen(filename) + 2);
+		if (!candidate)
+			break;
+		memcpy(candidate, entry, length);
+		if (length)
+			candidate[length++] = '/';
+		strcpy(candidate + length, filename);
+
+		struct stat st;
+		if (access(candidate, X_OK) == 0 && stat(candidate, &st) == 0 && S_ISREG(st.st_mode))
+			resolved = canonicalize_file_name(candidate);
+		free(candidate);
+		if (resolved || !end)
+			break;
+		entry = end + 1;
+	} while (1);
+	free(default_path);
+	return resolved;
+}
+
 static int is_external_process(const char *filename) {
 	const char *appdir = getenv("APPDIR");
 	if (!appdir) {
@@ -332,7 +374,11 @@ static int is_external_process(const char *filename) {
 		return 0;
 	}
 
-	int external = (strncmp(filename, appdir, MIN(strlen(filename), strlen(appdir))) != 0);
+	size_t length = strlen(appdir);
+	while (length > 1 && appdir[length - 1] == '/')
+		length--;
+	int external = strncmp(filename, appdir, length) != 0 ||
+		(length > 1 && filename[length] != '/' && filename[length] != '\0');
 	DEBUG_PRINT("Process '%s' is %s (APPDIR=%s)\n", filename, external ? "EXTERNAL" : "INTERNAL", appdir);
 	return external;
 }
@@ -388,9 +434,9 @@ static int spawn_common(posix_spawn_func_t fn,
 						const char *path, pid_t *pid,
 						const posix_spawn_file_actions_t *file_actions,
 						const posix_spawnattr_t *attrp,
-						char *const argv[], char *const envp[])
+						char *const argv[], char *const envp[], int search_path)
 {
-	char *fullpath = canonicalize_file_name(path);
+	char *fullpath = resolve_executable(path, search_path);
 	const char *path_to_check = fullpath ? fullpath : path;
 
 	char *const *env = envp;
@@ -413,10 +459,10 @@ static int spawn_common(posix_spawn_func_t fn,
 	return ret;
 }
 
-static int exec_common(execve_func_t function, const char *filename, char* const argv[], char* const envp[]) {
+static int exec_common(execve_func_t function, const char *filename, char* const argv[], char* const envp[], int search_path) {
 	DEBUG_PRINT("Preparing to exec: %s\n", filename);
 
-	char *fullpath = canonicalize_file_name(filename);
+	char *fullpath = resolve_executable(filename, search_path);
 	DEBUG_PRINT("canonicalize file: %s -> %s\n", filename, fullpath ? fullpath : "(null)");
 
 	// always unset LD_DEBUG to child processes to help when
@@ -512,7 +558,7 @@ VISIBLE int execve(const char *filename, char *const argv[], char *const envp[])
 		errno = ENOSYS;
 		return -1;
 	}
-	return exec_common(execve_orig, filename, argv, envp);
+	return exec_common(execve_orig, filename, argv, envp, 0);
 }
 
 VISIBLE int execv(const char *filename, char *const argv[]) {
@@ -528,7 +574,7 @@ VISIBLE int execvpe(const char *filename, char *const argv[], char *const envp[]
 		errno = ENOSYS;
 		return -1;
 	}
-	return exec_common(execvpe_orig, filename, argv, envp);
+	return exec_common(execvpe_orig, filename, argv, envp, 1);
 }
 
 VISIBLE int execvp(const char *filename, char *const argv[]) {
@@ -545,7 +591,7 @@ VISIBLE int posix_spawn(pid_t *pid, const char *path,
 	if (!fn)
 		return ENOSYS;
 
-	return spawn_common(fn, path, pid, file_actions, attrp, argv, envp);
+	return spawn_common(fn, path, pid, file_actions, attrp, argv, envp, 0);
 }
 
 VISIBLE int posix_spawnp(pid_t *pid, const char *file,
@@ -557,7 +603,7 @@ VISIBLE int posix_spawnp(pid_t *pid, const char *file,
 	if (!fn)
 		return ENOSYS;
 
-	return spawn_common(fn, file, pid, file_actions, attrp, argv, envp);
+	return spawn_common(fn, file, pid, file_actions, attrp, argv, envp, 1);
 }
 
 // Force NSS to only use the modules we bundle. Without this, glibc reads the
