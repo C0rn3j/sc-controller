@@ -119,6 +119,9 @@ class Config:
 		"name": None,  # Filled with controller ID on runtime
 		"icon": None,  # Determined by magic by UI
 		"led_level": 80,  # range 0 to 100
+		"led_hue": 240,  # degrees, range 0 to 360
+		"led_saturation": 100,  # range 0 to 100
+		"player_led_mode": "controller-count",  # DualSense only
 		"idle_timeout": 600,  # in seconds, range from 1 to 32767
 		"osd_alignment": 0,  # not used yet
 		"input_rotation_l": 20,  # range -180 to 180

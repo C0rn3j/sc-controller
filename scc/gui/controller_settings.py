@@ -97,7 +97,6 @@ class ControllerSettings(Editor, UserDataManager, ComboSetter):
 
 	def load_settings(self):
 		txName = self.builder.get_object("txName")
-		sclLED = self.builder.get_object("sclLED")
 		cbAlignOSD = self.builder.get_object("cbAlignOSD")
 		sclIdleTimeout = self.builder.get_object("sclIdleTimeout")
 		sclLeftRotation = self.builder.get_object("sclLeftRotation")
@@ -110,7 +109,6 @@ class ControllerSettings(Editor, UserDataManager, ComboSetter):
 
 		self._recursing = True
 		txName.set_text(cfg["name"] or "")
-		sclLED.set_value(float(cfg["led_level"]))
 		sclIdleTimeout.set_value(float(cfg["idle_timeout"]))
 		sclLeftRotation.set_value(float(cfg["input_rotation_l"]))
 		sclRightRotation.set_value(float(cfg["input_rotation_r"]))
@@ -128,7 +126,6 @@ class ControllerSettings(Editor, UserDataManager, ComboSetter):
 			return
 		# Get widgets
 		txName = self.builder.get_object("txName")
-		sclLED = self.builder.get_object("sclLED")
 		cbIcon = self.builder.get_object("cbIcon")
 		cbAlignOSD = self.builder.get_object("cbAlignOSD")
 		sclIdleTimeout = self.builder.get_object("sclIdleTimeout")
@@ -141,7 +138,6 @@ class ControllerSettings(Editor, UserDataManager, ComboSetter):
 		# Store data
 		cfg = self.app.config.get_controller_config(self.controller.get_id())
 		cfg["name"] = txName.get_text()
-		cfg["led_level"] = sclLED.get_value()
 		cfg["osd_alignment"] = 1 if cbAlignOSD.get_active() else 0
 		cfg["idle_timeout"] = sclIdleTimeout.get_value()
 		cfg["input_rotation_l"] = sclLeftRotation.get_value()
@@ -181,17 +177,11 @@ class ControllerSettings(Editor, UserDataManager, ComboSetter):
 			return _("%s minutes") % int(value / 60)
 		return _("%sm %ss") % (int(value / 60), int(value % 60))
 
-	def on_sclLED_value_changed(self, scale, *a):
-		if self._recursing:
-			return
-		cfg = self.app.config.get_controller_config(self.controller.get_id())
-		cfg["led_level"] = scale.get_value()
-		try:
-			self.controller.set_led_level(scale.get_value())
-		except IndexError:
-			# Happens when there is no controller connected to daemon
-			pass
-		self.schedule_save_config()
+	def on_btnLEDSettings_clicked(self, *args):
+		from scc.gui.led_editor import LEDEditor
+
+		self._led_editor = LEDEditor(self.app, self.controller)
+		self._led_editor.show(self.window)
 
 	def on_sclIdleTimeout_value_changed(self, scale, *a):
 		if self._recursing:

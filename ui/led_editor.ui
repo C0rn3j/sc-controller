@@ -1,8 +1,33 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 1.1.0 -->
-<interface>
+<interface domain="sc-controller">
   <!-- interface-name led_editor.ui -->
   <requires lib="gtk" version="4.14"/>
+  <object class="GtkAdjustment" id="adjLEDHue">
+    <property name="page-increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="upper">360</property>
+    <property name="value">210</property>
+  </object>
+  <object class="GtkAdjustment" id="adjLEDSaturation">
+    <property name="page-increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="upper">100</property>
+    <property name="value">100</property>
+  </object>
+  <object class="GtkAdjustment" id="adjLEDBrightness">
+    <property name="page-increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="upper">100</property>
+    <property name="value">80</property>
+  </object>
+  <object class="GtkStringList" id="lstPlayerLEDMode">
+    <items>
+      <item translatable="yes">On</item>
+      <item translatable="yes">Off</item>
+      <item translatable="yes">Controller count</item>
+    </items>
+  </object>
   <object class="GtkWindow" id="Dialog">
     <property name="child">
       <object class="GtkBox" id="vbLED">
@@ -15,11 +40,12 @@
         <child>
           <object class="GtkGrid" id="grdLED">
             <property name="column-spacing">12</property>
-            <property name="hexpand">True</property>
-            <property name="row-spacing">8</property>
+            <property name="hexpand">1</property>
+            <property name="row-spacing">12</property>
             <child>
               <object class="GtkLabel" id="lblLEDHue">
                 <property name="label" translatable="yes">LED Hue</property>
+                <property name="xalign">0</property>
                 <layout>
                   <property name="column">0</property>
                   <property name="row">0</property>
@@ -30,11 +56,11 @@
               <object class="GtkScale" id="sclLEDHue">
                 <property name="adjustment">adjLEDHue</property>
                 <property name="css-classes">led-hue</property>
-                <property name="hexpand">True</property>
-                <property name="round-digits">0</property>
+                <property name="draw-value">0</property>
+                <property name="hexpand">1</property>
                 <signal name="value-changed" handler="on_led_value_changed"/>
                 <layout>
-                  <property name="column">0</property>
+                  <property name="column">1</property>
                   <property name="row">0</property>
                 </layout>
               </object>
@@ -42,9 +68,10 @@
             <child>
               <object class="GtkLabel" id="lblLEDSaturation">
                 <property name="label" translatable="yes">LED Saturation</property>
+                <property name="xalign">0</property>
                 <layout>
                   <property name="column">0</property>
-                  <property name="row">0</property>
+                  <property name="row">1</property>
                 </layout>
               </object>
             </child>
@@ -52,20 +79,22 @@
               <object class="GtkScale" id="sclLEDSaturation">
                 <property name="adjustment">adjLEDSaturation</property>
                 <property name="css-classes">led-saturation</property>
-                <property name="hexpand">True</property>
+                <property name="draw-value">0</property>
+                <property name="hexpand">1</property>
                 <signal name="value-changed" handler="on_led_value_changed"/>
                 <layout>
-                  <property name="column">0</property>
-                  <property name="row">0</property>
+                  <property name="column">1</property>
+                  <property name="row">1</property>
                 </layout>
               </object>
             </child>
             <child>
               <object class="GtkLabel" id="lblLEDBrightness">
                 <property name="label" translatable="yes">LED Brightness</property>
+                <property name="xalign">0</property>
                 <layout>
                   <property name="column">0</property>
-                  <property name="row">0</property>
+                  <property name="row">2</property>
                 </layout>
               </object>
             </child>
@@ -73,25 +102,77 @@
               <object class="GtkScale" id="sclLEDBrightness">
                 <property name="adjustment">adjLEDBrightness</property>
                 <property name="css-classes">led-brightness</property>
-                <property name="hexpand">True</property>
+                <property name="draw-value">0</property>
+                <property name="hexpand">1</property>
                 <signal name="value-changed" handler="on_led_value_changed"/>
                 <layout>
+                  <property name="column">1</property>
+                  <property name="row">2</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lblPlayerLEDs">
+                <property name="label" translatable="yes">Player LEDs</property>
+                <property name="valign">start</property>
+                <property name="xalign">0</property>
+                <layout>
                   <property name="column">0</property>
-                  <property name="row">0</property>
+                  <property name="row">3</property>
                 </layout>
               </object>
             </child>
             <child>
               <object class="GtkBox" id="boxPlayerLEDs">
+                <property name="orientation">vertical</property>
+                <property name="spacing">6</property>
                 <child>
-                  <object class="GtkLabel" id="lblPlayerLEDs"/>
+                  <object class="GtkDropDown" id="ddPlayerLEDs">
+                    <property name="hexpand">1</property>
+                    <property name="model">lstPlayerLEDMode</property>
+                    <signal name="notify::selected" handler="on_player_led_mode_changed"/>
+                  </object>
                 </child>
                 <child>
-                  <object class="GtkDropDown" id="ddPlayerLEDs"/>
+                  <object class="GtkBox" id="boxPlayerLEDPreview">
+                    <property name="halign">center</property>
+                    <property name="homogeneous">1</property>
+                    <property name="spacing">8</property>
+                    <child>
+                      <object class="GtkLabel" id="ledPlayer1">
+                        <property name="css-classes">player-led</property>
+                        <property name="label">●</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="ledPlayer2">
+                        <property name="css-classes">player-led</property>
+                        <property name="label">●</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="ledPlayer3">
+                        <property name="css-classes">player-led</property>
+                        <property name="label">●</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="ledPlayer4">
+                        <property name="css-classes">player-led</property>
+                        <property name="label">●</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="ledPlayer5">
+                        <property name="css-classes">player-led</property>
+                        <property name="label">●</property>
+                      </object>
+                    </child>
+                  </object>
                 </child>
                 <layout>
-                  <property name="column">0</property>
-                  <property name="row">0</property>
+                  <property name="column">1</property>
+                  <property name="row">3</property>
                 </layout>
               </object>
             </child>
@@ -99,35 +180,28 @@
         </child>
         <child>
           <object class="GtkBox" id="boxActions">
+            <property name="halign">end</property>
             <child>
-              <object class="GtkButton" id="btnClose"/>
+              <object class="GtkButton" id="btnClose">
+                <property name="label" translatable="yes">_Close</property>
+                <property name="use-underline">1</property>
+                <signal name="clicked" handler="close"/>
+              </object>
             </child>
           </object>
         </child>
       </object>
     </property>
     <property name="default-width">480</property>
-    <property name="title">LED Settings</property>
+    <property name="resizable">0</property>
+    <property name="title" translatable="yes">LED Settings</property>
     <property name="titlebar">
       <object class="GtkHeaderBar" id="header"/>
     </property>
-  </object>
-  <object class="GtkAdjustment" id="adjLEDHue">
-    <property name="page-increment">10.0</property>
-    <property name="step-increment">1.0</property>
-    <property name="upper">360.0</property>
-    <property name="value">210.0</property>
-  </object>
-  <object class="GtkAdjustment" id="adjLEDSaturation">
-    <property name="page-increment">10.0</property>
-    <property name="step-increment">1.0</property>
-    <property name="upper">100.0</property>
-    <property name="value">100.0</property>
-  </object>
-  <object class="GtkAdjustment" id="adjLEDBrightness">
-    <property name="page-increment">10.0</property>
-    <property name="step-increment">1.0</property>
-    <property name="upper">100.0</property>
-    <property name="value">100.0</property>
+    <child>
+      <object class="GtkEventControllerKey">
+        <signal name="key-pressed" handler="on_window_key_press_event"/>
+      </object>
+    </child>
   </object>
 </interface>

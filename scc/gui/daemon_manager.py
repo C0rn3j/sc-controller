@@ -458,6 +458,20 @@ class ControllerManager(GObject.GObject):
 		self._send_id()
 		self._dm.request(f"Led: {int(value)}", DaemonManager.nocallback, DaemonManager.nocallback)
 
+	def set_led_color(self, red: int, green: int, blue: int) -> None:
+		"""Sets the controller RGB lightbar color."""
+		self._send_id()
+		self._dm.request(
+			f"LedColor: {int(red)} {int(green)} {int(blue)}",
+			DaemonManager.nocallback,
+			DaemonManager.nocallback,
+		)
+
+	def set_player_leds(self, mask: int) -> None:
+		"""Sets the five-bit DualSense player indicator mask."""
+		self._send_id()
+		self._dm.request(f"PlayerLEDs: {int(mask)}", DaemonManager.nocallback, DaemonManager.nocallback)
+
 	def set_profile(self, filename) -> None:
 		"""Asks daemon to change this controller profile"""
 		self._send_id()
