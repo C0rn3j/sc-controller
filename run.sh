@@ -66,6 +66,8 @@ function testDeps() {
 	# Windows also needs https://visualstudio.microsoft.com/visual-cpp-build-tools/
 	# winget install --exact --id Microsoft.VisualStudio.BuildTools `--override "--wait --passive --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"
 
+	# git config core.symlinks true # Otherwise SVGs are broken
+
 	# pacman -S mingw-w64-x86_64-gtk4
 }
 
