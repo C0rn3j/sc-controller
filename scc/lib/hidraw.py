@@ -1,7 +1,11 @@
 from __future__ import annotations
 
 import ctypes
-import fcntl
+import sys
+
+# TODO(Martin): Poor check, but will do for now
+if sys.platform != "win32":
+	import fcntl
 from typing import TYPE_CHECKING, NamedTuple
 
 import ioctl_opt
