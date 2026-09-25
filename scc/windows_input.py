@@ -7,7 +7,7 @@ import logging
 import sys
 from ctypes import wintypes
 
-from scc.uinput import Keys, Mouse, Rels
+from scc.uinput import Axes, Keys, Mouse, Rels
 
 if sys.platform != "win32":
 	raise ImportError("scc.windows_input is only available on Windows")
@@ -226,3 +226,110 @@ class WindowsMouse(Mouse):
 
 	def relManaged(self, rel: int) -> bool:
 		return rel in (Rels.REL_X, Rels.REL_Y, Rels.REL_WHEEL, Rels.REL_HWHEEL)
+
+
+class WindowsGamepad:
+	"""Xbox 360 virtual controller compatible with SCC's uinput API."""
+
+	def __init__(self, name=None) -> None:
+		try:
+			import vgamepad as vg
+		except ImportError as exc:
+			raise RuntimeError("Xbox 360 emulation on Windows requires the vgamepad package") from exc
+
+		self.name = name or "Microsoft X-Box 360 pad"
+		try:
+			self._gamepad = vg.VX360Gamepad()
+		except Exception as exc:
+			raise RuntimeError(
+				"Failed to create the virtual Xbox 360 controller. Install the ViGEmBus driver and restart Windows.",
+			) from exc
+
+		button = vg.XUSB_BUTTON
+		self._buttons = {
+			Keys.BTN_START: button.XUSB_GAMEPAD_START,
+			Keys.BTN_MODE: button.XUSB_GAMEPAD_GUIDE,
+			Keys.BTN_SELECT: button.XUSB_GAMEPAD_BACK,
+			Keys.BTN_SOUTH: button.XUSB_GAMEPAD_A,
+			Keys.BTN_EAST: button.XUSB_GAMEPAD_B,
+			Keys.BTN_WEST: button.XUSB_GAMEPAD_X,
+			Keys.BTN_NORTH: button.XUSB_GAMEPAD_Y,
+			Keys.BTN_TL: button.XUSB_GAMEPAD_LEFT_SHOULDER,
+			Keys.BTN_TR: button.XUSB_GAMEPAD_RIGHT_SHOULDER,
+			Keys.BTN_THUMBL: button.XUSB_GAMEPAD_LEFT_THUMB,
+			Keys.BTN_THUMBR: button.XUSB_GAMEPAD_RIGHT_THUMB,
+		}
+		self._dpad = {
+			"up": button.XUSB_GAMEPAD_DPAD_UP,
+			"down": button.XUSB_GAMEPAD_DPAD_DOWN,
+			"left": button.XUSB_GAMEPAD_DPAD_LEFT,
+			"right": button.XUSB_GAMEPAD_DPAD_RIGHT,
+		}
+		self._axes = {
+			Axes.ABS_X: 0,
+			Axes.ABS_Y: 0,
+			Axes.ABS_RX: 0,
+			Axes.ABS_RY: 0,
+			Axes.ABS_Z: 0,
+			Axes.ABS_RZ: 0,
+			Axes.ABS_HAT0X: 0,
+			Axes.ABS_HAT0Y: 0,
+		}
+
+	def keyEvent(self, key: int, val: int) -> None:
+		button = self._buttons.get(key)
+		if button is None:
+			return
+		if val:
+			self._gamepad.press_button(button=button)
+		else:
+			self._gamepad.release_button(button=button)
+
+	def axisEvent(self, axis: int, val: int) -> None:
+		if axis not in self._axes:
+			return
+		self._axes[axis] = val
+		if axis in (Axes.ABS_X, Axes.ABS_Y):
+			self._gamepad.left_joystick(
+				x_value=self._axes[Axes.ABS_X],
+				y_value=max(-32768, min(32767, -self._axes[Axes.ABS_Y])),
+			)
+		elif axis in (Axes.ABS_RX, Axes.ABS_RY):
+			self._gamepad.right_joystick(
+				x_value=self._axes[Axes.ABS_RX],
+				y_value=max(-32768, min(32767, -self._axes[Axes.ABS_RY])),
+			)
+		elif axis == Axes.ABS_Z:
+			self._gamepad.left_trigger(value=val)
+		elif axis == Axes.ABS_RZ:
+			self._gamepad.right_trigger(value=val)
+		else:
+			self._update_dpad()
+
+	def _update_dpad(self) -> None:
+		x = self._axes[Axes.ABS_HAT0X]
+		y = self._axes[Axes.ABS_HAT0Y]
+		states = {
+			"left": x < 0,
+			"right": x > 0,
+			"up": y < 0,
+			"down": y > 0,
+		}
+		for direction, pressed in states.items():
+			button = self._dpad[direction]
+			if pressed:
+				self._gamepad.press_button(button=button)
+			else:
+				self._gamepad.release_button(button=button)
+
+	def synEvent(self) -> None:
+		self._gamepad.update()
+
+	def keyManaged(self, key: int) -> bool:
+		return key in self._buttons
+
+	def axisManaged(self, axis: int) -> bool:
+		return axis in self._axes
+
+	def relManaged(self, rel: int) -> bool:
+		return False
