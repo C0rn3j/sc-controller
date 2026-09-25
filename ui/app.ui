@@ -381,10 +381,12 @@
                   <object class="GtkGrid" id="grEditor">
                     <property name="column-spacing">12</property>
                     <property name="row-spacing">12</property>
+                    <property name="valign">start</property>
                     <child>
                       <object class="GtkBox" id="vbLeft">
                         <property name="orientation">vertical</property>
                         <property name="spacing">6</property>
+                        <property name="valign">start</property>
                         <child>
                           <object class="GtkButton" id="btLT">
                             <property name="focusable">1</property>
@@ -431,6 +433,7 @@
                       <object class="GtkBox" id="vbRight">
                         <property name="orientation">vertical</property>
                         <property name="spacing">6</property>
+                        <property name="valign">start</property>
                         <child>
                           <object class="GtkButton" id="btRT">
                             <property name="focusable">1</property>
@@ -486,6 +489,7 @@
                       <object class="GtkBox" id="vbPads">
                         <property name="baseline-position">bottom</property>
                         <property name="spacing">12</property>
+                        <property name="valign">start</property>
                         <child>
                           <object class="GtkButton" id="btLPAD">
                             <property name="focusable">1</property>
@@ -575,6 +579,7 @@
                       <object class="GtkBox" id="vbXY">
                         <property name="orientation">vertical</property>
                         <property name="spacing">6</property>
+                        <property name="valign">start</property>
                         <child>
                           <object class="GtkButton" id="btY">
                             <property name="focusable">1</property>
@@ -599,6 +604,7 @@
                       <object class="GtkBox" id="vbAB">
                         <property name="orientation">vertical</property>
                         <property name="spacing">6</property>
+                        <property name="valign">start</property>
                         <child>
                           <object class="GtkButton" id="btB">
                             <property name="focusable">1</property>
