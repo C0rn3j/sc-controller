@@ -129,7 +129,11 @@ class SCCDaemon(Daemon):
 		self._glib_context: GLib.MainContext | None = None
 
 	def _poll(self) -> None:
-		self.poller.poll(self.scheduler.get_poll_timeout())
+		# HIDAPI has no selectable handle on Windows, so Windows controller
+		# drivers are serviced by the main loop. A 10 ms wait here made the
+		# virtual controller visibly lag behind the physical controller.
+		maximum = 0.001 if sys.platform == "win32" else 0.01
+		self.poller.poll(self.scheduler.get_poll_timeout(maximum))
 
 	def init_sleep_monitor(self) -> None:
 		"""Listen for systemd-logind suspend notifications."""
