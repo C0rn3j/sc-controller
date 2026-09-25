@@ -63,6 +63,10 @@ function testDeps() {
 		echo -e "${Red}uv not found, install it.${NoColor}"
 		exit 1
 	fi
+	# Windows also needs https://visualstudio.microsoft.com/visual-cpp-build-tools/
+	# winget install --exact --id Microsoft.VisualStudio.BuildTools `--override "--wait --passive --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"
+
+	# pacman -S mingw-w64-x86_64-gtk4
 }
 
 testDeps
