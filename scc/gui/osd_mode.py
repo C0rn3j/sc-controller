@@ -4,9 +4,10 @@ Use the same virtual input devices as the daemon so GTK4 receives ordinary
 keyboard and pointer events on both Wayland and X11.
 """
 
-from gi.repository import Gtk
+from gi.repository import Gdk, Gtk
 
 from scc.constants import SCButtons
+from scc.gui.gdk_to_key import KEY_TO_GDK
 from scc.osd.slave_mapper import SlaveMapper
 
 
@@ -20,6 +21,75 @@ class OSDModeMapper(SlaveMapper):
 	def on_sa_restart(self, *a):
 		"""Restart / exit handler"""
 		self.app.quit()
+
+	def set_target_window(self, w):
+		"""Set the GTK4 window whose focused widget receives OSD actions."""
+		self.target_window = w
+
+	def create_keyboard(self, name):
+		return OSDModeKeyboard(self)
+
+	def create_mouse(self, name):
+		return OSDModeMouse(self)
+
+
+class OSDModeKeyboard:
+	"""Translate the navigation keys used by OSD mode into GTK4 actions."""
+
+	def __init__(self, mapper):
+		self.mapper = mapper
+
+	def _focused_widget(self):
+		window = self.mapper.target_window
+		return window.get_focus() if isinstance(window, Gtk.Window) else None
+
+	def pressEvent(self, keys):
+		for k in keys:
+			keyval = KEY_TO_GDK.get(k)
+			direction = {
+				Gdk.KEY_Left: Gtk.DirectionType.LEFT,
+				Gdk.KEY_Right: Gtk.DirectionType.RIGHT,
+				Gdk.KEY_Up: Gtk.DirectionType.UP,
+				Gdk.KEY_Down: Gtk.DirectionType.DOWN,
+				Gdk.KEY_Tab: Gtk.DirectionType.TAB_FORWARD,
+			}.get(keyval)
+			if direction is not None:
+				self.mapper.target_window.child_focus(direction)
+			elif keyval in (Gdk.KEY_Return, Gdk.KEY_KP_Enter, Gdk.KEY_space):
+				focused = self._focused_widget()
+				if focused is not None:
+					focused.activate()
+
+	def releaseEvent(self, keys=None):
+		# GTK4 does not provide public synthetic key-event construction. OSD
+		# navigation and activation are completed on key press instead.
+		return
+
+
+class OSDModeMouse:
+	"""Provide the mapper's mouse interface using GTK4 widget activation."""
+
+	def __init__(self, mapper):
+		self.mapper = mapper
+
+	def synEvent(self, *a):
+		pass
+
+	def keyEvent(self, key, val) -> None:
+		if key != Keys.BTN_LEFT or not val:
+			return
+		window = self.mapper.target_window
+		focused = window.get_focus() if isinstance(window, Gtk.Window) else None
+		if focused is not None:
+			focused.activate()
+
+	def moveEvent(self, *args) -> None:
+		pass
+
+	moveStickEvent = moveEvent
+	scrollEvent = moveEvent
+	updateParams = moveEvent
+	updateScrollParams = moveEvent
 
 
 class OSDModeMappings:
@@ -65,13 +135,10 @@ class OSDModeMappings:
 			self.app.builder.get_object(x).set_visible(True)
 
 	def show(self):
-		# GTK4/Wayland cannot position a separate hints window beneath the
-		# editor. Keep the hints in its layout, where they cannot steal focus.
-		hints = self.window.get_child()
-		if hints is not None:
-			self.window.set_child(None)
-			self.app.builder.get_object("content").append(hints)
-			hints.set_visible(True)
+		# GTK4 does not expose override-redirect or absolute top-level window
+		# positioning. Present the helper as a regular undecorated window.
+		self.window.set_decorated(False)
+		self.window.present()
 
 
 def direction(x):
