@@ -34,7 +34,7 @@ from scc.lib import xwrappers as X
 from scc.uinput import Dummy, Keyboard, Mouse, UInput
 
 if sys.platform == "win32":
-	from scc.windows_input import WindowsKeyboard, WindowsMouse
+	from scc.windows_input import WindowsGamepad, WindowsKeyboard, WindowsMouse
 
 if TYPE_CHECKING:
 	from scc.controller import Controller
@@ -86,7 +86,7 @@ class Mapper:
 		log.debug(f"Keyboard: {self.keyboard}")
 		self.mouse: WindowsMouse | Mouse | Dummy = self.create_mouse(mouse) if mouse else Dummy()
 		log.debug(f"Mouse:    {self.mouse}")
-		self.gamepad: UInput | Dummy | None = self.create_gamepad(gamepad, poller) if gamepad and sys.platform != "win32" else Dummy()
+		self.gamepad: WindowsGamepad | UInput | Dummy | None = self.create_gamepad(gamepad, poller) if gamepad else Dummy()
 		log.debug(f"Gamepad:  {self.gamepad}")
 
 		# Set by SCCDaemon instance; Used to handle actions
@@ -120,6 +120,8 @@ class Mapper:
 			self.gamepad = Dummy()
 			return None
 		cfg = Config()
+		if sys.platform == "win32":
+			return WindowsGamepad(name=cfg["output"]["name"])
 		keys = ALL_BUTTONS[0 : cfg["output"]["buttons"]]
 		vendor = int(cfg["output"]["vendor"], 16)
 		product = int(cfg["output"]["product"], 16)
