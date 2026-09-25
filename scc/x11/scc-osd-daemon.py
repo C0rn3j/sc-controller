@@ -10,6 +10,13 @@ import os
 import sys
 import time
 
+_dll_directories = []
+
+if sys.platform == "win32":
+	_dll_directories.append(
+		os.add_dll_directory(r"C:\msys64\mingw64\bin"),
+	)
+
 import gi
 
 from scc.tools import set_logging_level
