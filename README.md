@@ -135,8 +135,7 @@ We also have a [Discord](https://discord.gg/d3G7dDJ2G7) available.
 			<strong>Windows:</strong>
 			<ul>
 				<li>
-					Not planned. The half-finished C rewrite had Windows support, but it has
-					been abandoned. See
+					Work in progress. See
 					<a href="https://github.com/C0rn3j/sc-controller/issues/44">issue #44</a>
 					for more information.
 				</li>
