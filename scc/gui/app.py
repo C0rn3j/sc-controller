@@ -307,9 +307,9 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			try:
 				w = self.button_widgets[b]
 				icon, trash = ControllerManager.get_button_icon(config, b, True)
-				w.icon.set_from_file(icon)
+				w.icon.set_filename(icon)
 			except Exception:
-				pass
+				log.exception(f"Failed to set button widget icon for {b}")
 		# Triggers
 		w = self.builder.get_object("btLT")
 		if w:
