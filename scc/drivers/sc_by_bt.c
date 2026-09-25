@@ -7,6 +7,19 @@
 
 #define SC_BY_BT_MODULE_VERSION 3
 
+static struct PyModuleDef libsc_by_bt_module = {
+	PyModuleDef_HEAD_INIT,
+	"libsc_by_bt",
+	NULL,
+	-1,
+	NULL,
+};
+
+PyMODINIT_FUNC PyInit_libsc_by_bt(void)
+{
+	return PyModule_Create(&libsc_by_bt_module);
+}
+
 enum BtInPacketType {
 	BUTTON   = 0x0010,
 	TRIGGERS = 0x0020,
