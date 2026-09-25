@@ -389,6 +389,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 	def check(self) -> bool:
 		"""Performs various (three) checks and reports possible problems"""
+		if sys.platform != "linux":
+			return False
 		# TODO: Maybe not best place to do this
 		try:
 			# Dynamic modules
