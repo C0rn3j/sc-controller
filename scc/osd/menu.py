@@ -261,18 +261,6 @@ class Menu(OSDWindow):
 		self.argparser.add_argument("--print-items", action="store_true", help="prints menu items to stdout")
 		self.argparser.add_argument("items", type=str, nargs="*", metavar="id title", help="Menu items")
 
-	@staticmethod
-	def _get_on_screen_position(w):
-		a = w.get_allocation()
-		parent = w.get_parent()
-		if parent:
-			if isinstance(parent, Menu) and parent.get_window() is not None:
-				x, y = parent.get_window().get_position()
-			else:
-				x, y = Menu._get_on_screen_position(parent)
-			return a.x + x, a.y + y
-		return a.x, a.y
-
 	def parse_menu(self):
 		if self.args.from_profile:
 			try:
@@ -408,39 +396,8 @@ class Menu(OSDWindow):
 			self._selected = self.items[index]
 			self._selected.widget.set_name(self._selected.widget.get_name() + "-selected")
 			self._ensure_visible(self._selected.widget)
-			GLib.timeout_add(2, self._check_on_screen_position)
 			return True
 		return False
-
-	def _check_on_screen_position(self, quick=False):
-		if self.using_wlroots:
-			return
-		x, y = Menu._get_on_screen_position(self._selected.widget)
-		try:
-			m = self.get_window().get_display().get_monitor_at_window(self.get_window())
-			assert m
-			y_offset = m.get_geometry().y
-			screen_height = m.get_geometry().height
-		except:
-			y_offset = 0
-			screen_height = self.get_window().get_screen().get_height()
-		y -= y_offset
-		if y < 50:
-			wx, wy = self.get_window().get_position()
-			if quick:
-				wy = 50 - (y - wy)
-			else:
-				wy += 5
-				GLib.timeout_add(2, self._check_on_screen_position)
-			self.get_window().move(wx, wy)
-		if y > screen_height - 100:
-			wx, wy = self.get_window().get_position()
-			if quick:
-				wy = screen_height - 100 - (y - wy)
-			else:
-				wy -= 5
-				GLib.timeout_add(2, self._check_on_screen_position)
-			self.get_window().move(wx, wy)
 
 	def _connect_handlers(self):
 		self._eh_ids += [
@@ -459,7 +416,6 @@ class Menu(OSDWindow):
 			self.next_item(1)
 		self._fit_scroll()
 		OSDWindow.show(self, *a)
-		GLib.timeout_add(1, self._check_on_screen_position, True)
 
 	def on_daemon_connected(self, *a) -> None:
 		if not self.config:

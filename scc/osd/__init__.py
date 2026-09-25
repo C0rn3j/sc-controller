@@ -231,6 +231,8 @@ class OSDWindow(Gtk.Window):
 	def show(self) -> None:
 		self.get_child().show()
 
+		# GTK4 intentionally does not expose absolute positioning for regular top-level windows
+		# Non-layer-shell backends let the window manager choose the initial position.
 		if self.using_wlroots:
 			x, y = self.position
 			if x < 0:
@@ -246,13 +248,6 @@ class OSDWindow(Gtk.Window):
 			self.layer_shell.set_margin(self, self.x_layer_anchor, x)
 			self.layer_shell.set_margin(self, self.y_layer_anchor, y)
 			self._layer_position = [float(x), float(y)]
-		else:  # X11
-			x, y = self.compute_position()
-			if x < 0:  # Negative X position is counted from right border
-				x = Gdk.Screen.width() - self.get_allocated_width() + x + 1
-			if y < 0:  # Negative Y position is counted from bottom border
-				y = Gdk.Screen.height() - self.get_allocated_height() + y + 1
-			self.move(x, y)
 
 		Gtk.Window.show(self)
 		GLib.idle_add(self.make_window_clicktrough)
@@ -289,8 +284,10 @@ class OSDWindow(Gtk.Window):
 			self.layer_shell.set_margin(self, self.x_layer_anchor, int(self._layer_position[0]))
 			self.layer_shell.set_margin(self, self.y_layer_anchor, int(self._layer_position[1]))
 		else:
-			x, y = self.get_position()
-			self.move(int(x + dx), int(y + dy))
+			# Keep the requested logical position for callers, even though GTK4 cannot move a regular top-level window to it.
+			# TODO(Martin): This section can probably be removed?
+			x, y = self.position
+			self.position = int(x + dx), int(y + dy)
 
 	def on_controller_lost(self, *a) -> None:
 		log.error("Controller lost")
