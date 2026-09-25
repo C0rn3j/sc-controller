@@ -721,6 +721,7 @@ class Dummy:
 	updateParams = keyEvent
 	updateScrollParams = keyEvent
 	moveEvent = keyEvent
+	moveStickEvent = keyEvent
 	scrollEvent = keyEvent
 	pressEvent = keyEvent
 	releaseEvent = keyEvent
