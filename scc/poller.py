@@ -4,11 +4,12 @@ Uses select to pool for file descriptors. Driver classes can use
 daemon.get_poller().register and .unregister to add file descriptors and
 register callbacks to be called when data is available in them.
 
-Callback is called as callback(fd, event) where event is one of select.POLL*
+Callback is called as callback(fd, event) where event is one of Poller.POLL*.
 """
 
 import logging
 import select
+import time
 
 log = logging.getLogger("Poller")
 
@@ -17,9 +18,9 @@ DO_NOTHING = lambda *a: False
 
 
 class Poller:
-	POLLIN = select.POLLIN
-	POLLOUT = select.POLLOUT
-	POLLPRI = select.POLLPRI
+	POLLIN = 1 << 0
+	POLLPRI = 1 << 1
+	POLLOUT = 1 << 2
 
 	def __init__(self) -> None:
 		self._events = {}
@@ -48,6 +49,11 @@ class Poller:
 		self._pool_pri = [fd for fd, events in self._events.items() if events & Poller.POLLPRI]
 
 	def poll(self, timeout=0.01) -> None:
+		# Windows requires at least one socket in a select() call.
+		if not (self._pool_in or self._pool_out or self._pool_pri):
+			time.sleep(timeout)
+			return
+
 		inn, out, pri = select.select(self._pool_in, self._pool_out, self._pool_pri, timeout)
 
 		for fd in inn:
