@@ -77,9 +77,9 @@ class AxisActionComponent(AEComponent, TimerManager):
 		AEComponent.load(self)
 		cbAreaType = self.builder.get_object("cbAreaType")
 		cbAreaType.set_row_separator_func(lambda model, iter: model.get_value(iter, 0) == "-")
-		self.on_wayland = "WAYLAND_DISPLAY" in os.environ or not isinstance(
+		self.on_wayland = "WAYLAND_DISPLAY" in os.environ or (sys.platform == "linux" and not isinstance(
 			Gdk.Display.get_default(), GdkX11.X11Display,
-		)
+		))
 		if self.on_wayland:
 			self.builder.get_object("lblArea").set_text(
 				_("Note: Mouse Region option is not available with Wayland-based display server"),

@@ -72,7 +72,7 @@ class Menu(OSDWindow):
 		self.config = None
 		self.feedback: tuple[HapticPos, int] | None = None
 		self.controller = None
-		if isinstance(Gdk.Display.get_default(), GdkX11.X11Display):
+		if sys.platform == "linux" and isinstance(Gdk.Display.get_default(), GdkX11.X11Display):
 			self.xdisplay = get_xdisplay()
 		else:
 			self.xdisplay = None

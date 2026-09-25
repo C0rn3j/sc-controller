@@ -45,7 +45,7 @@ class GestureComponent(AEComponent):
 		if AEComponent.load(self):
 			self.builder.get_object("sclPrecision").set_format_value_func(self.on_sclPrecision_format_value)
 			# Unlike mose region, gesutres kinda work with XWayland
-			self.on_wayland = not isinstance(Gdk.Display.get_default(), GdkX11.X11Display)
+			self.on_wayland = sys.platform == "linux" and not isinstance(Gdk.Display.get_default(), GdkX11.X11Display)
 			if self.on_wayland:
 				self.builder.get_object("lblGestureMessage").set_text(
 					_("Note: Gestures are not available with Wayland-based display server"),

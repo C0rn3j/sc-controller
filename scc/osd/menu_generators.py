@@ -130,7 +130,7 @@ class WindowListMenuGenerator(MenuGenerator):
 	def generate(self, menuhandler) -> list[MenuItem]:
 		rv: list[MenuItem] = []
 		x11_dpy = None
-		if isinstance(Gdk.Display.get_default(), GdkX11.X11Display):
+		if sys.platform == "linux" and isinstance(Gdk.Display.get_default(), GdkX11.X11Display):
 			from scc.x11 import get_xdisplay
 
 			x11_dpy = get_xdisplay()
