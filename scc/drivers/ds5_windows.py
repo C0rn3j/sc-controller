@@ -262,6 +262,10 @@ class DualSenseWindowsDriver:
 		self._next_scan = 0.0
 
 	def start(self) -> None:
+		log.warning(
+			"Windows cannot hide the physical DualSense by itself. To prevent double input, install HidHide, "
+			"add scc-daemon.exe to its Applications list, hide the DualSense under Devices, and enable cloaking.",
+		)
 		self.scan()
 
 	def mainloop(self) -> None:
