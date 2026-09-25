@@ -4,8 +4,17 @@ Handles gesture recognition settings.
 """
 
 import logging
+import sys
 
-from gi.repository import Gdk, GdkX11, GObject
+import gi
+
+gi.require_version("Gdk", "4.0")
+gi.require_version("GObject", "2.0")
+from gi.repository import Gdk, GObject
+
+if sys.platform == "linux":
+	gi.require_version("GdkX11", "4.0")
+	from gi.repository import GdkX11
 
 from scc.actions import Action, NoAction
 from scc.gui.action_editor import ActionEditor

@@ -15,9 +15,7 @@ import gi
 
 from scc.tools import set_logging_level
 
-gi.require_version("Gtk", "4.0")
-gi.require_version("Rsvg", "2.0")
-gi.require_version("GdkX11", "4.0")
+gi.require_version("GLib", "2.0")
 from gi.repository import GLib
 
 from scc.config import Config
@@ -34,7 +32,7 @@ from scc.osd.message import Message
 from scc.osd.quick_menu import QuickMenu
 from scc.osd.radial_menu import RadialMenu
 from scc.special_actions import OSDAction
-from scc.tools import shsplit
+from scc.tools import set_logging_level, shsplit
 
 log = logging.getLogger("osd.daemon")
 

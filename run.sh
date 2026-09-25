@@ -50,8 +50,13 @@ function testDeps() {
 #		echo -e "${Red}gi.Gtk not found, install it. ${Yellow}The package may be named gtk4 or gir1.2-gtk-4.0 on your distribution!${NoColor}"
 #		exit 1
 #	fi
-	if ! command -v x86_64-pc-linux-gnu-gcc >/dev/null; then
-		echo -e "${Red}x86_64-pc-linux-gnu-gcc not found, install it. ${Yellow}The package is usually named gcc!${NoColor}"
+	if [[ "$OSTYPE" == msys* || "$OSTYPE" == mingw* || "$OSTYPE" == cygwin* ]]; then
+		CC="gcc"
+	else
+		CC="x86_64-pc-linux-gnu-gcc"
+	fi
+	if ! command -v ${CC} >/dev/null; then
+		echo -e "${Red}${CC} not found, install it. ${Yellow}The package is usually named gcc!${NoColor}"
 		exit 1
 	fi
 	if ! command -v uv >/dev/null; then
@@ -74,8 +79,12 @@ export SCC_SHARED="${PWD}"
 rm -f ./lib*.so
 
 rm -rf dist
-python -m venv .venv
-source .venv/bin/activate
+uv venv --clear .venv
+if [[ "$OSTYPE" == msys* || "$OSTYPE" == mingw* || "$OSTYPE" == cygwin* ]]; then
+	source .venv/Scripts/activate
+else
+	source .venv/bin/activate
+fi
 uv pip install . build
 # PYGOBJECT_STUB_CONFIG and --no-cache-dir is needed to build pygobject-stubs correctly
 PYGOBJECT_STUB_CONFIG=Gtk4,Gdk4 uv pip install --no-cache-dir ".[dev]"
@@ -85,9 +94,11 @@ uv pip install --prefix ".venv" dist/*.whl --force-reinstall
 
 # Start either the daemon in debug mode if first parameter is 'daemon', or the regular sc-controller app in debug mode
 if [[ ${1-} == 'daemon' ]]; then
-	# Kill any existing daemons before spawning our own
-	if pkill -f scc-daemon; then
-		sleep 1
+	if ! [[ "$OSTYPE" == msys* || "$OSTYPE" == mingw* || "$OSTYPE" == cygwin* ]]; then
+		# Kill any existing daemons before spawning our own
+		if pkill -f scc-daemon; then
+			sleep 1
+		fi
 	fi
 	shift
 	# G_ENABLE_DIAGNOSTIC=1 to get GTK deprecation logs

@@ -255,12 +255,6 @@ class QuickMenu(Menu):
 
 
 if __name__ == "__main__":
-	import gi
-
-	gi.require_version("Gtk", "4.0")
-	gi.require_version("Rsvg", "2.0")
-	gi.require_version("GdkX11", "4.0")
-
 	from scc.paths import get_share_path
 	from scc.tools import init_logging
 

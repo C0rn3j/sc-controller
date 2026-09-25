@@ -8,6 +8,9 @@ import os
 import signal
 import sys
 
+import gi
+
+gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk
 
 from scc.constants import STICK_PAD_MAX, SCButtons, SCPads, SCSticks
@@ -176,12 +179,6 @@ def sigint(*a):
 
 if __name__ == "__main__":
 	signal.signal(signal.SIGINT, sigint)
-
-	import gi
-
-	gi.require_version("Gtk", "4.0")
-	gi.require_version("Rsvg", "2.0")
-	gi.require_version("GdkX11", "4.0")
 
 	from scc.tools import init_logging
 

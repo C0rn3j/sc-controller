@@ -2,6 +2,7 @@
 """Installation script for everything that could not be migrated to pyproject.toml so far."""
 
 import glob
+import sys
 from pathlib import Path
 
 from setuptools import Extension, setup
@@ -38,12 +39,17 @@ data_files = [
 ]
 
 extensions = [
-	Extension("libuinput", sources=["scc/uinput.c"]),
-	Extension("libcemuhook", sources=["scc/cemuhook_server.c"], libraries=["z"], define_macros=[("PYTHON", "1")]),
 	Extension("libhiddrv", sources=["scc/drivers/hiddrv.c"]),
 	Extension("libsc_by_bt", sources=["scc/drivers/sc_by_bt.c"]),
 	Extension("libremotepad", sources=["scc/drivers/remotepad_controller.c"]),
 ]
+if sys.platform == "linux":
+	extensions.extend([
+		Extension("libuinput", sources=["scc/uinput.c"]),
+		# TODO(Martin): Get this working on Windows
+		Extension( "libcemuhook", sources=["scc/cemuhook_server.c"], libraries=["z"], define_macros=[("PYTHON", "1")],
+		),
+	])
 
 setup(
 	ext_modules=extensions,

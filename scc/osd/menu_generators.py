@@ -5,10 +5,19 @@ Auto-generated menus with stuff like list of all available profiles...
 
 import logging
 import os
+import sys
 import traceback
 from ctypes import POINTER, cast
 
-from gi.repository import Gdk, GdkX11, Gio
+import gi
+
+gi.require_version("Gdk", "4.0")
+gi.require_version("Gio", "2.0")
+from gi.repository import Gdk, Gio
+
+if sys.platform == "linux":
+	gi.require_version("GdkX11", "4.0")
+	from gi.repository import GdkX11
 
 from scc.lib import xwrappers as X
 from scc.menu_data import MENU_GENERATORS, MenuGenerator, MenuItem

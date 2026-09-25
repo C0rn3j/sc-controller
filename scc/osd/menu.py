@@ -11,7 +11,18 @@ from math import sqrt
 from typing import TYPE_CHECKING
 
 import cairo
-from gi.repository import Gdk, GdkPixbuf, GdkX11, Gio, GLib, Gtk
+import gi
+
+gi.require_version("Gdk", "4.0")
+gi.require_version("GdkPixbuf", "2.0")
+gi.require_version("Gio", "2.0")
+gi.require_version("GLib", "2.0")
+gi.require_version("Gtk", "4.0")
+from gi.repository import Gdk, GdkPixbuf, Gio, GLib, Gtk
+
+if sys.platform == "linux":
+	gi.require_version("GdkX11", "4.0")
+	from gi.repository import GdkX11
 
 from scc.config import Config
 from scc.constants import (

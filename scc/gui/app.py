@@ -5,6 +5,7 @@ Main application window
 
 from __future__ import annotations
 
+import gi
 import json
 import logging
 import os
@@ -14,6 +15,11 @@ import sys
 from typing import TYPE_CHECKING
 from urllib.parse import unquote
 
+gi.require_version("Gdk", "4.0")
+gi.require_version("Gio", "2.0")
+gi.require_version("GLib", "2.0")
+gi.require_version("GObject", "2.0")
+gi.require_version("Gtk", "4.0")
 from gi.repository import Gdk, Gio, GLib, GObject, Gtk
 
 from scc.actions import NoAction

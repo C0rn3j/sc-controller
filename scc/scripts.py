@@ -81,7 +81,6 @@ def cmd_test_hid(argv0: str, argv: list[str]) -> int:
 
 
 def help_osd_keyboard() -> None:
-	import_osd()
 	from scc.osd.keyboard import Keyboard
 
 	return run_osd_tool(Keyboard(), "osd-keyboard", ["--help"])
@@ -89,7 +88,6 @@ def help_osd_keyboard() -> None:
 
 def cmd_osd_keyboard(argv0: str, argv: list[str]) -> None:
 	"""Display on-screen keyboard."""
-	import_osd()
 	from scc.osd.keyboard import Keyboard
 
 	return run_osd_tool(Keyboard(), argv0, argv)
@@ -334,14 +332,6 @@ def check_error(s) -> bool:
 def sigint(*a) -> None:
 	print("\n*break*")
 	sys.exit(0)
-
-
-def import_osd() -> None:
-	import gi
-
-	gi.require_version("Gtk", "4.0")
-	gi.require_version("Rsvg", "2.0")
-	gi.require_version("GdkX11", "4.0")
 
 
 def run_osd_tool(tool, argv0: str, argv: list[str]) -> None:

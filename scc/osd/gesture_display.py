@@ -7,6 +7,10 @@ that's usually not very much) grid.
 
 import logging
 
+import gi
+
+gi.require_version("GObject", "2.0")
+gi.require_version("Gtk", "4.0")
 from gi.repository import GObject, Gtk
 
 from scc.config import Config
@@ -173,12 +177,6 @@ class GestureDisplay(OSDWindow):
 
 
 def main():
-	import gi
-
-	gi.require_version("Gtk", "4.0")
-	gi.require_version("Rsvg", "2.0")
-	gi.require_version("GdkX11", "4.0")
-
 	from scc.tools import init_logging
 
 	init_logging()

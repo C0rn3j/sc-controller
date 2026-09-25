@@ -13,20 +13,18 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import cairo
-
-# gtk4-layer-shell must be loaded before GTK imports libwayland-client
-CDLL("libgtk4-layer-shell.so")
-
 import gi
 
-if TYPE_CHECKING:
-	from argparse import ArgumentParser
+# gtk4-layer-shell must be loaded before GTK imports libwayland-client
+if "WAYLAND_DISPLAY" in os.environ:
+	CDLL("libgtk4-layer-shell.so")
+	gi.require_version("Gtk4LayerShell", "1.0")
 
-	from scc.gui.daemon_manager import ControllerManager, DaemonManager
 
-gi.require_version("Gtk", "4.0")
 gi.require_version("Gdk", "4.0")
-gi.require_version("Gtk4LayerShell", "1.0")
+gi.require_version("GLib", "2.0")
+gi.require_version("GObject", "2.0")
+gi.require_version("Gtk", "4.0")
 
 from gi.repository import Gdk, GLib, GObject, Gtk
 
@@ -35,6 +33,11 @@ from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN
 from scc.osd.timermanager import TimerManager
 from scc.paths import get_share_path
 from scc.tools import set_logging_level
+
+if TYPE_CHECKING:
+	from argparse import ArgumentParser
+
+	from scc.gui.daemon_manager import ControllerManager, DaemonManager
 
 log = logging.getLogger("osd")
 

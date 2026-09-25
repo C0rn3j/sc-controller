@@ -5,10 +5,19 @@ Assigns emulated axis to trigger
 
 import logging
 import os
+import sys
 from ctypes import POINTER, cast
 from typing import TYPE_CHECKING
 
-from gi.repository import Gdk, GdkX11, GLib
+import gi
+
+gi.require_version("Gdk", "4.0")
+gi.require_version("GLib", "2.0")
+from gi.repository import Gdk, GLib
+
+if sys.platform == "linux":
+	gi.require_version("GdkX11", "4.0")
+	from gi.repository import GdkX11
 
 from scc.actions import (
 	Action,

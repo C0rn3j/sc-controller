@@ -12,6 +12,11 @@ import json
 import logging
 import os
 
+import gi
+
+gi.require_version("Gio", "2.0")
+gi.require_version("GLib", "2.0")
+gi.require_version("GObject", "2.0")
 from gi.repository import Gio, GLib, GObject
 
 from scc.constants import SCButtons

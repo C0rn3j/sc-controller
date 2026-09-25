@@ -2,10 +2,17 @@
 
 Daemon-related stuff that really needs X server to work.
 """
+import sys
 
 
 def get_xdisplay():
 	"""Return the Xlib display used by GTK4, or None on non-X11 backends."""
+	if sys.platform != "linux":
+		return None
+
+	import gi
+	gi.require_version("Gdk", "4.0")
+	gi.require_version("GdkX11", "4.0")
 	from gi.repository import Gdk, GdkX11
 
 	from scc.lib import xwrappers as X

@@ -11,7 +11,17 @@ import sys
 from typing import TYPE_CHECKING
 from xml.etree import ElementTree as ET
 
-from gi.repository import Gdk, GdkPixbuf, GdkX11, Gtk
+import gi
+
+gi.require_version("Gdk", "4.0")
+gi.require_version("GdkPixbuf", "2.0")
+gi.require_version("Gtk", "4.0")
+
+from gi.repository import Gdk, GdkPixbuf, Gtk
+
+if sys.platform == "linux":
+	gi.require_version("GdkX11", "4.0")
+	from gi.repository import GdkX11
 
 import scc.osd.osk_actions
 from scc.actions import Action
@@ -727,12 +737,6 @@ class Keyboard(OSDWindow, TimerManager):
 
 
 def main() -> None:
-	import gi
-
-	gi.require_version("Gtk", "4.0")
-	gi.require_version("Rsvg", "2.0")
-	gi.require_version("GdkX11", "4.0")
-
 	from scc.tools import init_logging
 
 	init_logging()
