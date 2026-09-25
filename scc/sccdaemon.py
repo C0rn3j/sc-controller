@@ -14,7 +14,12 @@ import threading
 import time
 import traceback
 from ctypes import CDLL
-from socketserver import StreamRequestHandler, ThreadingMixIn, UnixStreamServer
+from socketserver import StreamRequestHandler, ThreadingMixIn
+
+if sys.platform == "win32":
+	from socketserver import TCPServer
+else:
+	from socketserver import UnixStreamServer
 from typing import TYPE_CHECKING
 
 from scc import drivers
@@ -77,8 +82,13 @@ log = logging.getLogger("SCCDaemon")
 tlog = logging.getLogger("Socket Thread")
 
 
-class ThreadingUnixStreamServer(ThreadingMixIn, UnixStreamServer):
-	daemon_threads: bool = True
+if sys.platform == "win32":
+	class ThreadingTCPServer(ThreadingMixIn, TCPServer):
+		daemon_threads: bool = True
+		allow_reuse_address: bool = True
+else:
+	class ThreadingUnixStreamServer(ThreadingMixIn, UnixStreamServer):
+		daemon_threads: bool = True
 
 
 class SCCDaemon(Daemon):
@@ -724,11 +734,16 @@ class SCCDaemon(Daemon):
 			def handle(self):
 				instance._sshandler(self.connection, self.rfile, self.wfile)
 
-		self.sserver = ThreadingUnixStreamServer(self.socket_file, SSHandler)
-		t = threading.Thread(target=self.sserver.serve_forever)
-		t.daemon = True
+		if sys.platform == "win32":
+			self.sserver = ThreadingTCPServer(
+				("127.0.0.1", 10722),
+				SSHandler,
+			)
+		else:
+			self.sserver = ThreadingUnixStreamServer(self.socket_file, SSHandler)
+			os.chmod(self.socket_file, stat.S_IRUSR | stat.S_IWUSR)
+		t = threading.Thread(target=self.sserver.serve_forever, daemon=True)
 		t.start()
-		os.chmod(self.socket_file, stat.S_IRUSR | stat.S_IWUSR)
 		log.debug("Created control socket %s", self.socket_file)
 
 	def _start_gesture(
