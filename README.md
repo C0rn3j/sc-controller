@@ -10,7 +10,7 @@
 	<a href="https://ko-fi.com/martinrys">
 		<img src="https://img.shields.io/badge/Ko--fi-Support%20development-8B5CF6?style=for-the-badge&logo=ko-fi&logoColor=white" alt="Ko-Fi">
 	</a>
-	<a href="https://discord.gg/Np7pgfTX6">
+	<a href="https://discord.gg/d3G7dDJ2G7">
 		<img src="https://img.shields.io/discord/1540822420104028200.svg?color=a483ef&style=for-the-badge" alt="Discord">
 	</a>
 	<a href="https://github.com/C0rn3j/sc-controller/actions/workflows/scc-linux.yaml">
@@ -82,7 +82,7 @@ You can check out the ways to donate on [my website](https://rys.rs/donate), or 
 For reporting bugs or having feature suggestions, head to the [Issues](https://github.com/C0rn3j/sc-controller/issues) tab.</br>
 If you're not sure your topic belongs there, you can always head to [Discussions](https://github.com/C0rn3j/sc-controller/discussions) instead.
 
-We also have a [Discord](https://discord.gg/Np7pgfTX6) available.
+We also have a [Discord](https://discord.gg/d3G7dDJ2G7) available.
 
 ## Packages
 
