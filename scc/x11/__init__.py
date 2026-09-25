@@ -2,8 +2,15 @@
 
 Daemon-related stuff that really needs X server to work.
 """
+import os
 import sys
 
+_dll_directories = []
+
+if sys.platform == "win32":
+	_dll_directories.append(
+		os.add_dll_directory(r"C:\msys64\mingw64\bin"),
+	)
 
 def get_xdisplay():
 	"""Return the Xlib display used by GTK4, or None on non-X11 backends."""
