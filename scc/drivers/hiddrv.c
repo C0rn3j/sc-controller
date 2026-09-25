@@ -7,6 +7,18 @@
 
 #define HIDDRV_MODULE_VERSION 8
 PyObject* module;
+static struct PyModuleDef libhiddrv_module = {
+	PyModuleDef_HEAD_INIT,
+	"libhiddrv",
+	NULL,
+	-1,
+	NULL,
+};
+
+PyMODINIT_FUNC PyInit_libhiddrv(void)
+{
+	return PyModule_Create(&libhiddrv_module);
+}
 
 #define AXIS_COUNT 24
 #define BUTTON_COUNT 32
