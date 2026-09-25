@@ -78,7 +78,9 @@ export SCC_SHARED="${PWD}"
 # Wipe .so libraries in the root dir in case there are any, find_library() would shadow the .venv built ones
 rm -f ./lib*.so
 
-rm -rf dist
+# Don't accidentally load things from cache
+rm -rf build dist
+
 uv venv --clear .venv
 if [[ "$OSTYPE" == msys* || "$OSTYPE" == mingw* || "$OSTYPE" == cygwin* ]]; then
 	source .venv/Scripts/activate
