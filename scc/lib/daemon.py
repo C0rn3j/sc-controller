@@ -1,20 +1,21 @@
-"""Generic linux daemon base class."""
+"""Generic daemon base class."""
 
 # Adapted from http://www.jejik.com/files/examples/daemon3x.py
 # thanks to the original author
 from __future__ import annotations
 
 import atexit
+import logging
 import os
 import signal
 import sys
-import syslog
 import time
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
 	from typing import Never
 
+log = logging.getLogger(__name__)
 class Daemon:
 	"""A generic daemon class.
 
@@ -108,13 +109,13 @@ class Daemon:
 			self.daemonize()
 		else:
 			self.write_pid()
-		syslog.syslog(syslog.LOG_INFO, f"{os.path.basename(sys.argv[0])}: started")
+		log.info("%s: started", os.path.basename(sys.argv[0]))
 		self.on_start()
 		while True:
 			try:
 				self.run()
-			except Exception as e:  # pylint: disable=W0703
-				syslog.syslog(syslog.LOG_ERR, f"{os.path.basename(sys.argv[0])}: {e!s}")
+			except Exception:
+				log.exception("%s failed", os.path.basename(sys.argv[0]))
 			time.sleep(2)
 
 	def on_start(self) -> None:
@@ -153,7 +154,7 @@ class Daemon:
 			else:
 				print(str(err.args))
 				sys.exit(1)
-		syslog.syslog(syslog.LOG_INFO, f"{os.path.basename(sys.argv[0])}: stopped")
+		log.info("%s: stopped", os.path.basename(sys.argv[0]))
 
 	def restart(self) -> Never:
 		"""Restart the daemon."""
