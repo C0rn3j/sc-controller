@@ -9,7 +9,6 @@ import logging
 import os
 import sys
 import time
-import traceback
 
 import gi
 
@@ -226,9 +225,8 @@ class OSDDaemon:
 					else:
 						log.error("Failed to show menu")
 						self._window = None
-				except:
-					log.error(traceback.format_exc())
-					log.error("Failed to show menu")
+				except Exception:
+					log.exception("Failed to show menu")
 					self._window = None
 		elif message.startswith("OSD: area"):
 			args = shsplit(message)[1:]
