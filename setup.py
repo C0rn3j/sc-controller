@@ -42,14 +42,10 @@ extensions = [
 	Extension("libhiddrv", sources=["scc/drivers/hiddrv.c"]),
 	Extension("libsc_by_bt", sources=["scc/drivers/sc_by_bt.c"]),
 	Extension("libremotepad", sources=["scc/drivers/remotepad_controller.c"]),
+	Extension("libcemuhook", sources=["scc/cemuhook_server.c"], libraries=["ws2_32"] if sys.platform == "win32" else [], define_macros=[("PYTHON", "1")]),
 ]
 if sys.platform == "linux":
-	extensions.extend([
-		Extension("libuinput", sources=["scc/uinput.c"]),
-		# TODO(Martin): Get this working on Windows
-		Extension( "libcemuhook", sources=["scc/cemuhook_server.c"], libraries=["z"], define_macros=[("PYTHON", "1")],
-		),
-	])
+	extensions.append(Extension("libuinput", sources=["scc/uinput.c"]))
 
 setup(
 	ext_modules=extensions,
