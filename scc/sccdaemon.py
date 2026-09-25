@@ -192,7 +192,12 @@ class SCCDaemon(Daemon):
 		to_init = []
 		for importer, modname, ispkg in pkgutil.walk_packages(path=drivers.__path__, onerror=lambda x: None):
 			if not ispkg and modname != "driver":
-				if modname == "usb" or cfg["drivers"].get(modname):
+				if sys.platform == "linux" and modname == "ds5_windows":
+					continue
+				if sys.platform != "linux" and modname == "ds5drv":
+					continue
+				enabled = cfg["drivers"].get("ds5drv") if modname == "ds5_windows" else cfg["drivers"].get(modname)
+				if modname == "usb" or enabled:
 					# 'usb' driver has to be always active
 					mod = getattr(__import__(f"scc.drivers.{modname}").drivers, modname)
 					if hasattr(mod, "init"):
