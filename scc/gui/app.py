@@ -141,6 +141,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		self.builder = Gtk.Builder(self)
 		self.builder.add_from_file(os.path.join(self.gladepath, "app.ui"))
 		self.window = self.builder.get_object("window")
+		self.builder.get_object("stckEditor").connect("notify::transition-running", self._on_editor_transition_running)
 		for menu_id in ("mnuTray",):
 			self.builder.get_object(menu_id).set_parent(self.window)
 		self._setup_popover_menus()
@@ -341,7 +342,20 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			self.apply_ui_layout(expected_layout)
 
 		stckEditor.set_visible_child(grEditor)
-		GLib.idle_add(self.on_c_size_allocate)
+		GLib.idle_add(self._queue_editor_resize)
+
+	def _on_editor_transition_running(self, stack: Gtk.Stack, _property) -> None:
+		"""Recompute the content-sized window when a profile transition ends."""
+		if not stack.get_transition_running():
+			GLib.idle_add(self._queue_editor_resize)
+
+	def _queue_editor_resize(self) -> bool:
+		"""Invalidate cached GTK measurements after changing controller layout."""
+		for name in ("grEditor", "stckEditor", "content"):
+			self.builder.get_object(name).queue_resize()
+		self.window.queue_resize()
+		self.on_c_size_allocate()
+		return GLib.SOURCE_REMOVE
 
 	def apply_ui_layout(self, layout: str) -> None:
 		"""Changes layout of ui elements to fit additional buttons needed for Deck"""
