@@ -37,7 +37,10 @@ def log_selection() -> None:
 		log.info("Translation language: %s; catalogs: %s", languages, ", ".join(_catalogs))
 	else:
 		log.info("Translation language: English (source fallback); no matching catalog in %s", _localedir)
-	log.info("GTK message locale: %s; gettext domain: %s", locale.setlocale(locale.LC_MESSAGES), DOMAIN)
+	if hasattr(locale, "LC_MESSAGES"):
+		log.info("GTK message locale: %s; gettext domain: %s", locale.setlocale(locale.LC_MESSAGES), DOMAIN)
+	else: # Windows
+		log.info("System locale: %s; gettext domain: %s", locale.setlocale(locale.LC_ALL), DOMAIN)
 
 
 def init(localedir: str | None = None) -> None:
@@ -50,8 +53,20 @@ def init(localedir: str | None = None) -> None:
 		locale.setlocale(locale.LC_ALL, "")
 	except locale.Error:
 		logging.getLogger(__name__).warning("Cannot activate the requested system locale")
-	locale.bindtextdomain(DOMAIN, localedir)  # Native gettext used by GTK.
-	locale.textdomain(DOMAIN)
+	if hasattr(locale, "bindtextdomain"):
+		locale.bindtextdomain(DOMAIN, localedir)
+		locale.textdomain(DOMAIN)
+	else: # Windows
+		try:
+			from gi.repository import GLib
+
+			# Python built without gettext support does not have bindtextdomain() and textdomain()
+			gettext.bindtextdomain(DOMAIN, localedir)
+			#gettext.textdomain(DOMAIN)
+			#GLib.bind_textdomain_codeset(DOMAIN, "UTF-8")
+		except (ImportError, AttributeError):
+			log.exception("Failed setting up translations!")
+
 	_translation = gettext.translation(DOMAIN, localedir=localedir, fallback=True)
 	_catalogs = gettext.find(DOMAIN, localedir=localedir, all=True)
 	builtins._ = _
