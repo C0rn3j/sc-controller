@@ -570,7 +570,7 @@ class WindowsHIDDriver:
 				identity = int(info.get("vendor_id", 0)), int(info.get("product_id", 0))
 				if identity in SKIPPED_DEVICES:
 					continue
-				if info.get("usage_page") not in (None, 0x01) or info.get("usage") not in (None, 0x04, 0x05):
+				if info.get("usage_page") not in (None, 0, 0x01) or info.get("usage") not in (None, 0, 0x04, 0x05):
 					continue
 				path = info.get("path")
 				if path is None:

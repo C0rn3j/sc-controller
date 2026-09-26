@@ -145,13 +145,22 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		(self.builder.get_object("cbNewRelease").set_active(self.app.config["gui"]["news"]["enabled"]))
 		self._recursing = False
 
-		try:
-			import evdev
-		except ImportError:
-			# This block runs if evdev module is missing
+		if sys.platform == "win32":
 			for w in ("cbEnableDriver_evdevdrv", "btAddController"):
 				self.builder.get_object(w).set_sensitive(False)
-			self.builder.get_object("txEvdevMissing").set_visible(True)
+			message = self.builder.get_object("txEvdevMissing")
+			message.set_text(
+				_("Windows controllers are detected automatically using gamecontrollerdb.txt; manual registration is Linux-only."),
+			)
+			message.set_visible(True)
+		else:
+			try:
+				import evdev
+			except ImportError:
+				# This block runs if evdev module is missing
+				for w in ("cbEnableDriver_evdevdrv", "btAddController"):
+					self.builder.get_object(w).set_sensitive(False)
+				self.builder.get_object("txEvdevMissing").set_visible(True)
 
 	def load_drivers(self) -> None:
 		for key, value in self.app.config["drivers"].items():
