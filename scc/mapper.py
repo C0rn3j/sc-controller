@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import os
+import sys
 import time
 import traceback
 from typing import TYPE_CHECKING
@@ -31,6 +32,9 @@ from scc.constants import (
 from scc.controller import HapticData
 from scc.lib import xwrappers as X
 from scc.uinput import Dummy, Keyboard, Mouse, UInput
+
+if sys.platform == "win32":
+	from scc.windows_input import WindowsGamepad, WindowsKeyboard, WindowsMouse
 
 if TYPE_CHECKING:
 	from scc.controller import Controller
@@ -78,11 +82,11 @@ class Mapper:
 
 		# Create virtual devices
 		log.debug("Creating virtual devices")
-		self.keyboard: Keyboard | Dummy = self.create_keyboard(keyboard) if keyboard else Dummy()
+		self.keyboard: WindowsKeyboard | Keyboard | Dummy = self.create_keyboard(keyboard) if keyboard else Dummy()
 		log.debug(f"Keyboard: {self.keyboard}")
-		self.mouse: Mouse | Dummy = self.create_mouse(mouse) if mouse else Dummy()
+		self.mouse: WindowsMouse | Mouse | Dummy = self.create_mouse(mouse) if mouse else Dummy()
 		log.debug(f"Mouse:    {self.mouse}")
-		self.gamepad: UInput | Dummy | None = self.create_gamepad(gamepad, poller) if gamepad else Dummy()
+		self.gamepad: WindowsGamepad | UInput | Dummy | None = self.create_gamepad(gamepad, poller) if gamepad else Dummy()
 		log.debug(f"Gamepad:  {self.gamepad}")
 
 		# Set by SCCDaemon instance; Used to handle actions
@@ -116,6 +120,8 @@ class Mapper:
 			self.gamepad = Dummy()
 			return None
 		cfg = Config()
+		if sys.platform == "win32":
+			return WindowsGamepad(name=cfg["output"]["name"])
 		keys = ALL_BUTTONS[0 : cfg["output"]["buttons"]]
 		vendor = int(cfg["output"]["vendor"], 16)
 		product = int(cfg["output"]["product"], 16)
@@ -142,10 +148,14 @@ class Mapper:
 			poller.register(ui.getDescriptor(), poller.POLLIN, self._rumble_ready)
 		return ui
 
-	def create_keyboard(self, name: bytes) -> Keyboard:
+	def create_keyboard(self, name: bytes) -> WindowsKeyboard | Keyboard:
+		if sys.platform == "win32":
+			return WindowsKeyboard(name)
 		return Keyboard(name=name)
 
-	def create_mouse(self, name: bytes) -> Mouse:
+	def create_mouse(self, name: bytes) -> WindowsMouse | Mouse:
+		if sys.platform == "win32":
+			return WindowsMouse(name)
 		return Mouse(name=name)
 
 	def _rumble_ready(self, fd, event) -> None:

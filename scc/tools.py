@@ -148,23 +148,28 @@ def nameof(e: Any) -> str:
 	return e.name if hasattr(e, "name") else str(e)
 
 
-def shjoin(lst: list) -> bytes:
-	"""Joins list into shell-escaped, utf-8 encoded string"""
-	s = [x.encode("utf-8") for x in lst]
-	#   - escape quotes
-	s = [x.encode("unicode_escape") if (b'"' in x or b"'" in x) else x for x in s]
-	#   - quote strings with spaces
-	s = [b"'%s'" % (x,) if b" " in x else x for x in s]
-	return b" ".join(s)
+#def shjoin(lst: list) -> bytes:
+#	"""Joins list into shell-escaped, utf-8 encoded string"""
+#	s = [x.encode("utf-8") for x in lst]
+#	#   - escape quotes
+#	s = [x.encode("unicode_escape") if (b'"' in x or b"'" in x) else x for x in s]
+#	#   - quote strings with spaces
+#	s = [b"'%s'" % (x,) if b" " in x else x for x in s]
+#	return b" ".join(s)
+
+def shjoin(items: list) -> bytes:
+	return shlex.join(str(item) for item in items).encode()
 
 
-def shsplit(s: str) -> list[str]:
-	"""Returns original list from what shjoin returned"""
-	lex = shlex.shlex(s, posix=True)
-	lex.escapedquotes = "\"'"
-	lex.whitespace_split = True
-	return [x for x in list(lex)]
+#def shsplit(s: str) -> list[str]:
+#	"""Returns original list from what shjoin returned"""
+#	lex = shlex.shlex(s, posix=True)
+#	lex.escapedquotes = "\"'"
+#	lex.whitespace_split = True
+#	return [x for x in list(lex)]
 
+def shsplit(value: str) -> list[str]:
+	return shlex.split(value)
 
 def static_vars(**kwargs):
 	"""Static variable func decorator"""

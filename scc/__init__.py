@@ -18,8 +18,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 import os
 import subprocess
+import sys
 
 from scc.i18n import init as _init_translations
+
+_dll_directories = []
+
+if sys.platform == "win32":
+	_dll_directories.append(
+		os.add_dll_directory(r"C:\msys64\mingw64\bin"),
+	)
 
 # Initialize before submodules evaluate translated labels at import time.
 _init_translations()

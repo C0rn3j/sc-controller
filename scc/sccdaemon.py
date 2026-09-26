@@ -14,7 +14,12 @@ import threading
 import time
 import traceback
 from ctypes import CDLL
-from socketserver import StreamRequestHandler, ThreadingMixIn, UnixStreamServer
+from socketserver import StreamRequestHandler, ThreadingMixIn
+
+if sys.platform == "win32":
+	from socketserver import TCPServer
+else:
+	from socketserver import UnixStreamServer
 from typing import TYPE_CHECKING
 
 from scc import drivers
@@ -77,8 +82,13 @@ log = logging.getLogger("SCCDaemon")
 tlog = logging.getLogger("Socket Thread")
 
 
-class ThreadingUnixStreamServer(ThreadingMixIn, UnixStreamServer):
-	daemon_threads: bool = True
+if sys.platform == "win32":
+	class ThreadingTCPServer(ThreadingMixIn, TCPServer):
+		daemon_threads: bool = True
+		allow_reuse_address: bool = True
+else:
+	class ThreadingUnixStreamServer(ThreadingMixIn, UnixStreamServer):
+		daemon_threads: bool = True
 
 
 class SCCDaemon(Daemon):
@@ -119,7 +129,11 @@ class SCCDaemon(Daemon):
 		self._glib_context: GLib.MainContext | None = None
 
 	def _poll(self) -> None:
-		self.poller.poll(self.scheduler.get_poll_timeout())
+		# HIDAPI has no selectable handle on Windows, so Windows controller
+		# drivers are serviced by the main loop. A 10 ms wait here made the
+		# virtual controller visibly lag behind the physical controller.
+		maximum = 0.001 if sys.platform == "win32" else 0.01
+		self.poller.poll(self.scheduler.get_poll_timeout(maximum))
 
 	def init_sleep_monitor(self) -> None:
 		"""Listen for systemd-logind suspend notifications."""
@@ -182,7 +196,20 @@ class SCCDaemon(Daemon):
 		to_init = []
 		for importer, modname, ispkg in pkgutil.walk_packages(path=drivers.__path__, onerror=lambda x: None):
 			if not ispkg and modname != "driver":
-				if modname == "usb" or cfg["drivers"].get(modname):
+				if sys.platform == "linux" and modname == "ds5_windows":
+					continue
+				if sys.platform != "win32" and modname == "hid_windows":
+					continue
+				if sys.platform != "linux" and modname in ("evdevdrv", "hiddrv"):
+					continue
+				if sys.platform != "linux" and modname == "ds5drv":
+					continue
+				config_name = {
+					"ds5_windows": "ds5drv",
+					"hid_windows": "hiddrv",
+				}.get(modname, modname)
+				enabled = cfg["drivers"].get(config_name)
+				if modname == "usb" or enabled:
 					# 'usb' driver has to be always active
 					mod = getattr(__import__(f"scc.drivers.{modname}").drivers, modname)
 					if hasattr(mod, "init"):
@@ -724,11 +751,16 @@ class SCCDaemon(Daemon):
 			def handle(self):
 				instance._sshandler(self.connection, self.rfile, self.wfile)
 
-		self.sserver = ThreadingUnixStreamServer(self.socket_file, SSHandler)
-		t = threading.Thread(target=self.sserver.serve_forever)
-		t.daemon = True
+		if sys.platform == "win32":
+			self.sserver = ThreadingTCPServer(
+				("127.0.0.1", 10722),
+				SSHandler,
+			)
+		else:
+			self.sserver = ThreadingUnixStreamServer(self.socket_file, SSHandler)
+			os.chmod(self.socket_file, stat.S_IRUSR | stat.S_IWUSR)
+		t = threading.Thread(target=self.sserver.serve_forever, daemon=True)
 		t.start()
-		os.chmod(self.socket_file, stat.S_IRUSR | stat.S_IWUSR)
 		log.debug("Created control socket %s", self.socket_file)
 
 	def _start_gesture(

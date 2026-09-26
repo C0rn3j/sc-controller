@@ -6,6 +6,7 @@ manage plugging/releasing devices.
 
 from __future__ import annotations
 
+import sys
 from ctypes.util import find_library
 from typing import TYPE_CHECKING
 
@@ -17,7 +18,8 @@ if TYPE_CHECKING:
 	from scc.drivers.hiddrv import HIDDrvFakeDaemon
 	from scc.sccdaemon import SCCDaemon
 import ctypes
-import fcntl
+if sys.platform != "win32":
+	import fcntl
 import logging
 import os
 import re
@@ -376,8 +378,46 @@ class hci_conn_list_req(ctypes.Structure):
 		("conn_info", hci_conn_info * 256),
 	]
 
+if sys.platform == "win32":
+	class DeviceMonitorWindows:
+		"""Very rough empty implementation to get things started"""
 
-def create_device_monitor(daemon: SCCDaemon | HIDDrvFakeDaemon) -> DeviceMonitor:
+		def __init__(self, daemon) -> None:
+			self.daemon = daemon
+			self.dev_added_cbs = {}
+			self.dev_removed_cbs = {}
+
+		def add_callback(
+			self,
+			subsystem,
+			vendor_id,
+			product_id,
+			added_cb,
+			removed_cb,
+		) -> None:
+			key = (subsystem, vendor_id, product_id)
+			self.dev_added_cbs[key] = added_cb
+			self.dev_removed_cbs[key] = removed_cb
+
+		def start(self) -> None:
+			pass
+
+		def rescan(self) -> None:
+			pass
+
+		def add_remove_callback(self, syspath, callback) -> None:
+			pass
+
+		def disconnect_bluetooth(self, syspath) -> None:
+			raise NotImplementedError(
+				"Bluetooth disconnection is not implemented on Windows"
+			)
+
+
+def create_device_monitor(daemon: SCCDaemon | HIDDrvFakeDaemon) -> DeviceMonitor | DeviceMonitorWindows:
+	if sys.platform == "win32":
+		return DeviceMonitorWindows(daemon)
+
 	mon = Eudev().monitor(subclass=DeviceMonitor)
 	assert type(mon) is DeviceMonitor  # Satisfy type checker
 	mon.daemon = daemon

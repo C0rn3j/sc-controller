@@ -9,10 +9,10 @@ Mouse movement (but not buttons) are passed to uinput as usuall.
 
 import logging
 
-from gi.repository import Gdk, GLib, Gtk
+from gi.repository import Gdk, Gtk
 
 from scc.constants import SCButtons
-from scc.gui.gdk_to_key import KEY_TO_GDK, KEY_TO_KEYCODE
+from scc.gui.gdk_to_key import KEY_TO_GDK
 from scc.osd.slave_mapper import SlaveMapper
 from scc.uinput import Keys
 
@@ -31,6 +31,7 @@ class OSDModeMapper(SlaveMapper):
 		self.app.quit()
 
 	def set_target_window(self, w):
+		"""Set the GTK4 window whose focused widget receives OSD actions."""
 		self.target_window = w
 
 	def create_keyboard(self, name):
@@ -41,80 +42,62 @@ class OSDModeMapper(SlaveMapper):
 
 
 class OSDModeKeyboard:
-	"""Emulates uinput keyboard emulator"""
+	"""Translate the navigation keys used by OSD mode into GTK4 actions."""
 
 	def __init__(self, mapper):
 		self.mapper = mapper
-		self.display = Gdk.Display.get_default()
-		self.manager = self.display.get_device_manager()
-		self.device = [
-			x for x in self.manager.list_devices(Gdk.DeviceType.MASTER) if x.get_source() == Gdk.InputSource.KEYBOARD
-		][0]
+
+	def _focused_widget(self):
+		window = self.mapper.target_window
+		return window.get_focus() if isinstance(window, Gtk.Window) else None
 
 	def pressEvent(self, keys):
 		for k in keys:
-			event = Gdk.Event.new(Gdk.EventType.KEY_PRESS)
-			event.time = Gtk.get_current_event_time()
-			event.hardware_keycode = KEY_TO_KEYCODE[k]
-			event.keyval = KEY_TO_GDK[k]
-			event.window = self.mapper.target_window
-			event.set_device(self.device)
-			Gtk.main_do_event(event)
+			keyval = KEY_TO_GDK.get(k)
+			direction = {
+				Gdk.KEY_Left: Gtk.DirectionType.LEFT,
+				Gdk.KEY_Right: Gtk.DirectionType.RIGHT,
+				Gdk.KEY_Up: Gtk.DirectionType.UP,
+				Gdk.KEY_Down: Gtk.DirectionType.DOWN,
+				Gdk.KEY_Tab: Gtk.DirectionType.TAB_FORWARD,
+			}.get(keyval)
+			if direction is not None:
+				self.mapper.target_window.child_focus(direction)
+			elif keyval in (Gdk.KEY_Return, Gdk.KEY_KP_Enter, Gdk.KEY_space):
+				focused = self._focused_widget()
+				if focused is not None:
+					focused.activate()
 
-	def releaseEvent(self, keys=[]):
-		for k in keys:
-			event = Gdk.Event.new(Gdk.EventType.KEY_RELEASE)
-			event.time = Gtk.get_current_event_time()
-			event.hardware_keycode = KEY_TO_KEYCODE[k]
-			event.keyval = KEY_TO_GDK[k]
-			event.window = self.mapper.target_window
-			event.set_device(self.device)
-			Gtk.main_do_event(event)
+	def releaseEvent(self, keys=None):
+		# GTK4 does not provide public synthetic key-event construction. OSD
+		# navigation and activation are completed on key press instead.
+		return
 
 
 class OSDModeMouse:
-	"""Emulates uinput keyboard emulator too"""
+	"""Provide the mapper's mouse interface using GTK4 widget activation."""
 
 	def __init__(self, mapper):
 		self.mapper = mapper
-		self.display = Gdk.Display.get_default()
-		self.manager = self.display.get_device_manager()
-		self.device = [
-			x for x in self.manager.list_devices(Gdk.DeviceType.MASTER) if x.get_source() == Gdk.InputSource.MOUSE
-		][0]
 
 	def synEvent(self, *a):
 		pass
 
 	def keyEvent(self, key, val) -> None:
-		tp = Gdk.EventType.BUTTON_PRESS if val else Gdk.EventType.BUTTON_RELEASE
-		event = Gdk.Event.new(tp)
-		event.button = int(key) - Keys.BTN_LEFT + 1
-		window, event.x, event.y = Gdk.Window.at_pointer()
-		screen, x, y, mask = Gdk.Display.get_default().get_pointer()
-		event.x_root, event.y_root = x, y
+		if key != Keys.BTN_LEFT or not val:
+			return
+		window = self.mapper.target_window
+		focused = window.get_focus() if isinstance(window, Gtk.Window) else None
+		if focused is not None:
+			focused.activate()
 
-		gtk_window = None
-		for w in Gtk.Window.list_toplevels():
-			if w.get_window():
-				if window.get_toplevel().get_xid() == w.get_window().get_xid():
-					gtk_window = w
-					break
-		if gtk_window:
-			if gtk_window.get_type_hint() == Gdk.WindowTypeHint.COMBO:
-				# Special case, clicking on combo does nothing, so
-				# pressing "space" is emulated instead.
-				if not val:
-					return
-				event = Gdk.Event.new(Gdk.EventType.KEY_PRESS)
-				event.time = Gtk.get_current_event_time()
-				event.hardware_keycode = 65
-				event.keyval = Gdk.KEY_space
-				event.window = self.mapper.target_window
-		event.time = Gtk.get_current_event_time()
-		event.window = window
-		event.set_device(self.device)
-		Gtk.main_do_event(event)
+	def moveEvent(self, *args) -> None:
+		pass
+
+	moveStickEvent = moveEvent
+	scrollEvent = moveEvent
+	updateParams = moveEvent
+	updateScrollParams = moveEvent
 
 
 class OSDModeMappings:
@@ -134,8 +117,6 @@ class OSDModeMappings:
 		self.mapper = mapper
 		self.window = window
 		self.parent = app.window
-		self.first_window = None
-		GLib.timeout_add(10, self.move_around)
 		focus = Gtk.EventControllerFocus.new()
 		focus.connect("enter", self.on_main_window_focus_in_event)
 		focus.connect("leave", self.on_main_window_focus_out_event)
@@ -161,28 +142,11 @@ class OSDModeMappings:
 		for x in self.OTHER_WINDOW_BUTTONS:
 			self.app.builder.get_object(x).set_visible(True)
 
-	def get_target_position(self):
-		pos = self.first_window.get_position()
-		size = self.first_window.get_geometry()
-		my_size = self.window.get_window().get_geometry()
-		tx = pos.x + 0.5 * (size.width - my_size.width)
-		ty = pos.y + size.height + 100
-		return tx, ty
-
 	def show(self):
-		self.window.set_visible(True)
-		self.window.get_window().set_override_redirect(True)
-
-	def move_around(self, *a):
-		if self.first_window is None:
-			active = self.window.get_window().get_screen().get_active_window()
-			if active is None:
-				return None
-			self.first_window = active
-
-		tx, ty = self.get_target_position()
-		self.window.get_window().move(tx, ty)
-		return True
+		# GTK4 does not expose override-redirect or absolute top-level window
+		# positioning. Present the helper as a regular undecorated window.
+		self.window.set_decorated(False)
+		self.window.present()
 
 
 def direction(x):
