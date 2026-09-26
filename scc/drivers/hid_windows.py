@@ -242,6 +242,7 @@ class DecoderBuilder:
 		logical_min = 0
 		logical_max = 255
 		kind = None
+		axis_usages = []
 		usage_page = None
 		total = 0
 		axis_number = 0
@@ -266,6 +267,8 @@ class DecoderBuilder:
 					total = 8
 			elif isinstance(tag, LocalItem) and tag == LocalItem.Usage:
 				kind = item[1]
+				if usage_page == UsagePage.GenericDesktopPage and kind in AXES:
+					axis_usages.append(kind)
 				if usage_page == UsagePage.GenericDesktopPage and kind in (
 					GenericDesktopPage.Joystick,
 					GenericDesktopPage.GamePad,
@@ -280,8 +283,15 @@ class DecoderBuilder:
 						self._add_buttons(total, report_size, report_count)
 						total += bits
 					elif kind in AXES:
-						for _ in range(report_count):
-							self._add_axis(axis_number, total, report_size, logical_min, logical_max)
+						for field in range(report_count):
+							# SDL's Windows joystick backend numbers axes by their
+							# canonical HID usage (X,Y,Z,Rx,Ry,Rz), not necessarily
+							# by the order in which fields occur in the input report.
+							if field < len(axis_usages) and axis_usages[field] in AXES:
+								source = AXES.index(axis_usages[field])
+							else:
+								source = axis_number
+							self._add_axis(source, total, report_size, logical_min, logical_max)
 							axis_number += 1
 							total += report_size
 					elif kind == GenericDesktopPage.Hatswitch:
@@ -290,6 +300,7 @@ class DecoderBuilder:
 						total += bits
 					else:
 						total += bits
+				axis_usages = []
 
 		if not is_game_controller:
 			raise ValueError("HID interface is not a joystick or gamepad")
