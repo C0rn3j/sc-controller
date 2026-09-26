@@ -39,6 +39,7 @@ class Config:
 			"evdevdrv": True,
 			"ds4drv": True,  # At least one of hiddrv or evdevdrv has to be enabled as well
 			"ds5drv": True,
+			"hid_windows": True,  # Generic Windows controllers via HIDAPI and gamecontrollerdb
 		},
 		"fix_xinput": True,  # If True, attempt is done to deatach emulated controller
 		# from 'Virtual core pointer' core device.
