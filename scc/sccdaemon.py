@@ -200,9 +200,15 @@ class SCCDaemon(Daemon):
 					continue
 				if sys.platform != "win32" and modname == "hid_windows":
 					continue
+				if sys.platform != "linux" and modname in ("evdevdrv", "hiddrv"):
+					continue
 				if sys.platform != "linux" and modname == "ds5drv":
 					continue
-				enabled = cfg["drivers"].get("ds5drv") if modname == "ds5_windows" else cfg["drivers"].get(modname)
+				config_name = {
+					"ds5_windows": "ds5drv",
+					"hid_windows": "hiddrv",
+				}.get(modname, modname)
+				enabled = cfg["drivers"].get(config_name)
 				if modname == "usb" or enabled:
 					# 'usb' driver has to be always active
 					mod = getattr(__import__(f"scc.drivers.{modname}").drivers, modname)
