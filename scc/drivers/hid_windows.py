@@ -482,7 +482,13 @@ class WindowsHIDController(Controller):
 		self.device.open_path(self.path)
 		self.device.set_nonblocking(True)
 		try:
-			descriptor = bytes(self.device.get_report_descriptor(4096))
+			try:
+				descriptor = bytes(self.device.get_report_descriptor())
+			except TypeError:
+				# Some python-hidapi releases require an explicit maximum size,
+				# while others expose only the zero-argument form
+				log.warning("Type'err'd on the descriptor")
+				descriptor = bytes(self.device.get_report_descriptor(4096))
 		except AttributeError as exc:
 			self.device.close()
 			raise RuntimeError("This hidapi build does not expose get_report_descriptor()") from exc
@@ -587,7 +593,7 @@ class WindowsHIDDriver:
 				continue
 			try:
 				self.controllers[path] = WindowsHIDController(self, info, mapping_name, mapping)
-			except (OSError, RuntimeError, ValueError):
+			except (OSError, RuntimeError, TypeError, ValueError):
 				log.exception("Failed to open mapped HID controller at %r", path)
 				self._failed_paths.add(path)
 
