@@ -283,7 +283,7 @@ class DualSenseWindowsDriver:
 				for info in hid.enumerate(VENDOR_ID, product_id):
 					usage_page = info.get("usage_page")
 					usage = info.get("usage")
-					if usage_page not in (None, 0x01) or usage not in (None, 0x04, 0x05):
+					if usage_page not in (None, 0, 0x01) or usage not in (None, 0, 0x04, 0x05):
 						continue
 					path = info.get("path")
 					if path is not None:
@@ -291,6 +291,7 @@ class DualSenseWindowsDriver:
 		except Exception:
 			log.exception("Failed to enumerate DualSense HID devices")
 			return
+		log.debug("Found %d DualSense HID interface(s)", len(found))
 
 		for path, info in found.items():
 			if path in self.controllers:
