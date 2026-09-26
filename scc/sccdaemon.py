@@ -866,6 +866,20 @@ class SCCDaemon(Daemon):
 				return
 			if client.mapper.get_controller():
 				client.mapper.get_controller().set_led_level(number)
+		elif message.startswith(b"LedColor:"):
+			try:
+				red, green, blue = (clamp(0, int(value), 255) for value in message[9:].split())
+				client.mapper.get_controller().set_led_color(red, green, blue)
+				client.wfile.write(b"OK.\n")
+			except Exception as error:
+				client.wfile.write(f"Fail: {error}\n".encode())
+		elif message.startswith(b"PlayerLEDs:"):
+			try:
+				mask = clamp(0, int(message[11:]), 0x1F)
+				client.mapper.get_controller().set_player_leds(mask)
+				client.wfile.write(b"OK.\n")
+			except Exception as error:
+				client.wfile.write(f"Fail: {error}\n".encode())
 		elif message.startswith(b"Observe:"):
 			if Config()["enable_sniffing"]:
 				to_observe = list(message.split(b":", 1)[1].strip(b" \t\r").split(b" "))

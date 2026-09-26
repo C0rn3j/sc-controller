@@ -9,11 +9,6 @@
     <property name="step-increment">1</property>
     <property name="upper">7200</property>
   </object>
-  <object class="GtkAdjustment" id="adjLED">
-    <property name="page-increment">10</property>
-    <property name="step-increment">1</property>
-    <property name="upper">100</property>
-  </object>
   <object class="GtkAdjustment" id="adjLeftRotation">
     <property name="lower">-180</property>
     <property name="page-increment">10</property>
@@ -162,7 +157,7 @@
             <property name="attributes">
               0 -1 weight bold
             </property>
-            <property name="label" translatable="yes">LED brightness</property>
+            <property name="label" translatable="yes">LED settings</property>
             <property name="margin-top">10</property>
             <property name="xalign">0</property>
             <layout>
@@ -172,18 +167,14 @@
           </object>
         </child>
         <child>
-          <object class="GtkScale" id="sclLED">
-            <property name="adjustment">adjLED</property>
-            <property name="digits">0</property>
-            <property name="draw-value">1</property>
+          <object class="GtkButton" id="btnLEDSettings">
             <property name="focusable">1</property>
             <property name="hexpand">1</property>
+            <property name="label" translatable="yes">Configure LEDs…</property>
             <property name="margin-end">10</property>
             <property name="margin-start">10</property>
             <property name="margin-top">5</property>
-            <property name="round-digits">0</property>
-            <property name="value-pos">right</property>
-            <signal name="value-changed" handler="on_sclLED_value_changed"/>
+            <signal name="clicked" handler="on_btnLEDSettings_clicked"/>
             <layout>
               <property name="column">0</property>
               <property name="row">5</property>
