@@ -8,147 +8,149 @@ msgstr ""
 "Project-Id-Version: sc-controller\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-20 01:49+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-09-26 12:45+0000\n"
+"Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
+"Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/sc-"
+"controller/sc-controller/pt_BR/>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 2026.10.dev0\n"
 
 #: scc/actions.py:606
 msgid "Axis"
-msgstr ""
+msgstr "Eixo"
 
 #: scc/actions.py:606 scc/actions.py:616 scc/actions.py:617
 msgid "Negative"
-msgstr ""
+msgstr "Negativo"
 
 #: scc/actions.py:606 scc/actions.py:616 scc/actions.py:617
 msgid "Positive"
-msgstr ""
+msgstr "Positivo"
 
 #: scc/actions.py:611
 #, python-format
 msgid "%s X"
-msgstr ""
+msgstr "%s X"
 
 #: scc/actions.py:613
 #, python-format
 msgid "%s Y"
-msgstr ""
+msgstr "%s Y"
 
 #: scc/actions.py:616 scc/actions.py:617
 #, python-format
 msgid "Axis %s"
-msgstr ""
+msgstr "Eixo %s"
 
 #: scc/actions.py:703
 #, python-format
 msgid "%s %s (reversed)"
-msgstr ""
+msgstr "%s %s (invertido)"
 
 #: scc/actions.py:704
 #, python-format
 msgid "Reverse %s Axis"
-msgstr ""
+msgstr "Eixo %s invertido"
 
 #: scc/actions.py:829 scc/actions.py:961
 msgid "Wheel"
-msgstr ""
+msgstr "Roda"
 
 #: scc/actions.py:831 scc/actions.py:963
 msgid "Horizontal Wheel"
-msgstr ""
+msgstr "Roda horizontal"
 
 #: scc/actions.py:833 scc/actions.py:965 scc/actions.py:1193
 #: ui/ae/axis_action.ui:104 ui/ae/axis_action.ui:174
 msgid "Mouse"
-msgstr ""
+msgstr "Mouse"
 
 #: scc/actions.py:834 scc/actions.py:966 scc/actions.py:1490
 #, python-format
 msgid "Mouse %s"
-msgstr ""
+msgstr "Mouse %s"
 
 #: scc/actions.py:1013 ui/ae/axis_action.ui:169
 msgid "Mouse Region"
-msgstr ""
+msgstr "Região do mouse"
 
 #: scc/actions.py:1286
 msgid "Recenter Gyro"
-msgstr ""
+msgstr "Centralizar giroscópio"
 
 #: scc/actions.py:1391 scc/gui/ae/tilt.py:52
 msgid "Tilt"
-msgstr ""
+msgstr "Tiltar"
 
 #: scc/actions.py:1477
 msgid "Wheel UP"
-msgstr ""
+msgstr "Roda para cima"
 
 #: scc/actions.py:1478
 msgid "Wheel DOWN"
-msgstr ""
+msgstr "Roda para baixo"
 
 #: scc/actions.py:1501
 #, python-format
 msgid "Button %i"
-msgstr ""
+msgstr "Botão %i"
 
 #: scc/actions.py:1908
 msgid "Arrows"
-msgstr ""
+msgstr "Setas"
 
 #: scc/actions.py:1910
 msgid "WSAD"
-msgstr ""
+msgstr "WSAD"
 
 #: scc/actions.py:2277 ui/ae/axis_action.ui:154
 msgid "Joystick Camera"
-msgstr ""
+msgstr "Câmera do joystick"
 
 #: scc/actions.py:2628 scc/gui/ae/__init__.py:92 ui/ae/axis_action.ui:662
 #: ui/ae/axis_action.ui:676 ui/ae/trigger.ui:128
 msgid "(not set)"
-msgstr ""
+msgstr "(não definido)"
 
 #: scc/gui/action_editor.py:258 scc/gui/ae/axis_action.py:273
 #: scc/gui/ae/axis_action.py:299
 msgid "Select Button"
-msgstr ""
+msgstr "Botão de selecionar"
 
 #: scc/gui/action_editor.py:1061
 #, python-format
 msgid "%s Press"
-msgstr ""
+msgstr "Pressionar %s"
 
 #: scc/gui/action_editor.py:1070 scc/gui/osk_binding_editor.py:52
 #, python-format
 msgid "%s Trigger"
-msgstr ""
+msgstr "Acionamento de %s"
 
 #: scc/gui/action_editor.py:1077
 msgid "DPAD"
-msgstr ""
+msgstr "DPAD"
 
 #: scc/gui/action_editor.py:1079 scc/gui/ae/first_page.py:104
 #: ui/action_editor.ui:1403 ui/ae/axis_action.ui:139
 #: ui/ae/special_action.ui:184 ui/controller_settings.ui:132
 msgid "Right Stick"
-msgstr ""
+msgstr "Analógico direito"
 
 #: scc/gui/action_editor.py:1081 scc/gui/ae/first_page.py:103
 #: scc/gui/osk_binding_editor.py:43 ui/action_editor.ui:1398
 #: ui/ae/axis_action.ui:134 ui/ae/special_action.ui:180
 #: ui/controller_settings.ui:128 ui/global_settings.ui:231
 msgid "Left Stick"
-msgstr ""
+msgstr "Analógico esquerdo"
 
 #: scc/gui/action_editor.py:1089
 msgid "Gyro"
-msgstr ""
+msgstr "Giroscópio"
 
 #: scc/gui/action_editor.py:1101 scc/gui/ae/first_page.py:95
 #: ui/ae/special_action.ui:188 ui/controller_settings.ui:136
