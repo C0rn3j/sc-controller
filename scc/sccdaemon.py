@@ -198,6 +198,8 @@ class SCCDaemon(Daemon):
 			if not ispkg and modname != "driver":
 				if sys.platform == "linux" and modname == "ds5_windows":
 					continue
+				if sys.platform != "win32" and modname == "hid_windows":
+					continue
 				if sys.platform != "linux" and modname == "ds5drv":
 					continue
 				enabled = cfg["drivers"].get("ds5drv") if modname == "ds5_windows" else cfg["drivers"].get(modname)
