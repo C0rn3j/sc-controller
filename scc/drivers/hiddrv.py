@@ -67,7 +67,7 @@ def button_to_bit(sc) -> int:
 		bit += 1
 	if sc & 1 == 1:
 		return bit
-	return BUTTON_COUNT - 1
+	return BUTTON_COUNT
 
 class HIDDrvError(Exception):
 	pass
@@ -324,7 +324,7 @@ class USBHIDController(SCUSBDevice, Controller):
 		"""
 		if config:
 			# Last possible value is default "maps-to-nothing" mapping
-			buttons = [BUTTON_COUNT - 1] * BUTTON_COUNT
+			buttons = [BUTTON_COUNT] * BUTTON_COUNT
 			for keycode, value in config.get("buttons", {}).items():
 				keycode = int(keycode) - FIRST_BUTTON
 				# TODO(Martin): Compat crutch for saved devices - autoconvert it to current standard instead

@@ -410,7 +410,8 @@ class DecoderBuilder:
 			return
 		self.button_offset = bit // 8, bit % 8
 		self.button_count = min(count, BUTTON_COUNT)
-		button_map = [BUTTON_COUNT - 1] * BUTTON_COUNT
+		# 0..31 are all real SCC button bits; 32 is the disabled sentinel.
+		button_map = [BUTTON_COUNT] * BUTTON_COUNT
 		for name, button in SDL_BUTTON_NAMES.items():
 			match = re.fullmatch(r"b(\d+)", self.mapping.get(name, ""))
 			if match and int(match.group(1)) < self.button_count:
