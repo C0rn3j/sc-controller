@@ -489,13 +489,15 @@ class WindowsHIDController(Controller):
 				# while others expose only the zero-argument form
 				log.warning("Type'err'd on the descriptor")
 				descriptor = bytes(self.device.get_report_descriptor(4096))
+			self._decoder = DecoderBuilder(descriptor, mapping).build()
+			if not self._decoder.packet_size:
+				raise ValueError("empty HID input report")
 		except AttributeError as exc:
 			self.device.close()
 			raise RuntimeError("This hidapi build does not expose get_report_descriptor()") from exc
-		self._decoder = DecoderBuilder(descriptor, mapping).build()
-		if not self._decoder.packet_size:
+		except Exception:
 			self.device.close()
-			raise ValueError("empty HID input report")
+			raise
 
 		vendor_id, product_id = int(info["vendor_id"]), int(info["product_id"])
 		self._id = self._generate_id(f"hid{vendor_id:04x}:{product_id:04x}")
@@ -557,6 +559,8 @@ class WindowsHIDDriver:
 		self.daemon = daemon
 		self.controllers: dict[bytes | str, WindowsHIDController] = {}
 		self._failed_paths: set[bytes | str] = set()
+		self._seen_paths: set[bytes | str] = set()
+		self._did_initial_scan = False
 		self._next_scan = 0.0
 
 	def start(self) -> None:
@@ -571,22 +575,41 @@ class WindowsHIDDriver:
 	def scan(self) -> None:
 		self._next_scan = time.monotonic() + SCAN_INTERVAL
 		found = {}
+		seen = set()
 		try:
-			for info in hid.enumerate():
+			devices = hid.enumerate()
+			if not self._did_initial_scan:
+				log.debug("HIDAPI enumerated %d interface(s)", len(devices))
+				self._did_initial_scan = True
+			for info in devices:
 				identity = int(info.get("vendor_id", 0)), int(info.get("product_id", 0))
-				if identity in SKIPPED_DEVICES:
-					continue
-				if info.get("usage_page") not in (None, 0, 0x01) or info.get("usage") not in (None, 0, 0x04, 0x05):
-					continue
 				path = info.get("path")
 				if path is None:
 					continue
 				mapping = load_gamecontroller_mapping(*identity, str(info.get("product_string") or ""))
-				if mapping is not None:
-					found[path] = (info, mapping)
+				if mapping is None:
+					continue
+				seen.add(path)
+				is_new = path not in self._seen_paths
+				if is_new:
+					log.debug(
+						"Discovered mapped HID interface %04x:%04x %r, usage %r:%r, path %r",
+						identity[0],
+						identity[1],
+						info.get("product_string"),
+						info.get("usage_page"),
+						info.get("usage"),
+						path,
+					)
+				if identity in SKIPPED_DEVICES:
+					if is_new:
+						log.debug("Leaving %04x:%04x to its dedicated driver", *identity)
+					continue
+				found[path] = (info, mapping)
 		except Exception:
 			log.exception("Failed to enumerate generic HID controllers")
 			return
+		self._seen_paths = seen
 
 		for path, (info, (mapping_name, mapping)) in found.items():
 			if path in self.controllers or path in self._failed_paths:
