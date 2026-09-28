@@ -1,7 +1,135 @@
 List of (possibly) planned features in no particular order:
 
+- Selectable output device: virtual Xbox (today's default), virtual DS4/DS5,
+  or NO virtual controller at all. The current "Xbox 360 pad" is just a
+  generic uinput device wearing an X360 identity defined entirely in
+  config["output"] (scc/config.py: vendor/product/name/buttons/axes), so the
+  architecture already treats identity as data. Three tiers of work:
+    - no-controller mode (keyboard+mouse only) ALREADY EXISTS as the
+      undocumented SCC_NOGAMEPAD env var (scc/mapper.py create_gamepad);
+      promote it to a config key + GUI toggle (trivial), or per-profile
+      (moderate: create/destroy the uinput gamepad on profile switch).
+      Essential for games that refuse mouse/keyboard input while any
+      controller is detected;
+    - evdev-level DS4/DS5 identity presets (Sony VID/PID + the button/axis
+      layout SDL's gamecontrollerdb expects on the classic path): preset
+      table + GUI dropdown; gives PlayStation glyphs in most games, but no
+      gyro/touchpad/lightbar (those ride on hidraw, which uinput cannot
+      fake; SDL HIDAPI just falls back to evdev);
+    - faithful DS4/DS5 emulation via /dev/uhid: present a real HID device so
+      the kernel's hid-playstation binds and exposes motion/touchpad nodes
+      -> native in-game gyro from ANY supported controller. Big: a uhid
+      backend beside uinput, authentic report descriptors/streams, a udev
+      rule for /dev/uhid. Prior art exists (fake-DS4-over-uhid projects).
+
+- DualShock 4 / DualSense (ds4/ds5) polish. The HID driver is now functional
+  (mapper rstick/dpad guards, touchpad coordinate scaling + click highlight), but
+  rough edges remain:
+    - the two analog sticks are asymmetric in Input Test -- the left and right
+      stick brighten / behave differently from each other;
+    - the input icons drawn around the controller are the generic ones, not the
+      DualShock face symbols (cross / circle / square / triangle);
+    - the DS4 gyro works as relative and absolute (host-side euler integration in
+      _step_orientation, verified on hardware) but the absolute path is gyro-only,
+      so it DRIFTS and gimbals on large combined rotations. The clean next step is
+      accelerometer drift-correction: fuse gyro + accel (complementary filter) to
+      pin pitch/roll to the gravity vector -- the raw accel is still in q1-q3 right
+      after decode, before _step_orientation overwrites them (yaw has no absolute
+      reference without a magnetometer, so it drifts inherently);
+    - gyro -> MOUSE routes to the stick instead: an Axes/Rels IntEnum value
+      collision (ABS_X == REL_X) makes a mouse axis serialize/round-trip as a stick
+      axis. The gyro editor labels + chooser display are fixed, but the save/reload
+      path still needs a proper Axes-vs-Rels disambiguation; use gamepad axes for
+      gyro meanwhile;
+    - no rumble: neither DS4Controller nor DS4HidRawController drives the pad (the
+      DS5 driver does) -- port the DS5/kernel output report; over Bluetooth the
+      DS4HidRawController is input-only, so rumble + lightbar there need output
+      reports with the BT CRC32 wrapper (mirror DS5HidRawController);
+    - the lightbar LED is not driven (no DS4-specific set_led);
+    - DS5 is UNVERIFIED (no DualSense hardware here): its HID touchpad scaling was
+      added by analogy to the DS4 (DualSense pad assumed 1920x1080) and not tested;
+      the DS5HidRawController touchpad is still unscaled and stores cpad as unsigned
+      c_uint16, which can't hold the signed scaled range -- it needs a field type
+      change as well as scaling.
 - Multiple on-screen menus (and possibly keyboards) when using multiple controllers
 - Injecting emulated xbox controller into wine
+- mnuImage right-click "change background" menu has no `sc2` entry (the v2
+  image is selected automatically via sc2.config.json `gui.background`, but
+  it can't be picked manually from that menu yet).
+- Custom small (24px) controller icons per supported controller. Today only the
+  Steam Controller v1 (sc-*) and v2 (sc2-*) have bespoke top-down glyphs; every
+  other type (deck, ds4, ds5, evdev, hid, scbt, fake) reuses the same generic
+  silhouette, just recolored. Draw a distinct glyph per type so each controller
+  is recognisable at a glance. The v2 glyph could also be refined further (its
+  trackpads are necessarily small at 24px).
+- Steam Controller v1 GET_SERIAL reliability (nicety). The flaky v1 serial read
+  is now handled gracefully - usb.py retries a stalled control request instead of
+  tearing the dongle down, and sc_dongle falls back to a generated id if it never
+  reads - so multiple v1s with "Use Serial Numbers" on are detected reliably.
+  Remaining nicety: investigate *why* GET_SERIAL stalls, so a v1 always ends up
+  with its real serial (today a persistent stall yields a positional id instead).
+- Continuous "HD rumble" for the Steam Controller v2 (and v1/Deck). The SC pads
+  are LRA voice-coil actuators, not ERM spin-motors. We already drive single
+  pulses (v1: FEEDBACK report 0x8F; v2: interrupt-OUT report 0x82, effect 0x01 =
+  one click) which suit pad/scroll detents but NOT sustained, amplitude/
+  frequency-modulated game rumble. Gap: the v2's continuous-rumble report is
+  unknown (see sc2.py feedback(): "sustained game rumble may need another report,
+  not yet found"); the v2 uses its own report scheme (interrupt-OUT 0x82),
+  distinct from the Deck's feature-report commands, so it needs confirming for
+  the v2 specifically. Approach (do NOT brute-force the HID space by trial and
+  error - a wrong report just does nothing and gives no signal):
+    1. Read the canonical implementations: SDL's hidapi Steam driver
+       (SDL_hidapi_steam.c / SDL_hidapi_steamdeck.c - ID_TRIGGER_RUMBLE_CMD plus
+       the left/right gain "magic numbers") and the Linux kernel
+       drivers/hid/hid-steam.c (FF play_effect, derived from SDL's Deck code).
+    2. Check first whether SDL3 already rumbles the v2 by its VID/PID - if so,
+       its source *is* the v2 report format and no capture is needed.
+    3. Otherwise capture ground truth: run Steam Input on the v2, trigger rumble
+       (Steam's controller rumble test, or a rumbling game) and capture the USB
+       OUTPUT reports with usbmon + Wireshark; decode the continuous-rumble
+       report Steam actually sends.
+    4. Replicate it in sc2.py feedback() and diff the emitted bytes against the
+       capture to confirm.
+    5. Map the emulated gamepad's FF_RUMBLE strong/weak magnitudes to the LRA's
+       amplitude/frequency/gain and tune for feel (LRA != ERM, so a curve is
+       needed).
+  Plumbing already exists (emulated gamepad FF -> controller.feedback()); the
+  missing piece is the v2 continuous-rumble report itself. Refs: SDL hidapi steam
+  driver, kernel hid-steam.c, and Alice Mikhaylenko's "Steam Deck, HID, and
+  libmanette adventures" writeup.
+- Deck OSD menu fixes. (a) "Display Current Bindings..." and "Run Program..."
+  ship disabled in the menu settings; once enabled they appear in the OSD, but
+  selecting them does nothing - their shell() actions (scc-osd-show-bindings,
+  scc-osd-launcher) don't actually run/work on the Deck. Make them functional.
+  (b) Remove "Turn Controller OFF" from the Deck's OSD menu - the Deck's
+  built-in controller can't be powered off (today it shows and does nothing).
+  Entries defined in scc/gui/global_settings.py (~L45-58, e.g.
+  "Turn Controller OFF" -> osd(turnoff())); menu data in
+  default_menus/Default.menu.
+- Generalize the OSD "Turn Controller OFF" hiding. It's currently hidden only
+  for the Deck's built-in controls (controller type == "deck", checked in
+  scc/osd/menu.py against the --controller-type the daemon passes). Replace that
+  hardcoded type check with a per-controller capability (a ControllerFlags bit or
+  a controller.can_turnoff()) so any controller that can't be powered off
+  remotely hides the entry, not just the Deck.
+- Deck tray/status icon not visible. On the Steam Deck the status (tray) icon
+  doesn't appear even with the option enabled - works on desktop now that
+  libdbusmenu is bundled, so this is a Deck/gamescope SNI-tray-host issue to
+  investigate.
+- Rebrand the AppImage desktop app-id. app_info.id in AppImageBuilder.yml /
+  AppImageBuilder.debian.yml is still org.c0rn3j.sc-controller (upstream), so the
+  installed .desktop carries the upstream id, and the after_bundle step symlinks
+  it as org.c0rn3j.sc-controller.desktop. Switch both to org.patola.sc-controller-cc
+  once the fork is stable and we have committed/PR'd to upstream.
+- Replace the last deprecated GTK stock-icon calls. macro_editor.py (the
+  up/down/delete buttons) and modeshift_editor.py (the clear button) still call
+  `Gtk.Image.new_from_stock("gtk-go-up" / "gtk-go-down" / "gtk-delete", ...)`.
+  They render today (GTK maps the stock id to an icon internally) but the stock
+  API is deprecated; move them to `Gtk.Image.new_from_icon_name` with freedesktop
+  names (go-up / go-down / edit-delete, or the -symbolic variants - all present in
+  Adwaita/Breeze). Same class as the profile_switcher.py save/edit buttons, which
+  were actively blank because `new_from_icon_name` was handed the stock ids
+  "gtk-save"/"gtk-edit" (now document-save / document-edit).
 
 Hard stuff:
 - Injecting emulated xbox controller into PlayOnLinux
@@ -10,7 +138,22 @@ Very hard stuff:
 - Visual feedback in binding editor ( [what this guy says](https://www.reddit.com/r/linux_gaming/comments/5pcdmr/sc_controller_use_steam_controller_without_steam/dcqpvf4/) )
 
 **Done** stuff:
+- "Act on release" (inverted button): a general InvertedButtonModifier plus a
+  checkbox in the button action editor (next to Toggle/Repeat) that fires a
+  binding on *release* instead of press - for always-on sensors like the
+  capacitive grips. Round-trips with the Custom Action `inverted(...)` token.
+- Dedicated v2 controller artwork: traced SVG (tools/sc2-source.svg) wired by
+  tools/gen_sc2_image.py into controller-images/sc2.svg + v2 face-overlay
+  glyphs (button-images/sc2_*.svg, lifted from the drawn symbols so the face
+  buttons are blank in the art -> no duplication, monochrome ABXY, round Steam,
+  single dots) + v2 side-panel icons (images/sc2/*.svg, per-controller override
+  added in app.apply_gui_config_buttons). Control-name ids on sticks/pads/dpad/
+  bumpers + grip-touch shapes so everything highlights on hover; darker body
+  (#b8b8b8). sc2.config.json points at it all. Replaces the borrowed Deck image.
 - Multicontroller support
+- Per-controller profile memory: each controller's profile is remembered by id
+  (config["controllers"][id]["profile"]) and restored on (re)connect - follows
+  the physical device with "Use Serial Numbers" on, per-slot otherwise.
 - Configurable gamepad type (e.g. 4 axes and 16 buttons)
 - Steam Profile import
 - Radial Menu for the Joystick/Trackpad
@@ -33,3 +176,67 @@ Very hard stuff:
 - DPAD that acts only when clicked
 - 8-way DPAD
 - Selector for media keys
+
+## SC2 actuator audio streaming (haptic reports 0x86-0x89)
+
+The v2's haptic actuators can be driven as speakers: reports 0x86-0x89 carry
+stream configuration plus PCM / u-law data (layouts from iczero's RE, collected
+in CouchTurtle/sc2-research; not verified here, and not present in SDL3).
+
+This is the one piece of the haptic family that needs design rather than just
+wiring, because nothing in sc-controller has a concept of a *stream*. Every
+haptic today is a fire-and-forget event attached to an action. Streaming needs
+a source (file? synthesised? routed from the system mixer?), buffering and
+timing against the USB endpoint, and some answer to what a *profile* would even
+store. Deferred until there is a reason to want it beyond completeness.
+
+Prerequisites: the simpler effects (0x83 tone / 0x84 sweep / 0x85 script) land
+first, since they settle how per-effect parameters are represented in
+HapticData and in the GUI.
+
+## Haptic feedback on button presses
+
+feedback() is offered by ten actions -- XY, ball, circular, circularabs, dpad,
+hipfire, menu, mouse, trackpad, trigger -- but NOT by button. Haptics were
+conceived upstream as continuous feedback tied to movement (pad-travel ticks,
+trackball detents) rather than a per-press buzz, so ButtonAction never grew
+set_haptic.
+
+On the v2 that reads as a gap: a button press producing a tick is exactly what
+the hardware is for, and it is what makes the pads feel like buttons already.
+
+Deferred deliberately. Adding MOD_FEEDBACK to ButtonAction changes which
+modifiers the editor offers for buttons on EVERY controller, so the GUI side
+is not a small change and it needs thinking about before it is worth doing --
+what a v1 user is offered, whether the feedback panel makes sense next to a
+button binding, and whether it should be per-press or press-and-release.
+
+## Haptic feedback on the DS4
+
+The DualShock 4 has rumble motors and the daemon never uses them. No DS4 code
+path implements haptics at all: `DS4Controller` and `DS4HidRawController`
+inherit the no-op `Controller.feedback()`, and `DS4EvdevController` inherits
+`EvdevController.feedback`, whose entire body is a TODO docstring. So a profile
+with Feedback Enabled on a DS4 is silently doing nothing -- the GUI offers the
+setting, the modifier is stored, and the effect is dropped at the driver.
+
+This is a gap rather than a regression; it has never worked.
+
+The DS5 already does it (`ds5drv.feedback`), and the DS4's output report is the
+same shape -- a small motor pair, `motor_left` heavy / `motor_right` light, with
+a scheduled clear afterwards because the motors misbehave when shut off under
+50 ms. That method is close to a template.
+
+Two things to settle rather than copy blindly:
+
+  - The DS5 halves the left motor's amplitude ("the left motor is heavier, so
+    we must give it less oomph"). Whether the DS4's motors need the same
+    correction is a hardware question, not something to assume.
+  - The DS4 has three driver classes (HID, hidraw, evdev) and which one a pad
+    gets depends on how it is connected, so the fix has to land somewhere all
+    three reach, or be written three times.
+
+Also worth doing at the same time: `Controller.rumble()` is still unimplemented
+for the DS4 and DS5, so FF_RUMBLE's two magnitudes get averaged into one level
+before they arrive. The heavy and light effects consequently feel identical on
+both pads, where the hardware could tell them apart.
