@@ -1,5 +1,5 @@
-# Czech translations for sc-controller package.
-# Copyright (C) 2026 THE sc-controller'S COPYRIGHT HOLDER
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the sc-controller package.
 # Martin Rys <martin@archlinux.org>, 2026.
 #
@@ -7,101 +7,101 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sc-controller\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-19 23:16+0200\n"
-"PO-Revision-Date: 2026-09-28 16:11+0000\n"
-"Last-Translator: Martin <spleefer90@gmail.com>\n"
-"Language-Team: Czech <https://hosted.weblate.org/projects/sc-controller/sc-"
-"controller/cs/>\n"
-"Language: cs\n"
+"POT-Creation-Date: 2026-09-20 01:49+0200\n"
+"PO-Revision-Date: 2026-09-26 12:45+0000\n"
+"Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
+"Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/sc-"
+"controller/sc-controller/pt_BR/>\n"
+"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Weblate 2026.10.dev0\n"
 
 #: scc/actions.py:606
 msgid "Axis"
-msgstr "Osa"
+msgstr "Eixo"
 
 #: scc/actions.py:606 scc/actions.py:616 scc/actions.py:617
 msgid "Negative"
-msgstr "Negativní"
+msgstr "Negativo"
 
 #: scc/actions.py:606 scc/actions.py:616 scc/actions.py:617
 msgid "Positive"
-msgstr "Pozitivní"
+msgstr "Positivo"
 
 #: scc/actions.py:611
 #, python-format
 msgid "%s X"
-msgstr ""
+msgstr "%s X"
 
 #: scc/actions.py:613
 #, python-format
 msgid "%s Y"
-msgstr ""
+msgstr "%s Y"
 
 #: scc/actions.py:616 scc/actions.py:617
 #, python-format
 msgid "Axis %s"
-msgstr ""
+msgstr "Eixo %s"
 
 #: scc/actions.py:703
 #, python-format
 msgid "%s %s (reversed)"
-msgstr ""
+msgstr "%s %s (invertido)"
 
 #: scc/actions.py:704
 #, python-format
 msgid "Reverse %s Axis"
-msgstr ""
+msgstr "Eixo %s invertido"
 
 #: scc/actions.py:829 scc/actions.py:961
 msgid "Wheel"
-msgstr ""
+msgstr "Roda"
 
 #: scc/actions.py:831 scc/actions.py:963
 msgid "Horizontal Wheel"
-msgstr ""
+msgstr "Roda horizontal"
 
 #: scc/actions.py:833 scc/actions.py:965 scc/actions.py:1193
 #: ui/ae/axis_action.ui:104 ui/ae/axis_action.ui:174
 msgid "Mouse"
-msgstr "Myš"
+msgstr "Mouse"
 
 #: scc/actions.py:834 scc/actions.py:966 scc/actions.py:1490
 #, python-format
 msgid "Mouse %s"
-msgstr "Myš %s"
+msgstr "Mouse %s"
 
 #: scc/actions.py:1013 ui/ae/axis_action.ui:169
 msgid "Mouse Region"
-msgstr ""
+msgstr "Região do mouse"
 
 #: scc/actions.py:1286
 msgid "Recenter Gyro"
-msgstr ""
+msgstr "Centralizar giroscópio"
 
 #: scc/actions.py:1391 scc/gui/ae/tilt.py:52
 msgid "Tilt"
-msgstr ""
+msgstr "Tiltar"
 
 #: scc/actions.py:1477
 msgid "Wheel UP"
-msgstr ""
+msgstr "Roda para cima"
 
 #: scc/actions.py:1478
 msgid "Wheel DOWN"
-msgstr ""
+msgstr "Roda para baixo"
 
 #: scc/actions.py:1501
 #, python-format
 msgid "Button %i"
-msgstr ""
+msgstr "Botão %i"
 
 #: scc/actions.py:1908
 msgid "Arrows"
-msgstr "Šipky"
+msgstr "Setas"
 
 #: scc/actions.py:1910
 msgid "WSAD"
@@ -109,28 +109,27 @@ msgstr "WSAD"
 
 #: scc/actions.py:2277 ui/ae/axis_action.ui:154
 msgid "Joystick Camera"
-msgstr ""
+msgstr "Câmera do joystick"
 
-#: scc/actions.py:2628 scc/gui/ae/__init__.py:92
-#: ui/ae/axis_action.ui:662 ui/ae/axis_action.ui:676
-#: ui/ae/trigger.ui:128
+#: scc/actions.py:2628 scc/gui/ae/__init__.py:92 ui/ae/axis_action.ui:662
+#: ui/ae/axis_action.ui:676 ui/ae/trigger.ui:128
 msgid "(not set)"
-msgstr ""
+msgstr "(não definido)"
 
 #: scc/gui/action_editor.py:258 scc/gui/ae/axis_action.py:273
 #: scc/gui/ae/axis_action.py:299
 msgid "Select Button"
-msgstr ""
+msgstr "Botão de selecionar"
 
 #: scc/gui/action_editor.py:1061
 #, python-format
 msgid "%s Press"
-msgstr ""
+msgstr "Pressionar %s"
 
 #: scc/gui/action_editor.py:1070 scc/gui/osk_binding_editor.py:52
 #, python-format
 msgid "%s Trigger"
-msgstr ""
+msgstr "Acionamento de %s"
 
 #: scc/gui/action_editor.py:1077
 msgid "DPAD"
@@ -140,18 +139,18 @@ msgstr "DPAD"
 #: ui/action_editor.ui:1403 ui/ae/axis_action.ui:139
 #: ui/ae/special_action.ui:184 ui/controller_settings.ui:132
 msgid "Right Stick"
-msgstr ""
+msgstr "Analógico direito"
 
 #: scc/gui/action_editor.py:1081 scc/gui/ae/first_page.py:103
 #: scc/gui/osk_binding_editor.py:43 ui/action_editor.ui:1398
 #: ui/ae/axis_action.ui:134 ui/ae/special_action.ui:180
 #: ui/controller_settings.ui:128 ui/global_settings.ui:231
 msgid "Left Stick"
-msgstr ""
+msgstr "Analógico esquerdo"
 
 #: scc/gui/action_editor.py:1089
 msgid "Gyro"
-msgstr ""
+msgstr "Giroscópio"
 
 #: scc/gui/action_editor.py:1101 scc/gui/ae/first_page.py:95
 #: ui/ae/special_action.ui:188 ui/controller_settings.ui:136
@@ -179,7 +178,7 @@ msgstr ""
 
 #: scc/gui/ae/axis_action.py:398
 msgid "Joystick / Mouse"
-msgstr "Joystick / Myš"
+msgstr ""
 
 #: scc/gui/ae/axis.py:59
 msgid "Trigger or Axis"
@@ -189,14 +188,13 @@ msgstr ""
 msgid "Key or Button"
 msgstr ""
 
-#: scc/gui/ae/custom.py:34 scc/gui/ring_editor.py:138
-#: ui/ae/custom.ui:16
+#: scc/gui/ae/custom.py:34 scc/gui/ring_editor.py:138 ui/ae/custom.ui:16
 msgid "Custom Action"
 msgstr ""
 
 #: scc/gui/ae/dpad.py:94
 msgid "DPAD / Menu"
-msgstr "DPAD / Menu"
+msgstr ""
 
 #: scc/gui/ae/dpad.py:179
 #, python-format
@@ -208,40 +206,38 @@ msgid "Select DPAD Action"
 msgstr ""
 
 #: scc/gui/ae/first_page.py:97 scc/gui/ae/gyro_action.py:41
-#: scc/gui/modeshift_editor.py:35 ui/ae/dpad.ui:81
-#: ui/ae/special_action.ui:120 ui/controller_settings.ui:72
+#: scc/gui/modeshift_editor.py:35 ui/ae/dpad.ui:81 ui/ae/special_action.ui:120
+#: ui/controller_settings.ui:72
 msgid "Left Grip"
 msgstr ""
 
 #: scc/gui/ae/first_page.py:98 scc/gui/ae/gyro_action.py:42
-#: scc/gui/modeshift_editor.py:36 ui/ae/dpad.ui:85
-#: ui/ae/special_action.ui:124 ui/controller_settings.ui:76
+#: scc/gui/modeshift_editor.py:36 ui/ae/dpad.ui:85 ui/ae/special_action.ui:124
+#: ui/controller_settings.ui:76
 msgid "Right Grip"
 msgstr ""
 
 #: scc/gui/ae/first_page.py:99 scc/gui/ae/gyro_action.py:33
-#: scc/gui/modeshift_editor.py:37 ui/ae/dpad.ui:93
-#: ui/ae/special_action.ui:132 ui/controller_settings.ui:84
-#: ui/osk_binding_editor.ui:89
+#: scc/gui/modeshift_editor.py:37 ui/ae/dpad.ui:93 ui/ae/special_action.ui:132
+#: ui/controller_settings.ui:84 ui/osk_binding_editor.ui:89
 msgid "Left Bumper"
 msgstr ""
 
 #: scc/gui/ae/first_page.py:100 scc/gui/ae/gyro_action.py:34
-#: scc/gui/modeshift_editor.py:38 ui/ae/dpad.ui:97
-#: ui/ae/special_action.ui:136 ui/controller_settings.ui:88
-#: ui/osk_binding_editor.ui:110
+#: scc/gui/modeshift_editor.py:38 ui/ae/dpad.ui:97 ui/ae/special_action.ui:136
+#: ui/controller_settings.ui:88 ui/osk_binding_editor.ui:110
 msgid "Right Bumper"
 msgstr ""
 
-#: scc/gui/ae/first_page.py:101 scc/gui/ae/gyro_action.py:31
-#: ui/ae/dpad.ui:101 ui/ae/special_action.ui:140
-#: ui/controller_settings.ui:92 ui/osk_binding_editor.ui:78
+#: scc/gui/ae/first_page.py:101 scc/gui/ae/gyro_action.py:31 ui/ae/dpad.ui:101
+#: ui/ae/special_action.ui:140 ui/controller_settings.ui:92
+#: ui/osk_binding_editor.ui:78
 msgid "Left Trigger"
 msgstr ""
 
-#: scc/gui/ae/first_page.py:102 scc/gui/ae/gyro_action.py:32
-#: ui/ae/dpad.ui:105 ui/ae/special_action.ui:144
-#: ui/controller_settings.ui:96 ui/osk_binding_editor.ui:99
+#: scc/gui/ae/first_page.py:102 scc/gui/ae/gyro_action.py:32 ui/ae/dpad.ui:105
+#: ui/ae/special_action.ui:144 ui/controller_settings.ui:96
+#: ui/osk_binding_editor.ui:99
 msgid "Right Trigger"
 msgstr ""
 
@@ -251,7 +247,7 @@ msgstr ""
 
 #: scc/gui/ae/gesture.py:87 scc/special_actions.py:669
 msgid "Gestures"
-msgstr "Gesta"
+msgstr ""
 
 #: scc/gui/ae/gesture.py:118
 msgid "Edit Gesture Action"
@@ -259,7 +255,7 @@ msgstr ""
 
 #: scc/gui/ae/gesture.py:120 ui/ae/gesture.ui:247
 msgid "Gesture"
-msgstr "Gesto"
+msgstr ""
 
 #: scc/gui/ae/gesture.py:269
 msgid "Draw gesture on RIGHT pad..."
@@ -311,49 +307,46 @@ msgid "Left Stick Tilted"
 msgstr ""
 
 #: scc/gui/ae/gyro_action.py:45 scc/gui/modeshift_editor.py:26
-#: ui/ae/axis_action.ui:250 ui/ae/dpad.ui:45
-#: ui/ae/special_action.ui:84 ui/controller_settings.ui:36
-#: ui/osk_binding_editor.ui:17
+#: ui/ae/axis_action.ui:250 ui/ae/dpad.ui:45 ui/ae/special_action.ui:84
+#: ui/controller_settings.ui:36 ui/osk_binding_editor.ui:17
 msgid "A"
 msgstr ""
 
-#: scc/gui/ae/gyro_action.py:46 scc/gui/modeshift_editor.py:27
-#: ui/ae/dpad.ui:49 ui/ae/special_action.ui:88
-#: ui/controller_settings.ui:40 ui/osk_binding_editor.ui:27
+#: scc/gui/ae/gyro_action.py:46 scc/gui/modeshift_editor.py:27 ui/ae/dpad.ui:49
+#: ui/ae/special_action.ui:88 ui/controller_settings.ui:40
+#: ui/osk_binding_editor.ui:27
 msgid "B"
 msgstr ""
 
 #: scc/gui/ae/gyro_action.py:47 scc/gui/modeshift_editor.py:28
 #: ui/action_editor.ui:506 ui/ae/dpad.ui:53 ui/ae/special_action.ui:92
-#: ui/controller_settings.ui:44 ui/creg.ui:479 ui/creg.ui:503
-#: ui/creg.ui:515 ui/osk_binding_editor.ui:37
+#: ui/controller_settings.ui:44 ui/creg.ui:479 ui/creg.ui:503 ui/creg.ui:515
+#: ui/osk_binding_editor.ui:37
 msgid "X"
 msgstr ""
 
 #: scc/gui/ae/gyro_action.py:48 scc/gui/modeshift_editor.py:29
 #: ui/action_editor.ui:552 ui/ae/dpad.ui:57 ui/ae/special_action.ui:96
-#: ui/controller_settings.ui:48 ui/creg.ui:491 ui/creg.ui:527
-#: ui/creg.ui:539 ui/osk_binding_editor.ui:47
+#: ui/controller_settings.ui:48 ui/creg.ui:491 ui/creg.ui:527 ui/creg.ui:539
+#: ui/osk_binding_editor.ui:47
 msgid "Y"
 msgstr ""
 
-#: scc/gui/ae/gyro_action.py:50 scc/gui/modeshift_editor.py:31
-#: ui/ae/dpad.ui:65 ui/ae/special_action.ui:104
-#: ui/controller_settings.ui:56
+#: scc/gui/ae/gyro_action.py:50 scc/gui/modeshift_editor.py:31 ui/ae/dpad.ui:65
+#: ui/ae/special_action.ui:104 ui/controller_settings.ui:56
 msgid "Back (select)"
 msgstr ""
 
-#: scc/gui/ae/gyro_action.py:51 scc/gui/modeshift_editor.py:32
-#: ui/ae/dpad.ui:69 ui/ae/special_action.ui:108
-#: ui/controller_settings.ui:60
+#: scc/gui/ae/gyro_action.py:51 scc/gui/modeshift_editor.py:32 ui/ae/dpad.ui:69
+#: ui/ae/special_action.ui:108 ui/controller_settings.ui:60
 msgid "Center"
-msgstr "Střed"
+msgstr ""
 
-#: scc/gui/ae/gyro_action.py:52 scc/gui/modeshift_editor.py:33
-#: ui/ae/dpad.ui:73 ui/ae/special_action.ui:112
-#: ui/controller_settings.ui:64 ui/osk_binding_editor.ui:68
+#: scc/gui/ae/gyro_action.py:52 scc/gui/modeshift_editor.py:33 ui/ae/dpad.ui:73
+#: ui/ae/special_action.ui:112 ui/controller_settings.ui:64
+#: ui/osk_binding_editor.ui:68
 msgid "Start"
-msgstr "Start"
+msgstr ""
 
 #: scc/gui/ae/gyro_action.py:54
 msgid "Touch Touchpad"
@@ -407,7 +400,7 @@ msgstr ""
 
 #: scc/gui/ae/menu_action.py:240
 msgid "New Menu..."
-msgstr "Nové Menu..."
+msgstr ""
 
 #: scc/gui/ae/menu_action.py:446 ui/ae/dpad.ui:599
 msgid "Items per row"
@@ -567,12 +560,12 @@ msgstr ""
 
 #: scc/gui/app.py:789
 msgid "Create New Profile"
-msgstr "Vytvořit Nový Profil"
+msgstr ""
 
 #: scc/gui/app.py:861 scc/gui/app.py:865
 #, python-format
 msgid "New Profile %s"
-msgstr "Nový Profil %s"
+msgstr ""
 
 #: scc/gui/app.py:873
 #, python-format
@@ -790,7 +783,7 @@ msgstr ""
 
 #: scc/gui/importexport/dialog.py:143 ui/import_export.ui:1002
 msgid "Next"
-msgstr "Další"
+msgstr ""
 
 #: scc/gui/importexport/export.py:111 scc/gui/importexport/export.py:134
 #, python-format
@@ -1003,13 +996,11 @@ msgstr ""
 msgid "Edit mappings of this controller"
 msgstr ""
 
-#: scc/gui/ring_editor.py:74 scc/gui/ring_editor.py:82
-#: ui/ring_editor.ui:109
+#: scc/gui/ring_editor.py:74 scc/gui/ring_editor.py:82 ui/ring_editor.ui:109
 msgid "Inner Ring Radius"
 msgstr ""
 
-#: scc/gui/ring_editor.py:75 scc/gui/ring_editor.py:83
-#: ui/ring_editor.ui:171
+#: scc/gui/ring_editor.py:75 scc/gui/ring_editor.py:83 ui/ring_editor.ui:171
 msgid "Inner Ring"
 msgstr ""
 
@@ -1021,42 +1012,41 @@ msgstr ""
 msgid "Outer Ring Starts at"
 msgstr ""
 
-#: scc/gui/ring_editor.py:80 scc/gui/ring_editor.py:84
-#: ui/ring_editor.ui:238
+#: scc/gui/ring_editor.py:80 scc/gui/ring_editor.py:84 ui/ring_editor.ui:238
 msgid "Outer Ring"
 msgstr ""
 
-#: scc/macros.py:196
+#: scc/macros.py:195
 msgid "Cycle Actions"
 msgstr ""
 
-#: scc/macros.py:238
+#: scc/macros.py:237
 #, python-format
 msgid "Wait %sms"
 msgstr ""
 
-#: scc/macros.py:240
+#: scc/macros.py:239
 #, python-format
 msgid "Wait %ss"
 msgstr ""
 
-#: scc/macros.py:258 ui/macro_editor.ui:285 ui/modeshift_editor.ui:176
+#: scc/macros.py:257 ui/macro_editor.ui:285 ui/modeshift_editor.ui:176
 msgid "Press"
 msgstr ""
 
-#: scc/macros.py:291 ui/macro_editor.ui:289
+#: scc/macros.py:290 ui/macro_editor.ui:289
 msgid "Release"
 msgstr ""
 
-#: scc/macros.py:304 scc/macros.py:387
+#: scc/macros.py:303 scc/macros.py:386
 msgid "Tap"
 msgstr ""
 
-#: scc/macros.py:389
+#: scc/macros.py:388
 msgid "DblTap"
 msgstr ""
 
-#: scc/macros.py:390
+#: scc/macros.py:389
 msgid "-tap"
 msgstr ""
 
@@ -1073,52 +1063,51 @@ msgstr ""
 msgid ">>"
 msgstr ""
 
-#: scc/modifiers.py:183 scc/modifiers.py:184
+#: scc/modifiers.py:182 scc/modifiers.py:183
 msgid "(if pressed)"
 msgstr ""
 
-#: scc/modifiers.py:278 scc/modifiers.py:279
+#: scc/modifiers.py:277 scc/modifiers.py:278
 #, python-format
 msgid "(when %s)"
 msgstr ""
 
-#: scc/modifiers.py:311 scc/modifiers.py:312
+#: scc/modifiers.py:310 scc/modifiers.py:311
 msgid "(when pressed)"
 msgstr ""
 
-#: scc/modifiers.py:337 scc/modifiers.py:338
+#: scc/modifiers.py:336 scc/modifiers.py:337
 msgid "(when released)"
 msgstr ""
 
-#: scc/modifiers.py:483
+#: scc/modifiers.py:482
 msgid "Trackball"
 msgstr ""
 
-#: scc/modifiers.py:488
+#: scc/modifiers.py:487
 msgid "Mouse-like LStick"
 msgstr ""
 
-#: scc/modifiers.py:489
+#: scc/modifiers.py:488
 msgid "Mouse-like RStick"
 msgstr ""
 
-#: scc/modifiers.py:493 scc/osd/binding_display.py:255
-#: ui/action_editor.ui:1413 ui/ae/axis_action.ui:159
-#: ui/ae/axis_action.ui:164 ui/ae/axis_action.ui:648
+#: scc/modifiers.py:492 scc/osd/binding_display.py:255 ui/action_editor.ui:1413
+#: ui/ae/axis_action.ui:159 ui/ae/axis_action.ui:164 ui/ae/axis_action.ui:648
 msgid "Mouse Wheel"
 msgstr ""
 
-#: scc/modifiers.py:495
+#: scc/modifiers.py:494
 #, python-format
 msgid "Ball(%s)"
 msgstr ""
 
-#: scc/modifiers.py:1485
+#: scc/modifiers.py:1484
 #, python-format
 msgid "Circular %s"
 msgstr ""
 
-#: scc/modifiers.py:1562
+#: scc/modifiers.py:1561
 #, python-format
 msgid "Absolute Circular %s"
 msgstr ""
@@ -1127,53 +1116,53 @@ msgstr ""
 msgid "Run"
 msgstr ""
 
-#: scc/osd/menu_generators.py:38 scc/x11/autoswitcher.py:318
+#: scc/osd/menu_generators.py:37 scc/x11/autoswitcher.py:318
 msgid "[ All Profiles ]"
 msgstr ""
 
-#: scc/osd/menu_generators.py:66
+#: scc/osd/menu_generators.py:65
 #, python-format
 msgid "[ %s Recent Profiles ]"
 msgstr ""
 
-#: scc/osd/menu_generators.py:143
+#: scc/osd/menu_generators.py:142
 msgid "Switch To is not currently supported in Wayland"
 msgstr ""
 
-#: scc/osd/osk_actions.py:48
+#: scc/osd/osk_actions.py:47
 msgid "Hide"
 msgstr ""
 
-#: scc/osd/osk_actions.py:49 ui/ae/osk_action.ui:18
+#: scc/osd/osk_actions.py:48 ui/ae/osk_action.ui:18
 msgid "Hide Keyboard"
 msgstr ""
 
-#: scc/osd/osk_actions.py:81 ui/ae/osk_action.ui:22
+#: scc/osd/osk_actions.py:80 ui/ae/osk_action.ui:22
 msgid "Move LEFT Cursor"
 msgstr ""
 
-#: scc/osd/osk_actions.py:83 ui/ae/osk_action.ui:26
+#: scc/osd/osk_actions.py:82 ui/ae/osk_action.ui:26
 msgid "Move RIGHT Cursor"
 msgstr ""
 
-#: scc/osd/osk_actions.py:84
+#: scc/osd/osk_actions.py:83
 msgid "Move Cursor"
 msgstr ""
 
-#: scc/osd/osk_actions.py:98 ui/ae/osk_action.ui:38
-#: ui/ae/osk_action.ui:50 ui/global_settings.ui:107
+#: scc/osd/osk_actions.py:97 ui/ae/osk_action.ui:38 ui/ae/osk_action.ui:50
+#: ui/global_settings.ui:107
 msgid "Move Keyboard"
 msgstr ""
 
-#: scc/osd/osk_actions.py:116
+#: scc/osd/osk_actions.py:115
 msgid "Press Key"
 msgstr ""
 
-#: scc/osd/osk_actions.py:118 ui/ae/osk_action.ui:30
+#: scc/osd/osk_actions.py:117 ui/ae/osk_action.ui:30
 msgid "Press Key Under LEFT Cursor"
 msgstr ""
 
-#: scc/osd/osk_actions.py:119 ui/ae/osk_action.ui:34
+#: scc/osd/osk_actions.py:118 ui/ae/osk_action.ui:34
 msgid "Press Key Under RIGHT Cursor"
 msgstr ""
 
@@ -1403,8 +1392,8 @@ msgstr ""
 msgid "Action Type"
 msgstr ""
 
-#: ui/action_editor.ui:231 ui/macro_editor.ui:39
-#: ui/modeshift_editor.ui:44 ui/ring_editor.ui:47
+#: ui/action_editor.ui:231 ui/macro_editor.ui:39 ui/modeshift_editor.ui:44
+#: ui/ring_editor.ui:47
 msgid "Action Name"
 msgstr ""
 
@@ -1533,8 +1522,7 @@ msgid "Mode Shift"
 msgstr ""
 
 #: ui/action_editor.ui:1326 ui/app.ui:210 ui/icon_chooser.ui:175
-#: ui/macro_editor.ui:249 ui/modeshift_editor.ui:517
-#: ui/ring_editor.ui:303
+#: ui/macro_editor.ui:249 ui/modeshift_editor.ui:517 ui/ring_editor.ui:303
 msgid "_OK"
 msgstr ""
 
@@ -1546,8 +1534,8 @@ msgstr ""
 msgid "Ring Bindings"
 msgstr ""
 
-#: ui/action_editor.ui:1368 ui/macro_editor.ui:226
-#: ui/modeshift_editor.ui:543 ui/ring_editor.ui:329
+#: ui/action_editor.ui:1368 ui/macro_editor.ui:226 ui/modeshift_editor.ui:543
+#: ui/ring_editor.ui:329
 msgid "_Clear"
 msgstr ""
 
@@ -1635,8 +1623,8 @@ msgstr ""
 msgid "Mouse-like Joystick on RIGHT Stick"
 msgstr ""
 
-#: ui/ae/axis_action.ui:129 ui/ae/gyro_action.ui:28
-#: ui/ae/osk_action.ui:14 ui/ae/special_action.ui:33
+#: ui/ae/axis_action.ui:129 ui/ae/gyro_action.ui:28 ui/ae/osk_action.ui:14
+#: ui/ae/special_action.ui:33
 msgid "None"
 msgstr ""
 
@@ -1696,8 +1684,8 @@ msgstr ""
 msgid "X1"
 msgstr ""
 
-#: ui/ae/axis_action.ui:395 ui/ae/axis_action.ui:428
-#: ui/ae/axis_action.ui:462 ui/ae/axis_action.ui:495
+#: ui/ae/axis_action.ui:395 ui/ae/axis_action.ui:428 ui/ae/axis_action.ui:462
+#: ui/ae/axis_action.ui:495
 msgid "0"
 msgstr ""
 
@@ -1713,9 +1701,8 @@ msgstr ""
 msgid "Y2"
 msgstr ""
 
-#: ui/ae/axis_action.ui:519 ui/ae/dpad.ui:475
-#: ui/ae/special_action.ui:404 ui/ae/special_action.ui:480
-#: ui/app.ui:625 ui/creg.ui:206
+#: ui/ae/axis_action.ui:519 ui/ae/dpad.ui:475 ui/ae/special_action.ui:404
+#: ui/ae/special_action.ui:480 ui/app.ui:625 ui/creg.ui:206
 msgid "page0"
 msgstr ""
 
@@ -1727,8 +1714,8 @@ msgstr ""
 msgid "<a href=\"advanced://0#cbBallMode\">Setup or disable Trackball Mode</a>"
 msgstr ""
 
-#: ui/ae/axis_action.ui:567 ui/ae/dpad.ui:898
-#: ui/ae/special_action.ui:847 ui/app.ui:634 ui/creg.ui:351
+#: ui/ae/axis_action.ui:567 ui/ae/dpad.ui:898 ui/ae/special_action.ui:847
+#: ui/app.ui:634 ui/creg.ui:351
 msgid "page1"
 msgstr ""
 
@@ -1764,37 +1751,32 @@ msgstr ""
 msgid "Grab a key"
 msgstr ""
 
-#: ui/ae/dpad.ui:37 ui/ae/special_action.ui:76
-#: ui/ae/special_action.ui:176
+#: ui/ae/dpad.ui:37 ui/ae/special_action.ui:76 ui/ae/special_action.ui:176
 msgid "(Controller Default)"
 msgstr ""
 
-#: ui/ae/dpad.ui:41 ui/ae/dpad.ui:61 ui/ae/dpad.ui:77
-#: ui/ae/dpad.ui:89 ui/ae/dpad.ui:109 ui/ae/special_action.ui:80
-#: ui/ae/special_action.ui:100 ui/ae/special_action.ui:116
-#: ui/ae/special_action.ui:128 ui/ae/special_action.ui:148
-#: ui/controller_settings.ui:52 ui/controller_settings.ui:68
-#: ui/controller_settings.ui:80 ui/controller_settings.ui:100
+#: ui/ae/dpad.ui:41 ui/ae/dpad.ui:61 ui/ae/dpad.ui:77 ui/ae/dpad.ui:89
+#: ui/ae/dpad.ui:109 ui/ae/special_action.ui:80 ui/ae/special_action.ui:100
+#: ui/ae/special_action.ui:116 ui/ae/special_action.ui:128
+#: ui/ae/special_action.ui:148 ui/controller_settings.ui:52
+#: ui/controller_settings.ui:68 ui/controller_settings.ui:80
+#: ui/controller_settings.ui:100
 msgid "-"
 msgstr ""
 
-#: ui/ae/dpad.ui:113 ui/ae/special_action.ui:152
-#: ui/controller_settings.ui:104
+#: ui/ae/dpad.ui:113 ui/ae/special_action.ui:152 ui/controller_settings.ui:104
 msgid "Left Stick Press"
 msgstr ""
 
-#: ui/ae/dpad.ui:117 ui/ae/special_action.ui:156
-#: ui/controller_settings.ui:108
+#: ui/ae/dpad.ui:117 ui/ae/special_action.ui:156 ui/controller_settings.ui:108
 msgid "Right Stick Press"
 msgstr ""
 
-#: ui/ae/dpad.ui:121 ui/ae/special_action.ui:160
-#: ui/controller_settings.ui:112
+#: ui/ae/dpad.ui:121 ui/ae/special_action.ui:160 ui/controller_settings.ui:112
 msgid "Left Pad Press"
 msgstr ""
 
-#: ui/ae/dpad.ui:125 ui/ae/special_action.ui:164
-#: ui/controller_settings.ui:116
+#: ui/ae/dpad.ui:125 ui/ae/special_action.ui:164 ui/controller_settings.ui:116
 msgid "Right Pad Press"
 msgstr ""
 
@@ -1850,13 +1832,12 @@ msgstr ""
 msgid "Emulated DPAD"
 msgstr ""
 
-#: ui/ae/dpad.ui:251 ui/ae/dpad.ui:283 ui/ae/dpad.ui:315
-#: ui/ae/dpad.ui:339 ui/ae/dpad.ui:368 ui/ae/dpad.ui:384
-#: ui/ae/dpad.ui:400 ui/ae/dpad.ui:416 ui/ae/gyro.ui:44
-#: ui/ae/gyro.ui:76 ui/ae/gyro.ui:108 ui/ae/per_axis.ui:29
-#: ui/ae/per_axis.ui:57 ui/ae/tilt.ui:73 ui/ae/tilt.ui:93
-#: ui/ae/tilt.ui:113 ui/ae/tilt.ui:134 ui/ae/tilt.ui:184
-#: ui/ae/tilt.ui:203 ui/ae/trigger.ui:92 ui/key_grabber.ui:143
+#: ui/ae/dpad.ui:251 ui/ae/dpad.ui:283 ui/ae/dpad.ui:315 ui/ae/dpad.ui:339
+#: ui/ae/dpad.ui:368 ui/ae/dpad.ui:384 ui/ae/dpad.ui:400 ui/ae/dpad.ui:416
+#: ui/ae/gyro.ui:44 ui/ae/gyro.ui:76 ui/ae/gyro.ui:108 ui/ae/per_axis.ui:29
+#: ui/ae/per_axis.ui:57 ui/ae/tilt.ui:73 ui/ae/tilt.ui:93 ui/ae/tilt.ui:113
+#: ui/ae/tilt.ui:134 ui/ae/tilt.ui:184 ui/ae/tilt.ui:203 ui/ae/trigger.ui:92
+#: ui/key_grabber.ui:143
 msgid "(...)"
 msgstr ""
 
@@ -1876,13 +1857,11 @@ msgstr ""
 msgid "Control Options..."
 msgstr ""
 
-#: ui/ae/dpad.ui:664 ui/ae/special_action.ui:633
-#: ui/controller_settings.ui:517
+#: ui/ae/dpad.ui:664 ui/ae/special_action.ui:633 ui/controller_settings.ui:517
 msgid "Confirm Button"
 msgstr ""
 
-#: ui/ae/dpad.ui:676 ui/ae/special_action.ui:645
-#: ui/controller_settings.ui:528
+#: ui/ae/dpad.ui:676 ui/ae/special_action.ui:645 ui/controller_settings.ui:528
 msgid "Cancel Button"
 msgstr ""
 
@@ -1910,18 +1889,15 @@ msgstr ""
 msgid "_New Menu"
 msgstr ""
 
-#: ui/ae/dpad.ui:955 ui/ae/menu_only.ui:102
-#: ui/ae/special_action.ui:866
+#: ui/ae/dpad.ui:955 ui/ae/menu_only.ui:102 ui/ae/special_action.ui:866
 msgid "_Copy Menu"
 msgstr ""
 
-#: ui/ae/dpad.ui:962 ui/ae/menu_only.ui:109
-#: ui/ae/special_action.ui:873
+#: ui/ae/dpad.ui:962 ui/ae/menu_only.ui:109 ui/ae/special_action.ui:873
 msgid "_Rename Menu"
 msgstr ""
 
-#: ui/ae/dpad.ui:969 ui/ae/menu_only.ui:116
-#: ui/ae/special_action.ui:880
+#: ui/ae/dpad.ui:969 ui/ae/menu_only.ui:116 ui/ae/special_action.ui:880
 msgid "_Delete Menu"
 msgstr ""
 
@@ -1953,8 +1929,8 @@ msgstr ""
 msgid "message"
 msgstr ""
 
-#: ui/ae/gesture.ui:259 ui/ae/osk_action.ui:61
-#: ui/ae/special_action.ui:297 ui/global_settings.ui:2042
+#: ui/ae/gesture.ui:259 ui/ae/osk_action.ui:61 ui/ae/special_action.ui:297
+#: ui/global_settings.ui:2042
 msgid "Action"
 msgstr ""
 
@@ -2228,7 +2204,7 @@ msgstr ""
 
 #: ui/app.ui:317
 msgid "_Settings"
-msgstr "_Nastavení"
+msgstr ""
 
 #: ui/app.ui:325
 msgid "Import/Export _Profile..."
@@ -2244,11 +2220,11 @@ msgstr ""
 
 #: ui/app.ui:680
 msgid "Undo"
-msgstr "Zpět"
+msgstr ""
 
 #: ui/app.ui:694
 msgid "Redo"
-msgstr "Opakovat"
+msgstr ""
 
 #: ui/app.ui:724
 msgid "_Filename"
@@ -3048,8 +3024,7 @@ msgid ""
 "what command does before clicking \"Continue.\""
 msgstr ""
 
-#: ui/import_export.ui:735 ui/import_export.ui:923
-#: ui/import_export.ui:982
+#: ui/import_export.ui:735 ui/import_export.ui:923 ui/import_export.ui:982
 msgid "Import"
 msgstr ""
 
@@ -3130,13 +3105,11 @@ msgstr ""
 msgid "Add _Action"
 msgstr ""
 
-#: ui/macro_editor.ui:175 ui/modeshift_editor.ui:442
-#: ui/ring_editor.ui:76
+#: ui/macro_editor.ui:175 ui/modeshift_editor.ui:442 ui/ring_editor.ui:76
 msgid "(Widget)"
 msgstr ""
 
-#: ui/macro_editor.ui:209 ui/modeshift_editor.ui:557
-#: ui/ring_editor.ui:343
+#: ui/macro_editor.ui:209 ui/modeshift_editor.ui:557 ui/ring_editor.ui:343
 msgid "Custom Editor"
 msgstr ""
 
