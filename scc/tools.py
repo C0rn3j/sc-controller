@@ -10,7 +10,9 @@ import importlib.machinery
 import logging
 import os
 import shlex
+import sys
 import sysconfig
+from importlib.metadata import PackageNotFoundError, version
 from math import atan2, cos, sin, sqrt
 from math import pi as PI
 from typing import TYPE_CHECKING
@@ -48,13 +50,52 @@ LOG_FORMAT = "%(asctime)s.%(msecs)03d %(levelname)s %(name)-13s %(message)s"
 LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
-def init_logging(prefix: str = "", suffix: str = ""):
+def _get_data_home() -> str:
+	"""Return the platform-specific directory for user application data."""
+	if sys.platform == "linux":
+		return os.environ.get("XDG_DATA_HOME") or os.path.expanduser("~/.local/share")
+	if sys.platform == "win32":
+		return (
+			os.environ.get("LOCALAPPDATA")
+			or os.environ.get("APPDATA")
+			or os.path.expanduser("~/AppData/Local")
+		)
+	if sys.platform == "darwin":
+		return os.path.expanduser("~/Library/Application Support")
+	raise NotImplementedError
+
+
+def _get_log_path() -> str:
+	"""Return the log path for the current executable."""
+	data_home = _get_data_home()
+	log_dir = os.path.join(data_home, "scc", "logs")
+	os.makedirs(log_dir, exist_ok=True)
+	binary_name = os.path.basename(sys.argv[0]) or "scc"
+	return os.path.join(log_dir, f"{binary_name}.log")
+
+
+def _file_logging_enabled() -> bool:
+	"""Return whether persistent logging is enabled for this installation."""
+	try:
+		release_name = version("sccontroller")
+	except PackageNotFoundError:
+		release_name = ""
+	debug_marker = os.path.join(_get_data_home(), "scc", "debug")
+	return "dev" in release_name.lower() or os.path.isfile(debug_marker)
+
+
+def init_logging(prefix: str = "", suffix: str = "") -> None:
 	"""Initialize logging, set custom logging format and add one logging level with name and method to call.
 
 	prefix and suffix arguments can be used to modify log level prefixes.
 	"""
 	logging.basicConfig(level=logging.INFO, format=LOG_FORMAT, datefmt=LOG_DATE_FORMAT)
 	logger = logging.getLogger()
+	if _file_logging_enabled() and not any(handler.get_name() == "scc-file" for handler in logger.handlers):
+		file_handler = logging.FileHandler(_get_log_path(), mode="w", encoding="utf-8")
+		file_handler.setFormatter(logging.Formatter(LOG_FORMAT, datefmt=LOG_DATE_FORMAT))
+		file_handler.set_name("scc-file")
+		logger.addHandler(file_handler)
 	# Rename levels
 	logging.addLevelName(10, prefix + "D" + suffix)  # Debug
 	logging.addLevelName(20, prefix + "I" + suffix)  # Info
