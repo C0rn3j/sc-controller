@@ -54,6 +54,7 @@ class Config:
 				"last_version": "1.0.0",  # last version for which message was displayed
 			},
 		},
+		"language": "",
 		"controllers": {},
 		# output - modifies emulated controller
 		# Changing this may be usefull, but can break a lot of things

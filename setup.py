@@ -11,7 +11,7 @@ from setuptools import Extension, setup
 # Compile translations
 # TODO(Martin): Probably move this under scc/ and define within pyproject.toml
 ROOT = Path(__file__).resolve().parent
-runpy.run_path(str(ROOT / "tools/translations_compile.py"))["compile_translations"]()
+runpy.run_path(str(ROOT / "tools/translations_compile.py"))["main"]()
 
 data_files = [
 	("share/scc/ui", glob.glob("ui/*.ui")),

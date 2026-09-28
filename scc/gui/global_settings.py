@@ -22,6 +22,7 @@ from scc.gui.editor import ComboSetter, Editor
 from scc.gui.osk_binding_editor import OSKBindingEditor
 from scc.gui.parser import GuiActionParser
 from scc.gui.userdata_manager import UserDataManager
+from scc.i18n import get_available_languages
 from scc.menu_data import MenuData, MenuGenerator, MenuItem, Separator, Submenu
 from scc.modifiers import SensitivityModifier
 from scc.osd.keyboard import Keyboard as OSDKeyboard
@@ -72,6 +73,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		self.setup_widgets()
 		self._timer: int | None = None
 		self._recursing: bool = False
+		self._language_codes: list[str] = []
 		self.loading_colors: bool = False
 		self._gamepad_icons = {
 			"unknown": GdkPixbuf.Pixbuf.new_from_file(
@@ -79,6 +81,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			),
 		}
 		self.app.config.reload()
+		self.load_languages()
 		Action.register_all(sys.modules["scc.osd.osk_actions"], prefix="OSK")
 		self.load_settings()
 		self.load_profile_list()
@@ -143,6 +146,9 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		)
 		(self.builder.get_object("cbAutokillDaemon").set_active(self.app.config["gui"]["autokill_daemon"]))
 		(self.builder.get_object("cbNewRelease").set_active(self.app.config["gui"]["news"]["enabled"]))
+		language = self.app.config["language"]
+		selected = self._language_codes.index(language) if language in self._language_codes else 0
+		self.builder.get_object("cbLanguage").set_selected(selected)
 		self._recursing = False
 
 		try:
@@ -152,6 +158,25 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			for w in ("cbEnableDriver_evdevdrv", "btAddController"):
 				self.builder.get_object(w).set_sensitive(False)
 			self.builder.get_object("txEvdevMissing").set_visible(True)
+
+	def load_languages(self) -> None:
+		model = self.builder.get_object("lstLanguages")
+		languages = get_available_languages()
+		self._language_codes = [code for code, _name in languages]
+		was_recursing = self._recursing
+		self._recursing = True
+		try:
+			# Populating GtkDropDown selects row zero and emits notify::selected
+			# Do not save in that case
+			model.splice(0, model.get_n_items(), [name for _code, name in languages])
+		finally:
+			self._recursing = was_recursing
+
+	def _get_selected_language(self) -> str | None:
+		selected = self.builder.get_object("cbLanguage").get_selected()
+		if selected >= len(self._language_codes):
+			return None
+		return self._language_codes[selected]
 
 	def load_drivers(self) -> None:
 		for key, value in self.app.config["drivers"].items():
@@ -325,6 +350,8 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		self.app.config["enable_sniffing"] = self.builder.get_object("cbInputTestMode").get_active()
 		self.app.config["ignore_serials"] = not self.builder.get_object("cbEnableSerials").get_active()
 		self.app.config["output"]["rumble"] = self.builder.get_object("cbEnableRumble").get_active()
+		if (language := self._get_selected_language()) is not None:
+			self.app.config["language"] = language
 		self.app.config["gui"]["enable_status_icon"] = self.builder.get_object("cbEnableStatusIcon").get_active()
 		self.app.config["gui"]["minimize_to_status_icon"] = self.builder.get_object(
 			"cbMinimizeToStatusIcon",
@@ -335,6 +362,13 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 
 		# Save
 		self.app.save_config()
+
+	def on_cbLanguage_changed(self, *args) -> None:
+		if self._recursing or (language := self._get_selected_language()) is None:
+			return
+		self.app.config["language"] = language
+		self.app.save_config()
+		self.builder.get_object("rvLanguageRestart").set_reveal_child(True)
 
 	def on_cbShowOSD_toggled(self, cb):
 		if self._recursing:
