@@ -2,10 +2,16 @@
 """Installation script for everything that could not be migrated to pyproject.toml so far."""
 
 import glob
+import runpy
 import sys
 from pathlib import Path
 
 from setuptools import Extension, setup
+
+# Compile translations
+# TODO(Martin): Probably move this under scc/ and define within pyproject.toml
+ROOT = Path(__file__).resolve().parent
+runpy.run_path(str(ROOT / "tools/translations_compile.py"))["compile_translations"]()
 
 data_files = [
 	("share/scc/ui", glob.glob("ui/*.ui")),
