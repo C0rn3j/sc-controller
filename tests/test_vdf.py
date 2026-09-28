@@ -76,4 +76,12 @@ class TestVDF:
 		for f in os.listdir(path):
 			filename = os.path.join(path, f)
 			print("Testing import of '%s'" % (filename,))
-			VDFProfile().load(filename)
+			profile = VDFProfile()
+			assert profile.load(filename) is profile
+
+	def test_loaded_profile_can_be_saved(self, tmp_path):
+		"""The file loader returns a profile that can be saved directly."""
+		filename = os.path.join("tests/vdfs", sorted(os.listdir("tests/vdfs"))[0])
+		output = tmp_path / "converted.sccprofile"
+		VDFProfile().load(filename).save(str(output))
+		assert output.is_file()
