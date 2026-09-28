@@ -84,6 +84,10 @@ If you're not sure your topic belongs there, you can always head to [Discussions
 
 We also have a [Discord](https://discord.gg/d3G7dDJ2G7) available.
 
+## Localization
+
+We use [Weblate](https://hosted.weblate.org/projects/sc-controller/sc-controller/) for localization, you can help translate SC Controller into your language(s) there!
+
 ## Packages
 
 <table>
