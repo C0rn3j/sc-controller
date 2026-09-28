@@ -30,6 +30,7 @@ RUN <<EOR
 	fi
 	apt-get install -y --no-install-recommends \
 		cmake \
+		gettext \
 		gir1.2-gtk4layershell-1.0 \
 		gir1.2-rsvg-2.0 \
 		libcairo2-dev \
