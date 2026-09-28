@@ -324,13 +324,14 @@ class ActionEditor(Editor):
 
 		stActionModes = self.builder.get_object("stActionModes")
 		component.load()
+		widget = component.get_widget()
 		if remove_rest:
-			for c in stActionModes.observe_children():
-				if c != component:
-					stActionModes.remove(c)
+			for child in list(stActionModes.observe_children()):
+				if child != widget:
+					stActionModes.remove(child)
 
-		if component.get_widget() not in stActionModes.observe_children():
-			stActionModes.add_child(component.get_widget())
+		if widget not in stActionModes.observe_children():
+			stActionModes.add_child(widget)
 
 		component.set_action(self._mode, self._action)
 		if self._selected_component is not None:
@@ -338,7 +339,7 @@ class ActionEditor(Editor):
 				self._selected_component.hidden()
 		self._selected_component = component
 		self._selected_component.shown()
-		stActionModes.set_visible_child(component.get_widget())
+		stActionModes.set_visible_child(widget)
 		stActionModes.show()
 
 		return component

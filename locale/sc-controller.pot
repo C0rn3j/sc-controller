@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sc-controller\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 19:46+0200\n"
+"POT-Creation-Date: 2026-09-28 19:55+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -119,48 +119,48 @@ msgstr ""
 msgid "Select Button"
 msgstr ""
 
-#: scc/gui/action_editor.py:1061
+#: scc/gui/action_editor.py:1062
 #, python-format
 msgid "%s Press"
 msgstr ""
 
-#: scc/gui/action_editor.py:1070 scc/gui/osk_binding_editor.py:52
+#: scc/gui/action_editor.py:1071 scc/gui/osk_binding_editor.py:52
 #, python-format
 msgid "%s Trigger"
 msgstr ""
 
-#: scc/gui/action_editor.py:1077
+#: scc/gui/action_editor.py:1078
 msgid "DPAD"
 msgstr ""
 
-#: scc/gui/action_editor.py:1079 scc/gui/ae/first_page.py:104
+#: scc/gui/action_editor.py:1080 scc/gui/ae/first_page.py:104
 #: ui/action_editor.ui:1403 ui/ae/axis_action.ui:139
 #: ui/ae/special_action.ui:184 ui/controller_settings.ui:132
 msgid "Right Stick"
 msgstr ""
 
-#: scc/gui/action_editor.py:1081 scc/gui/ae/first_page.py:103
+#: scc/gui/action_editor.py:1082 scc/gui/ae/first_page.py:103
 #: scc/gui/osk_binding_editor.py:43 ui/action_editor.ui:1398
 #: ui/ae/axis_action.ui:134 ui/ae/special_action.ui:180
 #: ui/controller_settings.ui:128 ui/global_settings.ui:368
 msgid "Left Stick"
 msgstr ""
 
-#: scc/gui/action_editor.py:1089
+#: scc/gui/action_editor.py:1090
 msgid "Gyro"
 msgstr ""
 
-#: scc/gui/action_editor.py:1101 scc/gui/ae/first_page.py:95
+#: scc/gui/action_editor.py:1102 scc/gui/ae/first_page.py:95
 #: ui/ae/special_action.ui:188 ui/controller_settings.ui:136
 msgid "Left Pad"
 msgstr ""
 
-#: scc/gui/action_editor.py:1103 scc/gui/ae/first_page.py:96
+#: scc/gui/action_editor.py:1104 scc/gui/ae/first_page.py:96
 #: ui/ae/special_action.ui:192 ui/controller_settings.ui:140
 msgid "Right Pad"
 msgstr ""
 
-#: scc/gui/action_editor.py:1105
+#: scc/gui/action_editor.py:1106
 msgid "Touch Pad"
 msgstr ""
 
