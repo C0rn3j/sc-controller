@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Enable this hook via `git config --local core.hooksPath .githooks`.
+# The hook regenerates and stages the translation template with each commit,
+# ensuring the .pot file remains up to date at all times.
+
+repo_root=$(git rev-parse --show-toplevel)
+cd "${repo_root}"
+
+tools/translations_update.sh
+if ! git diff --quiet -- locale/sc-controller.pot; then
+	git add locale/sc-controller.pot
+	echo "Updated and staged locale/sc-controller.pot"
+fi

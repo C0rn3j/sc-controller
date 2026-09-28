@@ -1,5 +1,7 @@
 *.pyc
 .*
+!.githooks/
+!.githooks/*
 *~
 *.so
 *.mo

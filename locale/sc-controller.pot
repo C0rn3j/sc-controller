@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sc-controller\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-20 01:49+0200\n"
+"POT-Creation-Date: 2026-09-28 18:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -114,8 +114,8 @@ msgstr ""
 msgid "(not set)"
 msgstr ""
 
-#: scc/gui/action_editor.py:258 scc/gui/ae/axis_action.py:273
-#: scc/gui/ae/axis_action.py:299
+#: scc/gui/action_editor.py:258 scc/gui/ae/axis_action.py:282
+#: scc/gui/ae/axis_action.py:308
 msgid "Select Button"
 msgstr ""
 
@@ -142,7 +142,7 @@ msgstr ""
 #: scc/gui/action_editor.py:1081 scc/gui/ae/first_page.py:103
 #: scc/gui/osk_binding_editor.py:43 ui/action_editor.ui:1398
 #: ui/ae/axis_action.ui:134 ui/ae/special_action.ui:180
-#: ui/controller_settings.ui:128 ui/global_settings.ui:231
+#: ui/controller_settings.ui:128 ui/global_settings.ui:331
 msgid "Left Stick"
 msgstr ""
 
@@ -164,17 +164,17 @@ msgstr ""
 msgid "Touch Pad"
 msgstr ""
 
-#: scc/gui/ae/axis_action.py:76
+#: scc/gui/ae/axis_action.py:85
 msgid ""
 "Note: Mouse Region option is not available with Wayland-based display server"
 msgstr ""
 
-#: scc/gui/ae/axis_action.py:259 scc/gui/ae/gyro.py:97
+#: scc/gui/ae/axis_action.py:268 scc/gui/ae/gyro.py:97
 #: scc/gui/ae/per_axis.py:71
 msgid "Select Axis"
 msgstr ""
 
-#: scc/gui/ae/axis_action.py:398
+#: scc/gui/ae/axis_action.py:407
 msgid "Joystick / Mouse"
 msgstr ""
 
@@ -239,44 +239,44 @@ msgstr ""
 msgid "Right Trigger"
 msgstr ""
 
-#: scc/gui/ae/gesture.py:42
+#: scc/gui/ae/gesture.py:51
 msgid "Note: Gestures are not available with Wayland-based display server"
 msgstr ""
 
-#: scc/gui/ae/gesture.py:87 scc/special_actions.py:669
+#: scc/gui/ae/gesture.py:96 scc/special_actions.py:669
 msgid "Gestures"
 msgstr ""
 
-#: scc/gui/ae/gesture.py:118
+#: scc/gui/ae/gesture.py:127
 msgid "Edit Gesture Action"
 msgstr ""
 
-#: scc/gui/ae/gesture.py:120 ui/ae/gesture.ui:247
+#: scc/gui/ae/gesture.py:129 ui/ae/gesture.ui:247
 msgid "Gesture"
 msgstr ""
 
-#: scc/gui/ae/gesture.py:269
+#: scc/gui/ae/gesture.py:278
 msgid "Draw gesture on RIGHT pad..."
 msgstr ""
 
-#: scc/gui/ae/gesture.py:271
+#: scc/gui/ae/gesture.py:280
 msgid "Draw gesture on Touchpad..."
 msgstr ""
 
-#: scc/gui/ae/gesture.py:273 ui/ae/gesture.ui:167
+#: scc/gui/ae/gesture.py:282 ui/ae/gesture.ui:167
 msgid "Draw gesture on LEFT pad..."
 msgstr ""
 
-#: scc/gui/ae/gesture.py:310
+#: scc/gui/ae/gesture.py:319
 msgid "Repeat same gesture or press A button to confirm..."
 msgstr ""
 
-#: scc/gui/ae/gesture.py:315
+#: scc/gui/ae/gesture.py:324
 #, python-format
 msgid "Repeated %s times"
 msgstr ""
 
-#: scc/gui/ae/gesture.py:317
+#: scc/gui/ae/gesture.py:326
 msgid "Gesture differs"
 msgstr ""
 
@@ -387,7 +387,7 @@ msgstr ""
 msgid "Really delete selected menu?"
 msgstr ""
 
-#: scc/gui/ae/menu_action.py:190 scc/gui/app.py:1435
+#: scc/gui/ae/menu_action.py:190 scc/gui/app.py:1443
 msgid "This action is not undoable!"
 msgstr ""
 
@@ -459,68 +459,68 @@ msgstr ""
 msgid "Select Analog Axis"
 msgstr ""
 
-#: scc/gui/app.py:142 scc/gui/app.py:379 scc/gui/app.py:1625
+#: scc/gui/app.py:148 scc/gui/app.py:385 scc/gui/app.py:1633
 #: scc/gui/statusicon.py:83
 msgid "SC Controller"
 msgstr ""
 
-#: scc/gui/app.py:242
+#: scc/gui/app.py:248
 msgid "Edit Profile"
 msgstr ""
 
-#: scc/gui/app.py:403
+#: scc/gui/app.py:411
 msgid "uinput kernel module not loaded"
 msgstr ""
 
-#: scc/gui/app.py:404 scc/gui/app.py:424 scc/gui/app.py:431
+#: scc/gui/app.py:412 scc/gui/app.py:432 scc/gui/app.py:439
 msgid "Please, consult your distribution manual on how to enable uinput"
 msgstr ""
 
-#: scc/gui/app.py:405 scc/gui/app.py:432
+#: scc/gui/app.py:413 scc/gui/app.py:440
 msgid ""
 "or click on \"Fix Temporary\" button to attempt fix that should work until "
 "next restart."
 msgstr ""
 
-#: scc/gui/app.py:409 scc/gui/app.py:436
+#: scc/gui/app.py:417 scc/gui/app.py:444
 msgid "Fix Temporary"
 msgstr ""
 
-#: scc/gui/app.py:415
+#: scc/gui/app.py:423
 msgid "This will load missing uinput module."
 msgstr ""
 
-#: scc/gui/app.py:421
+#: scc/gui/app.py:429
 msgid "/dev/uinput doesn't exists"
 msgstr ""
 
-#: scc/gui/app.py:422
+#: scc/gui/app.py:430
 msgid "uinput kernel module is loaded, but /dev/uinput is missing."
 msgstr ""
 
-#: scc/gui/app.py:429
+#: scc/gui/app.py:437
 msgid "You don't have required access to /dev/uinput."
 msgstr ""
 
-#: scc/gui/app.py:430
+#: scc/gui/app.py:438
 msgid "This will most likely prevent emulation from working."
 msgstr ""
 
-#: scc/gui/app.py:443
+#: scc/gui/app.py:451
 msgid ""
 "This will enable input emulation for <i>every application</i> and <i>all "
 "users</i> on this machine."
 msgstr ""
 
-#: scc/gui/app.py:461
+#: scc/gui/app.py:469
 msgid "sudo fix-my-pc"
 msgstr ""
 
-#: scc/gui/app.py:476
+#: scc/gui/app.py:484
 msgid "Command Failed"
 msgstr ""
 
-#: scc/gui/app.py:485
+#: scc/gui/app.py:493
 #, python-format
 msgid ""
 "Following command is going to be executed:\n"
@@ -530,76 +530,76 @@ msgid ""
 "%s"
 msgstr ""
 
-#: scc/gui/app.py:546
+#: scc/gui/app.py:554
 msgid "_Edit Pressed Action"
 msgstr ""
 
-#: scc/gui/app.py:588
+#: scc/gui/app.py:596
 msgid "Unable to hide the window to the system tray"
 msgstr ""
 
-#: scc/gui/app.py:591
+#: scc/gui/app.py:599
 msgid "Do you want to quit the application instead?"
 msgstr ""
 
-#: scc/gui/app.py:594 ui/creg.ui:871
+#: scc/gui/app.py:602 ui/creg.ui:871
 msgid "_Cancel"
 msgstr ""
 
-#: scc/gui/app.py:595
+#: scc/gui/app.py:603
 msgid "_Quit"
 msgstr ""
 
-#: scc/gui/app.py:786
+#: scc/gui/app.py:794
 msgid ""
 "You are about to save changes over template.\n"
 "Are you sure?"
 msgstr ""
 
-#: scc/gui/app.py:789
+#: scc/gui/app.py:797
 msgid "Create New Profile"
 msgstr ""
 
-#: scc/gui/app.py:861 scc/gui/app.py:865
+#: scc/gui/app.py:869 scc/gui/app.py:873
 #, python-format
 msgid "New Profile %s"
 msgstr ""
 
-#: scc/gui/app.py:873
+#: scc/gui/app.py:881
 #, python-format
 msgid "%s (copy)"
 msgstr ""
 
-#: scc/gui/app.py:877
+#: scc/gui/app.py:885
 #, python-format
 msgid "%s (copy %s)"
 msgstr ""
 
-#: scc/gui/app.py:1236
+#: scc/gui/app.py:1244
 #, python-format
 msgid "There was an error with enabling emulation: <b>%s</b>"
 msgstr ""
 
-#: scc/gui/app.py:1239
+#: scc/gui/app.py:1247
 msgid "Please, check if you have receiver dongle connected to USB port."
 msgstr ""
 
-#: scc/gui/app.py:1241
+#: scc/gui/app.py:1249
 msgid "You don't have access to controller device."
 msgstr ""
 
-#: scc/gui/app.py:1244
+#: scc/gui/app.py:1252
 #, python-format
 msgid ""
 "Consult your distribution manual, try installing Steam package or <a "
 "href='%s'>install required udev rules manually</a>."
 msgstr ""
 
-#: scc/gui/app.py:1250
+#: scc/gui/app.py:1258
 msgid "Another application (most likely Steam) is using the controller."
 msgstr ""
 
-#: scc/gui/app.py:1253
+#: scc/gui/app.py:1261
 msgid ""
 "Background process responsible for emulation is not starting.\n"
 "\n"
@@ -609,77 +609,77 @@ msgid ""
 "GitHub</a> and copy output there."
 msgstr ""
 
-#: scc/gui/app.py:1257
+#: scc/gui/app.py:1265
 msgid "USB dongle was removed."
 msgstr ""
 
-#: scc/gui/app.py:1336 ui/app.ui:837
+#: scc/gui/app.py:1344 ui/app.ui:837
 msgid "_Configure Controller"
 msgstr ""
 
-#: scc/gui/app.py:1337 ui/app.ui:844
+#: scc/gui/app.py:1345 ui/app.ui:844
 msgid "_Turn Off Controller"
 msgstr ""
 
-#: scc/gui/app.py:1341 ui/app.ui:856
+#: scc/gui/app.py:1349 ui/app.ui:856
 msgid "_New Profile"
 msgstr ""
 
-#: scc/gui/app.py:1342 ui/app.ui:863
+#: scc/gui/app.py:1350 ui/app.ui:863
 msgid "_Copy Profile"
 msgstr ""
 
-#: scc/gui/app.py:1347 ui/app.ui:870
+#: scc/gui/app.py:1355 ui/app.ui:870
 msgid "_Rename Profile"
 msgstr ""
 
-#: scc/gui/app.py:1348 ui/app.ui:877
+#: scc/gui/app.py:1356 ui/app.ui:877
 msgid "_Delete Profile"
 msgstr ""
 
-#: scc/gui/app.py:1350 ui/app.ui:884
+#: scc/gui/app.py:1358 ui/app.ui:884
 msgid "_Revert Profile to Defaults"
 msgstr ""
 
-#: scc/gui/app.py:1351 ui/app.ui:896
+#: scc/gui/app.py:1359 ui/app.ui:896
 msgid "Profile D_etails"
 msgstr ""
 
-#: scc/gui/app.py:1424
+#: scc/gui/app.py:1432
 msgid "Really revert current profile to default values?"
 msgstr ""
 
-#: scc/gui/app.py:1426
+#: scc/gui/app.py:1434
 msgid "Really delete current profile?"
 msgstr ""
 
-#: scc/gui/app.py:1628
+#: scc/gui/app.py:1636
 msgid "Emulation is active"
 msgstr ""
 
-#: scc/gui/app.py:1630
+#: scc/gui/app.py:1638
 msgid "Error enabling emulation"
 msgstr ""
 
-#: scc/gui/app.py:1632
+#: scc/gui/app.py:1640
 msgid "Emulation is inactive"
 msgstr ""
 
-#: scc/gui/app.py:1634
+#: scc/gui/app.py:1642
 msgid "Checking emulation status..."
 msgstr ""
 
-#: scc/gui/app.py:1765
+#: scc/gui/app.py:1773
 #, python-format
 msgid "<a href='%s'>Click here</a> to check what's new!"
 msgstr ""
 
-#: scc/gui/app.py:1769
+#: scc/gui/app.py:1777
 #, python-format
 msgid "Welcome to the version <b>%s</b>."
 msgstr ""
 
-#: scc/gui/app.py:1770
+#: scc/gui/app.py:1778
 #, python-format
 msgid "<a href='%s'>Click here</a> to read release notes."
 msgstr ""
@@ -758,19 +758,19 @@ msgstr ""
 msgid "Move stick up and down..."
 msgstr ""
 
-#: scc/gui/global_settings.py:232
+#: scc/gui/global_settings.py:257
 msgid "(customized)"
 msgstr ""
 
-#: scc/gui/global_settings.py:759
+#: scc/gui/global_settings.py:793
 msgid "Please, install xdotool package to use this feature"
 msgstr ""
 
-#: scc/gui/global_settings.py:786
+#: scc/gui/global_settings.py:820
 msgid "Unregister controller?"
 msgstr ""
 
-#: scc/gui/global_settings.py:788
+#: scc/gui/global_settings.py:822
 msgid "You'll lose all settings for it"
 msgstr ""
 
@@ -1014,6 +1014,14 @@ msgstr ""
 msgid "Outer Ring"
 msgstr ""
 
+#: scc/i18n.py:60
+msgid "System Default"
+msgstr ""
+
+#: scc/i18n.py:60
+msgid "English"
+msgstr ""
+
 #: scc/macros.py:195
 msgid "Cycle Actions"
 msgstr ""
@@ -1057,7 +1065,7 @@ msgstr ""
 msgid "---- Separator ----"
 msgstr ""
 
-#: scc/menu_data.py:239 scc/osd/menu.py:348 scc/osd/quick_menu.py:50
+#: scc/menu_data.py:239 scc/osd/menu.py:347 scc/osd/quick_menu.py:50
 msgid ">>"
 msgstr ""
 
@@ -1114,16 +1122,16 @@ msgstr ""
 msgid "Run"
 msgstr ""
 
-#: scc/osd/menu_generators.py:37 scc/x11/autoswitcher.py:318
+#: scc/osd/menu_generators.py:46 scc/x11/autoswitcher.py:318
 msgid "[ All Profiles ]"
 msgstr ""
 
-#: scc/osd/menu_generators.py:65
+#: scc/osd/menu_generators.py:74
 #, python-format
 msgid "[ %s Recent Profiles ]"
 msgstr ""
 
-#: scc/osd/menu_generators.py:142
+#: scc/osd/menu_generators.py:151
 msgid "Switch To is not currently supported in Wayland"
 msgstr ""
 
@@ -1148,7 +1156,7 @@ msgid "Move Cursor"
 msgstr ""
 
 #: scc/osd/osk_actions.py:97 ui/ae/osk_action.ui:38 ui/ae/osk_action.ui:50
-#: ui/global_settings.ui:107
+#: ui/global_settings.ui:108
 msgid "Move Keyboard"
 msgstr ""
 
@@ -1219,7 +1227,7 @@ msgstr ""
 msgid "Dialog"
 msgstr ""
 
-#: scc/special_actions.py:599 ui/global_settings.ui:624
+#: scc/special_actions.py:599 ui/global_settings.ui:724
 msgid "Display Keyboard"
 msgstr ""
 
@@ -1928,7 +1936,7 @@ msgid "message"
 msgstr ""
 
 #: ui/ae/gesture.ui:259 ui/ae/osk_action.ui:61 ui/ae/special_action.ui:297
-#: ui/global_settings.ui:2042
+#: ui/global_settings.ui:2101
 msgid "Action"
 msgstr ""
 
@@ -2020,7 +2028,7 @@ msgstr ""
 msgid "Number of Profiles to Display"
 msgstr ""
 
-#: ui/ae/special_action.ui:37 ui/global_settings.ui:2098
+#: ui/ae/special_action.ui:37 ui/global_settings.ui:2157
 msgid "Turn Off Controller"
 msgstr ""
 
@@ -2372,7 +2380,7 @@ msgid ""
 "Please, select your controller from list bellow and click Next."
 msgstr ""
 
-#: ui/creg.ui:123 ui/global_settings.ui:1317 ui/import_export.ui:702
+#: ui/creg.ui:123 ui/global_settings.ui:1418 ui/import_export.ui:702
 msgid "column"
 msgstr ""
 
@@ -2513,63 +2521,63 @@ msgstr ""
 msgid "Change mapping for _Moving stick"
 msgstr ""
 
-#: ui/global_settings.ui:52
+#: ui/global_settings.ui:53
 msgid "None / Custom"
 msgstr ""
 
-#: ui/global_settings.ui:56
+#: ui/global_settings.ui:57
 msgid "Green"
 msgstr ""
 
-#: ui/global_settings.ui:60
+#: ui/global_settings.ui:61
 msgid "Blue"
 msgstr ""
 
-#: ui/global_settings.ui:64
+#: ui/global_settings.ui:65
 msgid "Cyan"
 msgstr ""
 
-#: ui/global_settings.ui:68
+#: ui/global_settings.ui:69
 msgid "Yellow"
 msgstr ""
 
-#: ui/global_settings.ui:72
+#: ui/global_settings.ui:73
 msgid "Red"
 msgstr ""
 
-#: ui/global_settings.ui:84
+#: ui/global_settings.ui:85
 msgid "Classic"
 msgstr ""
 
-#: ui/global_settings.ui:88
+#: ui/global_settings.ui:89
 msgid "Reloaded"
 msgstr ""
 
-#: ui/global_settings.ui:112
+#: ui/global_settings.ui:113
 msgid "Emulate Arrows"
 msgstr ""
 
-#: ui/global_settings.ui:117
+#: ui/global_settings.ui:118
 msgid "Emulate Arrows, Move Keyboard when Left Stick is Pressed"
 msgstr ""
 
-#: ui/global_settings.ui:122
+#: ui/global_settings.ui:123
 msgid "Emulate Arrows, Move Keyboard when Left Grip is Pressed"
 msgstr ""
 
-#: ui/global_settings.ui:127
+#: ui/global_settings.ui:128
 msgid "Emulate Arrows, Move Keyboard when Right Grip is Pressed"
 msgstr ""
 
-#: ui/global_settings.ui:141
+#: ui/global_settings.ui:142
 msgid "Shift and Ctrl"
 msgstr ""
 
-#: ui/global_settings.ui:146
+#: ui/global_settings.ui:147
 msgid "Press Keyboard Buttons"
 msgstr ""
 
-#: ui/global_settings.ui:180
+#: ui/global_settings.ui:181
 msgid ""
 "Emulation has to be restarted to apply all settings.\n"
 "If you have any games running, restarting emulation will \"unplug\"\n"
@@ -2577,205 +2585,225 @@ msgid ""
 "or even crash."
 msgstr ""
 
-#: ui/global_settings.ui:191
+#: ui/global_settings.ui:192
 msgid "Restart Emulation"
 msgstr ""
 
-#: ui/global_settings.ui:220
+#: ui/global_settings.ui:218
+msgid "Language"
+msgstr ""
+
+#: ui/global_settings.ui:242
+msgid "The language change will take effect after restarting SC Controller."
+msgstr ""
+
+#: ui/global_settings.ui:265
+msgid "Enable Rumble Support"
+msgstr ""
+
+#: ui/global_settings.ui:286
+msgid "Enable Status (Systray) Icon"
+msgstr ""
+
+#: ui/global_settings.ui:302
+msgid "General"
+msgstr ""
+
+#: ui/global_settings.ui:320
 msgid "On-Screen Keyboard Bindings"
 msgstr ""
 
-#: ui/global_settings.ui:244
+#: ui/global_settings.ui:344
 msgid "Triggers"
 msgstr ""
 
-#: ui/global_settings.ui:259
+#: ui/global_settings.ui:359
 msgid "Advanced..."
 msgstr ""
 
-#: ui/global_settings.ui:319
+#: ui/global_settings.ui:419
 msgid "Pad Sensitivity"
 msgstr ""
 
-#: ui/global_settings.ui:331
+#: ui/global_settings.ui:431
 msgid "Horizontal"
 msgstr ""
 
-#: ui/global_settings.ui:345
+#: ui/global_settings.ui:445
 msgid "Vertical"
 msgstr ""
 
-#: ui/global_settings.ui:434
+#: ui/global_settings.ui:534
 msgid "Default Menu Items"
 msgstr ""
 
-#: ui/global_settings.ui:455
+#: ui/global_settings.ui:555
 msgid "List of recent profiles"
 msgstr ""
 
-#: ui/global_settings.ui:477
+#: ui/global_settings.ui:577
 msgid "Run Program..."
 msgstr ""
 
-#: ui/global_settings.ui:498
+#: ui/global_settings.ui:598
 msgid "Autoswitch options"
 msgstr ""
 
-#: ui/global_settings.ui:519
+#: ui/global_settings.ui:619
 msgid "Kill Current Window"
 msgstr ""
 
-#: ui/global_settings.ui:540
+#: ui/global_settings.ui:640
 msgid "Window switcher"
 msgstr ""
 
-#: ui/global_settings.ui:561
+#: ui/global_settings.ui:661
 msgid "Show Current Bindings"
 msgstr ""
 
-#: ui/global_settings.ui:582
+#: ui/global_settings.ui:682
 msgid "Games List"
 msgstr ""
 
-#: ui/global_settings.ui:603
+#: ui/global_settings.ui:703
 msgid "Turn Controller OFF"
 msgstr ""
 
-#: ui/global_settings.ui:645
+#: ui/global_settings.ui:745
 msgid "Edit Current Bindings"
 msgstr ""
 
-#: ui/global_settings.ui:660
+#: ui/global_settings.ui:761
 msgid "Menus & Keyboard"
 msgstr ""
 
-#: ui/global_settings.ui:739
+#: ui/global_settings.ui:840
 msgid "Separator Text"
 msgstr ""
 
-#: ui/global_settings.ui:752
+#: ui/global_settings.ui:853
 msgid "Selected Text"
 msgstr ""
 
-#: ui/global_settings.ui:765
+#: ui/global_settings.ui:866
 msgid "Selected Background"
 msgstr ""
 
-#: ui/global_settings.ui:778
+#: ui/global_settings.ui:879
 msgid "Selected Border"
 msgstr ""
 
-#: ui/global_settings.ui:858
+#: ui/global_settings.ui:959
 msgid "OSD Menu Colors"
 msgstr ""
 
-#: ui/global_settings.ui:869 ui/global_settings.ui:1025
+#: ui/global_settings.ui:970 ui/global_settings.ui:1126
 msgid "Text"
 msgstr ""
 
-#: ui/global_settings.ui:882
+#: ui/global_settings.ui:983
 msgid "Item Border"
 msgstr ""
 
-#: ui/global_settings.ui:895
+#: ui/global_settings.ui:996
 msgid "Background"
 msgstr ""
 
-#: ui/global_settings.ui:908
+#: ui/global_settings.ui:1009
 msgid "Border"
 msgstr ""
 
-#: ui/global_settings.ui:924
+#: ui/global_settings.ui:1025
 msgid "On-Screen Keyboard Colors"
 msgstr ""
 
-#: ui/global_settings.ui:936
+#: ui/global_settings.ui:1037
 msgid "Normal Button"
 msgstr ""
 
-#: ui/global_settings.ui:965
+#: ui/global_settings.ui:1066
 msgid "Pressed Button"
 msgstr ""
 
-#: ui/global_settings.ui:995
+#: ui/global_settings.ui:1096
 msgid "Special Button"
 msgstr ""
 
-#: ui/global_settings.ui:1056
+#: ui/global_settings.ui:1157
 msgid "Higlight"
 msgstr ""
 
-#: ui/global_settings.ui:1086 ui/key_grabber.ui:53
+#: ui/global_settings.ui:1187 ui/key_grabber.ui:53
 msgid " "
 msgstr ""
 
-#: ui/global_settings.ui:1099
+#: ui/global_settings.ui:1200
 msgid "OSD Style"
 msgstr ""
 
-#: ui/global_settings.ui:1137
+#: ui/global_settings.ui:1238
 msgid "Color Preset"
 msgstr ""
 
-#: ui/global_settings.ui:1174
+#: ui/global_settings.ui:1275
 msgid "OSD Colors"
 msgstr ""
 
-#: ui/global_settings.ui:1197
+#: ui/global_settings.ui:1298
 msgid "Enable Steam Controller support"
 msgstr ""
 
-#: ui/global_settings.ui:1219
+#: ui/global_settings.ui:1320
 msgid "Enable DualShock 4 (PS4 controller) support"
 msgstr ""
 
-#: ui/global_settings.ui:1241
+#: ui/global_settings.ui:1342
 msgid "Enable DualSense (PS5 controller) support"
 msgstr ""
 
-#: ui/global_settings.ui:1253
+#: ui/global_settings.ui:1354
 msgid ""
 "If enabled, any connected DualSense controller will be automatically used by "
 "SC Controller"
 msgstr ""
 
-#: ui/global_settings.ui:1269
+#: ui/global_settings.ui:1370
 msgid "Other registered controllers"
 msgstr ""
 
-#: ui/global_settings.ui:1282
+#: ui/global_settings.ui:1383
 msgid ""
 "If enabled, any connected DualShock 4 controller will be automatically used "
 "by SC Controller"
 msgstr ""
 
-#: ui/global_settings.ui:1295
+#: ui/global_settings.ui:1396
 msgid ""
 "Controllers listed here are automatically used by SC Controller whenever "
 "they are connected."
 msgstr ""
 
-#: ui/global_settings.ui:1360
+#: ui/global_settings.ui:1461
 msgid "Enable HID device support"
 msgstr ""
 
-#: ui/global_settings.ui:1382
+#: ui/global_settings.ui:1483
 msgid "Enable evdev support"
 msgstr ""
 
-#: ui/global_settings.ui:1411
+#: ui/global_settings.ui:1512
 msgid "Register New Controller"
 msgstr ""
 
-#: ui/global_settings.ui:1455
+#: ui/global_settings.ui:1556
 msgid "Note: python-evdev package is needed for non-steam controller support"
 msgstr ""
 
-#: ui/global_settings.ui:1474
+#: ui/global_settings.ui:1575
 msgid "Enable Remote RetroPad protocol support"
 msgstr ""
 
-#: ui/global_settings.ui:1487
+#: ui/global_settings.ui:1588
 msgid ""
 "If enabled, any device or application compatibile with Retroarch's Remote "
 "RetroPad protocol\n"
@@ -2786,43 +2814,43 @@ msgid ""
 "</a>"
 msgstr ""
 
-#: ui/global_settings.ui:1506
+#: ui/global_settings.ui:1607
 msgid "Controllers"
 msgstr ""
 
-#: ui/global_settings.ui:1529
+#: ui/global_settings.ui:1630
 msgid "Show _OSD notification when profile is switched automatically"
 msgstr ""
 
-#: ui/global_settings.ui:1545
+#: ui/global_settings.ui:1646
 msgid "Switching Rules"
 msgstr ""
 
-#: ui/global_settings.ui:1571
+#: ui/global_settings.ui:1672
 msgid "When window..."
 msgstr ""
 
-#: ui/global_settings.ui:1584
+#: ui/global_settings.ui:1685
 msgid "... then"
 msgstr ""
 
-#: ui/global_settings.ui:1615
+#: ui/global_settings.ui:1716
 msgid "Automatic Profile Switching Options"
 msgstr ""
 
-#: ui/global_settings.ui:1639
+#: ui/global_settings.ui:1740
 msgid "Edit Condition"
 msgstr ""
 
-#: ui/global_settings.ui:1700
+#: ui/global_settings.ui:1801
 msgid "Autoswitcher"
 msgstr ""
 
-#: ui/global_settings.ui:1723
+#: ui/global_settings.ui:1824
 msgid "Enable Input Test Mode"
 msgstr ""
 
-#: ui/global_settings.ui:1736
+#: ui/global_settings.ui:1837
 msgid ""
 "Allows applications to <b>watch and possibly log</b> gamepad inputs.\n"
 "\n"
@@ -2830,71 +2858,63 @@ msgid ""
 "grips, triggers, finger positions on both pads and stick angle."
 msgstr ""
 
-#: ui/global_settings.ui:1762
+#: ui/global_settings.ui:1863
 msgid "Use Serial Numbers to Identify Controllers"
 msgstr ""
 
-#: ui/global_settings.ui:1783
+#: ui/global_settings.ui:1884
 msgid "Automatically Disable Emulation When Closing GUI"
 msgstr ""
 
-#: ui/global_settings.ui:1802
+#: ui/global_settings.ui:1903
 msgid "Minimize to status icon instead closing"
 msgstr ""
 
-#: ui/global_settings.ui:1823
-msgid "Enable Status (Systray) Icon"
-msgstr ""
-
-#: ui/global_settings.ui:1836
+#: ui/global_settings.ui:1916
 msgid "Try disabling this option if your controller stops working randomly."
 msgstr ""
 
-#: ui/global_settings.ui:1859
-msgid "Enable Rumble Support"
-msgstr ""
-
-#: ui/global_settings.ui:1880
+#: ui/global_settings.ui:1939
 msgid "Display a message with changelog when SC Controller updates"
 msgstr ""
 
-#: ui/global_settings.ui:1899
+#: ui/global_settings.ui:1958
 msgid "Minimize to tray on start"
 msgstr ""
 
-#: ui/global_settings.ui:1914
+#: ui/global_settings.ui:1973
 msgid "Advanced"
 msgstr ""
 
-#: ui/global_settings.ui:1958
+#: ui/global_settings.ui:2017
 msgid "Condition"
 msgstr ""
 
-#: ui/global_settings.ui:1973
+#: ui/global_settings.ui:2032
 msgid "Match Window Title"
 msgstr ""
 
-#: ui/global_settings.ui:1995
+#: ui/global_settings.ui:2054
 msgid "Match exact title"
 msgstr ""
 
-#: ui/global_settings.ui:2007
+#: ui/global_settings.ui:2066
 msgid "Use regular expression"
 msgstr ""
 
-#: ui/global_settings.ui:2025
+#: ui/global_settings.ui:2084
 msgid "Match Window Class"
 msgstr ""
 
-#: ui/global_settings.ui:2057
+#: ui/global_settings.ui:2116
 msgid "Activate Profile"
 msgstr ""
 
-#: ui/global_settings.ui:2113
+#: ui/global_settings.ui:2172
 msgid "Restart Daemon"
 msgstr ""
 
-#: ui/global_settings.ui:2144 ui/menu_editor.ui:317
+#: ui/global_settings.ui:2203 ui/menu_editor.ui:317
 msgid "_Save"
 msgstr ""
 

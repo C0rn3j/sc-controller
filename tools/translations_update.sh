@@ -26,13 +26,18 @@ xgettext \
 	--files-from=/tmp/scc_POTFILES.ui \
 	--output=locale/sc-controller.pot
 
+sed -i \
+	's/^# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR\.$/# Martin Rys <martin@archlinux.org>, 2026./' \
+	locale/sc-controller.pot
+
 rm /tmp/scc_POTFILES.python /tmp/scc_POTFILES.ui
 
 # Create language files - this needs to only ever run once per language
-if [[ ! -e "locale/cs/LC_MESSAGES/sc-controller.po" ]]; then
-	echo "cs LANGUAGE NOT FOUND, CREATING ANEW!"
-	msginit \
-		--input=locale/sc-controller.pot \
-		--locale=cs \
-		--output-file=locale/cs/LC_MESSAGES/sc-controller.po
-fi
+# Weblate takes care of this now
+#if [[ ! -e "locale/cs/LC_MESSAGES/sc-controller.po" ]]; then
+#	echo "cs LANGUAGE NOT FOUND, CREATING ANEW!"
+#	msginit \
+#		--input=locale/sc-controller.pot \
+#		--locale=cs \
+#		--output-file=locale/cs/LC_MESSAGES/sc-controller.po
+#fi
