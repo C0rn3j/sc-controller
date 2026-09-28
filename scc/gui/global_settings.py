@@ -333,6 +333,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		cbShowOSD = self.builder.get_object("cbShowOSD")
 		cbEnableStatusIcon = self.builder.get_object("cbEnableStatusIcon")
 		cbMinimizeToStatusIcon = self.builder.get_object("cbMinimizeToStatusIcon")
+		cbMinimizeOnStart = self.builder.get_object("cbMinimizeOnStart")
 		conds = []
 		for row in tvItems.get_model():
 			conds.append({"condition": row[0].condition.encode(), "action": row[0].action.to_string()})
@@ -340,6 +341,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		if self.app.config["gui"]["enable_status_icon"] != cbEnableStatusIcon.get_active():
 			self.app.config["gui"]["enable_status_icon"] = cbEnableStatusIcon.get_active()
 			cbMinimizeToStatusIcon.set_sensitive(not IS_UNITY and cbEnableStatusIcon.get_active())
+			cbMinimizeOnStart.set_sensitive(not IS_UNITY and cbEnableStatusIcon.get_active())
 			if cbEnableStatusIcon.get_active():
 				self.app.setup_statusicon()
 			else:

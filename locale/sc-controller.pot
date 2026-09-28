@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sc-controller\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 18:44+0200\n"
+"POT-Creation-Date: 2026-09-28 18:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -142,7 +142,7 @@ msgstr ""
 #: scc/gui/action_editor.py:1081 scc/gui/ae/first_page.py:103
 #: scc/gui/osk_binding_editor.py:43 ui/action_editor.ui:1398
 #: ui/ae/axis_action.ui:134 ui/ae/special_action.ui:180
-#: ui/controller_settings.ui:128 ui/global_settings.ui:331
+#: ui/controller_settings.ui:128 ui/global_settings.ui:368
 msgid "Left Stick"
 msgstr ""
 
@@ -762,15 +762,15 @@ msgstr ""
 msgid "(customized)"
 msgstr ""
 
-#: scc/gui/global_settings.py:793
+#: scc/gui/global_settings.py:795
 msgid "Please, install xdotool package to use this feature"
 msgstr ""
 
-#: scc/gui/global_settings.py:820
+#: scc/gui/global_settings.py:822
 msgid "Unregister controller?"
 msgstr ""
 
-#: scc/gui/global_settings.py:822
+#: scc/gui/global_settings.py:824
 msgid "You'll lose all settings for it"
 msgstr ""
 
@@ -1227,7 +1227,7 @@ msgstr ""
 msgid "Dialog"
 msgstr ""
 
-#: scc/special_actions.py:599 ui/global_settings.ui:724
+#: scc/special_actions.py:599 ui/global_settings.ui:761
 msgid "Display Keyboard"
 msgstr ""
 
@@ -2380,7 +2380,7 @@ msgid ""
 "Please, select your controller from list bellow and click Next."
 msgstr ""
 
-#: ui/creg.ui:123 ui/global_settings.ui:1418 ui/import_export.ui:702
+#: ui/creg.ui:123 ui/global_settings.ui:1455 ui/import_export.ui:702
 msgid "column"
 msgstr ""
 
@@ -2602,208 +2602,216 @@ msgid "Enable Rumble Support"
 msgstr ""
 
 #: ui/global_settings.ui:286
-msgid "Enable Status (Systray) Icon"
+msgid "Enable System Tray Icon"
 msgstr ""
 
-#: ui/global_settings.ui:302
+#: ui/global_settings.ui:305
+msgid "Minimize to tray instead closing"
+msgstr ""
+
+#: ui/global_settings.ui:324
+msgid "Minimize to tray on start"
+msgstr ""
+
+#: ui/global_settings.ui:339
 msgid "General"
 msgstr ""
 
-#: ui/global_settings.ui:320
+#: ui/global_settings.ui:357
 msgid "On-Screen Keyboard Bindings"
 msgstr ""
 
-#: ui/global_settings.ui:344
+#: ui/global_settings.ui:381
 msgid "Triggers"
 msgstr ""
 
-#: ui/global_settings.ui:359
+#: ui/global_settings.ui:396
 msgid "Advanced..."
 msgstr ""
 
-#: ui/global_settings.ui:419
+#: ui/global_settings.ui:456
 msgid "Pad Sensitivity"
 msgstr ""
 
-#: ui/global_settings.ui:431
+#: ui/global_settings.ui:468
 msgid "Horizontal"
 msgstr ""
 
-#: ui/global_settings.ui:445
+#: ui/global_settings.ui:482
 msgid "Vertical"
 msgstr ""
 
-#: ui/global_settings.ui:534
+#: ui/global_settings.ui:571
 msgid "Default Menu Items"
 msgstr ""
 
-#: ui/global_settings.ui:555
+#: ui/global_settings.ui:592
 msgid "List of recent profiles"
 msgstr ""
 
-#: ui/global_settings.ui:577
+#: ui/global_settings.ui:614
 msgid "Run Program..."
 msgstr ""
 
-#: ui/global_settings.ui:598
+#: ui/global_settings.ui:635
 msgid "Autoswitch options"
 msgstr ""
 
-#: ui/global_settings.ui:619
+#: ui/global_settings.ui:656
 msgid "Kill Current Window"
 msgstr ""
 
-#: ui/global_settings.ui:640
+#: ui/global_settings.ui:677
 msgid "Window switcher"
 msgstr ""
 
-#: ui/global_settings.ui:661
+#: ui/global_settings.ui:698
 msgid "Show Current Bindings"
 msgstr ""
 
-#: ui/global_settings.ui:682
+#: ui/global_settings.ui:719
 msgid "Games List"
 msgstr ""
 
-#: ui/global_settings.ui:703
+#: ui/global_settings.ui:740
 msgid "Turn Controller OFF"
 msgstr ""
 
-#: ui/global_settings.ui:745
+#: ui/global_settings.ui:782
 msgid "Edit Current Bindings"
 msgstr ""
 
-#: ui/global_settings.ui:761
+#: ui/global_settings.ui:798
 msgid "Menus & Keyboard"
 msgstr ""
 
-#: ui/global_settings.ui:840
+#: ui/global_settings.ui:877
 msgid "Separator Text"
 msgstr ""
 
-#: ui/global_settings.ui:853
+#: ui/global_settings.ui:890
 msgid "Selected Text"
 msgstr ""
 
-#: ui/global_settings.ui:866
+#: ui/global_settings.ui:903
 msgid "Selected Background"
 msgstr ""
 
-#: ui/global_settings.ui:879
+#: ui/global_settings.ui:916
 msgid "Selected Border"
 msgstr ""
 
-#: ui/global_settings.ui:959
+#: ui/global_settings.ui:996
 msgid "OSD Menu Colors"
 msgstr ""
 
-#: ui/global_settings.ui:970 ui/global_settings.ui:1126
+#: ui/global_settings.ui:1007 ui/global_settings.ui:1163
 msgid "Text"
 msgstr ""
 
-#: ui/global_settings.ui:983
+#: ui/global_settings.ui:1020
 msgid "Item Border"
 msgstr ""
 
-#: ui/global_settings.ui:996
+#: ui/global_settings.ui:1033
 msgid "Background"
 msgstr ""
 
-#: ui/global_settings.ui:1009
+#: ui/global_settings.ui:1046
 msgid "Border"
 msgstr ""
 
-#: ui/global_settings.ui:1025
+#: ui/global_settings.ui:1062
 msgid "On-Screen Keyboard Colors"
 msgstr ""
 
-#: ui/global_settings.ui:1037
+#: ui/global_settings.ui:1074
 msgid "Normal Button"
 msgstr ""
 
-#: ui/global_settings.ui:1066
+#: ui/global_settings.ui:1103
 msgid "Pressed Button"
 msgstr ""
 
-#: ui/global_settings.ui:1096
+#: ui/global_settings.ui:1133
 msgid "Special Button"
 msgstr ""
 
-#: ui/global_settings.ui:1157
+#: ui/global_settings.ui:1194
 msgid "Higlight"
 msgstr ""
 
-#: ui/global_settings.ui:1187 ui/key_grabber.ui:53
+#: ui/global_settings.ui:1224 ui/key_grabber.ui:53
 msgid " "
 msgstr ""
 
-#: ui/global_settings.ui:1200
+#: ui/global_settings.ui:1237
 msgid "OSD Style"
 msgstr ""
 
-#: ui/global_settings.ui:1238
+#: ui/global_settings.ui:1275
 msgid "Color Preset"
 msgstr ""
 
-#: ui/global_settings.ui:1275
+#: ui/global_settings.ui:1312
 msgid "OSD Colors"
 msgstr ""
 
-#: ui/global_settings.ui:1298
+#: ui/global_settings.ui:1335
 msgid "Enable Steam Controller support"
 msgstr ""
 
-#: ui/global_settings.ui:1320
+#: ui/global_settings.ui:1357
 msgid "Enable DualShock 4 (PS4 controller) support"
 msgstr ""
 
-#: ui/global_settings.ui:1342
+#: ui/global_settings.ui:1379
 msgid "Enable DualSense (PS5 controller) support"
 msgstr ""
 
-#: ui/global_settings.ui:1354
+#: ui/global_settings.ui:1391
 msgid ""
 "If enabled, any connected DualSense controller will be automatically used by "
 "SC Controller"
 msgstr ""
 
-#: ui/global_settings.ui:1370
+#: ui/global_settings.ui:1407
 msgid "Other registered controllers"
 msgstr ""
 
-#: ui/global_settings.ui:1383
+#: ui/global_settings.ui:1420
 msgid ""
 "If enabled, any connected DualShock 4 controller will be automatically used "
 "by SC Controller"
 msgstr ""
 
-#: ui/global_settings.ui:1396
+#: ui/global_settings.ui:1433
 msgid ""
 "Controllers listed here are automatically used by SC Controller whenever "
 "they are connected."
 msgstr ""
 
-#: ui/global_settings.ui:1461
+#: ui/global_settings.ui:1498
 msgid "Enable HID device support"
 msgstr ""
 
-#: ui/global_settings.ui:1483
+#: ui/global_settings.ui:1520
 msgid "Enable evdev support"
 msgstr ""
 
-#: ui/global_settings.ui:1512
+#: ui/global_settings.ui:1549
 msgid "Register New Controller"
 msgstr ""
 
-#: ui/global_settings.ui:1556
+#: ui/global_settings.ui:1593
 msgid "Note: python-evdev package is needed for non-steam controller support"
 msgstr ""
 
-#: ui/global_settings.ui:1575
+#: ui/global_settings.ui:1612
 msgid "Enable Remote RetroPad protocol support"
 msgstr ""
 
-#: ui/global_settings.ui:1588
+#: ui/global_settings.ui:1625
 msgid ""
 "If enabled, any device or application compatibile with Retroarch's Remote "
 "RetroPad protocol\n"
@@ -2814,43 +2822,43 @@ msgid ""
 "</a>"
 msgstr ""
 
-#: ui/global_settings.ui:1607
+#: ui/global_settings.ui:1644
 msgid "Controllers"
 msgstr ""
 
-#: ui/global_settings.ui:1630
+#: ui/global_settings.ui:1667
 msgid "Show _OSD notification when profile is switched automatically"
 msgstr ""
 
-#: ui/global_settings.ui:1646
+#: ui/global_settings.ui:1683
 msgid "Switching Rules"
 msgstr ""
 
-#: ui/global_settings.ui:1672
+#: ui/global_settings.ui:1709
 msgid "When window..."
 msgstr ""
 
-#: ui/global_settings.ui:1685
+#: ui/global_settings.ui:1722
 msgid "... then"
 msgstr ""
 
-#: ui/global_settings.ui:1716
+#: ui/global_settings.ui:1753
 msgid "Automatic Profile Switching Options"
 msgstr ""
 
-#: ui/global_settings.ui:1740
+#: ui/global_settings.ui:1777
 msgid "Edit Condition"
 msgstr ""
 
-#: ui/global_settings.ui:1801
+#: ui/global_settings.ui:1838
 msgid "Autoswitcher"
 msgstr ""
 
-#: ui/global_settings.ui:1824
+#: ui/global_settings.ui:1861
 msgid "Enable Input Test Mode"
 msgstr ""
 
-#: ui/global_settings.ui:1837
+#: ui/global_settings.ui:1874
 msgid ""
 "Allows applications to <b>watch and possibly log</b> gamepad inputs.\n"
 "\n"
@@ -2858,28 +2866,20 @@ msgid ""
 "grips, triggers, finger positions on both pads and stick angle."
 msgstr ""
 
-#: ui/global_settings.ui:1863
+#: ui/global_settings.ui:1900
 msgid "Use Serial Numbers to Identify Controllers"
 msgstr ""
 
-#: ui/global_settings.ui:1884
+#: ui/global_settings.ui:1921
 msgid "Automatically Disable Emulation When Closing GUI"
 msgstr ""
 
-#: ui/global_settings.ui:1903
-msgid "Minimize to status icon instead closing"
-msgstr ""
-
-#: ui/global_settings.ui:1916
+#: ui/global_settings.ui:1934
 msgid "Try disabling this option if your controller stops working randomly."
 msgstr ""
 
-#: ui/global_settings.ui:1939
+#: ui/global_settings.ui:1957
 msgid "Display a message with changelog when SC Controller updates"
-msgstr ""
-
-#: ui/global_settings.ui:1958
-msgid "Minimize to tray on start"
 msgstr ""
 
 #: ui/global_settings.ui:1973
