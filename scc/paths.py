@@ -122,7 +122,9 @@ def get_share_path() -> str:
 		os.path.join(sys.prefix, "share/scc"),
 	)
 	for path in paths:
-		if os.path.exists(path):
+		# The user data directory may also contain runtime files such as logs or the debug marker.
+		# Only treat it as an installation prefix when it actually contains the assets.
+		if all(os.path.isdir(os.path.join(path, directory)) for directory in ("ui", "images", "default_profiles")):
 			return path
 	# No path found, assume default and hope for best
 	return "/usr/share/scc"
