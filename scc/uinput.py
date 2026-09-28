@@ -24,6 +24,7 @@ from __future__ import annotations
 import ctypes
 import logging
 import os
+import sys
 from ctypes import POINTER, byref, c_bool, c_int16, c_int32, c_uint16
 from enum import IntEnum
 from math import copysign, fmod, sqrt
@@ -40,6 +41,10 @@ if TYPE_CHECKING:
 log = logging.getLogger("uinput.py")
 UNPUT_MODULE_VERSION = 9
 MAX_FEEDBACK_EFFECTS = 4
+
+XBOX_GAMEPAD_IDS = frozenset({
+	(0x045E, 0x028E),  # Xbox 360 Controller
+})
 
 # Get All defines from linux headers
 if os.path.exists("/usr/include/linux/input-event-codes.h"):
@@ -242,6 +247,8 @@ class UInput:
 		keyboard: bool = False,
 		rumble: bool = False,
 	):
+		self.vendor: int = vendor
+		self.product: int = product
 		self._k = keys
 		self.name: str = name
 		if not axes or len(axes) == 0:
@@ -316,6 +323,19 @@ class UInput:
 		@param int axis		 key or btn event (KEY_* or BTN_*)
 		@param int val		  event value
 		"""
+		# The Xbox drivers on Linux seem to be a legacy POS,
+		# so they ignore the directional NORTH/WEST and use X/Y instead
+		#
+		# Meaning we flip the directions to be wrong here, to emulate the driver
+		# behavior, as we otherwise use the directional definitions everywhere else
+		if sys.platform == "linux":
+			if (self.vendor, self.product) in XBOX_GAMEPAD_IDS:
+				key = {
+					Keys.BTN_X: Keys.BTN_Y,
+					Keys.BTN_Y: Keys.BTN_X,
+					Keys.BTN_WEST: Keys.BTN_X,
+					Keys.BTN_NORTH: Keys.BTN_Y,
+				}.get(key, key)
 		self._lib.uinput_key(self._fd, ctypes.c_uint16(key), ctypes.c_int32(val))
 
 	def axisEvent(self, axis: int, val: int) -> None:
@@ -376,22 +396,22 @@ class UInput:
 
 
 class Gamepad(UInput):
-	"""Gamepad uinput class, create a Xbox360 gamepad device."""
+	"""Gamepad uinput class, create an Xbox 360 gamepad device."""
 
-	def __init__(self, name):
+	def __init__(self, name: str, vendor: int = 0x045E, product: int = 0x028E) -> None:
 		super().__init__(
-			vendor=0x045E,
-			product=0x028E,
+			vendor=vendor,
+			product=product,
 			version=1,
 			name=name,
 			keys=[
 				Keys["BTN_START"],
 				Keys["BTN_MODE"],
 				Keys["BTN_SELECT"],
-				Keys["BTN_A"],
-				Keys["BTN_B"],
-				Keys["BTN_X"],
-				Keys["BTN_Y"],
+				Keys["BTN_SOUTH"],
+				Keys["BTN_EAST"],
+				Keys["BTN_WEST"],
+				Keys["BTN_NORTH"],
 				Keys["BTN_TL"],
 				Keys["BTN_TR"],
 				Keys["BTN_THUMBL"],
