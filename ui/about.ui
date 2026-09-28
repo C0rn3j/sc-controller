@@ -33,7 +33,7 @@
             </child>
             <child>
               <object class="GtkLabel" id="lblVersion">
-                <property name="label" translatable="yes">(version)</property>
+                <property name="label">(version)</property>
                 <property name="margin-bottom">10</property>
                 <property name="margin-top">5</property>
               </object>

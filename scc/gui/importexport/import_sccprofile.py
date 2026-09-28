@@ -164,7 +164,7 @@ class ImportSccprofile:
 		vbImportPackage = self.builder.get_object("vbImportPackage")
 
 		enabled, trash, name, trash, obj = files[0]
-		lblSccImportFinished.set_text(_("Profile sucessfully imported"))
+		lblSccImportFinished.set_text(_("Profile successfully imported"))
 		txName2.set_text(name)
 		vbImportPackage.set_visible(len(files) > 1)
 		self.next_page(grSccImportFinished)
@@ -186,7 +186,7 @@ class ImportSccprofile:
 			btNext.set_sensitive(False)
 
 		cbImportHidden.set_label(_('Import as hidden menus and profiles named ".%s:name"') % (main_name,))
-		cbImportVisible.set_label(_('Import normaly, with names formated as "%s:name"') % (main_name,))
+		cbImportVisible.set_label(_('Import normally, with names formatted as "%s:name"') % (main_name,))
 
 		for i in range(len(files)):
 			enabled, name, importas, type, obj = files[i]

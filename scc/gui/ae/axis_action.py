@@ -82,7 +82,7 @@ class AxisActionComponent(AEComponent, TimerManager):
 		))
 		if self.on_wayland:
 			self.builder.get_object("lblArea").set_text(
-				_("Note: Mouse Region option is not available with Wayland-based display server"),
+				_("Mouse Region option is unavailable when using a Wayland compositor"),
 			)
 			self.builder.get_object("grArea").set_sensitive(False)
 

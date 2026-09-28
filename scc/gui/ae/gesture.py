@@ -48,7 +48,7 @@ class GestureComponent(AEComponent):
 			self.on_wayland = sys.platform == "linux" and not isinstance(Gdk.Display.get_default(), GdkX11.X11Display)
 			if self.on_wayland:
 				self.builder.get_object("lblGestureMessage").set_text(
-					_("Note: Gestures are not available with Wayland-based display server"),
+					_("Gestures are unavailable when using a Wayland compositor."),
 				)
 				self.builder.get_object("lblGestureMessage").set_visible(True)
 				self.builder.get_object("gesture").set_sensitive(False)

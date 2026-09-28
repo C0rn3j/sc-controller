@@ -14,13 +14,13 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">hid</col>
-        <col id="1" translatable="yes">USB HID</col>
+        <col id="0">hid</col>
+        <col id="1">USB HID</col>
         <col id="2">False</col>
       </row>
       <row>
-        <col id="0" translatable="yes">evdev</col>
-        <col id="1" translatable="yes">evdev</col>
+        <col id="0">evdev</col>
+        <col id="1">evdev</col>
         <col id="2">True</col>
       </row>
     </data>
@@ -120,7 +120,7 @@ Please, select your controller from list bellow and click Next.</property>
                         </child>
                         <child>
                           <object class="GtkTreeViewColumn" id="tcDevice">
-                            <property name="title" translatable="yes">column</property>
+                            <property name="title">column</property>
                             <child>
                               <object class="GtkCellRendererPixbuf" id="tcDeviceIcon"/>
                               <!-- Custom child fragments -->
@@ -203,7 +203,7 @@ Please, select your controller from list bellow and click Next.</property>
               </object>
             </property>
             <property name="name">page0</property>
-            <property name="title" translatable="yes">page0</property>
+            <property name="title">page0</property>
           </object>
         </child>
         <child>
@@ -348,7 +348,7 @@ Please, select options that are best describing controller you are configuring.<
               </object>
             </property>
             <property name="name">page1</property>
-            <property name="title" translatable="yes">page1</property>
+            <property name="title">page1</property>
           </object>
         </child>
         <child>
@@ -384,7 +384,7 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                       0 -1 style italic
                     </property>
                     <property name="hexpand">1</property>
-                    <property name="label" translatable="yes">Red colored controls are not assigned.</property>
+                    <property name="label" translatable="yes">Controls shown in red are not assigned.</property>
                     <property name="margin-end">10</property>
                     <property name="margin-start">10</property>
                     <property name="max-width-chars">60</property>
@@ -704,7 +704,7 @@ That means your account lacks permissons needed to read controller exclusively. 
               </object>
             </property>
             <property name="name">page2</property>
-            <property name="title" translatable="yes">page2</property>
+            <property name="title">page2</property>
           </object>
         </child>
         <child>
@@ -791,7 +791,7 @@ future inputs or even crash.</property>
               </object>
             </property>
             <property name="name">page3</property>
-            <property name="title" translatable="yes">page3</property>
+            <property name="title">page3</property>
           </object>
         </child>
       </object>

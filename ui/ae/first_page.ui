@@ -6,7 +6,7 @@
   <object class="GtkGrid" id="first_page">
     <child>
       <object class="GtkLabel" id="lblMarkup">
-        <property name="label" translatable="yes">(markup goes here)</property>
+        <property name="label">(markup goes here)</property>
         <property name="margin-start">20</property>
         <property name="use-markup">1</property>
         <property name="xalign">0</property>

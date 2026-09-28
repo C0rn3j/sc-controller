@@ -73,7 +73,7 @@
             <property name="attributes">
               0 -1 weight bold
             </property>
-            <property name="label" translatable="yes">(Widget)</property>
+            <property name="label">(Widget)</property>
             <property name="margin-bottom">5</property>
             <property name="margin-end">20</property>
             <property name="visible">0</property>

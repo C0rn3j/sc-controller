@@ -622,7 +622,7 @@
                   </object>
                 </property>
                 <property name="name">page0</property>
-                <property name="title" translatable="yes">page0</property>
+                <property name="title">page0</property>
               </object>
             </child>
             <child>
@@ -631,7 +631,7 @@
                   <object class="GtkLabel" id="lblEmpty"/>
                 </property>
                 <property name="name">page1</property>
-                <property name="title" translatable="yes">page1</property>
+                <property name="title">page1</property>
               </object>
             </child>
           </object>
@@ -792,7 +792,7 @@
       <attribute name="label" translatable="yes">Change Sticks and Background</attribute>
       <item>
         <attribute name="action">app.change-controller-image</attribute>
-        <attribute name="label" translatable="yes">Symetrical</attribute>
+        <attribute name="label" translatable="yes">Symmetrical</attribute>
         <attribute name="target">background,ds4-config</attribute>
       </item>
       <item>

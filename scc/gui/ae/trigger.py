@@ -240,9 +240,9 @@ class TriggerComponent(AEComponent, BindingEditor):
 			self.send()
 
 	def on_btPartPressed_clicked(self, *a):
-		"""'Partialy Pressed Action' handler"""
+		"""'Partially Pressed Action' handler"""
 		ae = self.choose_editor(self.half, "")
-		ae.set_title(_("Select Partialy Pressed Action"))
+		ae.set_title(_("Select Partially Pressed Action"))
 		ae.hide_name()
 		ae.set_input("half", self.half, mode=Action.AC_BUTTON)
 		ae.show(self.editor.window)

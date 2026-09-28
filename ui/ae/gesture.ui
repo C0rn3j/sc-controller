@@ -222,7 +222,7 @@
         <property name="attributes">
           0 -1 weight semibold
         </property>
-        <property name="label" translatable="yes">message</property>
+        <property name="label">message</property>
         <property name="margin-bottom">10</property>
         <property name="margin-end">10</property>
         <property name="margin-start">10</property>

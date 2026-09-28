@@ -243,12 +243,12 @@ class MenuEditor(Editor):
 		self.builder.get_object("btSave").set_sensitive(False)
 
 	def _bad_id_duplicate(self, *a):
-		self.builder.get_object("lblNope").set_label(_("Invalid Menu ID: Menu with same ID already exists."))
+		self.builder.get_object("lblNope").set_label(_("Invalid Menu ID: A menu with the same ID already exists."))
 		self.builder.get_object("rvInvalidID").set_reveal_child(True)
 		self.builder.get_object("btSave").set_sensitive(False)
 
 	def _bad_id_chars(self, *a):
-		self.builder.get_object("lblNope").set_label(_("Invalid Menu ID: Please, don't use dots (.) or slashes (/)."))
+		self.builder.get_object("lblNope").set_label(_("Invalid Menu ID: Do not use dots (.) or slashes (/)."))
 		self.builder.get_object("rvInvalidID").set_reveal_child(True)
 		self.builder.get_object("btSave").set_sensitive(False)
 

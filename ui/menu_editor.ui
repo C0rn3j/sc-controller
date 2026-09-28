@@ -32,7 +32,7 @@
                     <child>
                       <object class="GtkLabel" id="lblNope">
                         <property name="hexpand">1</property>
-                        <property name="label" translatable="yes">No!. Bad, bad user!</property>
+                        <property name="label" translatable="yes">No! Bad, bad user!</property>
                         <property name="xalign">0</property>
                       </object>
                     </child>
@@ -346,7 +346,7 @@
             <child>
               <object class="GtkLabel" id="lblItemIconName">
                 <property name="hexpand">1</property>
-                <property name="label" translatable="yes">&lt;icon name&gt;</property>
+                <property name="label">&lt;icon name&gt;</property>
                 <property name="margin-end">10</property>
                 <property name="margin-start">10</property>
                 <property name="xalign">0</property>

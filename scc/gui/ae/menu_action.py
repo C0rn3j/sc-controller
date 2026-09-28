@@ -187,7 +187,7 @@ class MenuActionCofC(UserDataManager):
 		)
 
 		if MenuEditor.menu_is_global(id):
-			d.set_property("secondary-text", _("This action is not undoable!"))
+			d.set_property("secondary-text", _("This action cannot be undone!"))
 
 		def on_response(dialog, response_id) -> None:
 			dialog.close()

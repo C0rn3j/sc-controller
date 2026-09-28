@@ -792,7 +792,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		if find_binary("xdotool") == "xdotool":
 			# Not found
 			cbMI_5.set_sensitive(False)
-			cbMI_5.set_tooltip_text(_("Please, install xdotool package to use this feature"))
+			cbMI_5.set_tooltip_text(_("Install the xdotool package to use this feature"))
 		else:
 			cbMI_5.set_sensitive(True)
 			cbMI_5.set_tooltip_text("")

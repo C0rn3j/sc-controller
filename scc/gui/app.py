@@ -409,7 +409,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		if len(kernel_mods) > 0 and "uinput" not in kernel_mods:
 			# There is no uinput
 			msg = _("uinput kernel module not loaded")
-			msg += "\n\n" + _("Please, consult your distribution manual on how to enable uinput")
+			msg += "\n\n" + _("Consult your distribution documentation to learn how to enable uinput")
 			msg += "\n" + _('or click on "Fix Temporary" button to attempt fix that should work until next restart.')
 			ribar = self.show_error(msg)
 			gksudo = find_gksudo()
@@ -426,17 +426,17 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			return True
 		if not os.path.exists("/dev/uinput"):
 			# /dev/uinput missing
-			msg = _("/dev/uinput doesn't exists")
+			msg = _("/dev/uinput does not exist")
 			msg += "\n" + _("uinput kernel module is loaded, but /dev/uinput is missing.")
 			# msg += "\n\n" + _('Please, consult your distribution manual on what in the world could cause this.')
-			msg += "\n\n" + _("Please, consult your distribution manual on how to enable uinput")
+			msg += "\n\n" + _("Consult your distribution documentation to learn how to enable uinput")
 			self.show_error(msg)
 			return True
 		if not check_access("/dev/uinput"):
 			# Cannot acces uinput
 			msg = _("You don't have required access to /dev/uinput.")
 			msg += "\n" + _("This will most likely prevent emulation from working.")
-			msg += "\n\n" + _("Please, consult your distribution manual on how to enable uinput")
+			msg += "\n\n" + _("Consult your distribution documentation to learn how to enable uinput")
 			msg += "\n" + _('or click on "Fix Temporary" button to attempt fix that should work until next restart.')
 			ribar = self.show_error(msg)
 			gksudo = find_gksudo()
@@ -1244,9 +1244,9 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		msg = _("There was an error with enabling emulation: <b>%s</b>") % (error,)
 		# Known errors are handled with aditional message
 		if "Device not found" in error:
-			msg += "\n" + _("Please, check if you have receiver dongle connected to USB port.")
+			msg += "\n" + _("Check whether the receiver dongle is connected to a USB port.")
 		elif "LIBUSB_ERROR_ACCESS" in error:
-			msg += "\n" + _("You don't have access to controller device.")
+			msg += "\n" + _("You do not have access to the controller device.")
 			msg += "\n\n" + (
 				_(
 					"Consult your distribution manual, try installing Steam package or <a href='%s'>install required udev rules manually</a>.",
@@ -1440,7 +1440,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			buttons=Gtk.ButtonsType.OK_CANCEL,
 			text=text,
 		)
-		d.set_property("secondary-text", _("This action is not undoable!"))
+		d.set_property("secondary-text", _("This action cannot be undone!"))
 
 		def on_response(dialog, response_id) -> None:
 			if response_id == Gtk.ResponseType.OK:

@@ -64,7 +64,7 @@
                     <property name="margin-start">20</property>
                     <child>
                       <object class="GtkLabel" id="label3">
-                        <property name="label" translatable="yes">Please, select an option</property>
+                        <property name="label" translatable="yes">Select an option</property>
                         <property name="margin-bottom">10</property>
                         <property name="margin-top">10</property>
                         <layout>
@@ -184,7 +184,7 @@
                     </child>
                     <child>
                       <object class="GtkLabel" id="lblImportText">
-                        <property name="label" translatable="yes">You can also drag-n-drop profile file on main application window</property>
+                        <property name="label" translatable="yes">You can also drag and drop a profile file onto the main window</property>
                         <property name="margin-bottom">10</property>
                         <property name="vexpand">1</property>
                         <property name="xalign">1</property>
@@ -462,7 +462,7 @@ Please, select what should be packaged along with exported profile.</property>
                       <object class="GtkRevealer" id="rvLoading">
                         <property name="child">
                           <object class="GtkLabel" id="lblSearching">
-                            <property name="label" translatable="yes">Searching for profiles. This may take som time.</property>
+                            <property name="label" translatable="yes">Searching for profiles. This may take some time.</property>
                             <property name="margin-bottom">10</property>
                             <property name="margin-top">10</property>
                           </object>
@@ -493,7 +493,7 @@ Please, select what should be packaged along with exported profile.</property>
                           0 -1 weight bold
                         </property>
                         <property name="hexpand">1</property>
-                        <property name="label" translatable="yes">Import results goes here</property>
+                        <property name="label">Import results go here</property>
                         <property name="margin-bottom">50</property>
                         <property name="margin-top">55</property>
                         <layout>
@@ -539,7 +539,7 @@ Please, select what should be packaged along with exported profile.</property>
                     </child>
                     <child>
                       <object class="GtkLabel" id="lblName">
-                        <property name="label" translatable="yes">Enter name for imported profile and click "Apply"</property>
+                        <property name="label" translatable="yes">Enter a name for the imported profile and click "Apply"</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">0</property>
@@ -699,7 +699,7 @@ what command does before clicking "Continue."</property>
                             </child>
                             <child>
                               <object class="GtkTreeViewColumn" id="clShellCommand">
-                                <property name="title" translatable="yes">column</property>
+                                <property name="title">column</property>
                                 <child>
                                   <object class="GtkCellRendererToggle" id="crShellCommandChecked">
                                     <signal name="toggled" handler="on_crShellCommandChecked_toggled"/>
@@ -748,7 +748,7 @@ what command does before clicking "Continue."</property>
                           0 -1 weight bold
                         </property>
                         <property name="hexpand">1</property>
-                        <property name="label" translatable="yes">Import results goes here</property>
+                        <property name="label">Import results go here</property>
                         <property name="margin-bottom">30</property>
                         <property name="margin-top">35</property>
                         <layout>
@@ -760,7 +760,7 @@ what command does before clicking "Continue."</property>
                     </child>
                     <child>
                       <object class="GtkLabel" id="lblName1">
-                        <property name="label" translatable="yes">Enter name for imported profile and click "Apply"</property>
+                        <property name="label" translatable="yes">Enter a name for the imported profile and click "Apply"</property>
                         <property name="xalign">0</property>
                         <layout>
                           <property name="column">0</property>
@@ -810,7 +810,7 @@ and profile switches in imported profile may not work as expected.</property>
                             <property name="active">1</property>
                             <property name="focusable">1</property>
                             <property name="group">cbImportPackageHidden</property>
-                            <property name="label" translatable="yes">Import normaly, with names formated as "%s:name"</property>
+                            <property name="label" translatable="yes">Import normally, with names formatted as "%s:name"</property>
                             <signal name="toggled" handler="on_txName2_changed"/>
                           </object>
                         </child>
@@ -828,7 +828,7 @@ and profile switches in imported profile may not work as expected.</property>
                             <property name="active">1</property>
                             <property name="focusable">1</property>
                             <property name="group">cbImportPackageHidden</property>
-                            <property name="label" translatable="yes">Display list and let me choose name for each imported profile</property>
+                            <property name="label" translatable="yes">Display a list and let me choose a name for each imported profile</property>
                             <signal name="toggled" handler="on_cbImportPackageAdvanced_toggled"/>
                           </object>
                         </child>

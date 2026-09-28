@@ -50,7 +50,7 @@
         <child>
           <object class="GtkLabel" id="label6">
             <property name="hexpand">1</property>
-            <property name="label" translatable="yes"> </property>
+            <property name="label"> </property>
             <property name="width-request">100</property>
             <layout>
               <property name="column">3</property>

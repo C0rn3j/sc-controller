@@ -38,7 +38,7 @@
         <col id="1">DEFAULT</col>
       </row>
       <row>
-        <col id="0" translatable="yes">-</col>
+        <col id="0">-</col>
         <col id="1">x</col>
       </row>
       <row>
@@ -58,7 +58,7 @@
         <col id="1">Y</col>
       </row>
       <row>
-        <col id="0" translatable="yes">-</col>
+        <col id="0">-</col>
         <col id="1">x</col>
       </row>
       <row>
@@ -74,7 +74,7 @@
         <col id="1">START</col>
       </row>
       <row>
-        <col id="0" translatable="yes">-</col>
+        <col id="0">-</col>
         <col id="1">x</col>
       </row>
       <row>
@@ -86,7 +86,7 @@
         <col id="1">RGRIP</col>
       </row>
       <row>
-        <col id="0" translatable="yes">-</col>
+        <col id="0">-</col>
         <col id="1">x</col>
       </row>
       <row>
@@ -106,7 +106,7 @@
         <col id="1">RT</col>
       </row>
       <row>
-        <col id="0" translatable="yes">-</col>
+        <col id="0">-</col>
         <col id="1">x</col>
       </row>
       <row>
@@ -472,7 +472,7 @@
               </object>
             </property>
             <property name="name">page0</property>
-            <property name="title" translatable="yes">page0</property>
+            <property name="title">page0</property>
           </object>
         </child>
         <child>
@@ -895,7 +895,7 @@
               </object>
             </property>
             <property name="name">page1</property>
-            <property name="title" translatable="yes">page1</property>
+            <property name="title">page1</property>
           </object>
         </child>
         <layout>

@@ -1396,32 +1396,32 @@
       <row>
         <col id="0">XY( axis(Axes.ABS_X), raxis(Axes.ABS_Y) )</col>
         <col id="1" translatable="yes">Left Stick</col>
-        <col id="2" translatable="yes">lstick</col>
+        <col id="2">lstick</col>
       </row>
       <row>
         <col id="0">XY( axis(Axes.ABS_RX), raxis(Axes.ABS_RY) )</col>
         <col id="1" translatable="yes">Right Stick</col>
-        <col id="2" translatable="yes">rstick</col>
+        <col id="2">rstick</col>
       </row>
       <row>
         <col id="0">XY( axis(Axes.ABS_HAT0X), raxis(Axes.ABS_HAT0Y) )</col>
         <col id="1" translatable="yes">DPad</col>
-        <col id="2" translatable="yes">dpad</col>
+        <col id="2">dpad</col>
       </row>
       <row>
         <col id="0">XY( mouse(Rels.REL_HWHEEL, sensitivity), mouse(Rels.REL_WHEEL, sensitivity) )</col>
         <col id="1" translatable="yes">Mouse Wheel</col>
-        <col id="2" translatable="yes">wheel</col>
+        <col id="2">wheel</col>
       </row>
       <row>
         <col id="0">trackpad(sensitivity)</col>
         <col id="1" translatable="yes">Trackpad (Mouse)</col>
-        <col id="2" translatable="yes">trackpad</col>
+        <col id="2">trackpad</col>
       </row>
       <row>
         <col id="0">trackball(sensitivity)</col>
         <col id="1" translatable="yes">Trackball (Mouse)</col>
-        <col id="2" translatable="yes">trackball</col>
+        <col id="2">trackball</col>
       </row>
     </data>
   </object>

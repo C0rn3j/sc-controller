@@ -399,7 +399,7 @@ class ImportVdf:
 				tvError.get_buffer().set_text(error_log.getvalue())
 				txName.set_text(self._profile.name)
 			else:
-				lblVdfImportFinished.set_text(_("Profile sucessfully imported"))
+				lblVdfImportFinished.set_text(_("Profile successfully imported"))
 				txName.set_text(self._profile.name)
 			self.on_txName_changed()
 

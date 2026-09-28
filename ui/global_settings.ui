@@ -302,7 +302,7 @@ or even crash.</property>
                         <signal name="toggled" handler="on_random_checkbox_toggled"/>
                         <child>
                           <object class="GtkLabel" id="label31">
-                            <property name="label" translatable="yes">Minimize to tray instead closing</property>
+                            <property name="label" translatable="yes">Minimize to tray instead of closing</property>
                             <property name="use-underline">1</property>
                           </object>
                         </child>
@@ -1191,7 +1191,7 @@ or even crash.</property>
                     </child>
                     <child>
                       <object class="GtkLabel" id="lblosk_hilight">
-                        <property name="label" translatable="yes">Higlight</property>
+                        <property name="label" translatable="yes">Highlight</property>
                         <property name="margin-bottom">5</property>
                         <property name="margin-end">5</property>
                         <property name="margin-start">20</property>
@@ -1221,7 +1221,7 @@ or even crash.</property>
                     </child>
                     <child>
                       <object class="GtkLabel" id="label269">
-                        <property name="label" translatable="yes"> </property>
+                        <property name="label"> </property>
                         <layout>
                           <property name="column">2</property>
                           <property name="column-span">2</property>
@@ -1452,7 +1452,7 @@ or even crash.</property>
                             </child>
                             <child>
                               <object class="GtkTreeViewColumn" id="tcDevice">
-                                <property name="title" translatable="yes">column</property>
+                                <property name="title">column</property>
                                 <child>
                                   <object class="GtkCellRendererPixbuf" id="tcDeviceIcon"/>
                                   <!-- Custom child fragments -->
@@ -1590,7 +1590,7 @@ or even crash.</property>
                         <property name="attributes">
                           0 -1 style italic
                         </property>
-                        <property name="label" translatable="yes">Note: python-evdev package is needed for non-steam controller support</property>
+                        <property name="label" translatable="yes">The python-evdev package is required for non-Steam controller support</property>
                         <property name="visible">0</property>
                         <layout>
                           <property name="column">0</property>
@@ -1954,7 +1954,7 @@ grips, triggers, finger positions on both pads and stick angle.</property>
                             <property name="attributes">
                               0 -1 weight bold
                             </property>
-                            <property name="label" translatable="yes">Display a message with changelog when SC Controller updates</property>
+                            <property name="label" translatable="yes">Show the changelog after SC Controller is updated</property>
                             <property name="mnemonic-widget">cbShowOSD</property>
                             <property name="use-underline">1</property>
                           </object>

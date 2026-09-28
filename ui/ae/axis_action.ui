@@ -226,7 +226,7 @@
               <object class="GtkFixed" id="nothing"/>
             </property>
             <property name="name">page4</property>
-            <property name="title" translatable="yes">page4</property>
+            <property name="title">page4</property>
           </object>
         </child>
         <child>
@@ -257,7 +257,7 @@
               </object>
             </property>
             <property name="name">page21</property>
-            <property name="title" translatable="yes">page21</property>
+            <property name="title">page21</property>
           </object>
         </child>
         <child>
@@ -392,7 +392,7 @@
                         <property name="margin-end">5</property>
                         <property name="margin-start">5</property>
                         <property name="margin-top">10</property>
-                        <property name="text" translatable="yes">0</property>
+                        <property name="text">0</property>
                         <property name="width-request">150</property>
                         <signal name="output" handler="on_sbArea_output"/>
                         <signal name="value-changed" handler="on_sbArea_changed"/>
@@ -425,7 +425,7 @@
                         <property name="margin-end">5</property>
                         <property name="margin-start">5</property>
                         <property name="margin-top">10</property>
-                        <property name="text" translatable="yes">0</property>
+                        <property name="text">0</property>
                         <property name="width-request">150</property>
                         <signal name="output" handler="on_sbArea_output"/>
                         <signal name="value-changed" handler="on_sbArea_changed"/>
@@ -459,7 +459,7 @@
                         <property name="margin-end">5</property>
                         <property name="margin-start">5</property>
                         <property name="margin-top">10</property>
-                        <property name="text" translatable="yes">0</property>
+                        <property name="text">0</property>
                         <property name="width-request">150</property>
                         <signal name="output" handler="on_sbArea_output"/>
                         <signal name="value-changed" handler="on_sbArea_changed"/>
@@ -492,7 +492,7 @@
                         <property name="margin-end">10</property>
                         <property name="margin-start">5</property>
                         <property name="margin-top">10</property>
-                        <property name="text" translatable="yes">0</property>
+                        <property name="text">0</property>
                         <property name="width-request">150</property>
                         <signal name="output" handler="on_sbArea_output"/>
                         <signal name="value-changed" handler="on_sbArea_changed"/>
@@ -516,7 +516,7 @@
               </object>
             </property>
             <property name="name">page0</property>
-            <property name="title" translatable="yes">page0</property>
+            <property name="title">page0</property>
           </object>
         </child>
         <child>
@@ -564,7 +564,7 @@
               </object>
             </property>
             <property name="name">page1</property>
-            <property name="title" translatable="yes">page1</property>
+            <property name="title">page1</property>
           </object>
         </child>
         <child>
@@ -686,7 +686,7 @@
               </object>
             </property>
             <property name="name">grCircular</property>
-            <property name="title" translatable="yes">page2</property>
+            <property name="title">page2</property>
           </object>
         </child>
       </object>

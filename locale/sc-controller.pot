@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sc-controller\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 18:54+0200\n"
+"POT-Creation-Date: 2026-09-28 19:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -165,8 +165,7 @@ msgid "Touch Pad"
 msgstr ""
 
 #: scc/gui/ae/axis_action.py:85
-msgid ""
-"Note: Mouse Region option is not available with Wayland-based display server"
+msgid "Mouse Region option is unavailable when using a Wayland compositor"
 msgstr ""
 
 #: scc/gui/ae/axis_action.py:268 scc/gui/ae/gyro.py:97
@@ -240,7 +239,7 @@ msgid "Right Trigger"
 msgstr ""
 
 #: scc/gui/ae/gesture.py:51
-msgid "Note: Gestures are not available with Wayland-based display server"
+msgid "Gestures are unavailable when using a Wayland compositor."
 msgstr ""
 
 #: scc/gui/ae/gesture.py:96 scc/special_actions.py:669
@@ -388,7 +387,7 @@ msgid "Really delete selected menu?"
 msgstr ""
 
 #: scc/gui/ae/menu_action.py:190 scc/gui/app.py:1443
-msgid "This action is not undoable!"
+msgid "This action cannot be undone!"
 msgstr ""
 
 #: scc/gui/ae/menu_action.py:233
@@ -448,7 +447,7 @@ msgid "Select Tilt Action"
 msgstr ""
 
 #: scc/gui/ae/trigger.py:245
-msgid "Select Partialy Pressed Action"
+msgid "Select Partially Pressed Action"
 msgstr ""
 
 #: scc/gui/ae/trigger.py:253
@@ -473,7 +472,7 @@ msgid "uinput kernel module not loaded"
 msgstr ""
 
 #: scc/gui/app.py:412 scc/gui/app.py:432 scc/gui/app.py:439
-msgid "Please, consult your distribution manual on how to enable uinput"
+msgid "Consult your distribution documentation to learn how to enable uinput"
 msgstr ""
 
 #: scc/gui/app.py:413 scc/gui/app.py:440
@@ -491,7 +490,7 @@ msgid "This will load missing uinput module."
 msgstr ""
 
 #: scc/gui/app.py:429
-msgid "/dev/uinput doesn't exists"
+msgid "/dev/uinput does not exist"
 msgstr ""
 
 #: scc/gui/app.py:430
@@ -581,11 +580,11 @@ msgid "There was an error with enabling emulation: <b>%s</b>"
 msgstr ""
 
 #: scc/gui/app.py:1247
-msgid "Please, check if you have receiver dongle connected to USB port."
+msgid "Check whether the receiver dongle is connected to a USB port."
 msgstr ""
 
 #: scc/gui/app.py:1249
-msgid "You don't have access to controller device."
+msgid "You do not have access to the controller device."
 msgstr ""
 
 #: scc/gui/app.py:1252
@@ -722,7 +721,7 @@ msgstr ""
 msgid "USB HID (recommended)"
 msgstr ""
 
-#: scc/gui/creg/dialog.py:549 ui/creg.ui:18
+#: scc/gui/creg/dialog.py:549
 msgid "USB HID"
 msgstr ""
 
@@ -763,7 +762,7 @@ msgid "(customized)"
 msgstr ""
 
 #: scc/gui/global_settings.py:795
-msgid "Please, install xdotool package to use this feature"
+msgid "Install the xdotool package to use this feature"
 msgstr ""
 
 #: scc/gui/global_settings.py:822
@@ -818,7 +817,7 @@ msgstr ""
 
 #: scc/gui/importexport/import_sccprofile.py:167
 #: scc/gui/importexport/import_vdf.py:402
-msgid "Profile sucessfully imported"
+msgid "Profile successfully imported"
 msgstr ""
 
 #: scc/gui/importexport/import_sccprofile.py:181
@@ -833,7 +832,7 @@ msgstr ""
 
 #: scc/gui/importexport/import_sccprofile.py:189 ui/import_export.ui:813
 #, python-format
-msgid "Import normaly, with names formated as \"%s:name\""
+msgid "Import normally, with names formatted as \"%s:name\""
 msgstr ""
 
 #: scc/gui/importexport/import_vdf.py:137
@@ -901,11 +900,11 @@ msgid "Edit Recent List"
 msgstr ""
 
 #: scc/gui/menu_editor.py:246
-msgid "Invalid Menu ID: Menu with same ID already exists."
+msgid "Invalid Menu ID: A menu with the same ID already exists."
 msgstr ""
 
 #: scc/gui/menu_editor.py:251
-msgid "Invalid Menu ID: Please, don't use dots (.) or slashes (/)."
+msgid "Invalid Menu ID: Do not use dots (.) or slashes (/)."
 msgstr ""
 
 #: scc/gui/menu_editor.py:258
@@ -1313,10 +1312,6 @@ msgstr ""
 msgid "<span size=\"large\"><b>SC Controller</b></span>"
 msgstr ""
 
-#: ui/about.ui:36
-msgid "(version)"
-msgstr ""
-
 #: ui/about.ui:44
 msgid ""
 "User-mode driver and GTK4 based GUI for the Steam Controller, DS4 and "
@@ -1545,40 +1540,16 @@ msgstr ""
 msgid "_Clear"
 msgstr ""
 
-#: ui/action_editor.ui:1399
-msgid "lstick"
-msgstr ""
-
-#: ui/action_editor.ui:1404
-msgid "rstick"
-msgstr ""
-
 #: ui/action_editor.ui:1408
 msgid "DPad"
-msgstr ""
-
-#: ui/action_editor.ui:1409
-msgid "dpad"
-msgstr ""
-
-#: ui/action_editor.ui:1414
-msgid "wheel"
 msgstr ""
 
 #: ui/action_editor.ui:1418
 msgid "Trackpad (Mouse)"
 msgstr ""
 
-#: ui/action_editor.ui:1419
-msgid "trackpad"
-msgstr ""
-
 #: ui/action_editor.ui:1423
 msgid "Trackball (Mouse)"
-msgstr ""
-
-#: ui/action_editor.ui:1424
-msgid "trackball"
 msgstr ""
 
 #: ui/ae/axis_action.ui:47
@@ -1654,16 +1625,8 @@ msgstr ""
 msgid "Output"
 msgstr ""
 
-#: ui/ae/axis_action.ui:229 ui/ae/special_action.ui:331
-msgid "page4"
-msgstr ""
-
 #: ui/ae/axis_action.ui:242
 msgid "Button"
-msgstr ""
-
-#: ui/ae/axis_action.ui:260
-msgid "page21"
 msgstr ""
 
 #: ui/ae/axis_action.ui:272
@@ -1690,11 +1653,6 @@ msgstr ""
 msgid "X1"
 msgstr ""
 
-#: ui/ae/axis_action.ui:395 ui/ae/axis_action.ui:428 ui/ae/axis_action.ui:462
-#: ui/ae/axis_action.ui:495
-msgid "0"
-msgstr ""
-
 #: ui/ae/axis_action.ui:412
 msgid "X2"
 msgstr ""
@@ -1707,11 +1665,6 @@ msgstr ""
 msgid "Y2"
 msgstr ""
 
-#: ui/ae/axis_action.ui:519 ui/ae/dpad.ui:475 ui/ae/special_action.ui:404
-#: ui/ae/special_action.ui:480 ui/app.ui:625 ui/creg.ui:206
-msgid "page0"
-msgstr ""
-
 #: ui/ae/axis_action.ui:532
 msgid "Output As"
 msgstr ""
@@ -1720,21 +1673,12 @@ msgstr ""
 msgid "<a href=\"advanced://0#cbBallMode\">Setup or disable Trackball Mode</a>"
 msgstr ""
 
-#: ui/ae/axis_action.ui:567 ui/ae/dpad.ui:898 ui/ae/special_action.ui:847
-#: ui/app.ui:634 ui/creg.ui:351
-msgid "page1"
-msgstr ""
-
 #: ui/ae/axis_action.ui:617
 msgid "Output Axis"
 msgstr ""
 
 #: ui/ae/axis_action.ui:633
 msgid "Output Buttons"
-msgstr ""
-
-#: ui/ae/axis_action.ui:689 ui/creg.ui:707
-msgid "page2"
 msgstr ""
 
 #: ui/ae/axis.ui:12
@@ -1759,15 +1703,6 @@ msgstr ""
 
 #: ui/ae/dpad.ui:37 ui/ae/special_action.ui:76 ui/ae/special_action.ui:176
 msgid "(Controller Default)"
-msgstr ""
-
-#: ui/ae/dpad.ui:41 ui/ae/dpad.ui:61 ui/ae/dpad.ui:77 ui/ae/dpad.ui:89
-#: ui/ae/dpad.ui:109 ui/ae/special_action.ui:80 ui/ae/special_action.ui:100
-#: ui/ae/special_action.ui:116 ui/ae/special_action.ui:128
-#: ui/ae/special_action.ui:148 ui/controller_settings.ui:52
-#: ui/controller_settings.ui:68 ui/controller_settings.ui:80
-#: ui/controller_settings.ui:100
-msgid "-"
 msgstr ""
 
 #: ui/ae/dpad.ui:113 ui/ae/special_action.ui:152 ui/controller_settings.ui:104
@@ -1907,10 +1842,6 @@ msgstr ""
 msgid "_Delete Menu"
 msgstr ""
 
-#: ui/ae/first_page.ui:9
-msgid "(markup goes here)"
-msgstr ""
-
 #: ui/ae/gesture.ui:37
 msgid "_Change"
 msgstr ""
@@ -1929,10 +1860,6 @@ msgstr ""
 
 #: ui/ae/gesture.ui:190
 msgid "Matching Precision"
-msgstr ""
-
-#: ui/ae/gesture.ui:225
-msgid "message"
 msgstr ""
 
 #: ui/ae/gesture.ui:259 ui/ae/osk_action.ui:61 ui/ae/special_action.ui:297
@@ -2072,10 +1999,6 @@ msgstr ""
 msgid "Command"
 msgstr ""
 
-#: ui/ae/special_action.ui:359 ui/creg.ui:794
-msgid "page3"
-msgstr ""
-
 #: ui/ae/special_action.ui:418
 msgid "Text to Display"
 msgstr ""
@@ -2096,40 +2019,20 @@ msgstr ""
 msgid "Normal"
 msgstr ""
 
-#: ui/ae/trigger.ui:47
-msgid "NORMAL"
-msgstr ""
-
 #: ui/ae/trigger.ui:50
 msgid "Normal - Exclusive Buttons"
-msgstr ""
-
-#: ui/ae/trigger.ui:51
-msgid "NORMAL_EXCLUSIVE"
 msgstr ""
 
 #: ui/ae/trigger.ui:54
 msgid "Hip Fire"
 msgstr ""
 
-#: ui/ae/trigger.ui:55
-msgid "HIPFIRE_NORMAL"
-msgstr ""
-
 #: ui/ae/trigger.ui:58
 msgid "Hip Fire - Exclusive Buttons"
 msgstr ""
 
-#: ui/ae/trigger.ui:59
-msgid "HIPFIRE_EXCLUSIVE"
-msgstr ""
-
 #: ui/ae/trigger.ui:62
 msgid "Hip fire - Sensible"
-msgstr ""
-
-#: ui/ae/trigger.ui:63
-msgid "HIPFIRE_SENSIBLE"
 msgstr ""
 
 #: ui/ae/trigger.ui:78
@@ -2249,7 +2152,7 @@ msgid "Change Sticks and Background"
 msgstr ""
 
 #: ui/app.ui:795
-msgid "Symetrical"
+msgid "Symmetrical"
 msgstr ""
 
 #: ui/app.ui:800
@@ -2325,7 +2228,9 @@ msgid "Touchpad Input Rotation"
 msgstr ""
 
 #: ui/controller_settings.ui:339
-msgid "Applied to everything, even if profile sets no rotation on its actions."
+msgid ""
+"Applied to everything, even if the profile does not set rotation for its "
+"actions."
 msgstr ""
 
 #: ui/controller_settings.ui:354
@@ -2341,15 +2246,7 @@ msgid "Default Menu Controls"
 msgstr ""
 
 #: ui/controller_settings.ui:474
-msgid "Used to control menus unless profile sets something different"
-msgstr ""
-
-#: ui/creg.ui:17
-msgid "hid"
-msgstr ""
-
-#: ui/creg.ui:22 ui/creg.ui:23
-msgid "evdev"
+msgid "Used to control menus unless the profile specifies something different"
 msgstr ""
 
 #: ui/creg.ui:45
@@ -2378,10 +2275,6 @@ msgid ""
 "Controller.\n"
 "\n"
 "Please, select your controller from list bellow and click Next."
-msgstr ""
-
-#: ui/creg.ui:123 ui/global_settings.ui:1455 ui/import_export.ui:702
-msgid "column"
 msgstr ""
 
 #: ui/creg.ui:166
@@ -2420,7 +2313,7 @@ msgid ""
 msgstr ""
 
 #: ui/creg.ui:387
-msgid "Red colored controls are not assigned."
+msgid "Controls shown in red are not assigned."
 msgstr ""
 
 #: ui/creg.ui:422
@@ -2606,7 +2499,7 @@ msgid "Enable System Tray Icon"
 msgstr ""
 
 #: ui/global_settings.ui:305
-msgid "Minimize to tray instead closing"
+msgid "Minimize to tray instead of closing"
 msgstr ""
 
 #: ui/global_settings.ui:324
@@ -2738,11 +2631,7 @@ msgid "Special Button"
 msgstr ""
 
 #: ui/global_settings.ui:1194
-msgid "Higlight"
-msgstr ""
-
-#: ui/global_settings.ui:1224 ui/key_grabber.ui:53
-msgid " "
+msgid "Highlight"
 msgstr ""
 
 #: ui/global_settings.ui:1237
@@ -2804,7 +2693,7 @@ msgid "Register New Controller"
 msgstr ""
 
 #: ui/global_settings.ui:1593
-msgid "Note: python-evdev package is needed for non-steam controller support"
+msgid "The python-evdev package is required for non-Steam controller support"
 msgstr ""
 
 #: ui/global_settings.ui:1612
@@ -2879,7 +2768,7 @@ msgid "Try disabling this option if your controller stops working randomly."
 msgstr ""
 
 #: ui/global_settings.ui:1957
-msgid "Display a message with changelog when SC Controller updates"
+msgid "Show the changelog after SC Controller is updated"
 msgstr ""
 
 #: ui/global_settings.ui:1973
@@ -2927,7 +2816,7 @@ msgid "button"
 msgstr ""
 
 #: ui/import_export.ui:67
-msgid "Please, select an option"
+msgid "Select an option"
 msgstr ""
 
 #: ui/import_export.ui:94
@@ -2943,7 +2832,7 @@ msgid "Import _Steam Profile"
 msgstr ""
 
 #: ui/import_export.ui:187
-msgid "You can also drag-n-drop profile file on main application window"
+msgid "You can also drag and drop a profile file onto the main window"
 msgstr ""
 
 #: ui/import_export.ui:200
@@ -2989,15 +2878,11 @@ msgid "Select Profile to Import"
 msgstr ""
 
 #: ui/import_export.ui:465
-msgid "Searching for profiles. This may take som time."
+msgid "Searching for profiles. This may take some time."
 msgstr ""
 
 #: ui/import_export.ui:480 ui/import_export.ui:633
 msgid "Import Steam Profile"
-msgstr ""
-
-#: ui/import_export.ui:496 ui/import_export.ui:751
-msgid "Import results goes here"
 msgstr ""
 
 #: ui/import_export.ui:508 ui/import_export.ui:950
@@ -3005,7 +2890,7 @@ msgid "Error message:"
 msgstr ""
 
 #: ui/import_export.ui:542 ui/import_export.ui:763
-msgid "Enter name for imported profile and click \"Apply\""
+msgid "Enter a name for the imported profile and click \"Apply\""
 msgstr ""
 
 #: ui/import_export.ui:565
@@ -3064,7 +2949,7 @@ msgid "Don't import any additional profiles or menus"
 msgstr ""
 
 #: ui/import_export.ui:831
-msgid "Display list and let me choose name for each imported profile"
+msgid "Display a list and let me choose a name for each imported profile"
 msgstr ""
 
 #: ui/import_export.ui:855
@@ -3123,10 +3008,6 @@ msgstr ""
 msgid "Add _Action"
 msgstr ""
 
-#: ui/macro_editor.ui:175 ui/modeshift_editor.ui:442 ui/ring_editor.ui:76
-msgid "(Widget)"
-msgstr ""
-
 #: ui/macro_editor.ui:209 ui/modeshift_editor.ui:557 ui/ring_editor.ui:343
 msgid "Custom Editor"
 msgstr ""
@@ -3136,7 +3017,7 @@ msgid "Click"
 msgstr ""
 
 #: ui/menu_editor.ui:35
-msgid "No!. Bad, bad user!"
+msgid "No! Bad, bad user!"
 msgstr ""
 
 #: ui/menu_editor.ui:72
@@ -3179,10 +3060,6 @@ msgstr ""
 msgid "Items"
 msgstr ""
 
-#: ui/menu_editor.ui:349
-msgid "<icon name>"
-msgstr ""
-
 #: ui/modeshift_editor.ui:225
 msgid "(held alone)"
 msgstr ""
@@ -3192,7 +3069,7 @@ msgid "Hold Time"
 msgstr ""
 
 #: ui/modeshift_editor.ui:280
-msgid "Play haptic feedback effect when Hold action is executed"
+msgid "Play a haptic feedback effect when the Hold action is executed"
 msgstr ""
 
 #: ui/modeshift_editor.ui:295

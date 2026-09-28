@@ -44,23 +44,23 @@
     <data>
       <row>
         <col id="0" translatable="yes">Normal</col>
-        <col id="1" translatable="yes">NORMAL</col>
+        <col id="1">NORMAL</col>
       </row>
       <row>
         <col id="0" translatable="yes">Normal - Exclusive Buttons</col>
-        <col id="1" translatable="yes">NORMAL_EXCLUSIVE</col>
+        <col id="1">NORMAL_EXCLUSIVE</col>
       </row>
       <row>
         <col id="0" translatable="yes">Hip Fire</col>
-        <col id="1" translatable="yes">HIPFIRE_NORMAL</col>
+        <col id="1">HIPFIRE_NORMAL</col>
       </row>
       <row>
         <col id="0" translatable="yes">Hip Fire - Exclusive Buttons</col>
-        <col id="1" translatable="yes">HIPFIRE_EXCLUSIVE</col>
+        <col id="1">HIPFIRE_EXCLUSIVE</col>
       </row>
       <row>
         <col id="0" translatable="yes">Hip fire - Sensible</col>
-        <col id="1" translatable="yes">HIPFIRE_SENSIBLE</col>
+        <col id="1">HIPFIRE_SENSIBLE</col>
       </row>
     </data>
   </object>
