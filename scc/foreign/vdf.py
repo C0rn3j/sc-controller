@@ -575,7 +575,7 @@ class VDFProfile(Profile):
 		"""
 		with open(filename) as file:
 			data = parse_vdf(file)
-		self.load_data(data)
+		return self.load_data(data)
 
 	def load_data(self, data) -> Self:
 		if "controller_mappings" not in data:
