@@ -35,6 +35,8 @@ from scc.uinput import Dummy, Keyboard, Mouse, UInput
 
 if sys.platform == "win32":
 	from scc.windows_input import WindowsGamepad, WindowsKeyboard, WindowsMouse
+elif sys.platform == "darwin":
+	from scc.macos_input import MacOSKeyboard, MacOSMouse
 
 if TYPE_CHECKING:
 	from scc.controller import Controller
@@ -82,9 +84,9 @@ class Mapper:
 
 		# Create virtual devices
 		log.debug("Creating virtual devices")
-		self.keyboard: WindowsKeyboard | Keyboard | Dummy = self.create_keyboard(keyboard) if keyboard else Dummy()
+		self.keyboard: MacOSKeyboard | WindowsKeyboard | Keyboard | Dummy = self.create_keyboard(keyboard) if keyboard else Dummy()
 		log.debug(f"Keyboard: {self.keyboard}")
-		self.mouse: WindowsMouse | Mouse | Dummy = self.create_mouse(mouse) if mouse else Dummy()
+		self.mouse: MacOSMouse | WindowsMouse | Mouse | Dummy = self.create_mouse(mouse) if mouse else Dummy()
 		log.debug(f"Mouse:    {self.mouse}")
 		self.gamepad: WindowsGamepad | UInput | Dummy | None = self.create_gamepad(gamepad, poller) if gamepad else Dummy()
 		log.debug(f"Gamepad:  {self.gamepad}")
@@ -112,13 +114,16 @@ class Mapper:
 		self._bt_stick_mouse_last_tick: float = 0.0
 		self._bt_stick_mouse_logged: bool = False
 
-	def create_gamepad(self, enabled: bool, poller: Poller | None) -> UInput | None:
+	def create_gamepad(self, enabled: bool, poller: Poller | None) -> UInput | Dummy | None:
 		"""Parses gamepad configuration and creates apropriate unput device"""
 		if not enabled or "SCC_NOGAMEPAD" in os.environ:
 			# Completly undocumented and for debuging purposes only.
 			# If set, no gamepad is emulated
 			self.gamepad = Dummy()
 			return None
+		if sys.platform == "darwin":
+			log.warning("Virtual gamepad output is unavailable on macOS; keyboard and mouse output remain enabled")
+			return Dummy()
 		cfg = Config()
 		if sys.platform == "win32":
 			return WindowsGamepad(name=cfg["output"]["name"])
@@ -148,14 +153,18 @@ class Mapper:
 			poller.register(ui.getDescriptor(), poller.POLLIN, self._rumble_ready)
 		return ui
 
-	def create_keyboard(self, name: bytes) -> WindowsKeyboard | Keyboard:
+	def create_keyboard(self, name: bytes) -> MacOSKeyboard | WindowsKeyboard | Keyboard:
 		if sys.platform == "win32":
 			return WindowsKeyboard(name)
+		if sys.platform == "darwin":
+			return MacOSKeyboard(name)
 		return Keyboard(name=name)
 
-	def create_mouse(self, name: bytes) -> WindowsMouse | Mouse:
+	def create_mouse(self, name: bytes) -> MacOSMouse | WindowsMouse | Mouse:
 		if sys.platform == "win32":
 			return WindowsMouse(name)
+		if sys.platform == "darwin":
+			return MacOSMouse(name)
 		return Mouse(name=name)
 
 	def _rumble_ready(self, fd, event) -> None:
