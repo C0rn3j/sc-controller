@@ -147,7 +147,9 @@ We use [Weblate](https://hosted.weblate.org/projects/sc-controller/sc-controller
 			<strong>macOS:</strong>
 			<ul>
 				<li>
-					Not planned.
+					Evaluation whether a macOS port is feasible is in progress. See
+					<a href="https://github.com/C0rn3j/sc-controller/issues/172">issue #172</a>
+					for more information.
 				</li>
 			</ul>
 		</td>
