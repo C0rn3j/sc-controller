@@ -44,7 +44,6 @@ RUN <<EOR
 		linux-headers-generic \
 		python3-build \
 		python3-dev \
-		python3-setuptools \
 		python3-usb \
 		python3-venv \
 		python-is-python3

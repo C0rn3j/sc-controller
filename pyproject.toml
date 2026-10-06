@@ -26,7 +26,6 @@ dependencies = [
 	"ioctl-opt",
 	"libusb1",
 	"pygobject",
-	"setuptools",
 	"vdf",
 ]
 #platforms = ["Linux"]
