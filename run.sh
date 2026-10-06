@@ -46,7 +46,7 @@ function testDeps() {
 #		echo -e "${Red}gi.Gtk not found, install it. ${Yellow}The package may be named gtk4 or gir1.2-gtk-4.0 on your distribution!${NoColor}"
 #		exit 1
 #	fi
-	if [[ "$OSTYPE" == msys* || "$OSTYPE" == mingw* || "$OSTYPE" == cygwin* ]]; then
+	if [[ "$OSTYPE" == msys* || "$OSTYPE" == mingw* || "$OSTYPE" == cygwin* || "$OSTYPE" == darwin* ]]; then
 		CC="gcc"
 	else
 		CC="x86_64-pc-linux-gnu-gcc"
