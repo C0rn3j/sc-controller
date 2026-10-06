@@ -412,11 +412,47 @@ if sys.platform == "win32":
 			raise NotImplementedError(
 				"Bluetooth disconnection is not implemented on Windows"
 			)
+elif sys.platform == "darwin":
+	class DeviceMonitormacOS:
+		"""Very rough empty implementation to get things started"""
+
+		def __init__(self, daemon) -> None:
+			self.daemon = daemon
+			self.dev_added_cbs = {}
+			self.dev_removed_cbs = {}
+
+		def add_callback(
+			self,
+			subsystem,
+			vendor_id,
+			product_id,
+			added_cb,
+			removed_cb,
+		) -> None:
+			key = (subsystem, vendor_id, product_id)
+			self.dev_added_cbs[key] = added_cb
+			self.dev_removed_cbs[key] = removed_cb
+
+		def start(self) -> None:
+			pass
+
+		def rescan(self) -> None:
+			pass
+
+		def add_remove_callback(self, syspath, callback) -> None:
+			pass
+
+		def disconnect_bluetooth(self, syspath) -> None:
+			raise NotImplementedError(
+				"Bluetooth disconnection is not implemented on Windows"
+			)
 
 
-def create_device_monitor(daemon: SCCDaemon | HIDDrvFakeDaemon) -> DeviceMonitor | DeviceMonitorWindows:
+def create_device_monitor(daemon: SCCDaemon | HIDDrvFakeDaemon) -> DeviceMonitor | DeviceMonitorWindows | DeviceMonitormacOS:
 	if sys.platform == "win32":
 		return DeviceMonitorWindows(daemon)
+	if sys.platform == "darwin":
+		return DeviceMonitormacOS(daemon)
 
 	mon = Eudev().monitor(subclass=DeviceMonitor)
 	assert type(mon) is DeviceMonitor  # Satisfy type checker

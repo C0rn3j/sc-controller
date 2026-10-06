@@ -1,0 +1,141 @@
+name: Build macOS version
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-macos-arm64:
+    name: "macOS arm64"
+    # Keep lowest version we can reasonably build on,
+    # as that's the resulting minimally-supported macOS version in the built app
+    runs-on: macos-15
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v7
+        with:
+          submodules: true
+
+      - name: Setup pip cache-key
+        uses: actions/cache@v6
+        if: startsWith(runner.os, 'macOS')
+        with:
+          path: ~/Library/Caches/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: brew update
+        run: brew untap aws/tap && brew update
+
+      - name: Force install openssl@3 to prevent a bug with current images
+        run: brew install --overwrite openssl@3
+
+      - name: Install brew dependencies
+        run: |
+          brew install --overwrite \
+            uv \
+            cairo \
+            pkg-config \
+            gobject-introspection \
+            gtk4 \
+            librsvg \
+            create-dmg \
+            Python@3.14
+
+      - name: Remove aws-sam-cli as it makes pydantic core preinstalled in brew but we want to use pip's
+        run: brew uninstall aws-sam-cli pydantic
+
+      # This generates 30MB of logs, enable it only when actively debugging something
+      #- name: "[DEBUG] List all Cellar files"
+      #  run: find /opt/homebrew/Cellar
+
+      # - name: "[DEBUG] Try running using run.sh"
+      #   run: bash run.sh
+
+      - name: Install Python dependencies and setup venv
+        run: |
+          export CXXFLAGS="-I/opt/homebrew/include"
+          export LDFLAGS="-L/opt/homebrew/lib"
+
+          $(brew --prefix python)/libexec/bin/pip install --break-system-packages \
+            "." \
+            build \
+            pyinstaller \
+            pytest
+        #    https://github.com/pyinstaller/pyinstaller/archive/develop.zip
+        #  $(brew --prefix python)/libexec/bin/python -m pip install --break-system-packages --upgrade pip
+        #  $(brew --prefix python)/libexec/bin/python -m venv --system-site-packages .venv
+        #  source .venv/bin/activate
+        #  CFLAGS: "-I/opt/homebrew/include"
+
+      - name: Build the project using python-build
+        run: |
+          $(brew --prefix python)/libexec/bin/python -m build --wheel
+        #  source .venv/bin/activate
+
+      - name: Install the project into a venv
+        run: |
+          $(brew --prefix python)/libexec/bin/pip install --prefix ".venv" dist/*.whl
+        #  $(brew --prefix python)/libexec/bin/pip install --break-system-packages dist/*.whl
+        #  source .venv/bin/activate
+
+      - name: Run tests using pytest
+        run: |
+          PYTHONPATH=src pytest tests
+
+      - name: "[DEBUG] List all files"
+        run: find .
+
+      - name: Build macOS app with PyInstaller
+        run: |
+          pyinstaller --log-level=DEBUG packaging/pyinstaller/mac.spec
+        #  source .venv/bin/activate
+        env:
+          DYLD_LIBRARY_PATH: "/opt/homebrew/lib"
+
+      - name: "[DEBUG] List all files in .app"
+        run: find "dist/SCC.app"
+
+      - name: Generate DMG background image
+        run: |
+          $(brew --prefix python)/libexec/bin/python extra/generate_dmg_background.py dist/dmg-background.png
+
+      - name: Create DMG
+        run: |
+          mkdir -p dist/dmg
+          APP_NAME="SCC"
+          APP_PATH="dist/${APP_NAME}.app"
+          DMG_PATH="dist/dmg/${APP_NAME}.dmg"
+
+          # FIXME: Undo this overengineered crap once the following issue gets figured out:
+          #        https://github.com/actions/runner-images/issues/7522
+          i=0
+          until create-dmg \
+            --volname "${APP_NAME}" \
+            --background "dist/dmg-background.png" \
+            --window-pos 200 120 \
+            --window-size 540 400 \
+            --icon-size 100 \
+            --icon "${APP_NAME}.app" 150 170 \
+            --hide-extension "${APP_NAME}.app" \
+            --app-drop-link 390 170 \
+            "${DMG_PATH}" \
+            "${APP_PATH}"; do
+            if [[ ${i} -eq 10 ]]; then
+              echo "Error: create-dmg did not succeed even after 10 tries."
+              exit 1
+            fi
+            i=$((i+1))
+          done
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: SCC-dmg
+          path: dist/dmg/SCC.dmg
+
+      - name: Run SCC for testing
+        run: |
+          hdiutil attach dist/dmg/SCC.dmg
+          /Volumes/SCC/SCC.app/Contents/MacOS/SCC
