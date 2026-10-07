@@ -1,5 +1,6 @@
 *.pyc
 .*
+!.git-blame-ignore-revs
 !.githooks/
 !.githooks/*
 *~
