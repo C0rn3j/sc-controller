@@ -36,11 +36,12 @@ sed -i \
 	's/^# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR\.$/# Martin Rys <martin@archlinux.org>, 2026./' \
 	"${new_pot}"
 
-# xgettext always updates POT-Creation-Date
-# Exit if that is the only difference
+# xgettext always updates POT-Creation-Date, ignore it
+# Line placement etc are tracked in a comment, ignore that too
+# Exit if there are no other differences
 if [[ -f "${pot_file}" ]] && cmp -s \
-	<(sed '/^"POT-Creation-Date:/d' "${pot_file}") \
-	<(sed '/^"POT-Creation-Date:/d' "${new_pot}"); then
+	<(sed '/^"POT-Creation-Date:/d; /^#/d' "${pot_file}") \
+	<(sed '/^"POT-Creation-Date:/d; /^#/d' "${new_pot}"); then
 	exit 0
 fi
 
