@@ -1,5 +1,5 @@
-# Czech translations for sc-controller package.
-# Copyright (C) 2026 THE sc-controller'S COPYRIGHT HOLDER
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the sc-controller package.
 # Martin Rys <martin@archlinux.org>, 2026.
 #
@@ -7,101 +7,101 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sc-controller\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-19 23:16+0200\n"
-"PO-Revision-Date: 2026-09-28 17:03+0000\n"
-"Last-Translator: Martin Rys <martin@rys.rs>\n"
-"Language-Team: Czech <https://hosted.weblate.org/projects/sc-controller/sc-"
-"controller/cs/>\n"
-"Language: cs\n"
+"POT-Creation-Date: 2026-09-28 20:33+0200\n"
+"PO-Revision-Date: 2026-10-06 12:47+0000\n"
+"Last-Translator: Ma <horstyle0411@gmail.com>\n"
+"Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
+"projects/sc-controller/sc-controller/zh_Hant/>\n"
+"Language: zh_Hant\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
-"X-Generator: Weblate 2026.10.dev0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 2026.10.1.dev0\n"
 
 #: scc/actions.py:606
 msgid "Axis"
-msgstr "Osa"
+msgstr "軸"
 
 #: scc/actions.py:606 scc/actions.py:616 scc/actions.py:617
 msgid "Negative"
-msgstr "Negativní"
+msgstr "負向"
 
 #: scc/actions.py:606 scc/actions.py:616 scc/actions.py:617
 msgid "Positive"
-msgstr "Pozitivní"
+msgstr "正向"
 
 #: scc/actions.py:611
 #, python-format
 msgid "%s X"
-msgstr ""
+msgstr "%s X"
 
 #: scc/actions.py:613
 #, python-format
 msgid "%s Y"
-msgstr ""
+msgstr "%s Y"
 
 #: scc/actions.py:616 scc/actions.py:617
 #, python-format
 msgid "Axis %s"
-msgstr ""
+msgstr "軸 %s"
 
 #: scc/actions.py:703
 #, python-format
 msgid "%s %s (reversed)"
-msgstr ""
+msgstr "%s %s (反轉)"
 
 #: scc/actions.py:704
 #, python-format
 msgid "Reverse %s Axis"
-msgstr ""
+msgstr "反轉 %s 軸"
 
 #: scc/actions.py:829 scc/actions.py:961
 msgid "Wheel"
-msgstr ""
+msgstr "滾輪"
 
 #: scc/actions.py:831 scc/actions.py:963
 msgid "Horizontal Wheel"
-msgstr ""
+msgstr "水平滾輪"
 
 #: scc/actions.py:833 scc/actions.py:965 scc/actions.py:1193
 #: ui/ae/axis_action.ui:104 ui/ae/axis_action.ui:174
 msgid "Mouse"
-msgstr "Myš"
+msgstr "滑鼠"
 
 #: scc/actions.py:834 scc/actions.py:966 scc/actions.py:1490
 #, python-format
 msgid "Mouse %s"
-msgstr "Myš %s"
+msgstr "滑鼠 %s"
 
 #: scc/actions.py:1013 ui/ae/axis_action.ui:169
 msgid "Mouse Region"
-msgstr ""
+msgstr "滑鼠區域"
 
 #: scc/actions.py:1286
 msgid "Recenter Gyro"
-msgstr ""
+msgstr "陀螺儀回正"
 
 #: scc/actions.py:1391 scc/gui/ae/tilt.py:52
 msgid "Tilt"
-msgstr ""
+msgstr "偏移"
 
 #: scc/actions.py:1477
 msgid "Wheel UP"
-msgstr ""
+msgstr "滾輪向上"
 
 #: scc/actions.py:1478
 msgid "Wheel DOWN"
-msgstr ""
+msgstr "滾輪向下"
 
 #: scc/actions.py:1501
 #, python-format
 msgid "Button %i"
-msgstr ""
+msgstr "按鈕 %i"
 
 #: scc/actions.py:1908
 msgid "Arrows"
-msgstr "Šipky"
+msgstr "方向鍵"
 
 #: scc/actions.py:1910
 msgid "WSAD"
@@ -109,272 +109,265 @@ msgstr "WSAD"
 
 #: scc/actions.py:2277 ui/ae/axis_action.ui:154
 msgid "Joystick Camera"
-msgstr ""
+msgstr "搖桿視角"
 
-#: scc/actions.py:2628 scc/gui/ae/__init__.py:92
-#: ui/ae/axis_action.ui:662 ui/ae/axis_action.ui:676
-#: ui/ae/trigger.ui:128
+#: scc/actions.py:2628 scc/gui/ae/__init__.py:92 ui/ae/axis_action.ui:662
+#: ui/ae/axis_action.ui:676 ui/ae/trigger.ui:128
 msgid "(not set)"
-msgstr ""
+msgstr "(未設定)"
 
-#: scc/gui/action_editor.py:258 scc/gui/ae/axis_action.py:273
-#: scc/gui/ae/axis_action.py:299
+#: scc/gui/action_editor.py:258 scc/gui/ae/axis_action.py:282
+#: scc/gui/ae/axis_action.py:308
 msgid "Select Button"
-msgstr ""
+msgstr "Select 按鈕"
 
-#: scc/gui/action_editor.py:1061
+#: scc/gui/action_editor.py:1062
 #, python-format
 msgid "%s Press"
-msgstr ""
+msgstr "%s 按壓"
 
-#: scc/gui/action_editor.py:1070 scc/gui/osk_binding_editor.py:52
+#: scc/gui/action_editor.py:1071 scc/gui/osk_binding_editor.py:52
 #, python-format
 msgid "%s Trigger"
-msgstr ""
+msgstr "%s 扳機"
 
-#: scc/gui/action_editor.py:1077
+#: scc/gui/action_editor.py:1078
 msgid "DPAD"
-msgstr "DPAD"
+msgstr "方向鍵"
 
-#: scc/gui/action_editor.py:1079 scc/gui/ae/first_page.py:104
+#: scc/gui/action_editor.py:1080 scc/gui/ae/first_page.py:104
 #: ui/action_editor.ui:1403 ui/ae/axis_action.ui:139
 #: ui/ae/special_action.ui:184 ui/controller_settings.ui:132
 msgid "Right Stick"
-msgstr ""
+msgstr "右類比搖桿"
 
-#: scc/gui/action_editor.py:1081 scc/gui/ae/first_page.py:103
+#: scc/gui/action_editor.py:1082 scc/gui/ae/first_page.py:103
 #: scc/gui/osk_binding_editor.py:43 ui/action_editor.ui:1398
 #: ui/ae/axis_action.ui:134 ui/ae/special_action.ui:180
-#: ui/controller_settings.ui:128 ui/global_settings.ui:231
+#: ui/controller_settings.ui:128 ui/global_settings.ui:368
 msgid "Left Stick"
-msgstr ""
+msgstr "左類比搖桿"
 
-#: scc/gui/action_editor.py:1089
+#: scc/gui/action_editor.py:1090
 msgid "Gyro"
-msgstr ""
+msgstr "陀螺儀"
 
-#: scc/gui/action_editor.py:1101 scc/gui/ae/first_page.py:95
+#: scc/gui/action_editor.py:1102 scc/gui/ae/first_page.py:95
 #: ui/ae/special_action.ui:188 ui/controller_settings.ui:136
 msgid "Left Pad"
-msgstr ""
+msgstr "左觸控板"
 
-#: scc/gui/action_editor.py:1103 scc/gui/ae/first_page.py:96
+#: scc/gui/action_editor.py:1104 scc/gui/ae/first_page.py:96
 #: ui/ae/special_action.ui:192 ui/controller_settings.ui:140
 msgid "Right Pad"
-msgstr ""
+msgstr "右觸控板"
 
-#: scc/gui/action_editor.py:1105
+#: scc/gui/action_editor.py:1106
 msgid "Touch Pad"
-msgstr ""
+msgstr "觸控板"
 
-#: scc/gui/ae/axis_action.py:76
-msgid ""
-"Note: Mouse Region option is not available with Wayland-based display server"
-msgstr ""
+#: scc/gui/ae/axis_action.py:85
+msgid "Mouse Region option is unavailable when using a Wayland compositor"
+msgstr "當使用Wayland 合成器時，滑鼠區域選項無法使用"
 
-#: scc/gui/ae/axis_action.py:259 scc/gui/ae/gyro.py:97
+#: scc/gui/ae/axis_action.py:268 scc/gui/ae/gyro.py:97
 #: scc/gui/ae/per_axis.py:71
 msgid "Select Axis"
-msgstr ""
+msgstr "選擇軸"
 
-#: scc/gui/ae/axis_action.py:398
+#: scc/gui/ae/axis_action.py:407
 msgid "Joystick / Mouse"
-msgstr "Joystick / Myš"
+msgstr "類比搖桿 / 滑鼠"
 
 #: scc/gui/ae/axis.py:59
 msgid "Trigger or Axis"
-msgstr ""
+msgstr "數位 或 類比"
 
 #: scc/gui/ae/buttons.py:90 scc/gui/ae/trigger.py:153
 msgid "Key or Button"
-msgstr ""
+msgstr "鍵盤按鍵 或 搖桿按鍵"
 
-#: scc/gui/ae/custom.py:34 scc/gui/ring_editor.py:138
-#: ui/ae/custom.ui:16
+#: scc/gui/ae/custom.py:34 scc/gui/ring_editor.py:138 ui/ae/custom.ui:16
 msgid "Custom Action"
-msgstr ""
+msgstr "自定義動作"
 
 #: scc/gui/ae/dpad.py:94
 msgid "DPAD / Menu"
-msgstr "DPAD / Menu"
+msgstr "方向鍵 / 選單"
 
 #: scc/gui/ae/dpad.py:179
 #, python-format
 msgid "%s°"
-msgstr ""
+msgstr "%s°"
 
 #: scc/gui/ae/dpad.py:197
 msgid "Select DPAD Action"
-msgstr ""
+msgstr "選擇 方向鍵 動作"
 
 #: scc/gui/ae/first_page.py:97 scc/gui/ae/gyro_action.py:41
-#: scc/gui/modeshift_editor.py:35 ui/ae/dpad.ui:81
-#: ui/ae/special_action.ui:120 ui/controller_settings.ui:72
+#: scc/gui/modeshift_editor.py:35 ui/ae/dpad.ui:81 ui/ae/special_action.ui:120
+#: ui/controller_settings.ui:72
 msgid "Left Grip"
-msgstr ""
+msgstr "左 握持"
 
 #: scc/gui/ae/first_page.py:98 scc/gui/ae/gyro_action.py:42
-#: scc/gui/modeshift_editor.py:36 ui/ae/dpad.ui:85
-#: ui/ae/special_action.ui:124 ui/controller_settings.ui:76
+#: scc/gui/modeshift_editor.py:36 ui/ae/dpad.ui:85 ui/ae/special_action.ui:124
+#: ui/controller_settings.ui:76
 msgid "Right Grip"
-msgstr ""
+msgstr "右 握持"
 
 #: scc/gui/ae/first_page.py:99 scc/gui/ae/gyro_action.py:33
-#: scc/gui/modeshift_editor.py:37 ui/ae/dpad.ui:93
-#: ui/ae/special_action.ui:132 ui/controller_settings.ui:84
-#: ui/osk_binding_editor.ui:89
+#: scc/gui/modeshift_editor.py:37 ui/ae/dpad.ui:93 ui/ae/special_action.ui:132
+#: ui/controller_settings.ui:84 ui/osk_binding_editor.ui:89
 msgid "Left Bumper"
-msgstr ""
+msgstr "左 肩鍵"
 
 #: scc/gui/ae/first_page.py:100 scc/gui/ae/gyro_action.py:34
-#: scc/gui/modeshift_editor.py:38 ui/ae/dpad.ui:97
-#: ui/ae/special_action.ui:136 ui/controller_settings.ui:88
-#: ui/osk_binding_editor.ui:110
+#: scc/gui/modeshift_editor.py:38 ui/ae/dpad.ui:97 ui/ae/special_action.ui:136
+#: ui/controller_settings.ui:88 ui/osk_binding_editor.ui:110
 msgid "Right Bumper"
-msgstr ""
+msgstr "右肩鍵"
 
-#: scc/gui/ae/first_page.py:101 scc/gui/ae/gyro_action.py:31
-#: ui/ae/dpad.ui:101 ui/ae/special_action.ui:140
-#: ui/controller_settings.ui:92 ui/osk_binding_editor.ui:78
+#: scc/gui/ae/first_page.py:101 scc/gui/ae/gyro_action.py:31 ui/ae/dpad.ui:101
+#: ui/ae/special_action.ui:140 ui/controller_settings.ui:92
+#: ui/osk_binding_editor.ui:78
 msgid "Left Trigger"
-msgstr ""
+msgstr "左 扳機"
 
-#: scc/gui/ae/first_page.py:102 scc/gui/ae/gyro_action.py:32
-#: ui/ae/dpad.ui:105 ui/ae/special_action.ui:144
-#: ui/controller_settings.ui:96 ui/osk_binding_editor.ui:99
+#: scc/gui/ae/first_page.py:102 scc/gui/ae/gyro_action.py:32 ui/ae/dpad.ui:105
+#: ui/ae/special_action.ui:144 ui/controller_settings.ui:96
+#: ui/osk_binding_editor.ui:99
 msgid "Right Trigger"
-msgstr ""
+msgstr "右 扳機"
 
-#: scc/gui/ae/gesture.py:42
-msgid "Note: Gestures are not available with Wayland-based display server"
-msgstr ""
+#: scc/gui/ae/gesture.py:51
+msgid "Gestures are unavailable when using a Wayland compositor."
+msgstr "當使用Wayland時,手勢無法使用."
 
-#: scc/gui/ae/gesture.py:87 scc/special_actions.py:669
+#: scc/gui/ae/gesture.py:96 scc/special_actions.py:669
 msgid "Gestures"
-msgstr "Gesta"
+msgstr "手勢"
 
-#: scc/gui/ae/gesture.py:118
+#: scc/gui/ae/gesture.py:127
 msgid "Edit Gesture Action"
-msgstr ""
+msgstr "編輯 手勢 動作"
 
-#: scc/gui/ae/gesture.py:120 ui/ae/gesture.ui:247
+#: scc/gui/ae/gesture.py:129 ui/ae/gesture.ui:247
 msgid "Gesture"
-msgstr "Gesto"
+msgstr "手勢"
 
-#: scc/gui/ae/gesture.py:269
+#: scc/gui/ae/gesture.py:278
 msgid "Draw gesture on RIGHT pad..."
-msgstr ""
+msgstr "在右側觸控板畫出手勢..."
 
-#: scc/gui/ae/gesture.py:271
+#: scc/gui/ae/gesture.py:280
 msgid "Draw gesture on Touchpad..."
-msgstr ""
+msgstr "在觸控板畫出手勢..."
 
-#: scc/gui/ae/gesture.py:273 ui/ae/gesture.ui:167
+#: scc/gui/ae/gesture.py:282 ui/ae/gesture.ui:167
 msgid "Draw gesture on LEFT pad..."
-msgstr ""
+msgstr "在左側觸控板畫出手勢..."
 
-#: scc/gui/ae/gesture.py:310
+#: scc/gui/ae/gesture.py:319
 msgid "Repeat same gesture or press A button to confirm..."
-msgstr ""
+msgstr "重複同樣的手勢或按壓Ａ鍵來確認..."
 
-#: scc/gui/ae/gesture.py:315
+#: scc/gui/ae/gesture.py:324
 #, python-format
 msgid "Repeated %s times"
-msgstr ""
+msgstr "重複 %s 幾次"
 
-#: scc/gui/ae/gesture.py:317
+#: scc/gui/ae/gesture.py:326
 msgid "Gesture differs"
 msgstr ""
 
 #: scc/gui/ae/gyro_action.py:29
 msgid "Always Active"
-msgstr ""
+msgstr "永遠開啟"
 
 #: scc/gui/ae/gyro_action.py:36 scc/gui/modeshift_editor.py:49
 msgid "Left Pad Touched"
-msgstr ""
+msgstr "左觸控板碰觸"
 
 #: scc/gui/ae/gyro_action.py:37 scc/gui/modeshift_editor.py:50
 msgid "Right Pad Touched"
-msgstr ""
+msgstr "右觸控板碰觸"
 
 #: scc/gui/ae/gyro_action.py:38 scc/gui/modeshift_editor.py:47
 msgid "Left Pad Pressed"
-msgstr ""
+msgstr "左觸控板點擊"
 
 #: scc/gui/ae/gyro_action.py:39 scc/gui/modeshift_editor.py:48
 msgid "Right Pad Pressed"
-msgstr ""
+msgstr "右觸控板點擊"
 
 #: scc/gui/ae/gyro_action.py:43
 msgid "Left Stick Tilted"
-msgstr ""
+msgstr "左搖桿偏移"
 
 #: scc/gui/ae/gyro_action.py:45 scc/gui/modeshift_editor.py:26
-#: ui/ae/axis_action.ui:250 ui/ae/dpad.ui:45
-#: ui/ae/special_action.ui:84 ui/controller_settings.ui:36
-#: ui/osk_binding_editor.ui:17
+#: ui/ae/axis_action.ui:250 ui/ae/dpad.ui:45 ui/ae/special_action.ui:84
+#: ui/controller_settings.ui:36 ui/osk_binding_editor.ui:17
 msgid "A"
-msgstr ""
+msgstr "A"
 
-#: scc/gui/ae/gyro_action.py:46 scc/gui/modeshift_editor.py:27
-#: ui/ae/dpad.ui:49 ui/ae/special_action.ui:88
-#: ui/controller_settings.ui:40 ui/osk_binding_editor.ui:27
+#: scc/gui/ae/gyro_action.py:46 scc/gui/modeshift_editor.py:27 ui/ae/dpad.ui:49
+#: ui/ae/special_action.ui:88 ui/controller_settings.ui:40
+#: ui/osk_binding_editor.ui:27
 msgid "B"
-msgstr ""
+msgstr "B"
 
 #: scc/gui/ae/gyro_action.py:47 scc/gui/modeshift_editor.py:28
 #: ui/action_editor.ui:506 ui/ae/dpad.ui:53 ui/ae/special_action.ui:92
-#: ui/controller_settings.ui:44 ui/creg.ui:479 ui/creg.ui:503
-#: ui/creg.ui:515 ui/osk_binding_editor.ui:37
+#: ui/controller_settings.ui:44 ui/creg.ui:479 ui/creg.ui:503 ui/creg.ui:515
+#: ui/osk_binding_editor.ui:37
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: scc/gui/ae/gyro_action.py:48 scc/gui/modeshift_editor.py:29
 #: ui/action_editor.ui:552 ui/ae/dpad.ui:57 ui/ae/special_action.ui:96
-#: ui/controller_settings.ui:48 ui/creg.ui:491 ui/creg.ui:527
-#: ui/creg.ui:539 ui/osk_binding_editor.ui:47
+#: ui/controller_settings.ui:48 ui/creg.ui:491 ui/creg.ui:527 ui/creg.ui:539
+#: ui/osk_binding_editor.ui:47
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
-#: scc/gui/ae/gyro_action.py:50 scc/gui/modeshift_editor.py:31
-#: ui/ae/dpad.ui:65 ui/ae/special_action.ui:104
-#: ui/controller_settings.ui:56
+#: scc/gui/ae/gyro_action.py:50 scc/gui/modeshift_editor.py:31 ui/ae/dpad.ui:65
+#: ui/ae/special_action.ui:104 ui/controller_settings.ui:56
 msgid "Back (select)"
-msgstr ""
+msgstr "Back (select)"
 
-#: scc/gui/ae/gyro_action.py:51 scc/gui/modeshift_editor.py:32
-#: ui/ae/dpad.ui:69 ui/ae/special_action.ui:108
-#: ui/controller_settings.ui:60
+#: scc/gui/ae/gyro_action.py:51 scc/gui/modeshift_editor.py:32 ui/ae/dpad.ui:69
+#: ui/ae/special_action.ui:108 ui/controller_settings.ui:60
+#, fuzzy
 msgid "Center"
-msgstr "Střed"
+msgstr "中間鈕"
 
-#: scc/gui/ae/gyro_action.py:52 scc/gui/modeshift_editor.py:33
-#: ui/ae/dpad.ui:73 ui/ae/special_action.ui:112
-#: ui/controller_settings.ui:64 ui/osk_binding_editor.ui:68
+#: scc/gui/ae/gyro_action.py:52 scc/gui/modeshift_editor.py:33 ui/ae/dpad.ui:73
+#: ui/ae/special_action.ui:112 ui/controller_settings.ui:64
+#: ui/osk_binding_editor.ui:68
 msgid "Start"
 msgstr "Start"
 
 #: scc/gui/ae/gyro_action.py:54
 msgid "Touch Touchpad"
-msgstr ""
+msgstr "碰觸觸控板"
 
 #: scc/gui/ae/gyro_action.py:55
 msgid "Press Touchpad"
-msgstr ""
+msgstr "點擊觸控板"
 
 #: scc/gui/ae/gyro_action.py:152
 msgid "Joystick or Mouse"
-msgstr ""
+msgstr "搖桿 或 滑鼠"
 
 #: scc/gui/ae/gyro_action.py:221 scc/gui/ae/gyro.py:136
 msgid "Gyro Disable Button"
-msgstr ""
+msgstr "陀螺儀 關閉鍵"
 
 #: scc/gui/ae/gyro_action.py:223 scc/gui/ae/gyro.py:138
 #: ui/ae/gyro_action.ui:187 ui/ae/gyro.ui:167
 msgid "Gyro Enable Button"
-msgstr ""
+msgstr "陀螺儀 開啟鍵"
 
 #: scc/gui/ae/gyro.py:74 scc/gui/ae/per_axis.py:37
 msgid "Per Axis"
@@ -382,59 +375,60 @@ msgstr ""
 
 #: scc/gui/ae/gyro.py:121
 msgid "Stick deadzone"
-msgstr ""
+msgstr "搖桿 死區"
 
 #: scc/gui/ae/gyro.py:123 ui/ae/gyro_action.ui:243 ui/ae/gyro.ui:194
+#, fuzzy
 msgid "Trigger Pull Level"
-msgstr ""
+msgstr "扳機 全扣 Level"
 
 #: scc/gui/ae/menu_action.py:177
 msgid "Really delete selected global menu?"
-msgstr ""
+msgstr "確認要刪除所選的 全域 選單嗎?"
 
 #: scc/gui/ae/menu_action.py:179
 msgid "Really delete selected menu?"
-msgstr ""
+msgstr "確認要刪除所選的選單嗎?"
 
-#: scc/gui/ae/menu_action.py:190 scc/gui/app.py:1435
-msgid "This action is not undoable!"
-msgstr ""
+#: scc/gui/ae/menu_action.py:190 scc/gui/app.py:1443
+msgid "This action cannot be undone!"
+msgstr "這項動作不能被復原!"
 
 #: scc/gui/ae/menu_action.py:233
 #, python-format
 msgid "%s (global)"
-msgstr ""
+msgstr "%s (全域)"
 
 #: scc/gui/ae/menu_action.py:240
 msgid "New Menu..."
-msgstr "Nové Menu..."
+msgstr "新 選單..."
 
 #: scc/gui/ae/menu_action.py:446 ui/ae/dpad.ui:599
 msgid "Items per row"
-msgstr ""
+msgstr "每行顯示的項目數量"
 
 #: scc/gui/ae/menu_action.py:452 ui/ae/special_action.ui:457
 msgid "Size"
-msgstr ""
+msgstr "大小"
 
 #: scc/gui/ae/menu_action.py:468
 msgid "auto"
-msgstr ""
+msgstr "自動"
 
 #: scc/gui/ae/menu_action.py:478 scc/gui/ae/menu_action.py:483
 msgid "default"
-msgstr ""
+msgstr "預設"
 
 #: scc/gui/ae/menu_only.py:44 scc/gui/importexport/export.py:98
 #: scc/gui/importexport/export.py:111 scc/special_actions.py:324
 #: ui/ae/dpad.ui:219 ui/ae/dpad.ui:490 ui/ae/menu_only.ui:23
 #: ui/ae/special_action.ui:527 ui/ae/tilt.ui:55 ui/app.ui:657
 msgid "Menu"
-msgstr ""
+msgstr "選單"
 
 #: scc/gui/ae/osk_action.py:54
 msgid "On-Screen Keyboard"
-msgstr ""
+msgstr "虛擬鍵盤"
 
 #: scc/gui/ae/osk_buttons.py:27
 msgid "Key"
@@ -442,94 +436,95 @@ msgstr ""
 
 #: scc/gui/ae/recent_list.py:30
 msgid "Recent List"
-msgstr ""
+msgstr "近期 清單"
 
 #: scc/gui/ae/special_action.py:117
 msgid "Special Action"
-msgstr ""
+msgstr "特殊 動作"
 
 #: scc/gui/ae/special_action.py:217
 msgid "forever"
-msgstr ""
+msgstr "永久"
 
 #: scc/gui/ae/tilt.py:70
 msgid "Select Tilt Action"
-msgstr ""
+msgstr "選擇 偏移 動作"
 
 #: scc/gui/ae/trigger.py:245
-msgid "Select Partialy Pressed Action"
-msgstr ""
+msgid "Select Partially Pressed Action"
+msgstr "選擇 輕按壓 動作"
 
 #: scc/gui/ae/trigger.py:253
 msgid "Select Fully Pressed Action"
-msgstr ""
+msgstr "選擇 全按壓 動作"
 
 #: scc/gui/ae/trigger.py:261
 msgid "Select Analog Axis"
-msgstr ""
+msgstr "選取類比軸"
 
-#: scc/gui/app.py:142 scc/gui/app.py:379 scc/gui/app.py:1625
+#: scc/gui/app.py:148 scc/gui/app.py:385 scc/gui/app.py:1633
 #: scc/gui/statusicon.py:83
 msgid "SC Controller"
-msgstr ""
+msgstr "SC Controller"
 
-#: scc/gui/app.py:242
+#: scc/gui/app.py:248
 msgid "Edit Profile"
-msgstr ""
+msgstr "編輯配置"
 
-#: scc/gui/app.py:403
+#: scc/gui/app.py:411
 msgid "uinput kernel module not loaded"
-msgstr ""
+msgstr "未載入 uniput 核心模組"
 
-#: scc/gui/app.py:404 scc/gui/app.py:424 scc/gui/app.py:431
-msgid "Please, consult your distribution manual on how to enable uinput"
-msgstr ""
+#: scc/gui/app.py:412 scc/gui/app.py:432 scc/gui/app.py:439
+msgid "Consult your distribution documentation to learn how to enable uinput"
+msgstr "請參閱您的發行版文件,了解如何啟用 uinput"
 
-#: scc/gui/app.py:405 scc/gui/app.py:432
+#: scc/gui/app.py:413 scc/gui/app.py:440
+#, fuzzy
 msgid ""
 "or click on \"Fix Temporary\" button to attempt fix that should work until "
 "next restart."
-msgstr ""
+msgstr "或按一下 \"臨時修復\" 按鈕 , 以修正該按鈕應能運作至下次重新啟動為止."
 
-#: scc/gui/app.py:409 scc/gui/app.py:436
+#: scc/gui/app.py:417 scc/gui/app.py:444
 msgid "Fix Temporary"
-msgstr ""
+msgstr "臨時修復"
 
-#: scc/gui/app.py:415
+#: scc/gui/app.py:423
 msgid "This will load missing uinput module."
-msgstr ""
-
-#: scc/gui/app.py:421
-msgid "/dev/uinput doesn't exists"
-msgstr ""
-
-#: scc/gui/app.py:422
-msgid "uinput kernel module is loaded, but /dev/uinput is missing."
-msgstr ""
+msgstr "這將載入缺少的 uniput 模組."
 
 #: scc/gui/app.py:429
+msgid "/dev/uinput does not exist"
+msgstr "/dev/uinput 不存在"
+
+#: scc/gui/app.py:430
+msgid "uinput kernel module is loaded, but /dev/uinput is missing."
+msgstr "已載入 uinput 核心模組,但 /dev/uinput 遺失."
+
+#: scc/gui/app.py:437
 msgid "You don't have required access to /dev/uinput."
 msgstr ""
 
-#: scc/gui/app.py:430
+#: scc/gui/app.py:438
 msgid "This will most likely prevent emulation from working."
 msgstr ""
 
-#: scc/gui/app.py:443
+#: scc/gui/app.py:451
 msgid ""
 "This will enable input emulation for <i>every application</i> and <i>all "
 "users</i> on this machine."
 msgstr ""
 
-#: scc/gui/app.py:461
+#: scc/gui/app.py:469
 msgid "sudo fix-my-pc"
-msgstr ""
+msgstr "sudo fix-my-pc"
 
-#: scc/gui/app.py:476
+#: scc/gui/app.py:484
 msgid "Command Failed"
-msgstr ""
+msgstr "指令 失敗"
 
-#: scc/gui/app.py:485
+#: scc/gui/app.py:493
 #, python-format
 msgid ""
 "Following command is going to be executed:\n"
@@ -538,77 +533,87 @@ msgid ""
 "\n"
 "%s"
 msgstr ""
+"將執行以下指令:\n"
+"\n"
+"<b>%s</b>\n"
+"\n"
+"%s"
 
-#: scc/gui/app.py:546
+#: scc/gui/app.py:554
 msgid "_Edit Pressed Action"
-msgstr ""
+msgstr "_編輯 按壓 動作"
 
-#: scc/gui/app.py:588
+#: scc/gui/app.py:596
 msgid "Unable to hide the window to the system tray"
-msgstr ""
+msgstr "無法 隱藏 視窗至 系統匣"
 
-#: scc/gui/app.py:591
+#: scc/gui/app.py:599
 msgid "Do you want to quit the application instead?"
-msgstr ""
+msgstr "您要改為關閉應用程式嗎?"
 
-#: scc/gui/app.py:594 ui/creg.ui:871
+#: scc/gui/app.py:602 ui/creg.ui:871
 msgid "_Cancel"
-msgstr ""
+msgstr "_取消"
 
-#: scc/gui/app.py:595
+#: scc/gui/app.py:603
 msgid "_Quit"
-msgstr ""
+msgstr "_退出"
 
-#: scc/gui/app.py:786
+#: scc/gui/app.py:794
 msgid ""
 "You are about to save changes over template.\n"
 "Are you sure?"
 msgstr ""
+"你將要儲存覆蓋範本.\n"
+"你確定嗎?"
 
-#: scc/gui/app.py:789
+#: scc/gui/app.py:797
 msgid "Create New Profile"
-msgstr "Vytvořit Nový Profil"
+msgstr "建立新配置"
 
-#: scc/gui/app.py:861 scc/gui/app.py:865
+#: scc/gui/app.py:869 scc/gui/app.py:873
 #, python-format
 msgid "New Profile %s"
-msgstr "Nový Profil %s"
+msgstr "新 配置 %s"
 
-#: scc/gui/app.py:873
+#: scc/gui/app.py:881
 #, python-format
 msgid "%s (copy)"
-msgstr ""
+msgstr "%s (複製)"
 
-#: scc/gui/app.py:877
+#: scc/gui/app.py:885
 #, python-format
 msgid "%s (copy %s)"
-msgstr ""
+msgstr "%s (複製 %s)"
 
-#: scc/gui/app.py:1236
+#: scc/gui/app.py:1244
 #, python-format
 msgid "There was an error with enabling emulation: <b>%s</b>"
 msgstr ""
 
-#: scc/gui/app.py:1239
-msgid "Please, check if you have receiver dongle connected to USB port."
+#: scc/gui/app.py:1247
+msgid "Check whether the receiver dongle is connected to a USB port."
 msgstr ""
 
-#: scc/gui/app.py:1241
-msgid "You don't have access to controller device."
+#: scc/gui/app.py:1249
+msgid "You do not have access to the controller device."
 msgstr ""
 
-#: scc/gui/app.py:1244
-#, python-format
+#: scc/gui/app.py:1252
+#, fuzzy, python-format
 msgid ""
 "Consult your distribution manual, try installing Steam package or <a "
 "href='%s'>install required udev rules manually</a>."
 msgstr ""
+"請查閱您的distribution說明手冊,請嘗試安裝 Steam 套件或 <a href='%s'>install "
+"required udev rules manually</a>."
 
-#: scc/gui/app.py:1250
+#: scc/gui/app.py:1258
 msgid "Another application (most likely Steam) is using the controller."
-msgstr ""
+msgstr "另外一個程式 (高機率是Steam) 正在使用這支控制器。"
 
-#: scc/gui/app.py:1253
+#: scc/gui/app.py:1261
+#, fuzzy
 msgid ""
 "Background process responsible for emulation is not starting.\n"
 "\n"
@@ -617,171 +622,179 @@ msgid ""
 "or <a href='https://github.com/C0rn3j/sc-controller/issues'>open issue on "
 "GitHub</a> and copy output there."
 msgstr ""
+"Background process responsible for emulation is not starting.\n"
+"\n"
+"請嘗試執行 \"scc-daemon debug\" 在終端機視窗中檢查是否有任何錯誤\n"
+"或 <a href='https://github.com/C0rn3j/sc-controller/issues'>open issue on "
+"GitHub</a> and copy output there."
 
-#: scc/gui/app.py:1257
+#: scc/gui/app.py:1265
 msgid "USB dongle was removed."
-msgstr ""
+msgstr "USB接收器已被移除."
 
-#: scc/gui/app.py:1336 ui/app.ui:837
+#: scc/gui/app.py:1344 ui/app.ui:837
 msgid "_Configure Controller"
-msgstr ""
+msgstr "_設定 控制器"
 
-#: scc/gui/app.py:1337 ui/app.ui:844
+#: scc/gui/app.py:1345 ui/app.ui:844
 msgid "_Turn Off Controller"
-msgstr ""
+msgstr "_關 閉 控制器"
 
-#: scc/gui/app.py:1341 ui/app.ui:856
+#: scc/gui/app.py:1349 ui/app.ui:856
 msgid "_New Profile"
-msgstr ""
+msgstr "_新 配置"
 
-#: scc/gui/app.py:1342 ui/app.ui:863
+#: scc/gui/app.py:1350 ui/app.ui:863
 msgid "_Copy Profile"
-msgstr ""
+msgstr "_複製 配置"
 
-#: scc/gui/app.py:1347 ui/app.ui:870
+#: scc/gui/app.py:1355 ui/app.ui:870
 msgid "_Rename Profile"
-msgstr ""
+msgstr "_重命名 配置"
 
-#: scc/gui/app.py:1348 ui/app.ui:877
+#: scc/gui/app.py:1356 ui/app.ui:877
 msgid "_Delete Profile"
-msgstr ""
+msgstr "_刪除 配置"
 
-#: scc/gui/app.py:1350 ui/app.ui:884
+#: scc/gui/app.py:1358 ui/app.ui:884
 msgid "_Revert Profile to Defaults"
-msgstr ""
+msgstr "_回復為預設配置"
 
-#: scc/gui/app.py:1351 ui/app.ui:896
+#: scc/gui/app.py:1359 ui/app.ui:896
 msgid "Profile D_etails"
 msgstr ""
 
-#: scc/gui/app.py:1424
+#: scc/gui/app.py:1432
 msgid "Really revert current profile to default values?"
-msgstr ""
+msgstr "確定要回復現有配置到預設的配置?"
 
-#: scc/gui/app.py:1426
+#: scc/gui/app.py:1434
 msgid "Really delete current profile?"
-msgstr ""
+msgstr "確定要刪除現有配置?"
 
-#: scc/gui/app.py:1628
+#: scc/gui/app.py:1636
+#, fuzzy
 msgid "Emulation is active"
-msgstr ""
+msgstr "模擬 已啟動"
 
-#: scc/gui/app.py:1630
+#: scc/gui/app.py:1638
 msgid "Error enabling emulation"
 msgstr ""
 
-#: scc/gui/app.py:1632
+#: scc/gui/app.py:1640
 msgid "Emulation is inactive"
 msgstr ""
 
-#: scc/gui/app.py:1634
+#: scc/gui/app.py:1642
 msgid "Checking emulation status..."
 msgstr ""
 
-#: scc/gui/app.py:1765
+#: scc/gui/app.py:1773
 #, python-format
 msgid "<a href='%s'>Click here</a> to check what's new!"
-msgstr ""
+msgstr "<a href='%s'>點擊這裡</a> 來看有什麼新內容！"
 
-#: scc/gui/app.py:1769
+#: scc/gui/app.py:1777
 #, python-format
 msgid "Welcome to the version <b>%s</b>."
-msgstr ""
+msgstr "歡迎來到版本 <b>%s</b>."
 
-#: scc/gui/app.py:1770
+#: scc/gui/app.py:1778
 #, python-format
 msgid "<a href='%s'>Click here</a> to read release notes."
-msgstr ""
+msgstr "<a href='%s'>點擊這裡</a> 來閱讀更新資訊."
 
 #: scc/gui/binding_editor.py:169
-#, python-format
+#, fuzzy, python-format
 msgid "Mode Shift for %s"
-msgstr ""
+msgstr "模式切換 for %s"
 
 #: scc/gui/binding_editor.py:179
-#, python-format
+#, fuzzy, python-format
 msgid "Macro for %s"
-msgstr ""
+msgstr "巨集 for %s"
 
 #: scc/gui/controller_settings.py:179
 #, python-format
 msgid "%s seconds"
-msgstr ""
+msgstr "%s 秒數"
 
 #: scc/gui/controller_settings.py:181
 #, python-format
 msgid "%s minutes"
-msgstr ""
+msgstr "%s 分鐘數"
 
 #: scc/gui/controller_settings.py:182
 #, python-format
 msgid "%sm %ss"
-msgstr ""
+msgstr "%s分 %s秒"
 
 #: scc/gui/controller_widget.py:67 scc/gui/controller_widget.py:116
 #: scc/gui/controller_widget.py:221
 msgid "(no action)"
-msgstr ""
+msgstr "(無動作)"
 
 #: scc/gui/creg/dialog.py:526
 msgid "Failed to open device"
-msgstr ""
+msgstr "開啟裝置失敗"
 
 #: scc/gui/creg/dialog.py:549
+#, fuzzy
 msgid "USB HID (recommended)"
-msgstr ""
+msgstr "USB HID (推薦)"
 
-#: scc/gui/creg/dialog.py:549 ui/creg.ui:18
+#: scc/gui/creg/dialog.py:549
+#, fuzzy
 msgid "USB HID"
-msgstr ""
+msgstr "USB HID"
 
 #: scc/gui/creg/dialog.py:721
 msgid "Press stick or button..."
-msgstr ""
+msgstr "按壓 搖桿 或 按鈕..."
 
 #: scc/gui/creg/grabs.py:20
 msgid "Press a button..."
-msgstr ""
+msgstr "按壓 一個 按鍵..."
 
 #: scc/gui/creg/grabs.py:66
 msgid "Pull a trigger..."
-msgstr ""
+msgstr "按壓 一個 扳機鍵..."
 
 #: scc/gui/creg/grabs.py:110
 msgid "Move stick left and right..."
-msgstr ""
+msgstr "把搖桿向左和向右移動..."
 
 #: scc/gui/creg/grabs.py:126
 msgid "Move DPAD to right"
-msgstr ""
+msgstr "方向鍵按右"
 
 #: scc/gui/creg/grabs.py:129
 msgid "Move DPAD up"
-msgstr ""
+msgstr "方向鍵按上"
 
 #: scc/gui/creg/grabs.py:132
 msgid "Move DPAD down"
-msgstr ""
+msgstr "方向鍵按下"
 
 #: scc/gui/creg/grabs.py:153
 msgid "Move stick up and down..."
-msgstr ""
+msgstr "把搖桿向上和向下移動..."
 
-#: scc/gui/global_settings.py:232
+#: scc/gui/global_settings.py:257
 msgid "(customized)"
-msgstr ""
+msgstr "(自訂)"
 
-#: scc/gui/global_settings.py:759
-msgid "Please, install xdotool package to use this feature"
-msgstr ""
+#: scc/gui/global_settings.py:795
+msgid "Install the xdotool package to use this feature"
+msgstr "安裝 xdotool 套件以使用此功能"
 
-#: scc/gui/global_settings.py:786
+#: scc/gui/global_settings.py:822
 msgid "Unregister controller?"
-msgstr ""
+msgstr "未註冊 控制器?"
 
-#: scc/gui/global_settings.py:788
+#: scc/gui/global_settings.py:824
 msgid "You'll lose all settings for it"
-msgstr ""
+msgstr "你將會失去所有設定"
 
 #: scc/gui/icon_chooser.py:102
 #, python-format
@@ -790,100 +803,104 @@ msgstr ""
 
 #: scc/gui/importexport/dialog.py:143 ui/import_export.ui:1002
 msgid "Next"
-msgstr "Další"
+msgstr "下一步"
 
 #: scc/gui/importexport/export.py:111 scc/gui/importexport/export.py:134
 #, python-format
 msgid "%s (not found)"
-msgstr ""
+msgstr "%s (未找到)"
 
 #: scc/gui/importexport/export.py:124 scc/gui/importexport/export.py:134
 #: scc/gui/profile_switcher.py:344 ui/ae/special_action.ui:372
 #: ui/import_export.ui:245 ui/import_export.ui:425
 msgid "Profile"
-msgstr ""
+msgstr "配置"
 
 #: scc/gui/importexport/export.py:204
 msgid "Export to File..."
-msgstr ""
+msgstr "匯出至檔案..."
 
 #: scc/gui/importexport/import_sccprofile.py:27
 msgid "Import Profile..."
-msgstr ""
+msgstr "匯入配置..."
 
 #: scc/gui/importexport/import_sccprofile.py:73
 #: scc/gui/importexport/import_sccprofile.py:95
 #: scc/gui/importexport/import_sccprofile.py:101
 msgid "(profile)"
-msgstr ""
+msgstr "(配置)"
 
 #: scc/gui/importexport/import_sccprofile.py:109
 msgid "(menu)"
-msgstr ""
+msgstr "(選單)"
 
 #: scc/gui/importexport/import_sccprofile.py:142
 msgid "Continue"
-msgstr ""
+msgstr "繼續"
 
 #: scc/gui/importexport/import_sccprofile.py:167
 #: scc/gui/importexport/import_vdf.py:402
-msgid "Profile sucessfully imported"
-msgstr ""
+msgid "Profile successfully imported"
+msgstr "配置成功的匯入了"
 
 #: scc/gui/importexport/import_sccprofile.py:181
 #: scc/gui/importexport/import_vdf.py:280
+#, fuzzy
 msgid "Apply"
-msgstr ""
+msgstr "採用"
 
 #: scc/gui/importexport/import_sccprofile.py:188 ui/import_export.ui:804
-#, python-format
+#, fuzzy, python-format
 msgid "Import as hidden menus and profiles named \".%s:name\""
-msgstr ""
+msgstr "匯出為隱藏選單 並命名為 \".%s:name\""
 
 #: scc/gui/importexport/import_sccprofile.py:189 ui/import_export.ui:813
-#, python-format
-msgid "Import normaly, with names formated as \"%s:name\""
-msgstr ""
+#, fuzzy, python-format
+msgid "Import normally, with names formatted as \"%s:name\""
+msgstr "正常匯出, 名稱已格式化為 \"%s:name\""
 
 #: scc/gui/importexport/import_vdf.py:137
-#, python-format
+#, fuzzy, python-format
 msgid "Unknown App ID %s"
-msgstr ""
+msgstr "未知 App ID %s"
 
 #: scc/gui/importexport/import_vdf.py:206
 msgid "(not found)"
-msgstr ""
+msgstr "(沒找到)"
 
 #: scc/gui/importexport/import_vdf.py:306
+#, fuzzy
 msgid "No game"
-msgstr ""
+msgstr "沒有 遊戲"
 
 #: scc/gui/importexport/import_vdf.py:306
+#, fuzzy
 msgid "Dropped profile"
-msgstr ""
+msgstr "放下 丟下 配置"
 
 #: scc/gui/importexport/import_vdf.py:381 ui/import_export.ui:939
 msgid "Import failed"
-msgstr ""
+msgstr "匯入失敗"
 
 #: scc/gui/importexport/import_vdf.py:397
+#, fuzzy
 msgid "Profile imported with warnings"
-msgstr ""
+msgstr "匯入有警告的配置"
 
 #: scc/gui/macro_editor.py:257
 #, python-format
 msgid "<b>Delay: %sms</b>"
-msgstr ""
+msgstr "<b>延遲: %s毫秒</b>"
 
 #: scc/gui/macro_editor.py:260
 #, python-format
 msgid "<b>Delay: %0.2fs</b>"
-msgstr ""
+msgstr "<b>延遲: %0.2f秒</b>"
 
 #: scc/gui/macro_editor.py:275 scc/gui/modeshift_editor.py:224
 #: scc/gui/ring_editor.py:91 scc/gui/ring_editor.py:96
 msgid "Edit Action"
-msgstr ""
+msgstr "編輯 動作"
 
 #: scc/gui/menu_editor.py:133
 msgid "Edit Separator"
@@ -895,230 +912,236 @@ msgstr ""
 
 #: scc/gui/menu_editor.py:137
 msgid "Edit Submenu"
-msgstr ""
+msgstr "編輯子選單"
 
 #: scc/gui/menu_editor.py:145
 msgid "Menu Label"
-msgstr ""
+msgstr "選單 標籤"
 
 #: scc/gui/menu_editor.py:151
 msgid "Edit Menu Action"
-msgstr ""
+msgstr "編輯 選單 動作"
 
 #: scc/gui/menu_editor.py:157
 msgid "Edit Recent List"
-msgstr ""
+msgstr "編輯 近期 清單"
 
 #: scc/gui/menu_editor.py:246
-msgid "Invalid Menu ID: Menu with same ID already exists."
-msgstr ""
+#, fuzzy
+msgid "Invalid Menu ID: A menu with the same ID already exists."
+msgstr "無效的選單ID: 已存在具有相同ID的選單."
 
 #: scc/gui/menu_editor.py:251
-msgid "Invalid Menu ID: Please, don't use dots (.) or slashes (/)."
-msgstr ""
+#, fuzzy
+msgid "Invalid Menu ID: Do not use dots (.) or slashes (/)."
+msgstr "無效的選單ID: 請勿使用點(.)或斜線(/)。"
 
 #: scc/gui/menu_editor.py:258
 msgid "New Menu"
-msgstr ""
+msgstr "新 選單"
 
 #: scc/gui/menu_editor.py:275
 msgid "Menu Editor"
-msgstr ""
+msgstr "選單 編輯器"
 
 #: scc/gui/menu_editor.py:382 ui/controller_settings.ui:211
 #: ui/icon_chooser.ui:60
 msgid "Icon"
-msgstr ""
+msgstr "圖示"
 
 #: scc/gui/menu_editor.py:387
 msgid "(no icon)"
-msgstr ""
+msgstr "(無圖示)"
 
 #: scc/gui/modeshift_editor.py:40
 msgid "Left Trigger (full)"
-msgstr ""
+msgstr "左 扳機 (全扣)"
 
 #: scc/gui/modeshift_editor.py:41
 msgid "Right Trigger (full)"
-msgstr ""
+msgstr "右 扳機 (全扣)"
 
 #: scc/gui/modeshift_editor.py:42
 msgid "Left Trigger (soft)"
-msgstr ""
+msgstr "左 扳機 (輕扣)"
 
 #: scc/gui/modeshift_editor.py:43
 msgid "Right Trigger (soft)"
-msgstr ""
+msgstr "右 扳機 (輕扣)"
 
 #: scc/gui/modeshift_editor.py:45
 msgid "Left Stick Pressed"
-msgstr ""
+msgstr "左 搖桿 按壓"
 
 #: scc/gui/modeshift_editor.py:46
 msgid "Right Stick Pressed"
-msgstr ""
+msgstr "右搖桿 按壓"
 
 #: scc/gui/modeshift_editor.py:217
 msgid "Edit Macro"
-msgstr ""
+msgstr "編輯 巨集"
 
 #: scc/gui/modeshift_editor.py:376 scc/gui/modeshift_editor.py:379
 msgid "(no button pressed)"
-msgstr ""
+msgstr "(沒有 按鈕 按壓)"
 
 #: scc/gui/modeshift_editor.py:382 ui/modeshift_editor.ui:154
 msgid "(pressed alone)"
-msgstr ""
+msgstr "(單獨 按壓)"
 
 #: scc/gui/osk_binding_editor.py:47
 #, python-format
 msgid "%s Button"
-msgstr ""
+msgstr "%s 按鈕"
 
 #: scc/gui/parser.py:25
 msgid "(invalid)"
-msgstr ""
+msgstr "(無效)"
 
 #: scc/gui/profile_switcher.py:181
 msgid "New profile..."
-msgstr ""
+msgstr "新 配置..."
 
 #: scc/gui/profile_switcher.py:296
 msgid "Save changes"
-msgstr ""
+msgstr "儲存 變更"
 
 #: scc/gui/profile_switcher.py:302
 msgid "(changed template)"
-msgstr ""
+msgstr "(更改 範本)"
 
 #: scc/gui/profile_switcher.py:304
 msgid "(changed)"
-msgstr ""
+msgstr "(已更改)"
 
 #: scc/gui/profile_switcher.py:313
 msgid "(template)"
-msgstr ""
+msgstr "(範本)"
 
 #: scc/gui/profile_switcher.py:321
 msgid "Edit mappings of this controller"
-msgstr ""
+msgstr "編輯此控制器的設定配置"
 
-#: scc/gui/ring_editor.py:74 scc/gui/ring_editor.py:82
-#: ui/ring_editor.ui:109
+#: scc/gui/ring_editor.py:74 scc/gui/ring_editor.py:82 ui/ring_editor.ui:109
 msgid "Inner Ring Radius"
-msgstr ""
+msgstr "內環半徑"
 
-#: scc/gui/ring_editor.py:75 scc/gui/ring_editor.py:83
-#: ui/ring_editor.ui:171
+#: scc/gui/ring_editor.py:75 scc/gui/ring_editor.py:83 ui/ring_editor.ui:171
 msgid "Inner Ring"
-msgstr ""
+msgstr "內環"
 
 #: scc/gui/ring_editor.py:76 scc/gui/ring_editor.py:79
 msgid "Entire Pad"
-msgstr ""
+msgstr "整個觸控板"
 
 #: scc/gui/ring_editor.py:78
 msgid "Outer Ring Starts at"
-msgstr ""
+msgstr "外環 開始於"
 
-#: scc/gui/ring_editor.py:80 scc/gui/ring_editor.py:84
-#: ui/ring_editor.ui:238
+#: scc/gui/ring_editor.py:80 scc/gui/ring_editor.py:84 ui/ring_editor.ui:238
 msgid "Outer Ring"
-msgstr ""
+msgstr "外環"
 
-#: scc/macros.py:196
+#: scc/i18n.py:60
+msgid "System Default"
+msgstr "系統 預設"
+
+#: scc/i18n.py:60
+msgid "English"
+msgstr "英文"
+
+#: scc/macros.py:195
 msgid "Cycle Actions"
 msgstr ""
 
-#: scc/macros.py:238
+#: scc/macros.py:237
 #, python-format
 msgid "Wait %sms"
-msgstr ""
+msgstr "等候 %s毫秒"
 
-#: scc/macros.py:240
+#: scc/macros.py:239
 #, python-format
 msgid "Wait %ss"
-msgstr ""
+msgstr "等候 %s秒"
 
-#: scc/macros.py:258 ui/macro_editor.ui:285 ui/modeshift_editor.ui:176
+#: scc/macros.py:257 ui/macro_editor.ui:285 ui/modeshift_editor.ui:176
 msgid "Press"
-msgstr ""
+msgstr "按壓"
 
-#: scc/macros.py:291 ui/macro_editor.ui:289
+#: scc/macros.py:290 ui/macro_editor.ui:289
 msgid "Release"
-msgstr ""
+msgstr "放開按壓"
 
-#: scc/macros.py:304 scc/macros.py:387
+#: scc/macros.py:303 scc/macros.py:386
 msgid "Tap"
-msgstr ""
+msgstr "普通按壓"
+
+#: scc/macros.py:388
+msgid "DblTap"
+msgstr "雙擊"
 
 #: scc/macros.py:389
-msgid "DblTap"
-msgstr ""
-
-#: scc/macros.py:390
 msgid "-tap"
 msgstr ""
 
 #: scc/menu_data.py:220
 #, python-format
 msgid "----[ %s ]----"
-msgstr ""
+msgstr "----[ %s ]----"
 
 #: scc/menu_data.py:221
 msgid "---- Separator ----"
 msgstr ""
 
-#: scc/menu_data.py:239 scc/osd/menu.py:348 scc/osd/quick_menu.py:50
+#: scc/menu_data.py:239 scc/osd/menu.py:347 scc/osd/quick_menu.py:50
 msgid ">>"
-msgstr ""
+msgstr ">>"
 
-#: scc/modifiers.py:183 scc/modifiers.py:184
+#: scc/modifiers.py:182 scc/modifiers.py:183
 msgid "(if pressed)"
-msgstr ""
+msgstr "(假如 按壓了)"
 
-#: scc/modifiers.py:278 scc/modifiers.py:279
+#: scc/modifiers.py:277 scc/modifiers.py:278
 #, python-format
 msgid "(when %s)"
-msgstr ""
+msgstr "(當 %s)"
 
-#: scc/modifiers.py:311 scc/modifiers.py:312
+#: scc/modifiers.py:310 scc/modifiers.py:311
 msgid "(when pressed)"
-msgstr ""
+msgstr "(當 按壓了)"
 
-#: scc/modifiers.py:337 scc/modifiers.py:338
+#: scc/modifiers.py:336 scc/modifiers.py:337
 msgid "(when released)"
-msgstr ""
+msgstr "(當 放開按壓)"
 
-#: scc/modifiers.py:483
+#: scc/modifiers.py:482
 msgid "Trackball"
-msgstr ""
+msgstr "軌跡球"
+
+#: scc/modifiers.py:487
+msgid "Mouse-like LStick"
+msgstr "類似滑鼠的左搖桿"
 
 #: scc/modifiers.py:488
-msgid "Mouse-like LStick"
-msgstr ""
-
-#: scc/modifiers.py:489
 msgid "Mouse-like RStick"
-msgstr ""
+msgstr "類似滑鼠的右搖桿"
 
-#: scc/modifiers.py:493 scc/osd/binding_display.py:255
-#: ui/action_editor.ui:1413 ui/ae/axis_action.ui:159
-#: ui/ae/axis_action.ui:164 ui/ae/axis_action.ui:648
+#: scc/modifiers.py:492 scc/osd/binding_display.py:255 ui/action_editor.ui:1413
+#: ui/ae/axis_action.ui:159 ui/ae/axis_action.ui:164 ui/ae/axis_action.ui:648
 msgid "Mouse Wheel"
-msgstr ""
+msgstr "滑鼠滾輪"
 
-#: scc/modifiers.py:495
+#: scc/modifiers.py:494
 #, python-format
 msgid "Ball(%s)"
 msgstr ""
 
-#: scc/modifiers.py:1485
+#: scc/modifiers.py:1484
 #, python-format
 msgid "Circular %s"
 msgstr ""
 
-#: scc/modifiers.py:1562
+#: scc/modifiers.py:1561
 #, python-format
 msgid "Absolute Circular %s"
 msgstr ""
@@ -1127,89 +1150,89 @@ msgstr ""
 msgid "Run"
 msgstr ""
 
-#: scc/osd/menu_generators.py:38 scc/x11/autoswitcher.py:318
+#: scc/osd/menu_generators.py:46 scc/x11/autoswitcher.py:318
 msgid "[ All Profiles ]"
-msgstr ""
+msgstr "[ 所有 配置 ]"
 
-#: scc/osd/menu_generators.py:66
+#: scc/osd/menu_generators.py:74
 #, python-format
 msgid "[ %s Recent Profiles ]"
-msgstr ""
+msgstr "[ %s 近期 清單 ]"
 
-#: scc/osd/menu_generators.py:143
+#: scc/osd/menu_generators.py:151
 msgid "Switch To is not currently supported in Wayland"
 msgstr ""
 
-#: scc/osd/osk_actions.py:48
+#: scc/osd/osk_actions.py:47
 msgid "Hide"
-msgstr ""
+msgstr "隱藏"
 
-#: scc/osd/osk_actions.py:49 ui/ae/osk_action.ui:18
+#: scc/osd/osk_actions.py:48 ui/ae/osk_action.ui:18
 msgid "Hide Keyboard"
-msgstr ""
+msgstr "隱藏 鍵盤"
 
-#: scc/osd/osk_actions.py:81 ui/ae/osk_action.ui:22
+#: scc/osd/osk_actions.py:80 ui/ae/osk_action.ui:22
 msgid "Move LEFT Cursor"
-msgstr ""
+msgstr "向左移動游標"
 
-#: scc/osd/osk_actions.py:83 ui/ae/osk_action.ui:26
+#: scc/osd/osk_actions.py:82 ui/ae/osk_action.ui:26
 msgid "Move RIGHT Cursor"
-msgstr ""
+msgstr "向右移動游標"
 
-#: scc/osd/osk_actions.py:84
+#: scc/osd/osk_actions.py:83
 msgid "Move Cursor"
-msgstr ""
+msgstr "移動游標"
 
-#: scc/osd/osk_actions.py:98 ui/ae/osk_action.ui:38
-#: ui/ae/osk_action.ui:50 ui/global_settings.ui:107
+#: scc/osd/osk_actions.py:97 ui/ae/osk_action.ui:38 ui/ae/osk_action.ui:50
+#: ui/global_settings.ui:108
 msgid "Move Keyboard"
-msgstr ""
+msgstr "移動 鍵盤"
 
-#: scc/osd/osk_actions.py:116
+#: scc/osd/osk_actions.py:115
 msgid "Press Key"
-msgstr ""
+msgstr "按壓 按鍵"
 
-#: scc/osd/osk_actions.py:118 ui/ae/osk_action.ui:30
+#: scc/osd/osk_actions.py:117 ui/ae/osk_action.ui:30
 msgid "Press Key Under LEFT Cursor"
 msgstr ""
 
-#: scc/osd/osk_actions.py:119 ui/ae/osk_action.ui:34
+#: scc/osd/osk_actions.py:118 ui/ae/osk_action.ui:34
 msgid "Press Key Under RIGHT Cursor"
 msgstr ""
 
 #: scc/special_actions.py:48
 #, python-format
 msgid "Profile: %s"
-msgstr ""
+msgstr "配置: %s"
 
 #: scc/special_actions.py:50
 #, python-format
 msgid "Switch to %s"
-msgstr ""
+msgstr "切換 至 %s"
 
 #: scc/special_actions.py:51
 msgid "Profile Change"
-msgstr ""
+msgstr "配置 更換"
 
 #: scc/special_actions.py:83 ui/ae/special_action.ui:65
 msgid "Execute Command"
-msgstr ""
+msgstr "執行 指令"
 
 #: scc/special_actions.py:107
 msgid "Turning controller OFF"
-msgstr ""
+msgstr "把 控制器 關閉"
 
 #: scc/special_actions.py:108
 msgid "Turn Off the Controller"
-msgstr ""
+msgstr "把這控制器關閉"
 
 #: scc/special_actions.py:137
 msgid "Restart SCC-Daemon"
-msgstr ""
+msgstr "重開 SCC-Daemon"
 
 #: scc/special_actions.py:159
 msgid "Set LED brightness"
-msgstr ""
+msgstr "設定 LED 亮度"
 
 #: scc/special_actions.py:215
 #, python-format
@@ -1222,23 +1245,23 @@ msgstr ""
 
 #: scc/special_actions.py:277 ui/ae/special_action.ui:57
 msgid "Hide all OSD Menus and Messages"
-msgstr ""
+msgstr "隱藏 所有 虛擬鍵盤 選單 及 訊息"
 
 #: scc/special_actions.py:466
 msgid "QuickMenu"
-msgstr ""
+msgstr "快速選單"
 
 #: scc/special_actions.py:520 scc/special_actions.py:536
 msgid "Dialog"
 msgstr ""
 
-#: scc/special_actions.py:599 ui/global_settings.ui:624
+#: scc/special_actions.py:599 ui/global_settings.ui:761
 msgid "Display Keyboard"
-msgstr ""
+msgstr "顯示 鍵盤"
 
 #: scc/special_actions.py:600
 msgid "OSD Keyboard"
-msgstr ""
+msgstr "虛擬鍵盤"
 
 #: scc/special_actions.py:775
 msgid "CemuHook"
@@ -1246,22 +1269,22 @@ msgstr ""
 
 #: scc/x11/autoswitcher.py:154
 msgid "Switched to profile"
-msgstr ""
+msgstr "切換 至 配置"
 
 #: scc/x11/autoswitcher.py:230
 #, python-format
 msgid "title contains '%s'"
-msgstr ""
+msgstr "標題包含 '%s'"
 
 #: scc/x11/autoswitcher.py:232
 #, python-format
 msgid "title is '%s'"
-msgstr ""
+msgstr "標題為 '%s'"
 
 #: scc/x11/autoswitcher.py:234
 #, python-format
 msgid "title matches '%s'"
-msgstr ""
+msgstr "標題 符合 '%s'"
 
 #: scc/x11/autoswitcher.py:236
 #, python-format
@@ -1270,32 +1293,32 @@ msgstr ""
 
 #: scc/x11/autoswitcher.py:238
 msgid " and "
-msgstr ""
+msgstr " 和 "
 
 #: scc/x11/autoswitcher.py:239
 msgid "matches nothing"
-msgstr ""
+msgstr "無符合"
 
 #: scc/x11/autoswitcher.py:323
 msgid "Autoswitch is not currently supported in Wayland"
-msgstr ""
+msgstr "目前 Wayland 不支援 Autoswitch"
 
 #: scc/x11/autoswitcher.py:329
 msgid "No active window"
-msgstr ""
+msgstr "沒有活動中的視窗"
 
 #: scc/x11/autoswitcher.py:330 ui/app.ui:91
 msgid "Close"
-msgstr ""
+msgstr "關閉"
 
 #: scc/x11/autoswitcher.py:344
 msgid "No Title"
-msgstr ""
+msgstr "無 標題"
 
 #: scc/x11/autoswitcher.py:345
 #, python-format
 msgid "Current Window: %s"
-msgstr ""
+msgstr "目前 視窗: %s"
 
 #: scc/x11/autoswitcher.py:347
 #, python-format
@@ -1316,10 +1339,6 @@ msgstr ""
 
 #: ui/about.ui:30
 msgid "<span size=\"large\"><b>SC Controller</b></span>"
-msgstr ""
-
-#: ui/about.ui:36
-msgid "(version)"
 msgstr ""
 
 #: ui/about.ui:44
@@ -1361,7 +1380,7 @@ msgstr ""
 
 #: ui/about.ui:112
 msgid "About SC Controller"
-msgstr ""
+msgstr "關於 SC Controller"
 
 #: ui/action_editor.ui:97
 msgid "Simple"
@@ -1384,49 +1403,52 @@ msgid "Linear"
 msgstr ""
 
 #: ui/action_editor.ui:125
+#, fuzzy
 msgid "Minimum Output Value"
-msgstr ""
+msgstr "最小 輸出 值"
 
 #: ui/action_editor.ui:137
 msgid "Left"
-msgstr ""
+msgstr "左"
 
 #: ui/action_editor.ui:141
 msgid "Right"
-msgstr ""
+msgstr "右"
 
 #: ui/action_editor.ui:145
 msgid "Both"
-msgstr ""
+msgstr "二者"
 
 #: ui/action_editor.ui:216
 msgid "Action Type"
 msgstr ""
 
-#: ui/action_editor.ui:231 ui/macro_editor.ui:39
-#: ui/modeshift_editor.ui:44 ui/ring_editor.ui:47
+#: ui/action_editor.ui:231 ui/macro_editor.ui:39 ui/modeshift_editor.ui:44
+#: ui/ring_editor.ui:47
+#, fuzzy
 msgid "Action Name"
-msgstr ""
+msgstr "動作 名稱"
 
 #: ui/action_editor.ui:250
 msgid "More..."
-msgstr ""
+msgstr "更多..."
 
 #: ui/action_editor.ui:286
 msgid "Display OSD"
-msgstr ""
+msgstr "顯示 虛擬鍵盤"
 
 #: ui/action_editor.ui:302
+#, fuzzy
 msgid "Input Rotation"
-msgstr ""
+msgstr "輸入 旋轉"
 
 #: ui/action_editor.ui:318
 msgid "Angle"
-msgstr ""
+msgstr "角度"
 
 #: ui/action_editor.ui:369
 msgid "Require Click"
-msgstr ""
+msgstr "需要點擊"
 
 #: ui/action_editor.ui:389
 msgid "Preview Changes Immediately"
@@ -1438,7 +1460,7 @@ msgstr ""
 
 #: ui/action_editor.ui:458
 msgid "Trackball Mode"
-msgstr ""
+msgstr "軌跡球 模式"
 
 #: ui/action_editor.ui:473
 msgid "Basics"
@@ -1446,7 +1468,7 @@ msgstr ""
 
 #: ui/action_editor.ui:491 ui/action_editor.ui:680
 msgid "Sensitivity"
-msgstr ""
+msgstr "靈敏度"
 
 #: ui/action_editor.ui:598 ui/ae/gyro_action.ui:85 ui/ae/gyro.ui:97
 msgid "Roll"
@@ -1454,11 +1476,11 @@ msgstr ""
 
 #: ui/action_editor.ui:641
 msgid "Invert X axis"
-msgstr ""
+msgstr "反轉 X 軸"
 
 #: ui/action_editor.ui:653
 msgid "Invert Y axis"
-msgstr ""
+msgstr "反轉 Y 軸"
 
 #: ui/action_editor.ui:665
 msgid "Invert Roll"
@@ -1470,47 +1492,52 @@ msgstr ""
 
 #: ui/action_editor.ui:835
 msgid "Frequency"
-msgstr ""
+msgstr "頻率"
 
 #: ui/action_editor.ui:850
+#, fuzzy
 msgid "Strength"
-msgstr ""
+msgstr "強度"
 
 #: ui/action_editor.ui:865
 msgid "Side"
 msgstr ""
 
 #: ui/action_editor.ui:884
+#, fuzzy
 msgid "Feedback Enabled"
-msgstr ""
+msgstr "回饋 啟動"
 
 #: ui/action_editor.ui:900
 msgid "Feedback"
-msgstr ""
+msgstr "回饋"
 
 #: ui/action_editor.ui:921
+#, fuzzy
 msgid "Upper"
-msgstr ""
+msgstr "上"
 
 #: ui/action_editor.ui:936
+#, fuzzy
 msgid "Lower"
-msgstr ""
+msgstr "下"
 
 #: ui/action_editor.ui:1019
 msgid "Deadzone Enabled"
-msgstr ""
+msgstr "死區 啟動"
 
 #: ui/action_editor.ui:1036 ui/ring_editor.ui:249
 msgid "Mode"
-msgstr ""
+msgstr "模式"
 
 #: ui/action_editor.ui:1070
 msgid "Deadzone"
-msgstr ""
+msgstr "死區"
 
 #: ui/action_editor.ui:1091
+#, fuzzy
 msgid "Filter"
-msgstr ""
+msgstr "篩選"
 
 #: ui/action_editor.ui:1106
 msgid "Weight"
@@ -1521,71 +1548,50 @@ msgid "Level"
 msgstr ""
 
 #: ui/action_editor.ui:1236
+#, fuzzy
 msgid "Smoothing Enabled"
-msgstr ""
+msgstr "平滑 啟動"
 
 #: ui/action_editor.ui:1252
+#, fuzzy
 msgid "Smoothing"
-msgstr ""
+msgstr "平滑"
 
 #: ui/action_editor.ui:1309
 msgid "Mode Shift"
-msgstr ""
+msgstr "模式 切換"
 
 #: ui/action_editor.ui:1326 ui/app.ui:210 ui/icon_chooser.ui:175
-#: ui/macro_editor.ui:249 ui/modeshift_editor.ui:517
-#: ui/ring_editor.ui:303
+#: ui/macro_editor.ui:249 ui/modeshift_editor.ui:517 ui/ring_editor.ui:303
 msgid "_OK"
 msgstr ""
 
 #: ui/action_editor.ui:1343
 msgid "Macro"
-msgstr ""
+msgstr "巨集"
 
 #: ui/action_editor.ui:1351
+#, fuzzy
 msgid "Ring Bindings"
-msgstr ""
+msgstr "環 綁定"
 
-#: ui/action_editor.ui:1368 ui/macro_editor.ui:226
-#: ui/modeshift_editor.ui:543 ui/ring_editor.ui:329
+#: ui/action_editor.ui:1368 ui/macro_editor.ui:226 ui/modeshift_editor.ui:543
+#: ui/ring_editor.ui:329
+#, fuzzy
 msgid "_Clear"
-msgstr ""
-
-#: ui/action_editor.ui:1399
-msgid "lstick"
-msgstr ""
-
-#: ui/action_editor.ui:1404
-msgid "rstick"
-msgstr ""
+msgstr "_清除"
 
 #: ui/action_editor.ui:1408
 msgid "DPad"
-msgstr ""
-
-#: ui/action_editor.ui:1409
-msgid "dpad"
-msgstr ""
-
-#: ui/action_editor.ui:1414
-msgid "wheel"
-msgstr ""
+msgstr "方向鍵"
 
 #: ui/action_editor.ui:1418
 msgid "Trackpad (Mouse)"
-msgstr ""
-
-#: ui/action_editor.ui:1419
-msgid "trackpad"
-msgstr ""
+msgstr "觸控板 (滑鼠)"
 
 #: ui/action_editor.ui:1423
 msgid "Trackball (Mouse)"
-msgstr ""
-
-#: ui/action_editor.ui:1424
-msgid "trackball"
-msgstr ""
+msgstr "軌跡球 (滑鼠)"
 
 #: ui/ae/axis_action.ui:47
 msgid "Relative to Screen Size"
@@ -1628,207 +1634,199 @@ msgid "Relative to Bottom-Right Corner of Active Window"
 msgstr ""
 
 #: ui/ae/axis_action.ui:109
+#, fuzzy
 msgid "Mouse-like Joystick on LEFT Stick"
-msgstr ""
+msgstr "類滑鼠 搖桿 在 左側搖桿"
 
 #: ui/ae/axis_action.ui:114
+#, fuzzy
 msgid "Mouse-like Joystick on RIGHT Stick"
-msgstr ""
+msgstr "類滑鼠 搖桿 在右側搖桿"
 
-#: ui/ae/axis_action.ui:129 ui/ae/gyro_action.ui:28
-#: ui/ae/osk_action.ui:14 ui/ae/special_action.ui:33
+#: ui/ae/axis_action.ui:129 ui/ae/gyro_action.ui:28 ui/ae/osk_action.ui:14
+#: ui/ae/special_action.ui:33
+#, fuzzy
 msgid "None"
-msgstr ""
+msgstr "無"
 
 #: ui/ae/axis_action.ui:144
+#, fuzzy
 msgid "Single Button"
-msgstr ""
+msgstr "單鍵"
 
 #: ui/ae/axis_action.ui:149
+#, fuzzy
 msgid "Circular"
-msgstr ""
+msgstr "園"
 
 #: ui/ae/axis_action.ui:179 ui/ae/gyro_action.ui:43
 msgid "Mouse (Emulate Stick)"
-msgstr ""
+msgstr "滑鼠 (模擬 搖桿)"
 
 #: ui/ae/axis_action.ui:184
 msgid "Mouse (Trackpad or Trackball)"
-msgstr ""
+msgstr "滑鼠 (觸控板 或 軌跡球)"
 
 #: ui/ae/axis_action.ui:196
+#, fuzzy
 msgid "Output"
-msgstr ""
-
-#: ui/ae/axis_action.ui:229 ui/ae/special_action.ui:331
-msgid "page4"
-msgstr ""
+msgstr "輸出"
 
 #: ui/ae/axis_action.ui:242
 msgid "Button"
-msgstr ""
-
-#: ui/ae/axis_action.ui:260
-msgid "page21"
-msgstr ""
+msgstr "按鈕"
 
 #: ui/ae/axis_action.ui:272
+#, fuzzy
 msgid "Region Options"
-msgstr ""
+msgstr "區域 設定"
 
 #: ui/ae/axis_action.ui:286 ui/menu_editor.ui:87
+#, fuzzy
 msgid "Type"
-msgstr ""
+msgstr "種類"
 
 #: ui/ae/axis_action.ui:322
+#, fuzzy
 msgid "Coordinates"
-msgstr ""
+msgstr "座標"
 
 #: ui/ae/axis_action.ui:345
+#, fuzzy
 msgid "Pressing the Pad Clicks"
-msgstr ""
+msgstr "按壓 觸控版 點擊"
 
 #: ui/ae/axis_action.ui:359
 msgid "Display Area While Pad is Being Touched"
-msgstr ""
+msgstr "顯示觸摸區域 當觸控板被觸摸"
 
 #: ui/ae/axis_action.ui:378
+#, fuzzy
 msgid "X1"
-msgstr ""
-
-#: ui/ae/axis_action.ui:395 ui/ae/axis_action.ui:428
-#: ui/ae/axis_action.ui:462 ui/ae/axis_action.ui:495
-msgid "0"
-msgstr ""
+msgstr "X1"
 
 #: ui/ae/axis_action.ui:412
+#, fuzzy
 msgid "X2"
-msgstr ""
+msgstr "X2"
 
 #: ui/ae/axis_action.ui:445
+#, fuzzy
 msgid "Y1"
-msgstr ""
+msgstr "Y1"
 
 #: ui/ae/axis_action.ui:479
+#, fuzzy
 msgid "Y2"
-msgstr ""
-
-#: ui/ae/axis_action.ui:519 ui/ae/dpad.ui:475
-#: ui/ae/special_action.ui:404 ui/ae/special_action.ui:480
-#: ui/app.ui:625 ui/creg.ui:206
-msgid "page0"
-msgstr ""
+msgstr "Y2"
 
 #: ui/ae/axis_action.ui:532
+#, fuzzy
 msgid "Output As"
-msgstr ""
+msgstr "輸出為"
 
 #: ui/ae/axis_action.ui:555
+#, fuzzy
 msgid "<a href=\"advanced://0#cbBallMode\">Setup or disable Trackball Mode</a>"
-msgstr ""
-
-#: ui/ae/axis_action.ui:567 ui/ae/dpad.ui:898
-#: ui/ae/special_action.ui:847 ui/app.ui:634 ui/creg.ui:351
-msgid "page1"
-msgstr ""
+msgstr "<a href=\"advanced://0#cbBallMode\">啟動 或 關閉 軌跡球模式</a>"
 
 #: ui/ae/axis_action.ui:617
+#, fuzzy
 msgid "Output Axis"
-msgstr ""
+msgstr "輸出軸"
 
 #: ui/ae/axis_action.ui:633
+#, fuzzy
 msgid "Output Buttons"
-msgstr ""
-
-#: ui/ae/axis_action.ui:689 ui/creg.ui:707
-msgid "page2"
-msgstr ""
+msgstr "輸出按鈕"
 
 #: ui/ae/axis.ui:12
 msgid "click on axis or trigger"
 msgstr ""
 
 #: ui/ae/buttons.ui:32
+#, fuzzy
 msgid "Toggle Button"
-msgstr ""
+msgstr "切換按鈕"
 
 #: ui/ae/buttons.ui:47 ui/macro_editor.ui:18
+#, fuzzy
 msgid "Repeat"
-msgstr ""
+msgstr "重複"
 
 #: ui/ae/buttons.ui:71
+#, fuzzy
 msgid "click any button or..."
-msgstr ""
+msgstr "按 任何 按鈕 或..."
 
 #: ui/ae/buttons.ui:82
 msgid "Grab a key"
 msgstr ""
 
-#: ui/ae/dpad.ui:37 ui/ae/special_action.ui:76
-#: ui/ae/special_action.ui:176
+#: ui/ae/dpad.ui:37 ui/ae/special_action.ui:76 ui/ae/special_action.ui:176
+#, fuzzy
 msgid "(Controller Default)"
-msgstr ""
+msgstr "(控制器 預設)"
 
-#: ui/ae/dpad.ui:41 ui/ae/dpad.ui:61 ui/ae/dpad.ui:77
-#: ui/ae/dpad.ui:89 ui/ae/dpad.ui:109 ui/ae/special_action.ui:80
-#: ui/ae/special_action.ui:100 ui/ae/special_action.ui:116
-#: ui/ae/special_action.ui:128 ui/ae/special_action.ui:148
-#: ui/controller_settings.ui:52 ui/controller_settings.ui:68
-#: ui/controller_settings.ui:80 ui/controller_settings.ui:100
-msgid "-"
-msgstr ""
-
-#: ui/ae/dpad.ui:113 ui/ae/special_action.ui:152
-#: ui/controller_settings.ui:104
+#: ui/ae/dpad.ui:113 ui/ae/special_action.ui:152 ui/controller_settings.ui:104
+#, fuzzy
 msgid "Left Stick Press"
-msgstr ""
+msgstr "左 搖桿 按壓"
 
-#: ui/ae/dpad.ui:117 ui/ae/special_action.ui:156
-#: ui/controller_settings.ui:108
+#: ui/ae/dpad.ui:117 ui/ae/special_action.ui:156 ui/controller_settings.ui:108
+#, fuzzy
 msgid "Right Stick Press"
-msgstr ""
+msgstr "右 搖桿 按壓"
 
-#: ui/ae/dpad.ui:121 ui/ae/special_action.ui:160
-#: ui/controller_settings.ui:112
+#: ui/ae/dpad.ui:121 ui/ae/special_action.ui:160 ui/controller_settings.ui:112
+#, fuzzy
 msgid "Left Pad Press"
-msgstr ""
+msgstr "左 觸控板 按壓"
 
-#: ui/ae/dpad.ui:125 ui/ae/special_action.ui:164
-#: ui/controller_settings.ui:116
+#: ui/ae/dpad.ui:125 ui/ae/special_action.ui:164 ui/controller_settings.ui:116
+#, fuzzy
 msgid "Right Pad Press"
-msgstr ""
+msgstr "右 觸控板 按壓"
 
 #: ui/ae/dpad.ui:144 ui/ae/special_action.ui:211
+#, fuzzy
 msgid "From Left"
-msgstr ""
+msgstr "從左"
 
 #: ui/ae/dpad.ui:148 ui/ae/special_action.ui:215
+#, fuzzy
 msgid "From Right"
-msgstr ""
+msgstr "從右"
 
 #: ui/ae/dpad.ui:160 ui/ae/special_action.ui:227
+#, fuzzy
 msgid "From Top"
-msgstr ""
+msgstr "從上"
 
 #: ui/ae/dpad.ui:164 ui/ae/special_action.ui:231
+#, fuzzy
 msgid "From Bottom"
-msgstr ""
+msgstr "從下"
 
 #: ui/ae/dpad.ui:175 ui/ae/special_action.ui:242 ui/ae/tilt.ui:19
+#, fuzzy
 msgid "List"
-msgstr ""
+msgstr "清單"
 
 #: ui/ae/dpad.ui:179 ui/ae/special_action.ui:246 ui/ae/tilt.ui:23
+#, fuzzy
 msgid "Grid"
-msgstr ""
+msgstr "網格"
 
 #: ui/ae/dpad.ui:183 ui/ae/special_action.ui:250 ui/ae/tilt.ui:27
+#, fuzzy
 msgid "Radial"
-msgstr ""
+msgstr "放射"
 
 #: ui/ae/dpad.ui:187 ui/ae/special_action.ui:254
+#, fuzzy
 msgid "Horizontal Menu"
-msgstr ""
+msgstr "橫向選單"
 
 #: ui/ae/dpad.ui:199 ui/ae/tilt.ui:39
 msgid "Simple DPAD"
@@ -1850,88 +1848,93 @@ msgstr ""
 msgid "Emulated DPAD"
 msgstr ""
 
-#: ui/ae/dpad.ui:251 ui/ae/dpad.ui:283 ui/ae/dpad.ui:315
-#: ui/ae/dpad.ui:339 ui/ae/dpad.ui:368 ui/ae/dpad.ui:384
-#: ui/ae/dpad.ui:400 ui/ae/dpad.ui:416 ui/ae/gyro.ui:44
-#: ui/ae/gyro.ui:76 ui/ae/gyro.ui:108 ui/ae/per_axis.ui:29
-#: ui/ae/per_axis.ui:57 ui/ae/tilt.ui:73 ui/ae/tilt.ui:93
-#: ui/ae/tilt.ui:113 ui/ae/tilt.ui:134 ui/ae/tilt.ui:184
-#: ui/ae/tilt.ui:203 ui/ae/trigger.ui:92 ui/key_grabber.ui:143
+#: ui/ae/dpad.ui:251 ui/ae/dpad.ui:283 ui/ae/dpad.ui:315 ui/ae/dpad.ui:339
+#: ui/ae/dpad.ui:368 ui/ae/dpad.ui:384 ui/ae/dpad.ui:400 ui/ae/dpad.ui:416
+#: ui/ae/gyro.ui:44 ui/ae/gyro.ui:76 ui/ae/gyro.ui:108 ui/ae/per_axis.ui:29
+#: ui/ae/per_axis.ui:57 ui/ae/tilt.ui:73 ui/ae/tilt.ui:93 ui/ae/tilt.ui:113
+#: ui/ae/tilt.ui:134 ui/ae/tilt.ui:184 ui/ae/tilt.ui:203 ui/ae/trigger.ui:92
+#: ui/key_grabber.ui:143
 msgid "(...)"
-msgstr ""
+msgstr "(...)"
 
 #: ui/ae/dpad.ui:435
 msgid "Diagonal Range"
 msgstr ""
 
 #: ui/ae/dpad.ui:537 ui/ae/menu_only.ui:70 ui/ae/special_action.ui:574
+#, fuzzy
 msgid "_Edit"
-msgstr ""
+msgstr "_編輯"
 
 #: ui/ae/dpad.ui:559 ui/ae/special_action.ui:492
+#, fuzzy
 msgid "Menu Type"
-msgstr ""
+msgstr "選單 種類"
 
 #: ui/ae/dpad.ui:642 ui/ae/special_action.ui:599
+#, fuzzy
 msgid "Control Options..."
-msgstr ""
+msgstr "控制方式 選項..."
 
-#: ui/ae/dpad.ui:664 ui/ae/special_action.ui:633
-#: ui/controller_settings.ui:517
+#: ui/ae/dpad.ui:664 ui/ae/special_action.ui:633 ui/controller_settings.ui:517
+#, fuzzy
 msgid "Confirm Button"
-msgstr ""
+msgstr "確認 按鈕"
 
-#: ui/ae/dpad.ui:676 ui/ae/special_action.ui:645
-#: ui/controller_settings.ui:528
+#: ui/ae/dpad.ui:676 ui/ae/special_action.ui:645 ui/controller_settings.ui:528
+#, fuzzy
 msgid "Cancel Button"
-msgstr ""
+msgstr "取消 按鈕"
 
 #: ui/ae/dpad.ui:730
+#, fuzzy
 msgid "Confirm selection when pad is released"
-msgstr ""
+msgstr "確認 所選的 當 觸控板釋放"
 
 #: ui/ae/dpad.ui:749
+#, fuzzy
 msgid "Cancel menu when pad is released"
-msgstr ""
+msgstr "取消 選單 當 觸控板 釋放"
 
 #: ui/ae/dpad.ui:768
+#, fuzzy
 msgid "Confirm selection by clicking the pad"
-msgstr ""
+msgstr "確認 所選的 當 觸控板點擊"
 
 #: ui/ae/dpad.ui:800 ui/ae/special_action.ui:749
+#, fuzzy
 msgid "Menu Position..."
-msgstr ""
+msgstr "選單 位置..."
 
 #: ui/ae/dpad.ui:913
+#, fuzzy
 msgid "Output Type"
-msgstr ""
+msgstr "輸出 模式"
 
 #: ui/ae/dpad.ui:948 ui/ae/menu_only.ui:95 ui/ae/special_action.ui:859
+#, fuzzy
 msgid "_New Menu"
-msgstr ""
+msgstr "_新 選單"
 
-#: ui/ae/dpad.ui:955 ui/ae/menu_only.ui:102
-#: ui/ae/special_action.ui:866
+#: ui/ae/dpad.ui:955 ui/ae/menu_only.ui:102 ui/ae/special_action.ui:866
+#, fuzzy
 msgid "_Copy Menu"
-msgstr ""
+msgstr "_複製 選單"
 
-#: ui/ae/dpad.ui:962 ui/ae/menu_only.ui:109
-#: ui/ae/special_action.ui:873
+#: ui/ae/dpad.ui:962 ui/ae/menu_only.ui:109 ui/ae/special_action.ui:873
+#, fuzzy
 msgid "_Rename Menu"
-msgstr ""
+msgstr "_重命名 選單"
 
-#: ui/ae/dpad.ui:969 ui/ae/menu_only.ui:116
-#: ui/ae/special_action.ui:880
+#: ui/ae/dpad.ui:969 ui/ae/menu_only.ui:116 ui/ae/special_action.ui:880
+#, fuzzy
 msgid "_Delete Menu"
-msgstr ""
-
-#: ui/ae/first_page.ui:9
-msgid "(markup goes here)"
-msgstr ""
+msgstr "_取消 選單"
 
 #: ui/ae/gesture.ui:37
+#, fuzzy
 msgid "_Change"
-msgstr ""
+msgstr "_更改"
 
 #: ui/ae/gesture.ui:55
 msgid "Ignore Stroke _Length"
@@ -1949,46 +1952,49 @@ msgstr ""
 msgid "Matching Precision"
 msgstr ""
 
-#: ui/ae/gesture.ui:225
-msgid "message"
-msgstr ""
-
-#: ui/ae/gesture.ui:259 ui/ae/osk_action.ui:61
-#: ui/ae/special_action.ui:297 ui/global_settings.ui:2042
+#: ui/ae/gesture.ui:259 ui/ae/osk_action.ui:61 ui/ae/special_action.ui:297
+#: ui/global_settings.ui:2101
 msgid "Action"
 msgstr ""
 
 #: ui/ae/gesture.ui:282
+#, fuzzy
 msgid "Edit"
-msgstr ""
+msgstr "編輯"
 
 #: ui/ae/gesture.ui:297 ui/menu_editor.ui:146
+#, fuzzy
 msgid "_Remove"
-msgstr ""
+msgstr "_移除"
 
 #: ui/ae/gesture.ui:306 ui/menu_editor.ui:157
+#, fuzzy
 msgid "_Add"
-msgstr ""
+msgstr "_新增"
 
 #: ui/ae/gyro_action.ui:33
+#, fuzzy
 msgid "Mouse (Desktop)"
-msgstr ""
+msgstr "滑鼠 (桌面)"
 
 #: ui/ae/gyro_action.ui:38
+#, fuzzy
 msgid "Mouse (Camera)"
-msgstr ""
+msgstr "滑鼠 (視角)"
 
 #: ui/ae/gyro_action.ui:48
+#, fuzzy
 msgid "Right Stick (Camera)"
-msgstr ""
+msgstr "右搖桿 (視角)"
 
 #: ui/ae/gyro_action.ui:53
 msgid "Right Stick (Absolute)"
 msgstr ""
 
 #: ui/ae/gyro_action.ui:58
+#, fuzzy
 msgid "Left Stick (Camera)"
-msgstr ""
+msgstr "左搖桿 (視角)"
 
 #: ui/ae/gyro_action.ui:63
 msgid "Left Stick (Absolute)"
@@ -2007,16 +2013,19 @@ msgid "X Axis Controlled by"
 msgstr ""
 
 #: ui/ae/gyro_action.ui:133
+#, fuzzy
 msgid "Output Mode"
-msgstr ""
+msgstr "輸出 模式"
 
 #: ui/ae/gyro_action.ui:204
+#, fuzzy
 msgid "Invert Y Axis"
-msgstr ""
+msgstr "反轉 Y 軸"
 
 #: ui/ae/gyro_action.ui:224 ui/ae/gyro.ui:224
+#, fuzzy
 msgid "Button disables Gyro"
-msgstr ""
+msgstr "按鈕 取消 陀螺儀"
 
 #: ui/ae/gyro.ui:33
 msgid "Pitch"
@@ -2027,136 +2036,133 @@ msgid "Absolute"
 msgstr ""
 
 #: ui/ae/osk_action.ui:42
+#, fuzzy
 msgid "Press LEFT mouse button"
-msgstr ""
+msgstr "按 左 滑鼠 按鈕"
 
 #: ui/ae/osk_action.ui:46
+#, fuzzy
 msgid "Press RIGHT mouse button"
-msgstr ""
+msgstr "按 右 滑鼠 按鈕"
 
 #: ui/ae/per_axis.ui:18
+#, fuzzy
 msgid "X Axis"
-msgstr ""
+msgstr "X 軸"
 
 #: ui/ae/per_axis.ui:46
+#, fuzzy
 msgid "Y Axis"
-msgstr ""
+msgstr "Y 軸"
 
 #: ui/ae/recent_list.ui:26
+#, fuzzy
 msgid "Number of Profiles to Display"
-msgstr ""
+msgstr "可顯示的配置數"
 
-#: ui/ae/special_action.ui:37 ui/global_settings.ui:2098
+#: ui/ae/special_action.ui:37 ui/global_settings.ui:2157
+#, fuzzy
 msgid "Turn Off Controller"
-msgstr ""
+msgstr "關掉 控制器"
 
 #: ui/ae/special_action.ui:41
+#, fuzzy
 msgid "Change Profile"
-msgstr ""
+msgstr "更改 配置"
 
 #: ui/ae/special_action.ui:45
 msgid "Display Menu"
-msgstr ""
+msgstr "顯示 選單"
 
 #: ui/ae/special_action.ui:49
+#, fuzzy
 msgid "Display On-Screen Keyboard"
-msgstr ""
+msgstr "顯示 虛擬鍵盤"
 
 #: ui/ae/special_action.ui:53
+#, fuzzy
 msgid "Show OSD Message"
-msgstr ""
+msgstr "顯示 OSD 訊息"
 
 #: ui/ae/special_action.ui:61
+#, fuzzy
 msgid "Recenter gyro sensor"
-msgstr ""
+msgstr "置中 陀螺儀 感應器"
 
 #: ui/ae/special_action.ui:258
+#, fuzzy
 msgid "Quick Menu"
-msgstr ""
+msgstr "快速選單"
 
 #: ui/ae/special_action.ui:271
+#, fuzzy
 msgid "Smaller"
-msgstr ""
+msgstr "更小"
 
 #: ui/ae/special_action.ui:275
+#, fuzzy
 msgid "Small"
-msgstr ""
+msgstr "小"
 
 #: ui/ae/special_action.ui:279
+#, fuzzy
 msgid "Default"
-msgstr ""
+msgstr "預設"
 
 #: ui/ae/special_action.ui:344
+#, fuzzy
 msgid "Command"
-msgstr ""
-
-#: ui/ae/special_action.ui:359 ui/creg.ui:794
-msgid "page3"
-msgstr ""
+msgstr "指令"
 
 #: ui/ae/special_action.ui:418
 msgid "Text to Display"
 msgstr ""
 
 #: ui/ae/special_action.ui:435
+#, fuzzy
 msgid "Display Time"
-msgstr ""
+msgstr "顯示 時間"
 
 #: ui/ae/special_action.ui:621 ui/controller_settings.ui:487
+#, fuzzy
 msgid "Control Menu With"
-msgstr ""
+msgstr "用...控制選單"
 
 #: ui/ae/special_action.ui:659
+#, fuzzy
 msgid "Confirm selection by releasing the button"
-msgstr ""
+msgstr "確認 選取 藉由 釋放 按鈕"
 
 #: ui/ae/trigger.ui:46
 msgid "Normal"
-msgstr ""
-
-#: ui/ae/trigger.ui:47
-msgid "NORMAL"
-msgstr ""
+msgstr "普通"
 
 #: ui/ae/trigger.ui:50
 msgid "Normal - Exclusive Buttons"
 msgstr ""
 
-#: ui/ae/trigger.ui:51
-msgid "NORMAL_EXCLUSIVE"
-msgstr ""
-
 #: ui/ae/trigger.ui:54
+#, fuzzy
 msgid "Hip Fire"
-msgstr ""
-
-#: ui/ae/trigger.ui:55
-msgid "HIPFIRE_NORMAL"
-msgstr ""
+msgstr "腰射"
 
 #: ui/ae/trigger.ui:58
 msgid "Hip Fire - Exclusive Buttons"
-msgstr ""
-
-#: ui/ae/trigger.ui:59
-msgid "HIPFIRE_EXCLUSIVE"
 msgstr ""
 
 #: ui/ae/trigger.ui:62
 msgid "Hip fire - Sensible"
 msgstr ""
 
-#: ui/ae/trigger.ui:63
-msgid "HIPFIRE_SENSIBLE"
-msgstr ""
-
 #: ui/ae/trigger.ui:78
+#, fuzzy
 msgid "Partially Pressed Action"
-msgstr ""
+msgstr "輕 按 動作"
 
 #: ui/ae/trigger.ui:114
+#, fuzzy
 msgid "Fully Pressed Action"
-msgstr ""
+msgstr "全 按壓 動作"
 
 #: ui/ae/trigger.ui:209
 msgid "Analog Output"
@@ -2183,152 +2189,183 @@ msgid "Partially Pressed Level"
 msgstr ""
 
 #: ui/ae/trigger.ui:422
+#, fuzzy
 msgid "Dual Stage Trigger Style"
-msgstr ""
+msgstr "二 階段 扳機 模式"
 
 #: ui/ae/trigger.ui:456
+#, fuzzy
 msgid "Hip Fire Delay"
-msgstr ""
+msgstr "腰射 延遲"
 
 #: ui/app.ui:29
+#, fuzzy
 msgid "Exit"
-msgstr ""
+msgstr "退出"
 
 #: ui/app.ui:50
+#, fuzzy
 msgid "Activate"
-msgstr ""
+msgstr "開啟"
 
 #: ui/app.ui:70
 msgid "OK"
-msgstr ""
+msgstr "確認"
 
 #: ui/app.ui:111
+#, fuzzy
 msgid "Save"
-msgstr ""
+msgstr "儲存"
 
 #: ui/app.ui:152 ui/app.ui:242
+#, fuzzy
 msgid "Profile name"
-msgstr ""
+msgstr "配置 名稱"
 
 #: ui/app.ui:170
 msgid "Empty profile"
-msgstr ""
+msgstr "空 配置"
 
 #: ui/app.ui:178
+#, fuzzy
 msgid "Copy current profile"
-msgstr ""
+msgstr "複製 目前 配置"
 
 #: ui/app.ui:277
+#, fuzzy
 msgid "_Rename"
-msgstr ""
+msgstr "_重命名"
 
 #: ui/app.ui:309 ui/app.ui:934
+#, fuzzy
 msgid "_Emulation Enabled"
-msgstr ""
+msgstr "_模擬 啟動"
 
 #: ui/app.ui:317
+#, fuzzy
 msgid "_Settings"
-msgstr "_Nastavení"
+msgstr "_設定"
 
 #: ui/app.ui:325
 msgid "Import/Export _Profile..."
-msgstr ""
+msgstr "匯出/匯入_配置..."
 
 #: ui/app.ui:338 ui/app.ui:946
+#, fuzzy
 msgid "About"
-msgstr ""
+msgstr "關於"
 
 #: ui/app.ui:346 ui/app.ui:953
+#, fuzzy
 msgid "Quit"
-msgstr ""
+msgstr "退出"
 
 #: ui/app.ui:680
+#, fuzzy
 msgid "Undo"
-msgstr "Zpět"
+msgstr "復原"
 
 #: ui/app.ui:694
+#, fuzzy
 msgid "Redo"
-msgstr "Opakovat"
+msgstr "復原"
 
 #: ui/app.ui:724
+#, fuzzy
 msgid "_Filename"
-msgstr ""
+msgstr "_檔案名稱"
 
 #: ui/app.ui:742
+#, fuzzy
 msgid "_Description"
-msgstr ""
+msgstr "_描述"
 
 #: ui/app.ui:766
+#, fuzzy
 msgid "Profile is _template"
-msgstr ""
+msgstr "配置 是 _範本"
 
 #: ui/app.ui:792
 msgid "Change Sticks and Background"
 msgstr ""
 
 #: ui/app.ui:795
-msgid "Symetrical"
-msgstr ""
+#, fuzzy
+msgid "Symmetrical"
+msgstr "對稱式"
 
 #: ui/app.ui:800
+#, fuzzy
 msgid "Asymmetrical"
-msgstr ""
+msgstr "不對稱式"
 
 #: ui/app.ui:805
+#, fuzzy
 msgid "Touchpads"
-msgstr ""
+msgstr "觸控板"
 
 #: ui/app.ui:810
+#, fuzzy
 msgid "Change Buttons"
-msgstr ""
+msgstr "更改 按鈕"
 
 #: ui/app.ui:813
 msgid "PSx"
-msgstr ""
+msgstr "PSx"
 
 #: ui/app.ui:818
+#, fuzzy
 msgid "ABXY"
-msgstr ""
+msgstr "ABXY"
 
 #: ui/app.ui:824
+#, fuzzy
 msgid "Clear Above Settings"
-msgstr ""
+msgstr "清除 以上 設定"
 
 #: ui/app.ui:907
 msgid "C_lear"
 msgstr ""
 
 #: ui/app.ui:911
+#, fuzzy
 msgid "_Copy"
-msgstr ""
+msgstr "_複製"
 
 #: ui/app.ui:915
+#, fuzzy
 msgid "_Paste"
-msgstr ""
+msgstr "_貼上"
 
 #: ui/app.ui:927
+#, fuzzy
 msgid "Show/Hide _Window"
-msgstr ""
+msgstr "顯示/隱藏 _視窗"
 
 #: ui/app.ui:980
+#, fuzzy
 msgid "Welcome to the version <b>%s</b>"
-msgstr ""
+msgstr "歡迎 來 到版本 <b>%s</b>"
 
 #: ui/app.ui:996
+#, fuzzy
 msgid "SC Controller was upgraded"
-msgstr ""
+msgstr "SC Controller 已被 更新"
 
 #: ui/app.ui:1010
+#, fuzzy
 msgid "Display with each new version"
-msgstr ""
+msgstr "每個新版本都顯示"
 
 #: ui/controller_settings.ui:165
+#, fuzzy
 msgid "LED brightness"
-msgstr ""
+msgstr "LED 亮度"
 
 #: ui/controller_settings.ui:198
+#, fuzzy
 msgid "Controller Name"
-msgstr ""
+msgstr "控制器 名稱"
 
 #: ui/controller_settings.ui:270
 msgid "Right-aligned OSD"
@@ -2343,52 +2380,53 @@ msgid "Touchpad Input Rotation"
 msgstr ""
 
 #: ui/controller_settings.ui:339
-msgid "Applied to everything, even if profile sets no rotation on its actions."
+msgid ""
+"Applied to everything, even if the profile does not set rotation for its "
+"actions."
 msgstr ""
 
 #: ui/controller_settings.ui:354
+#, fuzzy
 msgid "Left Pad Angle"
-msgstr ""
+msgstr "左 觸控板 角度"
 
 #: ui/controller_settings.ui:367
+#, fuzzy
 msgid "Right Pad Angle"
-msgstr ""
+msgstr "右 觸控板 角度"
 
 #: ui/controller_settings.ui:453
+#, fuzzy
 msgid "Default Menu Controls"
-msgstr ""
+msgstr "預設 選單 控制"
 
 #: ui/controller_settings.ui:474
-msgid "Used to control menus unless profile sets something different"
-msgstr ""
-
-#: ui/creg.ui:17
-msgid "hid"
-msgstr ""
-
-#: ui/creg.ui:22 ui/creg.ui:23
-msgid "evdev"
+msgid "Used to control menus unless the profile specifies something different"
 msgstr ""
 
 #: ui/creg.ui:45
+#, fuzzy
 msgid "Two sticks, symmetrical (PSx Controller)"
-msgstr ""
+msgstr "雙 搖桿, 對稱式 (PSx Controller)"
 
 #: ui/creg.ui:49
+#, fuzzy
 msgid "Two sticks, asymmetrical (x360 pad)"
-msgstr ""
+msgstr "雙 搖桿, 不對稱式 (x360 pad)"
 
 #: ui/creg.ui:53
+#, fuzzy
 msgid "Single stick"
-msgstr ""
+msgstr "單類比搖桿"
 
 #: ui/creg.ui:57
 msgid "Single DPAD (NES/SNES controller)"
 msgstr ""
 
 #: ui/creg.ui:86
+#, fuzzy
 msgid "Controller Device"
-msgstr ""
+msgstr "控制器 裝置"
 
 #: ui/creg.ui:97
 msgid ""
@@ -2397,33 +2435,39 @@ msgid ""
 "\n"
 "Please, select your controller from list bellow and click Next."
 msgstr ""
-
-#: ui/creg.ui:123 ui/global_settings.ui:1317 ui/import_export.ui:702
-msgid "column"
-msgstr ""
+"此對話框可設定傳統控制器與 SC 控制器一起使用.\n"
+"\n"
+"請從下方的清單中選擇您的控制器,然後按一下 下一步."
 
 #: ui/creg.ui:166
+#, fuzzy
 msgid "Show All Devices"
-msgstr ""
+msgstr "顯示 所有 裝置"
 
 #: ui/creg.ui:188
+#, fuzzy
 msgid "_Refresh"
-msgstr ""
+msgstr "_重整"
 
 #: ui/creg.ui:220
+#, fuzzy
 msgid ""
 "<b>Input Configuration</b>\n"
 "Please, select options that are best describing controller you are "
 "configuring."
 msgstr ""
+"<b>輸入設定</b>\n"
+"請選擇最適合描述您所設定控制器的選項."
 
 #: ui/creg.ui:255
+#, fuzzy
 msgid "Sticks"
-msgstr ""
+msgstr "類比搖桿"
 
 #: ui/creg.ui:270
+#, fuzzy
 msgid "Labels"
-msgstr ""
+msgstr "標籤"
 
 #: ui/creg.ui:362
 msgid ""
@@ -2438,8 +2482,9 @@ msgid ""
 msgstr ""
 
 #: ui/creg.ui:387
-msgid "Red colored controls are not assigned."
-msgstr ""
+#, fuzzy
+msgid "Controls shown in red are not assigned."
+msgstr "按鍵 顯示 為 紅色 代表 未指派."
 
 #: ui/creg.ui:422
 msgid "Emulate center (guide) button by pressing Back + Start at once"
@@ -2450,24 +2495,28 @@ msgid "Invert Axes"
 msgstr ""
 
 #: ui/creg.ui:445
+#, fuzzy
 msgid "Left stick"
-msgstr ""
+msgstr "左 類比搖桿"
 
 #: ui/creg.ui:456
+#, fuzzy
 msgid "Right stick (right pad)"
-msgstr ""
+msgstr "右 搖桿 (右觸控板)"
 
 #: ui/creg.ui:467
+#, fuzzy
 msgid "DPAD (left pad)"
-msgstr ""
+msgstr "方向鍵 (左觸控板)"
 
 #: ui/creg.ui:550
 msgid "Access Mode"
 msgstr ""
 
 #: ui/creg.ui:598
+#, fuzzy
 msgid "Advanced Options"
-msgstr ""
+msgstr "進階設定"
 
 #: ui/creg.ui:620
 msgid "Display Raw Data"
@@ -2496,8 +2545,9 @@ msgid ""
 msgstr ""
 
 #: ui/creg.ui:748
+#, fuzzy
 msgid "_Enable DS4 Controller Support"
-msgstr ""
+msgstr "_啟動 DS4 控制器 支援"
 
 #: ui/creg.ui:763
 msgid ""
@@ -2508,28 +2558,30 @@ msgid ""
 msgstr ""
 
 #: ui/creg.ui:814
+#, fuzzy
 msgid "_Back"
-msgstr ""
+msgstr "_返回"
 
 #: ui/creg.ui:824
 msgid "_Next"
-msgstr ""
+msgstr "_下一步"
 
 #: ui/creg.ui:854
+#, fuzzy
 msgid "Press button..."
-msgstr ""
+msgstr "按 按鈕..."
 
 #: ui/creg.ui:913
 msgid "L1 L2 R1 R2"
-msgstr ""
+msgstr "L1 L2 R1 R2"
 
 #: ui/creg.ui:917
 msgid "LB LT RB RT"
-msgstr ""
+msgstr "LB LT RB RT"
 
 #: ui/creg.ui:921
 msgid "L R"
-msgstr ""
+msgstr "L R"
 
 #: ui/creg.ui:931
 msgid "Change mapping for _Pressing stick"
@@ -2539,63 +2591,65 @@ msgstr ""
 msgid "Change mapping for _Moving stick"
 msgstr ""
 
-#: ui/global_settings.ui:52
+#: ui/global_settings.ui:53
 msgid "None / Custom"
 msgstr ""
 
-#: ui/global_settings.ui:56
+#: ui/global_settings.ui:57
 msgid "Green"
-msgstr ""
+msgstr "綠"
 
-#: ui/global_settings.ui:60
+#: ui/global_settings.ui:61
 msgid "Blue"
-msgstr ""
+msgstr "藍"
 
-#: ui/global_settings.ui:64
+#: ui/global_settings.ui:65
+#, fuzzy
 msgid "Cyan"
-msgstr ""
+msgstr "青"
 
-#: ui/global_settings.ui:68
+#: ui/global_settings.ui:69
 msgid "Yellow"
-msgstr ""
+msgstr "黃"
 
-#: ui/global_settings.ui:72
+#: ui/global_settings.ui:73
 msgid "Red"
-msgstr ""
+msgstr "紅"
 
-#: ui/global_settings.ui:84
+#: ui/global_settings.ui:85
 msgid "Classic"
-msgstr ""
+msgstr "經典"
 
-#: ui/global_settings.ui:88
+#: ui/global_settings.ui:89
 msgid "Reloaded"
 msgstr ""
 
-#: ui/global_settings.ui:112
+#: ui/global_settings.ui:113
 msgid "Emulate Arrows"
 msgstr ""
 
-#: ui/global_settings.ui:117
+#: ui/global_settings.ui:118
 msgid "Emulate Arrows, Move Keyboard when Left Stick is Pressed"
 msgstr ""
 
-#: ui/global_settings.ui:122
+#: ui/global_settings.ui:123
 msgid "Emulate Arrows, Move Keyboard when Left Grip is Pressed"
 msgstr ""
 
-#: ui/global_settings.ui:127
+#: ui/global_settings.ui:128
 msgid "Emulate Arrows, Move Keyboard when Right Grip is Pressed"
 msgstr ""
 
-#: ui/global_settings.ui:141
+#: ui/global_settings.ui:142
 msgid "Shift and Ctrl"
-msgstr ""
+msgstr "Shift and Ctrl"
 
-#: ui/global_settings.ui:146
+#: ui/global_settings.ui:147
+#, fuzzy
 msgid "Press Keyboard Buttons"
-msgstr ""
+msgstr "按 鍵盤 按鍵"
 
-#: ui/global_settings.ui:180
+#: ui/global_settings.ui:181
 msgid ""
 "Emulation has to be restarted to apply all settings.\n"
 "If you have any games running, restarting emulation will \"unplug\"\n"
@@ -2603,205 +2657,251 @@ msgid ""
 "or even crash."
 msgstr ""
 
-#: ui/global_settings.ui:191
+#: ui/global_settings.ui:192
 msgid "Restart Emulation"
 msgstr ""
 
-#: ui/global_settings.ui:220
-msgid "On-Screen Keyboard Bindings"
-msgstr ""
+#: ui/global_settings.ui:218
+#, fuzzy
+msgid "Language"
+msgstr "語言"
 
-#: ui/global_settings.ui:244
+#: ui/global_settings.ui:242
+#, fuzzy
+msgid "The language change will take effect after restarting SC Controller."
+msgstr "語言切換 將會在重新啟動SC Controller生效."
+
+#: ui/global_settings.ui:265
+#, fuzzy
+msgid "Enable Rumble Support"
+msgstr "啟動 震動"
+
+#: ui/global_settings.ui:286
+#, fuzzy
+msgid "Enable System Tray Icon"
+msgstr "啟動 系統匣 圖示"
+
+#: ui/global_settings.ui:305
+#, fuzzy
+msgid "Minimize to tray instead of closing"
+msgstr "最小化到系統匣 而非關閉"
+
+#: ui/global_settings.ui:324
+#, fuzzy
+msgid "Minimize to tray on start"
+msgstr "最小化系統匣 於啟動時"
+
+#: ui/global_settings.ui:339
+msgid "General"
+msgstr "一般"
+
+#: ui/global_settings.ui:357
+#, fuzzy
+msgid "On-Screen Keyboard Bindings"
+msgstr "螢幕鍵盤按鍵配置"
+
+#: ui/global_settings.ui:381
 msgid "Triggers"
 msgstr ""
 
-#: ui/global_settings.ui:259
+#: ui/global_settings.ui:396
+#, fuzzy
 msgid "Advanced..."
-msgstr ""
+msgstr "更多設定..."
 
-#: ui/global_settings.ui:319
+#: ui/global_settings.ui:456
+#, fuzzy
 msgid "Pad Sensitivity"
-msgstr ""
+msgstr "觸控板 靈敏度"
 
-#: ui/global_settings.ui:331
+#: ui/global_settings.ui:468
 msgid "Horizontal"
 msgstr ""
 
-#: ui/global_settings.ui:345
+#: ui/global_settings.ui:482
 msgid "Vertical"
 msgstr ""
 
-#: ui/global_settings.ui:434
+#: ui/global_settings.ui:571
 msgid "Default Menu Items"
 msgstr ""
 
-#: ui/global_settings.ui:455
+#: ui/global_settings.ui:592
+#, fuzzy
 msgid "List of recent profiles"
-msgstr ""
+msgstr "列出 近期 配置"
 
-#: ui/global_settings.ui:477
+#: ui/global_settings.ui:614
+#, fuzzy
 msgid "Run Program..."
-msgstr ""
+msgstr "執行 程式..."
 
-#: ui/global_settings.ui:498
+#: ui/global_settings.ui:635
 msgid "Autoswitch options"
 msgstr ""
 
-#: ui/global_settings.ui:519
+#: ui/global_settings.ui:656
+#, fuzzy
 msgid "Kill Current Window"
-msgstr ""
+msgstr "關閉 目前 視窗"
 
-#: ui/global_settings.ui:540
+#: ui/global_settings.ui:677
+#, fuzzy
 msgid "Window switcher"
-msgstr ""
+msgstr "視窗 切換"
 
-#: ui/global_settings.ui:561
+#: ui/global_settings.ui:698
 msgid "Show Current Bindings"
-msgstr ""
+msgstr "顯示 目前 按鍵配置"
 
-#: ui/global_settings.ui:582
+#: ui/global_settings.ui:719
+#, fuzzy
 msgid "Games List"
-msgstr ""
+msgstr "遊戲 清單"
 
-#: ui/global_settings.ui:603
+#: ui/global_settings.ui:740
+#, fuzzy
 msgid "Turn Controller OFF"
-msgstr ""
+msgstr "關掉 控制器"
 
-#: ui/global_settings.ui:645
+#: ui/global_settings.ui:782
 msgid "Edit Current Bindings"
-msgstr ""
+msgstr "編輯 目前 按鍵配置"
 
-#: ui/global_settings.ui:660
+#: ui/global_settings.ui:798
 msgid "Menus & Keyboard"
-msgstr ""
+msgstr "選單 & 鍵盤"
 
-#: ui/global_settings.ui:739
+#: ui/global_settings.ui:877
 msgid "Separator Text"
 msgstr ""
 
-#: ui/global_settings.ui:752
+#: ui/global_settings.ui:890
 msgid "Selected Text"
 msgstr ""
 
-#: ui/global_settings.ui:765
+#: ui/global_settings.ui:903
 msgid "Selected Background"
-msgstr ""
+msgstr "選擇 背景"
 
-#: ui/global_settings.ui:778
+#: ui/global_settings.ui:916
 msgid "Selected Border"
-msgstr ""
+msgstr "選擇 邊框"
 
-#: ui/global_settings.ui:858
+#: ui/global_settings.ui:996
+#, fuzzy
 msgid "OSD Menu Colors"
-msgstr ""
+msgstr "OSD 選單 顏色"
 
-#: ui/global_settings.ui:869 ui/global_settings.ui:1025
+#: ui/global_settings.ui:1007 ui/global_settings.ui:1163
 msgid "Text"
 msgstr ""
 
-#: ui/global_settings.ui:882
+#: ui/global_settings.ui:1020
 msgid "Item Border"
 msgstr ""
 
-#: ui/global_settings.ui:895
+#: ui/global_settings.ui:1033
 msgid "Background"
 msgstr ""
 
-#: ui/global_settings.ui:908
+#: ui/global_settings.ui:1046
 msgid "Border"
 msgstr ""
 
-#: ui/global_settings.ui:924
+#: ui/global_settings.ui:1062
+#, fuzzy
 msgid "On-Screen Keyboard Colors"
-msgstr ""
+msgstr "虛擬鍵盤 顏色"
 
-#: ui/global_settings.ui:936
+#: ui/global_settings.ui:1074
 msgid "Normal Button"
 msgstr ""
 
-#: ui/global_settings.ui:965
+#: ui/global_settings.ui:1103
+#, fuzzy
 msgid "Pressed Button"
-msgstr ""
+msgstr "按 按鈕"
 
-#: ui/global_settings.ui:995
+#: ui/global_settings.ui:1133
 msgid "Special Button"
 msgstr ""
 
-#: ui/global_settings.ui:1056
-msgid "Higlight"
+#: ui/global_settings.ui:1194
+msgid "Highlight"
 msgstr ""
 
-#: ui/global_settings.ui:1086 ui/key_grabber.ui:53
-msgid " "
-msgstr ""
-
-#: ui/global_settings.ui:1099
+#: ui/global_settings.ui:1237
+#, fuzzy
 msgid "OSD Style"
-msgstr ""
+msgstr "OSD 風格"
 
-#: ui/global_settings.ui:1137
+#: ui/global_settings.ui:1275
 msgid "Color Preset"
 msgstr ""
 
-#: ui/global_settings.ui:1174
+#: ui/global_settings.ui:1312
 msgid "OSD Colors"
 msgstr ""
 
-#: ui/global_settings.ui:1197
+#: ui/global_settings.ui:1335
+#, fuzzy
 msgid "Enable Steam Controller support"
-msgstr ""
+msgstr "啟動 Steam Controller 支援"
 
-#: ui/global_settings.ui:1219
+#: ui/global_settings.ui:1357
 msgid "Enable DualShock 4 (PS4 controller) support"
-msgstr ""
+msgstr "啟動 DualShock 4 (PS4 控制器) 支援"
 
-#: ui/global_settings.ui:1241
+#: ui/global_settings.ui:1379
+#, fuzzy
 msgid "Enable DualSense (PS5 controller) support"
-msgstr ""
+msgstr "啟動 DualSense (PS5 控制器) 支援"
 
-#: ui/global_settings.ui:1253
+#: ui/global_settings.ui:1391
+#, fuzzy
 msgid ""
 "If enabled, any connected DualSense controller will be automatically used by "
 "SC Controller"
-msgstr ""
+msgstr "若啟用, 任何連接的 DualSense 控制器將會自動由 SC Controller使用"
 
-#: ui/global_settings.ui:1269
+#: ui/global_settings.ui:1407
 msgid "Other registered controllers"
 msgstr ""
 
-#: ui/global_settings.ui:1282
+#: ui/global_settings.ui:1420
 msgid ""
 "If enabled, any connected DualShock 4 controller will be automatically used "
 "by SC Controller"
 msgstr ""
 
-#: ui/global_settings.ui:1295
+#: ui/global_settings.ui:1433
 msgid ""
 "Controllers listed here are automatically used by SC Controller whenever "
 "they are connected."
 msgstr ""
 
-#: ui/global_settings.ui:1360
+#: ui/global_settings.ui:1498
 msgid "Enable HID device support"
 msgstr ""
 
-#: ui/global_settings.ui:1382
+#: ui/global_settings.ui:1520
 msgid "Enable evdev support"
 msgstr ""
 
-#: ui/global_settings.ui:1411
+#: ui/global_settings.ui:1549
 msgid "Register New Controller"
 msgstr ""
 
-#: ui/global_settings.ui:1455
-msgid "Note: python-evdev package is needed for non-steam controller support"
+#: ui/global_settings.ui:1593
+msgid "The python-evdev package is required for non-Steam controller support"
 msgstr ""
 
-#: ui/global_settings.ui:1474
+#: ui/global_settings.ui:1612
 msgid "Enable Remote RetroPad protocol support"
 msgstr ""
 
-#: ui/global_settings.ui:1487
+#: ui/global_settings.ui:1625
 msgid ""
 "If enabled, any device or application compatibile with Retroarch's Remote "
 "RetroPad protocol\n"
@@ -2812,43 +2912,49 @@ msgid ""
 "</a>"
 msgstr ""
 
-#: ui/global_settings.ui:1506
+#: ui/global_settings.ui:1644
+#, fuzzy
 msgid "Controllers"
-msgstr ""
+msgstr "控制器"
 
-#: ui/global_settings.ui:1529
+#: ui/global_settings.ui:1667
 msgid "Show _OSD notification when profile is switched automatically"
 msgstr ""
 
-#: ui/global_settings.ui:1545
+#: ui/global_settings.ui:1683
+#, fuzzy
 msgid "Switching Rules"
-msgstr ""
+msgstr "切換規則"
 
-#: ui/global_settings.ui:1571
+#: ui/global_settings.ui:1709
+#, fuzzy
 msgid "When window..."
-msgstr ""
+msgstr "當 視窗..."
 
-#: ui/global_settings.ui:1584
+#: ui/global_settings.ui:1722
+#, fuzzy
 msgid "... then"
-msgstr ""
+msgstr "... 然後"
 
-#: ui/global_settings.ui:1615
+#: ui/global_settings.ui:1753
+#, fuzzy
 msgid "Automatic Profile Switching Options"
-msgstr ""
+msgstr "自動 配置 切換 選項"
 
-#: ui/global_settings.ui:1639
+#: ui/global_settings.ui:1777
 msgid "Edit Condition"
 msgstr ""
 
-#: ui/global_settings.ui:1700
+#: ui/global_settings.ui:1838
 msgid "Autoswitcher"
 msgstr ""
 
-#: ui/global_settings.ui:1723
+#: ui/global_settings.ui:1861
+#, fuzzy
 msgid "Enable Input Test Mode"
-msgstr ""
+msgstr "啟動 輸入 測試 模式"
 
-#: ui/global_settings.ui:1736
+#: ui/global_settings.ui:1874
 msgid ""
 "Allows applications to <b>watch and possibly log</b> gamepad inputs.\n"
 "\n"
@@ -2856,113 +2962,108 @@ msgid ""
 "grips, triggers, finger positions on both pads and stick angle."
 msgstr ""
 
-#: ui/global_settings.ui:1762
+#: ui/global_settings.ui:1900
 msgid "Use Serial Numbers to Identify Controllers"
 msgstr ""
 
-#: ui/global_settings.ui:1783
+#: ui/global_settings.ui:1921
 msgid "Automatically Disable Emulation When Closing GUI"
 msgstr ""
 
-#: ui/global_settings.ui:1802
-msgid "Minimize to status icon instead closing"
-msgstr ""
-
-#: ui/global_settings.ui:1823
-msgid "Enable Status (Systray) Icon"
-msgstr ""
-
-#: ui/global_settings.ui:1836
+#: ui/global_settings.ui:1934
 msgid "Try disabling this option if your controller stops working randomly."
 msgstr ""
 
-#: ui/global_settings.ui:1859
-msgid "Enable Rumble Support"
-msgstr ""
+#: ui/global_settings.ui:1957
+#, fuzzy
+msgid "Show the changelog after SC Controller is updated"
+msgstr "顯示 更新紀錄 在 SC Controller 更新完成後"
 
-#: ui/global_settings.ui:1880
-msgid "Display a message with changelog when SC Controller updates"
-msgstr ""
-
-#: ui/global_settings.ui:1899
-msgid "Minimize to tray on start"
-msgstr ""
-
-#: ui/global_settings.ui:1914
+#: ui/global_settings.ui:1973
 msgid "Advanced"
 msgstr ""
 
-#: ui/global_settings.ui:1958
+#: ui/global_settings.ui:2017
 msgid "Condition"
 msgstr ""
 
-#: ui/global_settings.ui:1973
+#: ui/global_settings.ui:2032
 msgid "Match Window Title"
 msgstr ""
 
-#: ui/global_settings.ui:1995
+#: ui/global_settings.ui:2054
 msgid "Match exact title"
 msgstr ""
 
-#: ui/global_settings.ui:2007
+#: ui/global_settings.ui:2066
 msgid "Use regular expression"
 msgstr ""
 
-#: ui/global_settings.ui:2025
+#: ui/global_settings.ui:2084
 msgid "Match Window Class"
 msgstr ""
 
-#: ui/global_settings.ui:2057
+#: ui/global_settings.ui:2116
+#, fuzzy
 msgid "Activate Profile"
-msgstr ""
+msgstr "啟動 配置"
 
-#: ui/global_settings.ui:2113
+#: ui/global_settings.ui:2172
 msgid "Restart Daemon"
-msgstr ""
+msgstr "重開 Daemon"
 
-#: ui/global_settings.ui:2144 ui/menu_editor.ui:317
+#: ui/global_settings.ui:2203 ui/menu_editor.ui:317
+#, fuzzy
 msgid "_Save"
-msgstr ""
+msgstr "_儲存"
 
 #: ui/icon_chooser.ui:101
+#, fuzzy
 msgid "Category"
-msgstr ""
+msgstr "類別"
 
 #: ui/icon_chooser.ui:154
+#, fuzzy
 msgid "button"
-msgstr ""
+msgstr "按鈕"
 
 #: ui/import_export.ui:67
-msgid "Please, select an option"
-msgstr ""
+#, fuzzy
+msgid "Select an option"
+msgstr "選擇 一個 選項"
 
 #: ui/import_export.ui:94
+#, fuzzy
 msgid "_Export Profile"
-msgstr ""
+msgstr "_輸出 配置"
 
 #: ui/import_export.ui:130
 msgid "_Import SC Controller Profile"
-msgstr ""
+msgstr "_匯入 SC Controller 配置"
 
 #: ui/import_export.ui:167
 msgid "Import _Steam Profile"
-msgstr ""
+msgstr "匯入 _Steam 配置"
 
 #: ui/import_export.ui:187
-msgid "You can also drag-n-drop profile file on main application window"
-msgstr ""
+#, fuzzy
+msgid "You can also drag and drop a profile file onto the main window"
+msgstr "你也可以拖放配置檔案到主要視窗裡來匯入"
 
 #: ui/import_export.ui:200
+#, fuzzy
 msgid "Import / Export"
-msgstr ""
+msgstr "匯入 / 匯出"
 
 #: ui/import_export.ui:217
+#, fuzzy
 msgid "Select Profile to Export"
-msgstr ""
+msgstr "選擇 配置 來 匯出"
 
 #: ui/import_export.ui:270 ui/import_export.ui:381
+#, fuzzy
 msgid "Export Profile"
-msgstr ""
+msgstr "匯出 配置"
 
 #: ui/import_export.ui:281
 msgid ""
@@ -2980,39 +3081,40 @@ msgstr ""
 
 #: ui/import_export.ui:332
 msgid "Name"
-msgstr ""
+msgstr "名稱"
 
 #: ui/import_export.ui:360
 msgid "Select All"
-msgstr ""
+msgstr "全部選取"
 
 #: ui/import_export.ui:411
 msgid "Game"
-msgstr ""
+msgstr "遊戲"
 
 #: ui/import_export.ui:453
+#, fuzzy
 msgid "Select Profile to Import"
-msgstr ""
+msgstr "選擇 配置 來 匯入"
 
 #: ui/import_export.ui:465
-msgid "Searching for profiles. This may take som time."
-msgstr ""
+#, fuzzy
+msgid "Searching for profiles. This may take some time."
+msgstr "搜尋配置中. 這將會花點時間."
 
 #: ui/import_export.ui:480 ui/import_export.ui:633
+#, fuzzy
 msgid "Import Steam Profile"
-msgstr ""
-
-#: ui/import_export.ui:496 ui/import_export.ui:751
-msgid "Import results goes here"
-msgstr ""
+msgstr "匯入 Steam 配置"
 
 #: ui/import_export.ui:508 ui/import_export.ui:950
+#, fuzzy
 msgid "Error message:"
-msgstr ""
+msgstr "錯誤 訊息:"
 
 #: ui/import_export.ui:542 ui/import_export.ui:763
-msgid "Enter name for imported profile and click \"Apply\""
-msgstr ""
+#, fuzzy
+msgid "Enter a name for the imported profile and click \"Apply\""
+msgstr "輸入一個命名給匯入的配置 然後點擊\"採用\""
 
 #: ui/import_export.ui:565
 msgid ""
@@ -3048,10 +3150,10 @@ msgid ""
 "what command does before clicking \"Continue.\""
 msgstr ""
 
-#: ui/import_export.ui:735 ui/import_export.ui:923
-#: ui/import_export.ui:982
+#: ui/import_export.ui:735 ui/import_export.ui:923 ui/import_export.ui:982
+#, fuzzy
 msgid "Import"
-msgstr ""
+msgstr "匯入"
 
 #: ui/import_export.ui:790
 msgid ""
@@ -3071,7 +3173,7 @@ msgid "Don't import any additional profiles or menus"
 msgstr ""
 
 #: ui/import_export.ui:831
-msgid "Display list and let me choose name for each imported profile"
+msgid "Display a list and let me choose a name for each imported profile"
 msgstr ""
 
 #: ui/import_export.ui:855
@@ -3080,23 +3182,25 @@ msgstr ""
 
 #: ui/import_export.ui:869
 msgid "Original name"
-msgstr ""
+msgstr "原名稱"
 
 #: ui/import_export.ui:890
+#, fuzzy
 msgid "Import As"
-msgstr ""
+msgstr "匯入 為"
 
 #: ui/import_export.ui:1020
+#, fuzzy
 msgid "Save _As…"
-msgstr ""
+msgstr "儲存 _為…"
 
 #: ui/import_export.ui:1038 ui/osk_binding_editor.ui:57
 msgid "Back"
-msgstr ""
+msgstr "返回"
 
 #: ui/key_grabber.ui:17 ui/key_grabber.ui:86
 msgid "Ctrl"
-msgstr ""
+msgstr "Ctrl"
 
 #: ui/key_grabber.ui:29 ui/key_grabber.ui:75
 msgid "Meta"
@@ -3104,61 +3208,63 @@ msgstr ""
 
 #: ui/key_grabber.ui:40 ui/key_grabber.ui:63
 msgid "Alt"
-msgstr ""
+msgstr "Alt"
 
 #: ui/key_grabber.ui:100 ui/key_grabber.ui:127
 msgid "Shift"
-msgstr ""
+msgstr "Shift"
 
 #: ui/macro_editor.ui:14
 msgid "Run once"
-msgstr ""
+msgstr "執行單次"
 
 #: ui/macro_editor.ui:22
+#, fuzzy
 msgid "Cycle"
-msgstr ""
+msgstr "循環"
 
 #: ui/macro_editor.ui:66
+#, fuzzy
 msgid "Macro Type"
-msgstr ""
+msgstr "巨集 種類"
 
 #: ui/macro_editor.ui:112
+#, fuzzy
 msgid "Add Delay"
-msgstr ""
+msgstr "增加 延遲"
 
 #: ui/macro_editor.ui:120 ui/menu_editor.ui:178
+#, fuzzy
 msgid "Add _Action"
-msgstr ""
+msgstr "增加 _動作"
 
-#: ui/macro_editor.ui:175 ui/modeshift_editor.ui:442
-#: ui/ring_editor.ui:76
-msgid "(Widget)"
-msgstr ""
-
-#: ui/macro_editor.ui:209 ui/modeshift_editor.ui:557
-#: ui/ring_editor.ui:343
+#: ui/macro_editor.ui:209 ui/modeshift_editor.ui:557 ui/ring_editor.ui:343
+#, fuzzy
 msgid "Custom Editor"
-msgstr ""
+msgstr "自訂 編輯器"
 
 #: ui/macro_editor.ui:281
+#, fuzzy
 msgid "Click"
-msgstr ""
+msgstr "點擊"
 
 #: ui/menu_editor.ui:35
-msgid "No!. Bad, bad user!"
+msgid "No! Bad, bad user!"
 msgstr ""
 
 #: ui/menu_editor.ui:72
+#, fuzzy
 msgid "Menu ID"
-msgstr ""
+msgstr "選單 ID"
 
 #: ui/menu_editor.ui:101
 msgid "Global"
-msgstr ""
+msgstr "全域"
 
 #: ui/menu_editor.ui:114
+#, fuzzy
 msgid "Stored in Profile"
-msgstr ""
+msgstr "儲存在配置中"
 
 #: ui/menu_editor.ui:130
 msgid "_Edit Item"
@@ -3173,23 +3279,22 @@ msgid "Add Su_bmenu"
 msgstr ""
 
 #: ui/menu_editor.ui:204
+#, fuzzy
 msgid "Add List of All _Profiles"
-msgstr ""
+msgstr "增加至 清單 所有_配置"
 
 #: ui/menu_editor.ui:211
+#, fuzzy
 msgid "Add List of _Recent Profiles"
-msgstr ""
+msgstr "增加至 清單 _近期配置"
 
 #: ui/menu_editor.ui:218
+#, fuzzy
 msgid "Add List of _Games"
-msgstr ""
+msgstr "增加至 清單 _遊戲"
 
 #: ui/menu_editor.ui:284
 msgid "Items"
-msgstr ""
-
-#: ui/menu_editor.ui:349
-msgid "<icon name>"
 msgstr ""
 
 #: ui/modeshift_editor.ui:225
@@ -3197,48 +3302,56 @@ msgid "(held alone)"
 msgstr ""
 
 #: ui/modeshift_editor.ui:249
+#, fuzzy
 msgid "Hold Time"
-msgstr ""
+msgstr "等待 時間"
 
 #: ui/modeshift_editor.ui:280
-msgid "Play haptic feedback effect when Hold action is executed"
-msgstr ""
+#, fuzzy
+msgid "Play a haptic feedback effect when the Hold action is executed"
+msgstr "當 長按 動作執行時,觸發觸覺回饋效果"
 
 #: ui/modeshift_editor.ui:295
 msgid "Effect Amplitude"
 msgstr ""
 
 #: ui/modeshift_editor.ui:325
+#, fuzzy
 msgid "Hold"
-msgstr ""
+msgstr "按住"
 
 #: ui/modeshift_editor.ui:375
+#, fuzzy
 msgid "(double-clicked)"
-msgstr ""
+msgstr "(雙-擊)"
 
 #: ui/modeshift_editor.ui:401
+#, fuzzy
 msgid "Double-click Time"
-msgstr ""
+msgstr "雙-擊 時間"
 
 #: ui/modeshift_editor.ui:425
 msgid "Double-click"
-msgstr ""
+msgstr "雙擊"
 
 #: ui/modeshift_editor.ui:472
+#, fuzzy
 msgid "Soft Pull Level"
-msgstr ""
+msgstr "輕扣 Level"
 
 #: ui/osk_binding_editor.ui:234
+#, fuzzy
 msgid "C"
-msgstr ""
+msgstr "C"
 
 #: ui/osk_binding_editor.ui:256
+#, fuzzy
 msgid "Stick Movement"
-msgstr ""
+msgstr "搖桿 移動"
 
 #: ui/osk_binding_editor.ui:279
 msgid "Stick Press"
-msgstr ""
+msgstr "搖桿點擊"
 
 #: ui/ring_editor.ui:22
 msgid "Two separate rings"
@@ -3246,12 +3359,12 @@ msgstr ""
 
 #: ui/ring_editor.ui:26
 msgid "Pad binding with Inner ring binding"
-msgstr ""
+msgstr "觸控板 內環配置"
 
 #: ui/ring_editor.ui:30
 msgid "Pad binding with Outer ring binding"
-msgstr ""
+msgstr "觸控板 外環配置"
 
 #: ui/ring_editor.ui:158
 msgid "Preview Immediately"
-msgstr ""
+msgstr "立即預覽"
