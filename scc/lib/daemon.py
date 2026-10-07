@@ -146,13 +146,13 @@ class Daemon:
 					time.sleep(0.1)
 				time.sleep(0.1)
 			os.kill(pid, signal.SIGKILL)
-		except OSError as err:
+		except Exception as err:
 			e = str(err.args)
 			if e.find("No such process") > 0:
 				if os.path.exists(self.pidfile):
 					os.remove(self.pidfile)
 			else:
-				print(str(err.args))
+				log.exception("Failed killing scc-daemon")
 				sys.exit(1)
 		log.info("%s: stopped", os.path.basename(sys.argv[0]))
 
