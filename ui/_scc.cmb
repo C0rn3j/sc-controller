@@ -33,4 +33,5 @@
   <ui filename="ae/special_action.ui"/>
   <ui filename="ae/tilt.ui"/>
   <ui filename="ae/trigger.ui"/>
+  <ui filename="led_editor.ui"/>
 </cambalache-project>

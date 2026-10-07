@@ -5,6 +5,7 @@ Extends HID driver with DS5-specific options.
 from __future__ import annotations
 
 import ctypes
+import colorsys
 import logging
 import math
 import os
@@ -394,9 +395,25 @@ class DS5USBController(USBHIDController):
 		self._feedback_cancel_task = self.mapper.schedule(duration, clear_feedback)
 
 	def apply_config(self, config) -> None:
-		icon = config["icon"]
-		led_level = config["led_level"]
-		self.configure(icon=icon, led_level=led_level)
+		self._apply_led_config(config)
+
+	def _apply_led_config(self, config) -> None:
+		red, green, blue = colorsys.hsv_to_rgb(
+			float(config["led_hue"]) / 360,
+			float(config["led_saturation"]) / 100,
+			float(config["led_level"]) / 100,
+		)
+		self.set_led_color(*(round(channel * 255) for channel in (red, green, blue)))
+		mode = config.get("player_led_mode", "controller-count")
+		if mode == "on":
+			mask = 0x1F
+		elif mode == "off":
+			mask = 0
+		else:
+			patterns = (0x04, 0x0A, 0x15, 0x1B, 0x1F)
+			count = max(1, min(len(self.daemon.controllers) + 1, len(patterns)))
+			mask = patterns[count - 1]
+		self.set_player_leds(mask)
 
 	def configure(self, icon=None, led_level=100) -> None:
 		lightbar_color = (0.0, 0.0, 1.0)  # blue by default
@@ -424,6 +441,28 @@ class DS5USBController(USBHIDController):
 			lightbar_blue=lightbar_color_bytes[2],
 		)
 		self.schedule_output("lightbar", output)
+
+	def set_led_color(self, red: int, green: int, blue: int) -> None:
+		self.schedule_output(
+			"lightbar",
+			DualSenseHIDOutput(
+				operating_mode=OperatingMode.DS5_MODE,
+				light_effect_control=LightEffectControl.LIGHTBAR_CONTROL_ENABLE,
+				lightbar_red=red,
+				lightbar_green=green,
+				lightbar_blue=blue,
+			),
+		)
+
+	def set_player_leds(self, mask: int) -> None:
+		self.schedule_output(
+			"player-leds",
+			DualSenseHIDOutput(
+				operating_mode=OperatingMode.DS5_MODE,
+				light_effect_control=LightEffectControl.PLAYER_INDICATOR_CONTROL_ENABLE,
+				player_leds=mask,
+			),
+		)
 
 	def get_gyro_enabled(self) -> bool:
 		# Cannot be actually turned off, so it's always active
@@ -598,9 +637,22 @@ class DS5BluetoothHIDRawController(Controller):
 			log.warning("Failed to turn off DS5 Bluetooth controller: %s", error)
 
 	def apply_config(self, config):
-		icon = config["icon"]
-		led_level = config["led_level"]
-		self.configure(icon=icon, led_level=led_level)
+		red, green, blue = colorsys.hsv_to_rgb(
+			float(config["led_hue"]) / 360,
+			float(config["led_saturation"]) / 100,
+			float(config["led_level"]) / 100,
+		)
+		self.set_led_color(*(round(channel * 255) for channel in (red, green, blue)))
+		mode = config.get("player_led_mode", "controller-count")
+		if mode == "on":
+			mask = 0x1F
+		elif mode == "off":
+			mask = 0
+		else:
+			patterns = (0x04, 0x0A, 0x15, 0x1B, 0x1F)
+			count = max(1, min(len(self.daemon.controllers) + 1, len(patterns)))
+			mask = patterns[count - 1]
+		self.set_player_leds(mask)
 
 	def configure(self, icon=None, led_level=100) -> None:
 		# log.debug("CALLED CONFIGURE")
@@ -642,6 +694,36 @@ class DS5BluetoothHIDRawController(Controller):
 		self.schedule_output("lightbar", tempbuffer)
 		# time.sleep(2)
 		self.flush()
+
+	def _schedule_led_output(self, output_id: str, output: DualSenseHIDOutputBT) -> None:
+		buffer = bytearray(output)
+		self._prepare_buffer_crc(buffer)
+		self.schedule_output(output_id, buffer)
+		self.flush()
+
+	def set_led_color(self, red: int, green: int, blue: int) -> None:
+		self._schedule_led_output(
+			"lightbar",
+			DualSenseHIDOutputBT(
+				operating_mode=OperatingMode.DS5_MODE_BT,
+				data_id_byte=0x02,
+				light_effect_control=LightEffectControl.LIGHTBAR_CONTROL_ENABLE,
+				lightbar_red=red,
+				lightbar_green=green,
+				lightbar_blue=blue,
+			),
+		)
+
+	def set_player_leds(self, mask: int) -> None:
+		self._schedule_led_output(
+			"player-leds",
+			DualSenseHIDOutputBT(
+				operating_mode=OperatingMode.DS5_MODE_BT,
+				data_id_byte=0x02,
+				light_effect_control=LightEffectControl.PLAYER_INDICATOR_CONTROL_ENABLE,
+				player_leds=mask,
+			),
+		)
 		# self._device_file.read(78)
 		# feature_data = self._hidrawdev.getFeatureReport(9)
 		# time.sleep(2)
@@ -1041,6 +1123,23 @@ class DS5BluetoothHIDRawController(Controller):
 		return True
 
 
+def _find_evdev_hidraw(evdev_path: str) -> str | None:
+	"""Find the hidraw sibling used for output by an evdev input node."""
+	event_name = os.path.basename(evdev_path)
+	device_path = os.path.realpath(os.path.join("/sys/class/input", event_name, "device"))
+	while device_path.startswith("/sys/"):
+		hidraw_dir = os.path.join(device_path, "hidraw")
+		if os.path.isdir(hidraw_dir):
+			for name in sorted(os.listdir(hidraw_dir)):
+				if name.startswith("hidraw"):
+					return os.path.join("/dev", name)
+		parent = os.path.dirname(device_path)
+		if parent == device_path:
+			break
+		device_path = parent
+	return None
+
+
 class DS5EvdevController(EvdevController):
 	TOUCH_FACTOR_X = STICK_PAD_MAX / 940.0
 	TOUCH_FACTOR_Y = STICK_PAD_MAX / 470.0
@@ -1088,11 +1187,17 @@ class DS5EvdevController(EvdevController):
 		| ControllerFlags.NO_GRIPS
 	)
 
-	def __init__(self, daemon, controllerdevice, gyro, touchpad) -> None:
+	def __init__(self, daemon, controllerdevice, gyro, touchpad, hidraw_path=None) -> None:
 		config = {"axes": DS5EvdevController.AXIS_MAP, "buttons": DS5EvdevController.BUTTON_MAP, "dpads": {}}
 		self._gyro = gyro
 		self._touchpad = touchpad
 		self._feedback_effect_id: int | None = None
+		self._hidraw_output = None
+		if hidraw_path:
+			try:
+				self._hidraw_output = open(hidraw_path, "r+b", buffering=0)
+			except OSError as error:
+				log.warning("Cannot open %s for DualSense LED output: %s", hidraw_path, error)
 		for device in (self._gyro, self._touchpad):
 			if device:
 				device.grab()
@@ -1165,6 +1270,9 @@ class DS5EvdevController(EvdevController):
 				device.ungrab()
 			except:
 				pass
+		if self._hidraw_output is not None:
+			self._hidraw_output.close()
+			self._hidraw_output = None
 
 	def _stop_feedback(self) -> None:
 		if self._feedback_effect_id is None:
@@ -1206,6 +1314,77 @@ class DS5EvdevController(EvdevController):
 		except OSError as error:
 			self._feedback_effect_id = None
 			log.warning("Failed to play DS5 evdev rumble effect: %s", error)
+
+	def _write_led_output(self, output) -> None:
+		if self._hidraw_output is None:
+			log.debug("DualSense evdev backend has no writable hidraw node for LED output")
+			return
+		try:
+			if self.device.info.bustype == self.ECODES.BUS_BLUETOOTH:
+				report = bytearray(output)
+				crc = zlib.crc32(b"\xa2") & 0xFFFFFFFF
+				crc = zlib.crc32(report[:74], crc) & 0xFFFFFFFF
+				report[74:78] = crc.to_bytes(4, "little")
+			else:
+				report = bytearray(output)
+				report.extend(bytes(64 - len(report)))
+			self._hidraw_output.write(report)
+		except OSError as error:
+			log.warning("Failed to set DualSense LEDs through %s: %s", self._hidraw_output.name, error)
+
+	def set_led_color(self, red: int, green: int, blue: int) -> None:
+		if self.device.info.bustype == self.ECODES.BUS_BLUETOOTH:
+			output = DualSenseHIDOutputBT(
+				operating_mode=OperatingMode.DS5_MODE_BT,
+				data_id_byte=0x02,
+				light_effect_control=LightEffectControl.LIGHTBAR_CONTROL_ENABLE,
+				lightbar_red=red,
+				lightbar_green=green,
+				lightbar_blue=blue,
+			)
+		else:
+			output = DualSenseHIDOutput(
+				operating_mode=OperatingMode.DS5_MODE,
+				light_effect_control=LightEffectControl.LIGHTBAR_CONTROL_ENABLE,
+				lightbar_red=red,
+				lightbar_green=green,
+				lightbar_blue=blue,
+			)
+		self._write_led_output(output)
+
+	def set_player_leds(self, mask: int) -> None:
+		if self.device.info.bustype == self.ECODES.BUS_BLUETOOTH:
+			output = DualSenseHIDOutputBT(
+				operating_mode=OperatingMode.DS5_MODE_BT,
+				data_id_byte=0x02,
+				light_effect_control=LightEffectControl.PLAYER_INDICATOR_CONTROL_ENABLE,
+				player_leds=mask,
+			)
+		else:
+			output = DualSenseHIDOutput(
+				operating_mode=OperatingMode.DS5_MODE,
+				light_effect_control=LightEffectControl.PLAYER_INDICATOR_CONTROL_ENABLE,
+				player_leds=mask,
+			)
+		self._write_led_output(output)
+
+	def apply_config(self, config) -> None:
+		red, green, blue = colorsys.hsv_to_rgb(
+			float(config["led_hue"]) / 360,
+			float(config["led_saturation"]) / 100,
+			float(config["led_level"]) / 100,
+		)
+		self.set_led_color(*(round(channel * 255) for channel in (red, green, blue)))
+		mode = config.get("player_led_mode", "controller-count")
+		if mode == "on":
+			mask = 0x1F
+		elif mode == "off":
+			mask = 0
+		else:
+			patterns = (0x04, 0x0A, 0x15, 0x1B, 0x1F)
+			count = max(1, min(len(self.daemon.controllers) + 1, len(patterns)))
+			mask = patterns[count - 1]
+		self.set_player_leds(mask)
 
 	def get_gyro_enabled(self) -> bool:
 		# Cannot be actually turned off, so it's always active
@@ -1271,7 +1450,8 @@ def init(daemon, config) -> bool:
 					touchpad = device
 		# 3rd, do a magic
 		if controllerdevice and gyro and touchpad:
-			return make_new_device(DS5EvdevController, controllerdevice, gyro, touchpad)
+			hidraw_path = _find_evdev_hidraw(controllerdevice.path)
+			return make_new_device(DS5EvdevController, controllerdevice, gyro, touchpad, hidraw_path)
 		return None
 
 	def fail_cb(syspath: str, vid: int, pid: int) -> None:

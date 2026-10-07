@@ -5,6 +5,7 @@ Extends HID driver with DS4-specific options.
 from __future__ import annotations
 
 import ctypes
+import colorsys
 import logging
 import os
 import struct
@@ -114,6 +115,14 @@ class DS4Controller(Controller):
 	def __init__(self, daemon: SCCDaemon) -> None:
 		self.daemon: SCCDaemon = daemon
 		Controller.__init__(self)
+
+	def apply_config(self, config) -> None:
+		red, green, blue = colorsys.hsv_to_rgb(
+			float(config["led_hue"]) / 360,
+			float(config["led_saturation"]) / 100,
+			float(config["led_level"]) / 100,
+		)
+		self.set_led_color(*(round(channel * 255) for channel in (red, green, blue)))
 
 	def _load_hid_descriptor(self, config, max_size, vid, pid, test_mode) -> None:
 		# Overrided and hardcoded
@@ -334,6 +343,11 @@ class DS4USBController(DS4Controller, USBHIDController):
 
 			self._feedback_cancel_tasks[task_index] = self.mapper.schedule(duration, clear_feedback)
 
+	def set_led_color(self, red: int, green: int, blue: int) -> None:
+		self._feedback_output[1] |= 0x02
+		self._feedback_output[6:9] = bytes((red, green, blue))
+		self._feedback_pending = True
+
 	def flush(self) -> None:
 		USBHIDController.flush(self)
 		if self._feedback_pending:
@@ -409,6 +423,11 @@ class DS4BluetoothHIDRawController(DS4Controller):
 		#log.debug("DS4 Bluetooth output: motors=(%s,%s)", self._feedback_output[7], self._feedback_output[6])
 		self._device_file.write(bytes(self._feedback_output))
 
+	def set_led_color(self, red: int, green: int, blue: int) -> None:
+		self._feedback_output[3] |= 0x02
+		self._feedback_output[8:11] = bytes((red, green, blue))
+		self._write_feedback_report()
+
 	def feedback(self, data) -> None:
 		position, amplitude, period, count = data.data
 		amplitude = min(amplitude, 0x8000) / 0x8000
@@ -476,6 +495,23 @@ class DS4BluetoothHIDRawDriver:
 	def get_type(self) -> str:
 		return "ds4bt_hidraw"
 
+
+def _find_evdev_hidraw(evdev_path: str) -> str | None:
+	"""Find the hidraw sibling used for output by an evdev input node."""
+	event_name = os.path.basename(evdev_path)
+	device_path = os.path.realpath(os.path.join("/sys/class/input", event_name, "device"))
+	while device_path.startswith("/sys/"):
+		hidraw_dir = os.path.join(device_path, "hidraw")
+		if os.path.isdir(hidraw_dir):
+			for name in sorted(os.listdir(hidraw_dir)):
+				if name.startswith("hidraw"):
+					return os.path.join("/dev", name)
+		parent = os.path.dirname(device_path)
+		if parent == device_path:
+			break
+		device_path = parent
+	return None
+
 class DS4EvdevController(EvdevController):
 	TOUCH_FACTOR_X = STICK_PAD_MAX / 940.0
 	TOUCH_FACTOR_Y = STICK_PAD_MAX / 470.0
@@ -526,6 +562,7 @@ class DS4EvdevController(EvdevController):
 		controllerdevice: InputDevice[str],
 		gyro: InputDevice[str],
 		touchpad: InputDevice[str],
+		hidraw_path: str | None = None,
 	) -> None:
 		config = {
 			"axes": DS4EvdevController.AXIS_MAP,
@@ -535,6 +572,12 @@ class DS4EvdevController(EvdevController):
 		self._gyro: InputDevice[str] = gyro
 		self._touchpad: InputDevice[str] = touchpad
 		self._feedback_effect_id: int | None = None
+		self._hidraw_output = None
+		if hidraw_path:
+			try:
+				self._hidraw_output = open(hidraw_path, "r+b", buffering=0)
+			except OSError as error:
+				log.warning("Cannot open %s for DS4 LED output: %s", hidraw_path, error)
 		for device in (self._gyro, self._touchpad):
 			if device:
 				device.grab()
@@ -608,11 +651,23 @@ class DS4EvdevController(EvdevController):
 				device.ungrab()
 			except Exception:
 				pass
+		if self._hidraw_output is not None:
+			self._hidraw_output.close()
+			self._hidraw_output = None
 
 	def get_gyro_enabled(self) -> bool:
 		# Cannot be actually turned off, so it's always active
 		# TODO: Maybe emulate turning off?
 		return True
+
+	def apply_config(self, config) -> None:
+		brightness = float(config["led_level"]) / 100
+		red, green, blue = colorsys.hsv_to_rgb(
+			float(config["led_hue"]) / 360,
+			float(config["led_saturation"]) / 100,
+			brightness,
+		)
+		self.set_led_color(*(round(channel * 255) for channel in (red, green, blue)))
 
 	def _stop_feedback(self) -> None:
 		if self._feedback_effect_id is None:
@@ -654,6 +709,29 @@ class DS4EvdevController(EvdevController):
 		except OSError as error:
 			self._feedback_effect_id = None
 			log.warning("Failed to play DS4 evdev rumble effect: %s", error)
+
+	def set_led_color(self, red: int, green: int, blue: int) -> None:
+		if self._hidraw_output is None:
+			log.debug("DS4 evdev backend has no writable hidraw node for LED output")
+			return
+		try:
+			if self.device.info.bustype == self.ECODES.BUS_BLUETOOTH:
+				report = bytearray(DS4_BT_OUTPUT_REPORT_SIZE)
+				report[0] = DS4_BT_OUTPUT_REPORT_ID
+				report[1] = DS4_BT_OUTPUT_HW_CONTROL
+				report[3] = 0x02
+				report[8:11] = bytes((red, green, blue))
+				crc = zlib.crc32(bytes((DS4_BT_OUTPUT_CRC_SEED,)))
+				crc = zlib.crc32(report[:-4], crc)
+				struct.pack_into("<I", report, DS4_BT_OUTPUT_REPORT_SIZE - 4, crc)
+			else:
+				report = bytearray(DS4_USB_OUTPUT_REPORT_SIZE)
+				report[0] = DS4_USB_OUTPUT_REPORT_ID
+				report[1] = 0x02
+				report[6:9] = bytes((red, green, blue))
+			self._hidraw_output.write(report)
+		except OSError as error:
+			log.warning("Failed to set DS4 lightbar through %s: %s", self._hidraw_output.name, error)
 
 	def get_type(self) -> str:
 		return "ds4evdev"
@@ -713,7 +791,8 @@ def init(daemon: SCCDaemon, config: dict) -> bool:
 					touchpad = device
 		# 3rd, do a magic
 		if controllerdevice and gyro and touchpad:
-			return make_new_device(DS4EvdevController, controllerdevice, gyro, touchpad)
+			hidraw_path = _find_evdev_hidraw(controllerdevice.path)
+			return make_new_device(DS4EvdevController, controllerdevice, gyro, touchpad, hidraw_path)
 		return None
 
 	def fail_cb(syspath: str, vid: int, pid: int) -> None:
