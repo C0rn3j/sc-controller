@@ -146,14 +146,13 @@ class Daemon:
 					time.sleep(0.1)
 				time.sleep(0.1)
 			os.kill(pid, signal.SIGKILL)
-		except Exception as err:
-			e = str(err.args)
-			if e.find("No such process") > 0:
-				if os.path.exists(self.pidfile):
-					os.remove(self.pidfile)
-			else:
-				log.exception("Failed killing scc-daemon")
-				sys.exit(1)
+		except ProcessLookupError:
+			log.debug("Old pidfile seems to point to a PID that is no longer running...")
+			if os.path.exists(self.pidfile):
+				os.remove(self.pidfile)
+		except Exception:
+			log.exception("Failed killing scc-daemon")
+			sys.exit(1)
 		log.info("%s: stopped", os.path.basename(sys.argv[0]))
 
 	def restart(self) -> Never:
