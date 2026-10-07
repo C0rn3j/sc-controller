@@ -93,8 +93,8 @@ We use [Weblate](https://hosted.weblate.org/projects/sc-controller/sc-controller
 <table>
 	<tr>
 		<td width="267" valign="top">
-			<a href="https://repology.amdmi3.ru/project/sc-controller/versions">
-				<img src="https://repology.amdmi3.ru/badge/vertical-allrepos/sc-controller.svg?exclude_unsupported=1&header=" width="240" alt="Packaging status">
+			<a href="https://repology.org/project/sc-controller/versions">
+				<img src="https://repology.org/badge/vertical-allrepos/sc-controller.svg?exclude_unsupported=1&header=" width="240" alt="Packaging status">
 			</a>
 		</td>
 		<td valign="top">
