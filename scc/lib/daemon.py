@@ -128,6 +128,7 @@ class Daemon:
 			with open(self.pidfile) as pidf:
 				pid = int(pidf.read().strip())
 		except Exception:
+			log.exception("Failed opening PID file")
 			pid = None
 
 		if not pid:
