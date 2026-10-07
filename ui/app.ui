@@ -828,78 +828,52 @@
   <object class="GtkPopoverMenu" id="mnuImage">
     <property name="menu-model">mnuImageModel</property>
   </object>
-  <object class="GtkPopover" id="mnuPS">
-    <property name="child">
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkButton" id="mnuConfigureController">
-            <property name="label" translatable="yes">_Configure Controller</property>
-            <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuConfigureController_activate"/>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="mnuTurnoffController">
-            <property name="label" translatable="yes">_Turn Off Controller</property>
-            <property name="use-underline">True</property>
-            <signal name="clicked" handler="mnuTurnoffController_activate"/>
-          </object>
-        </child>
-        <child>
-          <object class="GtkSeparator" id="mnuProfileSeparator2">
-            <property name="orientation">horizontal</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="mnuProfileNew">
-            <property name="label" translatable="yes">_New Profile</property>
-            <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuProfileNew_activate"/>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="mnuProfileCopy">
-            <property name="label" translatable="yes">_Copy Profile</property>
-            <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuProfileCopy_activate"/>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="mnuProfileRename">
-            <property name="label" translatable="yes">_Rename Profile</property>
-            <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuProfileRename_activate"/>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="mnuProfileDelete">
-            <property name="label" translatable="yes">_Delete Profile</property>
-            <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuProfileDelete_activate"/>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="mnuProfileRevert">
-            <property name="label" translatable="yes">_Revert Profile to Defaults</property>
-            <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuProfileDelete_activate"/>
-          </object>
-        </child>
-        <child>
-          <object class="GtkSeparator" id="mnuProfileSeparator1">
-            <property name="orientation">horizontal</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="mnuProfileDetails">
-            <property name="label" translatable="yes">Profile D_etails</property>
-            <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuProfileDetails_activate"/>
-          </object>
-        </child>
-      </object>
-    </property>
+  <menu id="mnuPSModel">
+    <section>
+      <item>
+        <attribute name="action">app.profile-configure</attribute>
+        <attribute name="label" translatable="yes">_Configure Controller</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.profile-turn-off</attribute>
+        <attribute name="label" translatable="yes">_Turn Off Controller</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="action">app.profile-new</attribute>
+        <attribute name="label" translatable="yes">_New Profile</attribute>
+        <attribute name="hidden-when">action-disabled</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.profile-copy</attribute>
+        <attribute name="label" translatable="yes">_Copy Profile</attribute>
+        <attribute name="hidden-when">action-disabled</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.profile-rename</attribute>
+        <attribute name="label" translatable="yes">_Rename Profile</attribute>
+        <attribute name="hidden-when">action-disabled</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.profile-delete</attribute>
+        <attribute name="label" translatable="yes">_Delete Profile</attribute>
+        <attribute name="hidden-when">action-disabled</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.profile-revert</attribute>
+        <attribute name="label" translatable="yes">_Revert Profile to Defaults</attribute>
+        <attribute name="hidden-when">action-disabled</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.profile-details</attribute>
+        <attribute name="label" translatable="yes">Profile D_etails</attribute>
+        <attribute name="hidden-when">action-disabled</attribute>
+      </item>
+    </section>
+  </menu>
+  <object class="GtkPopoverMenu" id="mnuPS">
+    <property name="menu-model">mnuPSModel</property>
   </object>
   <menu id="mnuPopupModel">
     <item>

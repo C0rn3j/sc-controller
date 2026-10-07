@@ -184,7 +184,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			("profile-details", self.on_mnuProfileDetails_activate),
 		):
 			self._add_menu_action(name, lambda action, parameter, callback=callback: callback())
-		self._mnu_ps = Gtk.PopoverMenu()
+		self._mnu_ps = self.builder.get_object("mnuPS")
 		self._profile_menu_ps = None
 
 		ps = self.add_switcher(12, 12)
@@ -1337,31 +1337,24 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		else:
 			log.debug("Unprocessed event in on_daemon_event_observer(): %s", what)
 
-	def on_profile_right_clicked(self, ps) -> None:
+	def on_profile_right_clicked(self, ps: ProfileSwitcher) -> None:
 		connected = ps.get_controller() is not None
 		self.lookup_action("profile-configure").set_enabled(connected)
 		self.lookup_action("profile-turn-off").set_enabled(connected)
-		model = Gio.Menu()
-		controller = Gio.Menu()
-		controller.append(_("_Configure Controller"), "app.profile-configure")
-		controller.append(_("_Turn Off Controller"), "app.profile-turn-off")
-		model.append_section(None, controller)
-		if ps == self.profile_switchers[0]:
-			profiles = Gio.Menu()
-			profiles.append(_("_New Profile"), "app.profile-new")
-			profiles.append(_("_Copy Profile"), "app.profile-copy")
+		primary = ps == self.profile_switchers[0]
+		if primary:
 			name = ps.get_profile_name()
 			is_override = profile_is_override(name)
 			is_default = profile_is_default(name)
-			if not is_default:
-				profiles.append(_("_Rename Profile"), "app.profile-rename")
-				profiles.append(_("_Delete Profile"), "app.profile-delete")
-			if is_override:
-				profiles.append(_("_Revert Profile to Defaults"), "app.profile-revert")
-			profiles.append(_("Profile D_etails"), "app.profile-details")
-			model.append_section(None, profiles)
+		else:
+			is_override = False
+			is_default = True
+		for action in ("profile-new", "profile-copy", "profile-details"):
+			self.lookup_action(action).set_enabled(primary)
+		for action in ("profile-rename", "profile-delete"):
+			self.lookup_action(action).set_enabled(primary and not is_default)
+		self.lookup_action("profile-revert").set_enabled(primary and is_override)
 		self._profile_menu_ps = ps
-		self._mnu_ps.set_menu_model(model)
 		x, y = getattr(ps, "_right_click_position", (ps.get_width() / 2, ps.get_height() / 2))
 		self._popup_at(self._mnu_ps, ps, x, y)
 
