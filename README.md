@@ -170,7 +170,6 @@ We use [Weblate](https://hosted.weblate.org/projects/sc-controller/sc-controller
   - [python-libusb1](https://github.com/vpelletier/python-libusb1)
   - [python-hidraw-pure](https://github.com/vpelletier/python-hidraw) - Note: Temporarily vendored as v1.2 can conflict with python-hidapi, but system version is preferred by the code if present
   - [python-ioctl-opt](https://pypi.org/project/ioctl-opt/)
-  - [setuptools](https://pypi.python.org/pypi/setuptools)
 
 ### Via Python into a local build directory
   - ~~Download and extract [latest release](https://github.com/C0rn3j/sc-controller/releases/latest)~~ .zip releases without .git directory are currently broken - tracked in [#50](https://github.com/C0rn3j/sc-controller/issues/50)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sc-controller\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 20:33+0200\n"
+"POT-Creation-Date: 2026-10-07 19:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -386,7 +386,7 @@ msgstr ""
 msgid "Really delete selected menu?"
 msgstr ""
 
-#: scc/gui/ae/menu_action.py:190 scc/gui/app.py:1443
+#: scc/gui/ae/menu_action.py:190 scc/gui/app.py:1447
 msgid "This action cannot be undone!"
 msgstr ""
 
@@ -418,7 +418,7 @@ msgstr ""
 #: scc/gui/ae/menu_only.py:44 scc/gui/importexport/export.py:98
 #: scc/gui/importexport/export.py:111 scc/special_actions.py:324
 #: ui/ae/dpad.ui:219 ui/ae/dpad.ui:490 ui/ae/menu_only.ui:23
-#: ui/ae/special_action.ui:527 ui/ae/tilt.ui:55 ui/app.ui:657
+#: ui/ae/special_action.ui:527 ui/ae/tilt.ui:55 ui/app.ui:656
 msgid "Menu"
 msgstr ""
 
@@ -458,68 +458,68 @@ msgstr ""
 msgid "Select Analog Axis"
 msgstr ""
 
-#: scc/gui/app.py:148 scc/gui/app.py:385 scc/gui/app.py:1633
+#: scc/gui/app.py:150 scc/gui/app.py:393 scc/gui/app.py:1643
 #: scc/gui/statusicon.py:83
 msgid "SC Controller"
 msgstr ""
 
-#: scc/gui/app.py:248
+#: scc/gui/app.py:256
 msgid "Edit Profile"
 msgstr ""
 
-#: scc/gui/app.py:411
+#: scc/gui/app.py:419
 msgid "uinput kernel module not loaded"
 msgstr ""
 
-#: scc/gui/app.py:412 scc/gui/app.py:432 scc/gui/app.py:439
+#: scc/gui/app.py:420 scc/gui/app.py:440 scc/gui/app.py:447
 msgid "Consult your distribution documentation to learn how to enable uinput"
 msgstr ""
 
-#: scc/gui/app.py:413 scc/gui/app.py:440
+#: scc/gui/app.py:421 scc/gui/app.py:448
 msgid ""
 "or click on \"Fix Temporary\" button to attempt fix that should work until "
 "next restart."
 msgstr ""
 
-#: scc/gui/app.py:417 scc/gui/app.py:444
+#: scc/gui/app.py:425 scc/gui/app.py:452
 msgid "Fix Temporary"
 msgstr ""
 
-#: scc/gui/app.py:423
+#: scc/gui/app.py:431
 msgid "This will load missing uinput module."
 msgstr ""
 
-#: scc/gui/app.py:429
+#: scc/gui/app.py:437
 msgid "/dev/uinput does not exist"
 msgstr ""
 
-#: scc/gui/app.py:430
+#: scc/gui/app.py:438
 msgid "uinput kernel module is loaded, but /dev/uinput is missing."
 msgstr ""
 
-#: scc/gui/app.py:437
+#: scc/gui/app.py:445
 msgid "You don't have required access to /dev/uinput."
 msgstr ""
 
-#: scc/gui/app.py:438
+#: scc/gui/app.py:446
 msgid "This will most likely prevent emulation from working."
 msgstr ""
 
-#: scc/gui/app.py:451
+#: scc/gui/app.py:459
 msgid ""
 "This will enable input emulation for <i>every application</i> and <i>all "
 "users</i> on this machine."
 msgstr ""
 
-#: scc/gui/app.py:469
+#: scc/gui/app.py:477
 msgid "sudo fix-my-pc"
 msgstr ""
 
-#: scc/gui/app.py:484
+#: scc/gui/app.py:492
 msgid "Command Failed"
 msgstr ""
 
-#: scc/gui/app.py:493
+#: scc/gui/app.py:501
 #, python-format
 msgid ""
 "Following command is going to be executed:\n"
@@ -529,76 +529,76 @@ msgid ""
 "%s"
 msgstr ""
 
-#: scc/gui/app.py:554
+#: scc/gui/app.py:562
 msgid "_Edit Pressed Action"
 msgstr ""
 
-#: scc/gui/app.py:596
+#: scc/gui/app.py:604
 msgid "Unable to hide the window to the system tray"
 msgstr ""
 
-#: scc/gui/app.py:599
+#: scc/gui/app.py:607
 msgid "Do you want to quit the application instead?"
 msgstr ""
 
-#: scc/gui/app.py:602 ui/creg.ui:871
+#: scc/gui/app.py:610 ui/creg.ui:871
 msgid "_Cancel"
 msgstr ""
 
-#: scc/gui/app.py:603
+#: scc/gui/app.py:611
 msgid "_Quit"
 msgstr ""
 
-#: scc/gui/app.py:794
+#: scc/gui/app.py:802
 msgid ""
 "You are about to save changes over template.\n"
 "Are you sure?"
 msgstr ""
 
-#: scc/gui/app.py:797
+#: scc/gui/app.py:805
 msgid "Create New Profile"
 msgstr ""
 
-#: scc/gui/app.py:869 scc/gui/app.py:873
+#: scc/gui/app.py:878 scc/gui/app.py:882
 #, python-format
 msgid "New Profile %s"
 msgstr ""
 
-#: scc/gui/app.py:881
+#: scc/gui/app.py:891
 #, python-format
 msgid "%s (copy)"
 msgstr ""
 
-#: scc/gui/app.py:885
+#: scc/gui/app.py:895
 #, python-format
 msgid "%s (copy %s)"
 msgstr ""
 
-#: scc/gui/app.py:1244
+#: scc/gui/app.py:1255
 #, python-format
 msgid "There was an error with enabling emulation: <b>%s</b>"
 msgstr ""
 
-#: scc/gui/app.py:1247
+#: scc/gui/app.py:1258
 msgid "Check whether the receiver dongle is connected to a USB port."
 msgstr ""
 
-#: scc/gui/app.py:1249
+#: scc/gui/app.py:1260
 msgid "You do not have access to the controller device."
 msgstr ""
 
-#: scc/gui/app.py:1252
+#: scc/gui/app.py:1263
 #, python-format
 msgid ""
 "Consult your distribution manual, try installing Steam package or <a "
 "href='%s'>install required udev rules manually</a>."
 msgstr ""
 
-#: scc/gui/app.py:1258
+#: scc/gui/app.py:1269
 msgid "Another application (most likely Steam) is using the controller."
 msgstr ""
 
-#: scc/gui/app.py:1261
+#: scc/gui/app.py:1272
 msgid ""
 "Background process responsible for emulation is not starting.\n"
 "\n"
@@ -608,77 +608,45 @@ msgid ""
 "GitHub</a> and copy output there."
 msgstr ""
 
-#: scc/gui/app.py:1265
+#: scc/gui/app.py:1276
 msgid "USB dongle was removed."
 msgstr ""
 
-#: scc/gui/app.py:1344 ui/app.ui:837
-msgid "_Configure Controller"
-msgstr ""
-
-#: scc/gui/app.py:1345 ui/app.ui:844
-msgid "_Turn Off Controller"
-msgstr ""
-
-#: scc/gui/app.py:1349 ui/app.ui:856
-msgid "_New Profile"
-msgstr ""
-
-#: scc/gui/app.py:1350 ui/app.ui:863
-msgid "_Copy Profile"
-msgstr ""
-
-#: scc/gui/app.py:1355 ui/app.ui:870
-msgid "_Rename Profile"
-msgstr ""
-
-#: scc/gui/app.py:1356 ui/app.ui:877
-msgid "_Delete Profile"
-msgstr ""
-
-#: scc/gui/app.py:1358 ui/app.ui:884
-msgid "_Revert Profile to Defaults"
-msgstr ""
-
-#: scc/gui/app.py:1359 ui/app.ui:896
-msgid "Profile D_etails"
-msgstr ""
-
-#: scc/gui/app.py:1432
+#: scc/gui/app.py:1436
 msgid "Really revert current profile to default values?"
 msgstr ""
 
-#: scc/gui/app.py:1434
+#: scc/gui/app.py:1438
 msgid "Really delete current profile?"
 msgstr ""
 
-#: scc/gui/app.py:1636
+#: scc/gui/app.py:1646
 msgid "Emulation is active"
 msgstr ""
 
-#: scc/gui/app.py:1638
+#: scc/gui/app.py:1648
 msgid "Error enabling emulation"
 msgstr ""
 
-#: scc/gui/app.py:1640
+#: scc/gui/app.py:1650
 msgid "Emulation is inactive"
 msgstr ""
 
-#: scc/gui/app.py:1642
+#: scc/gui/app.py:1652
 msgid "Checking emulation status..."
 msgstr ""
 
-#: scc/gui/app.py:1773
+#: scc/gui/app.py:1783
 #, python-format
 msgid "<a href='%s'>Click here</a> to check what's new!"
 msgstr ""
 
-#: scc/gui/app.py:1777
+#: scc/gui/app.py:1787
 #, python-format
 msgid "Welcome to the version <b>%s</b>."
 msgstr ""
 
-#: scc/gui/app.py:1778
+#: scc/gui/app.py:1788
 #, python-format
 msgid "<a href='%s'>Click here</a> to read release notes."
 msgstr ""
@@ -2107,103 +2075,135 @@ msgstr ""
 msgid "_Rename"
 msgstr ""
 
-#: ui/app.ui:309 ui/app.ui:934
+#: ui/app.ui:328 ui/app.ui:907
 msgid "_Emulation Enabled"
 msgstr ""
 
-#: ui/app.ui:317
+#: ui/app.ui:332
 msgid "_Settings"
 msgstr ""
 
-#: ui/app.ui:325
+#: ui/app.ui:336
 msgid "Import/Export _Profile..."
 msgstr ""
 
-#: ui/app.ui:338 ui/app.ui:946
+#: ui/app.ui:342 ui/app.ui:919
 msgid "About"
 msgstr ""
 
-#: ui/app.ui:346 ui/app.ui:953
+#: ui/app.ui:346 ui/app.ui:926
 msgid "Quit"
 msgstr ""
 
-#: ui/app.ui:680
+#: ui/app.ui:679
 msgid "Undo"
 msgstr ""
 
-#: ui/app.ui:694
+#: ui/app.ui:693
 msgid "Redo"
 msgstr ""
 
-#: ui/app.ui:724
+#: ui/app.ui:723
 msgid "_Filename"
 msgstr ""
 
-#: ui/app.ui:742
+#: ui/app.ui:741
 msgid "_Description"
 msgstr ""
 
-#: ui/app.ui:766
+#: ui/app.ui:765
 msgid "Profile is _template"
 msgstr ""
 
-#: ui/app.ui:792
+#: ui/app.ui:791
 msgid "Change Sticks and Background"
 msgstr ""
 
-#: ui/app.ui:795
+#: ui/app.ui:794
 msgid "Symmetrical"
 msgstr ""
 
-#: ui/app.ui:800
+#: ui/app.ui:799
 msgid "Asymmetrical"
 msgstr ""
 
-#: ui/app.ui:805
+#: ui/app.ui:804
 msgid "Touchpads"
 msgstr ""
 
-#: ui/app.ui:810
+#: ui/app.ui:809
 msgid "Change Buttons"
 msgstr ""
 
-#: ui/app.ui:813
+#: ui/app.ui:812
 msgid "PSx"
 msgstr ""
 
-#: ui/app.ui:818
+#: ui/app.ui:817
 msgid "ABXY"
 msgstr ""
 
-#: ui/app.ui:824
+#: ui/app.ui:823
 msgid "Clear Above Settings"
 msgstr ""
 
-#: ui/app.ui:907
+#: ui/app.ui:834
+msgid "_Configure Controller"
+msgstr ""
+
+#: ui/app.ui:838
+msgid "_Turn Off Controller"
+msgstr ""
+
+#: ui/app.ui:844
+msgid "_New Profile"
+msgstr ""
+
+#: ui/app.ui:849
+msgid "_Copy Profile"
+msgstr ""
+
+#: ui/app.ui:854
+msgid "_Rename Profile"
+msgstr ""
+
+#: ui/app.ui:859
+msgid "_Delete Profile"
+msgstr ""
+
+#: ui/app.ui:864
+msgid "_Revert Profile to Defaults"
+msgstr ""
+
+#: ui/app.ui:869
+msgid "Profile D_etails"
+msgstr ""
+
+#: ui/app.ui:880
 msgid "C_lear"
 msgstr ""
 
-#: ui/app.ui:911
+#: ui/app.ui:884
 msgid "_Copy"
 msgstr ""
 
-#: ui/app.ui:915
+#: ui/app.ui:888
 msgid "_Paste"
 msgstr ""
 
-#: ui/app.ui:927
+#: ui/app.ui:900
 msgid "Show/Hide _Window"
 msgstr ""
 
-#: ui/app.ui:980
+#: ui/app.ui:953
 msgid "Welcome to the version <b>%s</b>"
 msgstr ""
 
-#: ui/app.ui:996
+#: ui/app.ui:969
 msgid "SC Controller was upgraded"
 msgstr ""
 
-#: ui/app.ui:1010
+#: ui/app.ui:983
 msgid "Display with each new version"
 msgstr ""
 
