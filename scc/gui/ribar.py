@@ -70,7 +70,7 @@ class RIBar(Gtk.Revealer):
 		self.set_reveal_child(False)
 		# Packing
 		self.set_child(self._infobar)
-		self.show()
+		self.set_visible(True)
 
 	def _cb_close(self, ib):
 		self.emit("close")
@@ -85,11 +85,11 @@ class RIBar(Gtk.Revealer):
 	def add_widget(self, widget, expand=False, fill=True):
 		widget.set_hexpand(expand)
 		self._infobar.add_child(widget)
-		widget.show()
+		widget.set_visible(True)
 
 	def add_button(self, button, response_id):
 		self._infobar.add_action_widget(button, response_id)
-		self._infobar.show()
+		self._infobar.set_visible(True)
 
 	def get_label(self):
 		"""Returns label widget"""

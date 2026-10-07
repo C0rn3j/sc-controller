@@ -147,7 +147,7 @@ class ControllerStick(ControllerWidget):
 		self.over_icon = False
 		self.enable_press = enable_press
 		self.widget.set_child(grid)
-		self.widget.show()
+		self.widget.set_visible(True)
 
 	def on_cursor_enter(self, *a):
 		return
@@ -266,7 +266,7 @@ class ControllerGyro(ControllerWidget):
 		grid.attach(self.pressed, 2, 2, 1, 1)
 		self.over_icon = False
 		self.widget.set_child(grid)
-		self.widget.show()
+		self.widget.set_visible(True)
 
 	def on_click(self, *a) -> None:
 		self.app.show_editor(self.id)

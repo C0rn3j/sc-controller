@@ -55,9 +55,9 @@ class InputDisplay(OSDWindow):
 		self.add(self.main_area)
 
 		OSDWindow.show(self)
-		self.lpadTest.hide()
-		self.rpadTest.hide()
-		self.lstickTest.hide()
+		self.lpadTest.set_visible(False)
+		self.rpadTest.set_visible(False)
+		self.lstickTest.set_visible(False)
 
 	def run(self):
 		self.daemon = DaemonManager()
@@ -127,10 +127,10 @@ class InputDisplay(OSDWindow):
 			}[what]
 			# Check if stick or pad is released
 			if data[0] == data[1] == 0:
-				widget.hide()
+				widget.set_visible(False)
 				return
 			if not widget.is_visible():
-				widget.show()
+				widget.set_visible(True)
 			# Grab values
 			ax, ay, aw, trash = self.background.get_area_position(area)
 			cw = widget.get_allocation().width
