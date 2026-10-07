@@ -138,6 +138,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 	def setup_widgets(self) -> None:
 		# Important stuff
+		# Register the Gio type ahead, otherwise we get a crash
+		GObject.type_ensure(Gio.SimpleAction.__gtype__)
 		self.builder = Gtk.Builder(self)
 		self.builder.add_from_file(os.path.join(self.gladepath, "app.ui"))
 		self.window = self.builder.get_object("window")
@@ -157,6 +159,12 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 	def _setup_popover_menus(self):
 		"""Build context menus as native GTK4 model-backed popovers."""
+		for action_id in (
+			"settingsAction", "importExportAction", "aboutAction", "quitAction", "emulationAction",
+		):
+			self.add_action(self.builder.get_object(action_id))
+		self._emulation_action = self.builder.get_object("emulationAction")
+
 		self._add_menu_action("context-clear", lambda *a: self.on_mnuClear_activate())
 		self._add_menu_action("context-copy", lambda *a: self.on_mnuCopy_activate())
 		self._add_menu_action("context-paste", lambda *a: self.on_mnuPaste_activate())
@@ -983,10 +991,11 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 	def on_mnuExit_activate(self, *a):
 		if not self.osd_mode and self.app.config["gui"]["autokill_daemon"]:
 			log.debug("Terminating scc-daemon")
-			for x in ("content", "mnuEmulationEnabled", "mnuEmulationEnabledTray"):
+			for x in ("content", "mnuEmulationEnabledTray"):
 				w = self.builder.get_object(x)
 				w.set_sensitive(False)
 			self.set_daemon_status("unknown", False)
+			self._emulation_action.set_enabled(False)
 			self.hide_error()
 			if self.dm.is_alive():
 				self.dm.connect("dead", self.on_exiting_n_daemon_killed)
@@ -1511,15 +1520,22 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 	def on_mnuEmulationEnabled_toggled(self, cb):
 		if self.recursing:
 			return
-		if cb.get_active():
+		self._set_emulation_enabled(cb.get_active())
+
+	def _on_emulation_enabled_change_state(self, action: Gio.SimpleAction, state: GLib.Variant) -> None:
+		if self.recursing:
+			return
+		self._set_emulation_enabled(state.get_boolean())
+
+	def _set_emulation_enabled(self, enabled: bool) -> None:
+		self.set_daemon_status("unknown", enabled)
+		self._emulation_action.set_enabled(False)
+		self.builder.get_object("mnuEmulationEnabledTray").set_sensitive(False)
+		if enabled:
 			# Turning daemon on
-			self.set_daemon_status("unknown", True)
-			cb.set_sensitive(False)
 			self.dm.start()
 		else:
 			# Turning daemon off
-			self.set_daemon_status("unknown", False)
-			cb.set_sensitive(False)
 			self.hide_error()
 			self.dm.stop()
 
@@ -1618,10 +1634,9 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		icon = os.path.join(self.imagepath, f"scc-{status}.svg")
 		imgDaemonStatus = self.builder.get_object("imgDaemonStatus")
 		btDaemon = self.builder.get_object("btDaemon")
-		mnuEmulationEnabled = self.builder.get_object("mnuEmulationEnabled")
 		mnuEmulationEnabledTray = self.builder.get_object("mnuEmulationEnabledTray")
 		imgDaemonStatus.set_from_file(icon)
-		mnuEmulationEnabled.set_sensitive(True)
+		self._emulation_action.set_enabled(True)
 		mnuEmulationEnabledTray.set_sensitive(True)
 		self.status = status
 		if self.statusicon:
@@ -1635,7 +1650,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			btDaemon.set_tooltip_text(_("Emulation is inactive"))
 		else:
 			btDaemon.set_tooltip_text(_("Checking emulation status..."))
-		mnuEmulationEnabled.set_active(daemon_runs)
+		self._emulation_action.set_state(GLib.Variant.new_boolean(daemon_runs))
 		mnuEmulationEnabledTray.set_active(daemon_runs)
 		self.recursing = False
 

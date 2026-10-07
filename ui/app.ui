@@ -300,56 +300,55 @@
       <column type="gchararray"/>
     </columns>
   </object>
-  <object class="GtkPopover" id="mnuDaemon">
-    <property name="child">
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkCheckButton" id="mnuEmulationEnabled">
-            <property name="label" translatable="yes">_Emulation Enabled</property>
-            <property name="use-underline">True</property>
-            <signal name="toggled" handler="on_mnuEmulationEnabled_toggled"/>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="mnuGlobalSettings">
-            <property name="css-name">modelbutton</property>
-            <property name="label" translatable="yes">_Settings</property>
-            <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuGlobalSettings_activate"/>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="mnuImport">
-            <property name="css-name">modelbutton</property>
-            <property name="label" translatable="yes">Import/Export _Profile...</property>
-            <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuImport_activate"/>
-          </object>
-        </child>
-        <child>
-          <object class="GtkSeparator" id="menuitem1">
-            <property name="orientation">horizontal</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="mnuAbout">
-            <property name="css-name">modelbutton</property>
-            <property name="label" translatable="yes">About</property>
-            <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuAbout_activate"/>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="mnuExit">
-            <property name="css-name">modelbutton</property>
-            <property name="label" translatable="yes">Quit</property>
-            <property name="use-underline">True</property>
-            <signal name="clicked" handler="on_mnuExit_activate"/>
-          </object>
-        </child>
-      </object>
-    </property>
+  <object class="GSimpleAction" id="settingsAction">
+    <property name="name">settings</property>
+    <signal name="activate" handler="on_mnuGlobalSettings_activate"/>
+  </object>
+  <object class="GSimpleAction" id="importExportAction">
+    <property name="name">import-export</property>
+    <signal name="activate" handler="on_mnuImport_activate"/>
+  </object>
+  <object class="GSimpleAction" id="aboutAction">
+    <property name="name">about</property>
+    <signal name="activate" handler="on_mnuAbout_activate"/>
+  </object>
+  <object class="GSimpleAction" id="quitAction">
+    <property name="name">quit</property>
+    <signal name="activate" handler="on_mnuExit_activate"/>
+  </object>
+  <object class="GSimpleAction" id="emulationAction">
+    <property name="name">emulation-enabled</property>
+    <property name="state">false</property>
+    <signal name="change-state" handler="_on_emulation_enabled_change_state"/>
+  </object>
+  <menu id="mnuDaemonModel">
+    <section>
+      <item>
+        <attribute name="action">app.emulation-enabled</attribute>
+        <attribute name="label" translatable="yes">_Emulation Enabled</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.settings</attribute>
+        <attribute name="label" translatable="yes">_Settings</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.import-export</attribute>
+        <attribute name="label" translatable="yes">Import/Export _Profile...</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="action">app.about</attribute>
+        <attribute name="label" translatable="yes">About</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.quit</attribute>
+        <attribute name="label" translatable="yes">Quit</attribute>
+      </item>
+    </section>
+  </menu>
+  <object class="GtkPopoverMenu" id="mnuDaemon">
+    <property name="menu-model">mnuDaemonModel</property>
   </object>
   <object class="GtkWindow" id="window">
     <property name="child">
