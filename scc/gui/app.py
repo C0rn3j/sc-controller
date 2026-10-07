@@ -861,33 +861,35 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 
 		self.current_file = giofile
 
-	def generate_new_name(self):
+	def generate_new_name(self) -> str:
 		"""Generates name for new profile.
+
 		That is 'New Profile X', where X is number that makes name unique.
 		"""
 		i = 1
-		new_name = _("New Profile %s") % (i,)
+		new_name = _("New Profile %s") % i
 		filename = os.path.join(get_profiles_path(), new_name + ".sccprofile")
 		while os.path.exists(filename):
 			i += 1
-			new_name = _("New Profile %s") % (i,)
+			new_name = _("New Profile %s") % i
 			filename = os.path.join(get_profiles_path(), new_name + ".sccprofile")
 		return new_name
 
-	def generate_copy_name(self, name):
+	def generate_copy_name(self, name: str):
 		"""Generates name for profile copy.
+
 		That is 'New Profile X', where X is number that makes name unique.
 		"""
-		new_name = _("%s (copy)") % (name,)
+		new_name = _("%s (copy)") % name
 		filename = os.path.join(get_profiles_path(), new_name + ".sccprofile")
 		i = 2
 		while os.path.exists(filename):
-			new_name = _("%s (copy %s)") % (name,)
+			new_name = _("%s (copy %s)") % (name, i)
 			filename = os.path.join(get_profiles_path(), new_name + ".sccprofile")
 			i += 1
 		return new_name
 
-	def on_txNewProfile_changed(self, tx):
+	def on_txNewProfile_changed(self, tx) -> None:
 		if self.recursing:
 			return
 		tx._changed = True
