@@ -8,6 +8,9 @@ script:
       mv "{{APPIMAGE_SOURCE}}" "${TARGET_APPDIR}"
     fi
 
+    # Keep retrying on failure, because the CI can fail OFTEN
+    printf 'Acquire::Retries "5";\n' > /etc/apt/apt.conf.d/80-retries
+
     # Manual installation of squashfs-tools is required
     # until https://github.com/AppImageCrafters/build-appimage/issues/5 is fixed
     if ! command -v mksquashfs >/dev/null; then

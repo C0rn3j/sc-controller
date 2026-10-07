@@ -11,6 +11,8 @@ RUN <<EOR
 	# Workaround for outstanding fix of https://bugs.launchpad.net/ubuntu/+source/python-build/+bug/1992108
 	. /etc/os-release
 
+	# Keep retrying on failure, because the CI can fail OFTEN
+	printf 'Acquire::Retries "5";\n' > /etc/apt/apt.conf.d/80-retries
 	export DEBIAN_FRONTEND=noninteractive
 	apt-get update
 	# 24.04 does not package gtk4 layer shell, we build it ourselves
