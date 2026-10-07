@@ -697,7 +697,10 @@ class SCCDaemon(Daemon):
 	def run(self) -> Never:
 		log.debug("Starting SCCDaemon...")
 		signal.signal(signal.SIGTERM, self.sigterm)
-		self.init_sleep_monitor()
+		if sys.platform == "linux":
+			self.init_sleep_monitor()
+		else:
+			log.debug("init_sleep_monitor() not implemented on this platform - it is not actually used for anything so this is fine")
 		self.init_drivers()
 		self.dev_monitor.start()
 		load_custom_module(log)
