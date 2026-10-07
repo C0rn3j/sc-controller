@@ -23,22 +23,31 @@
 	#include "c_branch.h"
 #endif	// PYTHON
 #ifdef _WIN32
-	#error "Implement me!"
+	#include <winsock2.h>
+	#include <ws2tcpip.h>
+	typedef UINT_PTR socket_handle_t;
+	typedef SOCKET native_socket_t;
+	#define SOCKETERROR  ": error %d", WSAGetLastError()
+	#define PACKED
+	#define CEMUHOOK_API __declspec(dllexport)
 #else	// _WIN32
 	#include <netinet/in.h>
 	#include <sys/socket.h>
 	#include <arpa/inet.h>
 	#include <sys/types.h>
+	#include <unistd.h>
+	typedef int socket_handle_t;
+	typedef int native_socket_t;
 	#define SOCKETERROR  ": %s", strerror(errno)
+	#define PACKED __attribute__((packed))
+	#define CEMUHOOK_API __attribute__((visibility("default")))
 #endif	// _WIN32
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <errno.h>
-#include <zlib.h>
 
 #define BUFFER_SIZE					1024
 #define MAX_PROTO_VERSION			1001
@@ -68,7 +77,10 @@ typedef enum {
 	DSUS_PADDATARSP =	0x100002,
 } MessageType;
 
-struct __attribute__((packed)) PortInfo {
+#ifdef _MSC_VER
+#pragma pack(push, 1)
+#endif
+struct PACKED PortInfo {
 	uint8_t			pad_id;
 	uint8_t			state;
 	uint8_t			model;
@@ -78,7 +90,7 @@ struct __attribute__((packed)) PortInfo {
 	uint8_t			active;
 };
 
-struct __attribute__((packed)) Message {
+struct PACKED Message {
 	char						header[4];			// 0B
 	uint16_t					protocol_version;	// 4B
 	uint16_t					packet_size;		// 6B
@@ -127,8 +139,25 @@ struct __attribute__((packed)) Message {
 		} pad_data;
 	};
 };
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif
 
-static void send_msg(int fd, struct sockaddr_in* target, struct Message* msg, MessageType type, uint16_t payload_size) {
+static uint32_t calculate_crc32(const uint8_t* data, size_t size) {
+	uint32_t crc = 0xFFFFFFFFu;
+	size_t i;
+	for (i = 0; i < size; i++) {
+		uint32_t byte = data[i];
+		int bit;
+		crc ^= byte;
+		for (bit = 0; bit < 8; bit++) {
+			crc = (crc >> 1) ^ (0xEDB88320u & (uint32_t)-(int32_t)(crc & 1));
+		}
+	}
+	return crc ^ 0xFFFFFFFFu;
+}
+
+static void send_msg(socket_handle_t fd, struct sockaddr_in* target, struct Message* msg, MessageType type, uint16_t payload_size) {
 	size_t size = 20 + payload_size;
 	memcpy(msg->header, "DSUS", 4);
 	msg->protocol_version = MAX_PROTO_VERSION;
@@ -137,10 +166,9 @@ static void send_msg(int fd, struct sockaddr_in* target, struct Message* msg, Me
 	msg->msg_id = next_id ++;
 	msg->crc = 0;
 
-	uLong crc = crc32(0, (const Bytef*)msg, size);
-	msg->crc = crc;
+	msg->crc = calculate_crc32((const uint8_t*)msg, size);
 
-	ssize_t r = sendto(fd, (char*)msg, size, 0, (struct sockaddr*)target, sizeof(struct sockaddr_in));
+	int r = sendto((native_socket_t)fd, (const char*)msg, (int)size, 0, (struct sockaddr*)target, sizeof(struct sockaddr_in));
 	if (r < 0) LERROR("sendto failed: " SOCKETERROR);
 }
 
@@ -156,7 +184,7 @@ static void fill_port_info(struct PortInfo* pi, uint16_t id, uint8_t active) {
 	pi->mac[5] = 1 + id;
 }
 
-static void send_gyro_data(int fd, CEHClient* target, uint16_t id, float data[6], uint64_t timestamp) {
+static void send_gyro_data(socket_handle_t fd, CEHClient* target, uint16_t id, float data[6], uint64_t timestamp) {
 	struct Message out;
 	memset(&out, 0, sizeof(struct Message));
 	fill_port_info(&out.pad_data.pad_info, id, 1);
@@ -167,7 +195,7 @@ static void send_gyro_data(int fd, CEHClient* target, uint16_t id, float data[6]
 	// DEBUG("Sent data to (0x%x)", target->address.sin_port);
 }
 
-static void parse_message(int fd, const char* buffer, size_t size, struct sockaddr_in* source) {
+static void parse_message(socket_handle_t fd, const char* buffer, size_t size, struct sockaddr_in* source) {
 	struct Message* msg = (struct Message*)&buffer[0];
 	struct Message out;
 	int i, x;
@@ -262,7 +290,7 @@ static void parse_message(int fd, const char* buffer, size_t size, struct sockad
 }
 
 #ifdef PYTHON
-bool cemuhook_feed(int fd, int index, float data[6]) {
+CEMUHOOK_API bool cemuhook_feed(socket_handle_t fd, int index, float data[6]) {
 #else
 bool sccd_cemuhook_feed(int index, float data[6]) {
 	const int fd = sock;
@@ -298,11 +326,11 @@ bool sccd_cemuhook_feed(int index, float data[6]) {
 
 #ifdef PYTHON
 
-const int cemuhook_module_version(void) {
+CEMUHOOK_API const int cemuhook_module_version(void) {
 	return CEMUHOOK_MODULE_VERSION;
 }
 
-void cemuhook_data_received(int fd, const char* ip, int port, const char* buffer, size_t size) {
+CEMUHOOK_API void cemuhook_data_received(socket_handle_t fd, const char* ip, int port, const char* buffer, size_t size) {
 	struct sockaddr_in source;
 	source.sin_family = AF_INET;
 	source.sin_addr.s_addr = inet_addr(ip);
@@ -311,12 +339,24 @@ void cemuhook_data_received(int fd, const char* ip, int port, const char* buffer
 	parse_message(fd, buffer, size, &source);
 }
 
-bool cemuhook_socket_enable() {
+CEMUHOOK_API bool cemuhook_socket_enable() {
 	int i;
 	for (i=0; i<CLIENT_LIMIT; i++)
 		clients[i].address.sin_port = 0;
 	// listening is done in python
 	return true;
+}
+
+static struct PyModuleDef libcemuhook_module = {
+	PyModuleDef_HEAD_INIT,
+	"libcemuhook",
+	NULL,
+	-1,
+	NULL,
+};
+
+PyMODINIT_FUNC PyInit_libcemuhook(void) {
+	return PyModule_Create(&libcemuhook_module);
 }
 
 #else

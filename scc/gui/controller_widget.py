@@ -40,6 +40,11 @@ class ControllerWidget:
 		self.id = id
 		self.name = id if type(id) in (str,) else id.name
 		self.widget = widget
+		# These buttons live beside a much taller controller image. Relying on
+		# computed expansion makes GTK on Windows stretch selected buttons to
+		# consume the grid row, while GTK on Linux keeps their natural size.
+		self.widget.set_hexpand(False)
+		self.widget.set_vexpand(False)
 
 		self.label = Gtk.Label()
 		self.label.set_ellipsize(Pango.EllipsizeMode.END)

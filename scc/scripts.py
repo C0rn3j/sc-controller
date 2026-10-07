@@ -300,8 +300,11 @@ def connect_to_daemon() -> TextIOWrapper | None:
 	from scc.paths import get_daemon_socket
 
 	try:
-		s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-		s.connect(get_daemon_socket())
+		if sys.platform == "win32":
+			s = socket.create_connection(("127.0.0.1", 10722))
+		else:
+			s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+			s.connect(get_daemon_socket())
 	except Exception as e:
 		print("Connection to scc-daemon failed: %s" % (e,), file=sys.stderr)
 		return None

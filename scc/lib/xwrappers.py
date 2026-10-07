@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 """
-
+import sys
 from ctypes import (
 	CDLL,
 	POINTER,
@@ -45,10 +45,11 @@ def _load_lib(*names):
 			pass
 	raise OSError("Failed to load %s, library not found" % (names[0],))
 
-
-libXFixes = _load_lib("libXfixes.so", "libXfixes.so.3")
-libX11 = _load_lib("libX11.so", "libX11.so.6")
-libXext = _load_lib("libXext.so", "libXext.so.6")
+# TODO(Martin): Do not import this entire library in the first place
+if sys.platform == "linux":
+	libXFixes = _load_lib("libXfixes.so", "libXfixes.so.3")
+	libX11 = _load_lib("libX11.so", "libX11.so.6")
+	libXext = _load_lib("libXext.so", "libXext.so.6")
 
 
 # Types
@@ -137,160 +138,162 @@ SUCCESS = 0
 ISVIEWABLE = 2
 
 
-# Functions
-open_display = libX11.XOpenDisplay
-open_display.__doc__ = "Opens connection to XDisplay"
-open_display.argtypes = [c_char_p]
-open_display.restype = c_void_p
+# TODO(Martin): Do not import this entire library in the first place
+if sys.platform == "linux":
+	# Functions
+	open_display = libX11.XOpenDisplay
+	open_display.__doc__ = "Opens connection to XDisplay"
+	open_display.argtypes = [c_char_p]
+	open_display.restype = c_void_p
 
-free = libX11.XFree
-free.__doc__ = "Used to free some resource returned by XLib"
-free.argtypes = [c_void_p]
+	free = libX11.XFree
+	free.__doc__ = "Used to free some resource returned by XLib"
+	free.argtypes = [c_void_p]
 
-create_region = libXFixes.XFixesCreateRegion
-create_region.__doc__ = "Creates rectanglular region for use with set_window_shape_region"
-create_region.argtypes = [c_void_p, POINTER(XRectangle), c_int]
-create_region.restype = XserverRegion
+	create_region = libXFixes.XFixesCreateRegion
+	create_region.__doc__ = "Creates rectanglular region for use with set_window_shape_region"
+	create_region.argtypes = [c_void_p, POINTER(XRectangle), c_int]
+	create_region.restype = XserverRegion
 
-set_window_shape_region = libXFixes.XFixesSetWindowShapeRegion
-set_window_shape_region.__doc__ = "Sets region in which window accepts inputs"
-set_window_shape_region.argtypes = [c_void_p, XID, c_int, c_int, c_int, XserverRegion]
+	set_window_shape_region = libXFixes.XFixesSetWindowShapeRegion
+	set_window_shape_region.__doc__ = "Sets region in which window accepts inputs"
+	set_window_shape_region.argtypes = [c_void_p, XID, c_int, c_int, c_int, XserverRegion]
 
-destroy_region = libXFixes.XFixesDestroyRegion
-destroy_region.__doc__ = "Frees region created by create_region"
-destroy_region.argtypes = [c_void_p, XserverRegion]
+	destroy_region = libXFixes.XFixesDestroyRegion
+	destroy_region.__doc__ = "Frees region created by create_region"
+	destroy_region.argtypes = [c_void_p, XserverRegion]
 
-get_default_root_window = libX11.XDefaultRootWindow
-get_default_root_window.argtypes = [c_void_p]
+	get_default_root_window = libX11.XDefaultRootWindow
+	get_default_root_window.argtypes = [c_void_p]
 
-flush = libX11.XFlush
-flush.__doc__ = "Asks Xlib to send queued commands to XServer"
-flush.argtypes = [c_void_p]
+	flush = libX11.XFlush
+	flush.__doc__ = "Asks Xlib to send queued commands to XServer"
+	flush.argtypes = [c_void_p]
 
-warp_pointer = libX11.XWarpPointer
-warp_pointer.__doc__ = "Very, very, V*E*R*Y complicated shit used to move cursor"
-warp_pointer.argtypes = [c_void_p, XID, XID, c_int, c_int, c_int, c_int, c_int, c_int]
+	warp_pointer = libX11.XWarpPointer
+	warp_pointer.__doc__ = "Very, very, V*E*R*Y complicated shit used to move cursor"
+	warp_pointer.argtypes = [c_void_p, XID, XID, c_int, c_int, c_int, c_int, c_int, c_int]
 
-query_pointer = libX11.XQueryPointer
-query_pointer.__doc__ = "Returns a lot of nonsense along with mouse cursor position"
-query_pointer.argtypes = [
-	c_void_p,
-	XID,
-	POINTER(XID),
-	POINTER(XID),
-	POINTER(c_int),
-	POINTER(c_int),
-	POINTER(c_int),
-	POINTER(c_int),
-	POINTER(c_uint),
-]
+	query_pointer = libX11.XQueryPointer
+	query_pointer.__doc__ = "Returns a lot of nonsense along with mouse cursor position"
+	query_pointer.argtypes = [
+		c_void_p,
+		XID,
+		POINTER(XID),
+		POINTER(XID),
+		POINTER(c_int),
+		POINTER(c_int),
+		POINTER(c_int),
+		POINTER(c_int),
+		POINTER(c_uint),
+	]
 
-get_window_attributes = libX11.XGetWindowAttributes
-get_window_attributes.__doc__ = "https://tronche.com/gui/x/xlib/window-information/XGetWindowAttributes.html"
-get_window_attributes.argtypes = [c_void_p, XID, POINTER(XWindowAttributes)]
-
-
-translate_coordinates = libX11.XTranslateCoordinates
-translate_coordinates.argtypes = [c_void_p, XID, XID, c_int, c_int, POINTER(c_int), POINTER(c_int), POINTER(XID)]
-translate_coordinates.restype = c_bool
+	get_window_attributes = libX11.XGetWindowAttributes
+	get_window_attributes.__doc__ = "https://tronche.com/gui/x/xlib/window-information/XGetWindowAttributes.html"
+	get_window_attributes.argtypes = [c_void_p, XID, POINTER(XWindowAttributes)]
 
 
-get_input_focus = libX11.XGetInputFocus
-get_input_focus.__doc__ = """Returns window that currently have window focus.
-	Most of window managers and some GTK applications are breaking this.
-	See https://specifications.freedesktop.org/wm-spec/1.3/ar01s03.html
-	"""
-get_input_focus.argtypes = [c_void_p, POINTER(XID), POINTER(c_int)]
-
-get_window_property = libX11.XGetWindowProperty
-get_window_property.__doc__ = "Returns value of property associated with window"
-get_window_property.argtypes = [
-	c_void_p,
-	XID,
-	Atom,
-	c_long,
-	c_long,
-	c_bool,
-	Atom,
-	POINTER(Atom),
-	POINTER(Atom),
-	POINTER(c_ulong),
-	POINTER(c_ulong),
-	POINTER(c_void_p),
-]
-get_window_property.restype = c_int
-
-alloc_class_hint = libX11.XAllocClassHint
-alloc_class_hint.restype = POINTER(XClassHint)
-alloc_class_hint.argtypes = []
-alloc_class_hint.__doc__ = """Allocates and returns a pointer to a XClassHint
-	structure. Returned pointer has to be deallocated using free()"""
-
-get_class_hint = libX11.XGetClassHint
-get_class_hint.argtypes = [c_void_p, XID, POINTER(XClassHint)]
-get_class_hint.restype = c_int
-
-intern_atom = libX11.XInternAtom
-intern_atom.__doc__ = "Returns integer ID for specified Atom name."
-intern_atom.argtypes = [c_void_p, c_char_p, c_bool]
-intern_atom.restype = Atom
-
-create_pixmap = libX11.XCreatePixmap
-create_pixmap.argtypes = [c_void_p, XID, c_uint, c_uint, c_uint]
-create_pixmap.restype = Pixmap
-
-create_pixmap_from_bitmap = libX11.XCreatePixmapFromBitmapData
-create_pixmap_from_bitmap.argtypes = [c_void_p, XID, c_char_p, c_uint, c_uint, c_uint, c_uint, c_uint]
-create_pixmap_from_bitmap.restype = Pixmap
-
-write_bitmap = libX11.XWriteBitmapFile
-write_bitmap.argtypes = [c_void_p, c_char_p, Pixmap, c_uint, c_uint, c_int, c_int]
-write_bitmap.restype = c_int
-
-free_pixmap = libX11.XFreePixmap
-free_pixmap.__doc__ = "Deallocates pixmap created by create_pixmap"
-free_pixmap.argtypes = [c_void_p, Pixmap]
-
-create_gc = libX11.XCreateGC
-create_gc.__doc__ = "Creates graphics context to draw on"
-create_gc.argtypes = [c_void_p, XID, c_ulong, c_void_p]
-create_gc.restype = GC
-
-flush_gc = libX11.XFlushGC
-flush_gc.__doc__ = "Force sending GC component changes"
-flush_gc.argtypes = [c_void_p, GC]
-
-free_gc = libX11.XFreeGC
-free_gc.__doc__ = "Deallocates graphics context created by create_gc"
-free_gc.argtypes = [c_void_p, GC]
-
-fill_rectangle = libX11.XFillRectangle
-fill_rectangle.__doc__ = "Draws and fills rectangle on graphics context"
-fill_rectangle.argtypes = [c_void_p, XID, GC, c_int, c_int, c_uint, c_uint]
-
-draw_arc = libX11.XDrawArc
-draw_arc.argtypes = [c_void_p, Pixmap, GC, c_int, c_int, c_uint, c_uint, c_int, c_int]
-
-fill_arc = libX11.XFillArc
-fill_arc.argtypes = [c_void_p, Pixmap, GC, c_int, c_int, c_uint, c_uint, c_int, c_int]
+	translate_coordinates = libX11.XTranslateCoordinates
+	translate_coordinates.argtypes = [c_void_p, XID, XID, c_int, c_int, POINTER(c_int), POINTER(c_int), POINTER(XID)]
+	translate_coordinates.restype = c_bool
 
 
-set_foreground = libX11.XSetForeground
-set_foreground.__doc__ = "Sets foreground color for drawing on graphics context"
-set_foreground.argtypes = [c_void_p, GC, c_ulong]
+	get_input_focus = libX11.XGetInputFocus
+	get_input_focus.__doc__ = """Returns window that currently have window focus.
+		Most of window managers and some GTK applications are breaking this.
+		See https://specifications.freedesktop.org/wm-spec/1.3/ar01s03.html
+		"""
+	get_input_focus.argtypes = [c_void_p, POINTER(XID), POINTER(c_int)]
 
-set_background = libX11.XSetBackground
-set_background.__doc__ = "Sets background color for drawing on graphics context"
-set_background.argtypes = set_foreground.argtypes
+	get_window_property = libX11.XGetWindowProperty
+	get_window_property.__doc__ = "Returns value of property associated with window"
+	get_window_property.argtypes = [
+		c_void_p,
+		XID,
+		Atom,
+		c_long,
+		c_long,
+		c_bool,
+		Atom,
+		POINTER(Atom),
+		POINTER(Atom),
+		POINTER(c_ulong),
+		POINTER(c_ulong),
+		POINTER(c_void_p),
+	]
+	get_window_property.restype = c_int
 
-shape_combine_mask = libXext.XShapeCombineMask
-shape_combine_mask.__doc__ = "Sets 1-bit transparency mask for window"
-shape_combine_mask.argtypes = [c_void_p, XID, c_int, c_int, c_int, Pixmap, c_int]
+	alloc_class_hint = libX11.XAllocClassHint
+	alloc_class_hint.restype = POINTER(XClassHint)
+	alloc_class_hint.argtypes = []
+	alloc_class_hint.__doc__ = """Allocates and returns a pointer to a XClassHint
+		structure. Returned pointer has to be deallocated using free()"""
+
+	get_class_hint = libX11.XGetClassHint
+	get_class_hint.argtypes = [c_void_p, XID, POINTER(XClassHint)]
+	get_class_hint.restype = c_int
+
+	intern_atom = libX11.XInternAtom
+	intern_atom.__doc__ = "Returns integer ID for specified Atom name."
+	intern_atom.argtypes = [c_void_p, c_char_p, c_bool]
+	intern_atom.restype = Atom
+
+	create_pixmap = libX11.XCreatePixmap
+	create_pixmap.argtypes = [c_void_p, XID, c_uint, c_uint, c_uint]
+	create_pixmap.restype = Pixmap
+
+	create_pixmap_from_bitmap = libX11.XCreatePixmapFromBitmapData
+	create_pixmap_from_bitmap.argtypes = [c_void_p, XID, c_char_p, c_uint, c_uint, c_uint, c_uint, c_uint]
+	create_pixmap_from_bitmap.restype = Pixmap
+
+	write_bitmap = libX11.XWriteBitmapFile
+	write_bitmap.argtypes = [c_void_p, c_char_p, Pixmap, c_uint, c_uint, c_int, c_int]
+	write_bitmap.restype = c_int
+
+	free_pixmap = libX11.XFreePixmap
+	free_pixmap.__doc__ = "Deallocates pixmap created by create_pixmap"
+	free_pixmap.argtypes = [c_void_p, Pixmap]
+
+	create_gc = libX11.XCreateGC
+	create_gc.__doc__ = "Creates graphics context to draw on"
+	create_gc.argtypes = [c_void_p, XID, c_ulong, c_void_p]
+	create_gc.restype = GC
+
+	flush_gc = libX11.XFlushGC
+	flush_gc.__doc__ = "Force sending GC component changes"
+	flush_gc.argtypes = [c_void_p, GC]
+
+	free_gc = libX11.XFreeGC
+	free_gc.__doc__ = "Deallocates graphics context created by create_gc"
+	free_gc.argtypes = [c_void_p, GC]
+
+	fill_rectangle = libX11.XFillRectangle
+	fill_rectangle.__doc__ = "Draws and fills rectangle on graphics context"
+	fill_rectangle.argtypes = [c_void_p, XID, GC, c_int, c_int, c_uint, c_uint]
+
+	draw_arc = libX11.XDrawArc
+	draw_arc.argtypes = [c_void_p, Pixmap, GC, c_int, c_int, c_uint, c_uint, c_int, c_int]
+
+	fill_arc = libX11.XFillArc
+	fill_arc.argtypes = [c_void_p, Pixmap, GC, c_int, c_int, c_uint, c_uint, c_int, c_int]
 
 
-# Wrapped functions
-_xkb_get_state = libX11.XkbGetState
-_xkb_get_state.argtypes = [c_void_p, c_uint, POINTER(XkbStateRec)]
+	set_foreground = libX11.XSetForeground
+	set_foreground.__doc__ = "Sets foreground color for drawing on graphics context"
+	set_foreground.argtypes = [c_void_p, GC, c_ulong]
+
+	set_background = libX11.XSetBackground
+	set_background.__doc__ = "Sets background color for drawing on graphics context"
+	set_background.argtypes = set_foreground.argtypes
+
+	shape_combine_mask = libXext.XShapeCombineMask
+	shape_combine_mask.__doc__ = "Sets 1-bit transparency mask for window"
+	shape_combine_mask.argtypes = [c_void_p, XID, c_int, c_int, c_int, Pixmap, c_int]
+
+
+	# Wrapped functions
+	_xkb_get_state = libX11.XkbGetState
+	_xkb_get_state.argtypes = [c_void_p, c_uint, POINTER(XkbStateRec)]
 
 
 # Wrappers
