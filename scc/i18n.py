@@ -1,6 +1,8 @@
 """Shared Python and GTK translation setup."""
 
 import builtins
+import ctypes
+import ctypes.util
 import gettext
 import json
 import locale
@@ -51,7 +53,10 @@ def log_selection() -> None:
 		log.info("Translation language: %s; catalogs: %s", languages, ", ".join(_catalogs))
 	else:
 		log.info("Translation language: English (source fallback); no matching catalog in %s", _localedir)
-	log.info("GTK message locale: %s; gettext domain: %s", locale.setlocale(locale.LC_MESSAGES), DOMAIN)
+	if hasattr(locale, "LC_MESSAGES"): # Linux, macOS
+		log.info("GTK message locale: %s; gettext domain: %s", locale.setlocale(locale.LC_MESSAGES), DOMAIN)
+	else: # Windows
+		log.info("System locale: %s; gettext domain: %s", locale.setlocale(locale.LC_ALL), DOMAIN)
 
 
 def get_available_languages(localedir: str | None = None) -> list[tuple[str, str]]:
@@ -90,8 +95,49 @@ def init(localedir: str | None = None, language: str | None = None) -> None:
 		locale.setlocale(locale.LC_ALL, "")
 	except locale.Error:
 		logging.getLogger(__name__).warning("Cannot activate the requested system locale")
-	locale.bindtextdomain(DOMAIN, localedir)  # Native gettext used by GTK.
-	locale.textdomain(DOMAIN)
+	if hasattr(locale, "bindtextdomain"): # Linux
+		locale.bindtextdomain(DOMAIN, localedir)
+		#locale.bind_textdomain_codeset(DOMAIN, "UTF-8")
+		locale.textdomain(DOMAIN)
+	else: # Windows, macOS
+		# GTK uses libintl and needs its own binding on Windows and macOS
+		library = "libintl-8.dll" if sys.platform == "win32" else ctypes.util.find_library("intl")
+		if not library:
+			log.warning("Native gettext library was not found; GTK labels may remain untranslated")
+		else:
+			try:
+				native_gettext = ctypes.CDLL(library)
+
+				bindtextdomain = native_gettext.libintl_bindtextdomain
+				bindtextdomain.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+				bindtextdomain.restype = ctypes.c_char_p
+
+				bind_textdomain_codeset = native_gettext.libintl_bind_textdomain_codeset
+				bind_textdomain_codeset.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+				bind_textdomain_codeset.restype = ctypes.c_char_p
+
+				textdomain = native_gettext.libintl_textdomain
+				textdomain.argtypes = [ctypes.c_char_p]
+				textdomain.restype = ctypes.c_char_p
+
+				domain = DOMAIN.encode("utf-8")
+				if bindtextdomain(domain, os.fsencode(localedir)) is None:
+					raise OSError("Native gettext bindtextdomain failed")
+				if bind_textdomain_codeset(domain, b"UTF-8") is None:
+					raise OSError("Native gettext bind_textdomain_codeset failed")
+				if textdomain(domain) is None:
+					raise OSError("Native gettext textdomain failed")
+
+				# Synchronize LANGUAGE with the native environment used by GTK/libintl
+				# on Windows and macOS, rather than relying only on os.environ
+				if os.environ.get("LANGUAGE"):
+					from gi.repository import GLib
+					log.debug("Setting GLib-native env var LANGUAGE")
+
+					GLib.setenv("LANGUAGE", os.environ["LANGUAGE"], True)
+			except Exception:
+				log.exception("Failed setting up translations!")
+
 	languages = [language] if language else None
 	_translation = gettext.translation(DOMAIN, localedir=localedir, languages=languages, fallback=True)
 	_catalogs = gettext.find(DOMAIN, localedir=localedir, languages=languages, all=True)
