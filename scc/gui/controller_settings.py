@@ -37,7 +37,7 @@ class ControllerSettings(Editor, UserDataManager, ComboSetter):
 		paths = [get_default_controller_icons_path(), get_controller_icons_path()]
 		self.load_user_data(paths, "*.svg", None, self.on_icons_loaded)
 
-	def on_icons_loaded(self, icons):
+	def on_icons_loaded(self, icons) -> None:
 		lstIcons = self.builder.get_object("lstIcons")
 		cbIcon = self.builder.get_object("cbIcon")
 		paths = [f.get_path() for f in icons]
@@ -49,8 +49,8 @@ class ControllerSettings(Editor, UserDataManager, ComboSetter):
 				continue
 			try:
 				pb = GdkPixbuf.Pixbuf.new_from_file(path)
-			except:
-				# Failed to load image
+			except Exception:
+				log.exception("Failed to load image")
 				continue
 			lstIcons.append((path, filename, name, pb))
 
