@@ -9,10 +9,11 @@ Main App class interits from this.
 import logging
 import os
 
-from gi.repository import Gio
+from gi.repository import Gio, GLib
 
 from scc.gui.parser import GuiActionParser
 from scc.paths import (
+	get_controller_icons_path,
 	get_default_menuicons_path,
 	get_default_menus_path,
 	get_default_profiles_path,
@@ -116,8 +117,14 @@ class UserDataManager:
 		try:
 			data[i] = pdir, pdir.enumerate_children_finish(res)
 		except Exception as e:
-			# Usually when directory doesn't exists
-			log.warning("enumerate_children_finish for %s failed: %s", pdir.get_path(), e)
+			if (
+				pdir.get_path() == get_controller_icons_path()
+				and isinstance(e, GLib.Error)
+				and e.matches(Gio.io_error_quark(), Gio.IOErrorEnum.NOT_FOUND)
+			):
+				log.debug("Optional custom controller icon directory %s does not exist", pdir.get_path())
+			else:
+				log.warning("Cannot list user data directory %s: %s", pdir.get_path(), e)
 			data[i] = None, []
 		if None not in data:
 			files = {}

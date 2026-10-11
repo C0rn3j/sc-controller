@@ -69,7 +69,12 @@ class ControllerSettings(Editor, UserDataManager, ComboSetter):
 
 		if "icon" in cfg:
 			# Should be always
-			self.set_cb(cbIcon, cfg["icon"], 1)
+			if not self.set_cb(cbIcon, cfg["icon"], 1):
+				log.warning(
+					"Controller %s (type %s): configured icon %r is absent from the icon dropdown; "
+					"scanned %s files, retained %s icons after type filtering and image loading",
+					self.controller.get_id(), self.controller.get_type(), cfg["icon"], len(paths), len(lstIcons),
+				)
 
 	def on_Dialog_destroy(self, *a):
 		for x in self._eh_ids:

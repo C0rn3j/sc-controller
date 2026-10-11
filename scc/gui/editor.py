@@ -24,7 +24,10 @@ class ComboSetter:
 				cb.set_active_iter(row.iter)
 				self._recursing = False
 				return True
-		log.warning("Failed to set combobox value, key '%s' not found", key)
+		log.warning(
+			"Cannot select %r in combobox %s: value absent from model column %s; available values: %r",
+			key, cb.get_buildable_id(), keyindex, [row[keyindex] for row in model],
+		)
 		self._recursing = False
 		return False
 
