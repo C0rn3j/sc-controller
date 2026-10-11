@@ -493,7 +493,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			cbMatchClass.set_active(True)
 
 		# Show editor
-		ce.show()
+		ce.set_visible(True)
 
 	def on_btSave_clicked(self, *a):
 		tvItems = self.builder.get_object("tvItems")

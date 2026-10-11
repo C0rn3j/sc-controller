@@ -56,7 +56,7 @@ class KeyGrabber:
 		self.active_mods = []
 		self.window.set_transient_for(modal_for)
 		self.window.set_modal(True)
-		self.window.show()
+		self.window.set_visible(True)
 		self.window.set_focus()
 
 	def setup_widgets(self):
@@ -108,7 +108,7 @@ class KeyGrabber:
 					if len(self.active_mods) == 1:
 						# Releasing last modifier
 						self.callback([key])
-						self.window.hide()
+						self.window.set_visible(False)
 						return
 					self.active_mods.remove(key)
 					self.builder.get_object("tg" + key.name).set_active(False)
@@ -118,7 +118,7 @@ class KeyGrabber:
 				return
 
 			self.callback(self.active_mods + [key])
-			self.window.hide()
+			self.window.set_visible(False)
 
 	def on_tgkey_toggled(self, obj, *a):
 		"""Handles when user clicks on modifier buttons in "Grab Key" dialog

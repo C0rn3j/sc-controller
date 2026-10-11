@@ -59,7 +59,7 @@ class Editor(ComboSetter):
 
 	def hide_dont_destroy(self, w, *a):
 		"""When used as a 'close-request' handler, hide the window instead of destroying it."""
-		w.hide()
+		w.set_visible(False)
 		return True
 
 	def set_title(self, title):
@@ -88,7 +88,7 @@ class Editor(ComboSetter):
 			self._transient_for = transient_for
 			self.window.set_transient_for(transient_for)
 			self.window.set_modal(True)
-		self.window.show()
+		self.window.set_visible(True)
 
 	def add_widget(self, label, widget):
 		"""Add new widget into row before Action Name.

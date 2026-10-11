@@ -50,7 +50,7 @@ class Chooser(Editor):
 				else:
 					# Box
 					parent.append(image)
-				parent.show()
+				parent.set_visible(True)
 
 	def set_active_area(self, a):
 		"""Sets area that is permanently hilighted on image.

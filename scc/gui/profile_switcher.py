@@ -295,7 +295,7 @@ class ProfileSwitcher(Gtk.Box, UserDataManager):
 				# Save button has to be created
 				self._savebutton = ButtonInRevealer("document-save", _("Save changes"), self.on_savebutton_clicked)
 				self._box.append(self._savebutton)
-				self.show()
+				self.set_visible(True)
 			self._savebutton.set_reveal_child(True)
 			iter = self._combo.get_active_iter()
 			if is_template:
@@ -321,7 +321,7 @@ class ProfileSwitcher(Gtk.Box, UserDataManager):
 					"document-edit", _("Edit mappings of this controller"), self.on_switch_to_clicked,
 				)
 				self._box.append(self._switch_to_button)
-				self.show()
+				self.set_visible(True)
 			self._switch_to_button.set_reveal_child(True)
 		elif self._switch_to_button:
 			# Nothing to hide if there is no revealer
