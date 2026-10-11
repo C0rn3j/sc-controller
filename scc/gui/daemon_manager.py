@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import sys
 
 import gi
 
@@ -118,7 +119,10 @@ class DaemonManager(GObject.GObject):
 			return
 		self.connecting = True
 		sc = Gio.SocketClient()
-		address = Gio.UnixSocketAddress.new(get_daemon_socket())
+		if sys.platform == "win32":
+			address = Gio.InetSocketAddress.new_from_string("127.0.0.1", 10722)
+		else:
+			address = Gio.UnixSocketAddress.new(get_daemon_socket())
 		sc.connect_async(address, None, self._on_connected)
 
 	def _on_daemon_died(self, *a) -> None:
