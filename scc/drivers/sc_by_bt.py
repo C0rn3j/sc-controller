@@ -222,14 +222,20 @@ class SCByBt(SCController):
 			),
 		)
 
-		# LED
-		self.overwrite_control(
-			self._ccidx,
-			struct.pack(">BBBB", SCPacketType.CONFIGURE, SCPacketLength.LED, SCConfigType.LED, self._led_level),
-		)
+		self.set_led_level(self._led_level, force_write=True)
 
 	def read_serial(self) -> None:
 		self._serial = self._hidrawdev.getPhysicalAddress().replace(b":", b"")
+
+	def set_led_level(self, level: int, force_write: bool = False) -> None:
+		"""force_write is an override not present elsewhere"""
+		level = min(100, int(level)) & 0xFF
+		if self._led_level != level or force_write:
+			self._led_level = level
+			self.overwrite_control(
+				self._ccidx,
+				struct.pack(">BBBB", SCPacketType.CONFIGURE, SCPacketLength.LED, SCConfigType.LED, level),
+			)
 
 	def send_control(self, index, data) -> None:
 		"""Schedules writing control to device"""
@@ -258,7 +264,16 @@ class SCByBt(SCController):
 			# Feature report data must be sent with report ID 3
 			# or Input/output error will occur with later BlueZ versions (5.64)
 			# Does not affect older BlueZ versions
-			self._hidrawdev.sendFeatureReport(msg, 3)
+			try:
+				self._hidrawdev.sendFeatureReport(msg, 3)
+			except Exception:
+				log.exception(
+					"BT feature write failed: device=%s fd=%d "
+					"report_id=3 command=0x%02x payload=%s queued=%d gyros=%s",
+					self._device_file.name, self._fileno,
+					msg[1], msg.hex(" "), len(self._cmsg), self._enable_gyros,
+				)
+				raise
 
 	def input(self, idata):
 		raise RuntimeError("This shouldn't be called, ever")
@@ -308,7 +323,8 @@ class SCByBt(SCController):
 				self.mapper.input(self, self._old_state, self._state)
 			self.flush()
 		elif r > 1:
-			log.error("Read Failed")
+			log.error("Read Failed: device=%s fd=%d result=%d syspath=%s; reconnecting",
+				self._device_file.name, self._fileno, r, self.syspath)
 			self.close()
 			self.driver.retry(self.syspath)
 

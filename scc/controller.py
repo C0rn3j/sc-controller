@@ -114,7 +114,7 @@ class Controller:
 		Does nothing by default.
 		"""
 
-	def set_led_level(self, level) -> None:
+	def set_led_level(self, level: float) -> None:
 		"""Configures LED intensity, if supported.
 
 		'level' goes from 0.0 to 100.0
