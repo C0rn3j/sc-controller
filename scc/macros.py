@@ -161,7 +161,7 @@ class Type(Macro):
 		self.letters = string
 
 	def to_string(self, multiline=False, pad=0):
-		return (" " * pad) + self.COMMAND + "(" + repr(self.letters).strip("u") + ")"
+		return (" " * pad) + self.COMMAND + "(" + repr(self.letters) + ")"
 
 
 class Cycle(Macro):

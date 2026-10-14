@@ -166,7 +166,7 @@ class NameModifier(Modifier):
 		return self.name or self.to_string()
 
 	def to_string(self, multiline=False, pad=0):
-		return "%s(%s, %s)" % (self.COMMAND, repr(self.name).strip("u"), self.action.to_string(multiline, pad))
+		return "%s(%s, %s)" % (self.COMMAND, repr(self.name), self.action.to_string(multiline, pad))
 
 
 class ClickModifier(Modifier):

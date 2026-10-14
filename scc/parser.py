@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import sys
 import token as TokenType
+from ast import literal_eval
 from tokenize import TokenError, generate_tokens
 from typing import NamedTuple, Self
 
@@ -202,7 +203,13 @@ class ActionParser:
 			return self._parse_number()
 
 		if t.type == TokenType.STRING:
-			return t.value[1:-1]
+			try:
+				value = literal_eval(t.value)
+			except (SyntaxError, ValueError) as error:
+				raise ParseError("Invalid string literal") from error
+			if not isinstance(value, str):
+				raise ParseError("Expected a text string literal")
+			return value
 
 		raise ParseError("Expected parameter, got '%s'" % (t.value,))
 

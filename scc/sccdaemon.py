@@ -397,7 +397,7 @@ class SCCDaemon(Daemon):
 	def on_sa_osd(self, mapper: Mapper, action: OSDAction) -> None:
 		"""Called when 'osd' action is used"""
 		with self.lock:
-			self._osd("message", "-t", str(action.timeout), "-s", str(action.size), action.text)
+			self._osd("message", "-t", str(action.timeout), "-s", str(action.size), "--", action.text)
 
 	def on_sa_clearosd(self, mapper: Mapper, action: ClearOSDAction) -> None:
 		"""Called when 'clearosd' action is used"""
@@ -430,8 +430,11 @@ class SCCDaemon(Daemon):
 				return
 			p += ["--from-file", path]
 		else:
-			p += ["--from-profile", mapper.profile.get_filename(), action.menu_id]
+			p += ["--from-profile", mapper.profile.get_filename()]
 		p += list(pars)
+		if "." not in action.menu_id:
+			# Put positional data after all options, even if the ID starts with '-'.
+			p += ["--", action.menu_id]
 
 		with self.lock:
 			self._osd(*p)
@@ -850,7 +853,7 @@ class SCCDaemon(Daemon):
 				try:
 					text = message[5:].decode("utf-8").strip("\t ")
 					with self.lock:
-						if not self._osd("message", text):
+						if not self._osd("message", "--", text):
 							raise Exception
 					client.wfile.write(b"OK.\n")
 				except Exception:
@@ -1050,10 +1053,7 @@ class SCCDaemon(Daemon):
 
 			with self.lock:
 				try:
-					# menu_id, item_id = shsplit(message)[1:]
-					# print(message)
-					tmp = shsplit(str(message, "utf-8"))
-					menu_id, item_id = tmp[1:]
+					menu_id, item_id = shsplit(message.decode("utf-8"))[1:]
 					menuaction = None
 					if menu_id in (None, "None"):
 						menuaction = self.osd_ids[item_id]

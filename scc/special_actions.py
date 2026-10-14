@@ -54,7 +54,7 @@ class ChangeProfileAction(Action, SpecialAction):
 		return Action.MOD_OSD
 
 	def to_string(self, multiline: bool = False, pad: int = 0) -> str:
-		return (" " * pad) + "%s('%s')" % (self.COMMAND, self.profile)
+		return (" " * pad) + f"{self.COMMAND}({self.profile!r})"
 
 	def button_release(self, mapper: Mapper) -> None:
 		# Execute only when button is released (executing this when button
@@ -86,7 +86,7 @@ class ShellCommandAction(Action, SpecialAction):
 		return Action.MOD_OSD
 
 	def to_string(self, multiline: bool = False, pad: int = 0) -> str:
-		return (" " * pad) + f"{self.COMMAND}('{self.parameters[0]}')"
+		return (" " * pad) + f"{self.COMMAND}({self.parameters[0]!r})"
 
 	def button_press(self, mapper: Mapper):
 		# Executes only when button is pressed
@@ -226,7 +226,7 @@ class OSDAction(Action, SpecialAction):
 		if self.action:
 			parameters.append(self.action.to_string(multiline=multiline, pad=pad))
 		else:
-			parameters.append(f"'{str(self.text)}'")
+			parameters.append(repr(self.text))
 		return (" " * pad) + "{}({})".format(self.COMMAND, ",".join(parameters))
 
 	def strip(self) -> Action | Self:
@@ -333,8 +333,8 @@ class MenuAction(Action, SpecialAction, HapticEnabledAction):
 			if dflt == vals:
 				# Special case when menu is assigned to pad
 				if self.size == 0:
-					return "{}{}('{}')".format(" " * pad, self.COMMAND, self.menu_id)
-				return "{}{}('{}', {})".format(" " * pad, self.COMMAND, self.menu_id, self.size)
+					return "{}{}({!r})".format(" " * pad, self.COMMAND, self.menu_id)
+				return "{}{}({!r}, {})".format(" " * pad, self.COMMAND, self.menu_id, self.size)
 
 		return "{}{}({})".format(" " * pad, self.COMMAND, ",".join(Action.encode_parameters(self.strip_defaults())))
 
@@ -541,7 +541,7 @@ class DialogAction(Action, SpecialAction):
 			rv += "%s, " % (nameof(self.confirm_with),)
 			if self.cancel_with != DEFAULT:
 				rv += "%s, " % (nameof(self.cancel_with),)
-		rv += "'%s', " % (self.text,)
+		rv += f"{self.text!r}, "
 		if multiline:
 			rv += "\n%s" % (" " * (pad + 2))
 		for option in self.options:
@@ -572,8 +572,8 @@ class DialogAction(Action, SpecialAction):
 			nameof(confirm_with),
 			"--cancel-with",
 			nameof(cancel_with),
-			"--text",
-			self.text,
+			f"--text={self.text}",
+			"--",
 		]
 		for x in self.options:
 			args.append(x)
@@ -675,7 +675,7 @@ class GesturesAction(Action, OSDEnabledAction, SpecialAction):
 				rv[0] += "%s," % (self.precision)
 			for gstr in self.gestures:
 				a_str: list[str] = self.gestures[gstr].to_string(True).split("\n")
-				a_str[0] = (" " * pad) + "  '" + (gstr + "',").ljust(11) + a_str[0]  # Key has to be one of SCButtons
+				a_str[0] = (" " * pad) + "  " + (repr(gstr) + ",").ljust(12) + a_str[0]  # Key has to be one of SCButtons
 				for i in range(1, len(a_str)):
 					a_str[i] = (" " * pad) + "  " + a_str[i]
 				a_str[-1] = a_str[-1] + ","
@@ -688,7 +688,7 @@ class GesturesAction(Action, OSDEnabledAction, SpecialAction):
 		if self.precision != self.DEFAULT_PRECISION:
 			rv.append(str(self.precision))
 		for gstr in self.gestures:
-			rv += ["'%s'" % (gstr,), self.gestures[gstr].to_string(False)]
+			rv += [repr(gstr), self.gestures[gstr].to_string(False)]
 		return self.COMMAND + "(" + ", ".join(rv) + ")"
 
 	def compress(self) -> Self:

@@ -4,3 +4,5 @@
 732f6c5b2fba1ded249a96b152ed464efc97090a
 # chore: Ruff format
 e9fb9c41e5925eca10bec558d41a045587c6d264
+# chore: Last batch of ruff check --fix
+82e19ebef8c6442d51659dda3a4c913d5ec78836

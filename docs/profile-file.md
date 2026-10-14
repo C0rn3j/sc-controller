@@ -34,6 +34,13 @@ For example,
 
 assigns `axis` action with *Axes.ABS_Z* parameter to left trigger.
 
+String parameters use Python string literal syntax, including escapes:
+`osd("Don't lose \"these\" quotes")` preserves both kinds of quotes, and
+`osd('C:\\games\\test\\')` preserves a path ending in a backslash.
+Raw strings such as `osd(r'C:\games\test')` preserve backslashes literally.
+These examples show action syntax; backslashes and double quotes must also be
+escaped when embedding the action in JSON.
+
 ## <a name="Additional_keys"></a>Additional keys in action definition
 
 #### `X` and `Y`

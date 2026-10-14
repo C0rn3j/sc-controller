@@ -236,6 +236,8 @@ class Action:
 					if isinstance(x, Action)
 					else f"{x.__class__.__name__}.{x.name}"
 					if isinstance(x, IntEnum)
+					else repr(x)
+					if type(x) is str
 					else str(x)
 					for x in self.parameters
 				],
@@ -355,7 +357,7 @@ class Action:
 
 		- x.name for enums
 		- str(x) numbers
-		- '%s' % (x.encode('unicode_escape'),) for strings
+		- repr(x) for strings
 		"""
 		return [Action._encode_parameter(p) for p in parameters]
 
@@ -365,7 +367,7 @@ class Action:
 		if parameter in PARSER_CONSTANTS:
 			return parameter
 		if type(parameter) is str:
-			return f"'{parameter!s}'"
+			return repr(parameter)
 		return nameof(parameter)
 
 	def trigger(self, mapper: Mapper, position, old_position) -> None:
