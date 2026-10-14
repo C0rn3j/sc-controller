@@ -1314,8 +1314,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				widget.set_visible(True)
 			# Grab values
 			ax, ay, aw, ah = self.background.get_area_position(area)
-			cw = widget.get_allocation().width
-			ch = widget.get_allocation().height
+			marker_size = widget.get_preferred_size()[1]
+			cw, ch = marker_size.width, marker_size.height
 			# Compute center
 			x = ax + aw * 0.5 - cw * 0.5
 			y = ay + ah * 0.5 - ch * 0.5
