@@ -108,6 +108,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		# Load custom stuff
 		load_custom_module(log, "gui")
 		# Set variables
+		self._profile_menu_ps: ProfileSwitcher | None = None
 		self.config = Config()
 		self.gladepath = gladepath
 		self.imagepath = imagepath

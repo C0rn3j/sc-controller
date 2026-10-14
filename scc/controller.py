@@ -120,6 +120,18 @@ class Controller:
 		'level' goes from 0.0 to 100.0
 		"""
 
+	def set_led_color(self, red: int, green: int, blue: int) -> None:
+		"""Sets RGB lightbar channels in the range 0 to 255, if supported.
+
+		Only available on DualShock 4 and DualSense (Edge).
+		"""
+
+	def set_player_leds(self, mask: int) -> None:
+		"""Sets the five-bit player-indicator mask, if supported.
+
+		Only available on DualSense (Edge).
+		"""
+
 	def set_gyro_enabled(self, enabled: bool) -> None:
 		"""Enables or disables gyroscope, if supported"""
 

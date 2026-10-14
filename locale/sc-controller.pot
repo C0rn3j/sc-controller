@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sc-controller\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-07 19:05+0200\n"
+"POT-Creation-Date: 2026-10-14 21:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -135,14 +135,14 @@ msgstr ""
 
 #: scc/gui/action_editor.py:1080 scc/gui/ae/first_page.py:104
 #: ui/action_editor.ui:1403 ui/ae/axis_action.ui:139
-#: ui/ae/special_action.ui:184 ui/controller_settings.ui:132
+#: ui/ae/special_action.ui:184 ui/controller_settings.ui:127
 msgid "Right Stick"
 msgstr ""
 
 #: scc/gui/action_editor.py:1082 scc/gui/ae/first_page.py:103
 #: scc/gui/osk_binding_editor.py:43 ui/action_editor.ui:1398
 #: ui/ae/axis_action.ui:134 ui/ae/special_action.ui:180
-#: ui/controller_settings.ui:128 ui/global_settings.ui:368
+#: ui/controller_settings.ui:123 ui/global_settings.ui:368
 msgid "Left Stick"
 msgstr ""
 
@@ -151,12 +151,12 @@ msgid "Gyro"
 msgstr ""
 
 #: scc/gui/action_editor.py:1102 scc/gui/ae/first_page.py:95
-#: ui/ae/special_action.ui:188 ui/controller_settings.ui:136
+#: ui/ae/special_action.ui:188 ui/controller_settings.ui:131
 msgid "Left Pad"
 msgstr ""
 
 #: scc/gui/action_editor.py:1104 scc/gui/ae/first_page.py:96
-#: ui/ae/special_action.ui:192 ui/controller_settings.ui:140
+#: ui/ae/special_action.ui:192 ui/controller_settings.ui:135
 msgid "Right Pad"
 msgstr ""
 
@@ -204,36 +204,36 @@ msgstr ""
 
 #: scc/gui/ae/first_page.py:97 scc/gui/ae/gyro_action.py:41
 #: scc/gui/modeshift_editor.py:35 ui/ae/dpad.ui:81 ui/ae/special_action.ui:120
-#: ui/controller_settings.ui:72
+#: ui/controller_settings.ui:67
 msgid "Left Grip"
 msgstr ""
 
 #: scc/gui/ae/first_page.py:98 scc/gui/ae/gyro_action.py:42
 #: scc/gui/modeshift_editor.py:36 ui/ae/dpad.ui:85 ui/ae/special_action.ui:124
-#: ui/controller_settings.ui:76
+#: ui/controller_settings.ui:71
 msgid "Right Grip"
 msgstr ""
 
 #: scc/gui/ae/first_page.py:99 scc/gui/ae/gyro_action.py:33
 #: scc/gui/modeshift_editor.py:37 ui/ae/dpad.ui:93 ui/ae/special_action.ui:132
-#: ui/controller_settings.ui:84 ui/osk_binding_editor.ui:89
+#: ui/controller_settings.ui:79 ui/osk_binding_editor.ui:89
 msgid "Left Bumper"
 msgstr ""
 
 #: scc/gui/ae/first_page.py:100 scc/gui/ae/gyro_action.py:34
 #: scc/gui/modeshift_editor.py:38 ui/ae/dpad.ui:97 ui/ae/special_action.ui:136
-#: ui/controller_settings.ui:88 ui/osk_binding_editor.ui:110
+#: ui/controller_settings.ui:83 ui/osk_binding_editor.ui:110
 msgid "Right Bumper"
 msgstr ""
 
 #: scc/gui/ae/first_page.py:101 scc/gui/ae/gyro_action.py:31 ui/ae/dpad.ui:101
-#: ui/ae/special_action.ui:140 ui/controller_settings.ui:92
+#: ui/ae/special_action.ui:140 ui/controller_settings.ui:87
 #: ui/osk_binding_editor.ui:78
 msgid "Left Trigger"
 msgstr ""
 
 #: scc/gui/ae/first_page.py:102 scc/gui/ae/gyro_action.py:32 ui/ae/dpad.ui:105
-#: ui/ae/special_action.ui:144 ui/controller_settings.ui:96
+#: ui/ae/special_action.ui:144 ui/controller_settings.ui:91
 #: ui/osk_binding_editor.ui:99
 msgid "Right Trigger"
 msgstr ""
@@ -305,42 +305,42 @@ msgstr ""
 
 #: scc/gui/ae/gyro_action.py:45 scc/gui/modeshift_editor.py:26
 #: ui/ae/axis_action.ui:250 ui/ae/dpad.ui:45 ui/ae/special_action.ui:84
-#: ui/controller_settings.ui:36 ui/osk_binding_editor.ui:17
+#: ui/controller_settings.ui:31 ui/osk_binding_editor.ui:17
 msgid "A"
 msgstr ""
 
 #: scc/gui/ae/gyro_action.py:46 scc/gui/modeshift_editor.py:27 ui/ae/dpad.ui:49
-#: ui/ae/special_action.ui:88 ui/controller_settings.ui:40
+#: ui/ae/special_action.ui:88 ui/controller_settings.ui:35
 #: ui/osk_binding_editor.ui:27
 msgid "B"
 msgstr ""
 
 #: scc/gui/ae/gyro_action.py:47 scc/gui/modeshift_editor.py:28
 #: ui/action_editor.ui:506 ui/ae/dpad.ui:53 ui/ae/special_action.ui:92
-#: ui/controller_settings.ui:44 ui/creg.ui:479 ui/creg.ui:503 ui/creg.ui:515
+#: ui/controller_settings.ui:39 ui/creg.ui:479 ui/creg.ui:503 ui/creg.ui:515
 #: ui/osk_binding_editor.ui:37
 msgid "X"
 msgstr ""
 
 #: scc/gui/ae/gyro_action.py:48 scc/gui/modeshift_editor.py:29
 #: ui/action_editor.ui:552 ui/ae/dpad.ui:57 ui/ae/special_action.ui:96
-#: ui/controller_settings.ui:48 ui/creg.ui:491 ui/creg.ui:527 ui/creg.ui:539
+#: ui/controller_settings.ui:43 ui/creg.ui:491 ui/creg.ui:527 ui/creg.ui:539
 #: ui/osk_binding_editor.ui:47
 msgid "Y"
 msgstr ""
 
 #: scc/gui/ae/gyro_action.py:50 scc/gui/modeshift_editor.py:31 ui/ae/dpad.ui:65
-#: ui/ae/special_action.ui:104 ui/controller_settings.ui:56
+#: ui/ae/special_action.ui:104 ui/controller_settings.ui:51
 msgid "Back (select)"
 msgstr ""
 
 #: scc/gui/ae/gyro_action.py:51 scc/gui/modeshift_editor.py:32 ui/ae/dpad.ui:69
-#: ui/ae/special_action.ui:108 ui/controller_settings.ui:60
+#: ui/ae/special_action.ui:108 ui/controller_settings.ui:55
 msgid "Center"
 msgstr ""
 
 #: scc/gui/ae/gyro_action.py:52 scc/gui/modeshift_editor.py:33 ui/ae/dpad.ui:73
-#: ui/ae/special_action.ui:112 ui/controller_settings.ui:64
+#: ui/ae/special_action.ui:112 ui/controller_settings.ui:59
 #: ui/osk_binding_editor.ui:68
 msgid "Start"
 msgstr ""
@@ -386,7 +386,7 @@ msgstr ""
 msgid "Really delete selected menu?"
 msgstr ""
 
-#: scc/gui/ae/menu_action.py:190 scc/gui/app.py:1447
+#: scc/gui/ae/menu_action.py:190 scc/gui/app.py:1448
 msgid "This action cannot be undone!"
 msgstr ""
 
@@ -458,68 +458,68 @@ msgstr ""
 msgid "Select Analog Axis"
 msgstr ""
 
-#: scc/gui/app.py:150 scc/gui/app.py:393 scc/gui/app.py:1643
+#: scc/gui/app.py:151 scc/gui/app.py:394 scc/gui/app.py:1644
 #: scc/gui/statusicon.py:83
 msgid "SC Controller"
 msgstr ""
 
-#: scc/gui/app.py:256
+#: scc/gui/app.py:257
 msgid "Edit Profile"
 msgstr ""
 
-#: scc/gui/app.py:419
+#: scc/gui/app.py:420
 msgid "uinput kernel module not loaded"
 msgstr ""
 
-#: scc/gui/app.py:420 scc/gui/app.py:440 scc/gui/app.py:447
+#: scc/gui/app.py:421 scc/gui/app.py:441 scc/gui/app.py:448
 msgid "Consult your distribution documentation to learn how to enable uinput"
 msgstr ""
 
-#: scc/gui/app.py:421 scc/gui/app.py:448
+#: scc/gui/app.py:422 scc/gui/app.py:449
 msgid ""
 "or click on \"Fix Temporary\" button to attempt fix that should work until "
 "next restart."
 msgstr ""
 
-#: scc/gui/app.py:425 scc/gui/app.py:452
+#: scc/gui/app.py:426 scc/gui/app.py:453
 msgid "Fix Temporary"
 msgstr ""
 
-#: scc/gui/app.py:431
+#: scc/gui/app.py:432
 msgid "This will load missing uinput module."
 msgstr ""
 
-#: scc/gui/app.py:437
+#: scc/gui/app.py:438
 msgid "/dev/uinput does not exist"
 msgstr ""
 
-#: scc/gui/app.py:438
+#: scc/gui/app.py:439
 msgid "uinput kernel module is loaded, but /dev/uinput is missing."
 msgstr ""
 
-#: scc/gui/app.py:445
+#: scc/gui/app.py:446
 msgid "You don't have required access to /dev/uinput."
 msgstr ""
 
-#: scc/gui/app.py:446
+#: scc/gui/app.py:447
 msgid "This will most likely prevent emulation from working."
 msgstr ""
 
-#: scc/gui/app.py:459
+#: scc/gui/app.py:460
 msgid ""
 "This will enable input emulation for <i>every application</i> and <i>all "
 "users</i> on this machine."
 msgstr ""
 
-#: scc/gui/app.py:477
+#: scc/gui/app.py:478
 msgid "sudo fix-my-pc"
 msgstr ""
 
-#: scc/gui/app.py:492
+#: scc/gui/app.py:493
 msgid "Command Failed"
 msgstr ""
 
-#: scc/gui/app.py:501
+#: scc/gui/app.py:502
 #, python-format
 msgid ""
 "Following command is going to be executed:\n"
@@ -529,76 +529,76 @@ msgid ""
 "%s"
 msgstr ""
 
-#: scc/gui/app.py:562
+#: scc/gui/app.py:563
 msgid "_Edit Pressed Action"
 msgstr ""
 
-#: scc/gui/app.py:604
+#: scc/gui/app.py:605
 msgid "Unable to hide the window to the system tray"
 msgstr ""
 
-#: scc/gui/app.py:607
+#: scc/gui/app.py:608
 msgid "Do you want to quit the application instead?"
 msgstr ""
 
-#: scc/gui/app.py:610 ui/creg.ui:871
+#: scc/gui/app.py:611 ui/creg.ui:871
 msgid "_Cancel"
 msgstr ""
 
-#: scc/gui/app.py:611
+#: scc/gui/app.py:612
 msgid "_Quit"
 msgstr ""
 
-#: scc/gui/app.py:802
+#: scc/gui/app.py:803
 msgid ""
 "You are about to save changes over template.\n"
 "Are you sure?"
 msgstr ""
 
-#: scc/gui/app.py:805
+#: scc/gui/app.py:806
 msgid "Create New Profile"
 msgstr ""
 
-#: scc/gui/app.py:878 scc/gui/app.py:882
+#: scc/gui/app.py:879 scc/gui/app.py:883
 #, python-format
 msgid "New Profile %s"
 msgstr ""
 
-#: scc/gui/app.py:891
+#: scc/gui/app.py:892
 #, python-format
 msgid "%s (copy)"
 msgstr ""
 
-#: scc/gui/app.py:895
+#: scc/gui/app.py:896
 #, python-format
 msgid "%s (copy %s)"
 msgstr ""
 
-#: scc/gui/app.py:1255
+#: scc/gui/app.py:1256
 #, python-format
 msgid "There was an error with enabling emulation: <b>%s</b>"
 msgstr ""
 
-#: scc/gui/app.py:1258
+#: scc/gui/app.py:1259
 msgid "Check whether the receiver dongle is connected to a USB port."
 msgstr ""
 
-#: scc/gui/app.py:1260
+#: scc/gui/app.py:1261
 msgid "You do not have access to the controller device."
 msgstr ""
 
-#: scc/gui/app.py:1263
+#: scc/gui/app.py:1264
 #, python-format
 msgid ""
 "Consult your distribution manual, try installing Steam package or <a "
 "href='%s'>install required udev rules manually</a>."
 msgstr ""
 
-#: scc/gui/app.py:1269
+#: scc/gui/app.py:1270
 msgid "Another application (most likely Steam) is using the controller."
 msgstr ""
 
-#: scc/gui/app.py:1272
+#: scc/gui/app.py:1273
 msgid ""
 "Background process responsible for emulation is not starting.\n"
 "\n"
@@ -608,45 +608,45 @@ msgid ""
 "GitHub</a> and copy output there."
 msgstr ""
 
-#: scc/gui/app.py:1276
+#: scc/gui/app.py:1277
 msgid "USB dongle was removed."
 msgstr ""
 
-#: scc/gui/app.py:1436
+#: scc/gui/app.py:1437
 msgid "Really revert current profile to default values?"
 msgstr ""
 
-#: scc/gui/app.py:1438
+#: scc/gui/app.py:1439
 msgid "Really delete current profile?"
 msgstr ""
 
-#: scc/gui/app.py:1646
+#: scc/gui/app.py:1647
 msgid "Emulation is active"
 msgstr ""
 
-#: scc/gui/app.py:1648
+#: scc/gui/app.py:1649
 msgid "Error enabling emulation"
 msgstr ""
 
-#: scc/gui/app.py:1650
+#: scc/gui/app.py:1651
 msgid "Emulation is inactive"
 msgstr ""
 
-#: scc/gui/app.py:1652
+#: scc/gui/app.py:1653
 msgid "Checking emulation status..."
 msgstr ""
 
-#: scc/gui/app.py:1783
+#: scc/gui/app.py:1784
 #, python-format
 msgid "<a href='%s'>Click here</a> to check what's new!"
 msgstr ""
 
-#: scc/gui/app.py:1787
+#: scc/gui/app.py:1788
 #, python-format
 msgid "Welcome to the version <b>%s</b>."
 msgstr ""
 
-#: scc/gui/app.py:1788
+#: scc/gui/app.py:1789
 #, python-format
 msgid "<a href='%s'>Click here</a> to read release notes."
 msgstr ""
@@ -661,17 +661,17 @@ msgstr ""
 msgid "Macro for %s"
 msgstr ""
 
-#: scc/gui/controller_settings.py:179
+#: scc/gui/controller_settings.py:186
 #, python-format
 msgid "%s seconds"
 msgstr ""
 
-#: scc/gui/controller_settings.py:181
+#: scc/gui/controller_settings.py:188
 #, python-format
 msgid "%s minutes"
 msgstr ""
 
-#: scc/gui/controller_settings.py:182
+#: scc/gui/controller_settings.py:189
 #, python-format
 msgid "%sm %ss"
 msgstr ""
@@ -883,7 +883,7 @@ msgstr ""
 msgid "Menu Editor"
 msgstr ""
 
-#: scc/gui/menu_editor.py:382 ui/controller_settings.ui:211
+#: scc/gui/menu_editor.py:382 ui/controller_settings.ui:202
 #: ui/icon_chooser.ui:60
 msgid "Icon"
 msgstr ""
@@ -981,11 +981,11 @@ msgstr ""
 msgid "Outer Ring"
 msgstr ""
 
-#: scc/i18n.py:60
+#: scc/i18n.py:65
 msgid "System Default"
 msgstr ""
 
-#: scc/i18n.py:60
+#: scc/i18n.py:65
 msgid "English"
 msgstr ""
 
@@ -1313,7 +1313,7 @@ msgid ""
 "gpl-2.0.html\">GNU General Public License, version 2</a> for details.</small>"
 msgstr ""
 
-#: ui/about.ui:96
+#: ui/about.ui:96 ui/led_editor.ui:186
 msgid "_Close"
 msgstr ""
 
@@ -1673,19 +1673,19 @@ msgstr ""
 msgid "(Controller Default)"
 msgstr ""
 
-#: ui/ae/dpad.ui:113 ui/ae/special_action.ui:152 ui/controller_settings.ui:104
+#: ui/ae/dpad.ui:113 ui/ae/special_action.ui:152 ui/controller_settings.ui:99
 msgid "Left Stick Press"
 msgstr ""
 
-#: ui/ae/dpad.ui:117 ui/ae/special_action.ui:156 ui/controller_settings.ui:108
+#: ui/ae/dpad.ui:117 ui/ae/special_action.ui:156 ui/controller_settings.ui:103
 msgid "Right Stick Press"
 msgstr ""
 
-#: ui/ae/dpad.ui:121 ui/ae/special_action.ui:160 ui/controller_settings.ui:112
+#: ui/ae/dpad.ui:121 ui/ae/special_action.ui:160 ui/controller_settings.ui:107
 msgid "Left Pad Press"
 msgstr ""
 
-#: ui/ae/dpad.ui:125 ui/ae/special_action.ui:164 ui/controller_settings.ui:116
+#: ui/ae/dpad.ui:125 ui/ae/special_action.ui:164 ui/controller_settings.ui:111
 msgid "Right Pad Press"
 msgstr ""
 
@@ -1766,11 +1766,11 @@ msgstr ""
 msgid "Control Options..."
 msgstr ""
 
-#: ui/ae/dpad.ui:664 ui/ae/special_action.ui:633 ui/controller_settings.ui:517
+#: ui/ae/dpad.ui:664 ui/ae/special_action.ui:633 ui/controller_settings.ui:509
 msgid "Confirm Button"
 msgstr ""
 
-#: ui/ae/dpad.ui:676 ui/ae/special_action.ui:645 ui/controller_settings.ui:528
+#: ui/ae/dpad.ui:676 ui/ae/special_action.ui:645 ui/controller_settings.ui:520
 msgid "Cancel Button"
 msgstr ""
 
@@ -1975,7 +1975,7 @@ msgstr ""
 msgid "Display Time"
 msgstr ""
 
-#: ui/ae/special_action.ui:621 ui/controller_settings.ui:487
+#: ui/ae/special_action.ui:621 ui/controller_settings.ui:479
 msgid "Control Menu With"
 msgstr ""
 
@@ -2207,45 +2207,49 @@ msgstr ""
 msgid "Display with each new version"
 msgstr ""
 
-#: ui/controller_settings.ui:165
-msgid "LED brightness"
+#: ui/controller_settings.ui:160
+msgid "LED settings"
 msgstr ""
 
-#: ui/controller_settings.ui:198
+#: ui/controller_settings.ui:173
+msgid "Configure LEDs…"
+msgstr ""
+
+#: ui/controller_settings.ui:189
 msgid "Controller Name"
 msgstr ""
 
-#: ui/controller_settings.ui:270
+#: ui/controller_settings.ui:261
 msgid "Right-aligned OSD"
 msgstr ""
 
-#: ui/controller_settings.ui:285
+#: ui/controller_settings.ui:276
 msgid "Automatically turn off when inactive for"
 msgstr ""
 
-#: ui/controller_settings.ui:318
+#: ui/controller_settings.ui:310
 msgid "Touchpad Input Rotation"
 msgstr ""
 
-#: ui/controller_settings.ui:339
+#: ui/controller_settings.ui:331
 msgid ""
 "Applied to everything, even if the profile does not set rotation for its "
 "actions."
 msgstr ""
 
-#: ui/controller_settings.ui:354
+#: ui/controller_settings.ui:346
 msgid "Left Pad Angle"
 msgstr ""
 
-#: ui/controller_settings.ui:367
+#: ui/controller_settings.ui:359
 msgid "Right Pad Angle"
 msgstr ""
 
-#: ui/controller_settings.ui:453
+#: ui/controller_settings.ui:445
 msgid "Default Menu Controls"
 msgstr ""
 
-#: ui/controller_settings.ui:474
+#: ui/controller_settings.ui:466
 msgid "Used to control menus unless the profile specifies something different"
 msgstr ""
 
@@ -2986,6 +2990,38 @@ msgstr ""
 
 #: ui/key_grabber.ui:100 ui/key_grabber.ui:127
 msgid "Shift"
+msgstr ""
+
+#: ui/led_editor.ui:26
+msgid "On"
+msgstr ""
+
+#: ui/led_editor.ui:27
+msgid "Off"
+msgstr ""
+
+#: ui/led_editor.ui:28
+msgid "Controller count"
+msgstr ""
+
+#: ui/led_editor.ui:47
+msgid "LED Hue"
+msgstr ""
+
+#: ui/led_editor.ui:70
+msgid "LED Saturation"
+msgstr ""
+
+#: ui/led_editor.ui:93
+msgid "LED Brightness"
+msgstr ""
+
+#: ui/led_editor.ui:116
+msgid "Player LEDs"
+msgstr ""
+
+#: ui/led_editor.ui:197
+msgid "LED Settings"
 msgstr ""
 
 #: ui/macro_editor.ui:14
