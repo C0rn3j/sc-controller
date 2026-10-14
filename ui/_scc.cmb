@@ -11,6 +11,7 @@
   <ui filename="icon_chooser.ui"/>
   <ui filename="import_export.ui"/>
   <ui filename="key_grabber.ui"/>
+  <ui filename="led_editor.ui"/>
   <ui filename="macro_editor.ui"/>
   <ui filename="menu_editor.ui"/>
   <ui filename="modeshift_editor.ui"/>

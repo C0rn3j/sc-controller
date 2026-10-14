@@ -612,6 +612,7 @@ class SCCDaemon(Daemon):
 
 		c.apply_config(Config().get_controller_config(c.get_id()))
 		self.controllers.append(c)
+		self._update_controller_count_leds()
 		log.debug("Controller added: %s", c)
 		with self.lock:
 			self.send_controller_list(self._send_to_all)
@@ -627,6 +628,7 @@ class SCCDaemon(Daemon):
 		with self.lock:
 			while c in self.controllers:
 				self.controllers.remove(c)
+			self._update_controller_count_leds()
 			log.debug("Controller removed: %s", c)
 
 			if mapper == self.default_mapper and len(self.controllers) > 0:
@@ -646,6 +648,17 @@ class SCCDaemon(Daemon):
 					mapper.set_controller(None)
 					self.free_mappers.append(mapper)
 			self.send_controller_list(self._send_to_all)
+
+	def _update_controller_count_leds(self) -> None:
+		"""Refresh DualSense count indicators after the controller list changes."""
+		patterns = (0x04, 0x0A, 0x15, 0x1B, 0x1F)
+		count = max(1, min(len(self.controllers), len(patterns)))
+		config = Config()
+		for controller in self.controllers:
+			if controller.get_type().startswith("ds5"):
+				cfg = config.get_controller_config(controller.get_id())
+				if cfg.get("player_led_mode", "controller-count") == "controller-count":
+					controller.set_player_leds(patterns[count - 1])
 
 	def get_active_ids(self):
 		"""Returns iterable with IDs of all active controllers"""
@@ -884,6 +897,20 @@ class SCCDaemon(Daemon):
 				return
 			if client.mapper.get_controller():
 				client.mapper.get_controller().set_led_level(number)
+		elif message.startswith(b"LEDColor:"):
+			try:
+				red, green, blue = (clamp(0, int(value), 255) for value in message[9:].split())
+				client.mapper.get_controller().set_led_color(red, green, blue)
+				client.wfile.write(b"OK.\n")
+			except Exception as error:
+				client.wfile.write(f"Fail: {error}\n".encode())
+		elif message.startswith(b"PlayerLEDs:"):
+			try:
+				mask = clamp(0, int(message[11:]), 0x1F)
+				client.mapper.get_controller().set_player_leds(mask)
+				client.wfile.write(b"OK.\n")
+			except Exception as error:
+				client.wfile.write(f"Fail: {error}\n".encode())
 		elif message.startswith(b"Observe:"):
 			if Config()["enable_sniffing"]:
 				to_observe = list(message.split(b":", 1)[1].strip(b" \t\r").split(b" "))
