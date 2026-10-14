@@ -129,7 +129,11 @@ class SCCDaemon(Daemon):
 		self._glib_context: GLib.MainContext | None = None
 
 	def _poll(self) -> None:
-		self.poller.poll(self.scheduler.get_poll_timeout())
+		# HIDAPI has no selectable handle on Windows, so Windows controller
+		# drivers are serviced by the main loop. A 10 ms wait here made the
+		# virtual controller visibly lag behind the physical controller.
+		maximum = 0.001 if sys.platform == "win32" else 0.01
+		self.poller.poll(self.scheduler.get_poll_timeout(maximum))
 
 	def init_sleep_monitor(self) -> None:
 		"""Listen for systemd-logind suspend notifications."""
@@ -192,7 +196,20 @@ class SCCDaemon(Daemon):
 		to_init = []
 		for importer, modname, ispkg in pkgutil.walk_packages(path=drivers.__path__, onerror=lambda x: None):
 			if not ispkg and modname != "driver":
-				if modname == "usb" or cfg["drivers"].get(modname):
+				if sys.platform == "linux" and modname == "ds5_windows":
+					continue
+				if sys.platform != "win32" and modname == "hid_windows":
+					continue
+				if sys.platform != "linux" and modname in ("evdevdrv", "hiddrv"):
+					continue
+				if sys.platform != "linux" and modname == "ds5drv":
+					continue
+				config_name = {
+					"ds5_windows": "ds5drv",
+					"hid_windows": "hiddrv",
+				}.get(modname, modname)
+				enabled = cfg["drivers"].get(config_name)
+				if modname == "usb" or enabled:
 					# 'usb' driver has to be always active
 					mod = getattr(__import__(f"scc.drivers.{modname}").drivers, modname)
 					if hasattr(mod, "init"):
