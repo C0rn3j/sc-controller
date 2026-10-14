@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: sc-controller\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-28 20:33+0200\n"
-"PO-Revision-Date: 2026-09-28 23:10+0000\n"
-"Last-Translator: \"sotis.oph\" <sotis.oph@gmail.com>\n"
+"PO-Revision-Date: 2026-10-14 10:51+0000\n"
+"Last-Translator: \"sotis.oph\" <sotis.oph@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/sc-controller/sc-"
 "controller/ru/>\n"
 "Language: ru\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 2026.10.dev0\n"
+"X-Generator: Weblate 2026.11.dev0\n"
 
 #: scc/actions.py:606
 msgid "Axis"
@@ -562,7 +562,7 @@ msgstr "_Отмена"
 
 #: scc/gui/app.py:603
 msgid "_Quit"
-msgstr "_Закрыть"
+msgstr "_Выйти"
 
 #: scc/gui/app.py:794
 msgid ""
@@ -627,716 +627,730 @@ msgid ""
 "or <a href='https://github.com/C0rn3j/sc-controller/issues'>open issue on "
 "GitHub</a> and copy output there."
 msgstr ""
+"Фоновый процесс, отвечающий за эмуляцию, не запускается.\n"
+"\n"
+"Попробуйте запустить команду \"scc-daemon debug\" в окне терминала, чтобы "
+"проверить наличие ошибок.\n"
+"или <a href='https://github.com/C0rn3j/sc-controller/issues'>откройте "
+"проблему на GitHub</a> и скопируйте туда результат."
 
 #: scc/gui/app.py:1265
 msgid "USB dongle was removed."
-msgstr ""
+msgstr "USB-адаптер был удален."
 
 #: scc/gui/app.py:1344 ui/app.ui:837
 msgid "_Configure Controller"
-msgstr ""
+msgstr "_Настроить контроллер"
 
 #: scc/gui/app.py:1345 ui/app.ui:844
 msgid "_Turn Off Controller"
-msgstr ""
+msgstr "_Выключить контроллер"
 
 #: scc/gui/app.py:1349 ui/app.ui:856
 msgid "_New Profile"
-msgstr ""
+msgstr "_Новый профиль"
 
 #: scc/gui/app.py:1350 ui/app.ui:863
 msgid "_Copy Profile"
-msgstr ""
+msgstr "_Скопировать профиль"
 
 #: scc/gui/app.py:1355 ui/app.ui:870
 msgid "_Rename Profile"
-msgstr ""
+msgstr "_Переименовать профиль"
 
 #: scc/gui/app.py:1356 ui/app.ui:877
 msgid "_Delete Profile"
-msgstr ""
+msgstr "_Удалить профиль"
 
 #: scc/gui/app.py:1358 ui/app.ui:884
 msgid "_Revert Profile to Defaults"
-msgstr ""
+msgstr "_Вернуть профиль к настройкам по умолчанию"
 
 #: scc/gui/app.py:1359 ui/app.ui:896
 msgid "Profile D_etails"
-msgstr ""
+msgstr "П_одробности профиля"
 
 #: scc/gui/app.py:1432
 msgid "Really revert current profile to default values?"
 msgstr ""
+"Действительно ли нужно вернуть текущий профиль к значениям по умолчанию?"
 
 #: scc/gui/app.py:1434
 msgid "Really delete current profile?"
-msgstr ""
+msgstr "Действительно удалить текущий профиль?"
 
 #: scc/gui/app.py:1636
 msgid "Emulation is active"
-msgstr ""
+msgstr "Эмуляция активна"
 
 #: scc/gui/app.py:1638
 msgid "Error enabling emulation"
-msgstr ""
+msgstr "Ошибка при включении эмуляции"
 
 #: scc/gui/app.py:1640
 msgid "Emulation is inactive"
-msgstr ""
+msgstr "Эмуляция неактивна"
 
 #: scc/gui/app.py:1642
 msgid "Checking emulation status..."
-msgstr ""
+msgstr "Проверка состояния эмуляции..."
 
 #: scc/gui/app.py:1773
 #, python-format
 msgid "<a href='%s'>Click here</a> to check what's new!"
-msgstr ""
+msgstr "<a href='%s'>Нажмите здесь</a>, чтобы узнать что изменилось!"
 
 #: scc/gui/app.py:1777
 #, python-format
 msgid "Welcome to the version <b>%s</b>."
-msgstr ""
+msgstr "Добро пожаловать в версию <b>%s</b>."
 
 #: scc/gui/app.py:1778
 #, python-format
 msgid "<a href='%s'>Click here</a> to read release notes."
-msgstr ""
+msgstr "<a href='%s'>Нажмите здесь</a>, чтобы прочитать примечания к выпуску."
 
 #: scc/gui/binding_editor.py:169
 #, python-format
 msgid "Mode Shift for %s"
-msgstr ""
+msgstr "Режим смещения для %s"
 
 #: scc/gui/binding_editor.py:179
 #, python-format
 msgid "Macro for %s"
-msgstr ""
+msgstr "Макрос для %s"
 
 #: scc/gui/controller_settings.py:179
 #, python-format
 msgid "%s seconds"
-msgstr ""
+msgstr "%s секунд"
 
 #: scc/gui/controller_settings.py:181
 #, python-format
 msgid "%s minutes"
-msgstr ""
+msgstr "%s минут"
 
 #: scc/gui/controller_settings.py:182
 #, python-format
 msgid "%sm %ss"
-msgstr ""
+msgstr "%sм %sс"
 
 #: scc/gui/controller_widget.py:67 scc/gui/controller_widget.py:116
 #: scc/gui/controller_widget.py:221
 msgid "(no action)"
-msgstr ""
+msgstr "(нет действия)"
 
 #: scc/gui/creg/dialog.py:526
 msgid "Failed to open device"
-msgstr ""
+msgstr "Не удалось открыть устройство"
 
 #: scc/gui/creg/dialog.py:549
 msgid "USB HID (recommended)"
-msgstr ""
+msgstr "USB HID (рекомендуется)"
 
 #: scc/gui/creg/dialog.py:549
 msgid "USB HID"
-msgstr ""
+msgstr "USB HID"
 
 #: scc/gui/creg/dialog.py:721
 msgid "Press stick or button..."
-msgstr ""
+msgstr "Нажмите на стик или кнопку..."
 
 #: scc/gui/creg/grabs.py:20
 msgid "Press a button..."
-msgstr ""
+msgstr "Нажмите кнопку..."
 
 #: scc/gui/creg/grabs.py:66
 msgid "Pull a trigger..."
-msgstr ""
+msgstr "Нажмите на курок..."
 
 #: scc/gui/creg/grabs.py:110
 msgid "Move stick left and right..."
-msgstr ""
+msgstr "Поворачивайте стик влево и вправо..."
 
 #: scc/gui/creg/grabs.py:126
 msgid "Move DPAD to right"
-msgstr ""
+msgstr "Переместите D-пад вправо"
 
 #: scc/gui/creg/grabs.py:129
 msgid "Move DPAD up"
-msgstr ""
+msgstr "Переместите D-пад вверх"
 
 #: scc/gui/creg/grabs.py:132
 msgid "Move DPAD down"
-msgstr ""
+msgstr "Переместите D-пад вниз"
 
 #: scc/gui/creg/grabs.py:153
 msgid "Move stick up and down..."
-msgstr ""
+msgstr "Перемещайте стик вверх и вниз..."
 
 #: scc/gui/global_settings.py:257
 msgid "(customized)"
-msgstr ""
+msgstr "(индивидуальный)"
 
 #: scc/gui/global_settings.py:795
 msgid "Install the xdotool package to use this feature"
-msgstr ""
+msgstr "Для использования этой функции установите пакет xdotool"
 
 #: scc/gui/global_settings.py:822
 msgid "Unregister controller?"
-msgstr ""
+msgstr "Отменить регистрацию контроллера?"
 
 #: scc/gui/global_settings.py:824
 msgid "You'll lose all settings for it"
-msgstr ""
+msgstr "Вы потеряете все настройки для него"
 
 #: scc/gui/icon_chooser.py:102
 #, python-format
 msgid "Free-use icon created by %s"
-msgstr ""
+msgstr "Иконка для свободного использования, созданная %s"
 
 #: scc/gui/importexport/dialog.py:143 ui/import_export.ui:1002
 msgid "Next"
-msgstr ""
+msgstr "Следующий"
 
 #: scc/gui/importexport/export.py:111 scc/gui/importexport/export.py:134
 #, python-format
 msgid "%s (not found)"
-msgstr ""
+msgstr "%s (не найден)"
 
 #: scc/gui/importexport/export.py:124 scc/gui/importexport/export.py:134
 #: scc/gui/profile_switcher.py:344 ui/ae/special_action.ui:372
 #: ui/import_export.ui:245 ui/import_export.ui:425
 msgid "Profile"
-msgstr ""
+msgstr "Профиль"
 
 #: scc/gui/importexport/export.py:204
 msgid "Export to File..."
-msgstr ""
+msgstr "Экспорт в файл..."
 
 #: scc/gui/importexport/import_sccprofile.py:27
 msgid "Import Profile..."
-msgstr ""
+msgstr "Импорт профиля..."
 
 #: scc/gui/importexport/import_sccprofile.py:73
 #: scc/gui/importexport/import_sccprofile.py:95
 #: scc/gui/importexport/import_sccprofile.py:101
 msgid "(profile)"
-msgstr ""
+msgstr "(профиль)"
 
 #: scc/gui/importexport/import_sccprofile.py:109
 msgid "(menu)"
-msgstr ""
+msgstr "(меню)"
 
 #: scc/gui/importexport/import_sccprofile.py:142
 msgid "Continue"
-msgstr ""
+msgstr "Продолжать"
 
 #: scc/gui/importexport/import_sccprofile.py:167
 #: scc/gui/importexport/import_vdf.py:402
 msgid "Profile successfully imported"
-msgstr ""
+msgstr "Профиль успешно импортирован"
 
 #: scc/gui/importexport/import_sccprofile.py:181
 #: scc/gui/importexport/import_vdf.py:280
 msgid "Apply"
-msgstr ""
+msgstr "Применить"
 
 #: scc/gui/importexport/import_sccprofile.py:188 ui/import_export.ui:804
 #, python-format
 msgid "Import as hidden menus and profiles named \".%s:name\""
-msgstr ""
+msgstr "Импортировать в виде скрытых меню и профилей с именем \".%s:name\""
 
 #: scc/gui/importexport/import_sccprofile.py:189 ui/import_export.ui:813
 #, python-format
 msgid "Import normally, with names formatted as \"%s:name\""
 msgstr ""
+"Импорт осуществляется обычным способом, с именами, отформатированными как "
+"\"%s:name\""
 
 #: scc/gui/importexport/import_vdf.py:137
 #, python-format
 msgid "Unknown App ID %s"
-msgstr ""
+msgstr "Неизвестный идентификатор приложения %s"
 
 #: scc/gui/importexport/import_vdf.py:206
 msgid "(not found)"
-msgstr ""
+msgstr "(не найден)"
 
 #: scc/gui/importexport/import_vdf.py:306
 msgid "No game"
-msgstr ""
+msgstr "Нет игры"
 
 #: scc/gui/importexport/import_vdf.py:306
 msgid "Dropped profile"
-msgstr ""
+msgstr "Удаленный профиль"
 
 #: scc/gui/importexport/import_vdf.py:381 ui/import_export.ui:939
 msgid "Import failed"
-msgstr ""
+msgstr "Импорт не удался"
 
 #: scc/gui/importexport/import_vdf.py:397
 msgid "Profile imported with warnings"
-msgstr ""
+msgstr "Профиль импортирован с предупреждениями"
 
 #: scc/gui/macro_editor.py:257
 #, python-format
 msgid "<b>Delay: %sms</b>"
-msgstr ""
+msgstr "<b>Задержка: %sмс</b>"
 
 #: scc/gui/macro_editor.py:260
 #, python-format
 msgid "<b>Delay: %0.2fs</b>"
-msgstr ""
+msgstr "<b>Задержка: %0.2fs</b>"
 
 #: scc/gui/macro_editor.py:275 scc/gui/modeshift_editor.py:224
 #: scc/gui/ring_editor.py:91 scc/gui/ring_editor.py:96
 msgid "Edit Action"
-msgstr ""
+msgstr "Изменить действие"
 
 #: scc/gui/menu_editor.py:133
 msgid "Edit Separator"
-msgstr ""
+msgstr "Изменить разделитель"
 
 #: scc/gui/menu_editor.py:135
 msgid "Separator Name"
-msgstr ""
+msgstr "Имя разделителя"
 
 #: scc/gui/menu_editor.py:137
 msgid "Edit Submenu"
-msgstr ""
+msgstr "Изменить подменю"
 
 #: scc/gui/menu_editor.py:145
 msgid "Menu Label"
-msgstr ""
+msgstr "Метка меню"
 
 #: scc/gui/menu_editor.py:151
 msgid "Edit Menu Action"
-msgstr ""
+msgstr "Изменить действие меню"
 
 #: scc/gui/menu_editor.py:157
 msgid "Edit Recent List"
-msgstr ""
+msgstr "Изменить список последних"
 
 #: scc/gui/menu_editor.py:246
 msgid "Invalid Menu ID: A menu with the same ID already exists."
-msgstr ""
+msgstr "Неверный ID меню: меню с таким ID уже существует."
 
 #: scc/gui/menu_editor.py:251
 msgid "Invalid Menu ID: Do not use dots (.) or slashes (/)."
 msgstr ""
+"Неверный идентификатор меню: не используйте точки (.) или косые черты (/)."
 
 #: scc/gui/menu_editor.py:258
 msgid "New Menu"
-msgstr ""
+msgstr "Новое меню"
 
 #: scc/gui/menu_editor.py:275
 msgid "Menu Editor"
-msgstr ""
+msgstr "Редактор меню"
 
 #: scc/gui/menu_editor.py:382 ui/controller_settings.ui:211
 #: ui/icon_chooser.ui:60
 msgid "Icon"
-msgstr ""
+msgstr "Значек"
 
 #: scc/gui/menu_editor.py:387
 msgid "(no icon)"
-msgstr ""
+msgstr "(без значка)"
 
 #: scc/gui/modeshift_editor.py:40
 msgid "Left Trigger (full)"
-msgstr ""
+msgstr "Левый курок (полностью)"
 
 #: scc/gui/modeshift_editor.py:41
 msgid "Right Trigger (full)"
-msgstr ""
+msgstr "Правый курок (полностью)"
 
 #: scc/gui/modeshift_editor.py:42
 msgid "Left Trigger (soft)"
-msgstr ""
+msgstr "Левый курок (частично)"
 
 #: scc/gui/modeshift_editor.py:43
 msgid "Right Trigger (soft)"
-msgstr ""
+msgstr "Правый курок (частично)"
 
 #: scc/gui/modeshift_editor.py:45
 msgid "Left Stick Pressed"
-msgstr ""
+msgstr "Нажат левый стик"
 
 #: scc/gui/modeshift_editor.py:46
 msgid "Right Stick Pressed"
-msgstr ""
+msgstr "Нажат правый стик"
 
 #: scc/gui/modeshift_editor.py:217
 msgid "Edit Macro"
-msgstr ""
+msgstr "Редактировать макрос"
 
 #: scc/gui/modeshift_editor.py:376 scc/gui/modeshift_editor.py:379
 msgid "(no button pressed)"
-msgstr ""
+msgstr "(кнопка не нажата)"
 
 #: scc/gui/modeshift_editor.py:382 ui/modeshift_editor.ui:154
 msgid "(pressed alone)"
-msgstr ""
+msgstr "(нажата одна)"
 
 #: scc/gui/osk_binding_editor.py:47
 #, python-format
 msgid "%s Button"
-msgstr ""
+msgstr "Кнопка %s"
 
 #: scc/gui/parser.py:25
 msgid "(invalid)"
-msgstr ""
+msgstr "(недействительный)"
 
 #: scc/gui/profile_switcher.py:181
 msgid "New profile..."
-msgstr ""
+msgstr "Новый профиль..."
 
 #: scc/gui/profile_switcher.py:296
 msgid "Save changes"
-msgstr ""
+msgstr "Сохранить изменения"
 
 #: scc/gui/profile_switcher.py:302
 msgid "(changed template)"
-msgstr ""
+msgstr "(измененный шаблон)"
 
 #: scc/gui/profile_switcher.py:304
 msgid "(changed)"
-msgstr ""
+msgstr "(изменен)"
 
 #: scc/gui/profile_switcher.py:313
 msgid "(template)"
-msgstr ""
+msgstr "(шаблон)"
 
 #: scc/gui/profile_switcher.py:321
 msgid "Edit mappings of this controller"
-msgstr ""
+msgstr "Редактировать сопоставления этого контроллера"
 
 #: scc/gui/ring_editor.py:74 scc/gui/ring_editor.py:82 ui/ring_editor.ui:109
 msgid "Inner Ring Radius"
-msgstr ""
+msgstr "Радиус внутреннего кольца"
 
 #: scc/gui/ring_editor.py:75 scc/gui/ring_editor.py:83 ui/ring_editor.ui:171
 msgid "Inner Ring"
-msgstr ""
+msgstr "Внутреннее кольцо"
 
 #: scc/gui/ring_editor.py:76 scc/gui/ring_editor.py:79
 msgid "Entire Pad"
-msgstr ""
+msgstr "Весь пад"
 
 #: scc/gui/ring_editor.py:78
 msgid "Outer Ring Starts at"
-msgstr ""
+msgstr "Внешний круг начинается в"
 
 #: scc/gui/ring_editor.py:80 scc/gui/ring_editor.py:84 ui/ring_editor.ui:238
 msgid "Outer Ring"
-msgstr ""
+msgstr "Внешнее кольцо"
 
 #: scc/i18n.py:60
 msgid "System Default"
-msgstr ""
+msgstr "Системные настройки по умолчанию"
 
 #: scc/i18n.py:60
 msgid "English"
-msgstr ""
+msgstr "Английский"
 
 #: scc/macros.py:195
 msgid "Cycle Actions"
-msgstr ""
+msgstr "Действия цикла"
 
 #: scc/macros.py:237
 #, python-format
 msgid "Wait %sms"
-msgstr ""
+msgstr "Ждать %sмс"
 
 #: scc/macros.py:239
 #, python-format
 msgid "Wait %ss"
-msgstr ""
+msgstr "Ждать %sс"
 
 #: scc/macros.py:257 ui/macro_editor.ui:285 ui/modeshift_editor.ui:176
 msgid "Press"
-msgstr ""
+msgstr "Надавить"
 
 #: scc/macros.py:290 ui/macro_editor.ui:289
 msgid "Release"
-msgstr ""
+msgstr "Отпустить"
 
 #: scc/macros.py:303 scc/macros.py:386
 msgid "Tap"
-msgstr ""
+msgstr "Нажать"
 
 #: scc/macros.py:388
 msgid "DblTap"
-msgstr ""
+msgstr "Двойное нажатие"
 
 #: scc/macros.py:389
 msgid "-tap"
-msgstr ""
+msgstr "-нажать"
 
 #: scc/menu_data.py:220
 #, python-format
 msgid "----[ %s ]----"
-msgstr ""
+msgstr "----[ %s ]----"
 
 #: scc/menu_data.py:221
 msgid "---- Separator ----"
-msgstr ""
+msgstr "---- Разделитель ----"
 
 #: scc/menu_data.py:239 scc/osd/menu.py:347 scc/osd/quick_menu.py:50
 msgid ">>"
-msgstr ""
+msgstr ">>"
 
 #: scc/modifiers.py:182 scc/modifiers.py:183
 msgid "(if pressed)"
-msgstr ""
+msgstr "(при нажатии)"
 
 #: scc/modifiers.py:277 scc/modifiers.py:278
 #, python-format
 msgid "(when %s)"
-msgstr ""
+msgstr "(когда %s)"
 
 #: scc/modifiers.py:310 scc/modifiers.py:311
 msgid "(when pressed)"
-msgstr ""
+msgstr "(при надавливании)"
 
 #: scc/modifiers.py:336 scc/modifiers.py:337
 msgid "(when released)"
-msgstr ""
+msgstr "(при отпускании)"
 
 #: scc/modifiers.py:482
 msgid "Trackball"
-msgstr ""
+msgstr "Трекбол"
 
 #: scc/modifiers.py:487
 msgid "Mouse-like LStick"
-msgstr ""
+msgstr "L-стик, похожий на мышь"
 
 #: scc/modifiers.py:488
 msgid "Mouse-like RStick"
-msgstr ""
+msgstr "R-стик, похожий на мышь"
 
 #: scc/modifiers.py:492 scc/osd/binding_display.py:255 ui/action_editor.ui:1413
 #: ui/ae/axis_action.ui:159 ui/ae/axis_action.ui:164 ui/ae/axis_action.ui:648
 msgid "Mouse Wheel"
-msgstr ""
+msgstr "Колесо мыши"
 
 #: scc/modifiers.py:494
 #, python-format
 msgid "Ball(%s)"
-msgstr ""
+msgstr "Шар(%s)"
 
 #: scc/modifiers.py:1484
 #, python-format
 msgid "Circular %s"
-msgstr ""
+msgstr "Круговой %s"
 
 #: scc/modifiers.py:1561
 #, python-format
 msgid "Absolute Circular %s"
-msgstr ""
+msgstr "Абсолютный круговой %s"
 
 #: scc/osd/launcher.py:134
 msgid "Run"
-msgstr ""
+msgstr "Запустить"
 
 #: scc/osd/menu_generators.py:46 scc/x11/autoswitcher.py:318
 msgid "[ All Profiles ]"
-msgstr ""
+msgstr "[ Все профили ]"
 
 #: scc/osd/menu_generators.py:74
 #, python-format
 msgid "[ %s Recent Profiles ]"
-msgstr ""
+msgstr "[ %s недавних профилей ]"
 
 #: scc/osd/menu_generators.py:151
 msgid "Switch To is not currently supported in Wayland"
-msgstr ""
+msgstr "Функция Switch To в настоящее время не поддерживается в Wayland"
 
 #: scc/osd/osk_actions.py:47
 msgid "Hide"
-msgstr ""
+msgstr "Скрыть"
 
 #: scc/osd/osk_actions.py:48 ui/ae/osk_action.ui:18
 msgid "Hide Keyboard"
-msgstr ""
+msgstr "Скрыть клавиатуру"
 
 #: scc/osd/osk_actions.py:80 ui/ae/osk_action.ui:22
 msgid "Move LEFT Cursor"
-msgstr ""
+msgstr "Переместите курсор влево"
 
 #: scc/osd/osk_actions.py:82 ui/ae/osk_action.ui:26
 msgid "Move RIGHT Cursor"
-msgstr ""
+msgstr "Переместите курсор вправо"
 
 #: scc/osd/osk_actions.py:83
 msgid "Move Cursor"
-msgstr ""
+msgstr "Переместите курсор"
 
 #: scc/osd/osk_actions.py:97 ui/ae/osk_action.ui:38 ui/ae/osk_action.ui:50
 #: ui/global_settings.ui:108
 msgid "Move Keyboard"
-msgstr ""
+msgstr "Переместить клавиатуру"
 
 #: scc/osd/osk_actions.py:115
 msgid "Press Key"
-msgstr ""
+msgstr "Нажмите клавишу"
 
 #: scc/osd/osk_actions.py:117 ui/ae/osk_action.ui:30
 msgid "Press Key Under LEFT Cursor"
-msgstr ""
+msgstr "Нажмите клавишу под левым курсором"
 
 #: scc/osd/osk_actions.py:118 ui/ae/osk_action.ui:34
 msgid "Press Key Under RIGHT Cursor"
-msgstr ""
+msgstr "Нажмите клавишу под правым курсором"
 
 #: scc/special_actions.py:48
 #, python-format
 msgid "Profile: %s"
-msgstr ""
+msgstr "Профиль: %s"
 
 #: scc/special_actions.py:50
 #, python-format
 msgid "Switch to %s"
-msgstr ""
+msgstr "Переключиться на %s"
 
 #: scc/special_actions.py:51
 msgid "Profile Change"
-msgstr ""
+msgstr "Изменение профиля"
 
 #: scc/special_actions.py:83 ui/ae/special_action.ui:65
 msgid "Execute Command"
-msgstr ""
+msgstr "Выполнить команду"
 
 #: scc/special_actions.py:107
 msgid "Turning controller OFF"
-msgstr ""
+msgstr "Выключение контроллера"
 
 #: scc/special_actions.py:108
 msgid "Turn Off the Controller"
-msgstr ""
+msgstr "Выключите контроллер"
 
 #: scc/special_actions.py:137
 msgid "Restart SCC-Daemon"
-msgstr ""
+msgstr "Перезапустите демон SCC"
 
 #: scc/special_actions.py:159
 msgid "Set LED brightness"
-msgstr ""
+msgstr "Установите яркость светодиода"
 
 #: scc/special_actions.py:215
 #, python-format
 msgid "%s (with OSD)"
-msgstr ""
+msgstr "%s (с OSD)"
 
 #: scc/special_actions.py:218
 msgid "OSD Message"
-msgstr ""
+msgstr "Сообщение OSD"
 
 #: scc/special_actions.py:277 ui/ae/special_action.ui:57
 msgid "Hide all OSD Menus and Messages"
-msgstr ""
+msgstr "Скрыть все экранные меню и сообщения"
 
 #: scc/special_actions.py:466
 msgid "QuickMenu"
-msgstr ""
+msgstr "Быстрое меню"
 
 #: scc/special_actions.py:520 scc/special_actions.py:536
 msgid "Dialog"
-msgstr ""
+msgstr "Диалог"
 
 #: scc/special_actions.py:599 ui/global_settings.ui:761
 msgid "Display Keyboard"
-msgstr ""
+msgstr "Показать клавиатуру"
 
 #: scc/special_actions.py:600
 msgid "OSD Keyboard"
-msgstr ""
+msgstr "OSD Клавиатура"
 
 #: scc/special_actions.py:775
 msgid "CemuHook"
-msgstr ""
+msgstr "CemuHook"
 
 #: scc/x11/autoswitcher.py:154
 msgid "Switched to profile"
-msgstr ""
+msgstr "Переключиться на профиль"
 
 #: scc/x11/autoswitcher.py:230
 #, python-format
 msgid "title contains '%s'"
-msgstr ""
+msgstr "заголовок содержит '%s'"
 
 #: scc/x11/autoswitcher.py:232
 #, python-format
 msgid "title is '%s'"
-msgstr ""
+msgstr "заголовок - '%s'"
 
 #: scc/x11/autoswitcher.py:234
 #, python-format
 msgid "title matches '%s'"
-msgstr ""
+msgstr "заголовок соответствует '%s'"
 
 #: scc/x11/autoswitcher.py:236
 #, python-format
 msgid "class is '%s'"
-msgstr ""
+msgstr "класс — '%s'"
 
 #: scc/x11/autoswitcher.py:238
 msgid " and "
-msgstr ""
+msgstr " И "
 
 #: scc/x11/autoswitcher.py:239
 msgid "matches nothing"
-msgstr ""
+msgstr "ни с чем не сочетается"
 
 #: scc/x11/autoswitcher.py:323
 msgid "Autoswitch is not currently supported in Wayland"
 msgstr ""
+"Функция автоматического переключения в Wayland в настоящее время не "
+"поддерживается"
 
 #: scc/x11/autoswitcher.py:329
 msgid "No active window"
-msgstr ""
+msgstr "Нет активного окна"
 
 #: scc/x11/autoswitcher.py:330 ui/app.ui:91
 msgid "Close"
-msgstr ""
+msgstr "Закрыть"
 
 #: scc/x11/autoswitcher.py:344
 msgid "No Title"
-msgstr ""
+msgstr "Без заголовка"
 
 #: scc/x11/autoswitcher.py:345
 #, python-format
 msgid "Current Window: %s"
-msgstr ""
+msgstr "Текущее окно: %s"
 
 #: scc/x11/autoswitcher.py:347
 #, python-format
 msgid "Assigned Profile: %s"
-msgstr ""
+msgstr "Назначенный профиль: %s"
 
 #: scc/x11/autoswitcher.py:349
 msgid "No Profile Assigned"
-msgstr ""
+msgstr "Профиль не назначен"
 
 #: scc/x11/autoswitcher.py:354
 msgid "Unassign Profile"
-msgstr ""
+msgstr "Отменить назначение профиля"
 
 #: scc/x11/autoswitcher.py:355
 msgid "Assign Current Profile"
-msgstr ""
+msgstr "Назначить текущий профиль"
 
 #: ui/about.ui:30
 msgid "<span size=\"large\"><b>SC Controller</b></span>"
-msgstr ""
+msgstr "<span size=\"large\"><b>SC Controller</b></span>"
 
 #: ui/about.ui:44
 msgid ""
 "User-mode driver and GTK4 based GUI for the Steam Controller, DS4 and "
 "similar controllers"
 msgstr ""
+"Драйвер пользовательского режима и графический интерфейс на основе GTK4 для "
+"контроллеров Steam Controller, DS4 и аналогичных устройств"
 
 #: ui/about.ui:53
 msgid ""
@@ -1357,6 +1371,22 @@ msgid ""
 "im-doing\">here</a>\n"
 "\n"
 msgstr ""
+"\n"
+"<b>Код и пользовательский интерфейс © 2016-2023 Козец</b>\n"
+"<b>Портирование и поддержка Python 3 © 2020-2024 Ryochan7</b>\n"
+"<b>Портирование и обслуживание GTK 4 © 2024 Мартин Рис</b>\n"
+"\n"
+"Исходный код доступен на <a href=\"https://github.com/C0rn3j/sc-controller\">"
+"GitHub</a>\n"
+"\n"
+"Если вам нравится то, что я делаю, вы можете стать моим спонсором на <a "
+"href=\"https://ko-fi.com/martinrys\">Ko-Fi</a> или ознакомиться с другими <a "
+"href=\"https://rys.rs/donate\">способами пожертвования</a>.\n"
+"\n"
+"Ссылки для пожертвований Козеку, первоначальному разработчику, можно найти "
+"<a href=\"https://github.com/kozec/sc-controller?tab=readme-ov-file#like-"
+"what-im-doing\">здесь</a>\n"
+"\n"
 
 #: ui/about.ui:74
 msgid ""
@@ -1364,434 +1394,439 @@ msgid ""
 "See the <a href=\"http://www.gnu.org/licenses/old-licenses/"
 "gpl-2.0.html\">GNU General Public License, version 2</a> for details.</small>"
 msgstr ""
+"<small>Данная программа предоставляется без каких-либо гарантий.\n"
+"Подробности см. в <a href=\"http://www.gnu.org/licenses/old-licenses/gpl-"
+"2.0.html\">GNU General Public License, версия 2</a>.</small>"
 
 #: ui/about.ui:96
 msgid "_Close"
-msgstr ""
+msgstr "_Закрыть"
 
 #: ui/about.ui:112
 msgid "About SC Controller"
-msgstr ""
+msgstr "О SC Controller"
 
 #: ui/action_editor.ui:97
 msgid "Simple"
-msgstr ""
+msgstr "Простой"
 
 #: ui/action_editor.ui:101
 msgid "8-Way"
-msgstr ""
+msgstr "8-сторонний"
 
 #: ui/action_editor.ui:113
 msgid "Cut Down"
-msgstr ""
+msgstr "Сократить"
 
 #: ui/action_editor.ui:117
 msgid "Round Up"
-msgstr ""
+msgstr "Округлить вверх"
 
 #: ui/action_editor.ui:121
 msgid "Linear"
-msgstr ""
+msgstr "Линейный"
 
 #: ui/action_editor.ui:125
 msgid "Minimum Output Value"
-msgstr ""
+msgstr "Минимальное выходное значение"
 
 #: ui/action_editor.ui:137
 msgid "Left"
-msgstr ""
+msgstr "Лево"
 
 #: ui/action_editor.ui:141
 msgid "Right"
-msgstr ""
+msgstr "Право"
 
 #: ui/action_editor.ui:145
 msgid "Both"
-msgstr ""
+msgstr "Оба"
 
 #: ui/action_editor.ui:216
 msgid "Action Type"
-msgstr ""
+msgstr "Тип действия"
 
 #: ui/action_editor.ui:231 ui/macro_editor.ui:39 ui/modeshift_editor.ui:44
 #: ui/ring_editor.ui:47
 msgid "Action Name"
-msgstr ""
+msgstr "Имя действия"
 
 #: ui/action_editor.ui:250
 msgid "More..."
-msgstr ""
+msgstr "Больше..."
 
 #: ui/action_editor.ui:286
 msgid "Display OSD"
-msgstr ""
+msgstr "Отображение экранного меню"
 
 #: ui/action_editor.ui:302
 msgid "Input Rotation"
-msgstr ""
+msgstr "Поворот ввода"
 
 #: ui/action_editor.ui:318
 msgid "Angle"
-msgstr ""
+msgstr "Угол"
 
 #: ui/action_editor.ui:369
 msgid "Require Click"
-msgstr ""
+msgstr "Требуется клик"
 
 #: ui/action_editor.ui:389
 msgid "Preview Changes Immediately"
-msgstr ""
+msgstr "Отображать изменения немедленно"
 
 #: ui/action_editor.ui:406
 msgid "Friction"
-msgstr ""
+msgstr "Трение"
 
 #: ui/action_editor.ui:458
 msgid "Trackball Mode"
-msgstr ""
+msgstr "Режим трекбола"
 
 #: ui/action_editor.ui:473
 msgid "Basics"
-msgstr ""
+msgstr "Основной"
 
 #: ui/action_editor.ui:491 ui/action_editor.ui:680
 msgid "Sensitivity"
-msgstr ""
+msgstr "Чувствительность"
 
 #: ui/action_editor.ui:598 ui/ae/gyro_action.ui:85 ui/ae/gyro.ui:97
 msgid "Roll"
-msgstr ""
+msgstr "Вращение"
 
 #: ui/action_editor.ui:641
 msgid "Invert X axis"
-msgstr ""
+msgstr "Обратная ось X"
 
 #: ui/action_editor.ui:653
 msgid "Invert Y axis"
-msgstr ""
+msgstr "Обратная ось Y"
 
 #: ui/action_editor.ui:665
 msgid "Invert Roll"
-msgstr ""
+msgstr "Обратное вращение"
 
 #: ui/action_editor.ui:701
 msgid "Period"
-msgstr ""
+msgstr "Период"
 
 #: ui/action_editor.ui:835
 msgid "Frequency"
-msgstr ""
+msgstr "Частота"
 
 #: ui/action_editor.ui:850
 msgid "Strength"
-msgstr ""
+msgstr "Сила"
 
 #: ui/action_editor.ui:865
 msgid "Side"
-msgstr ""
+msgstr "Сторона"
 
 #: ui/action_editor.ui:884
 msgid "Feedback Enabled"
-msgstr ""
+msgstr "Обратная связь включена"
 
 #: ui/action_editor.ui:900
 msgid "Feedback"
-msgstr ""
+msgstr "Обратная связь"
 
 #: ui/action_editor.ui:921
 msgid "Upper"
-msgstr ""
+msgstr "Верхняя"
 
 #: ui/action_editor.ui:936
 msgid "Lower"
-msgstr ""
+msgstr "Нижняя"
 
 #: ui/action_editor.ui:1019
 msgid "Deadzone Enabled"
-msgstr ""
+msgstr "Мертвая зона включена"
 
 #: ui/action_editor.ui:1036 ui/ring_editor.ui:249
 msgid "Mode"
-msgstr ""
+msgstr "Режим"
 
 #: ui/action_editor.ui:1070
 msgid "Deadzone"
-msgstr ""
+msgstr "Мертвая зона"
 
 #: ui/action_editor.ui:1091
 msgid "Filter"
-msgstr ""
+msgstr "Фильтр"
 
 #: ui/action_editor.ui:1106
 msgid "Weight"
-msgstr ""
+msgstr "Вес"
 
 #: ui/action_editor.ui:1121
 msgid "Level"
-msgstr ""
+msgstr "Уровень"
 
 #: ui/action_editor.ui:1236
 msgid "Smoothing Enabled"
-msgstr ""
+msgstr "Сглаживание включено"
 
 #: ui/action_editor.ui:1252
 msgid "Smoothing"
-msgstr ""
+msgstr "Сглаживание"
 
 #: ui/action_editor.ui:1309
 msgid "Mode Shift"
-msgstr ""
+msgstr "Режим смещения"
 
 #: ui/action_editor.ui:1326 ui/app.ui:210 ui/icon_chooser.ui:175
 #: ui/macro_editor.ui:249 ui/modeshift_editor.ui:517 ui/ring_editor.ui:303
 msgid "_OK"
-msgstr ""
+msgstr "_OK"
 
 #: ui/action_editor.ui:1343
 msgid "Macro"
-msgstr ""
+msgstr "Макро"
 
 #: ui/action_editor.ui:1351
 msgid "Ring Bindings"
-msgstr ""
+msgstr "Кольцевые привязки"
 
 #: ui/action_editor.ui:1368 ui/macro_editor.ui:226 ui/modeshift_editor.ui:543
 #: ui/ring_editor.ui:329
 msgid "_Clear"
-msgstr ""
+msgstr "_Очистить"
 
 #: ui/action_editor.ui:1408
 msgid "DPad"
-msgstr ""
+msgstr "DPad"
 
 #: ui/action_editor.ui:1418
 msgid "Trackpad (Mouse)"
-msgstr ""
+msgstr "Тачпад (мышь)"
 
 #: ui/action_editor.ui:1423
 msgid "Trackball (Mouse)"
-msgstr ""
+msgstr "Трекбол (мышь)"
 
 #: ui/ae/axis_action.ui:47
 msgid "Relative to Screen Size"
-msgstr ""
+msgstr "Относительно размера экрана"
 
 #: ui/ae/axis_action.ui:51
 msgid "Relative to Active Window Size"
-msgstr ""
+msgstr "Относительно размера активного окна"
 
 #: ui/ae/axis_action.ui:59
 msgid "Relative to Top-Left Corner of Screen"
-msgstr ""
+msgstr "Относительно верхнего левого угла экрана"
 
 #: ui/ae/axis_action.ui:63
 msgid "Relative to Top-Right Corner of Screen"
-msgstr ""
+msgstr "Относительно верхнего правого угла экрана"
 
 #: ui/ae/axis_action.ui:67
 msgid "Relative to Bottom-Left Corner of Screen"
-msgstr ""
+msgstr "Относительно нижнего левого угла экрана"
 
 #: ui/ae/axis_action.ui:71
 msgid "Relative to Bottom-Right Corner of Screen"
-msgstr ""
+msgstr "Относительно нижнего правого угла экрана"
 
 #: ui/ae/axis_action.ui:79
 msgid "Relative to Top-Left Corner of Active Window"
-msgstr ""
+msgstr "Относительно верхнего левого угла активного окна"
 
 #: ui/ae/axis_action.ui:83
 msgid "Relative to Top-Right Corner of Active Window"
-msgstr ""
+msgstr "Относительно верхнего правого угла активного окна"
 
 #: ui/ae/axis_action.ui:87
 msgid "Relative to Bottom-Left Corner of Active Window"
-msgstr ""
+msgstr "Относительно нижнего левого угла активного окна"
 
 #: ui/ae/axis_action.ui:91
 msgid "Relative to Bottom-Right Corner of Active Window"
-msgstr ""
+msgstr "Относительно нижнего правого угла активного окна"
 
 #: ui/ae/axis_action.ui:109
 msgid "Mouse-like Joystick on LEFT Stick"
-msgstr ""
+msgstr "Джойстик, похожий на мышь, на левом стике"
 
 #: ui/ae/axis_action.ui:114
 msgid "Mouse-like Joystick on RIGHT Stick"
-msgstr ""
+msgstr "Джойстик, похожий на мышь, расположен на правом стике"
 
 #: ui/ae/axis_action.ui:129 ui/ae/gyro_action.ui:28 ui/ae/osk_action.ui:14
 #: ui/ae/special_action.ui:33
 msgid "None"
-msgstr ""
+msgstr "Ничего"
 
 #: ui/ae/axis_action.ui:144
 msgid "Single Button"
-msgstr ""
+msgstr "Одна кнопка"
 
 #: ui/ae/axis_action.ui:149
 msgid "Circular"
-msgstr ""
+msgstr "Круговой"
 
 #: ui/ae/axis_action.ui:179 ui/ae/gyro_action.ui:43
 msgid "Mouse (Emulate Stick)"
-msgstr ""
+msgstr "Мышь (имитация стика)"
 
 #: ui/ae/axis_action.ui:184
 msgid "Mouse (Trackpad or Trackball)"
-msgstr ""
+msgstr "Мышь (трекпад или трекбол)"
 
 #: ui/ae/axis_action.ui:196
 msgid "Output"
-msgstr ""
+msgstr "Вывод"
 
 #: ui/ae/axis_action.ui:242
 msgid "Button"
-msgstr ""
+msgstr "Кнопка"
 
 #: ui/ae/axis_action.ui:272
 msgid "Region Options"
-msgstr ""
+msgstr "Региональные параметры"
 
 #: ui/ae/axis_action.ui:286 ui/menu_editor.ui:87
 msgid "Type"
-msgstr ""
+msgstr "Тип"
 
 #: ui/ae/axis_action.ui:322
 msgid "Coordinates"
-msgstr ""
+msgstr "Координаты"
 
 #: ui/ae/axis_action.ui:345
 msgid "Pressing the Pad Clicks"
-msgstr ""
+msgstr "Нажатие на панель"
 
 #: ui/ae/axis_action.ui:359
 msgid "Display Area While Pad is Being Touched"
-msgstr ""
+msgstr "Область отображения во время касания панели"
 
 #: ui/ae/axis_action.ui:378
 msgid "X1"
-msgstr ""
+msgstr "X1"
 
 #: ui/ae/axis_action.ui:412
 msgid "X2"
-msgstr ""
+msgstr "X2"
 
 #: ui/ae/axis_action.ui:445
 msgid "Y1"
-msgstr ""
+msgstr "Y1"
 
 #: ui/ae/axis_action.ui:479
 msgid "Y2"
-msgstr ""
+msgstr "Y2"
 
 #: ui/ae/axis_action.ui:532
 msgid "Output As"
-msgstr ""
+msgstr "Вывод в виде"
 
 #: ui/ae/axis_action.ui:555
 msgid "<a href=\"advanced://0#cbBallMode\">Setup or disable Trackball Mode</a>"
 msgstr ""
+"<a href=\"advanced://0#cbBallMode\">Настройка или отключение режима "
+"трекбола</a>"
 
 #: ui/ae/axis_action.ui:617
 msgid "Output Axis"
-msgstr ""
+msgstr "Вывод Оси"
 
 #: ui/ae/axis_action.ui:633
 msgid "Output Buttons"
-msgstr ""
+msgstr "Вывод Кнопки"
 
 #: ui/ae/axis.ui:12
 msgid "click on axis or trigger"
-msgstr ""
+msgstr "щелчок по оси или триггеру"
 
 #: ui/ae/buttons.ui:32
 msgid "Toggle Button"
-msgstr ""
+msgstr "Кнопка переключения"
 
 #: ui/ae/buttons.ui:47 ui/macro_editor.ui:18
 msgid "Repeat"
-msgstr ""
+msgstr "Повтор"
 
 #: ui/ae/buttons.ui:71
 msgid "click any button or..."
-msgstr ""
+msgstr "нажмите любую кнопку или..."
 
 #: ui/ae/buttons.ui:82
 msgid "Grab a key"
-msgstr ""
+msgstr "Возьмите ключ"
 
 #: ui/ae/dpad.ui:37 ui/ae/special_action.ui:76 ui/ae/special_action.ui:176
 msgid "(Controller Default)"
-msgstr ""
+msgstr "(По умолчанию контроллера)"
 
 #: ui/ae/dpad.ui:113 ui/ae/special_action.ui:152 ui/controller_settings.ui:104
 msgid "Left Stick Press"
-msgstr ""
+msgstr "Нажмите левый стик"
 
 #: ui/ae/dpad.ui:117 ui/ae/special_action.ui:156 ui/controller_settings.ui:108
 msgid "Right Stick Press"
-msgstr ""
+msgstr "Нажмите правый стик"
 
 #: ui/ae/dpad.ui:121 ui/ae/special_action.ui:160 ui/controller_settings.ui:112
 msgid "Left Pad Press"
-msgstr ""
+msgstr "Нажмите левый пад"
 
 #: ui/ae/dpad.ui:125 ui/ae/special_action.ui:164 ui/controller_settings.ui:116
 msgid "Right Pad Press"
-msgstr ""
+msgstr "Нажмите правый пад"
 
 #: ui/ae/dpad.ui:144 ui/ae/special_action.ui:211
 msgid "From Left"
-msgstr ""
+msgstr "Слева"
 
 #: ui/ae/dpad.ui:148 ui/ae/special_action.ui:215
 msgid "From Right"
-msgstr ""
+msgstr "Справа"
 
 #: ui/ae/dpad.ui:160 ui/ae/special_action.ui:227
 msgid "From Top"
-msgstr ""
+msgstr "Сверху"
 
 #: ui/ae/dpad.ui:164 ui/ae/special_action.ui:231
 msgid "From Bottom"
-msgstr ""
+msgstr "Снизу"
 
 #: ui/ae/dpad.ui:175 ui/ae/special_action.ui:242 ui/ae/tilt.ui:19
 msgid "List"
-msgstr ""
+msgstr "Список"
 
 #: ui/ae/dpad.ui:179 ui/ae/special_action.ui:246 ui/ae/tilt.ui:23
 msgid "Grid"
-msgstr ""
+msgstr "Сетка"
 
 #: ui/ae/dpad.ui:183 ui/ae/special_action.ui:250 ui/ae/tilt.ui:27
 msgid "Radial"
-msgstr ""
+msgstr "Радиальный"
 
 #: ui/ae/dpad.ui:187 ui/ae/special_action.ui:254
 msgid "Horizontal Menu"
-msgstr ""
+msgstr "Горизонтальное меню"
 
 #: ui/ae/dpad.ui:199 ui/ae/tilt.ui:39
 msgid "Simple DPAD"
-msgstr ""
+msgstr "Простой D-пад"
 
 #: ui/ae/dpad.ui:203 ui/ae/tilt.ui:43
 msgid "8-Way DPAD"
-msgstr ""
+msgstr "8-позиционный D-пад"
 
 #: ui/ae/dpad.ui:207 ui/ae/tilt.ui:47
 msgid "WSAD (DPAD)"
-msgstr ""
+msgstr "WSAD (D-пад)"
 
 #: ui/ae/dpad.ui:211 ui/ae/tilt.ui:51
 msgid "Arrows (DPAD)"
-msgstr ""
+msgstr "Стрелки (D-пад)"
 
 #: ui/ae/dpad.ui:215
 msgid "Emulated DPAD"
-msgstr ""
+msgstr "Эмуляция D-пад"
 
 #: ui/ae/dpad.ui:251 ui/ae/dpad.ui:283 ui/ae/dpad.ui:315 ui/ae/dpad.ui:339
 #: ui/ae/dpad.ui:368 ui/ae/dpad.ui:384 ui/ae/dpad.ui:400 ui/ae/dpad.ui:416
@@ -1800,316 +1835,316 @@ msgstr ""
 #: ui/ae/tilt.ui:134 ui/ae/tilt.ui:184 ui/ae/tilt.ui:203 ui/ae/trigger.ui:92
 #: ui/key_grabber.ui:143
 msgid "(...)"
-msgstr ""
+msgstr "(...)"
 
 #: ui/ae/dpad.ui:435
 msgid "Diagonal Range"
-msgstr ""
+msgstr "Диагональный диапазон"
 
 #: ui/ae/dpad.ui:537 ui/ae/menu_only.ui:70 ui/ae/special_action.ui:574
 msgid "_Edit"
-msgstr ""
+msgstr "_Редактировать"
 
 #: ui/ae/dpad.ui:559 ui/ae/special_action.ui:492
 msgid "Menu Type"
-msgstr ""
+msgstr "Тип меню"
 
 #: ui/ae/dpad.ui:642 ui/ae/special_action.ui:599
 msgid "Control Options..."
-msgstr ""
+msgstr "Параметры управления..."
 
 #: ui/ae/dpad.ui:664 ui/ae/special_action.ui:633 ui/controller_settings.ui:517
 msgid "Confirm Button"
-msgstr ""
+msgstr "Кнопка подтверждения"
 
 #: ui/ae/dpad.ui:676 ui/ae/special_action.ui:645 ui/controller_settings.ui:528
 msgid "Cancel Button"
-msgstr ""
+msgstr "Кнопка Отмена"
 
 #: ui/ae/dpad.ui:730
 msgid "Confirm selection when pad is released"
-msgstr ""
+msgstr "Подтвердите выбор после отпускания пада"
 
 #: ui/ae/dpad.ui:749
 msgid "Cancel menu when pad is released"
-msgstr ""
+msgstr "Отмена меню при отпускании пада"
 
 #: ui/ae/dpad.ui:768
 msgid "Confirm selection by clicking the pad"
-msgstr ""
+msgstr "Подтверждение выбора нажатием на пад"
 
 #: ui/ae/dpad.ui:800 ui/ae/special_action.ui:749
 msgid "Menu Position..."
-msgstr ""
+msgstr "Положение в меню..."
 
 #: ui/ae/dpad.ui:913
 msgid "Output Type"
-msgstr ""
+msgstr "Тип вывода"
 
 #: ui/ae/dpad.ui:948 ui/ae/menu_only.ui:95 ui/ae/special_action.ui:859
 msgid "_New Menu"
-msgstr ""
+msgstr "_Новое меню"
 
 #: ui/ae/dpad.ui:955 ui/ae/menu_only.ui:102 ui/ae/special_action.ui:866
 msgid "_Copy Menu"
-msgstr ""
+msgstr "_Копировать меню"
 
 #: ui/ae/dpad.ui:962 ui/ae/menu_only.ui:109 ui/ae/special_action.ui:873
 msgid "_Rename Menu"
-msgstr ""
+msgstr "_Переименовать меню"
 
 #: ui/ae/dpad.ui:969 ui/ae/menu_only.ui:116 ui/ae/special_action.ui:880
 msgid "_Delete Menu"
-msgstr ""
+msgstr "_Удалить меню"
 
 #: ui/ae/gesture.ui:37
 msgid "_Change"
-msgstr ""
+msgstr "_Изменить"
 
 #: ui/ae/gesture.ui:55
 msgid "Ignore Stroke _Length"
-msgstr ""
+msgstr "Игнорировать _длину штриха"
 
 #: ui/ae/gesture.ui:114
 msgid "Start _Over (Y)"
-msgstr ""
+msgstr "Начать _заново (Y)"
 
 #: ui/ae/gesture.ui:136
 msgid "_Use (A)"
-msgstr ""
+msgstr "_Используй (A)"
 
 #: ui/ae/gesture.ui:190
 msgid "Matching Precision"
-msgstr ""
+msgstr "Точность соответствия"
 
 #: ui/ae/gesture.ui:259 ui/ae/osk_action.ui:61 ui/ae/special_action.ui:297
 #: ui/global_settings.ui:2101
 msgid "Action"
-msgstr ""
+msgstr "Действие"
 
 #: ui/ae/gesture.ui:282
 msgid "Edit"
-msgstr ""
+msgstr "Редактировать"
 
 #: ui/ae/gesture.ui:297 ui/menu_editor.ui:146
 msgid "_Remove"
-msgstr ""
+msgstr "_Удалять"
 
 #: ui/ae/gesture.ui:306 ui/menu_editor.ui:157
 msgid "_Add"
-msgstr ""
+msgstr "_Добавить"
 
 #: ui/ae/gyro_action.ui:33
 msgid "Mouse (Desktop)"
-msgstr ""
+msgstr "Мышь (Рабочий стол)"
 
 #: ui/ae/gyro_action.ui:38
 msgid "Mouse (Camera)"
-msgstr ""
+msgstr "Мышь (Камера)"
 
 #: ui/ae/gyro_action.ui:48
 msgid "Right Stick (Camera)"
-msgstr ""
+msgstr "Правый стик (Камера)"
 
 #: ui/ae/gyro_action.ui:53
 msgid "Right Stick (Absolute)"
-msgstr ""
+msgstr "Правый стик (абсолютный)"
 
 #: ui/ae/gyro_action.ui:58
 msgid "Left Stick (Camera)"
-msgstr ""
+msgstr "Левый стик (камера)"
 
 #: ui/ae/gyro_action.ui:63
 msgid "Left Stick (Absolute)"
-msgstr ""
+msgstr "Левый стик (абсолютный)"
 
 #: ui/ae/gyro_action.ui:68
 msgid "CemuHook motion provider"
-msgstr ""
+msgstr "Поставщик управления движением CemuHook"
 
 #: ui/ae/gyro_action.ui:81 ui/ae/gyro.ui:65
 msgid "Yaw"
-msgstr ""
+msgstr "Yaw"
 
 #: ui/ae/gyro_action.ui:99
 msgid "X Axis Controlled by"
-msgstr ""
+msgstr "Ось X управляется"
 
 #: ui/ae/gyro_action.ui:133
 msgid "Output Mode"
-msgstr ""
+msgstr "Режим вывода"
 
 #: ui/ae/gyro_action.ui:204
 msgid "Invert Y Axis"
-msgstr ""
+msgstr "Инвертировать ось Y"
 
 #: ui/ae/gyro_action.ui:224 ui/ae/gyro.ui:224
 msgid "Button disables Gyro"
-msgstr ""
+msgstr "Кнопка отключает гироскоп."
 
 #: ui/ae/gyro.ui:33
 msgid "Pitch"
-msgstr ""
+msgstr "Уклон"
 
 #: ui/ae/gyro.ui:126 ui/ae/gyro.ui:137 ui/ae/gyro.ui:148
 msgid "Absolute"
-msgstr ""
+msgstr "Абсолютный"
 
 #: ui/ae/osk_action.ui:42
 msgid "Press LEFT mouse button"
-msgstr ""
+msgstr "Нажмите левую кнопку мыши"
 
 #: ui/ae/osk_action.ui:46
 msgid "Press RIGHT mouse button"
-msgstr ""
+msgstr "Нажмите правую кнопку мыши"
 
 #: ui/ae/per_axis.ui:18
 msgid "X Axis"
-msgstr ""
+msgstr "Ось X"
 
 #: ui/ae/per_axis.ui:46
 msgid "Y Axis"
-msgstr ""
+msgstr "Ось Y"
 
 #: ui/ae/recent_list.ui:26
 msgid "Number of Profiles to Display"
-msgstr ""
+msgstr "Количество профилей для показа"
 
 #: ui/ae/special_action.ui:37 ui/global_settings.ui:2157
 msgid "Turn Off Controller"
-msgstr ""
+msgstr "Выключить контроллер"
 
 #: ui/ae/special_action.ui:41
 msgid "Change Profile"
-msgstr ""
+msgstr "Изменить профиль"
 
 #: ui/ae/special_action.ui:45
 msgid "Display Menu"
-msgstr ""
+msgstr "Отобразить меню"
 
 #: ui/ae/special_action.ui:49
 msgid "Display On-Screen Keyboard"
-msgstr ""
+msgstr "Показать экранную клавиатуру"
 
 #: ui/ae/special_action.ui:53
 msgid "Show OSD Message"
-msgstr ""
+msgstr "Показать экранное сообщение"
 
 #: ui/ae/special_action.ui:61
 msgid "Recenter gyro sensor"
-msgstr ""
+msgstr "Рецентровка гироскопического датчика"
 
 #: ui/ae/special_action.ui:258
 msgid "Quick Menu"
-msgstr ""
+msgstr "Быстрое меню"
 
 #: ui/ae/special_action.ui:271
 msgid "Smaller"
-msgstr ""
+msgstr "Меньший"
 
 #: ui/ae/special_action.ui:275
 msgid "Small"
-msgstr ""
+msgstr "Маленький"
 
 #: ui/ae/special_action.ui:279
 msgid "Default"
-msgstr ""
+msgstr "По умолчанию"
 
 #: ui/ae/special_action.ui:344
 msgid "Command"
-msgstr ""
+msgstr "Команда"
 
 #: ui/ae/special_action.ui:418
 msgid "Text to Display"
-msgstr ""
+msgstr "Текст для отображения"
 
 #: ui/ae/special_action.ui:435
 msgid "Display Time"
-msgstr ""
+msgstr "Время отображения"
 
 #: ui/ae/special_action.ui:621 ui/controller_settings.ui:487
 msgid "Control Menu With"
-msgstr ""
+msgstr "Меню управления с"
 
 #: ui/ae/special_action.ui:659
 msgid "Confirm selection by releasing the button"
-msgstr ""
+msgstr "Подтвердите выбор, отпустив кнопку"
 
 #: ui/ae/trigger.ui:46
 msgid "Normal"
-msgstr ""
+msgstr "Нормальный"
 
 #: ui/ae/trigger.ui:50
 msgid "Normal - Exclusive Buttons"
-msgstr ""
+msgstr "Обычный - Эксклюзивные кнопки"
 
 #: ui/ae/trigger.ui:54
 msgid "Hip Fire"
-msgstr ""
+msgstr "Навскидку"
 
 #: ui/ae/trigger.ui:58
 msgid "Hip Fire - Exclusive Buttons"
-msgstr ""
+msgstr "Навскидку - эксклюзивные кнопки"
 
 #: ui/ae/trigger.ui:62
 msgid "Hip fire - Sensible"
-msgstr ""
+msgstr "Навскидку - Разумно"
 
 #: ui/ae/trigger.ui:78
 msgid "Partially Pressed Action"
-msgstr ""
+msgstr "Частично нажатое действие"
 
 #: ui/ae/trigger.ui:114
 msgid "Fully Pressed Action"
-msgstr ""
+msgstr "Полностью нажатое действие"
 
 #: ui/ae/trigger.ui:209
 msgid "Analog Output"
-msgstr ""
+msgstr "Аналоговый вывод"
 
 #: ui/ae/trigger.ui:220
 msgid "(disabled)"
-msgstr ""
+msgstr "(отключен)"
 
 #: ui/ae/trigger.ui:260
 msgid "Analog Range Start"
-msgstr ""
+msgstr "Начало аналогового диапазона"
 
 #: ui/ae/trigger.ui:310
 msgid "Analog Range End"
-msgstr ""
+msgstr "Конец аналогового диапазона"
 
 #: ui/ae/trigger.ui:375
 msgid "Fully Pressed Level"
-msgstr ""
+msgstr "Уровень полностью нажат"
 
 #: ui/ae/trigger.ui:407
 msgid "Partially Pressed Level"
-msgstr ""
+msgstr "Частично нажатый уровень"
 
 #: ui/ae/trigger.ui:422
 msgid "Dual Stage Trigger Style"
-msgstr ""
+msgstr "Двухступенчатый механизм курка"
 
 #: ui/ae/trigger.ui:456
 msgid "Hip Fire Delay"
-msgstr ""
+msgstr "Задержка навскидку"
 
 #: ui/app.ui:29
 msgid "Exit"
-msgstr ""
+msgstr "Выход"
 
 #: ui/app.ui:50
 msgid "Activate"
-msgstr ""
+msgstr "Активировать"
 
 #: ui/app.ui:70
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: ui/app.ui:111
 msgid "Save"
-msgstr ""
+msgstr "Сохранять"
 
 #: ui/app.ui:152 ui/app.ui:242
 msgid "Profile name"
@@ -2299,11 +2334,11 @@ msgstr ""
 
 #: ui/creg.ui:166
 msgid "Show All Devices"
-msgstr ""
+msgstr "Показать все устройства"
 
 #: ui/creg.ui:188
 msgid "_Refresh"
-msgstr ""
+msgstr "_Обновить"
 
 #: ui/creg.ui:220
 msgid ""
@@ -2311,14 +2346,17 @@ msgid ""
 "Please, select options that are best describing controller you are "
 "configuring."
 msgstr ""
+"<b>Входные параметры</b>\n"
+"Пожалуйста, выберите параметры, которые наиболее точно описывают "
+"настраиваемый вами контроллер."
 
 #: ui/creg.ui:255
 msgid "Sticks"
-msgstr ""
+msgstr "Стики"
 
 #: ui/creg.ui:270
 msgid "Labels"
-msgstr ""
+msgstr "Метки"
 
 #: ui/creg.ui:362
 msgid ""
@@ -2331,42 +2369,53 @@ msgid ""
 "If anything is assigned incorrectly, click on button on image to (re)assign "
 "physical button to it."
 msgstr ""
+"<b>Сопоставление входных данных</b>\n"
+"\n"
+"Пожалуйста, нажмите все кнопки на контроллере, нажмите каждый триггер как "
+"минимум дважды и переместите каждый стик. Убедитесь, что соответствующие "
+"кнопки, стики и триггеры на изображении мигают синим цветом при каждом "
+"нажатии.\n"
+"\n"
+"Если что-либо назначено неправильно, нажмите на кнопку на изображении, чтобы "
+"(пере)назначить ей физическую кнопку."
 
 #: ui/creg.ui:387
 msgid "Controls shown in red are not assigned."
-msgstr ""
+msgstr "Элементы управления, выделенные красным цветом, не назначены."
 
 #: ui/creg.ui:422
 msgid "Emulate center (guide) button by pressing Back + Start at once"
 msgstr ""
+"Чтобы имитировать нажатие центральной (направляющей) кнопки, одновременно "
+"нажмите кнопки «Назад» и «Старт»"
 
 #: ui/creg.ui:433
 msgid "Invert Axes"
-msgstr ""
+msgstr "Инвертировать оси"
 
 #: ui/creg.ui:445
 msgid "Left stick"
-msgstr ""
+msgstr "Левый стик"
 
 #: ui/creg.ui:456
 msgid "Right stick (right pad)"
-msgstr ""
+msgstr "Правый стик (правая панель)"
 
 #: ui/creg.ui:467
 msgid "DPAD (left pad)"
-msgstr ""
+msgstr "DPAD (левая панель)"
 
 #: ui/creg.ui:550
 msgid "Access Mode"
-msgstr ""
+msgstr "Режим доступа"
 
 #: ui/creg.ui:598
 msgid "Advanced Options"
-msgstr ""
+msgstr "Расширенные параметры"
 
 #: ui/creg.ui:620
 msgid "Display Raw Data"
-msgstr ""
+msgstr "Отображение исходных данных"
 
 #: ui/creg.ui:683
 msgid ""
@@ -2379,6 +2428,17 @@ msgid ""
 "<a href=\"https://github.com/C0rn3j/sc-controller/wiki/Evdev-and-HID-mode-"
 "for-non-steam-controllers\">Click here</a> for more info."
 msgstr ""
+"Предупреждение: для HID-устройства был автоматически выбран режим доступа "
+"evdev.\n"
+"\n"
+"Это означает, что в вашей учетной записи отсутствуют разрешения, необходимые "
+"для эксклюзивного чтения данных с контроллера. Вы по-прежнему можете "
+"использовать контроллер в режиме evdev, но у вас могут возникнуть проблемы с "
+"тем, что некоторые игры будут распознавать его дважды.\n"
+"\n"
+"<a href=\"https://github.com/C0rn3j/sc-controller/wiki/Evdev-and-HID-mode-"
+"for-non-steam-controllers\">Нажмите здесь</a> для получения дополнительной "
+"информации."
 
 #: ui/creg.ui:721
 msgid ""
@@ -2389,10 +2449,16 @@ msgid ""
 "is to make sure that the \"DS4 Controller Support\" checkbox\n"
 "is enabled in the Settings or here:"
 msgstr ""
+"<b>Контроллер DS4</b>\n"
+"\n"
+"Контроллер SC автоматически поддерживает контроллеры DS4.\n"
+"и не требует дополнительной настройки. Всё, что вам нужно.\n"
+"Необходимо убедиться, что установлен флажок \"Поддержка контроллера DS4\".\n"
+"Включена в настройках или здесь:"
 
 #: ui/creg.ui:748
 msgid "_Enable DS4 Controller Support"
-msgstr ""
+msgstr "_Включить поддержку контроллера DS4"
 
 #: ui/creg.ui:763
 msgid ""
@@ -2401,10 +2467,14 @@ msgid ""
 "\"unplug\" virtual gamepad, what may cause them to ignore\n"
 "future inputs or even crash."
 msgstr ""
+"Изменения вступят в силу после перезапуска эмуляции.\n"
+"Если у вас запущены какие-либо игры, перезапуск эмуляции может\n"
+"отключить виртуальный геймпад, что может привести к тому, что они \n"
+"начнут игнорировать будущие входные данные или даже упасть."
 
 #: ui/creg.ui:814
 msgid "_Back"
-msgstr ""
+msgstr "_Назад"
 
 #: ui/creg.ui:824
 msgid "_Next"
