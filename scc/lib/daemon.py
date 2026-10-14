@@ -105,7 +105,7 @@ class Daemon:
 			sys.stderr.write("Overwriting stale pidfile\n")
 
 		# Start the daemon
-		if not foreground:
+		if not foreground and sys.platform != "win32":
 			self.daemonize()
 		else:
 			self.write_pid()
