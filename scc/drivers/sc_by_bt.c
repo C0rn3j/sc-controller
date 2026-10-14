@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <limits.h>
 #include <stdio.h>
+#include <errno.h>
+#include <string.h>
 
 #define SC_BY_BT_MODULE_VERSION 3
 
@@ -118,8 +120,21 @@ static char tmp_buffer[256];
 
 /** Returns 1 if state has changed, 2 on read error */
 int read_input(SCByBtCPtr ptr) {
-	if (read(ptr->fileno, tmp_buffer, PACKET_SIZE) < PACKET_SIZE)
+	ssize_t bytes_read = read(ptr->fileno, tmp_buffer, PACKET_SIZE);
+	if (bytes_read < PACKET_SIZE)
 	{
+		int read_errno = bytes_read < 0 ? errno : 0;
+		fprintf(stderr,
+			"SCBT: input read failed: fd=%d bytes=%zd expected=%d errno=%d (%s) long_packet=%u\n",
+			ptr->fileno, bytes_read, PACKET_SIZE, read_errno,
+			bytes_read < 0 ? strerror(read_errno) : (bytes_read == 0 ? "EOF" : "short report"),
+			(unsigned int)ptr->long_packet);
+		if (bytes_read > 0) {
+			fprintf(stderr, "SCBT: short input report:");
+			for (ssize_t i = 0; i < bytes_read; i++)
+				fprintf(stderr, " %02x", (unsigned int)(uint8_t)tmp_buffer[i]);
+			fprintf(stderr, "\n");
+		}
 		return 2;
 	}
 

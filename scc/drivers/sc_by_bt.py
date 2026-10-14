@@ -248,7 +248,7 @@ class SCByBt(SCController):
 		# For BT controller, index is ignored
 		for x in self._cmsg:
 			# First byte is reserved, following 3 are for PacketType, size and ConfigType
-			if x[0:4] == data[0:4]:
+			if x[1:4] == data[0:3]:
 				self._cmsg.remove(x)
 				break
 		self.send_control(index, data)
