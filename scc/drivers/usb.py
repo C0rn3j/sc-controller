@@ -13,6 +13,7 @@ Callback has to return created (SC?)USBDevice instance or None.
 from __future__ import annotations
 
 import logging
+import os
 import time
 import traceback
 from typing import TYPE_CHECKING
@@ -208,6 +209,7 @@ class USBDriver:
 		self._started: bool = False
 		self._retry_devices = []
 		self._retry_devices_timer = 0
+		self._flatpak_rescan_timer = 0
 		self._ctx: USBContext | None = None  # Set by start method
 		self._changed: int = 0
 
@@ -244,6 +246,8 @@ class USBDriver:
 		handle = None
 		if tp not in self._known_ids:
 			return None
+		if syspath in self._syspaths:
+			return True
 		bus, dev = self.daemon.get_device_monitor().get_usb_address(syspath)
 		for device in self._ctx.getDeviceIterator():
 			if (bus, dev) == (device.getBusNumber(), device.getDeviceAddress()):
@@ -322,6 +326,10 @@ class USBDriver:
 			log.debug("Unregistred USB driver for %.4x:%.4x", vendor_id, product_id)
 
 	def mainloop(self) -> None:
+		if os.path.exists("/.flatpak-info") and time.monotonic() >= self._flatpak_rescan_timer:
+			self._flatpak_rescan_timer = time.monotonic() + 1.0
+			self._rescan_flatpak_usb()
+
 		if self._changed > 0:
 			self._ctx.handleEventsTimeout()
 			self._changed = 0
@@ -339,6 +347,39 @@ class USBDriver:
 				lst, self._retry_devices = self._retry_devices, []
 				for syspath, (vendor, product) in lst:
 					self.handle_new_device(syspath, vendor, product)
+
+	def _rescan_flatpak_usb(self) -> None:
+		"""Discover USB devices without relying on udev hotplug events."""
+		if self._ctx is None:
+			return
+		available = {
+			(device.getBusNumber(), device.getDeviceAddress()): (device.getVendorID(), device.getProductID())
+			for device in self._ctx.getDeviceIterator(skip_on_error=True)
+		}
+		for syspath in tuple(self._syspaths):
+			try:
+				address = self.daemon.get_device_monitor().get_usb_address(syspath)
+			except OSError:
+				address = None
+			if address not in available:
+				device = self._syspaths[syspath]
+				self.handle_removed_device(syspath, device.getVendorID(), device.getProductID())
+
+		for name in os.listdir("/sys/bus/usb/devices"):
+			syspath = os.path.realpath(os.path.join("/sys/bus/usb/devices", name))
+			if syspath in self._syspaths:
+				continue
+			try:
+				address = self.daemon.get_device_monitor().get_usb_address(syspath)
+				with open(os.path.join(syspath, "idVendor")) as vendor_file:
+					vendor = int(vendor_file.read().strip(), 16)
+				with open(os.path.join(syspath, "idProduct")) as product_file:
+					product = int(product_file.read().strip(), 16)
+			except (OSError, ValueError):
+				continue
+			if (vendor, product) in self._known_ids and available.get(address) == (vendor, product):
+				log.debug("Found USB device during Flatpak rescan: %.4x:%.4x", vendor, product)
+				self.handle_new_device(syspath, vendor, product)
 
 
 # USBDriver should be process-wide singleton
