@@ -27,13 +27,17 @@ TODO(Martin): Remove constants from profile.py and controller_widget.py and move
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import logging
 from enum import IntEnum, IntFlag, StrEnum
 from importlib.metadata import packages_distributions, version
 from typing import Literal
 
 distribution_name: str = "N/A"
-if __package__ is not None:
-	distribution_name = packages_distributions()[__package__][0]
+try:
+	if __package__ is not None:
+		distribution_name = packages_distributions()[__package__][0]
+except Exception:
+	logging.exception("Failure getting distribution name")
 
 class SCLeftRight(StrEnum):
 	"""Simply LEFT or RIGHT
@@ -138,7 +142,7 @@ class ControllerFlags(IntFlag):
 	# Left and right touchpads have circular input areas
 	LPAD_RPAD_IS_CIRCLE = 1 << 7
 
-DAEMON_VERSION = version(distribution_name)
+DAEMON_VERSION = "0.5.3"
 
 HPERIOD  = 0.02
 LPERIOD  = 0.5

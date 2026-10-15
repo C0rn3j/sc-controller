@@ -12,6 +12,7 @@ import os
 import platform
 import re
 import sys
+from pathlib import Path
 from typing import TYPE_CHECKING
 from urllib.parse import unquote
 
@@ -20,6 +21,7 @@ gi.require_version("Gio", "2.0")
 gi.require_version("GLib", "2.0")
 gi.require_version("GObject", "2.0")
 gi.require_version("Gtk", "4.0")
+
 from gi.repository import Gdk, Gio, GLib, GObject, Gtk
 
 from scc.actions import NoAction
@@ -110,8 +112,9 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		# Set variables
 		self._profile_menu_ps: ProfileSwitcher | None = None
 		self.config = Config()
-		self.gladepath = gladepath
-		self.imagepath = imagepath
+		app_py_directory = Path(__file__).resolve().parent
+		self.gladepath = gladepath if Path(gladepath).exists() else str(app_py_directory.parent.parent / "glade")
+		self.imagepath = imagepath if Path(imagepath).exists() else str(app_py_directory.parent.parent / "images")
 		self.builder = None
 		self.recursing = False
 		self.statusicon = None
