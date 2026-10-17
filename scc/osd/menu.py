@@ -504,11 +504,9 @@ class Menu(OSDWindow):
 				break
 			if i >= len(self.items):
 				i = 0
-				GLib.timeout_add(1, self._check_on_screen_position, True)
 				continue
 			if i < 0:
 				i = len(self.items) - 1
-				GLib.timeout_add(1, self._check_on_screen_position, True)
 				continue
 			if self.select(i):
 				# Not a separator

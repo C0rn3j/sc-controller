@@ -101,9 +101,6 @@ class QuickMenu(Menu):
 		self.argparser.add_argument("--print-items", action="store_true", help="prints menu items to stdout")
 		self.argparser.add_argument("items", type=str, nargs="*", metavar="id title", help="Menu items")
 
-	def _check_on_screen_position(self, quick=False):
-		pass
-
 	def lock_inputs(self):
 		def success(*a):
 			log.error("Sucessfully locked input")
