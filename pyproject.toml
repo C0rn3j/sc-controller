@@ -60,7 +60,7 @@ packages = [
 	"scc",
 	"scc.bin",
 	"scc.drivers",
-	#"scc.drivers.linux",
+	"scc.drivers.linux",
 	#"scc.drivers.windows",
 	#"scc.drivers.macos",
 	"scc.lib",

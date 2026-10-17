@@ -22,7 +22,7 @@ import usb1
 if TYPE_CHECKING:
 	from usb1 import USBContext, USBDevice, USBDeviceHandle, USBTransfer
 
-	from scc.drivers.hiddrv import HIDDrvFakeDaemon
+	from scc.drivers.linux.hiddrv import HIDDrvFakeDaemon
 	from scc.sccdaemon import SCCDaemon
 
 log = logging.getLogger("USB")

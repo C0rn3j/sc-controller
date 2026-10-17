@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""SC-Controller goes through all modules in scc.drivers package and calls
+"""SC Controller goes through all modules in scc.drivers package and calls
+
 init(daemon) methods from every module that defines it.
 
 Drivers then can use daemon.add_mainloop() method to add code that should
@@ -15,6 +15,6 @@ Assigning Mapper to Controller is handled by daemon.
 MOD_INIT_ORDER = (
 	# Modules mentioned here are initialized before everything else, in this exact order.
 	"scc.drivers.usb",
-	"scc.drivers.evdevdrv",
-	"scc.drivers.hiddrv",
+	"scc.drivers.linux.evdevdrv",
+	"scc.drivers.linux.hiddrv",
 )
