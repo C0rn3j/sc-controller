@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
-"""SC-Controller - Action Editor - Tilt
+"""SC Controller - Action Editor - Tilt
 
 Setups DPAD emulation or menu display
 """
 
 import logging
+import os
 
 from scc.actions import Action, NoAction, TiltAction
 from scc.gui.ae import AEComponent, describe_action
@@ -27,6 +27,11 @@ class TiltComponent(AEComponent, BindingEditor):
 		BindingEditor.__init__(self, app)
 		self._recursing = False
 		self.actions = [NoAction()] * 6
+
+	def load(self) -> None:
+		if not AEComponent.load(self):
+			return
+		self.builder.get_object("image1").set_filename(os.path.join(self.app.imagepath, "controller-side.svg"))
 
 	def set_action(self, mode, action):
 		if isinstance(action, TiltAction):

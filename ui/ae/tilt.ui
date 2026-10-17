@@ -149,8 +149,8 @@
           </object>
         </child>
         <child>
-          <object class="GtkImage" id="image1">
-            <property name="file">../../images/controller-side.svg</property>
+          <object class="GtkPicture" id="image1">
+            <property name="can-shrink">false</property>
             <property name="margin-end">10</property>
             <property name="margin-start">10</property>
             <layout>
