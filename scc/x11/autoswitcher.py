@@ -8,6 +8,7 @@ import logging
 import os
 import re
 import socket
+import sys
 import threading
 import time
 
@@ -319,8 +320,8 @@ class AutoswitchOptsMenuGenerator(MenuGenerator):
 
 	def generate(self, menuhandler) -> list[MenuItem]:
 		rv: list[MenuItem] = []
-		if os.environ.get("WAYLAND_DISPLAY"):
-			rv.append(self.mk_item(None, _("Autoswitch is not currently supported in Wayland")))
+		if sys.platform != "linux" or not getattr(menuhandler, "xdisplay", None) or os.environ.get("WAYLAND_DISPLAY"):
+			rv.append(self.mk_item(None, _("Autoswitch currently requires an X11 display on Linux")))
 			return rv
 
 		win = X.get_current_window(menuhandler.xdisplay)

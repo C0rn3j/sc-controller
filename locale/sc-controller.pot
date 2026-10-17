@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sc-controller\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-14 21:10+0200\n"
+"POT-Creation-Date: 2026-10-17 20:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -80,7 +80,7 @@ msgstr ""
 msgid "Recenter Gyro"
 msgstr ""
 
-#: scc/actions.py:1391 scc/gui/ae/tilt.py:52
+#: scc/actions.py:1391 scc/gui/ae/tilt.py:57
 msgid "Tilt"
 msgstr ""
 
@@ -442,7 +442,7 @@ msgstr ""
 msgid "forever"
 msgstr ""
 
-#: scc/gui/ae/tilt.py:70
+#: scc/gui/ae/tilt.py:75
 msgid "Select Tilt Action"
 msgstr ""
 
@@ -1089,7 +1089,7 @@ msgstr ""
 msgid "Run"
 msgstr ""
 
-#: scc/osd/menu_generators.py:46 scc/x11/autoswitcher.py:318
+#: scc/osd/menu_generators.py:46 scc/x11/autoswitcher.py:319
 msgid "[ All Profiles ]"
 msgstr ""
 
@@ -1206,73 +1206,73 @@ msgstr ""
 msgid "CemuHook"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:154
+#: scc/x11/autoswitcher.py:155
 msgid "Switched to profile"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:230
+#: scc/x11/autoswitcher.py:231
 #, python-format
 msgid "title contains '%s'"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:232
+#: scc/x11/autoswitcher.py:233
 #, python-format
 msgid "title is '%s'"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:234
+#: scc/x11/autoswitcher.py:235
 #, python-format
 msgid "title matches '%s'"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:236
+#: scc/x11/autoswitcher.py:237
 #, python-format
 msgid "class is '%s'"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:238
+#: scc/x11/autoswitcher.py:239
 msgid " and "
 msgstr ""
 
-#: scc/x11/autoswitcher.py:239
+#: scc/x11/autoswitcher.py:240
 msgid "matches nothing"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:323
-msgid "Autoswitch is not currently supported in Wayland"
+#: scc/x11/autoswitcher.py:324
+msgid "Autoswitch currently requires an X11 display on Linux"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:329
+#: scc/x11/autoswitcher.py:330
 msgid "No active window"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:330 ui/app.ui:91
+#: scc/x11/autoswitcher.py:331 ui/app.ui:91
 msgid "Close"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:344
+#: scc/x11/autoswitcher.py:345
 msgid "No Title"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:345
+#: scc/x11/autoswitcher.py:346
 #, python-format
 msgid "Current Window: %s"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:347
+#: scc/x11/autoswitcher.py:348
 #, python-format
 msgid "Assigned Profile: %s"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:349
+#: scc/x11/autoswitcher.py:350
 msgid "No Profile Assigned"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:354
+#: scc/x11/autoswitcher.py:355
 msgid "Unassign Profile"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:355
+#: scc/x11/autoswitcher.py:356
 msgid "Assign Current Profile"
 msgstr ""
 
