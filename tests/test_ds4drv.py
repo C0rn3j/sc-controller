@@ -4,7 +4,7 @@ from unittest.mock import Mock
 
 from scc.constants import HapticPos
 from scc.controller import HapticData
-from scc.drivers.ds4drv import (
+from scc.drivers.linux.ds4drv import (
 	DS4_BT_OUTPUT_CRC_SEED,
 	DS4_BT_OUTPUT_HW_CONTROL,
 	DS4_BT_OUTPUT_REPORT_ID,
@@ -19,7 +19,7 @@ from scc.drivers.ds4drv import (
 	DS4EvdevController,
 	DS4USBController,
 )
-from scc.drivers.hiddrv import AxisMode, AxisType, HIDControllerInput
+from scc.drivers.linux.hiddrv import AxisMode, AxisType, HIDControllerInput
 
 
 def test_hid_state_and_ds4_decoder_use_dedicated_right_stick() -> None:

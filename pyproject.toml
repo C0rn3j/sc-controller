@@ -21,6 +21,8 @@ classifiers = [
 requires-python = ">=3.12"
 dependencies = [
 	"evdev; sys_platform == 'linux'",
+	"hidapi; sys_platform != 'linux'",
+	"vgamepad; sys_platform == 'win32'",
 	# Vendored, dep check disabled until a rename happens in v1.3+ to avoid failing a `pip check` run
 	#"hidraw-pure",
 	"ioctl-opt",
@@ -60,6 +62,9 @@ packages = [
 	"scc",
 	"scc.bin",
 	"scc.drivers",
+	"scc.drivers.linux",
+	#"scc.drivers.windows",
+	#"scc.drivers.macos",
 	"scc.lib",
 	"scc.x11",
 	"scc.osd",

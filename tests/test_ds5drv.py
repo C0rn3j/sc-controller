@@ -2,8 +2,8 @@ from unittest.mock import Mock, call, patch
 
 from scc.constants import DUALSENSE_CPAD_X_MAX, DUALSENSE_CPAD_Y_MAX, STICK_PAD_MAX, STICK_PAD_MIN, HapticPos
 from scc.controller import HapticData
-from scc.drivers import ds5drv
-from scc.drivers.hiddrv import AxisMode, AxisType
+from scc.drivers.linux import ds5drv
+from scc.drivers.linux.hiddrv import AxisMode, AxisType
 
 
 def test_dualsense_decoders_use_dedicated_dpad_axes() -> None:

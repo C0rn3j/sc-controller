@@ -5,8 +5,26 @@
 #include <limits.h>
 #define CLAMP(min, x, max) x
 
+#ifdef _WIN32
+	#define HIDDRV_API __declspec(dllexport)
+#else
+	#define HIDDRV_API
+#endif
+
 #define HIDDRV_MODULE_VERSION 8
 PyObject* module;
+static struct PyModuleDef libhiddrv_module = {
+	PyModuleDef_HEAD_INIT,
+	"libhiddrv",
+	NULL,
+	-1,
+	NULL,
+};
+
+PyMODINIT_FUNC PyInit_libhiddrv(void)
+{
+	return PyModule_Create(&libhiddrv_module);
+}
 
 #define AXIS_COUNT 24
 #define BUTTON_COUNT 32
@@ -151,7 +169,7 @@ static int grab_with_size(const uint8_t size, const char* data, const size_t byt
 }
 
 
-bool decode(struct HIDDecoder* dec, const char* data) {
+HIDDRV_API bool decode(struct HIDDecoder* dec, const char* data) {
 	size_t i;
 	memcpy(&(dec->old_state), &(dec->state), sizeof(struct HIDControllerInput));
 	dec->state.buttons = 0;

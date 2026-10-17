@@ -5,6 +5,11 @@
 #include "Python.h"
 #include <stdbool.h>
 #include <stdint.h>
+#ifdef _WIN32
+	#include <winsock2.h>
+#else
+	#include <time.h>
+#endif
 
 #define LERROR(fmt, ...) do { fprintf(stderr, "E " LOG_TAG " " fmt, ##__VA_ARGS__); fprintf(stderr, "\n"); fflush(stderr); } while(0)
 #define WARN(fmt, ...) do { fprintf(stderr, "W " LOG_TAG " " fmt, ##__VA_ARGS__); fprintf(stderr, "\n"); fflush(stderr); } while(0)
@@ -15,8 +20,11 @@ typedef uint64_t monotime_t;
 
 /** Returns current value of CLOCK_MONOTONIC converted to number of milliseconds */
 inline static uint64_t mono_time_ms() {
+#ifdef _WIN32
+	return GetTickCount64();
+#else
 	static struct timespec t;
 	clock_gettime(CLOCK_MONOTONIC, &t);
 	return t.tv_sec * 1000 + (t.tv_nsec / 10e5);
+#endif
 }
-

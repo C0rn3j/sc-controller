@@ -2,8 +2,8 @@ import time
 from typing import NamedTuple
 
 from scc.constants import RSTICK, STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons, SCPads
-from scc.drivers.evdevdrv import EvdevControllerInput
 from scc.drivers.fake import FakeController
+from scc.drivers.linux.evdevdrv import EvdevControllerInput
 from scc.mapper import Mapper
 from scc.parser import ActionParser
 from scc.profile import Profile

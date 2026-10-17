@@ -4,8 +4,8 @@ Extends HID driver with DS4-specific options.
 """
 from __future__ import annotations
 
-import ctypes
 import colorsys
+import ctypes
 import logging
 import os
 import struct
@@ -30,7 +30,7 @@ except ImportError:
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, HapticPos, SCButtons
 from scc.controller import Controller
-from scc.drivers.evdevdrv import (
+from scc.drivers.linux.evdevdrv import (
 	HAVE_EVDEV,
 	EvdevController,
 	get_axes,
@@ -39,7 +39,7 @@ from scc.drivers.evdevdrv import (
 	make_new_device,
 	ungrab_evdev_nodes,
 )
-from scc.drivers.hiddrv import (
+from scc.drivers.linux.hiddrv import (
 	BUTTON_COUNT,
 	AxisData,
 	AxisDataUnion,

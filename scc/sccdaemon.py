@@ -14,6 +14,7 @@ import threading
 import time
 import traceback
 from ctypes import CDLL
+from importlib import import_module
 from socketserver import StreamRequestHandler, ThreadingMixIn
 
 if sys.platform == "win32":
@@ -129,7 +130,11 @@ class SCCDaemon(Daemon):
 		self._glib_context: GLib.MainContext | None = None
 
 	def _poll(self) -> None:
-		self.poller.poll(self.scheduler.get_poll_timeout())
+		# HIDAPI has no selectable handle on Windows, so Windows controller
+		# drivers are serviced by the main loop. A 10 ms wait here made the
+		# virtual controller visibly lag behind the physical controller.
+		maximum = 0.001 if sys.platform == "win32" else 0.01
+		self.poller.poll(self.scheduler.get_poll_timeout(maximum))
 
 	def init_sleep_monitor(self) -> None:
 		"""Listen for systemd-logind suspend notifications."""
@@ -190,11 +195,27 @@ class SCCDaemon(Daemon):
 		cfg = Config()
 		self._to_start = set()  # del-eted later by start_drivers
 		to_init = []
-		for importer, modname, ispkg in pkgutil.walk_packages(path=drivers.__path__, onerror=lambda x: None):
+		platform_dir = {"linux": "linux", "win32": "windows", "darwin": "macos"}.get(sys.platform)
+		if platform_dir is None:
+			raise OSError(f"Unsupported platform {sys.platform}!")
+		# Load shared modules from the root dir and platform-specific ones from platform dir
+		locations = [(drivers.__path__, "scc.drivers.")]
+		locations.append((
+			[os.path.join(path, platform_dir) for path in drivers.__path__],
+			f"scc.drivers.{platform_dir}.",
+		))
+		modules = (
+			module
+			for paths, prefix in locations
+			for module in pkgutil.iter_modules(paths, prefix)
+		)
+		for _importer, module_name, ispkg in modules:
+			modname = module_name.rsplit(".", 1)[-1]
 			if not ispkg and modname != "driver":
-				if modname == "usb" or cfg["drivers"].get(modname):
+				enabled = cfg["drivers"].get(modname)
+				if modname == "usb" or enabled:
 					# 'usb' driver has to be always active
-					mod = getattr(__import__(f"scc.drivers.{modname}").drivers, modname)
+					mod = import_module(module_name)
 					if hasattr(mod, "init"):
 						to_init.append(mod)
 				else:

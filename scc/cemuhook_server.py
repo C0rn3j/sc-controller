@@ -7,7 +7,7 @@ by 'cemuhook' actions to them.
 import logging
 import os
 import socket
-from ctypes import c_bool, c_char_p, c_float, c_int, c_size_t, create_string_buffer
+from ctypes import c_bool, c_char_p, c_float, c_int, c_size_t
 from datetime import datetime, timedelta
 from enum import IntEnum
 from threading import Thread
@@ -41,10 +41,10 @@ class CemuhookServer:
 
 	def __init__(self, daemon):
 		self._lib: CDLL = find_library("libcemuhook")
-		self._lib.cemuhook_data_received.argtypes = [c_int, c_char_p, c_int, c_char_p, c_size_t]
+		self._lib.cemuhook_data_received.argtypes = [c_size_t, c_char_p, c_int, c_char_p, c_size_t]
 		self._lib.cemuhook_data_received.restype = None
-		self._lib.cemuhook_feed.argtypes = [c_int, c_int, CemuhookServer.C_DATA_T]
-		self._lib.cemuhook_feed.restype = None
+		self._lib.cemuhook_feed.argtypes = [c_size_t, c_int, CemuhookServer.C_DATA_T]
+		self._lib.cemuhook_feed.restype = c_bool
 		self._lib.cemuhook_socket_enable.argtypes = []
 		self._lib.cemuhook_socket_enable.restype = c_bool
 		self.last_signal: datetime = datetime.now()
@@ -53,7 +53,8 @@ class CemuhookServer:
 			raise OSError("cemuhook_socket_enable failed")
 
 		self.socket: socket.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-		self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		if os.name != "nt":
+			self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 		poller = daemon.get_poller()
 		daemon.poller.register(self.socket.fileno(), poller.POLLIN, self.on_data_received)
@@ -63,7 +64,7 @@ class CemuhookServer:
 		self.socket.bind((server_ip, server_port))
 		log.info("Created CemuHookUDP Motion Provider")
 
-		Thread(target=self._keepalive).start()
+		Thread(target=self._keepalive, daemon=True).start()
 
 	def _keepalive(self):
 		while True:

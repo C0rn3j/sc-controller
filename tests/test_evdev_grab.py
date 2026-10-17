@@ -1,8 +1,6 @@
-import os
-
 import pytest
 
-from scc.drivers import evdevdrv
+from scc.drivers.linux import evdevdrv
 
 
 class FakeDevice:

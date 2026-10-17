@@ -13,6 +13,7 @@ Callback has to return created (SC?)USBDevice instance or None.
 from __future__ import annotations
 
 import logging
+import sys
 import time
 import traceback
 from typing import TYPE_CHECKING
@@ -22,7 +23,7 @@ import usb1
 if TYPE_CHECKING:
 	from usb1 import USBContext, USBDevice, USBDeviceHandle, USBTransfer
 
-	from scc.drivers.hiddrv import HIDDrvFakeDaemon
+	from scc.drivers.linux.hiddrv import HIDDrvFakeDaemon
 	from scc.sccdaemon import SCCDaemon
 
 log = logging.getLogger("USB")
@@ -224,6 +225,10 @@ class USBDriver:
 
 	def start(self) -> None:
 		self._ctx = usb1.USBContext()
+		if sys.platform == "win32":
+			# Windows libusb uses its own event handling rather than POSIX pollable file descriptors
+			self._started = True
+			return
 
 		def fd_cb(*a) -> None:
 			self._changed += 1
@@ -322,7 +327,9 @@ class USBDriver:
 			log.debug("Unregistred USB driver for %.4x:%.4x", vendor_id, product_id)
 
 	def mainloop(self) -> None:
-		if self._changed > 0:
+		if sys.platform == "win32":
+			self._ctx.handleEventsTimeout(tv=0)
+		elif self._changed > 0:
 			self._ctx.handleEventsTimeout()
 			self._changed = 0
 
