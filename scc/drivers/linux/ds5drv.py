@@ -4,8 +4,8 @@ Extends HID driver with DS5-specific options.
 """
 from __future__ import annotations
 
-import ctypes
 import colorsys
+import ctypes
 import logging
 import math
 import os
@@ -40,7 +40,7 @@ from scc.constants import (
 	SCButtons,
 )
 from scc.controller import Controller
-from scc.drivers.evdevdrv import (
+from scc.drivers.linux.evdevdrv import (
 	HAVE_EVDEV,
 	EvdevController,
 	get_axes,
@@ -49,7 +49,7 @@ from scc.drivers.evdevdrv import (
 	make_new_device,
 	ungrab_evdev_nodes,
 )
-from scc.drivers.hiddrv import (
+from scc.drivers.linux.hiddrv import (
 	BUTTON_COUNT,
 	AxisData,
 	AxisDataUnion,

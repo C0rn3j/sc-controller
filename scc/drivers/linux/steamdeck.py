@@ -16,7 +16,7 @@ from enum import IntEnum
 from typing import TYPE_CHECKING
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons
-from scc.drivers.sc_dongle import SCController, SCPacketType
+from scc.drivers.linux.sc_dongle import SCController, SCPacketType
 from scc.drivers.usb import SCUSBDevice, register_hotplug_device
 
 if TYPE_CHECKING:

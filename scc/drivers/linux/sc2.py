@@ -33,7 +33,7 @@ import usb1
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, HapticPos, SCButtons
 from scc.controller import HapticData
-from scc.drivers.sc_dongle import SCController, SCPacketType
+from scc.drivers.linux.sc_dongle import SCController, SCPacketType
 from scc.drivers.usb import SCUSBDevice, register_hotplug_device
 
 if TYPE_CHECKING:

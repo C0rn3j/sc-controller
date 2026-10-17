@@ -7,7 +7,15 @@ or captured data is required. These lock the reverse-engineered byte/bit layout.
 import struct
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, HapticPos, SCButtons
-from scc.drivers.sc2 import PAD_CLICK_PRESS, PAD_CLICK_RELEASE, SC2Controller, TURNOFF_QUIET_PERIOD, SC2Controller, SC2Device, SCPacketType, parse_input
+from scc.drivers.linux.sc2 import (
+	PAD_CLICK_PRESS,
+	PAD_CLICK_RELEASE,
+	TURNOFF_QUIET_PERIOD,
+	SC2Controller,
+	SC2Device,
+	SCPacketType,
+	parse_input,
+)
 
 
 def _frame(

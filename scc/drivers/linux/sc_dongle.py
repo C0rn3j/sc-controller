@@ -21,10 +21,10 @@ from scc.drivers.usb import SCUSBDevice, register_hotplug_device
 if TYPE_CHECKING:
 	from usb1 import USBDevice, USBDeviceHandle
 
-	from scc.drivers.sc2 import SC2Device
-	from scc.drivers.sc_by_bt import SCByBt
-	from scc.drivers.sc_by_cable import SCByCable
-	from scc.drivers.steamdeck import Deck
+	from scc.drivers.linux.sc2 import SC2Device
+	from scc.drivers.linux.sc_by_bt import SCByBt
+	from scc.drivers.linux.sc_by_cable import SCByCable
+	from scc.drivers.linux.steamdeck import Deck
 	from scc.sccdaemon import SCCDaemon
 
 class ControllerInput(NamedTuple):

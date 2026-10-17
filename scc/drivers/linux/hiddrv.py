@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons
 from scc.controller import Controller
 from scc.device_config import load_device_config
-from scc.drivers.evdevdrv import FIRST_BUTTON, TRIGGERS, parse_axis
+from scc.drivers.linux.evdevdrv import FIRST_BUTTON, TRIGGERS, parse_axis
 from scc.drivers.usb import (
 	SCUSBDevice,
 	register_hotplug_device,
