@@ -338,7 +338,7 @@ class Keyboard(OSDWindow, TimerManager):
 		Action.register_all(sys.modules["scc.osd.osk_actions"], prefix="OSK")
 		self.profile = Profile(TalkingActionParser())
 		self.config = config or Config()
-		if isinstance(Gdk.Display.get_default(), GdkX11.X11Display):
+		if sys.platform == "linux" and isinstance(self.display, GdkX11.X11Display):
 			from scc.x11 import get_xdisplay
 
 			self.x11_dpy = get_xdisplay()

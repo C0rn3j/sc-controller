@@ -7,8 +7,7 @@ def sigint(*a):
 	print("\n*break*")
 	sys.exit(0)
 
-
-if __name__ == "__main__":
+def main():
 	signal.signal(signal.SIGINT, sigint)
 
 	from scc.tools import init_logging
@@ -22,3 +21,6 @@ if __name__ == "__main__":
 		sys.exit(1)
 	k.run()
 	sys.exit(k.get_exit_code())
+
+if __name__ == "__main__":
+	main()
