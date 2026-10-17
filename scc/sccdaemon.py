@@ -330,7 +330,7 @@ class SCCDaemon(Daemon):
 			try:
 				client.wfile.write(message_str)
 			except Exception:
-				pass
+				log.exception("Failed to send message")
 
 	def on_sa_turnoff(self, mapper: Mapper, action: TurnOffAction) -> None:
 		"""Called when 'turnoff' action is used"""
@@ -359,8 +359,7 @@ class SCCDaemon(Daemon):
 		gd = None
 		with self.lock:
 			if action.osd_enabled and self.osd_daemon:
-				# When OSD is enabled, gesture detection is handled
-				# by scc-osd-daemon.
+				# When OSD is enabled, gesture detection is handled by scc-osd-daemon
 				self.osd_daemon.gesture_action = action
 				self._osd("gesture", "--controller", mapper.get_controller().get_id(), "--control-with", what)
 				log.debug("Gesture detection request sent to scc-osd-daemon")
@@ -509,8 +508,8 @@ class SCCDaemon(Daemon):
 		self.subprocs = []
 		sys.exit(0)
 
-	def connect_x(self) -> None:
-		"""Creates connection to X Server"""
+	def connect_linux_display(self) -> None:
+		"""Create a connection to X11/Xwayland, or set up Layer Shell"""
 		if "WAYLAND_DISPLAY" in os.environ:
 			# gtk4-layer-shell must be loaded before GTK imports libwayland-client
 			CDLL("libgtk4-layer-shell.so")
@@ -748,7 +747,10 @@ class SCCDaemon(Daemon):
 		self.load_default_profile()
 		self.lock.acquire()
 		self.start_listening()
-		self.connect_x()
+		if sys.platform == "linux":
+			self.connect_linux_display()
+		else:
+			self.subprocs.append(Subprocess("scc-osd-daemon", True))
 		self.lock.release()
 		self.start_drivers()
 		self.dev_monitor.rescan()
