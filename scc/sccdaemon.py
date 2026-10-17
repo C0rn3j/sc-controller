@@ -525,7 +525,8 @@ class SCCDaemon(Daemon):
 						"Wayland detected. Disabling X11 support, some functionality will be unavailable",
 					)
 					self.xdisplay = None
-					self.subprocs.append(Subprocess("scc-osd-daemon", True))
+					if not self.alone:
+						self.subprocs.append(Subprocess("scc-osd-daemon", True))
 					return
 			except (ImportError, ValueError):
 				pass
@@ -749,7 +750,7 @@ class SCCDaemon(Daemon):
 		self.start_listening()
 		if sys.platform == "linux":
 			self.connect_linux_display()
-		else:
+		elif not self.alone:
 			self.subprocs.append(Subprocess("scc-osd-daemon", True))
 		self.lock.release()
 		self.start_drivers()
