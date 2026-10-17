@@ -208,7 +208,8 @@ class SCCDaemon(Daemon):
 		for _importer, module_name, ispkg in modules:
 			modname = module_name.rsplit(".", 1)[-1]
 			if not ispkg and modname != "driver":
-				if modname == "usb" or cfg["drivers"].get(modname):
+				enabled = cfg["drivers"].get(modname)
+				if modname == "usb" or enabled:
 					# 'usb' driver has to be always active
 					mod = import_module(module_name)
 					if hasattr(mod, "init"):
