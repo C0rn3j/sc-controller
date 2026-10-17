@@ -14,7 +14,7 @@ from ioctl_opt import IOR
 from scc.lib.eudevmonitor import Eudev, Monitor
 
 if TYPE_CHECKING:
-	from scc.drivers.hiddrv import HIDDrvFakeDaemon
+	from scc.drivers.linux.hiddrv import HIDDrvFakeDaemon
 	from scc.sccdaemon import SCCDaemon
 import ctypes
 import fcntl

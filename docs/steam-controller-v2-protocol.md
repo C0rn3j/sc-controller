@@ -118,7 +118,7 @@ Notes:
 - Unknown bits remaining: off5 `0x40`, off5 `0x80` (may be unused or rare
   inputs not present/triggered on the test unit).
 
-## Comparison to the Steam Deck (`scc/drivers/steamdeck.py`)
+## Comparison to the Steam Deck (`scc/drivers/linux/steamdeck.py`)
 
 Same *field set* as `DeckInput`, but a **different, more compact byte layout**:
 
@@ -147,7 +147,7 @@ controller. Commands are USB control transfers — **`SET_REPORT`**
 
 Payload layout: `[reportID, packetType, length, params… , 0-pad to 64]` — the
 same shape as the v1/Deck command packets. The `packetType` opcodes match
-`SCPacketType` in `scc/drivers/sc_dongle.py`:
+`SCPacketType` in `scc/drivers/linux/sc_dongle.py`:
 
 | Opcode | Name | Observed | Meaning |
 |---|---|---|---|

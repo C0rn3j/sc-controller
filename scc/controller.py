@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from scc.constants import HapticPos
 
 if TYPE_CHECKING:
-	from scc.drivers.hiddrv import HIDDecoder
+	from scc.drivers.linux.hiddrv import HIDDecoder
 	from scc.mapper import Mapper
 
 log = logging.getLogger("SCController")

@@ -59,7 +59,7 @@ def cmd_test_evdev(argv0: str, argv: list[str]) -> int:
 	  1 - invalid arguments or other error
 	  2 - failed to open device
 	"""
-	from scc.drivers.evdevdrv import evdevdrv_test
+	from scc.drivers.linux.evdevdrv import evdevdrv_test
 
 	return evdevdrv_test(argv)
 
@@ -75,7 +75,12 @@ def cmd_test_hid(argv0: str, argv: list[str]) -> int:
 	  3 - device is not HID-compatibile
 	  4 - failed to parse HID descriptor
 	"""
-	from scc.drivers.hiddrv import USBHIDController, hiddrv_test
+	if sys.platform == "linux":
+		from scc.drivers.linux.hiddrv import USBHIDController, hiddrv_test
+	elif sys.platform == "win32":
+		from scc.drivers.windows.hiddrv import USBHIDController, hiddrv_test
+	else:
+		raise OSError("Unknown platform")
 
 	return hiddrv_test(USBHIDController, argv)
 

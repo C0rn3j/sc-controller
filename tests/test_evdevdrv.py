@@ -1,9 +1,9 @@
-from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, TRIGGER_MAX, TRIGGER_MIN
 from unittest.mock import Mock
 
 import pytest
 
-from scc.drivers.evdevdrv import AxisCalibrationData, EvdevController, EvdevDriver, parse_axis
+from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, TRIGGER_MAX, TRIGGER_MIN
+from scc.drivers.linux.evdevdrv import AxisCalibrationData, EvdevController, EvdevDriver, parse_axis
 from scc.tools import clamp
 
 

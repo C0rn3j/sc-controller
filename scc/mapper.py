@@ -34,10 +34,10 @@ from scc.uinput import Dummy, Keyboard, Mouse, UInput
 
 if TYPE_CHECKING:
 	from scc.controller import Controller
-	from scc.drivers.ds5drv import DualSenseBTControllerInput
-	from scc.drivers.evdevdrv import EvdevControllerInput
-	from scc.drivers.hiddrv import HIDControllerInput
-	from scc.drivers.sc_dongle import ControllerInput
+	from scc.drivers.linux.ds5drv import DualSenseBTControllerInput
+	from scc.drivers.linux.evdevdrv import EvdevControllerInput
+	from scc.drivers.linux.hiddrv import HIDControllerInput
+	from scc.drivers.linux.sc_dongle import ControllerInput
 	from scc.poller import Poller
 	from scc.profile import Profile
 	from scc.scheduler import Scheduler, Task
