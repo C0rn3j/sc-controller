@@ -31,7 +31,7 @@ from scc.osd.message import Message
 from scc.osd.quick_menu import QuickMenu
 from scc.osd.radial_menu import RadialMenu
 from scc.special_actions import OSDAction
-from scc.tools import set_logging_level, shsplit
+from scc.tools import set_logging_level, shjoin, shsplit
 
 log = logging.getLogger("osd.daemon")
 
@@ -112,10 +112,7 @@ class OSDDaemon:
 		if m.get_exit_code() == 0:
 			# 0 means that user selected item and confirmed selection
 			self.daemon.request(
-				f"Selected: {m.get_menuid()} {m.get_selected_item_id()}",
-				#'Selected: %s' % ( shjoin([
-				# m.get_menuid(), m.get_selected_item_id()
-				# ])),
+				b"Selected: " + shjoin([m.get_menuid(), m.get_selected_item_id()]),
 				lambda *a: False,
 				lambda *a: False,
 			)
