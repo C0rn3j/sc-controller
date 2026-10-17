@@ -52,7 +52,7 @@ class AboutDialog(Editor):
 		if modal_for:
 			self.window.set_transient_for(modal_for)
 			self.window.set_modal(True)
-		self.window.show()
+		self.window.set_visible(True)
 
 	def on_dialog_response(self, *a) -> None:
 		self.close()

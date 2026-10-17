@@ -144,7 +144,7 @@ class Menu(OSDWindow):
 		sw = getattr(self, "_scrollwindow", None)
 		if sw is None:
 			return
-		self.parent.show()
+		self.parent.set_visible(True)
 		_, natw, _, _ = self.parent.measure(Gtk.Orientation.HORIZONTAL, -1)
 		_, nath, _, _ = self.parent.measure(Gtk.Orientation.VERTICAL, natw)
 		cap = self._max_menu_height()

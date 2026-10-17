@@ -570,15 +570,15 @@ class Keyboard(OSDWindow, TimerManager):
 		if (c.get_flags() & ControllerFlags.HAS_CPAD) == 0:
 			# Two pads, two hands
 			locks = [SCPads.LPAD, SCPads.RPAD, LSTICK, "LSTICKPRESS", *button_locks]
-			self.cursors[CPAD].hide()
+			self.cursors[CPAD].set_visible(False)
 		else:
 			# Single-handed mode
 			locks = [CPAD, "CPADPRESS", LSTICK, "LSTICKPRESS", *button_locks]
 			self._hovers[self.cursors[SCLeftRight.RIGHT]] = None
 			self._hovers = {self.cursors[CPAD]: None}
 			self._pressed = {self.cursors[CPAD]: None}
-			self.cursors[SCLeftRight.LEFT].hide()
-			self.cursors[SCLeftRight.RIGHT].hide()
+			self.cursors[SCLeftRight.LEFT].set_visible(False)
+			self.cursors[SCLeftRight.RIGHT].set_visible(False)
 
 			# There is no configurable nor default mapping for CPDAD,
 			# so situable mappings are hardcoded here

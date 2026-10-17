@@ -229,7 +229,7 @@ class OSDWindow(Gtk.Window):
 		return self.get_width(), self.get_height()
 
 	def show(self) -> None:
-		self.get_child().show()
+		self.get_child().set_visible(True)
 
 		# GTK4 intentionally does not expose absolute positioning for regular top-level windows
 		# Non-layer-shell backends let the window manager choose the initial position.
@@ -249,7 +249,7 @@ class OSDWindow(Gtk.Window):
 			self.layer_shell.set_margin(self, self.y_layer_anchor, y)
 			self._layer_position = [float(x), float(y)]
 
-		Gtk.Window.show(self)
+		Gtk.Window.set_visible(self, True)
 		GLib.idle_add(self.make_window_clicktrough)
 
 	def move_relative(self, dx: float, dy: float) -> None:
