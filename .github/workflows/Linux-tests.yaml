@@ -1,4 +1,4 @@
-name: SCC Linux CI
+name: Run tests on Linux
 
 on:
   push:
