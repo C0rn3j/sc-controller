@@ -33,6 +33,9 @@ def _get_configured_language() -> str:
 
 def get_locale_path() -> str:
 	"""Locate catalogs in source checkouts, AppImages, and installed packages."""
+	# Pyinstaller
+	if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+		return str(Path(sys._MEIPASS) / "share/locale")
 	package = Path(__file__).resolve().parent
 	if (package.parent / "pyproject.toml").is_file():
 		return str(package / "locale")
