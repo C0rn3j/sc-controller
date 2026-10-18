@@ -24,5 +24,6 @@ out.svg
 .kateconfig
 
 /dist/
+/scc/_version.py
 sccontroller.egg-info/
 !.github

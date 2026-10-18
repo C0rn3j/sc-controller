@@ -1,8 +1,9 @@
-"""SC-Controller - About dialog."""
+"""SC Controller - About dialog."""
 
 import os
 
 from scc.gui.editor import Editor
+from scc.version import __version__
 
 
 class AboutDialog(Editor):
@@ -15,38 +16,14 @@ class AboutDialog(Editor):
 		self.setup_widgets()
 
 	def setup_widgets(self) -> None:
-		"""Setup widgets and get and set app version in the About.
-
-		TODO - We can get a mismatch like this and version won't be set then, why?:
-			location:     /usr/lib/python3.12/site-packages
-			scc.__file__: /home/user/sc-controller/scc/__init__.py
-		"""
+		"""Setup widgets and get and set app version in the About."""
 		Editor.setup_widgets(self)
 		self.builder.get_object("image1").set_filename(
 			os.path.join(self.app.imagepath, "sc-controller-small.svg"),
 		)
 
-		app_ver = "(unknown version)"
-		import importlib.metadata
-		import importlib.resources
-
-		import scc
-
-		sccontroller_version = importlib.metadata.version("sccontroller")
-		sccontroller_module = importlib.resources.files("scc")
-		if sccontroller_module is not None:
-			if scc.__file__.startswith(str(sccontroller_module)):
-				app_ver = "v" + sccontroller_version
-
-			else:
-				print(
-					"Could not get version, locations possibly could not match.",
-					f"scc.__file__:{scc.__file__}",
-					f"sccontroller_module: {sccontroller_module}",
-					f"sccontroller_version: {sccontroller_version}",
-				)
 		# Display version in UI
-		self.builder.get_object("lblVersion").set_label(app_ver)
+		self.builder.get_object("lblVersion").set_label("v" + __version__)
 
 	def show(self, modal_for) -> None:
 		if modal_for:
