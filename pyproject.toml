@@ -76,6 +76,11 @@ packages = [
 ]
 
 [tool.setuptools_scm]
+version_file = "scc/_version.py"
+fallback_version = "0.0.0+unknown"
+
+[tool.setuptools_scm.scm.git]
+describe_command = "git describe --dirty --tags --long --match 'v[0-9]*'"
 
 [tool.ruff]
 # Project uses 80 sporadically, so just do soft 80 and hard break at 120

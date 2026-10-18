@@ -158,6 +158,8 @@ We use [Weblate](https://hosted.weblate.org/projects/sc-controller/sc-controller
 
 ## Building the package by yourself
 
+Note that building without git history (e.g. from GitHub .zip) will set version to 0.0.0, this is expected, as the version is normally taken from git tags.
+
 ### Dependencies
   - Python 3.12+
   - GTK 4.14+
@@ -172,7 +174,6 @@ We use [Weblate](https://hosted.weblate.org/projects/sc-controller/sc-controller
   - [python-ioctl-opt](https://pypi.org/project/ioctl-opt/)
 
 ### Via Python into a local build directory
-  - ~~Download and extract [latest release](https://github.com/C0rn3j/sc-controller/releases/latest)~~ .zip releases without .git directory are currently broken - tracked in [#50](https://github.com/C0rn3j/sc-controller/issues/50)
   - Clone the repository `git clone https://github.com/C0rn3j/sc-controller.git` and navigate into it: `cd sc-controller`
   - `python3 -m build --wheel`
   - `python3 -m installer --destdir="./build" dist/*.whl`
@@ -186,7 +187,6 @@ docker build -o build-output --build-arg BASE_CODENAME=noble .
 ```
 
 ### Via Python venv through run.sh
-  - ~~Download and extract [latest release](https://github.com/C0rn3j/sc-controller/releases/latest)~~ .zip releases without .git directory are currently broken - tracked in [#50](https://github.com/C0rn3j/sc-controller/issues/50)
   - Clone the repository `git clone https://github.com/C0rn3j/sc-controller.git` and navigate into it: `cd sc-controller`
   - Optionally checkout a branch or a tag, like `main`(default) or `v0.6.2`
   - Execute `./run.sh`, this automatically builds the project into a venv called `.venv`, activates it and runs sc-controller, which in turn runs scc-daemon if one does not run already
