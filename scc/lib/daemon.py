@@ -32,8 +32,8 @@ class Daemon:
 			if pid > 0:
 				# exit first parent
 				sys.exit(0)
-		except OSError as err:
-			sys.stderr.write(f"fork #1 failed: {err}\n")
+		except OSError:
+			log.exception("Fork #1 failed")
 			sys.exit(1)
 
 		# decouple from parent environment
@@ -47,8 +47,8 @@ class Daemon:
 			if pid > 0:
 				# exit from second parent
 				sys.exit(0)
-		except OSError as err:
-			sys.stderr.write(f"fork #2 failed: {err}\n")
+		except OSError:
+			log.exception("Fork #2 failed")
 			sys.exit(1)
 
 		# redirect standard file descriptors
@@ -84,6 +84,7 @@ class Daemon:
 			with open(self.pidfile) as pidf:
 				pid = int(pidf.read().strip())
 		except Exception:
+			log.exception("Exception opening PID file - TODO(Martin): Rework this mess")
 			pid = None
 
 		if pid:
@@ -95,9 +96,10 @@ class Daemon:
 				if sys.argv[0] in cmdline:
 					raise Exception("already running")
 			except OSError:
+				log.exception("OSError exception handling PID check - TODO(Martin): Rework this mess")
 				# No such process
-				pass
 			except Exception:
+				log.exception("Exception handling PID check - TODO(Martin): Rework this mess to not raise custom exceptions wth")
 				message = "pidfile {0} already exist. " + "Daemon already running?\n"
 				sys.stderr.write(message.format(self.pidfile))
 				sys.exit(1)

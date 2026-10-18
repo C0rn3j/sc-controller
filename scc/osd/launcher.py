@@ -360,8 +360,8 @@ class Launcher(OSDWindow):
 		try:
 			start = self.items.index(self._selected)
 			i = start + direction
-		except:
-			pass
+		except Exception:
+			log.exception("Unknown exception getting next Launcher item")
 		while True:
 			if i == start:
 				# Cannot find valid menu item

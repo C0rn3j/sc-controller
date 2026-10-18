@@ -55,10 +55,9 @@ class AutoSwitcher:
 					astr = astr["action"]
 				action = parser.restart(astr).parse()
 				conds[Condition.parse(c["condition"])] = action
-			except Exception as e:
+			except Exception:
 				# Failure here is not fatal
-				log.error("Failed to parse autoswitcher condition '%s'", c)
-				log.error(e)
+				log.exception("Failed to parse autoswitcher condition '%s'", c)
 		log.debug("Parsed %s autoswitcher conditions", len(conds))
 		return conds
 
@@ -89,7 +88,7 @@ class AutoSwitcher:
 			self.socket.connect(get_daemon_socket())
 			self.socket.send(b"Register: autoswitch\n")
 		except Exception:
-			log.error("Failed to connect to scc-daemon")
+			log.exception("Failed to connect to scc-daemon")
 			os._exit(1)
 			return
 		buffer = ""
@@ -155,8 +154,8 @@ class AutoSwitcher:
 							msg = _("Switched to profile") + " " + profile_name
 							self.socket.send(b"OSD: " + msg.encode("utf-8") + b"\n")
 						self.socket.send(b"Profile: " + path.encode("utf-8") + b"\n")
-					except:
-						log.error("Socket write failed")
+					except Exception:
+						log.exception("Socket write failed")
 						os._exit(2)
 						return
 		else:
@@ -166,16 +165,16 @@ class AutoSwitcher:
 		with self.lock:
 			try:
 				self.socket.send(b"Turnoff.\n")
-			except:
-				log.error("Socket write failed")
+			except Exception:
+				log.exception("Socket write failed")
 				os._exit(2)
 
 	def on_sa_restart(self, *a):
 		with self.lock:
 			try:
 				self.socket.send(b"Restart.\n")
-			except:
-				log.error("Socket write failed")
+			except Exception:
+				log.exception("Socket write failed")
 				os._exit(2)
 
 	def sigint(self, *a):

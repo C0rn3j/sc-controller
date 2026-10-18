@@ -353,6 +353,7 @@ class USBHIDController(SCUSBDevice, Controller):
 				)
 				target = [x for (x, y) in HIDControllerInput._fields_].index(axis_name) - 1
 			except Exception:
+				log.exception("Unknown error mapping axes")
 				# Maps to unknown axis
 				return None, None
 			cdata = parse_axis(axis_config)
@@ -495,7 +496,7 @@ class USBHIDController(SCUSBDevice, Controller):
 						if r:
 							return r
 				except OSError:
-					pass
+					log.exception("OSError doing hid recursive search")
 			return None
 
 		pattern = f":{vid:04x}:{pid:04x}"
@@ -508,8 +509,8 @@ class USBHIDController(SCUSBDevice, Controller):
 					temp_list = [x for x in read_file.read(1024)]
 
 				return temp_list
-		except Exception as e:
-			log.exception(e)
+		except Exception:
+			log.exception("Failed loading descriptor")
 		return None
 
 	def close(self) -> None:
@@ -627,7 +628,7 @@ class HIDDrv:
 				try:
 					config = load_device_config(config_file)
 				except Exception:
-					log.warning("Ignoring file that cannot be parsed: %s", name)
+					log.exception("Ignoring file that cannot be parsed: %s", name)
 					continue
 
 				self.config_files[vid, pid] = config_file
@@ -671,13 +672,13 @@ def hiddrv_test(cls: type[USBHIDController], args: list[str]) -> int:
 		try:
 			return cls(device, None, handle, None, None, test_mode=True)
 		except NotHIDDevice:
-			print(f"{vid:04x}:{pid:04x} is not a HID device", file=sys.stderr)
+			log.error(f"{vid:04x}:{pid:04x} is not a HID device")
 			fake_daemon.exitcode = 3
 		except UnparsableDescriptor as e:
-			print("Invalid or unparsable HID descriptor", str(e), file=sys.stderr)
+			log.error(f"Invalid or unparsable HID descriptor {e!s}")
 			fake_daemon.exitcode = 4
-		except Exception as e:
-			print("Failed to open device:", str(e), file=sys.stderr)
+		except Exception:
+			log.exception("Failed to open device")
 			fake_daemon.exitcode = 2
 
 	_usb.set_daemon(fake_daemon)

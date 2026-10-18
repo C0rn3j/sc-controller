@@ -1,11 +1,8 @@
-#!/usr/bin/env python3
-"""SC-Controller - Icon Chooser
-"""
+"""SC Controller - Icon Chooser"""
 
 import logging
 import os
 import re
-import traceback
 
 from gi.repository import Gdk, GdkPixbuf, Gio, GObject, Gtk
 
@@ -51,8 +48,8 @@ class IconChooser(Editor, UserDataManager):
 			try:
 				os.makedirs(os.path.join(get_menuicons_path(), c))
 			except Exception:
+				log.exception("Failed creating directory")
 				# Dir. exists
-				pass
 
 	def on_btOk_clicked(self, *a):
 		icon = self.get_selected()
@@ -60,8 +57,9 @@ class IconChooser(Editor, UserDataManager):
 		if icon:
 			self.callback(icon)
 
-	def get_selected(self):
+	def get_selected(self) -> str | None:
 		"""Returns 'category/name' of currently selected icon.
+
 		Returns None if nothing is selected.
 		"""
 		tsCategories = self.builder.get_object("tsCategories")
@@ -71,8 +69,9 @@ class IconChooser(Editor, UserDataManager):
 			category = model.get_value(iter, 0)
 			model, iter = tsIcons.get_selected()
 			icon_name = model.get_value(iter, 0)
-			return "%s/%s" % (category, icon_name)
+			return f"{category}/{icon_name}"
 		except TypeError:
+			log.exception("Failed getting model values")
 			# This part may throw TypeError if either list has nothing selected.
 			return None
 
@@ -148,9 +147,8 @@ class IconChooser(Editor, UserDataManager):
 				pb = None
 				try:
 					pb = GdkPixbuf.Pixbuf.new_from_file(f.get_path())
-				except Exception as e:
-					log.error(e)
-					log.error(traceback.format_exc())
+				except Exception:
+					log.exception("Failed running new_from_file")
 					continue
 
 				model.append((name, pb, has_colors))
@@ -162,7 +160,7 @@ class IconChooser(Editor, UserDataManager):
 				tvCategories.get_selection().select_path((0,))
 				self.on_tvCategories_cursor_changed(tvCategories)
 			except Exception:
-				pass
+				log.exception("Failed selecting first category")
 
 	@staticmethod
 	def find_license(path, name):

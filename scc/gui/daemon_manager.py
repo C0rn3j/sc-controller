@@ -147,9 +147,10 @@ class DaemonManager(GObject.GObject):
 		self.connecting = False
 		try:
 			self.connection = sc.connect_finish(results)
-			if self.connection == None:
+			if self.connection is None:
 				raise Exception("Unknown error")
 		except Exception:
+			log.exception("Failed connecting to daemon?")
 			self._on_daemon_died()
 			return
 		self.buffer = b""
@@ -162,6 +163,7 @@ class DaemonManager(GObject.GObject):
 			if response is None:
 				raise Exception("No data received")
 		except Exception:
+			log.exception("Failed reading data from daemon")
 			# Broken sonnection, daemon was probably terminated
 			self._on_daemon_died()
 			return

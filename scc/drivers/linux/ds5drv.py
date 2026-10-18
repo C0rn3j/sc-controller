@@ -1276,8 +1276,8 @@ class DS5EvdevController(EvdevController):
 			try:
 				self.poller.unregister(device.fd)
 				device.ungrab()
-			except:
-				pass
+			except Exception:
+				log.exception("Unknown exception closing DualShock evdev")
 		if self._hidraw_output is not None:
 			self._hidraw_output.close()
 			self._hidraw_output = None

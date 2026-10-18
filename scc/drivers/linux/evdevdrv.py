@@ -136,8 +136,8 @@ class EvdevController(Controller):
 				else:
 					sc = getattr(SCButtons, value)
 					self._button_map[keycode] = sc
-			except:
-				pass
+			except Exception:
+				log.exception("Unknown exception parsing buttons in config")
 		for x, value in config.get("axes", {}).items():
 			code, axis = int(x), value.get("axis")
 			if axis in EvdevControllerInput._fields:
@@ -154,8 +154,8 @@ class EvdevController(Controller):
 		self.poller.unregister(self.device.fd)
 		try:
 			self.device.ungrab()
-		except:
-			pass
+		except Exception:
+			log.exception("Unknown exception when closing evdev controller")
 		self.device.close()
 
 	def get_type(self) -> str:

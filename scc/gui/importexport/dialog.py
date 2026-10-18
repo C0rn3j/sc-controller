@@ -1,10 +1,9 @@
-"""SC-Controller - Import / Export Dialog"""
+"""SC Controller - Import / Export Dialog"""
 from __future__ import annotations
 
 import json
 import logging
 import tarfile
-import traceback
 from typing import TYPE_CHECKING
 
 from scc.gui.editor import ComboSetter, Editor
@@ -46,7 +45,7 @@ class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 				f = file.read(1024)
 		except Exception:
 			# File not readable
-			log.error(traceback.format_exc())
+			log.exception("Failed opening file when determining type")
 			return None
 		try:
 			if f.decode("utf-8").strip(" \t\r\n").startswith("{"):
@@ -58,8 +57,8 @@ class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 				if "GameName" in data and "FileName" in data:
 					return "vdffz"
 		except Exception:
+			log.exception("Not JSON?")
 			# Definitelly not json
-			pass
 
 		if f[0:2] == b"\x1f\x8b":
 			# gzip, hopefully tar.gz
@@ -71,7 +70,7 @@ class Dialog(Editor, ComboSetter, Export, ImportVdf, ImportSccprofile):
 					return "sccprofile.tar.gz"
 			except Exception:
 				# Not a tarball
-				pass
+				log.exception("Not a tarball?")
 
 		# Rest is decided by extension
 		if filename.endswith(".sccprofile.tar.gz"):

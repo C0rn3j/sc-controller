@@ -332,8 +332,8 @@ class ControllerRegistration(Editor):
 		jsondata = buffRawData.get_text(buffRawData.get_start_iter(), buffRawData.get_end_iter(), True)
 		try:
 			os.makedirs(os.path.join(get_config_path(), "devices"))
-		except:
-			pass
+		except Exception:
+			log.exception("Unknown exception making a devices directory")
 
 		filename = self._evdevice.name.strip().replace("/", "")
 		if self._tester.driver == "hid":
@@ -360,6 +360,7 @@ class ControllerRegistration(Editor):
 			json.loads(jsondata)
 			btNext.set_sensitive(True)
 		except Exception:
+			log.debug("Controller registration saving disabled")
 			# User can modify generated json code before hitting save,
 			# but if he writes something unparsable, save button is disabled
 			btNext.set_sensitive(False)

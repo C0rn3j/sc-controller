@@ -412,6 +412,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 				rawlist = file.read().split("\n")
 			kernel_mods += [os.path.split(x)[-1].split(".")[0] for x in rawlist]
 		except Exception:
+			log.exception("Failed running module checks")
 			# Maybe running on BSD or Windows...
 			kernel_mods = []
 
@@ -1414,11 +1415,11 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			for n in (old_fname, new_fname):
 				try:
 					os.unlink(n + ".mod")
-				except:
+				except Exception:
 					# non-existing .mod file is expected
-					pass
-		except Exception as e:
-			log.error("Failed to rename %s: %s", old_fname, e)
+					log.exception("Unknown exception unlinking .mod file - TODO(Martin): add check if file exists")
+		except Exception:
+			log.exception("Failed to rename %s", old_fname)
 
 		controllers = list(self.dm.get_controllers())
 		for c in controllers:
@@ -1450,6 +1451,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		def on_response(dialog, response_id) -> None:
 			if response_id == Gtk.ResponseType.OK:
 				fname = os.path.join(get_profiles_path(), name + ".sccprofile")
+				log.warning("TODO(Martin): Fix this part to check if file exists first")
 				try:
 					os.unlink(fname)
 					try:
@@ -1705,6 +1707,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		try:
 			return self.config["recent_profiles"][0]
 		except Exception:
+			log.exception("Failed getting recent profile name, this is probably ok but needs code improvements here")
 			return None
 
 	@staticmethod
@@ -1749,9 +1752,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 					stream.read_bytes_async(102400, 0, None, stream_ready, buffer)
 				else:
 					self.on_got_release_notes(buffer.decode("utf-8"))
-			except Exception as e:
-				log.warning(f"Failed to read release notes at {url}, maybe your internet connection is down?")
-				log.exception(e)
+			except Exception:
+				log.exception(f"Failed to read release notes at {url}, maybe your internet connection is down?")
 				return
 
 		def http_ready(f, task, buffer) -> None:
@@ -1894,8 +1896,8 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 					os.rename(f"{get_profiles_path()}/{name}", f"{get_profiles_path()}/{name}~")
 					os.rename(f"{get_profiles_path()}/{name}.convert", f"{get_profiles_path()}/{name}")
 					log.warning("Converted %s (from v%s)", name, to_convert[name].original_version)
-				except Exception as e:
-					log.warning("Failed to convert %s: %s", name, e)
+				except Exception:
+					log.exception("Failed to convert %s", name)
 
 
 class UndoRedo:

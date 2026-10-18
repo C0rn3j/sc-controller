@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-"""SC-Controller - Action Editor
+"""SC Controller - Action Editor
 
 Allows to edit button or trigger action.
 """
@@ -128,8 +127,8 @@ class ModeshiftEditor(Editor):
 			while model.get_value(model[0].iter, 0) is None:
 				model.remove(model[0].iter)
 			cbButtonChooser.set_active(0)
-		except:
-			pass
+		except Exception:
+			log.exception("Unknown exception when adding action")
 
 		i = len(self.actions[index]) + 1
 		l = Gtk.Label()
@@ -192,8 +191,8 @@ class ModeshiftEditor(Editor):
 		active, i, index = None, 0, -1
 		try:
 			active = model.get_value(cbButtonChooser.get_active_iter(), 0)
-		except:
-			pass
+		except Exception:
+			log.exception("Unknown exception getting button value")
 		# Clear entire combobox
 		model.clear()
 		# Fill it again

@@ -1,4 +1,4 @@
-"""SC-Controller - OSD.
+"""SC Controller - OSD.
 
 Common methods for OSD-related stuff
 """
@@ -7,7 +7,6 @@ from __future__ import annotations
 import argparse
 import logging
 import os
-import traceback
 from ctypes import CDLL
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
@@ -178,7 +177,7 @@ class OSDWindow(Gtk.Window):
 		except SystemExit:
 			return False
 		except BaseException:  # Includes SystemExit
-			log.error(traceback.format_exc())
+			log.exception("Failed parsing arguments")
 			return False
 		del self.argparser
 		self.position = (self.args.x, self.args.y)

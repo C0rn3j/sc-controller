@@ -10,7 +10,6 @@ import logging
 import os
 import re
 import sys
-import traceback
 from typing import TYPE_CHECKING
 
 from gi.repository import Gdk, GdkPixbuf, GLib, GObject, Gtk
@@ -94,7 +93,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		try:
 			p = GdkPixbuf.Pixbuf.new_from_file(os.path.join(self.app.imagepath, "controller-icons", drv + "-4.svg"))
 		except Exception:
-			log.warning("Failed to load gamepad icon for driver '%s'", drv)
+			log.exception("Failed to load gamepad icon for driver '%s'", drv)
 			p = self._gamepad_icons["unknown"]
 		self._gamepad_icons[drv] = p
 		return p
@@ -484,7 +483,8 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		elif condition.regexp:
 			try:
 				entTitle.set_text(condition.regexp.pattern)
-			except:
+			except Exception:
+				log.exception("Unknown exception setting text")
 				entTitle.set_text("")
 			cbRegExp.set_active(True)
 			cbMatchTitle.set_active(True)
@@ -585,6 +585,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 				try:
 					name = name.decode("utf-8")
 				except Exception:
+					log.exception("Failed decoding profile name")
 					continue
 			if name.endswith(".mod"):
 				continue
@@ -649,8 +650,8 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			# in field and don't allow user to save unless expression is valid
 			try:
 				re.compile(ent.get_text())
-			except Exception as e:
-				log.error(e)
+			except Exception:
+				log.exception("Failed compiling regex title text")
 				btSave.set_sensitive(False)
 				return
 		btSave.set_sensitive(True)
@@ -729,7 +730,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			index = int(widget.get_name().split("_")[-1])
 			instance = GlobalSettings._make_mi_instance(index)
 		except Exception:
-			log.error(traceback.format_exc())
+			log.exception("Failed loading default menu")
 			self._recursing = True
 			widget.set_active(not widget.get_active())
 			self._recursing = False
@@ -776,7 +777,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 				data = MenuData.from_fileobj(fileobj)
 		except Exception:
 			# Shouldn't really happen
-			log.error(traceback.format_exc())
+			log.exception("Failed loading default menu non-toggle")
 			return
 		self._recursing = True
 
@@ -827,8 +828,8 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			if response_id == Gtk.ResponseType.YES:
 				try:
 					os.unlink(path)
-				except Exception as e:
-					log.exception(e)
+				except Exception:
+					log.exception("Failed unlinking file, maybe add file exist check first")
 				self._needs_restart()
 				self.load_controllers()
 			dialog.close()

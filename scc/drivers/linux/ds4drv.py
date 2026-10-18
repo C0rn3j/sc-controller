@@ -596,6 +596,7 @@ class DS4EvdevController(EvdevController):
 					if axis:
 						new_state = new_state._replace(**{axis: int(event.value * factor)})
 		except OSError:
+			log.debug("OSError on DS4 gyro input - should be fine")
 			# Errors here are not even reported, evdev class handles important ones
 			return
 
@@ -634,6 +635,7 @@ class DS4EvdevController(EvdevController):
 						b = new_state.buttons & ~SCButtons.CPADTOUCH
 						new_state = new_state._replace(buttons=b)
 		except OSError:
+			log.debug("OSError on DS4 touchpad input - should be fine")
 			# Errors here are not even reported, evdev class handles important ones
 			return
 
@@ -650,7 +652,7 @@ class DS4EvdevController(EvdevController):
 				self.poller.unregister(device.fd)
 				device.ungrab()
 			except Exception:
-				pass
+				log.exception("Unknown exception closing DS4")
 		if self._hidraw_output is not None:
 			self._hidraw_output.close()
 			self._hidraw_output = None

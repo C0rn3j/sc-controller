@@ -1,4 +1,4 @@
-"""SC-Controller - Device Monitor.
+"""SC Controller - Device Monitor.
 
 Extends eudevmonitor with options to register callbacks and
 manage plugging/releasing devices.
@@ -34,7 +34,7 @@ try:
 	btlib = ctypes.CDLL(btlib_name)
 	HAVE_BLUETOOTH_LIB = True
 except Exception:
-	pass
+	log.debug("Failed loading bluetooth library")
 
 
 def _disconnect_bluez(device_path: str) -> None:

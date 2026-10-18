@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import logging
 import time
-import traceback
 from typing import TYPE_CHECKING
 
 import usb1
@@ -53,10 +52,8 @@ class SCUSBDevice:
 			data = transfer.getBuffer()
 			try:
 				callback(endpoint, data)
-			except Exception as e:
-				log.error("Failed to handle received data")
-				log.error(e)
-				log.error(traceback.format_exc())
+			except Exception:
+				log.exception("Failed to handle received data")
 			finally:
 				try:  # https://github.com/C0rn3j/sc-controller/issues/57
 					transfer.submit()
@@ -182,7 +179,7 @@ class SCUSBDevice:
 				self.handle.attachKernelDriver(number)
 			except usb1.USBErrorNoDevice:
 				# Safe to ignore, happens when USB is removed
-				pass
+				log.debug("Failed unclaiming device - no device - USB removed?")
 		self._claimed = []
 
 	def close(self) -> None:
@@ -190,12 +187,12 @@ class SCUSBDevice:
 		try:
 			self.unclaim()
 		except Exception:
-			pass
+			log.exception("Unknown error unclaiming device")
 		try:
 			self.handle.resetDevice()
 			self.handle.close()
 		except Exception:
-			pass
+			log.exception("Unknown error resetting and closing device")
 
 
 class USBDriver:
@@ -251,7 +248,7 @@ class USBDriver:
 					handle = device.open()
 					break
 				except usb1.USBError as e:
-					log.error("Failed to open USB device %.4x:%.4x : %s", tp[0], tp[1], e)
+					log.exception("Failed to open USB device %.4x:%.4x : %s", tp[0], tp[1], e)
 					if tp in self._fail_cbs:
 						self._fail_cbs[tp](syspath, *tp)
 						return None
@@ -269,7 +266,7 @@ class USBDriver:
 		try:
 			handled_device = callback(device, handle)
 		except usb1.USBErrorBusy as e:
-			log.error("Failed to claim USB device %.4x:%.4x : %s", tp[0], tp[1], e)
+			log.exception("Failed to claim USB device %.4x:%.4x : %s", tp[0], tp[1], e)
 			if tp in self._fail_cbs:
 				device.close()
 				self._fail_cbs[tp](syspath, *tp)
@@ -303,8 +300,8 @@ class USBDriver:
 			try:
 				device.close()
 			except usb1.USBErrorNoDevice:
+				log.debug("Exception closing device - no device - USB removed?")
 				# Safe to ignore, happens when device is physically removed
-				pass
 
 	def register_hotplug_device(self, callback, vendor_id: int, product_id: int, on_failure) -> None:
 		self._known_ids[vendor_id, product_id] = callback
@@ -330,7 +327,7 @@ class USBDriver:
 			try:
 				d.flush()
 			except usb1.USBErrorPipe:
-				log.error("USB device %s disconnected durring flush", d)
+				log.exception("USB device %s disconnected durring flush", d)
 				d.close()
 				break
 		if len(self._retry_devices):

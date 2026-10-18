@@ -929,7 +929,8 @@ class ModeModifier(Modifier):
 		def cb(mapper):
 			try:
 				return c.__proc.poll() == 0
-			except:
+			except Exception:
+				log.exception("Unknown exception in ModeModifier.make_shell_check()")
 				return False
 
 		c.name = cb.name = c.to_string()  # So nameof() still works on keys in self.mods
@@ -976,8 +977,8 @@ class ModeModifier(Modifier):
 			try:
 				if c.__proc:
 					c.__proc.kill()
-			except:
-				pass
+			except Exception:
+				log.exception("Unknown exception in ModeModifier.kill_shell_commands()")
 			c.__proc = None
 
 	def button_release(self, mapper) -> None:

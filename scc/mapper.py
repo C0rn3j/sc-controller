@@ -3,7 +3,6 @@ from __future__ import annotations
 import logging
 import os
 import time
-import traceback
 from typing import TYPE_CHECKING
 
 from scc.actions import Action, ButtonAction, GyroAbsAction
@@ -131,6 +130,7 @@ class Mapper:
 			try:
 				axes.append((ALL_AXES[i], min, max, fuzz, flat))
 			except IndexError:
+				log.debug("Out of axes during gamepad creation, should be normal")
 				# Out of axes
 				break
 			i += 1
@@ -579,8 +579,7 @@ class Mapper:
 			# Log error but don't crash here, it breaks too many things at once
 			if hasattr(self, "_testing"):
 				raise
-			log.error("Error while processing controller event")
-			log.error(traceback.format_exc())
+			log.exception("Error while processing controller event")
 
 		# TODO: Is it important to run scheduled stuff before generate_events?
 		self.scheduler.run()

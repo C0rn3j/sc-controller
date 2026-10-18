@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 """
-
+import logging
 from ctypes import (
 	CDLL,
 	POINTER,
@@ -34,10 +34,10 @@ from ctypes import (
 	cast,
 )
 
+log = logging.getLogger(__name__)
 
 def _load_lib(*names):
-	"""Tries multiple alternative names to load .so library.
-	"""
+	"""Tries multiple alternative names to load .so library."""
 	for l in names:
 		try:
 			return CDLL(l)
@@ -434,8 +434,8 @@ def get_window_title(dpy, window):
 				value = cast(prop, c_char_p).value.decode("utf-8")
 				free(prop)
 				return value
-			except:
-				pass
+			except Exception:
+				log.exception("Unknown exception in get_window_title()")
 			free(prop)
 	return None
 

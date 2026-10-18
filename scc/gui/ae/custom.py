@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-"""SC-Controller - Action Editor - Custom action
+"""SC Controller - Action Editor - Custom action
 
 Custom Action page in Action Editor window
 """
@@ -40,8 +39,8 @@ class CustomActionComponent(AEComponent):
 		try:
 			txCustomAction = self.builder.get_object("txCustomAction")
 			txCustomAction.set_monospace(True)
-		except:
-			pass
+		except Exception:
+			log.exception("Unknown exception when loading custom action component")
 
 	def set_action(self, mode, action):
 		action = self.editor.generate_modifiers(action, from_custom=True)

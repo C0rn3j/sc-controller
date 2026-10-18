@@ -511,7 +511,7 @@ class SC2Device(SCUSBDevice):
 			t.submit()
 			self._out_transfers.add(t)
 		except usb1.USBError:
-			pass
+			log.debug("USB error when sending haptics")
 
 	def _listen(self, endpoint: int) -> None:
 		"""Submit a lenient interrupt-IN transfer.
@@ -535,7 +535,7 @@ class SC2Device(SCUSBDevice):
 			try:
 				transfer.submit()
 			except Exception:
-				pass
+				log.exception("Unknown error submitting SC2 transfer")
 
 		transfer = self.handle.getTransfer()
 		transfer.setInterrupt(usb1.ENDPOINT_IN | endpoint, INPUT_BUFFER, callback=cb)
@@ -622,6 +622,7 @@ class SC2Device(SCUSBDevice):
 			try:
 				self.handle.controlWrite(*msg)
 			except usb1.USBErrorPipe:
+				log.debug("Error writing cmsg to SC2, disconnected?")
 				self._slot_gone(msg[3])  # msg[3] == wIndex == interface
 		while self._rmsg:
 			msg, index, size, callback = self._rmsg.pop()
@@ -630,6 +631,7 @@ class SC2Device(SCUSBDevice):
 				data = self.handle.controlRead(0xA1, 0x01, 0x0300, index, size)
 				callback(data)
 			except usb1.USBErrorPipe:
+				log.debug("Error writing rmsg to SC2, disconnected?")
 				self._slot_gone(index)
 
 	def _slot_gone(self, interface: int, intentional: bool = False) -> None:

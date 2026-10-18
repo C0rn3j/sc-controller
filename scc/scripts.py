@@ -1,4 +1,4 @@
-"""SC-Controller - Scripts.
+"""SC Controller - Scripts.
 
 Contains code for most of what can be done using 'scc' script.
 Created so scc-* stuff doesn't polute /usr/bin.
@@ -6,6 +6,7 @@ Created so scc-* stuff doesn't polute /usr/bin.
 
 from __future__ import annotations
 
+import logging
 import os
 import subprocess
 import sys
@@ -17,6 +18,7 @@ if TYPE_CHECKING:
 
 from scc.tools import find_binary, init_logging, set_logging_level
 
+log = logging.getLogger(__name__)
 
 class InvalidArguments(Exception):
 	pass
@@ -400,8 +402,8 @@ def main() -> None:
 		set_logging_level(False, False)
 	try:
 		command = globals()["cmd_" + sys.argv[1].replace("-", "_")]
-	except:
-		print("Unknown command: %s" % (sys.argv[1],), file=sys.stderr)
+	except Exception:
+		log.exception(f"Unknown command: {sys.argv[1]}")
 		sys.exit(show_help(out=sys.stderr))
 
 	try:

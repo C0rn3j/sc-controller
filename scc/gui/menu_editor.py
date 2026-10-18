@@ -1,12 +1,10 @@
-#!/usr/bin/env python3
-"""SC-Controller - Menu Editor
+"""SC Controller - Menu Editor
 
 Edits .menu files and menus stored in profile.
 """
 
 import logging
 import os
-import traceback
 
 from gi.repository import GObject, Gtk
 
@@ -334,19 +332,18 @@ class MenuEditor(Editor):
 		elif self.original_type == MenuEditor.TYPE_INTERNAL:
 			try:
 				del self.app.current.menus[self.original_id]
-			except:
-				pass
+			except Exception:
+				log.exception("Unknown exception removing internal original in MenuEditor")
 		elif self.original_type == MenuEditor.TYPE_GLOBAL:
 			try:
 				path = os.path.join(get_menus_path(), "%s.menu" % (self.original_id,))
 				log.debug("Removing %s", path)
 				os.unlink(path)
-			except:
-				pass
+			except Exception:
+				log.exception("Unknown exception removing global original in MenuEditor")
 
 	def _generate_menudata(self):
-		"""Generates MenuData instance from items in list
-		"""
+		"""Generates MenuData instance from items in list"""
 		model = self.builder.get_object("tvItems").get_model()
 		data = MenuData(*[i[0].item for i in model])
 		i = 1
@@ -392,9 +389,8 @@ class MenuEditor(Editor):
 				filename, trash = find_icon(self.selected_icon)
 				self.menu_icon.set_filename(filename)
 				self.menu_icon.set_visible(True)
-			except Exception as e:
-				log.error(e)
-				log.error(traceback.format_exc())
+			except Exception:
+				log.exception("Failed updating menu icon")
 				self.menu_icon.set_visible(False)
 
 	def on_icon_choosen(self, name):

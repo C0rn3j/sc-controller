@@ -382,8 +382,8 @@ class SCCDaemon(Daemon):
 		if self.cemuhook is None:
 			try:
 				self.cemuhook = CemuhookServer(self)
-			except Exception as e:
-				log.error("Failed to initialize CemuHookUDP Motion Provider: %s", e)
+			except Exception:
+				log.exception("Failed to initialize CemuHookUDP Motion Provider")
 				return
 		self.cemuhook.feed(data)
 
@@ -403,8 +403,8 @@ class SCCDaemon(Daemon):
 		try:
 			self.osd_daemon.wfile.write(data)
 			self.osd_daemon.wfile.flush()
-		except Exception as e:
-			log.error("Failed to display OSD: %s", e)
+		except Exception:
+			log.exception("Failed to display OSD")
 			self.osd_daemon = None
 			return False
 		return True
@@ -481,8 +481,8 @@ class SCCDaemon(Daemon):
 				try:
 					self._set_profile(mapper, path)
 					log.info("Loaded profile '%s'", name)
-				except Exception as e:
-					log.exception(e)
+				except Exception:
+					log.exception("Failed loading profile")
 			return
 		log.error("Cannot load profile: Profile '%s' not found", name)
 
@@ -589,9 +589,9 @@ class SCCDaemon(Daemon):
 					if d.get_name() == name:
 						if d.is_pointer() and d.is_slave():
 							d.float()
-			except OSError as e:
+			except OSError:
 				# Most likely 'xinput' executable not found
-				log.warning("Failed to deatach gamepad from xinput master: %s", e)
+				log.exception("Failed to deatach gamepad from xinput master")
 
 	def load_default_profile(self, mapper: Mapper | None = None) -> None:
 		mapper = mapper or self.default_mapper
@@ -600,12 +600,11 @@ class SCCDaemon(Daemon):
 				self.default_profile = find_profile(Config()["recent_profiles"][0])
 			except Exception:
 				# Broken config is not reason to fail here
-				pass
+				log.exception("Failed loading recent profile")
 		try:
 			mapper.profile.load(self.default_profile).compress()
-		except Exception as e:
-			log.warning("Failed to load profile. Starting with no mappings.")
-			log.warning("Reason: %s", e)
+		except Exception:
+			log.exception("Failed to load profile. Starting with no mappings.")
 
 	def add_controller(self, c: Controller) -> None:
 		if len(self.free_mappers) > 0:
@@ -831,6 +830,7 @@ class SCCDaemon(Daemon):
 			try:
 				line = rfile.readline()
 			except Exception:
+				log.exception("Failed reading line from file, connection terminated?")
 				# Connection terminated
 				break
 			if len(line) == 0:
@@ -859,7 +859,7 @@ class SCCDaemon(Daemon):
 					client.wfile.write(b"OK.\n")
 				except Exception as e:
 					exc = traceback.format_exc()
-					log.exception(e)
+					log.exception("Failed handling message")
 					tb = str(exc).encode("utf-8").decode("unicode_escape").encode("latin1")
 					client.wfile.write(b"Fail: " + tb + b"\n")
 		elif message.startswith(b"OSD:"):
@@ -873,6 +873,7 @@ class SCCDaemon(Daemon):
 							raise Exception
 					client.wfile.write(b"OK.\n")
 				except Exception:
+					log.exception("Failed displaying OSD")
 					client.wfile.write(b"Fail: cannot display OSD\n")
 		elif message.startswith(b"Feedback:"):
 			try:
@@ -882,7 +883,7 @@ class SCCDaemon(Daemon):
 					client.mapper.get_controller().feedback(data)
 				client.wfile.write(b"OK.\n")
 			except Exception as e:
-				log.exception(e)
+				log.exception("Failed handling feedback")
 				client.wfile.write((f"Fail: {e}\n").encode())
 		elif message.startswith(b"Controller."):
 			with self.lock:
@@ -900,6 +901,7 @@ class SCCDaemon(Daemon):
 					else:
 						raise Exception("goto fail")
 				except Exception:
+					log.exception("Failed handling controller")
 					client.wfile.write(b"Fail: no such controller\n")
 		elif message.startswith(b"State."):
 			if Config()["enable_sniffing"]:
@@ -912,6 +914,7 @@ class SCCDaemon(Daemon):
 				number = int(message[4:])
 				number = clamp(0, number, 100)
 			except Exception as e:
+				log.exception("Failed handling LED brightness")
 				client.wfile.write(f"Fail: {e}\n".encode())
 				return
 			if client.mapper.get_controller():
@@ -922,6 +925,7 @@ class SCCDaemon(Daemon):
 				client.mapper.get_controller().set_led_color(red, green, blue)
 				client.wfile.write(b"OK.\n")
 			except Exception as error:
+				log.exception("Failed handling RGB LEDs")
 				client.wfile.write(f"Fail: {error}\n".encode())
 		elif message.startswith(b"PlayerLEDs:"):
 			try:
@@ -929,6 +933,7 @@ class SCCDaemon(Daemon):
 				client.mapper.get_controller().set_player_leds(mask)
 				client.wfile.write(b"OK.\n")
 			except Exception as error:
+				log.exception("Failed handling DualSense player LEDs")
 				client.wfile.write(f"Fail: {error}\n".encode())
 		elif message.startswith(b"Observe:"):
 			if Config()["enable_sniffing"]:
@@ -945,6 +950,7 @@ class SCCDaemon(Daemon):
 				source, actionstr = message.split(b":", 1)[1].strip(b" \t\r").split(b" ", 1)
 				action = TalkingActionParser().restart(actionstr.decode()).parse().compress()
 			except Exception as e:
+				log.exception("Failed handling Replace")
 				e = str(e).encode("utf-8").decode("unicode_escape").encode("latin1")
 				client.wfile.write(b"Fail: failed to parse: " + e + b"\n")
 				return
@@ -954,6 +960,7 @@ class SCCDaemon(Daemon):
 						client.wfile.write(b"Fail: Cannot lock " + source + b"\n")
 						return
 				except ValueError:
+					log.exception("Failed handling Replace 2nd case")
 					tb = str(traceback.format_exc()).encode("utf-8").decode("unicode_escape").encode("latin1")
 					client.wfile.write(b"Fail: " + tb + b"\n")
 					return
@@ -968,6 +975,7 @@ class SCCDaemon(Daemon):
 							client.wfile.write(b"Fail: Cannot lock " + source + b"\n")
 							return
 				except ValueError:
+					log.exception("Failed handling Lock")
 					tb = str(traceback.format_exc()).encode("utf-8").decode("unicode_escape").encode("latin1")
 					client.wfile.write(b"Fail: " + tb + b"\n")
 					return
@@ -998,7 +1006,7 @@ class SCCDaemon(Daemon):
 					client.wfile.write(b"OK.\n")
 					self._send_to_all(b"Reconfigured.\n")
 				except Exception:
-					pass
+					log.exception("Failed handling Reconfigure")
 		elif message.startswith(b"Rescan."):
 			cbs = []
 			with self.lock:
@@ -1007,20 +1015,20 @@ class SCCDaemon(Daemon):
 				try:
 					client.wfile.write(b"OK.\n")
 				except Exception:
-					pass
+					log.exception("Failed handling Rescan")
 			# Do stuff later
 			# (this cannot be done while self.lock is held, as creating new
 			# controller would create race condition)
 			for cb in self.rescan_cbs:
 				try:
 					cb()
-				except Exception as e:
-					log.exception(e)
+				except Exception:
+					log.exception("Failed handling Rescan callbacks")
 			# dev_monitor rescan has to be last to run
 			try:
 				self.dev_monitor.rescan()
-			except Exception as e:
-				log.exception(e)
+			except Exception:
+				log.exception("Failed handling Rescan rescan")
 		elif message.startswith(b"Turnoff."):
 			to_turn_off = []
 			with self.lock:
@@ -1036,6 +1044,7 @@ class SCCDaemon(Daemon):
 				what, up_angle = message[8:].strip().split(b" ", 2)
 				up_angle = int(up_angle)
 			except Exception:
+				log.exception("Failed handling Gesture")
 				tb = str(traceback.format_exc()).encode("utf-8").decode("unicode_escape").encode("latin1")
 				client.wfile.write(b"Fail: " + tb + b"\n")
 				return
@@ -1056,16 +1065,14 @@ class SCCDaemon(Daemon):
 				try:
 					menuaction.button_press(mapper)
 					client.mapper.schedule(0.1, release)
-				except Exception as e:
-					log.error("Error while processing menu action")
-					log.exception(e)
+				except Exception:
+					log.exception("Error while processing press menu action")
 
 			def release(mapper):
 				try:
 					menuaction.button_release(mapper)
-				except Exception as e:
-					log.error("Error while processing menu action")
-					log.exception(e)
+				except Exception:
+					log.exception("Error while processing release menu action")
 
 			with self.lock:
 				try:
@@ -1086,7 +1093,7 @@ class SCCDaemon(Daemon):
 						menuaction = client.mapper.profile.menus[menu_id].get_by_id(item_id).action
 					client.wfile.write(b"OK.\n")
 				except Exception:
-					log.warning("Selected menu item is no longer valid.")
+					log.exception("Selected menu item is no longer valid.")
 					client.wfile.write(b"Fail: Selected menu item is no longer valid\n")
 				if menuaction:
 					client.mapper.schedule(0, press)
@@ -1253,7 +1260,7 @@ class Client:
 		try:
 			self.connection.shutdown(True)
 		except Exception:
-			pass
+			log.exception("Unknown exception during client shutdown")
 
 	def request_gesture(self, daemon: SCCDaemon, what: bytes, up_angle: int) -> None:
 		"""Handler used when client requested gesture detection with "Gesture:" message.
@@ -1266,7 +1273,7 @@ class Client:
 			try:
 				self.wfile.write(b"Gesture: %s %s\n" % (what, gesture))
 			except Exception:
-				pass
+				log.exception("Failed writing gesture")
 
 		gd = daemon._start_gesture(self.mapper, what, up_angle, cb)
 		gd.enable()
@@ -1348,6 +1355,7 @@ class ReportingAction(Action):
 		try:
 			self.client.wfile.write(message.encode("utf-8"))
 		except Exception:
+			log.exception("Failed handling report")
 			# May fail when client dies
 			self.client.rfile.close()
 			self.client.wfile.close()

@@ -1,4 +1,4 @@
-"""SC-Controller - OSD Menu Generators
+"""SC Controller - OSD Menu Generators
 
 Auto-generated menus with stuff like list of all available profiles...
 """
@@ -6,7 +6,6 @@ Auto-generated menus with stuff like list of all available profiles...
 import logging
 import os
 import sys
-import traceback
 from ctypes import POINTER, cast
 
 import gi
@@ -123,8 +122,7 @@ class WindowListMenuGenerator(MenuGenerator):
 			window = GdkX11.X11Window.foreign_new_for_display(display, xid)
 			window.focus(0)
 		except Exception:
-			log.error("Failed to activate window")
-			log.error(traceback.format_exc())
+			log.exception("Failed to activate window")
 		menu.quit(-2)
 
 	def generate(self, menuhandler) -> list[MenuItem]:

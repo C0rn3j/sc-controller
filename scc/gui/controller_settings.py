@@ -161,9 +161,9 @@ class ControllerSettings(Editor, UserDataManager, ComboSetter):
 			cfg["icon"] = cbIcon.get_model().get_value(cbIcon.get_active_iter(), 1)
 			if self.profile_switcher:
 				self.profile_switcher.update_icon()
-		except:
+		except Exception:
 			# Just in case there are no icons at all
-			pass
+			log.exception("Unknown exception handling icons")
 
 		# Save (almost)
 		self.schedule_save_config()
