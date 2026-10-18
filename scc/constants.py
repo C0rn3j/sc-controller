@@ -27,13 +27,17 @@ TODO(Martin): Remove constants from profile.py and controller_widget.py and move
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import logging
 from enum import IntEnum, IntFlag, StrEnum
 from importlib.metadata import packages_distributions, version
 from typing import Literal
 
 distribution_name: str = "N/A"
-if __package__ is not None:
-	distribution_name = packages_distributions()[__package__][0]
+try:
+	if __package__ is not None:
+		distribution_name = packages_distributions()[__package__][0]
+except Exception:
+	logging.exception("Failure getting distribution name")
 
 class SCLeftRight(StrEnum):
 	"""Simply LEFT or RIGHT

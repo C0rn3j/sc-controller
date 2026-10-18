@@ -1,0 +1,271 @@
+name: Build and release
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-linux-x64:
+    name: "Pyinstaller Linux x64"
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v7
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.15'
+          cache: 'pip'
+
+      - name: Install deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            gettext \
+            gobject-introspection \
+            gir1.2-gtk-4.0 \
+            gir1.2-rsvg-2.0 \
+            gir1.2-notify-0.7 \
+            gir1.2-girepository-3.0-dev \
+            kde-config-gtk-style \
+            libcairo2-dev \
+            libgirepository1.0-dev \
+            libgirepository-2.0-dev \
+            libglib2.0-dev \
+            libgtk-4-common \
+            python3-gi-cairo \
+            p7zip
+
+      - name: Install Python dependencies and setup venv
+        env:
+          SDL_GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python -m pip install --upgrade pip
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install \
+            ".[all]" \
+            build \
+            pyinstaller \
+            pytest
+        #    https://github.com/pyinstaller/pyinstaller/archive/develop.zip
+
+      - name: Read git-derived project version
+        id: version
+        run: |
+          .venv/bin/python - <<'PY'
+          import os
+          from importlib.metadata import version as package_version
+          # The preceding installation uses setuptools-scm to derive this from Git tags.
+          version = package_version("sccontroller")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+            fh.write(f"version={version}\n")
+          print(f"Detected version: {version}")
+          PY
+
+      - name: Build the project using python-build
+        run: |
+          source .venv/bin/activate
+          python -m build --wheel
+
+      - name: Install the project into a venv
+        run: |
+          source .venv/bin/activate
+          pip install --prefix ".venv" dist/*.whl
+
+      # - name: "[DEBUG] Try running using run.sh"
+      #   run: bash run.sh
+
+      - name: Run tests using pytest
+        run: |
+          source .venv/bin/activate
+          PYTHONPATH=. pytest tests
+
+      - name: "[DEBUG] List all files"
+        run: find .
+
+      - name: Build Linux App with PyInstaller
+        run: |
+          source .venv/bin/activate
+          pyinstaller --log-level=DEBUG packaging/linux.spec
+
+      - name: "[DEBUG] List all files in packaged app"
+        run: find "dist/sc-controller"
+
+      - name: Create 7Z
+        run: |
+          APP_NAME="sc-controller"
+          cd "dist/${APP_NAME}"
+
+          ARCHIVE_PATH="../../${APP_NAME}-Linux-x64.7z"
+
+          7z a -r -snl "${ARCHIVE_PATH}" "."
+
+      - name: Upload 7Z artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: sc-controller-Linux-x64
+          path: sc-controller-Linux-x64.7z
+          archive: false
+
+      # - name: Run SCC for testing
+      #   run: |
+      #     source .venv/bin/activate
+      #     sc-controller
+
+  get-info:
+    runs-on: ubuntu-26.04
+    outputs:
+      date: ${{ steps.vars.outputs.date }}
+      shorthash: ${{ steps.vars.outputs.shorthash }}
+      fullhash: ${{ steps.vars.outputs.fullhash }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Get date and git hash
+        id: vars
+        run: |
+          echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+          echo "shorthash=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "fullhash=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+          echo "shorthash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "fullhash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+  pre-release:
+    if: github.ref == 'refs/heads/main' && github.repository == 'C0rn3j/sc-controller' && github.event_name == 'push'
+    needs: [get-info, build-linux-x64] # , build-linux-arm64, build-windows-x64, build-windows-arm64, build-macos-arm64
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: ~/artifacts
+
+      - name: Get latest release information
+        id: get_latest_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          api_url="https://api.github.com/repos/${{ github.repository }}"
+          latest_release_info=$(curl -H "Authorization: token $GITHUB_TOKEN" "$api_url/releases/latest")
+          echo "last_release_tag=$(echo "$latest_release_info" | jq -r '.tag_name')" >> $GITHUB_ENV
+
+      - name: Checkout the repository
+        uses: actions/checkout@v7
+
+      - name: Process template release_body.md
+        run: |
+          sed -i 's|RELEASE_TAG|Pre-release-SC-Controller-${{ needs.get-info.outputs.date }}-${{ needs.get-info.outputs.shorthash }}|g' ${{ github.workspace }}/.github/release_body.md
+
+
+      - name: Create Pre-Release on GitHub
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: "Pre-release-SC-Controller-${{ needs.get-info.outputs.date }}-${{ needs.get-info.outputs.shorthash }}"
+          tag: "Pre-release-SC-Controller-${{ needs.get-info.outputs.date }}-${{ needs.get-info.outputs.shorthash }}"
+          draft: false
+          prerelease: true
+          #body: "Full Changelog: [${{ env.last_release_tag }}...${{ needs.get-info.outputs.shorthash }}](https://github.com/Taiko2k/Tauon/compare/${{ env.last_release_tag }}...${{ needs.get-info.outputs.fullhash }})"
+          bodyFile: ${{ github.workspace }}/.github/release_body.md
+          artifacts: |
+            ~/artifacts/**/**/*.7z
+
+          #  ~/artifacts/**/**/*.dmg
+          #  ~/artifacts/**/**/*.exe
+
+#      - name: Publish to Release Repository
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        run: |
+#          ARTIFACTS_DIR=~/artifacts
+#          REPO="C0rn3j/sc-controller"
+#
+#          for file in "$ARTIFACTS_DIR"/**/**/*.{7z,dmg,exe}; do
+#            filename=$(basename "$file")
+#            # Check if release already exists and get ID
+#            release_id=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+#              "https://api.github.com/repos/$REPO/releases/tags/Pre-release-SC-Controller-${{ needs.get-info.outputs.date }}-${{ needs.get-info.outputs.shorthash }}" | jq -r '.id')
+#
+#            if [[ "$release_id" == "null" ]]; then
+#              echo "Creating release in $REPO for $filename"
+#              release_id=$(curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" \
+#                -H "Accept: application/vnd.github.v3+json" \
+#                -d '{
+#                  "tag_name": "Pre-release-SC-Controller-${{ needs.get-info.outputs.date }}-${{ needs.get-info.outputs.shorthash }}",
+#                  "name": "Pre-release-SC-Controller-${{ needs.get-info.outputs.date }}-${{ needs.get-info.outputs.shorthash }}",
+#                  "draft": false,
+#                  "prerelease": true,
+#                  "body": "Commit: [${{ needs.get-info.outputs.fullhash }}](https://github.com/C0rn3j/sc-controller/commit/${{ needs.get-info.outputs.fullhash }})"
+#                }' "https://api.github.com/repos/$REPO/releases" | jq -r '.id')
+#            else
+#              echo "Release already exists in $REPO with ID $release_id"
+#            fi
+#
+#            # Artifact upload
+#            echo "Uploading $filename to release $release_id in $REPO"
+#            upload_url="https://uploads.github.com/repos/$REPO/releases/$release_id/assets?name=$filename"
+#            curl -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/octet-stream" --data-binary @"$file" "$upload_url"
+#          done
+
+      - name: Get current pre-release information
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          api_url="https://api.github.com/repos/${{ github.repository }}/releases"
+
+          # Get all releases (sorted by date)
+          releases=$(curl -H "Authorization: token $GITHUB_TOKEN" "$api_url")
+
+          # Capture the most recent pre-release (assuming the first one is the latest)
+          current_release=$(echo "$releases" | jq -c '.[] | select(.prerelease == true) | .published_at' | sort -r | head -n 1)
+
+          # Remove extra quotes from captured date
+          current_release=$(echo $current_release | tr -d '"')
+
+          # Export the current published_at to be available for the next step
+          echo "CURRENT_PUBLISHED_AT=$current_release" >> $GITHUB_ENV
+
+      - name: Delete old pre-releases and tags
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          api_url="https://api.github.com/repos/${{ github.repository }}/releases"
+
+          # Get current Releases
+          releases=$(curl -H "Authorization: token $GITHUB_TOKEN" "$api_url")
+
+          # Remove extra quotes from captured date
+          CURRENT_PUBLISHED_AT=$(echo $CURRENT_PUBLISHED_AT | tr -d '"')
+
+          # Convert CURRENT_PUBLISHED_AT para timestamp Unix
+          current_published_ts=$(date -d "$CURRENT_PUBLISHED_AT" +%s)
+
+          # Identify pre-releases
+          echo "$releases" | jq -c '.[] | select(.prerelease == true)' | while read -r release; do
+            release_date=$(echo "$release" | jq -r '.published_at')
+            release_id=$(echo "$release" | jq -r '.id')
+            release_tag=$(echo "$release" | jq -r '.tag_name')
+
+            # Remove extra quotes from captured date
+            release_date=$(echo $release_date | tr -d '"')
+
+            # Convert release_date para timestamp Unix
+            release_date_ts=$(date -d "$release_date" +%s)
+
+            # Compare timestamps and delete old pre-releases
+            if [[ "$release_date_ts" -lt "$current_published_ts" ]]; then
+              echo "Deleting old pre-release: $release_id from $release_date with tag: $release_tag"
+              # Delete the pre-release
+              curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" "$api_url/$release_id"
+              # Delete the tag
+              curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/$release_tag"
+            else
+              echo "Skipping pre-release: $release_id (newer or same date)"
+            fi
+          done

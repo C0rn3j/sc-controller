@@ -12,6 +12,7 @@ import os
 import platform
 import re
 import sys
+from pathlib import Path
 from typing import TYPE_CHECKING
 from urllib.parse import unquote
 
@@ -110,8 +111,9 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		# Set variables
 		self._profile_menu_ps: ProfileSwitcher | None = None
 		self.config = Config()
-		self.gladepath = gladepath
-		self.imagepath = imagepath
+		app_py_directory = Path(__file__).resolve().parent
+		self.gladepath = gladepath if Path(gladepath).exists() else str(app_py_directory.parent.parent / "ui")
+		self.imagepath = imagepath if Path(imagepath).exists() else str(app_py_directory.parent.parent / "images")
 		self.builder = None
 		self.recursing = False
 		self.statusicon = None
