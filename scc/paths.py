@@ -111,11 +111,14 @@ def get_default_controller_icons_path() -> str:
 def get_share_path() -> str:
 	"""Return directory where shared files are kept.
 
-	Usually "/usr/share/scc" or $SCC_SHARED if program is being started from
+	Usually "/usr/share/scc" or ${SCC_SHARED} if program is being started from
 	script extracted from source tarball
 	"""
 	if "SCC_SHARED" in os.environ:
 		return os.environ["SCC_SHARED"]
+	# Pyinstaller
+	if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+		return sys._MEIPASS
 	paths = (
 		"/usr/local/share/scc/",
 		os.path.expanduser("~/.local/share/scc"),
