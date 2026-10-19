@@ -265,7 +265,7 @@ class DaemonManager(GObject.GObject):
 
 	def set_profile(self, filename) -> None:
 		"""Asks daemon to change 1st controller profile"""
-		self.request("Controller.\nProfile: %s" % (filename,), DaemonManager.nocallback, DaemonManager.nocallback)
+		self.request(f"Controller.\nProfile: {filename}", DaemonManager.nocallback, DaemonManager.nocallback)
 
 	def reconfigure(self):
 		"""Asks daemon reload configuration file"""
@@ -277,23 +277,21 @@ class DaemonManager(GObject.GObject):
 
 	def stop(self):
 		"""Stops the daemon"""
-		Gio.Subprocess.new([find_binary("scc-daemon"), "/dev/null", "stop"], Gio.SubprocessFlags.NONE)
+		Gio.Subprocess.new([find_binary("scc-daemon"), "stop"], Gio.SubprocessFlags.NONE)
 		self.connecting = False
 
 	def start(self, mode="start"):
-		"""Starts the daemon and forces connection to be created immediately.
-		"""
+		"""Starts the daemon and forces connection to be created immediately"""
 		if self.alive:
 			# Just to clean up living connection
 			self.alive = None
 			self._on_daemon_died()
-		Gio.Subprocess.new([find_binary("scc-daemon"), "/dev/null", mode], Gio.SubprocessFlags.NONE)
+		Gio.Subprocess.new([find_binary("scc-daemon"), mode], Gio.SubprocessFlags.NONE)
 		self._connect()
 		GLib.timeout_add_seconds(10, self._check_connected)
 
 	def restart(self):
-		"""Restarts the daemon and forces connection to be created immediately.
-		"""
+		"""Restarts the daemon and forces connection to be created immediately"""
 		self.start(mode="restart")
 
 	def _check_connected(self):

@@ -10,8 +10,8 @@ def main() -> None:
 	"""SCCDaemon launcher."""
 	init_logging()
 	parser = argparse.ArgumentParser()
-	parser.add_argument("profile", type=str, nargs="*")
 	parser.add_argument("command", type=str, choices=["start", "stop", "restart", "debug"])
+	parser.add_argument("--profile", help="Profile to load on startup")
 	parser.add_argument(
 		"--alone", action="store_true", help="prevent scc-daemon from launching osd-daemon and autoswitch-daemon",
 	)
@@ -23,11 +23,9 @@ def main() -> None:
 	args = parser.parse_args()
 	daemon.alone = args.alone
 
-	profile = " ".join(args.profile)
-	if profile:
-		daemon.set_default_profile(profile)
-		# If no default_profile is set, daemon will try to load last used
-		# from config
+	if args.profile:
+		daemon.set_default_profile(args.profile)
+		# If no default_profile is set, daemon will try to load last used from config
 
 	if args.command == "start":
 		daemon.start(foreground=args.foreground)
