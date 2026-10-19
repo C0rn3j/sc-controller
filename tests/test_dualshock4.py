@@ -1,3 +1,10 @@
+import sys
+
+import pytest
+
+if sys.platform != "linux":
+	pytest.skip("Requires Linux drivers", allow_module_level=True)
+
 import struct
 import zlib
 from unittest.mock import Mock

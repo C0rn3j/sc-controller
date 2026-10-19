@@ -2,8 +2,9 @@ from scc.actions import Action
 
 
 class TestDocs:
-	"""Tests every ui file in ui/ directory (and subdirectories) for known
-	problems that may cause GUI to crash in some environments.
+	"""Tests every ui file in ui/ directory (and subdirectories)
+
+	Deals with known problems that may cause GUI to crash in some environments.
 
 	(one case on one environment so far)
 	"""
@@ -21,9 +22,9 @@ class TestDocs:
 			if command in (None, "None", "exit"):
 				# Woo for special cases
 				continue
-			anchor = '<a name="%s">' % (command,)
-			assert anchor in actions_md, "Action '%s' is not documented in actions.md" % (command,)
+			anchor = f'<a name="{command}">'
+			assert anchor in actions_md, f"Action '{command}' is not documented in actions.md"
 
 		for key in Action.PKEYS:
-			anchor = "#### `%s`" % (key,)
-			assert key in profile_md, "Key '%s' is not documented in profile-file.md" % (key,)
+			anchor = f"#### `{key}`"
+			assert key in profile_md, f"Key '{key}' is not documented in profile-file.md"

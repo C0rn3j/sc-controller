@@ -1,4 +1,9 @@
+import sys
+
 import pytest
+
+if sys.platform != "linux":
+	pytest.skip("Requires Linux drivers", allow_module_level=True)
 
 from scc.drivers.linux import evdevdrv
 

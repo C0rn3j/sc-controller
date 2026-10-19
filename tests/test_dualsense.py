@@ -1,3 +1,10 @@
+import sys
+
+import pytest
+
+if sys.platform != "linux":
+	pytest.skip("Requires Linux drivers", allow_module_level=True)
+
 from unittest.mock import Mock, call, patch
 
 from scc.constants import DUALSENSE_CPAD_X_MAX, DUALSENSE_CPAD_Y_MAX, STICK_PAD_MAX, STICK_PAD_MIN, HapticPos
