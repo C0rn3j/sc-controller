@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: sc-controller\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-28 20:33+0200\n"
-"PO-Revision-Date: 2026-10-14 10:51+0000\n"
+"PO-Revision-Date: 2026-10-19 13:44+0000\n"
 "Last-Translator: \"sotis.oph\" <sotis.oph@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/sc-controller/sc-"
 "controller/ru/>\n"
@@ -758,7 +758,7 @@ msgstr "Нажмите на стик или кнопку..."
 
 #: scc/gui/creg/grabs.py:20
 msgid "Press a button..."
-msgstr "Нажмите кнопку..."
+msgstr "Нажмите одну кнопку..."
 
 #: scc/gui/creg/grabs.py:66
 msgid "Pull a trigger..."
@@ -1250,7 +1250,7 @@ msgstr "Скрыть все экранные меню и сообщения"
 
 #: scc/special_actions.py:466
 msgid "QuickMenu"
-msgstr "Быстрое меню"
+msgstr "QuickMenu"
 
 #: scc/special_actions.py:520 scc/special_actions.py:536
 msgid "Dialog"
@@ -1980,7 +1980,7 @@ msgstr "Инвертировать ось Y"
 
 #: ui/ae/gyro_action.ui:224 ui/ae/gyro.ui:224
 msgid "Button disables Gyro"
-msgstr "Кнопка отключает гироскоп."
+msgstr "Кнопка отключает гироскоп"
 
 #: ui/ae/gyro.ui:33
 msgid "Pitch"
@@ -2148,181 +2148,183 @@ msgstr "Сохранять"
 
 #: ui/app.ui:152 ui/app.ui:242
 msgid "Profile name"
-msgstr ""
+msgstr "Имя профиля"
 
 #: ui/app.ui:170
 msgid "Empty profile"
-msgstr ""
+msgstr "Пустой профиль"
 
 #: ui/app.ui:178
 msgid "Copy current profile"
-msgstr ""
+msgstr "Скопировать текущий профиль"
 
 #: ui/app.ui:277
 msgid "_Rename"
-msgstr ""
+msgstr "_Переименовать"
 
 #: ui/app.ui:309 ui/app.ui:934
 msgid "_Emulation Enabled"
-msgstr ""
+msgstr "_Включить эмуляцию"
 
 #: ui/app.ui:317
 msgid "_Settings"
-msgstr ""
+msgstr "_Настройки"
 
 #: ui/app.ui:325
 msgid "Import/Export _Profile..."
-msgstr ""
+msgstr "Импорт/Экспорт _Профиля.."
 
 #: ui/app.ui:338 ui/app.ui:946
 msgid "About"
-msgstr ""
+msgstr "О приложении"
 
 #: ui/app.ui:346 ui/app.ui:953
 msgid "Quit"
-msgstr ""
+msgstr "Выйти"
 
 #: ui/app.ui:680
 msgid "Undo"
-msgstr ""
+msgstr "Отменить"
 
 #: ui/app.ui:694
 msgid "Redo"
-msgstr ""
+msgstr "Повторить"
 
 #: ui/app.ui:724
 msgid "_Filename"
-msgstr ""
+msgstr "_Имя файла"
 
 #: ui/app.ui:742
 msgid "_Description"
-msgstr ""
+msgstr "_Описание"
 
 #: ui/app.ui:766
 msgid "Profile is _template"
-msgstr ""
+msgstr "Профиль — это _шаблон"
 
 #: ui/app.ui:792
 msgid "Change Sticks and Background"
-msgstr ""
+msgstr "Сменить стики и фон"
 
 #: ui/app.ui:795
 msgid "Symmetrical"
-msgstr ""
+msgstr "Симметричный"
 
 #: ui/app.ui:800
 msgid "Asymmetrical"
-msgstr ""
+msgstr "Асимметричный"
 
 #: ui/app.ui:805
 msgid "Touchpads"
-msgstr ""
+msgstr "Сенсорные панели"
 
 #: ui/app.ui:810
 msgid "Change Buttons"
-msgstr ""
+msgstr "Изменить кнопки"
 
 #: ui/app.ui:813
 msgid "PSx"
-msgstr ""
+msgstr "PSx"
 
 #: ui/app.ui:818
 msgid "ABXY"
-msgstr ""
+msgstr "ABXY"
 
 #: ui/app.ui:824
 msgid "Clear Above Settings"
-msgstr ""
+msgstr "Очистить настройки выше"
 
 #: ui/app.ui:907
 msgid "C_lear"
-msgstr ""
+msgstr "О_чистить"
 
 #: ui/app.ui:911
 msgid "_Copy"
-msgstr ""
+msgstr "_Скопировать"
 
 #: ui/app.ui:915
 msgid "_Paste"
-msgstr ""
+msgstr "_Вставить"
 
 #: ui/app.ui:927
 msgid "Show/Hide _Window"
-msgstr ""
+msgstr "Показать/скрыть _окно"
 
 #: ui/app.ui:980
 msgid "Welcome to the version <b>%s</b>"
-msgstr ""
+msgstr "Добро пожаловать в версию <b>%s</b>"
 
 #: ui/app.ui:996
 msgid "SC Controller was upgraded"
-msgstr ""
+msgstr "SC Контроллер был модернизирован"
 
 #: ui/app.ui:1010
 msgid "Display with each new version"
-msgstr ""
+msgstr "Отображается с каждой новой версией"
 
 #: ui/controller_settings.ui:165
 msgid "LED brightness"
-msgstr ""
+msgstr "Яркость светодиода"
 
 #: ui/controller_settings.ui:198
 msgid "Controller Name"
-msgstr ""
+msgstr "Имя контроллера"
 
 #: ui/controller_settings.ui:270
 msgid "Right-aligned OSD"
-msgstr ""
+msgstr "OSD выравненное по правому краю"
 
 #: ui/controller_settings.ui:285
 msgid "Automatically turn off when inactive for"
-msgstr ""
+msgstr "Автоматическое отключение при бездействии"
 
 #: ui/controller_settings.ui:318
 msgid "Touchpad Input Rotation"
-msgstr ""
+msgstr "Вращение ввода сенсорной панели"
 
 #: ui/controller_settings.ui:339
 msgid ""
 "Applied to everything, even if the profile does not set rotation for its "
 "actions."
 msgstr ""
+"Это применяется ко всему, даже если в профиле не задано вращение для "
+"выполняемых действий."
 
 #: ui/controller_settings.ui:354
 msgid "Left Pad Angle"
-msgstr ""
+msgstr "Угол левого пада"
 
 #: ui/controller_settings.ui:367
 msgid "Right Pad Angle"
-msgstr ""
+msgstr "Угол правого пада"
 
 #: ui/controller_settings.ui:453
 msgid "Default Menu Controls"
-msgstr ""
+msgstr "Элементы управления меню по умолчанию"
 
 #: ui/controller_settings.ui:474
 msgid "Used to control menus unless the profile specifies something different"
-msgstr ""
+msgstr "Используется для управления меню, если в профиле не указано иное"
 
 #: ui/creg.ui:45
 msgid "Two sticks, symmetrical (PSx Controller)"
-msgstr ""
+msgstr "Два симметричных стика (контроллер PSx)"
 
 #: ui/creg.ui:49
 msgid "Two sticks, asymmetrical (x360 pad)"
-msgstr ""
+msgstr "Два стика, асимметричные (геймпад x360)"
 
 #: ui/creg.ui:53
 msgid "Single stick"
-msgstr ""
+msgstr "Один стик"
 
 #: ui/creg.ui:57
 msgid "Single DPAD (NES/SNES controller)"
-msgstr ""
+msgstr "Одна крестовина (контроллер NES/SNES)"
 
 #: ui/creg.ui:86
 msgid "Controller Device"
-msgstr ""
+msgstr "Контроллер"
 
 #: ui/creg.ui:97
 msgid ""
@@ -2331,6 +2333,10 @@ msgid ""
 "\n"
 "Please, select your controller from list bellow and click Next."
 msgstr ""
+"Этот диалог позволяет настроить традиционные контроллеры для использования с "
+"SC Controller.\n"
+"\n"
+"Пожалуйста, выберите свой контроллер из списка ниже и нажмите «Далее»."
 
 #: ui/creg.ui:166
 msgid "Show All Devices"
@@ -2451,10 +2457,10 @@ msgid ""
 msgstr ""
 "<b>Контроллер DS4</b>\n"
 "\n"
-"Контроллер SC автоматически поддерживает контроллеры DS4.\n"
-"и не требует дополнительной настройки. Всё, что вам нужно.\n"
-"Необходимо убедиться, что установлен флажок \"Поддержка контроллера DS4\".\n"
-"Включена в настройках или здесь:"
+"Контроллер SC автоматически поддерживает контроллеры DS4\n"
+"и не требует дополнительной настройки. Всё, что вам необходимо\n"
+"это убедиться, что флажок \"Поддержка контроллера DS4\"\n"
+"включен в настройках или здесь:"
 
 #: ui/creg.ui:748
 msgid "_Enable DS4 Controller Support"
@@ -2478,87 +2484,89 @@ msgstr "_Назад"
 
 #: ui/creg.ui:824
 msgid "_Next"
-msgstr ""
+msgstr "_Следующий"
 
 #: ui/creg.ui:854
 msgid "Press button..."
-msgstr ""
+msgstr "Нажмите кнопку..."
 
 #: ui/creg.ui:913
 msgid "L1 L2 R1 R2"
-msgstr ""
+msgstr "L1 L2 R1 R2"
 
 #: ui/creg.ui:917
 msgid "LB LT RB RT"
-msgstr ""
+msgstr "LB LT RB RT"
 
 #: ui/creg.ui:921
 msgid "L R"
-msgstr ""
+msgstr "L R"
 
 #: ui/creg.ui:931
 msgid "Change mapping for _Pressing stick"
-msgstr ""
+msgstr "Изменить назначение кнопки для нажатия на стик"
 
 #: ui/creg.ui:938
 msgid "Change mapping for _Moving stick"
-msgstr ""
+msgstr "Изменить сопоставление для _Перемещающегося стика"
 
 #: ui/global_settings.ui:53
 msgid "None / Custom"
-msgstr ""
+msgstr "Нет / Пользовательский"
 
 #: ui/global_settings.ui:57
 msgid "Green"
-msgstr ""
+msgstr "Зеленый"
 
 #: ui/global_settings.ui:61
 msgid "Blue"
-msgstr ""
+msgstr "Синий"
 
 #: ui/global_settings.ui:65
 msgid "Cyan"
-msgstr ""
+msgstr "Голубой"
 
 #: ui/global_settings.ui:69
 msgid "Yellow"
-msgstr ""
+msgstr "Желтый"
 
 #: ui/global_settings.ui:73
 msgid "Red"
-msgstr ""
+msgstr "Красный"
 
 #: ui/global_settings.ui:85
 msgid "Classic"
-msgstr ""
+msgstr "Классический"
 
 #: ui/global_settings.ui:89
 msgid "Reloaded"
-msgstr ""
+msgstr "Перезагруженный"
 
 #: ui/global_settings.ui:113
 msgid "Emulate Arrows"
-msgstr ""
+msgstr "Имитация стрелок"
 
 #: ui/global_settings.ui:118
 msgid "Emulate Arrows, Move Keyboard when Left Stick is Pressed"
-msgstr ""
+msgstr "Имитация стрелок, перемещение клавиатуры при нажатии левого стика"
 
 #: ui/global_settings.ui:123
 msgid "Emulate Arrows, Move Keyboard when Left Grip is Pressed"
 msgstr ""
+"Имитация стрелок, перемещение клавиатуры при нажатии левой клавиши хвата"
 
 #: ui/global_settings.ui:128
 msgid "Emulate Arrows, Move Keyboard when Right Grip is Pressed"
 msgstr ""
+"Имитация стрелок, перемещение клавиатуры при нажатии правой клавиши хвата"
 
 #: ui/global_settings.ui:142
 msgid "Shift and Ctrl"
-msgstr ""
+msgstr "Shift и Ctrl"
 
 #: ui/global_settings.ui:147
 msgid "Press Keyboard Buttons"
-msgstr ""
+msgstr "Нажмите кнопки на клавиатуре"
 
 #: ui/global_settings.ui:181
 msgid ""
@@ -2567,228 +2575,241 @@ msgid ""
 "virtual gamepad, what may cause them to ignore future inputs\n"
 "or even crash."
 msgstr ""
+"Для применения всех настроек необходимо перезапустить эмуляцию.\n"
+"Если у вас запущены какие-либо игры, перезапуск эмуляции приведет к «"
+"отключению»\n"
+"виртуального геймпада, что может привести к тому, что игры будут "
+"игнорировать \n"
+"будущий ввод или даже упадут."
 
 #: ui/global_settings.ui:192
 msgid "Restart Emulation"
-msgstr ""
+msgstr "Перезапустить эмуляцию"
 
 #: ui/global_settings.ui:218
 msgid "Language"
-msgstr ""
+msgstr "Язык"
 
 #: ui/global_settings.ui:242
 msgid "The language change will take effect after restarting SC Controller."
-msgstr ""
+msgstr "Изменение языка вступит в силу после перезапуска SC Controller."
 
 #: ui/global_settings.ui:265
 msgid "Enable Rumble Support"
-msgstr ""
+msgstr "Включить поддержку вибрации"
 
 #: ui/global_settings.ui:286
 msgid "Enable System Tray Icon"
-msgstr ""
+msgstr "Включить значок в системном трее"
 
 #: ui/global_settings.ui:305
 msgid "Minimize to tray instead of closing"
-msgstr ""
+msgstr "Свернуть в трей вместо закрытия"
 
 #: ui/global_settings.ui:324
 msgid "Minimize to tray on start"
-msgstr ""
+msgstr "Свернуть в трей при запуске"
 
 #: ui/global_settings.ui:339
 msgid "General"
-msgstr ""
+msgstr "Общий"
 
 #: ui/global_settings.ui:357
 msgid "On-Screen Keyboard Bindings"
-msgstr ""
+msgstr "Сочетания клавиш экранной клавиатуры"
 
 #: ui/global_settings.ui:381
 msgid "Triggers"
-msgstr ""
+msgstr "Триггеры"
 
 #: ui/global_settings.ui:396
 msgid "Advanced..."
-msgstr ""
+msgstr "Расширенный..."
 
 #: ui/global_settings.ui:456
 msgid "Pad Sensitivity"
-msgstr ""
+msgstr "Чувствительность панели"
 
 #: ui/global_settings.ui:468
 msgid "Horizontal"
-msgstr ""
+msgstr "Горизонтальный"
 
 #: ui/global_settings.ui:482
 msgid "Vertical"
-msgstr ""
+msgstr "Вертикальный"
 
 #: ui/global_settings.ui:571
 msgid "Default Menu Items"
-msgstr ""
+msgstr "Пункты меню по умолчанию"
 
 #: ui/global_settings.ui:592
 msgid "List of recent profiles"
-msgstr ""
+msgstr "Список последних профилей"
 
 #: ui/global_settings.ui:614
 msgid "Run Program..."
-msgstr ""
+msgstr "Запустить программу..."
 
 #: ui/global_settings.ui:635
 msgid "Autoswitch options"
-msgstr ""
+msgstr "Параметры автопереключения"
 
 #: ui/global_settings.ui:656
 msgid "Kill Current Window"
-msgstr ""
+msgstr "Закрыть текущее окно"
 
 #: ui/global_settings.ui:677
 msgid "Window switcher"
-msgstr ""
+msgstr "Переключатель окон"
 
 #: ui/global_settings.ui:698
 msgid "Show Current Bindings"
-msgstr ""
+msgstr "Показать текущие привязки"
 
 #: ui/global_settings.ui:719
 msgid "Games List"
-msgstr ""
+msgstr "Список игр"
 
 #: ui/global_settings.ui:740
 msgid "Turn Controller OFF"
-msgstr ""
+msgstr "Выключить контроллер"
 
 #: ui/global_settings.ui:782
 msgid "Edit Current Bindings"
-msgstr ""
+msgstr "Редактировать текущие привязки"
 
 #: ui/global_settings.ui:798
 msgid "Menus & Keyboard"
-msgstr ""
+msgstr "Меню и клавиатура"
 
 #: ui/global_settings.ui:877
 msgid "Separator Text"
-msgstr ""
+msgstr "Разделитель текста"
 
 #: ui/global_settings.ui:890
 msgid "Selected Text"
-msgstr ""
+msgstr "Выбранный текст"
 
 #: ui/global_settings.ui:903
 msgid "Selected Background"
-msgstr ""
+msgstr "Выбранный фон"
 
 #: ui/global_settings.ui:916
 msgid "Selected Border"
-msgstr ""
+msgstr "Выбранная граница"
 
 #: ui/global_settings.ui:996
 msgid "OSD Menu Colors"
-msgstr ""
+msgstr "Цвета экранного меню"
 
 #: ui/global_settings.ui:1007 ui/global_settings.ui:1163
 msgid "Text"
-msgstr ""
+msgstr "Текст"
 
 #: ui/global_settings.ui:1020
 msgid "Item Border"
-msgstr ""
+msgstr "Граница элемента"
 
 #: ui/global_settings.ui:1033
 msgid "Background"
-msgstr ""
+msgstr "Фон"
 
 #: ui/global_settings.ui:1046
 msgid "Border"
-msgstr ""
+msgstr "Граница"
 
 #: ui/global_settings.ui:1062
 msgid "On-Screen Keyboard Colors"
-msgstr ""
+msgstr "Цвета экранной клавиатуры"
 
 #: ui/global_settings.ui:1074
 msgid "Normal Button"
-msgstr ""
+msgstr "Обычная кнопка"
 
 #: ui/global_settings.ui:1103
 msgid "Pressed Button"
-msgstr ""
+msgstr "Нажата кнопка"
 
 #: ui/global_settings.ui:1133
 msgid "Special Button"
-msgstr ""
+msgstr "Специальная кнопка"
 
 #: ui/global_settings.ui:1194
 msgid "Highlight"
-msgstr ""
+msgstr "Выделение"
 
 #: ui/global_settings.ui:1237
 msgid "OSD Style"
-msgstr ""
+msgstr "Стиль экранного меню"
 
 #: ui/global_settings.ui:1275
 msgid "Color Preset"
-msgstr ""
+msgstr "Предустановленный цвет"
 
 #: ui/global_settings.ui:1312
 msgid "OSD Colors"
-msgstr ""
+msgstr "Цвета экранного меню"
 
 #: ui/global_settings.ui:1335
 msgid "Enable Steam Controller support"
-msgstr ""
+msgstr "Включить поддержку Steam Controller"
 
 #: ui/global_settings.ui:1357
 msgid "Enable DualShock 4 (PS4 controller) support"
-msgstr ""
+msgstr "Включить поддержку контроллера DualShock 4 (PS4)"
 
 #: ui/global_settings.ui:1379
 msgid "Enable DualSense (PS5 controller) support"
-msgstr ""
+msgstr "Включить поддержку контроллера DualSense (контроллер PS5)"
 
 #: ui/global_settings.ui:1391
 msgid ""
 "If enabled, any connected DualSense controller will be automatically used by "
 "SC Controller"
 msgstr ""
+"Если эта функция включена, любой подключенный контроллер DualSense будет "
+"автоматически использоваться SC Controller"
 
 #: ui/global_settings.ui:1407
 msgid "Other registered controllers"
-msgstr ""
+msgstr "Другие зарегистрированные контроллеры"
 
 #: ui/global_settings.ui:1420
 msgid ""
 "If enabled, any connected DualShock 4 controller will be automatically used "
 "by SC Controller"
 msgstr ""
+"Если эта функция включена, любой подключенный контроллер DualShock 4 будет "
+"автоматически использоваться программой SC Controller"
 
 #: ui/global_settings.ui:1433
 msgid ""
 "Controllers listed here are automatically used by SC Controller whenever "
 "they are connected."
 msgstr ""
+"Контроллеры, перечисленные здесь, автоматически используются SC Controller "
+"при каждом подключении."
 
 #: ui/global_settings.ui:1498
 msgid "Enable HID device support"
-msgstr ""
+msgstr "Включить поддержку HID-устройств"
 
 #: ui/global_settings.ui:1520
 msgid "Enable evdev support"
-msgstr ""
+msgstr "Включить поддержку evdev"
 
 #: ui/global_settings.ui:1549
 msgid "Register New Controller"
-msgstr ""
+msgstr "Зарегистрировать нового контроллера"
 
 #: ui/global_settings.ui:1593
 msgid "The python-evdev package is required for non-Steam controller support"
 msgstr ""
+"Для поддержки контроллеров, отличных от Steam, требуется пакет python-evdev"
 
 #: ui/global_settings.ui:1612
 msgid "Enable Remote RetroPad protocol support"
-msgstr ""
+msgstr "Включить поддержку протокола Remote RetroPad"
 
 #: ui/global_settings.ui:1625
 msgid ""
@@ -2800,42 +2821,50 @@ msgid ""
 "Retroarch-as-additional-controller\">See wiki for instructions and more info."
 "</a>"
 msgstr ""
+"Если эта функция включена, то любое устройство или приложение, совместимое с "
+"протоколом Remote RetroPad от Retroarch, будет работать\n"
+"по сети и его можно подключить и удаленно управлять этим компьютером как с "
+"дополнительного геймпада.\n"
+"<a href=\"https://github.com/C0rn3j/sc-controller/wiki/Using-phone-with-"
+"Retroarch-as-additional-controller\">См. вики для получения инструкций и "
+"дополнительной информации.</a>"
 
 #: ui/global_settings.ui:1644
 msgid "Controllers"
-msgstr ""
+msgstr "Контроллеры"
 
 #: ui/global_settings.ui:1667
 msgid "Show _OSD notification when profile is switched automatically"
 msgstr ""
+"Отображать _экранное уведомление при автоматическом переключении профиля"
 
 #: ui/global_settings.ui:1683
 msgid "Switching Rules"
-msgstr ""
+msgstr "Правила переключения"
 
 #: ui/global_settings.ui:1709
 msgid "When window..."
-msgstr ""
+msgstr "Когда окно..."
 
 #: ui/global_settings.ui:1722
 msgid "... then"
-msgstr ""
+msgstr "... тогда"
 
 #: ui/global_settings.ui:1753
 msgid "Automatic Profile Switching Options"
-msgstr ""
+msgstr "Параметры автоматического переключения профилей"
 
 #: ui/global_settings.ui:1777
 msgid "Edit Condition"
-msgstr ""
+msgstr "Редактировать условие"
 
 #: ui/global_settings.ui:1838
 msgid "Autoswitcher"
-msgstr ""
+msgstr "Автоматический переключатель"
 
 #: ui/global_settings.ui:1861
 msgid "Enable Input Test Mode"
-msgstr ""
+msgstr "Включить режим проверки ввода"
 
 #: ui/global_settings.ui:1874
 msgid ""
@@ -2844,98 +2873,106 @@ msgid ""
 "When enabled, main application window will display pressed buttons,\n"
 "grips, triggers, finger positions on both pads and stick angle."
 msgstr ""
+"Позволяет приложениям <b>отслеживать и, возможно, записывать в лог</b> ввод "
+"с геймпада.\n"
+"\n"
+"При включении этой функции в главном окне приложения будут отображаться "
+"нажатые кнопки,\n"
+"рукоятки, курки, положение пальцев на обеих панелях и угол наклона джойстика."
 
 #: ui/global_settings.ui:1900
 msgid "Use Serial Numbers to Identify Controllers"
-msgstr ""
+msgstr "Использовать серийные номера для идентификации контроллеров"
 
 #: ui/global_settings.ui:1921
 msgid "Automatically Disable Emulation When Closing GUI"
-msgstr ""
+msgstr "Автоматическое отключение эмуляции при закрытии графического интерфейса"
 
 #: ui/global_settings.ui:1934
 msgid "Try disabling this option if your controller stops working randomly."
 msgstr ""
+"Попробуйте отключить эту опцию, если ваш контроллер внезапно перестаёт "
+"работать."
 
 #: ui/global_settings.ui:1957
 msgid "Show the changelog after SC Controller is updated"
-msgstr ""
+msgstr "Показать список изменений после обновления SC Controller"
 
 #: ui/global_settings.ui:1973
 msgid "Advanced"
-msgstr ""
+msgstr "Расширенный"
 
 #: ui/global_settings.ui:2017
 msgid "Condition"
-msgstr ""
+msgstr "Состояние"
 
 #: ui/global_settings.ui:2032
 msgid "Match Window Title"
-msgstr ""
+msgstr "Совпадает заголовок окна"
 
 #: ui/global_settings.ui:2054
 msgid "Match exact title"
-msgstr ""
+msgstr "Точное совпадение с заголовком"
 
 #: ui/global_settings.ui:2066
 msgid "Use regular expression"
-msgstr ""
+msgstr "Используются регулярные выражения"
 
 #: ui/global_settings.ui:2084
 msgid "Match Window Class"
-msgstr ""
+msgstr "Совпадает класс окна"
 
 #: ui/global_settings.ui:2116
 msgid "Activate Profile"
-msgstr ""
+msgstr "Активировать профиль"
 
 #: ui/global_settings.ui:2172
 msgid "Restart Daemon"
-msgstr ""
+msgstr "Перезапустить демон"
 
 #: ui/global_settings.ui:2203 ui/menu_editor.ui:317
 msgid "_Save"
-msgstr ""
+msgstr "_Сохранить"
 
 #: ui/icon_chooser.ui:101
 msgid "Category"
-msgstr ""
+msgstr "Категория"
 
 #: ui/icon_chooser.ui:154
 msgid "button"
-msgstr ""
+msgstr "кнопка"
 
 #: ui/import_export.ui:67
 msgid "Select an option"
-msgstr ""
+msgstr "Выберите вариант"
 
 #: ui/import_export.ui:94
 msgid "_Export Profile"
-msgstr ""
+msgstr "_Экспорт профиля"
 
 #: ui/import_export.ui:130
 msgid "_Import SC Controller Profile"
-msgstr ""
+msgstr "_Импорт профиля SC Controller"
 
 #: ui/import_export.ui:167
 msgid "Import _Steam Profile"
-msgstr ""
+msgstr "Импорт профиля _Steam"
 
 #: ui/import_export.ui:187
 msgid "You can also drag and drop a profile file onto the main window"
-msgstr ""
+msgstr "Вы также можете перетащить файл профиля в главное окно"
 
 #: ui/import_export.ui:200
 msgid "Import / Export"
-msgstr ""
+msgstr "Импорт / Экспорт"
 
 #: ui/import_export.ui:217
 msgid "Select Profile to Export"
-msgstr ""
+msgstr "Выберите профиль для экспорта"
 
 #: ui/import_export.ui:270 ui/import_export.ui:381
 msgid "Export Profile"
-msgstr ""
+msgstr "Экспорт профиля"
 
 #: ui/import_export.ui:281
 msgid ""
@@ -2946,42 +2983,50 @@ msgid ""
 "\n"
 "Please, select what should be packaged along with exported profile."
 msgstr ""
+"Выбранный профиль ссылается на другой профиль (или профили) или меню.\n"
+"Возможно, вам потребуется экспортировать и упаковать вместе с ним указанные "
+"элементы.\n"
+"В противном случае, переключение профилей или меню могут не работать при "
+"импорте профиля.\n"
+"\n"
+"Пожалуйста, выберите, что должно быть упаковано вместе с экспортированным "
+"профилем."
 
 #: ui/import_export.ui:309 ui/menu_editor.ui:256
 msgid "Item"
-msgstr ""
+msgstr "Элемент"
 
 #: ui/import_export.ui:332
 msgid "Name"
-msgstr ""
+msgstr "Имя"
 
 #: ui/import_export.ui:360
 msgid "Select All"
-msgstr ""
+msgstr "Выбрать всё"
 
 #: ui/import_export.ui:411
 msgid "Game"
-msgstr ""
+msgstr "Игра"
 
 #: ui/import_export.ui:453
 msgid "Select Profile to Import"
-msgstr ""
+msgstr "Выберите профиль для импорта"
 
 #: ui/import_export.ui:465
 msgid "Searching for profiles. This may take some time."
-msgstr ""
+msgstr "Поиск профилей. Это может занять некоторое время."
 
 #: ui/import_export.ui:480 ui/import_export.ui:633
 msgid "Import Steam Profile"
-msgstr ""
+msgstr "Импортировать профиль Steam"
 
 #: ui/import_export.ui:508 ui/import_export.ui:950
 msgid "Error message:"
-msgstr ""
+msgstr "Сообщение об ошибке:"
 
 #: ui/import_export.ui:542 ui/import_export.ui:763
 msgid "Enter a name for the imported profile and click \"Apply\""
-msgstr ""
+msgstr "Введите название для импортированного профиля и нажмите «Применить»"
 
 #: ui/import_export.ui:565
 msgid ""
@@ -2989,6 +3034,9 @@ msgid ""
 "\t\tEach set will be converted into separate, hidden profile with following "
 "names:"
 msgstr ""
+"Примечание: Импортированный профиль содержит наборы действий.\n"
+"\t\tКаждый набор будет преобразован в отдельный скрытый профиль со "
+"следующими именами:"
 
 #: ui/import_export.ui:582
 msgid ""
@@ -2997,10 +3045,14 @@ msgid ""
 "\t\t.XYZ.aset_3\n"
 "\t\t.XYZ.aset_4"
 msgstr ""
+".XYZ.aset_1\n"
+"\t\t.XYZ.aset_2\n"
+"\t\t.XYZ.aset_3\n"
+"\t\t.XYZ.aset_4"
 
 #: ui/import_export.ui:611
 msgid "Display Profile Dump"
-msgstr ""
+msgstr "Показать дамп профиля"
 
 #: ui/import_export.ui:646
 msgid ""
@@ -3016,10 +3068,23 @@ msgid ""
 "and mark each checkbox to indicate You fully understand\n"
 "what command does before clicking \"Continue.\""
 msgstr ""
+"<b>Предупреждение</b>\n"
+"\n"
+"Профиль который вы пытаетесь импортировать содержит действия оболочки.\n"
+"Действие оболочки позволяет выполнить любую произвольную команду оболочки\n"
+"и может изменять, создавать или <span color=\"#ff0000\"><b>удалять</b></"
+"span> любые файлы, загружать <span color=\"#ff0000\"><b>вирусы</b></span>\n"
+"или даже <span color=\"#ff0000\"><b>уничтожить</b></span> какое-нибудь "
+"оборудование.\n"
+"\n"
+"Пожалуйста, ознакомьтесь со списком команд, используемых импортированным "
+"профилем\n"
+"и отметьте каждый флажок, чтобы подтвердить, что вы полностью понимаете\n"
+"какая команда выполняется перед нажатием кнопки «Продолжить.»"
 
 #: ui/import_export.ui:735 ui/import_export.ui:923 ui/import_export.ui:982
 msgid "Import"
-msgstr ""
+msgstr "Импорт"
 
 #: ui/import_export.ui:790
 msgid ""
@@ -3033,183 +3098,195 @@ msgid ""
 "menus\n"
 "and profile switches in imported profile may not work as expected."
 msgstr ""
+"В профиль который вы импортируете встроен один или несколько дополнительных\n"
+"файлов профиля или меню. Пожалуйста, выберите, следует ли также "
+"импортировать \n"
+"эти дополнительные файлы и как их следует называть.\n"
+"\n"
+"Обратите внимание, что если вы решите вообще не импортировать эти файлы, "
+"некоторые меню могут быть недоступны\n"
+"и переключение профилей в импортированном профиле может работать некорректно."
 
 #: ui/import_export.ui:822
 msgid "Don't import any additional profiles or menus"
-msgstr ""
+msgstr "Не импортировать дополнительные профили или меню"
 
 #: ui/import_export.ui:831
 msgid "Display a list and let me choose a name for each imported profile"
 msgstr ""
+"Отобразить список и позволить мне выбрать имя для каждого импортированного "
+"профиля"
 
 #: ui/import_export.ui:855
 msgid "En."
-msgstr ""
+msgstr "En."
 
 #: ui/import_export.ui:869
 msgid "Original name"
-msgstr ""
+msgstr "Оригинальное имя"
 
 #: ui/import_export.ui:890
 msgid "Import As"
-msgstr ""
+msgstr "Импортировать как"
 
 #: ui/import_export.ui:1020
 msgid "Save _As…"
-msgstr ""
+msgstr "Сохранить _как…"
 
 #: ui/import_export.ui:1038 ui/osk_binding_editor.ui:57
 msgid "Back"
-msgstr ""
+msgstr "Назад"
 
 #: ui/key_grabber.ui:17 ui/key_grabber.ui:86
 msgid "Ctrl"
-msgstr ""
+msgstr "Ctrl"
 
 #: ui/key_grabber.ui:29 ui/key_grabber.ui:75
 msgid "Meta"
-msgstr ""
+msgstr "Meta"
 
 #: ui/key_grabber.ui:40 ui/key_grabber.ui:63
 msgid "Alt"
-msgstr ""
+msgstr "Alt"
 
 #: ui/key_grabber.ui:100 ui/key_grabber.ui:127
 msgid "Shift"
-msgstr ""
+msgstr "Shift"
 
 #: ui/macro_editor.ui:14
 msgid "Run once"
-msgstr ""
+msgstr "Запустить один раз"
 
 #: ui/macro_editor.ui:22
 msgid "Cycle"
-msgstr ""
+msgstr "Цикл"
 
 #: ui/macro_editor.ui:66
 msgid "Macro Type"
-msgstr ""
+msgstr "Макротип"
 
 #: ui/macro_editor.ui:112
 msgid "Add Delay"
-msgstr ""
+msgstr "Добавить задержку"
 
 #: ui/macro_editor.ui:120 ui/menu_editor.ui:178
 msgid "Add _Action"
-msgstr ""
+msgstr "Добавить _действие"
 
 #: ui/macro_editor.ui:209 ui/modeshift_editor.ui:557 ui/ring_editor.ui:343
 msgid "Custom Editor"
-msgstr ""
+msgstr "Пользовательский редактор"
 
 #: ui/macro_editor.ui:281
 msgid "Click"
-msgstr ""
+msgstr "Нажмите"
 
 #: ui/menu_editor.ui:35
 msgid "No! Bad, bad user!"
-msgstr ""
+msgstr "Нет! Плохой, очень плохой пользователь!"
 
 #: ui/menu_editor.ui:72
 msgid "Menu ID"
-msgstr ""
+msgstr "ИД меню"
 
 #: ui/menu_editor.ui:101
 msgid "Global"
-msgstr ""
+msgstr "Глобальный"
 
 #: ui/menu_editor.ui:114
 msgid "Stored in Profile"
-msgstr ""
+msgstr "Сохранено в профиле"
 
 #: ui/menu_editor.ui:130
 msgid "_Edit Item"
-msgstr ""
+msgstr "_Редактировать элемент"
 
 #: ui/menu_editor.ui:185
 msgid "Add Separator"
-msgstr ""
+msgstr "Добавить разделитель"
 
 #: ui/menu_editor.ui:192
 msgid "Add Su_bmenu"
-msgstr ""
+msgstr "Добавить по_дменю"
 
 #: ui/menu_editor.ui:204
 msgid "Add List of All _Profiles"
-msgstr ""
+msgstr "Добавить список всех _профилей"
 
 #: ui/menu_editor.ui:211
 msgid "Add List of _Recent Profiles"
-msgstr ""
+msgstr "Добавить список _недавних профилей"
 
 #: ui/menu_editor.ui:218
 msgid "Add List of _Games"
-msgstr ""
+msgstr "Добавить список _игр"
 
 #: ui/menu_editor.ui:284
 msgid "Items"
-msgstr ""
+msgstr "Элементы"
 
 #: ui/modeshift_editor.ui:225
 msgid "(held alone)"
-msgstr ""
+msgstr "(одиночная задержка)"
 
 #: ui/modeshift_editor.ui:249
 msgid "Hold Time"
-msgstr ""
+msgstr "Время задержки"
 
 #: ui/modeshift_editor.ui:280
 msgid "Play a haptic feedback effect when the Hold action is executed"
 msgstr ""
+"При выполнении действия «Удержание» воспроизводится эффект тактильной "
+"обратной связи"
 
 #: ui/modeshift_editor.ui:295
 msgid "Effect Amplitude"
-msgstr ""
+msgstr "Амплитуда эффекта"
 
 #: ui/modeshift_editor.ui:325
 msgid "Hold"
-msgstr ""
+msgstr "Задержка"
 
 #: ui/modeshift_editor.ui:375
 msgid "(double-clicked)"
-msgstr ""
+msgstr "(двойной щелчок)"
 
 #: ui/modeshift_editor.ui:401
 msgid "Double-click Time"
-msgstr ""
+msgstr "Время двойного щелчка"
 
 #: ui/modeshift_editor.ui:425
 msgid "Double-click"
-msgstr ""
+msgstr "Двойной щелчок"
 
 #: ui/modeshift_editor.ui:472
 msgid "Soft Pull Level"
-msgstr ""
+msgstr "Мягкий уровень натяжения"
 
 #: ui/osk_binding_editor.ui:234
 msgid "C"
-msgstr ""
+msgstr "C"
 
 #: ui/osk_binding_editor.ui:256
 msgid "Stick Movement"
-msgstr ""
+msgstr "Движение стика"
 
 #: ui/osk_binding_editor.ui:279
 msgid "Stick Press"
-msgstr ""
+msgstr "Нажатие стика"
 
 #: ui/ring_editor.ui:22
 msgid "Two separate rings"
-msgstr ""
+msgstr "Два отдельных кольца"
 
 #: ui/ring_editor.ui:26
 msgid "Pad binding with Inner ring binding"
-msgstr ""
+msgstr "Связка панели с внутренним кольцом"
 
 #: ui/ring_editor.ui:30
 msgid "Pad binding with Outer ring binding"
-msgstr ""
+msgstr "Связка панели с внешним кольцом"
 
 #: ui/ring_editor.ui:158
 msgid "Preview Immediately"
-msgstr ""
+msgstr "Немедленный предварительный просмотр"
