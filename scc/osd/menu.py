@@ -161,11 +161,11 @@ class Menu(OSDWindow):
 		adj = sw.get_vadjustment()
 		if adj is None:
 			return
-		alloc = widget.get_allocation()
+		valid, bounds = widget.compute_bounds(self.parent)
 		page = adj.get_page_size()
-		if alloc.height <= 0 or page <= 0:
+		if not valid or bounds.get_height() <= 0 or page <= 0:
 			return
-		top = alloc.y
+		top = bounds.get_y()
 		section_starts_menu = False
 		try:
 			index = next(i for i, item in enumerate(self.items) if item.widget is widget)
@@ -173,16 +173,16 @@ class Menu(OSDWindow):
 			# selectable item in a section, keep those rows visible as context.
 			while index > 0 and self.items[index - 1].id is None:
 				index -= 1
-				heading_alloc = self.items[index].widget.get_allocation()
-				if heading_alloc.height > 0:
-					top = min(top, heading_alloc.y)
+				heading_valid, heading_bounds = self.items[index].widget.compute_bounds(self.parent)
+				if heading_valid and heading_bounds.get_height() > 0:
+					top = min(top, heading_bounds.get_y())
 			section_starts_menu = index == 0
 		except StopIteration:
 			pass
 		lower = adj.get_lower()
 		upper = adj.get_upper()
 		top = lower if section_starts_menu else max(lower, top - self.SCROLL_MARGIN)
-		bottom = min(upper, alloc.y + alloc.height + self.SCROLL_MARGIN)
+		bottom = min(upper, bounds.get_y() + bounds.get_height() + self.SCROLL_MARGIN)
 		val = adj.get_value()
 		if top < val:
 			adj.set_value(top)
@@ -653,13 +653,12 @@ class MenuIcon(Gtk.DrawingArea):
 		icon_size = min(width, height)
 		if icon_size <= 0 or self.pb is None:
 			return
-		context = Gtk.Widget.get_style_context(self)
-		Gtk.render_background(context, cr, 0, 0, width, height)
 		scaled = self.pb.scale_simple(icon_size, icon_size, GdkPixbuf.InterpType.BILINEAR)
 		Gdk.cairo_set_source_pixbuf(cr, scaled, 0, 0)
 		cr.paint()
 		if not self.has_colors:
 			cr.set_operator(cairo.OPERATOR_IN)
-			Gdk.cairo_set_source_rgba(cr, context.get_color())
+			color = self.get_color()
+			cr.set_source_rgba(color.red, color.green, color.blue, color.alpha)
 			cr.paint()
 			cr.set_operator(cairo.OPERATOR_OVER)
