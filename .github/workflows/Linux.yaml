@@ -91,7 +91,7 @@ jobs:
       - name: Build Linux App with PyInstaller
         run: |
           source .venv/bin/activate
-          pyinstaller --log-level=DEBUG packaging/linux.spec
+          pyinstaller --log-level=DEBUG packaging/Linux.spec
 
       - name: "[DEBUG] List all files in packaged app"
         run: find "dist/sc-controller"

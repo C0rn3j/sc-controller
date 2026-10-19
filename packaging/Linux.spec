@@ -72,6 +72,7 @@ for source_root, destination_root in icon_themes:
 			if source.is_file():
 				destination = destination_root / source.relative_to(source_root)
 				a.datas.append((str(destination), str(source.resolve()), "DATA"))
+
 pyz = PYZ(a.pure)
 
 exe = EXE(
