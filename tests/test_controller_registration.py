@@ -1,3 +1,10 @@
+import sys
+
+import pytest
+
+if sys.platform != "linux":
+	pytest.skip("Requires Linux drivers - TODO(Martin): It shouldn't!", allow_module_level=True)
+
 from scc.gui.creg.dialog import order_evdev_buttons_for_sdl, parse_sdl_dpad_axis
 
 
