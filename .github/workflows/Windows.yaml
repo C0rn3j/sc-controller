@@ -1,0 +1,259 @@
+name: Build Windows version
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-windows-x64:
+    name: "Windows x64"
+    runs-on: windows-latest
+    # Get Pyinstaller bootloader to compile
+    #env:
+    #  CC: clang.exe
+    #  CXX: clang++.exe
+    #  PYINSTALLER_BOOTLOADER_WAF_ARGS: --clang -v
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v7
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Setup pip cache-key
+        uses: actions/cache@v6
+        if: startsWith(runner.os, 'Windows')
+        with:
+          path: ~\AppData\Local\pip\Cache
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Read Package List
+        id: read_packages
+        run: |
+          $packages = Get-Content packaging/windows_x64_clang.txt -Raw | Out-String
+          $packages = $packages -replace "`r`n", " " -replace "`n", " "
+          $packages = $packages.Trim() + " p7zip"
+          echo "packages=$packages" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8
+
+      - name: Set up MSYS2 MinGW-W64
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: clang64
+          update: true
+          install: ${{ env.packages }}
+
+      - name: Update CA trust
+        shell: msys2 {0}
+        run: update-ca-trust
+
+      - name: Install Python dependencies and setup venv
+        shell: msys2 {0}
+        run: |
+          python -m pip install --break-system-packages --upgrade pip
+          python -m venv .venv
+          export CFLAGS="-I/clang64/include"
+          .venv/bin/python -m pip install \
+            ".[all]" \
+            build \
+            pyinstaller \
+            pytest
+        #    https://github.com/pyinstaller/pyinstaller/archive/develop.zip
+
+      - name: Read git-derived project version
+        shell: msys2 {0}
+        id: version
+        run: |
+          .venv/bin/python - <<'PY'
+          import os
+          from importlib.metadata import version as package_version
+          # The preceding installation uses setuptools-scm to derive this from Git tags.
+          version = package_version("sccontroller")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+            fh.write(f"version={version}\n")
+          print(f"Detected version: {version}")
+          PY
+
+      - name: Build the project using python-build
+        shell: msys2 {0}
+        run: |
+          source .venv/bin/activate
+          python -m build --wheel
+
+      - name: Install the project into a venv
+        shell: msys2 {0}
+        run: |
+          source .venv/bin/activate
+          pip install --prefix ".venv" dist/*.whl
+
+      # - name: "[DEBUG] Try running using run.sh"
+      #   run: bash run.sh
+
+      - name: Run tests using pytest
+        shell: msys2 {0}
+        run: |
+          source .venv/bin/activate
+          PYTHONPATH=. pytest tests
+
+      - name: "[DEBUG] List all files"
+        shell: msys2 {0}
+        run: find .
+
+      - name: Build Windows app with PyInstaller
+        shell: msys2 {0}
+        run: |
+          source .venv/bin/activate
+          pyinstaller --log-level=DEBUG packaging/Windows.spec
+
+      - name: "[DEBUG] List all files in packaged app"
+        shell: msys2 {0}
+        run: find "dist/sc-controller"
+
+      - name: Create 7Z
+        shell: msys2 {0}
+        run: |
+          APP_NAME="sc-controller"
+          cd "dist/${APP_NAME}"
+
+          ARCHIVE_PATH="../../${APP_NAME}-Windows-x64.7z"
+
+          7z a -r "${ARCHIVE_PATH}" "."
+
+      #- name: "[DEBUG] List all files after pyinstaller"
+      #  shell: msys2 {0}
+      #  run: find .
+
+      - name: Upload 7Z artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: sc-controller-Windows-x64
+          path: sc-controller-Windows-x64.7z
+          archive: false
+
+  build-windows-arm64:
+    name: "Windows arm64"
+    runs-on: windows-11-arm
+    # Get Pyinstaller bootloader to compile
+    env:
+      CC: clang.exe
+      CXX: clang++.exe
+      PYINSTALLER_BOOTLOADER_WAF_ARGS: --clang -v
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v7
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Setup pip cache-key
+        uses: actions/cache@v6
+        if: startsWith(runner.os, 'Windows')
+        with:
+          path: ~\AppData\Local\pip\Cache
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Read Package List
+        id: read_packages
+        run: |
+          $packages = Get-Content packaging/windows_arm64_clang.txt -Raw | Out-String
+          $packages = $packages -replace "`r`n", " " -replace "`n", " "
+          $packages = $packages.Trim() + " p7zip"
+          echo "packages=$packages" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8
+
+      - name: Set up MSYS2 MinGW-W64
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: clangarm64
+          update: true
+          install: ${{ env.packages }}
+
+      - name: Update CA trust
+        shell: msys2 {0}
+        run: update-ca-trust
+
+      # Overriden to develop due to https://github.com/pyinstaller/pyinstaller/issues/9552
+      - name: Install Python dependencies and setup venv
+        shell: msys2 {0}
+        run: |
+          python -m pip install --break-system-packages --upgrade pip
+          python -m venv .venv
+          export CFLAGS="-I/clangarm64/include"
+          .venv/bin/python -m pip install \
+            ".[all]" \
+            build \
+            https://github.com/pyinstaller/pyinstaller/archive/develop.zip \
+            pytest
+        #    pyinstaller
+
+      - name: Read git-derived project version
+        shell: msys2 {0}
+        id: version
+        run: |
+          .venv/bin/python - <<'PY'
+          import os
+          from importlib.metadata import version as package_version
+          # The preceding installation uses setuptools-scm to derive this from Git tags.
+          version = package_version("sccontroller")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+            fh.write(f"version={version}\n")
+          print(f"Detected version: {version}")
+          PY
+
+      - name: Build the project using python-build
+        shell: msys2 {0}
+        run: |
+          source .venv/bin/activate
+          python -m build --wheel
+
+      - name: Install the project into a venv
+        shell: msys2 {0}
+        run: |
+          source .venv/bin/activate
+          pip install --prefix ".venv" dist/*.whl
+
+      # - name: "[DEBUG] Try running using run.sh"
+      #   run: bash run.sh
+
+      - name: Run tests using pytest
+        shell: msys2 {0}
+        run: |
+          source .venv/bin/activate
+          PYTHONPATH=. pytest tests
+
+      - name: "[DEBUG] List all files"
+        shell: msys2 {0}
+        run: find .
+
+      - name: Build Windows app with PyInstaller
+        shell: msys2 {0}
+        run: |
+          source .venv/bin/activate
+          pyinstaller --log-level=DEBUG packaging/Windows.spec
+
+      - name: "[DEBUG] List all files in packaged app"
+        shell: msys2 {0}
+        run: find "dist/sc-controller"
+
+      - name: Create 7Z
+        shell: msys2 {0}
+        run: |
+          APP_NAME="sc-controller"
+          cd "dist/${APP_NAME}"
+
+          ARCHIVE_PATH="../../${APP_NAME}-Windows-arm64.7z"
+
+          7z a -r "${ARCHIVE_PATH}" "."
+
+      #- name: "[DEBUG] List all files after pyinstaller"
+      #  shell: msys2 {0}
+      #  run: find .
+
+      - name: Upload 7Z artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: sc-controller-Windows-arm64
+          path: sc-controller-Windows-arm64.7z
+          archive: false
