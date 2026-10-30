@@ -25,7 +25,7 @@ RUN <<EOR
 		apt-get install -y curl
 		for package in gir1.2-gtk4layershell-1.0 libgtk4-layer-shell0 libgtk4-layer-shell-dev; do
 			file="${package}_1.3.0-1.${package_revision}_${TARGETARCH}.deb"
-			curl -fL "https://github.com/C0rn3j/sc-controller/releases/download/v0.0.0_extras/${file}" --output "${file}"
+			curl -fL "https://github.com/C0rn3j/sc-controller/releases/download/extras/${file}" --output "${file}"
 		done
 		apt-get install -y ./*_1.3.0-1."${package_revision}"_"${TARGETARCH}".deb
 		rm ./*_1.3.0-1."${package_revision}"_"${TARGETARCH}".deb
