@@ -223,7 +223,12 @@ jobs:
           releases=$(curl -H "Authorization: token $GITHUB_TOKEN" "$api_url")
 
           # Capture the most recent pre-release (assuming the first one is the latest)
-          current_release=$(echo "$releases" | jq -c '.[] | select(.prerelease == true) | .published_at' | sort -r | head -n 1)
+          current_release=$(echo "$releases" | jq -r '.[] | select(.prerelease == true and .name == .tag_name) | select(.tag_name | test("^Pre-release-SC-Controller-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9a-f]{7,40}$")) | .published_at' | sort -r | head -n 1)
+
+          if [[ -z "$current_release" ]]; then
+            echo "No generated pre-release found; skipping cleanup."
+            exit 0
+          fi
 
           # Remove extra quotes from captured date
           current_release=$(echo $current_release | tr -d '"')
@@ -232,6 +237,7 @@ jobs:
           echo "CURRENT_PUBLISHED_AT=$current_release" >> $GITHUB_ENV
 
       - name: Delete old pre-releases and tags
+        if: env.CURRENT_PUBLISHED_AT != ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -247,7 +253,7 @@ jobs:
           current_published_ts=$(date -d "$CURRENT_PUBLISHED_AT" +%s)
 
           # Identify pre-releases
-          echo "$releases" | jq -c '.[] | select(.prerelease == true)' | while read -r release; do
+          echo "$releases" | jq -c '.[] | select(.prerelease == true and .name == .tag_name) | select(.tag_name | test("^Pre-release-SC-Controller-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9a-f]{7,40}$"))' | while read -r release; do
             release_date=$(echo "$release" | jq -r '.published_at')
             release_id=$(echo "$release" | jq -r '.id')
             release_tag=$(echo "$release" | jq -r '.tag_name')
