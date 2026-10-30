@@ -512,7 +512,7 @@ class SCCDaemon(Daemon):
 		"""Create a connection to X11/Xwayland, or set up Layer Shell"""
 		if "WAYLAND_DISPLAY" in os.environ:
 			# gtk4-layer-shell must be loaded before GTK imports libwayland-client
-			CDLL("libgtk4-layer-shell.so")
+			CDLL("libgtk4-layer-shell.so.0")
 			import gi
 
 			gi.require_version("Gtk", "4.0")

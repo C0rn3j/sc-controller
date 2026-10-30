@@ -16,7 +16,7 @@ import gi
 
 # gtk4-layer-shell must be loaded before GTK imports libwayland-client
 if "WAYLAND_DISPLAY" in os.environ:
-	CDLL("libgtk4-layer-shell.so")
+	CDLL("libgtk4-layer-shell.so.0")
 	gi.require_version("Gtk4LayerShell", "1.0")
 
 
