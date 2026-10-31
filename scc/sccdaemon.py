@@ -189,6 +189,8 @@ class SCCDaemon(Daemon):
 		"""
 		log.debug("Initializing drivers...")
 		cfg = Config()
+		enabled_drivers: set[str] = {name for name, enabled in cfg["drivers"].items() if enabled} | {"usb"}
+		discovered_drivers: set[str] = set()
 		self._to_start = set()  # del-eted later by start_drivers
 		to_init = []
 		platform_dir = {"linux": "linux", "win32": "windows", "darwin": "macos"}.get(sys.platform)
@@ -208,13 +210,23 @@ class SCCDaemon(Daemon):
 		for _importer, module_name, ispkg in modules:
 			modname = module_name.rsplit(".", 1)[-1]
 			if not ispkg and modname != "driver":
-				if modname == "usb" or cfg["drivers"].get(modname):
+				discovered_drivers.add(modname)
+				if modname in enabled_drivers:
 					# 'usb' driver has to be always active
-					mod = import_module(module_name)
+					try:
+						mod = import_module(module_name)
+					except Exception:
+						log.exception("Failed to import enabled driver '%s'", module_name)
+						raise
 					if hasattr(mod, "init"):
 						to_init.append(mod)
+					else:
+						log.error("Enabled driver '%s' has no init function", module_name)
 				else:
 					log.warning("Skipping disabled driver '%s'", modname)
+
+		for name in sorted(enabled_drivers - discovered_drivers):
+			log.error("Enabled driver '%s' was not found for platform '%s'", name, sys.platform)
 
 		from scc.drivers import MOD_INIT_ORDER as order
 
@@ -222,9 +234,16 @@ class SCCDaemon(Daemon):
 		sort_fn = lambda m: index_fn(m.__name__)
 
 		for mod in sorted(to_init, key=sort_fn):
-			if mod.init(self, cfg):
+			try:
+				initialized = mod.init(self, cfg)
+			except Exception:
+				log.exception("Failed to initialize enabled driver '%s'", mod.__name__)
+				raise
+			if initialized:
 				if hasattr(mod, "start"):
 					self._to_start.add(mod.start)
+			else:
+				log.error("Enabled driver '%s' failed to initialize", mod.__name__)
 
 	def init_default_mapper(self) -> Mapper:
 		"""default_mapper is persistent mapper assigned to first Controller instance.
