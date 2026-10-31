@@ -6,12 +6,27 @@
  * Based on https://github.com/libretro/RetroArch/blob/master/cores/libretro-net-retropad.
  */
 
+#define PY_SSIZE_T_CLEAN
+#include <Python.h>
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdio.h>
 #include "remotepad.h"
 
 #define REMOTEPAD_MODULE_VERSION 1
+
+static struct PyModuleDef libremotepad_module = {
+	PyModuleDef_HEAD_INIT,
+	"libremotepad",
+	NULL,
+	-1,
+	NULL,
+};
+
+PyMODINIT_FUNC PyInit_libremotepad(void)
+{
+	return PyModule_Create(&libremotepad_module);
+}
 
 static uint32_t next_id = 0;
 

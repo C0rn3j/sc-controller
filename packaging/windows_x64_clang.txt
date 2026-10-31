@@ -1,0 +1,9 @@
+ninja
+git
+mingw-w64-clang-x86_64-cairo
+mingw-w64-clang-x86_64-clang
+mingw-w64-clang-x86_64-gobject-introspection-runtime
+mingw-w64-clang-x86_64-headers
+mingw-w64-clang-x86_64-gtk4
+mingw-w64-clang-x86_64-pkgconf
+mingw-w64-clang-x86_64-python-pip
