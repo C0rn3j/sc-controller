@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import colorsys
+import logging
 
 import gi
 
@@ -12,6 +13,8 @@ gi.require_version("Gtk", "4.0")
 from gi.repository import Gdk, GLib, Gtk
 
 from scc.gui.editor import Editor
+
+log = logging.getLogger(__name__)
 
 
 class LEDEditor(Editor):
@@ -43,6 +46,9 @@ class LEDEditor(Editor):
 		self.builder.get_object("lblPlayerLEDs").set_visible(self._has_player_leds)
 
 		cfg = self.app.config.get_controller_config(controller.get_id())
+		log.debug("LED editor loaded from %s; controller=%s config=%s", __file__, controller.get_id(), {
+			key: cfg.get(key) for key in ("led_hue", "led_saturation", "led_level")
+		})
 		# Keep the adjustments we read bound to the sliders and alive for this editor.
 		self._led_adjustments = []
 		for axis, key, upper in (
@@ -102,7 +108,14 @@ class LEDEditor(Editor):
 		cfg["led_saturation"] = round(saturation * 100)
 		cfg["led_level"] = round(brightness * 100)
 		if self._has_rgb_led:
-			self.controller.set_led_color(*self._get_rgb())
+			rgb = self._get_rgb()
+			log.debug(
+				"LED editor HSV=%s RGB=%s; adjustment properties=%s; slider values=%s",
+				(hue, saturation, brightness), rgb,
+				tuple(adjustment.props.value for adjustment in self._led_adjustments),
+				tuple(self.builder.get_object(f"sclLED{axis}").get_value() for axis in ("Hue", "Saturation", "Brightness")),
+			)
+			self.controller.set_led_color(*rgb)
 		else:
 			self.controller.set_led_level(round(brightness * 100))
 		self.schedule_save()
