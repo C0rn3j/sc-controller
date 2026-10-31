@@ -287,7 +287,8 @@ class OSDDaemon:
 		self.mainloop.run()
 
 
-if __name__ == "__main__":
+def main() -> None:
+	"""Run the OSD daemon"""
 	from scc.tools import init_logging
 
 	init_logging(suffix=" OSD")

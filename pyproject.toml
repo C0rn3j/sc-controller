@@ -47,8 +47,10 @@ dependencies = [
 sc-controller         = "scc.bin.sc_controller:main"
 
 [project.scripts]
-scc-daemon            = "scc.bin.scc_daemon:main"
 scc                   = "scc.bin.scc:main"
+scc-autoswitch-daemon = "scc.bin.scc_autoswitch_daemon:main"
+scc-daemon            = "scc.bin.scc_daemon:main"
+scc-osd-daemon        = "scc.bin.scc_osd_daemon:main"
 scc-osd-dialog        = "scc.bin.scc_osd_dialog:main"
 scc-osd-keyboard      = "scc.bin.scc_osd_keyboard:main"
 scc-osd-launcher      = "scc.bin.scc_osd_launcher:main"

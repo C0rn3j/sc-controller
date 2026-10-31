@@ -1494,13 +1494,13 @@ class ObservingAction(ReportingAction):
 class Subprocess:
 	"""Part of scc-daemon executed as another process, killed along with scc-daemon.
 
-	Currently scc-osd-daemon and scc-windowswitch-daemon.
+	Currently scc-osd-daemon and scc-autoswitch-daemon.
 	"""
 
 	def __init__(self, binary_name: str, debug: bool, restart_after: int = 5) -> None:
 		self.binary_name: str = binary_name
 		self.restart_after: int = restart_after
-		self.args: list[str] = [sys.executable, find_binary(binary_name)]
+		self.args: list[str] = [find_binary(binary_name)]
 		if debug:
 			self.args.append("debug")
 		self._killed: bool = False

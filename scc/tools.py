@@ -361,12 +361,6 @@ def find_binary(name: str) -> str:
 
 	Frozen builds search beside the executable first, then the PATH environment variable.
 	"""
-	if name.startswith("scc-osd-daemon"):
-		# Special case, this one is not supposed to go to /usr/bin
-		return os.path.join(os.path.split(__file__)[0], "x11", "scc-osd-daemon.py")
-	if name.startswith("scc-autoswitch-daemon"):
-		# As above
-		return os.path.join(os.path.split(__file__)[0], "x11", "scc-autoswitch-daemon.py")
 	user_path = os.environ.get("PATH", "").split(os.pathsep)
 	if getattr(sys, "frozen", False):
 		user_path.insert(0, os.path.dirname(sys.executable))
