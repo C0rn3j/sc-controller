@@ -110,12 +110,7 @@ class LEDEditor(Editor):
 		cfg["led_level"] = round(brightness * 100)
 		if self._has_rgb_led:
 			rgb = self._get_rgb()
-			log.debug(
-				"LED editor HSV=%s RGB=%s; adjustment properties=%s; slider values=%s",
-				(hue, saturation, brightness), rgb,
-				tuple(adjustment.props.value for adjustment in self._led_adjustments),
-				tuple(self.builder.get_object(f"sclLED{axis}").get_value() for axis in ("Hue", "Saturation", "Brightness")),
-			)
+			log.debug("LED editor HSV=%s RGB=%s", (hue, saturation, brightness), rgb)
 			self.controller.set_led_color(*rgb)
 		else:
 			self.controller.set_led_level(round(brightness * 100))
