@@ -15,6 +15,7 @@ import time
 import traceback
 from ctypes import CDLL
 from importlib import import_module
+from socket import SHUT_RDWR
 from socketserver import StreamRequestHandler, ThreadingMixIn
 
 if sys.platform == "win32":
@@ -349,9 +350,13 @@ class SCCDaemon(Daemon):
 		Should be called while lock is acquired.
 		Message should be utf-8 encoded str.
 		"""
-		for client in self.clients:
+		for client in tuple(self.clients):
 			try:
 				client.wfile.write(message_str)
+			except (OSError, ValueError):
+				log.debug("Client disconnected during broadcast", exc_info=True)
+				client.close()
+				self._disconnect_client(client)
 			except Exception:
 				log.exception("Failed to send message")
 
@@ -835,41 +840,48 @@ class SCCDaemon(Daemon):
 		return gd
 
 	def _sshandler(self, connection, rfile, wfile) -> None:
-		with self.lock:
-			client = Client(connection, self.default_mapper, rfile, wfile)
-			self.clients.add(client)
-			wfile.write(b"SCCDaemon\n")
-			wfile.write((f"Version: {DAEMON_VERSION}\n").encode())
-			wfile.write((f"PID: {os.getpid()}\n").encode())
-			self.send_controller_list(wfile.write)
-			self.send_all_profiles(wfile.write)
-			if len(self.errors) == 0:
-				wfile.write(b"Ready.\n")
-			else:
-				for id, error in self.errors:
-					wfile.write((f"Error: {error}\n").encode())
+		client = Client(connection, self.default_mapper, rfile, wfile)
+		try:
+			with self.lock:
+				self.clients.add(client)
+				wfile.write(b"SCCDaemon\n")
+				wfile.write((f"Version: {DAEMON_VERSION}\n").encode())
+				wfile.write((f"PID: {os.getpid()}\n").encode())
+				self.send_controller_list(wfile.write)
+				self.send_all_profiles(wfile.write)
+				if len(self.errors) == 0:
+					wfile.write(b"Ready.\n")
+				else:
+					for id, error in self.errors:
+						wfile.write((f"Error: {error}\n").encode())
 
-		while True:
-			try:
-				line = rfile.readline()
-			except Exception:
-				log.exception("Failed reading line from file, connection terminated?")
-				# Connection terminated
-				break
-			if len(line) == 0:
-				break
-			if len(line.strip(b"\t\n ")) > 0:
-				self._handle_message(client, line.strip(b"\n"))
+			while True:
+				try:
+					line = rfile.readline()
+				except Exception:
+					log.exception("Failed reading line from file, connection terminated?")
+					# Connection terminated
+					break
+				if len(line) == 0:
+					break
+				if len(line.strip(b"\t\n ")) > 0:
+					self._handle_message(client, line.strip(b"\n"))
+		finally:
+			with self.lock:
+				self._disconnect_client(client)
 
-		with self.lock:
-			client.unlock_actions(self)
-			if self.osd_daemon == client:
-				log.info("scc-osd-daemon lost")
-				self.osd_daemon = None
-			if self.autoswitch_daemon == client:
-				log.info("scc-autoswitch-daemon lost")
-				self.autoswitch_daemon = None
-			self.clients.remove(client)
+	def _disconnect_client(self, client: Client) -> None:
+		"""Remove a client and its locks; caller must hold self.lock."""
+		if client not in self.clients:
+			return
+		self.clients.remove(client)
+		if self.osd_daemon == client:
+			log.info("scc-osd-daemon lost")
+			self.osd_daemon = None
+		if self.autoswitch_daemon == client:
+			log.info("scc-autoswitch-daemon lost")
+			self.autoswitch_daemon = None
+		client.unlock_actions(self)
 
 	def _handle_message(self, client: Client, message: bytes) -> None:
 		"""Handles message received from client."""
@@ -944,6 +956,7 @@ class SCCDaemon(Daemon):
 				client.mapper.get_controller().set_led_level(number)
 		elif message.startswith(b"LEDColor:"):
 			try:
+				log.debug("Received RGB LED command: %r", message)
 				red, green, blue = (clamp(0, int(value), 255) for value in message[9:].split())
 				client.mapper.get_controller().set_led_color(red, green, blue)
 				client.wfile.write(b"OK.\n")
@@ -1281,9 +1294,9 @@ class Client:
 	def close(self) -> None:
 		"""Closes connection to this client"""
 		try:
-			self.connection.shutdown(True)
-		except Exception:
-			log.exception("Unknown exception during client shutdown")
+			self.connection.shutdown(SHUT_RDWR)
+		except OSError:
+			log.debug("Client socket was already disconnected", exc_info=True)
 
 	def request_gesture(self, daemon: SCCDaemon, what: bytes, up_angle: int) -> None:
 		"""Handler used when client requested gesture detection with "Gesture:" message.
