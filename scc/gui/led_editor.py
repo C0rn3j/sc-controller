@@ -75,7 +75,8 @@ class LEDEditor(Editor):
 
 	def _get_hsv(self) -> tuple[float, float, float]:
 		hue, saturation, brightness = self._led_adjustments
-		return hue.get_value() / 360.0, saturation.get_value() / 100.0, brightness.get_value() / 100.0
+		# Some Windows GI builds return zero from get_value() despite a valid property.
+		return hue.props.value / 360.0, saturation.props.value / 100.0, brightness.props.value / 100.0
 
 	def _get_rgb(self) -> tuple[int, int, int]:
 		return tuple(round(channel * 255) for channel in colorsys.hsv_to_rgb(*self._get_hsv()))
