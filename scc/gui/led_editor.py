@@ -43,9 +43,18 @@ class LEDEditor(Editor):
 		self.builder.get_object("lblPlayerLEDs").set_visible(self._has_player_leds)
 
 		cfg = self.app.config.get_controller_config(controller.get_id())
-		self.builder.get_object("adjLEDHue").set_value(float(cfg["led_hue"]))
-		self.builder.get_object("adjLEDSaturation").set_value(float(cfg["led_saturation"]))
-		self.builder.get_object("adjLEDBrightness").set_value(float(cfg["led_level"]))
+		# Keep the adjustments we read bound to the sliders and alive for this editor.
+		self._led_adjustments = []
+		for axis, key, upper in (
+			("Hue", "led_hue", 360),
+			("Saturation", "led_saturation", 100),
+			("Brightness", "led_level", 100),
+		):
+			adjustment = Gtk.Adjustment(
+				value=float(cfg[key]), lower=0, upper=upper, step_increment=1, page_increment=10,
+			)
+			self._led_adjustments.append(adjustment)
+			self.builder.get_object(f"sclLED{axis}").set_adjustment(adjustment)
 		mode = cfg.get("player_led_mode", "controller-count")
 		self.builder.get_object("ddPlayerLEDs").set_selected(
 			self.PLAYER_LED_MODES.index(mode) if mode in self.PLAYER_LED_MODES else 2,
@@ -59,11 +68,8 @@ class LEDEditor(Editor):
 		self.update_player_leds(send=False)
 
 	def _get_hsv(self) -> tuple[float, float, float]:
-		return (
-			self.builder.get_object("adjLEDHue").get_value() / 360.0,
-			self.builder.get_object("adjLEDSaturation").get_value() / 100.0,
-			self.builder.get_object("adjLEDBrightness").get_value() / 100.0,
-		)
+		hue, saturation, brightness = self._led_adjustments
+		return hue.get_value() / 360.0, saturation.get_value() / 100.0, brightness.get_value() / 100.0
 
 	def _get_rgb(self) -> tuple[int, int, int]:
 		return tuple(round(channel * 255) for channel in colorsys.hsv_to_rgb(*self._get_hsv()))
