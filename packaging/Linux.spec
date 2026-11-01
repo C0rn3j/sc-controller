@@ -61,7 +61,7 @@ a = Analysis(
 		"scc.drivers",
 		filter=lambda name: not name.startswith(("scc.drivers.windows", "scc.drivers.macos")),
 	) + collect_submodules("scc.drivers.linux"),
-	hookspath=[],
+	hookspath=[str(SPEC_DIR)],
 	hooksconfig={
 		"gi": {
 			"module-versions": {
