@@ -1,111 +1,89 @@
 # syntax=docker/dockerfile:1
-ARG BASE_OS=ubuntu
-ARG BASE_CODENAME=noble
-FROM $BASE_OS:$BASE_CODENAME AS build-stage
-ARG TARGETARCH
+FROM ghcr.io/pkgforge-dev/archlinux AS build-stage
 
-# Download build dependencies
+# Prepare Python build dependencies
 RUN <<EOR
-	set -eu
+  set -eu
 
-	# Workaround for outstanding fix of https://bugs.launchpad.net/ubuntu/+source/python-build/+bug/1992108
-	. /etc/os-release
+  pacman -Syu --noconfirm \
+    base-devel \
+    bluez-libs \
+    cairo \
+    gettext \
+    git \
+    gobject-introspection \
+    gtk4 \
+    gtk4-layer-shell \
+    librsvg \
+    libxfixes \
+    linux-headers \
+    python \
+    python-build \
+    python-cairo \
+    python-evdev \
+    python-gobject \
+    python-hidraw-pure \
+    python-ioctl-opt \
+    python-libusb1 \
+    python-pip \
+    python-pytest \
+    python-pyusb \
+    python-vdf
 
-	# Keep retrying on failure, because the CI can fail OFTEN
-	printf 'Acquire::Retries "5";\n' > /etc/apt/apt.conf.d/80-retries
-	export DEBIAN_FRONTEND=noninteractive
-	apt-get update
-	# 24.04 does not package gtk4 layer shell, we build it ourselves
-	if [ "${UBUNTU_CODENAME:-}" = "noble" ]; then
-		case "${TARGETARCH}" in
-			amd64) package_revision=24.04.1 ;;
-			arm64) package_revision=24.04.2 ;;
-			*) echo "Unsupported Noble architecture: ${TARGETARCH}" >&2; exit 1 ;;
-		esac
-		apt-get install -y curl
-		for package in gir1.2-gtk4layershell-1.0 libgtk4-layer-shell0 libgtk4-layer-shell-dev; do
-			file="${package}_1.3.0-1.${package_revision}_${TARGETARCH}.deb"
-			curl -fL "https://github.com/C0rn3j/sc-controller/releases/download/extras/${file}" --output "${file}"
-		done
-		apt-get install -y ./*_1.3.0-1."${package_revision}"_"${TARGETARCH}".deb
-		rm ./*_1.3.0-1."${package_revision}"_"${TARGETARCH}".deb
-	fi
-	apt-get install -y --no-install-recommends \
-		cmake \
-		gettext \
-		gir1.2-gtk4layershell-1.0 \
-		gir1.2-rsvg-2.0 \
-		libcairo2-dev \
-		libgirepository-2.0-dev \
-		libgtk-4-dev \
-		libgtk4-layer-shell-dev \
-		gcc \
-		git \
-		librsvg2-bin \
-		libxfixes3 \
-		linux-headers-generic \
-		python3-build \
-		python3-dev \
-		python3-usb \
-		python3-venv \
-		python-is-python3
-
-	apt-get clean && rm -rf /var/lib/apt/lists/*
+  pacman -Scc
 EOR
-# Prepare working directory and target
-COPY . /work
-WORKDIR /work
-ARG TARGET=/build
+
+# Prepare AppImage Build dependencies
+RUN <<EOR
+  pacman -Syu --noconfirm patchelf xorg-server-xvfb
+  tools="https://raw.githubusercontent.com/pkgforge-dev/Anylinux-AppImages/refs/heads/main/useful-tools"
+  sharun="${tools}/quick-sharun.sh"
+  debloated="${tools}/get-debloated-pkgs.sh"
+  curl -fsSL "${sharun}" | install /dev/stdin /usr/local/bin/quick-sharun.sh
+  curl -fsSL "${debloated}" | install /dev/stdin /usr/local/bin/get-debloated-pkgs.sh
+
+  # Installs a debloated MESA, Vulkan, Qt, GTK, libicudata, and more
+  get-debloated-pkgs.sh --add-mesa --prefer-nano
+
+  pacman -Scc
+EOR
 
 # Build and install
-RUN <<EOR
-	set -eu
-
-	python -m build --wheel
-	python -m venv .venv
-	. .venv/bin/activate
-	# TODO(Martin): Replace URL with just 'hidraw-pure' when https://github.com/vpelletier/python-hidraw/issues/7 is resolved
-	pip install evdev https://github.com/C0rn3j/python-hidraw/archive/modernize.zip ioctl-opt libusb1 pytest vdf
-	# Install into the active environment for tests
-	pip install dist/*.whl
-	python -m pytest tests
-
-	pip install --prefix "${TARGET}/usr" --no-warn-script-location --force-reinstall dist/*.whl
-
-	# Build the Glycin sandbox workaround for the target AppImage architecture.
-	mkdir -p "${TARGET}/usr/lib"
-	cc -O2 -fPIC -shared packaging/appimage/appimage-glycin-anylinux-hack.c \
-		-o "${TARGET}/usr/lib/appimage-glycin-anylinux-hack.so" -ldl
-
-	# Save version
-	PYTHONPATH=$(find "${TARGET}" -type d -name site-packages) \
-	python -c "from scc.constants import DAEMON_VERSION; print('VERSION=' + DAEMON_VERSION)" >>/build/.build-metadata.env
-
-	# Fix shebangs of scripts from '#!/work/.venv/bin/python' - note that AppImage builder will strip the leading /
-	find "${TARGET}/usr/bin" -type f | xargs sed -i 's:work/.venv/bin/:usr/bin/env :'
-
-	# Provide input-event-codes.h as fallback for runtime systems without linux headers
-	cp -a \
-		"$(find /usr -type f -name input-event-codes.h -print -quit)" \
-		"$(find "${TARGET}" -type f -name uinput.py -printf '%h\n' -quit)"
-
-	# Create short name symlinks for static libraries
-	suffix=".cpython-*-$(uname -m)-linux-gnu.so"
-	find "${TARGET}" -type f -path "*/site-packages/*${suffix}" \
-		| while read -r path; do ln -sfr "${path}" "${path%${suffix}}.so"; done
-
-	share="${TARGET}/usr/share"
-
-	# Convert icon to png format (required for icons in .desktop file)
-	iconpath="${share}/icons/hicolor/512x512/apps"
-	mkdir -p "${iconpath}"
-	rsvg-convert --background-color none -o "${iconpath}/sc-controller.png" images/sc-controller.svg
-EOR
-
-# Store build metadata
 ARG TARGETOS TARGETARCH TARGETVARIANT
-RUN export "TARGETMACHINE=$(uname -m)" && printenv | grep ^TARGET >>/build/.build-metadata.env
+ARG OWNER=owner
+COPY . /work
+WORKDIR /work
+RUN <<EOR
+  set -eu
+
+  pip install --break-system-packages --root-user-action ignore .
+  python -m pytest tests
+
+  # Provide input-event-codes.h as fallback for runtime systems without linux headers
+  input_event_codes="$(find /usr/lib/python*/site-packages/scc -type f -name uinput.py -printf '%h\n' -quit)/input-event-codes.h"
+  cp -a /usr/include/linux/input-event-codes.h "${input_event_codes}"
+
+  export APPNAME=sc-controller
+  export DESKTOP="packaging/io.github.c0rn3j.${APPNAME}.desktop"
+  export ICON="packaging/io.github.c0rn3j.${APPNAME}.svg"
+  export VERSION=$(python -c "from scc.constants import DAEMON_VERSION; print(DAEMON_VERSION)")
+  export UPINFO="gh-releases-zsync|${OWNER}|${APPNAME}|latest|${APPNAME}-*-${TARGETARCH}.AppImage.zsync"
+  export OUTNAME="$(echo "${APPNAME}-${VERSION}-anylinux-${TARGETARCH}" | tr '[:upper:]' '[:lower:]').AppImage"
+  export OUTPATH=/appimage
+  export DEPLOY_PYTHON=1
+  export MAIN_BIN=/usr/bin/scc
+
+  quick-sharun.sh \
+    /usr/bin/sc-controller \
+    /usr/bin/scc* \
+    /usr/lib/python*/site-packages/usb1/*.py \
+    /usr/lib/libbluetooth.so \
+    /usr/lib/librsvg-2.so \
+    "${input_event_codes}"
+
+  quick-sharun.sh --make-appimage
+EOR
 
 # Keep only files required for runtime
 FROM scratch AS export-stage
-COPY --from=build-stage /build /
+COPY --from=build-stage /appimage /
