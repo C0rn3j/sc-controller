@@ -701,7 +701,7 @@ class ControllerRegistration(Editor):
 			self.unhilight(self._hilighted_area)
 			self._hilighted_area = None
 
-	def on_area_click(self, trash, what):
+	def on_area_click(self, trash, what) -> None:
 		stDialog = self.builder.get_object("stDialog")
 		pages = list(stDialog.observe_children())
 		index = pages.index(stDialog.get_visible_child())
@@ -709,7 +709,9 @@ class ControllerRegistration(Editor):
 			if what in STICK_PAD_AREAS:
 				area_name, axes = STICK_PAD_AREAS[what]
 				mnuStick = self.builder.get_object("mnuStick")
-				mnuStick._what = "LSTICKPRESS" if what == "LSTICK" else what
+				mnuStick._what = what + "PRESS" if what in ("LSTICK", "RSTICK") else what
+				# DPAD does not have a press action
+				self.builder.get_object("mnuStickPress").set_sensitive(what != "DPAD")
 				mnuStick._axes = [self._axis_data[index] for index in axes]
 				mnuStick.popup()
 			elif what in TRIGGER_AREAS:
@@ -719,7 +721,9 @@ class ControllerRegistration(Editor):
 
 	def on_mnuStickPress_activate(self, *a):
 		mnuStick = self.builder.get_object("mnuStick")
-		self._grabber = InputGrabber(self, getattr(SCButtons, mnuStick._what), text=_("Press stick or button..."))
+		# DPAD does not have a press action
+		if mnuStick._what != "DPAD":
+			self._grabber = InputGrabber(self, getattr(SCButtons, mnuStick._what), text=_("Press stick or button..."))
 
 	def on_mnuStickmove_activate(self, *a):
 		mnuStick = self.builder.get_object("mnuStick")
