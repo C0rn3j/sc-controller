@@ -65,7 +65,12 @@ The controllers above will be autodetected and used without having to explicitly
 
 If your controller is not in the list above, you have to add it via `Settings -> Controllers -> Register New Controller`.
 
-Upon starting the registration process, your controller will be automatically mapped via SDL's [GameControllerDB](https://github.com/mdqinc/SDL_GameControllerDB), which has hundreds of supported devices.</br>
+Manual registration is available on Linux, Windows, and macOS. On Windows and macOS,
+the wizard reads HIDAPI inputs directly so you can assign buttons, calibrate axes,
+and choose the controller artwork even without a database entry. Saved registrations
+take precedence over automatic database mappings and are loaded after saving.
+
+On Linux, registration starts with mappings from SDL's [GameControllerDB](https://github.com/mdqinc/SDL_GameControllerDB), which has hundreds of supported devices. On Windows and macOS, the wizard starts with default assignments that you can adjust.</br>
 In case your controller is missing from the database, you will have to manually map each button in the UI, and afterwards you should [contribute](https://github.com/mdqinc/SDL_GameControllerDB#contributing) the layout.</br>
 
 Beware that even when you do use automapper instead of manual assignment, you still have to press all the buttons as instructed, to automatically set up deadzones and thresholds for inputs like triggers and joysticks.

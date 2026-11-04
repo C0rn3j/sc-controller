@@ -79,8 +79,10 @@ def cmd_test_hid(argv0: str, argv: list[str]) -> int:
 	"""
 	if sys.platform == "linux":
 		from scc.drivers.linux.hiddrv import USBHIDController, hiddrv_test
-	elif sys.platform == "win32":
-		from scc.drivers.windows.hiddrv import USBHIDController, hiddrv_test
+	elif sys.platform in ("win32", "darwin"):
+		from scc.lib.hid_registration import hiddrv_test
+
+		return hiddrv_test(argv)
 	else:
 		raise OSError("Unknown platform")
 
