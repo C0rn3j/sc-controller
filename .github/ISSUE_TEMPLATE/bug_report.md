@@ -12,7 +12,7 @@ assignees: ''
 **Desktop<!--(please complete the following information)-->**
 - OS: <!-- e.g. Arch Linux/Windows/macOS -->
 - OS version: <!-- e.g. rolling/11/15.2 -->
-- SCC Version: <!-- e.g. 0.7.1, see Menu->About -->
+- SCC Version: <!-- e.g. 1.0.8, see Menu->About -->
 - Installation method: <!-- e.g. AppImage/OS package/from source -->
 
 **Describe the bug**
@@ -38,10 +38,15 @@ Steps to reproduce the behavior:
  You can launch the application via a terminal for a full log.
  To do that, you should first ensure nothing is running:
    killall -9 scc-daemon sc-controller
+ The following examples are, in order, for a native Linux install, pyinstaller, AppImage.
  Then launch the daemon:
    scc-daemon debug
+   ./scc-daemon debug
+   ./sc-controller-1.0.8-resolute-x86_64.AppImage daemon debug
  Then in a second terminal, the GUI:
    sc-controller --debug
+   ./sc-controller --debug
+   ./sc-controller-1.0.8-resolute-x86_64.AppImage gui --debug
 -->
 
 <!--
