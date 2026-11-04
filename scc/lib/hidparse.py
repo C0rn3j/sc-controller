@@ -303,6 +303,9 @@ def parse_report_descriptor(data, flat_list=False):
 	stack, col = [], rv
 	for it in _split_hid_items(data):
 		item = parse_item(it, page)
+		if isinstance(item, GlobalItem):
+			# Payload-free global items (Push/Pop) still need a tuple wrapper.
+			item = (item,)
 		if not flat_list and item[0] is MainItem.Collection:
 			item = [item]
 			col.append(item)

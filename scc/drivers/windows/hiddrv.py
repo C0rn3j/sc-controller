@@ -1,4 +1,4 @@
-"""Generic Windows game-controller input using HIDAPI and gamecontrollerdb."""
+"""Generic HIDAPI controller input using registrations and gamecontrollerdb."""
 
 from __future__ import annotations
 
@@ -12,13 +12,15 @@ import time
 from enum import IntEnum
 from typing import TYPE_CHECKING
 
-if sys.platform == "win32":
+if sys.platform in ("win32", "darwin"):
 	import hid
 else:
 	hid = None
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons
 from scc.controller import Controller
+from scc.device_config import load_device_config
+from scc.lib.hid_registration import RawHIDInput, map_inputs
 from scc.lib.hidparse import (
 	AXES,
 	GenericDesktopPage,
@@ -29,7 +31,7 @@ from scc.lib.hidparse import (
 	UsagePage,
 	parse_report_descriptor,
 )
-from scc.paths import get_share_path
+from scc.paths import get_config_path, get_share_path
 from scc.tools import find_library
 
 if TYPE_CHECKING:
@@ -207,13 +209,14 @@ def _guid_vid_pid(guid: str) -> tuple[int, int] | None:
 
 @functools.lru_cache(maxsize=256)
 def load_gamecontroller_mapping(vendor_id: int, product_id: int, product_name: str = "") -> tuple[str, dict] | None:
-	"""Find the best Windows gamecontrollerdb entry for a USB VID/PID."""
+	"""Find a gamecontrollerdb entry for the current HIDAPI platform."""
 	filename = os.path.join(get_share_path(), "gamecontrollerdb.txt")
 	candidates = []
+	platform = "Mac OS X" if sys.platform == "darwin" else "Windows"
 	with open(filename, encoding="utf-8") as database:
 		for raw_line in database:
 			line = raw_line.strip()
-			if not line or line.startswith("#") or ",platform:Windows," not in line:
+			if not line or line.startswith("#") or f",platform:{platform}," not in line:
 				continue
 			parts = line.split(",")
 			if len(parts) < 3 or _guid_vid_pid(parts[0]) != (vendor_id, product_id):
@@ -492,11 +495,15 @@ class WindowsHIDController(Controller):
 		| ControllerFlags.NO_GRIPS
 	)
 
-	def __init__(self, driver: WindowsHIDDriver, info: dict, mapping_name: str, mapping: dict) -> None:
+	def __init__(self, driver: WindowsHIDDriver, info: dict, mapping_name: str, mapping: dict,
+		config_file: str | None = None) -> None:
 		super().__init__()
 		self.driver = driver
 		self.daemon = driver.daemon
 		self.path = info["path"]
+		self.config_file = config_file
+		self.config = mapping if config_file else None
+		self._raw = None
 		self._closed = False
 		self.device = hid.device()
 		self.device.open_path(self.path)
@@ -509,7 +516,11 @@ class WindowsHIDController(Controller):
 				# while others expose only the zero-argument form
 				log.warning("Type'err'd on the descriptor")
 				descriptor = bytes(self.device.get_report_descriptor(4096))
-			self._decoder = DecoderBuilder(descriptor, mapping).build()
+			if config_file:
+				self._raw = RawHIDInput(descriptor)
+				self._decoder = HIDDecoder(packet_size=max(self._raw.report_sizes.values()))
+			else:
+				self._decoder = DecoderBuilder(descriptor, mapping).build()
 			if not self._decoder.packet_size:
 				raise ValueError("empty HID input report")
 		except AttributeError as exc:
@@ -524,7 +535,8 @@ class WindowsHIDController(Controller):
 		self.mapping_name = mapping_name
 		self._bluetooth = self._detect_bluetooth(info)
 		self.daemon.add_controller(self)
-		log.info("Opened %s using gamecontrollerdb mapping '%s'", self._id, mapping_name)
+		log.info("Opened %s using %s mapping '%s'", self._id,
+			"registered" if config_file else "gamecontrollerdb", mapping_name)
 
 	def _generate_id(self, preferred: str) -> str:
 		controller_id = preferred
@@ -546,9 +558,17 @@ class WindowsHIDController(Controller):
 				if not report:
 					break
 				data = bytes(report)
-				if len(data) < self._decoder.packet_size:
+				if self._raw is None and len(data) < self._decoder.packet_size:
 					continue
-				if _lib.decode(ctypes.byref(self._decoder), data) and self.mapper:
+				if self._raw is not None:
+					if not self._raw.read(data):
+						continue
+					self._decoder.old_state = self._decoder.state
+					self._decoder.state = HIDControllerInput(**map_inputs(self._raw, self.config))
+					changed = bytes(self._decoder.old_state) != bytes(self._decoder.state)
+				else:
+					changed = _lib.decode(ctypes.byref(self._decoder), data)
+				if changed and self.mapper:
 					self.mapper.input(self, self._decoder.old_state, self._decoder.state)
 		except (OSError, ValueError):
 			log.exception("Generic HID controller %s read failed", self._id)
@@ -558,7 +578,7 @@ class WindowsHIDController(Controller):
 		return "hid"
 
 	def get_gui_config_file(self) -> str:
-		return "x360-config.json"
+		return self.config_file or "x360-config.json"
 
 	def is_bluetooth(self) -> bool:
 		return self._bluetooth
@@ -582,9 +602,32 @@ class WindowsHIDDriver:
 		self._seen_paths: set[bytes | str] = set()
 		self._did_initial_scan = False
 		self._next_scan = 0.0
+		self.configs = {}
+
+	def rescan(self) -> None:
+		"""Reload registrations and reconnect devices whose mapping changed."""
+		configs = {}
+		path = os.path.join(get_config_path(), "devices")
+		if os.path.isdir(path):
+			for name in sorted(os.listdir(path)):
+				match = re.fullmatch(r"hid-([0-9a-fA-F]{4})_([0-9a-fA-F]{4})-.*\.json", name)
+				if match is None:
+					continue
+				filename = os.path.join(path, name)
+				try:
+					config = load_device_config(filename)
+					if config.get("input_backend") == "hidapi":
+						configs[tuple(int(x, 16) for x in match.groups())] = (filename, config)
+				except (OSError, ValueError, TypeError):
+					log.exception("Failed to load HID registration %s", filename)
+		if configs != self.configs:
+			self.close()
+			self.configs = configs
+		self._failed_paths.clear()
+		self.scan()
 
 	def start(self) -> None:
-		self.scan()
+		self.rescan()
 
 	def mainloop(self) -> None:
 		for controller in tuple(self.controllers.values()):
@@ -606,7 +649,13 @@ class WindowsHIDDriver:
 				path = info.get("path")
 				if path is None:
 					continue
-				mapping = load_gamecontroller_mapping(*identity, str(info.get("product_string") or ""))
+				registration = self.configs.get(identity)
+				if registration:
+					config_file, config = registration
+					mapping = (str(info.get("product_string") or identity), config)
+				else:
+					config_file = None
+					mapping = load_gamecontroller_mapping(*identity, str(info.get("product_string") or ""))
 				if mapping is None:
 					continue
 				seen.add(path)
@@ -621,21 +670,21 @@ class WindowsHIDDriver:
 						info.get("usage"),
 						path,
 					)
-				if identity in SKIPPED_DEVICES:
+				if identity == (0x045E, 0x028E) or (identity in SKIPPED_DEVICES and registration is None):
 					if is_new:
 						log.debug("Leaving %04x:%04x to its dedicated driver", *identity)
 					continue
-				found[path] = (info, mapping)
+				found[path] = (info, mapping, config_file)
 		except Exception:
 			log.exception("Failed to enumerate generic HID controllers")
 			return
 		self._seen_paths = seen
 
-		for path, (info, (mapping_name, mapping)) in found.items():
+		for path, (info, (mapping_name, mapping), config_file) in found.items():
 			if path in self.controllers or path in self._failed_paths:
 				continue
 			try:
-				self.controllers[path] = WindowsHIDController(self, info, mapping_name, mapping)
+				self.controllers[path] = WindowsHIDController(self, info, mapping_name, mapping, config_file)
 			except (OSError, RuntimeError, TypeError, ValueError):
 				log.exception("Failed to open mapped HID controller at %r", path)
 				self._failed_paths.add(path)
@@ -657,11 +706,12 @@ _driver: WindowsHIDDriver | None = None
 
 def init(daemon: SCCDaemon, config: dict) -> bool:
 	global _driver
-	if sys.platform != "win32":
+	if sys.platform not in ("win32", "darwin"):
 		return False
 	_driver = WindowsHIDDriver(daemon)
 	daemon.add_mainloop(_driver.mainloop)
 	daemon.add_on_exit(_driver.close)
+	daemon.add_on_rescan(_driver.rescan)
 	return True
 
 

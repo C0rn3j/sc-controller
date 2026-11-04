@@ -150,14 +150,8 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		self.builder.get_object("cbLanguage").set_selected(selected)
 		self._recursing = False
 
-		if sys.platform == "win32":
-			for w in ("cbEnableDriver_evdevdrv", "btAddController"):
-				self.builder.get_object(w).set_sensitive(False)
-			message = self.builder.get_object("txEvdevMissing")
-			message.set_text(
-				_("Windows controllers are detected automatically using gamecontrollerdb.txt; manual registration is Linux-only."),
-			)
-			message.set_visible(True)
+		if sys.platform != "linux":
+			self.builder.get_object("cbEnableDriver_evdevdrv").set_sensitive(False)
 		else:
 			try:
 				import evdev
