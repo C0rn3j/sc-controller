@@ -1,7 +1,6 @@
 Here you can find builds for the very latest development version of SC Controller.
 
 macOS and Windows are early alpha quality, expect most things to not work.</br>
-Note that they are both forcefully built from the `windows` branch.
 
 You may want to use these releases if you want to:
 * Get a fix for a bug that hasn't made it to a stable release yet
