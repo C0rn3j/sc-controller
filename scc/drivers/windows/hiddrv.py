@@ -12,9 +12,9 @@ import time
 from enum import IntEnum
 from typing import TYPE_CHECKING
 
-if sys.platform in ("win32", "darwin"):
+try:
 	import hid
-else:
+except ImportError:
 	hid = None
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons
@@ -595,8 +595,9 @@ class WindowsHIDController(Controller):
 
 
 class WindowsHIDDriver:
-	def __init__(self, daemon: SCCDaemon) -> None:
+	def __init__(self, daemon: SCCDaemon, autodetect: bool = True) -> None:
 		self.daemon = daemon
+		self.autodetect = autodetect
 		self.controllers: dict[bytes | str, WindowsHIDController] = {}
 		self._failed_paths: set[bytes | str] = set()
 		self._seen_paths: set[bytes | str] = set()
@@ -610,7 +611,7 @@ class WindowsHIDDriver:
 		path = os.path.join(get_config_path(), "devices")
 		if os.path.isdir(path):
 			for name in sorted(os.listdir(path)):
-				match = re.fullmatch(r"hid-([0-9a-fA-F]{4})_([0-9a-fA-F]{4})-.*\.json", name)
+				match = re.fullmatch(r"(?:hid|hidapi)-([0-9a-fA-F]{4})_([0-9a-fA-F]{4})-.*\.json", name)
 				if match is None:
 					continue
 				filename = os.path.join(path, name)
@@ -655,7 +656,8 @@ class WindowsHIDDriver:
 					mapping = (str(info.get("product_string") or identity), config)
 				else:
 					config_file = None
-					mapping = load_gamecontroller_mapping(*identity, str(info.get("product_string") or ""))
+					mapping = (load_gamecontroller_mapping(*identity, str(info.get("product_string") or ""))
+						if self.autodetect else None)
 				if mapping is None:
 					continue
 				seen.add(path)

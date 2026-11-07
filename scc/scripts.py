@@ -89,6 +89,13 @@ def cmd_test_hid(argv0: str, argv: list[str]) -> int:
 	return hiddrv_test(USBHIDController, argv)
 
 
+def cmd_test_hidapi(argv0: str, argv: list[str]) -> int:
+	"""Test HIDAPI input using the encoded device path from registration."""
+	from scc.lib.hid_registration import hiddrv_test
+
+	return hiddrv_test(argv)
+
+
 def help_osd_keyboard() -> None:
 	from scc.osd.keyboard import Keyboard
 

@@ -12,9 +12,14 @@ import re
 import sys
 
 if sys.platform == "linux":
-	import evdev
-else:
+	try:
+		import evdev
+	except ImportError:
+		evdev = None
+try:
 	import hid
+except ImportError:
+	hid = None
 import gi
 
 gi.require_version("Gtk", "4.0")
@@ -125,7 +130,7 @@ class ControllerRegistration(Editor):
 
 		Return True on success.
 		"""
-		if sys.platform != "linux":
+		if sys.platform != "linux" or self._tester.driver == "hidapi":
 			# SDL's Windows axis numbering differs from raw descriptor order.
 			return False
 		# Build list of button and axes
@@ -279,7 +284,7 @@ class ControllerRegistration(Editor):
 			"axes": {},
 			"dpads": {},
 		}
-		if sys.platform != "linux":
+		if sys.platform != "linux" or self._tester.driver == "hidapi":
 			config["input_backend"] = "hidapi"
 
 		def axis_to_json(axisdata: AxisData) -> dict[str, str | float | int]:
@@ -341,8 +346,8 @@ class ControllerRegistration(Editor):
 		os.makedirs(os.path.join(get_config_path(), "devices"), exist_ok=True)
 
 		filename = re.sub(r'[<>:"/\\|?*\x00-\x1f]', "_", self._evdevice.name.strip()).rstrip(". ")
-		if self._tester.driver == "hid":
-			separator = ":" if sys.platform == "linux" else "_"
+		if self._tester.driver in ("hid", "hidapi"):
+			separator = ":" if sys.platform == "linux" and self._tester.driver == "hid" else "_"
 			filename = f"{self._evdevice.info.vendor:04x}{separator}{self._evdevice.info.product:04x}-{filename}"
 
 		config_file = os.path.join(
@@ -386,7 +391,8 @@ class ControllerRegistration(Editor):
 		if index == 0:
 			model, iter = tvDevices.get_selection().get_selected()
 			dev = self._open_selected_device(model[iter][0])
-			if sys.platform == "linux" and (dev.info.vendor, dev.info.product) == (0x054C, 0x09CC):
+			if (sys.platform == "linux" and not getattr(dev, "input_backend", None)
+				and (dev.info.vendor, dev.info.product) == (0x054C, 0x09CC)):
 				# Special case for PS4 controller
 				cbDS4 = self.builder.get_object("cbDS4")
 				imgDS4 = self.builder.get_object("imgDS4")
@@ -449,8 +455,8 @@ class ControllerRegistration(Editor):
 	def prepare_registration(self, dev):
 		self._evdevice = dev
 		self.set_hid_enabled(True)
-		if sys.platform != "linux":
-			self._tester = Tester("hid", dev.path)
+		if sys.platform != "linux" or getattr(dev, "input_backend", None) == "hidapi":
+			self._tester = Tester("hidapi" if sys.platform == "linux" else "hid", dev.path)
 			self._tester.__signals = [
 				self._tester.connect("ready", self.on_registration_ready),
 				self._tester.connect("error", self.on_device_open_failed),
@@ -499,7 +505,7 @@ class ControllerRegistration(Editor):
 		btNext = self.builder.get_object("btNext")
 
 		self.set_cb(cbAccessMode, tester.driver)
-		cbAccessMode.set_sensitive(sys.platform == "linux")
+		cbAccessMode.set_sensitive(sys.platform == "linux" and tester.driver != "hidapi")
 
 		if not self._mappings:
 			self._mappings = {}
@@ -560,6 +566,8 @@ class ControllerRegistration(Editor):
 		"""Enables or disables option to use HID driver"""
 		cbAccessMode = self.builder.get_object("cbAccessMode")
 		for x in cbAccessMode.get_model():
+			if x[0] == "hidapi":
+				x[2] = getattr(self._evdevice, "input_backend", None) == "hidapi"
 			if x[0] == "hid":
 				x[1] = _("USB HID (recommended)") if enabled else _("USB HID")
 				x[2] = enabled
@@ -753,10 +761,10 @@ class ControllerRegistration(Editor):
 		lstDevices = self.builder.get_object("lstDevices")
 		cbShowAllDevices = self.builder.get_object("cbShowAllDevices")
 		lstDevices.clear()
-		if sys.platform != "linux":
+		self._hid_devices = {}
+		if hid is not None and (sys.platform != "linux" or self.app.config["drivers"].get("hidapi")):
 			from scc.lib.hid_registration import registration_device
 
-			self._hid_devices = {}
 			for info in hid.enumerate():
 				if (info.get("vendor_id"), info.get("product_id")) == (0x045E, 0x028E):
 					# SCC's virtual Xbox output must never become an input.
@@ -764,8 +772,11 @@ class ControllerRegistration(Editor):
 				is_gamepad = info.get("usage_page") == 1 and info.get("usage") in (4, 5)
 				if is_gamepad or cbShowAllDevices.get_active():
 					dev = registration_device(info)
+					dev.input_backend = "hidapi"
 					self._hid_devices[dev.path] = dev
-					lstDevices.append((dev.path, dev.name, self._gamepad_icon if is_gamepad else self._other_icon))
+					name = f"{dev.name} (HIDAPI)" if sys.platform == "linux" else dev.name
+					lstDevices.append((dev.path, name, self._gamepad_icon if is_gamepad else self._other_icon))
+		if sys.platform != "linux" or evdev is None:
 			return
 		for fname in evdev.list_devices():
 			dev = evdev.InputDevice(fname)
@@ -780,9 +791,9 @@ class ControllerRegistration(Editor):
 				lstDevices.append((fname, dev.name, self._gamepad_icon if is_gamepad else self._other_icon))
 
 	def _open_selected_device(self, path):
-		if sys.platform == "linux":
-			return evdev.InputDevice(path)
-		return self._hid_devices[path]
+		if path in self._hid_devices:
+			return self._hid_devices[path]
+		return evdev.InputDevice(path)
 
 	def refresh_controller_image(self, *a):
 		cbControllerButtons = self.builder.get_object("cbControllerButtons")

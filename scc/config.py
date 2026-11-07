@@ -36,6 +36,7 @@ class Config:
 			"sc2": True,  # Steam Controller (2026)
 			"fake": False,  # Used for developement
 			"hiddrv": True,
+			"hidapi": False,  # Optional Linux backend; only opens manually registered devices
 			"evdevdrv": True,
 			"ds4drv": True,  # At least one of hiddrv or evdevdrv has to be enabled as well
 			"ds5drv": True,

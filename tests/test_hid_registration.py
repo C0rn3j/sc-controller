@@ -3,6 +3,8 @@
 import json
 from types import SimpleNamespace
 
+import pytest
+
 from scc.constants import SCButtons, STICK_PAD_MAX
 from scc.device_config import DEVICE_CONFIG_VERSION
 from scc.lib.hid_registration import RawHIDInput, map_inputs, path_token, registration_device
@@ -77,7 +79,8 @@ def test_descriptor_global_push_pop_restores_axis_range():
 	assert [field.minimum for field in raw.fields] == [-127, 0]
 
 
-def test_registered_unknown_controller_is_loaded_polled_and_removed(tmp_path, monkeypatch):
+@pytest.mark.parametrize("autodetect,prefix", [(True, "hid"), (False, "hidapi")])
+def test_registered_unknown_controller_is_loaded_polled_and_removed(tmp_path, monkeypatch, autodetect, prefix):
 	from scc.drivers.windows import hiddrv
 
 	class Device:
@@ -107,11 +110,11 @@ def test_registered_unknown_controller_is_loaded_polled_and_removed(tmp_path, mo
 	monkeypatch.setattr(hiddrv, "load_gamecontroller_mapping", lambda *args: None)
 	devices = tmp_path / "devices"
 	devices.mkdir()
-	filename = devices / "hid-1234_5678-Unknown.json"
+	filename = devices / f"{prefix}-1234_5678-Unknown.json"
 	filename.write_text(json.dumps(configuration()))
 	active = []
 	daemon = SimpleNamespace(add_controller=active.append, remove_controller=active.remove, get_active_ids=lambda: [])
-	driver = hiddrv.WindowsHIDDriver(daemon)
+	driver = hiddrv.WindowsHIDDriver(daemon, autodetect=autodetect)
 	driver.start()
 	assert len(active) == 1
 	controller = active[0]
@@ -135,3 +138,33 @@ def test_registered_unknown_controller_is_loaded_polled_and_removed(tmp_path, mo
 	driver.rescan()
 	assert active == []
 	assert device.closed
+
+
+def test_optional_linux_backend_never_autodetects(monkeypatch):
+	from scc.drivers.linux import hidapi
+	from scc.drivers.windows import hiddrv
+
+	info = {"path": b"mapped-device", "vendor_id": 0x1234, "product_id": 0x5678}
+	monkeypatch.setattr(hiddrv, "hid", SimpleNamespace(enumerate=lambda: [info]))
+
+	def database_lookup(*args):
+		pytest.fail("Linux HIDAPI backend must not look up automatic mappings")
+
+	monkeypatch.setattr(hiddrv, "load_gamecontroller_mapping", database_lookup)
+	callbacks = []
+	daemon = SimpleNamespace(
+		add_mainloop=callbacks.append, add_on_exit=callbacks.append, add_on_rescan=callbacks.append
+	)
+	monkeypatch.setattr(hidapi, "_driver", None)
+	assert hidapi.init(daemon, {})
+	assert not hidapi._driver.autodetect
+	assert len(callbacks) == 3
+	hidapi._driver.scan()
+	assert hidapi._driver.controllers == {}
+
+
+def test_optional_linux_backend_handles_missing_dependency(monkeypatch):
+	from scc.drivers.linux import hidapi
+
+	monkeypatch.setattr(hidapi.hiddrv, "hid", None)
+	assert not hidapi.init(SimpleNamespace(), {})
