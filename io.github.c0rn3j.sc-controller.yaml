@@ -1,0 +1,64 @@
+app-id: io.github.c0rn3j.sc-controller
+runtime: org.gnome.Platform
+runtime-version: "50"
+sdk: org.gnome.Sdk
+command: sc-controller
+
+finish-args:
+  - --env=SCC_SHARED=/app/share/scc
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --socket=pulseaudio
+  - --device=all
+  - --system-talk-name=org.bluez
+  - --system-talk-name=org.freedesktop.login1
+  - --talk-name=org.freedesktop.Flatpak
+  - --filesystem=host-os:ro
+  - --filesystem=xdg-data/applications:ro
+  - --filesystem=xdg-data/flatpak/exports/share/applications:ro
+  - --filesystem=/var/lib/flatpak/exports/share/applications:ro
+  - --filesystem=xdg-run/app/com.discordapp.Discord:create
+
+modules:
+  - name: gtk4-layer-shell
+    buildsystem: meson
+    config-opts:
+      - -Dexamples=false
+      - -Ddocs=false
+      - -Dtests=false
+      - -Dsmoke-tests=false
+      - -Dintrospection=true
+      - -Dvapi=false
+    sources:
+      - type: git
+        url: https://github.com/wmww/gtk4-layer-shell.git
+        commit: 1c963c51514581c41b9bdae08cdf69171265cdda
+
+  - python3-dependencies.json
+
+  - name: python3-hidraw-pure
+    buildsystem: simple
+    build-commands:
+      - pip3 install --no-deps --no-build-isolation --prefix=/app .
+    sources:
+      - type: git
+        url: https://github.com/C0rn3j/python-hidraw.git
+        commit: abe67834e1641ca4077d974a4c4983878d35c817
+
+  - name: sc-controller
+    buildsystem: simple
+    build-commands:
+      - pip3 install --no-deps --no-build-isolation --prefix=/app .
+      - rm -f /app/share/applications/sc-controller.desktop /app/share/pixmaps/sc-controller.svg
+      - install -Dm644 scripts/sc-controller.desktop /app/share/applications/io.github.c0rn3j.sc-controller.desktop
+      - sed -i 's|>sc-controller.desktop<|>io.github.c0rn3j.sc-controller.desktop<|' scripts/io.github.c0rn3j.sc-controller.metainfo.xml
+      - install -Dm644 scripts/io.github.c0rn3j.sc-controller.metainfo.xml /app/share/metainfo/io.github.c0rn3j.sc-controller.metainfo.xml
+      - install -Dm644 images/sc-controller.svg /app/share/icons/hicolor/scalable/apps/io.github.c0rn3j.sc-controller.svg
+      - desktop-file-edit
+          --set-key=Icon
+          --set-value=io.github.c0rn3j.sc-controller
+          /app/share/applications/io.github.c0rn3j.sc-controller.desktop
+    sources:
+      - type: dir
+        path: .
