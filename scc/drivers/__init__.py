@@ -17,4 +17,7 @@ MOD_INIT_ORDER = (
 	"scc.drivers.usb",
 	"scc.drivers.linux.evdevdrv",
 	"scc.drivers.linux.hiddrv",
+	"scc.drivers.linux.hidapi",
+	"scc.drivers.windows.hiddrv",
+	"scc.drivers.macos.hiddrv",
 )

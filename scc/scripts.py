@@ -79,12 +79,21 @@ def cmd_test_hid(argv0: str, argv: list[str]) -> int:
 	"""
 	if sys.platform == "linux":
 		from scc.drivers.linux.hiddrv import USBHIDController, hiddrv_test
-	elif sys.platform == "win32":
-		from scc.drivers.windows.hiddrv import USBHIDController, hiddrv_test
+	elif sys.platform in ("win32", "darwin"):
+		from scc.lib.hid_registration import hiddrv_test
+
+		return hiddrv_test(argv)
 	else:
 		raise OSError("Unknown platform")
 
 	return hiddrv_test(USBHIDController, argv)
+
+
+def cmd_test_hidapi(argv0: str, argv: list[str]) -> int:
+	"""Test HIDAPI input using the encoded device path from registration."""
+	from scc.lib.hid_registration import hiddrv_test
+
+	return hiddrv_test(argv)
 
 
 def help_osd_keyboard() -> None:

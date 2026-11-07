@@ -88,6 +88,8 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		self._eh_ids = (self.app.dm.connect("reconfigured", self.on_daemon_reconfigured),)
 
 	def _get_gamepad_icon(self, drv):
+		if drv == "hidapi":
+			drv = "hid"
 		if drv in self._gamepad_icons:
 			return self._gamepad_icons[drv]
 		try:
@@ -150,13 +152,18 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		self.builder.get_object("cbLanguage").set_selected(selected)
 		self._recursing = False
 
-		try:
-			import evdev
-		except ImportError:
-			# This block runs if evdev module is missing
-			for w in ("cbEnableDriver_evdevdrv", "btAddController"):
-				self.builder.get_object(w).set_sensitive(False)
-			self.builder.get_object("txEvdevMissing").set_visible(True)
+		if sys.platform != "linux":
+			self.builder.get_object("cbEnableDriver_evdevdrv").set_sensitive(False)
+			self.builder.get_object("cbEnableDriver_hidapi").set_visible(False)
+		else:
+			try:
+				import evdev
+			except ImportError:
+				# This block runs if evdev module is missing
+				self.builder.get_object("cbEnableDriver_evdevdrv").set_sensitive(False)
+				if not self.app.config["drivers"].get("hidapi"):
+					self.builder.get_object("btAddController").set_sensitive(False)
+				self.builder.get_object("txEvdevMissing").set_visible(True)
 
 	def load_languages(self) -> None:
 		model = self.builder.get_object("lstLanguages")
@@ -845,7 +852,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			os.makedirs(os.path.join(get_config_path(), "devices"))
 		for filename in os.listdir(os.path.join(get_config_path(), "devices")):
 			if filename.endswith(".json"):
-				if filename.startswith("hid-"):
+				if filename.startswith(("hid-", "hidapi-")):
 					drv, usbid, name = filename.split("-", 2)
 					name = "%s <i>(%s)</i>" % (name[0:-5], usbid.upper())
 				elif "-" in filename:
