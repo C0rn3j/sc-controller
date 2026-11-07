@@ -11,9 +11,6 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v7
         with:
-          # Temporarily build the windows branch, regardless of the triggering ref
-          # This is because it currently has patches that won't fly in main
-          ref: windows
           submodules: true
           fetch-depth: 0
 
