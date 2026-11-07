@@ -74,7 +74,11 @@ packages = [
 	"scc.gui",
 	"scc.gui.ae",
 	"scc.gui.importexport",
-	"scc.gui.creg"
+	"scc.gui.creg",
+	"scc.locale.cs.LC_MESSAGES",
+	"scc.locale.pt_BR.LC_MESSAGES",
+	"scc.locale.ru.LC_MESSAGES",
+	"scc.locale.zh_Hant.LC_MESSAGES",
 ]
 
 [tool.setuptools_scm]

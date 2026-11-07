@@ -7,157 +7,99 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
 
     strategy:
       matrix:
-        target:
+        include:
           - platform: linux/amd64
-            arch: amd64
+            runner: ubuntu-26.04
           - platform: linux/arm64
-            arch: arm64
-        base:
-          - os: ubuntu
-            codename: noble
-            pubkey: 871920D1991BC93C
-            recipe: packaging/appimage/AppImageBuilder.ubuntu.noble.yaml
-          - os: ubuntu
-            codename: resolute
-            pubkey: 871920D1991BC93C
-            recipe: packaging/appimage/AppImageBuilder.ubuntu.resolute.yaml
-          # - os: debian
-          #   codename: bookworm
-          #   pubkey: 54404762BBB6E853
-          #   pubkey_security: 6ED0E7B82643E131
-          #   recipe: packaging/appimage/AppImageBuilder.debian.bookworm.yaml
-          - os: debian
-            codename: trixie
-            pubkey: BDE6D2B9216EC7A8
-            pubkey_security: 8E9F831205B4BA95
-            pubkey_updates: 78DBA3BC47EF2265
-            recipe: packaging/appimage/AppImageBuilder.debian.trixie.yaml
+            runner: ubuntu-26.04-arm
 
     steps:
-      - uses: actions/checkout@v7
+      - name: Checkout
+        uses: actions/checkout@v7
         with:
-          fetch-depth: 0
-      - uses: rlespinasse/github-slug-action@v5
+          fetch-depth: 20
 
-      - name: Setup qemu for docker
-        uses: docker/setup-qemu-action@v4
-        if: matrix.target.platform != 'linux/amd64'
+      - name: Expose slug values
+        uses: rlespinasse/github-slug-action@v5
 
       - name: Setup buildx for docker
         uses: docker/setup-buildx-action@v4
 
-      - name: Compile in docker using the repo Dockerfile
+      - name: Compile and build AppImage in Docker using the repo Dockerfile
         uses: docker/build-push-action@v7
         with:
-          context: .
-          platforms: ${{ matrix.target.platform }}
+          platforms: ${{ matrix.platform }}
           outputs: build
           build-args: |
-            BASE_OS=${{ matrix.base.os }}
-            BASE_CODENAME=${{ matrix.base.codename }}
+            OWNER=${{ env.GITHUB_REPOSITORY_OWNER_PART }}
 
-      - name: Prepare environment to build AppImage
-        env:
-          TARGET_PLATFORM: ${{ matrix.target.platform }}
-        shell: bash
-        run: |
-          set -eua
-          if [ -r build/.build-metadata.env ]; then
-            . build/.build-metadata.env
-            rm build/.build-metadata.env
-          fi
-          APPIMAGE_SOURCE=build
-          APPIMAGE_VERSION="${VERSION}-${{ matrix.base.codename }}"
-          APPIMAGE_APT_ARCH="${TARGETARCH}"
-          APPIMAGE_APT_DISTRO="${{ matrix.base.codename }}"
-          APPIMAGE_APT_PUBKEY="${{ matrix.base.pubkey }}"
-          APPIMAGE_APT_PUBKEY_UPDATES="${{ matrix.base.pubkey_updates }}"
-          APPIMAGE_APT_PUBKEY_SECURITY="${{ matrix.base.pubkey_security }}"
-          APPIMAGE_ARCH="${TARGETMACHINE}"
-          printenv | grep ^APPIMAGE_ >>"${GITHUB_ENV}"
-
-      - name: Build AppImage
-        uses: C0rn3j/build-appimage@v1.3
+      - name: Slugify platform
+        uses: rlespinasse/slugify-value@v1
+        id: platform-slug
         with:
-          command: ${{
-                     format('sh -c "set -eu; {0}; {1}; {2}; appimage-builder --recipe {3}"',
-                       'pip install --upgrade setuptools packaging packaging-legacy',
-                       'pip install --extra-index-url https://lief.s3-website.fr-par.scw.cloud/latest \"lief>=0.16.0.dev0\"',
-                       'find /usr/local/lib -name package.py | while read -r file; do sed -i -e \"s/^from.packaging/&_legacy/\" \"${file}\"; done',
-                       matrix.base.recipe)
-                   }}
+          key: PLATFORM
+          value: ${{ matrix.platform }}
+          publish-env: false
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: appimage-${{ matrix.base.codename }}-${{ matrix.target.arch }}
+          name: appimage-${{ steps.platform-slug.outputs.slug-url }}
           path: |
-            ./*.AppImage
-            ./*.AppImage.zsync
+            build/*.AppImage
+            build/*.AppImage.zsync
           if-no-files-found: error
 
   test:
-    runs-on: ${{ matrix.target.os }}
+    runs-on: ${{ matrix.runner }}
     needs:
       - build
     strategy:
       fail-fast: false
       matrix:
-        target:
+        include:
           - platform: linux/amd64
-            arch: amd64
-            os: ubuntu-latest
-
-          # arm64 AppImages created by appimage-builder <= v1.1.0 are broken
-          # and fail with `APPRUN_ERROR: No such file or directory` on amd64
-          # due to https://github.com/AppImageCrafters/appimage-builder/issues/272
-          #
-          # This comment can be removed when a fixed appimage-builder release is available.
-          #- platform: linux/arm64
-          #  arch: arm64
-          #  os: ubuntu-24.04-arm
-
-        base:
-          - os: ubuntu
-            codename: noble
-          - os: ubuntu
-            codename: resolute
-          # - os: debian
-          #   codename: bookworm
-          - os: debian
-            codename: trixie
-          - os: fedora
-            codename: "43"
-          - os: fedora
-            codename: "44"
+            runner: ubuntu-26.04
+          - platform: linux/arm64
+            runner: ubuntu-26.04-arm
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
+      - name: Slugify platform
+        uses: rlespinasse/slugify-value@v1
+        id: platform-slug
+        with:
+          key: PLATFORM
+          value: ${{ matrix.platform }}
+          publish-env: false
 
       - name: Download artifacts
         uses: actions/download-artifact@v8
         with:
-          pattern: appimage-*-${{ matrix.target.arch }}
+          pattern: appimage-${{ steps.platform-slug.outputs.slug-url }}
           path: appimages
           merge-multiple: true
 
-      - name: Setup buildx for docker
-        uses: docker/setup-buildx-action@v4
-
-      - name: Test AppImages
-        uses: docker/build-push-action@v7
+      - name: Test AppImage on Alpine
+        uses: addnab/docker-run-action@v3
         with:
-          file: packaging/appimage/AppImageBuilder.test.Dockerfile
-          context: appimages
-          platforms: ${{ matrix.target.platform }}
-          build-args: |
-            BASE_OS=${{ matrix.base.os }}
-            BASE_CODENAME=${{ matrix.base.codename }}
+          image: alpine
+          options: -v ${{ github.workspace }}/assets:/appimage
+          run: |
+            apk add coreutils
+            find /appimage/ -type f -name '*.AppImage' | while read -r appimage; do
+              chmod +x "${appimage}"
+              "${appimage}" dependency-check || exit 1
+              timeout 5 "${appimage}" daemon --alone --foreground start
+              rc="$?"
+              if [ "$rc" -ne 124 ]; then
+                echo >&2 "AppImage returned unexpected code $rc."
+                if [ "$rc" -ne 0 ]; then exit "$rc"; else exit 1; fi
+              fi
+            done
 
   release:
     runs-on: ubuntu-latest
