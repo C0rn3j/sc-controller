@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sc-controller\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-01 20:42+0100\n"
+"POT-Creation-Date: 2026-11-04 23:19+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -317,14 +317,14 @@ msgstr ""
 
 #: scc/gui/ae/gyro_action.py:47 scc/gui/modeshift_editor.py:27
 #: ui/action_editor.ui:506 ui/ae/dpad.ui:53 ui/ae/special_action.ui:92
-#: ui/controller_settings.ui:39 ui/creg.ui:479 ui/creg.ui:503 ui/creg.ui:515
+#: ui/controller_settings.ui:39 ui/creg.ui:484 ui/creg.ui:508 ui/creg.ui:520
 #: ui/osk_binding_editor.ui:37
 msgid "X"
 msgstr ""
 
 #: scc/gui/ae/gyro_action.py:48 scc/gui/modeshift_editor.py:28
 #: ui/action_editor.ui:552 ui/ae/dpad.ui:57 ui/ae/special_action.ui:96
-#: ui/controller_settings.ui:43 ui/creg.ui:491 ui/creg.ui:527 ui/creg.ui:539
+#: ui/controller_settings.ui:43 ui/creg.ui:496 ui/creg.ui:532 ui/creg.ui:544
 #: ui/osk_binding_editor.ui:47
 msgid "Y"
 msgstr ""
@@ -541,7 +541,7 @@ msgstr ""
 msgid "Do you want to quit the application instead?"
 msgstr ""
 
-#: scc/gui/app.py:614 ui/creg.ui:871
+#: scc/gui/app.py:614 ui/creg.ui:876
 msgid "_Cancel"
 msgstr ""
 
@@ -681,19 +681,19 @@ msgstr ""
 msgid "(no action)"
 msgstr ""
 
-#: scc/gui/creg/dialog.py:542
+#: scc/gui/creg/dialog.py:548
 msgid "Failed to open device"
 msgstr ""
 
-#: scc/gui/creg/dialog.py:565
+#: scc/gui/creg/dialog.py:573
 msgid "USB HID (recommended)"
 msgstr ""
 
-#: scc/gui/creg/dialog.py:565
+#: scc/gui/creg/dialog.py:573
 msgid "USB HID"
 msgstr ""
 
-#: scc/gui/creg/dialog.py:737
+#: scc/gui/creg/dialog.py:745
 msgid "Press stick or button..."
 msgstr ""
 
@@ -725,19 +725,19 @@ msgstr ""
 msgid "Move stick up and down..."
 msgstr ""
 
-#: scc/gui/global_settings.py:259
+#: scc/gui/global_settings.py:263
 msgid "(customized)"
 msgstr ""
 
-#: scc/gui/global_settings.py:799
+#: scc/gui/global_settings.py:803
 msgid "Install the xdotool package to use this feature"
 msgstr ""
 
-#: scc/gui/global_settings.py:826
+#: scc/gui/global_settings.py:830
 msgid "Unregister controller?"
 msgstr ""
 
-#: scc/gui/global_settings.py:828
+#: scc/gui/global_settings.py:832
 msgid "You'll lose all settings for it"
 msgstr ""
 
@@ -1831,7 +1831,7 @@ msgid "Matching Precision"
 msgstr ""
 
 #: ui/ae/gesture.ui:259 ui/ae/osk_action.ui:61 ui/ae/special_action.ui:297
-#: ui/global_settings.ui:2101
+#: ui/global_settings.ui:2113
 msgid "Action"
 msgstr ""
 
@@ -1923,7 +1923,7 @@ msgstr ""
 msgid "Number of Profiles to Display"
 msgstr ""
 
-#: ui/ae/special_action.ui:37 ui/global_settings.ui:2157
+#: ui/ae/special_action.ui:37 ui/global_settings.ui:2169
 msgid "Turn Off Controller"
 msgstr ""
 
@@ -2253,27 +2253,27 @@ msgstr ""
 msgid "Used to control menus unless the profile specifies something different"
 msgstr ""
 
-#: ui/creg.ui:45
+#: ui/creg.ui:50
 msgid "Two sticks, symmetrical (PSx Controller)"
 msgstr ""
 
-#: ui/creg.ui:49
+#: ui/creg.ui:54
 msgid "Two sticks, asymmetrical (x360 pad)"
 msgstr ""
 
-#: ui/creg.ui:53
+#: ui/creg.ui:58
 msgid "Single stick"
 msgstr ""
 
-#: ui/creg.ui:57
+#: ui/creg.ui:62
 msgid "Single DPAD (NES/SNES controller)"
 msgstr ""
 
-#: ui/creg.ui:86
+#: ui/creg.ui:91
 msgid "Controller Device"
 msgstr ""
 
-#: ui/creg.ui:97
+#: ui/creg.ui:102
 msgid ""
 "This dialog allows to setup traditional controllers to be used with SC "
 "Controller.\n"
@@ -2281,30 +2281,30 @@ msgid ""
 "Please, select your controller from list bellow and click Next."
 msgstr ""
 
-#: ui/creg.ui:166
+#: ui/creg.ui:171
 msgid "Show All Devices"
 msgstr ""
 
-#: ui/creg.ui:188
+#: ui/creg.ui:193
 msgid "_Refresh"
 msgstr ""
 
-#: ui/creg.ui:220
+#: ui/creg.ui:225
 msgid ""
 "<b>Input Configuration</b>\n"
 "Please, select options that are best describing controller you are "
 "configuring."
 msgstr ""
 
-#: ui/creg.ui:255
+#: ui/creg.ui:260
 msgid "Sticks"
 msgstr ""
 
-#: ui/creg.ui:270
+#: ui/creg.ui:275
 msgid "Labels"
 msgstr ""
 
-#: ui/creg.ui:362
+#: ui/creg.ui:367
 msgid ""
 "<b>Input Mappings</b>\n"
 "\n"
@@ -2316,43 +2316,43 @@ msgid ""
 "physical button to it."
 msgstr ""
 
-#: ui/creg.ui:387
+#: ui/creg.ui:392
 msgid "Controls shown in red are not assigned."
 msgstr ""
 
-#: ui/creg.ui:422
+#: ui/creg.ui:427
 msgid "Emulate center (guide) button by pressing Back + Start at once"
 msgstr ""
 
-#: ui/creg.ui:433
+#: ui/creg.ui:438
 msgid "Invert Axes"
 msgstr ""
 
-#: ui/creg.ui:445
+#: ui/creg.ui:450
 msgid "Left stick"
 msgstr ""
 
-#: ui/creg.ui:456
+#: ui/creg.ui:461
 msgid "Right stick (right pad)"
 msgstr ""
 
-#: ui/creg.ui:467
+#: ui/creg.ui:472
 msgid "DPAD (left pad)"
 msgstr ""
 
-#: ui/creg.ui:550
+#: ui/creg.ui:555
 msgid "Access Mode"
 msgstr ""
 
-#: ui/creg.ui:598
+#: ui/creg.ui:603
 msgid "Advanced Options"
 msgstr ""
 
-#: ui/creg.ui:620
+#: ui/creg.ui:625
 msgid "Display Raw Data"
 msgstr ""
 
-#: ui/creg.ui:683
+#: ui/creg.ui:688
 msgid ""
 "Warning: evdev access mode was auto-selected for HID device.\n"
 "\n"
@@ -2364,7 +2364,7 @@ msgid ""
 "for-non-steam-controllers\">Click here</a> for more info."
 msgstr ""
 
-#: ui/creg.ui:721
+#: ui/creg.ui:726
 msgid ""
 "<b>DS4 Controller</b>\n"
 "\n"
@@ -2374,11 +2374,11 @@ msgid ""
 "is enabled in the Settings or here:"
 msgstr ""
 
-#: ui/creg.ui:748
+#: ui/creg.ui:753
 msgid "_Enable DS4 Controller Support"
 msgstr ""
 
-#: ui/creg.ui:763
+#: ui/creg.ui:768
 msgid ""
 "Change will be applied after emulation is restarted.\n"
 "If you have any games running, restarting emulation will\n"
@@ -2386,35 +2386,35 @@ msgid ""
 "future inputs or even crash."
 msgstr ""
 
-#: ui/creg.ui:814
+#: ui/creg.ui:819
 msgid "_Back"
 msgstr ""
 
-#: ui/creg.ui:824
+#: ui/creg.ui:829
 msgid "_Next"
 msgstr ""
 
-#: ui/creg.ui:854
+#: ui/creg.ui:859
 msgid "Press button..."
 msgstr ""
 
-#: ui/creg.ui:913
+#: ui/creg.ui:918
 msgid "L1 L2 R1 R2"
 msgstr ""
 
-#: ui/creg.ui:917
+#: ui/creg.ui:922
 msgid "LB LT RB RT"
 msgstr ""
 
-#: ui/creg.ui:921
+#: ui/creg.ui:926
 msgid "L R"
 msgstr ""
 
-#: ui/creg.ui:931
+#: ui/creg.ui:936
 msgid "Change mapping for _Pressing stick"
 msgstr ""
 
-#: ui/creg.ui:938
+#: ui/creg.ui:943
 msgid "Change mapping for _Moving stick"
 msgstr ""
 
@@ -2684,27 +2684,31 @@ msgid ""
 "they are connected."
 msgstr ""
 
-#: ui/global_settings.ui:1498
+#: ui/global_settings.ui:1506
 msgid "Enable HID device support"
 msgstr ""
 
-#: ui/global_settings.ui:1520
+#: ui/global_settings.ui:1515
+msgid "Enable HIDAPI support (optional)"
+msgstr ""
+
+#: ui/global_settings.ui:1532
 msgid "Enable evdev support"
 msgstr ""
 
-#: ui/global_settings.ui:1549
+#: ui/global_settings.ui:1561
 msgid "Register New Controller"
 msgstr ""
 
-#: ui/global_settings.ui:1593
+#: ui/global_settings.ui:1605
 msgid "The python-evdev package is required for non-Steam controller support"
 msgstr ""
 
-#: ui/global_settings.ui:1612
+#: ui/global_settings.ui:1624
 msgid "Enable Remote RetroPad protocol support"
 msgstr ""
 
-#: ui/global_settings.ui:1625
+#: ui/global_settings.ui:1637
 msgid ""
 "If enabled, any device or application compatibile with Retroarch's Remote "
 "RetroPad protocol\n"
@@ -2715,43 +2719,43 @@ msgid ""
 "</a>"
 msgstr ""
 
-#: ui/global_settings.ui:1644
+#: ui/global_settings.ui:1656
 msgid "Controllers"
 msgstr ""
 
-#: ui/global_settings.ui:1667
+#: ui/global_settings.ui:1679
 msgid "Show _OSD notification when profile is switched automatically"
 msgstr ""
 
-#: ui/global_settings.ui:1683
+#: ui/global_settings.ui:1695
 msgid "Switching Rules"
 msgstr ""
 
-#: ui/global_settings.ui:1709
+#: ui/global_settings.ui:1721
 msgid "When window..."
 msgstr ""
 
-#: ui/global_settings.ui:1722
+#: ui/global_settings.ui:1734
 msgid "... then"
 msgstr ""
 
-#: ui/global_settings.ui:1753
+#: ui/global_settings.ui:1765
 msgid "Automatic Profile Switching Options"
 msgstr ""
 
-#: ui/global_settings.ui:1777
+#: ui/global_settings.ui:1789
 msgid "Edit Condition"
 msgstr ""
 
-#: ui/global_settings.ui:1838
+#: ui/global_settings.ui:1850
 msgid "Autoswitcher"
 msgstr ""
 
-#: ui/global_settings.ui:1861
+#: ui/global_settings.ui:1873
 msgid "Enable Input Test Mode"
 msgstr ""
 
-#: ui/global_settings.ui:1874
+#: ui/global_settings.ui:1886
 msgid ""
 "Allows applications to <b>watch and possibly log</b> gamepad inputs.\n"
 "\n"
@@ -2759,55 +2763,55 @@ msgid ""
 "grips, triggers, finger positions on both pads and stick angle."
 msgstr ""
 
-#: ui/global_settings.ui:1900
+#: ui/global_settings.ui:1912
 msgid "Use Serial Numbers to Identify Controllers"
 msgstr ""
 
-#: ui/global_settings.ui:1921
+#: ui/global_settings.ui:1933
 msgid "Automatically Disable Emulation When Closing GUI"
 msgstr ""
 
-#: ui/global_settings.ui:1934
+#: ui/global_settings.ui:1946
 msgid "Try disabling this option if your controller stops working randomly."
 msgstr ""
 
-#: ui/global_settings.ui:1957
+#: ui/global_settings.ui:1969
 msgid "Show the changelog after SC Controller is updated"
 msgstr ""
 
-#: ui/global_settings.ui:1973
+#: ui/global_settings.ui:1985
 msgid "Advanced"
 msgstr ""
 
-#: ui/global_settings.ui:2017
+#: ui/global_settings.ui:2029
 msgid "Condition"
 msgstr ""
 
-#: ui/global_settings.ui:2032
+#: ui/global_settings.ui:2044
 msgid "Match Window Title"
 msgstr ""
 
-#: ui/global_settings.ui:2054
+#: ui/global_settings.ui:2066
 msgid "Match exact title"
 msgstr ""
 
-#: ui/global_settings.ui:2066
+#: ui/global_settings.ui:2078
 msgid "Use regular expression"
 msgstr ""
 
-#: ui/global_settings.ui:2084
+#: ui/global_settings.ui:2096
 msgid "Match Window Class"
 msgstr ""
 
-#: ui/global_settings.ui:2116
+#: ui/global_settings.ui:2128
 msgid "Activate Profile"
 msgstr ""
 
-#: ui/global_settings.ui:2172
+#: ui/global_settings.ui:2184
 msgid "Restart Daemon"
 msgstr ""
 
-#: ui/global_settings.ui:2203 ui/menu_editor.ui:317
+#: ui/global_settings.ui:2215 ui/menu_editor.ui:317
 msgid "_Save"
 msgstr ""
 

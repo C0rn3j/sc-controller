@@ -33,6 +33,7 @@ dependencies = [
 #platforms = ["Linux"]
 
 [project.optional-dependencies]
+	hidapi = ["hidapi"]
 	dev = [
 		# Needs PYGOBJECT_STUB_CONFIG=Gtk4,Gdk4 env var when being installed
 		# And also --no-cache-dir for pip install

@@ -1485,25 +1485,37 @@ or even crash.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckButton" id="cbEnableDriver_hiddrv">
-                        <property name="focusable">1</property>
-                        <property name="margin-top">5</property>
-                        <property name="name">hiddrv</property>
-                        <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
-                        <child>
-                          <object class="GtkLabel" id="lblKuaa12">
-                            <property name="attributes">
-                              0 -1 weight bold
-                            </property>
-                            <property name="label" translatable="yes">Enable HID device support</property>
-                            <property name="xalign">0</property>
-                          </object>
-                        </child>
+                      <object class="GtkBox" id="boxHIDBackends">
+                        <property name="orientation">vertical</property>
                         <layout>
                           <property name="column">0</property>
                           <property name="column-span">3</property>
                           <property name="row">5</property>
                         </layout>
+                        <child>
+                          <object class="GtkCheckButton" id="cbEnableDriver_hiddrv">
+                            <property name="focusable">1</property>
+                            <property name="margin-top">5</property>
+                            <property name="name">hiddrv</property>
+                            <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
+                            <child>
+                              <object class="GtkLabel" id="lblKuaa12">
+                                <property name="attributes">
+                                  0 -1 weight bold
+                                </property>
+                                <property name="label" translatable="yes">Enable HID device support</property>
+                                <property name="xalign">0</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckButton" id="cbEnableDriver_hidapi">
+                            <property name="name">hidapi</property>
+                            <property name="label" translatable="yes">Enable HIDAPI support (optional)</property>
+                            <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>

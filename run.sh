@@ -95,7 +95,7 @@ else
 fi
 uv pip install . build
 # PYGOBJECT_STUB_CONFIG and --no-cache-dir is needed to build pygobject-stubs correctly
-PYGOBJECT_STUB_CONFIG=Gtk4,Gdk4 uv pip install --no-cache-dir ".[dev]"
+PYGOBJECT_STUB_CONFIG=Gtk4,Gdk4 uv pip install --no-cache-dir ".[dev,hidapi]"
 uv build --wheel
 #python -m installer --destdir=".venv" dist/*.whl
 uv pip install --prefix ".venv" dist/*.whl --force-reinstall

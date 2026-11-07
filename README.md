@@ -70,6 +70,11 @@ the wizard reads HIDAPI inputs directly so you can assign buttons, calibrate axe
 and choose the controller artwork even without a database entry. Saved registrations
 take precedence over automatic database mappings and are loaded after saving.
 
+Linux also offers an optional HIDAPI backend.
+Enable **HIDAPI support** in Settings, and restart emulation.
+Register the entry labelled **(HIDAPI)** to use it.
+Remove an existing USB HID or evdev registration for the same controller before switching backends to avoid opening it twice.
+
 On Linux, registration starts with mappings from SDL's [GameControllerDB](https://github.com/mdqinc/SDL_GameControllerDB), which has hundreds of supported devices. On Windows and macOS, the wizard starts with default assignments that you can adjust.</br>
 In case your controller is missing from the database, you will have to manually map each button in the UI, and afterwards you should [contribute](https://github.com/mdqinc/SDL_GameControllerDB#contributing) the layout.</br>
 
