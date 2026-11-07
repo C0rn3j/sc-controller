@@ -1,5 +1,8 @@
 Here you can find builds for the very latest development version of SC Controller.
 
+macOS and Windows are early alpha quality, expect most things to not work.</br>
+Note that they are both forcefully built from the `windows` branch.
+
 You may want to use these releases if you want to:
 * Get a fix for a bug that hasn't made it to a stable release yet
 * Help catch bugs before they make it to a stable release
@@ -10,8 +13,8 @@ Please report any issues either over at [Discord](https://discord.gg/d3G7dDJ2G7)
 **[List of all changes](https://github.com/C0rn3j/sc-controller/commits/main/)**
 
 > [!NOTE]
-> Windows pre-release builds can be wrongly flagged by Defender, it is safe to whitelist them.
-> See https://github.com/C0rn3j/sc-controller/issues/1062 for more information.
+> Windows Pre-Release builds can be wrongly flagged by Defender, it is safe to whitelist them.
+> See https://github.com/pyinstaller/pyinstaller/issues/5854#issuecomment-846312429 for more information.
 
 
 <div align=left>
@@ -33,11 +36,12 @@ Please report any issues either over at [Discord](https://discord.gg/d3G7dDJ2G7)
 				</td>
 			</tr>
 			<tr>
-<!-- 				<td>Windows</td>
-				<td> -->
+ 				<td>Windows</td>
+				<td>
 					<!-- MS Logos were removed from Simpleicons so just ship the singular SVG here -->
-<!-- 					<a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-Windows-x64.7z"><img src="https://img.shields.io/badge/Portable-x64-0078d7.svg?logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTAgMGgxMS4zNzd2MTEuMzcySDBabTEyLjYyMyAwSDI0djExLjM3MkgxMi42MjNaTTAgMTIuNjIzaDExLjM3N1YyNEgwWm0xMi42MjMgMEgyNFYyNEgxMi42MjMiLz48L3N2Zz4="></a><br>
-					<a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-Windows-x64-installer.exe"><img src="https://img.shields.io/badge/Installer-x64-0078d7.svg?logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTAgMGgxMS4zNzd2MTEuMzcySDBabTEyLjYyMyAwSDI0djExLjM3MkgxMi42MjNaTTAgMTIuNjIzaDExLjM3N1YyNEgwWm0xMi42MjMgMEgyNFYyNEgxMi42MjMiLz48L3N2Zz4="></a><br>
+ 					<a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-Windows-x64.7z"><img src="https://img.shields.io/badge/Portable-x64-0078d7.svg?logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTAgMGgxMS4zNzd2MTEuMzcySDBabTEyLjYyMyAwSDI0djExLjM3MkgxMi42MjNaTTAgMTIuNjIzaDExLjM3N1YyNEgwWm0xMi42MjMgMEgyNFYyNEgxMi42MjMiLz48L3N2Zz4="></a><br>
+ 					<a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-Windows-arm64.7z"><img src="https://img.shields.io/badge/Portable-x64-0078d7.svg?logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTAgMGgxMS4zNzd2MTEuMzcySDBabTEyLjYyMyAwSDI0djExLjM3MkgxMi42MjNaTTAgMTIuNjIzaDExLjM3N1YyNEgwWm0xMi42MjMgMEgyNFYyNEgxMi42MjMiLz48L3N2Zz4="></a><br>
+					<!--<a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-Windows-x64-installer.exe"><img src="https://img.shields.io/badge/Installer-x64-0078d7.svg?logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTAgMGgxMS4zNzd2MTEuMzcySDBabTEyLjYyMyAwSDI0djExLjM3MkgxMi42MjNaTTAgMTIuNjIzaDExLjM3N1YyNEgwWm0xMi42MjMgMEgyNFYyNEgxMi42MjMiLz48L3N2Zz4="></a><br> -->
 				</td>
 			</tr>
 			<tr>
