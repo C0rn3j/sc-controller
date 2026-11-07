@@ -59,6 +59,7 @@ class SVGWidget(Gtk.Box):
 		self.cache = OrderedDict()
 		self.areas: list[Area] = []
 		self.current_svg: str | bytes
+		self._click_position: tuple[float, float] = (0.0, 0.0)
 
 		motion = Gtk.EventControllerMotion.new()
 		motion.connect("motion", self.on_mouse_moved)
@@ -104,9 +105,10 @@ class SVGWidget(Gtk.Box):
 		self.size_override = width, height
 		self.cache = OrderedDict()
 
-	def on_mouse_click(self, gesture, n_press, x, y) -> None:
+	def on_mouse_click(self, gesture: Gtk.GestureClick, n_press: int, x: float, y: float) -> None:
 		area = self.get_area_at(x, y)
 		if area is not None:
+			self._click_position = (x, y)
 			self.emit("click", area)
 
 	def on_mouse_moved(self, controller, x, y) -> str | None:

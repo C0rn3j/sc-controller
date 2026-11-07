@@ -77,7 +77,6 @@ class ControllerRegistration(Editor):
 
 	def setup_widgets(self):
 		Editor.setup_widgets(self)
-		self.builder.get_object("mnuStick").set_parent(self.window)
 		cursors = {}
 		for axis in self._axis_data:
 			if "trig" in axis.name:
@@ -701,7 +700,7 @@ class ControllerRegistration(Editor):
 			self.unhilight(self._hilighted_area)
 			self._hilighted_area = None
 
-	def on_area_click(self, trash, what) -> None:
+	def on_area_click(self, image: ControllerImage, what: str) -> None:
 		stDialog = self.builder.get_object("stDialog")
 		pages = list(stDialog.observe_children())
 		index = pages.index(stDialog.get_visible_child())
@@ -713,7 +712,8 @@ class ControllerRegistration(Editor):
 				# DPAD does not have a press action
 				self.builder.get_object("mnuStickPress").set_sensitive(what != "DPAD")
 				mnuStick._axes = [self._axis_data[index] for index in axes]
-				mnuStick.popup()
+				x, y = image._click_position
+				self.app._popup_at(mnuStick, image, x, y)
 			elif what in TRIGGER_AREAS:
 				self._grabber = TriggerGrabber(self, self._axis_data[TRIGGER_AREAS[what]])
 			elif hasattr(SCButtons, what):
