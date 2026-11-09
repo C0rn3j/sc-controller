@@ -778,11 +778,10 @@ class ControllerRegistration(Editor):
 		lstDevices.clear()
 		self._hid_devices = {}
 		if hid is not None and (sys.platform != "linux" or self.app.config["drivers"].get("hidapi")):
-			from scc.lib.hid_registration import registration_device
+			from scc.lib.hid_registration import registration_device, should_skip_hid_device
 
 			for info in hid.enumerate():
-				if (info.get("vendor_id"), info.get("product_id")) == (0x045E, 0x028E):
-					# SCC's virtual Xbox output must never become an input.
+				if should_skip_hid_device(info):
 					continue
 				is_gamepad = info.get("usage_page") == 1 and info.get("usage") in (4, 5)
 				if is_gamepad or cbShowAllDevices.get_active():

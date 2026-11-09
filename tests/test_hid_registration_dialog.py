@@ -20,6 +20,27 @@ from scc.gui.creg.tester import Tester as RegistrationTester
 from scc.lib.hid_registration import registration_device
 
 
+def test_windows_registration_filters_virtual_but_keeps_physical_xbox(monkeypatch):
+	from scc.lib import hid_registration, windows_devices
+
+	monkeypatch.setattr(dialog, "sys", SimpleNamespace(platform="win32"))
+	monkeypatch.setattr(hid_registration, "sys", SimpleNamespace(platform="win32"))
+	physical = {"path": b"physical", "vendor_id": 0x045E, "product_id": 0x028E, "usage_page": 1, "usage": 5}
+	virtual = dict(physical, path=b"virtual")
+	monkeypatch.setattr(windows_devices, "is_vigem_device", lambda path: path == virtual["path"])
+	monkeypatch.setattr(dialog, "hid", SimpleNamespace(enumerate=lambda: [physical, virtual]))
+	registration = object.__new__(dialog.ControllerRegistration)
+	registration._gamepad_icon = "gamepad-icon"
+	registration._other_icon = "other-icon"
+	devices = []
+	widgets = {"lstDevices": devices, "cbShowAllDevices": SimpleNamespace(get_active=lambda: True)}
+	registration.builder = SimpleNamespace(get_object=widgets.get)
+	registration.refresh_devices()
+	assert len(devices) == 1
+	assert registration._open_selected_device(devices[0][0]).info.vendor == 0x045E
+	assert devices[0][0] == physical["path"].hex()
+
+
 @pytest.mark.parametrize("platform,driver", [("linux", "hidapi"), ("win32", "hid"), ("darwin", "hid")])
 def test_hidapi_database_mapping_reaches_saved_registration(monkeypatch, platform, driver):
 	from pathlib import Path

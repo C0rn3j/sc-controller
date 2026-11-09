@@ -162,6 +162,7 @@ def test_descriptor_global_push_pop_restores_axis_range():
 def test_registered_unknown_controller_is_loaded_polled_and_removed(tmp_path, monkeypatch, autodetect, prefix):
 	from scc.drivers import hidapi
 
+	monkeypatch.setattr(hidapi, "should_skip_hid_device", lambda info: False)
 	class Device:
 		def __init__(self):
 			self.reports = [[3, 127, 129, 1], [0, 0, 0, 8]]
