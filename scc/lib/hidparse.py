@@ -283,7 +283,7 @@ def _split_hid_items(data):
 		size = data[i] & 0x3  # 3 means 4 bytes
 		if size == 3:
 			size = 4
-		if i == 0xFE:  # long item
+		if data[i] == 0xFE:  # long item
 			size = data[i + 1]
 		yield data[i : i + size + 1]
 
