@@ -29,7 +29,7 @@ Please report any issues either over at [Discord](https://discord.gg/d3G7dDJ2G7)
 			<tr>
 				<td>Linux</td>
 				<td>
-					<!-- <a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-Linux-arm64.7z"><img src="https://img.shields.io/badge/Portable-arm64-f84e29.svg?logo=linux"> </a><br> -->
+					<a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-Linux-arm64.7z"><img src="https://img.shields.io/badge/Portable-arm64-f84e29.svg?logo=linux"> </a><br>
 					<a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-Linux-x64.7z"><img src="https://img.shields.io/badge/Portable-x64-f84e29.svg?logo=linux"> </a><br>
 					<!-- <a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-noble-x64.7z"><img src="https://img.shields.io/badge/AppImage-x64-f84e29.svg?logo=linux"> </a><br> -->
 					<!-- <a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-flatpak-x64.flatpak"><img src="https://img.shields.io/badge/Flatpak-x64-FF9966.svg?logo=flatpak"> </a><br> -->

@@ -117,3 +117,119 @@ jobs:
       #   run: |
       #     source .venv/bin/activate
       #     sc-controller
+
+  build-linux-arm64:
+    name: "PyInstaller Linux arm64"
+    runs-on: ubuntu-26.04-arm
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v7
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.15'
+          cache: 'pip'
+
+      - name: Install deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            gettext \
+            gobject-introspection \
+            gir1.2-gtk-4.0 \
+            gir1.2-gtk4layershell-1.0 \
+            gir1.2-rsvg-2.0 \
+            gir1.2-notify-0.7 \
+            gir1.2-girepository-3.0-dev \
+            kde-config-gtk-style \
+            libcairo2-dev \
+            libgirepository1.0-dev \
+            libgirepository-2.0-dev \
+            libglib2.0-dev \
+            libgtk-4-common \
+            libgtk4-layer-shell0 \
+            libudev-dev \
+            libusb-1.0-0-dev \
+            python3-gi-cairo \
+            p7zip
+
+      - name: Install Python dependencies and setup venv
+        env:
+          SDL_GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python -m pip install --upgrade pip
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install \
+            ".[hidapi]" \
+            build \
+            pyinstaller \
+            pytest
+        #    https://github.com/pyinstaller/pyinstaller/archive/develop.zip
+
+      - name: Read git-derived project version
+        id: version
+        run: |
+          .venv/bin/python - <<'PY'
+          import os
+          from importlib.metadata import version as package_version
+          # The preceding installation uses setuptools-scm to derive this from Git tags.
+          version = package_version("sccontroller")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+            fh.write(f"version={version}\n")
+          print(f"Detected version: {version}")
+          PY
+
+      - name: Build the project using python-build
+        run: |
+          source .venv/bin/activate
+          python -m build --wheel
+
+      - name: Install the project into a venv
+        run: |
+          source .venv/bin/activate
+          pip install --prefix ".venv" dist/*.whl
+
+      # - name: "[DEBUG] Try running using run.sh"
+      #   run: bash run.sh
+
+      - name: Run tests using pytest
+        run: |
+          source .venv/bin/activate
+          PYTHONPATH=. pytest tests
+
+      - name: "[DEBUG] List all files"
+        run: find .
+
+      - name: Build Linux App with PyInstaller
+        run: |
+          source .venv/bin/activate
+          pyinstaller --log-level=DEBUG packaging/Linux.spec
+
+      - name: "[DEBUG] List all files in packaged app"
+        run: find "dist/sc-controller"
+
+      - name: Create 7Z
+        run: |
+          APP_NAME="sc-controller"
+          cd "dist/${APP_NAME}"
+
+          ARCHIVE_PATH="../../${APP_NAME}-Linux-arm64.7z"
+
+          7z a -r -snl "${ARCHIVE_PATH}" "."
+
+      - name: Upload 7Z artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: sc-controller-Linux-arm64
+          path: sc-controller-Linux-arm64.7z
+          archive: false
+
+      # - name: Run SCC for testing
+      #   run: |
+      #     source .venv/bin/activate
+      #     sc-controller
