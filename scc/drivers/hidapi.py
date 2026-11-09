@@ -50,6 +50,8 @@ SKIPPED_DEVICES = {
 	(0x054C, 0x0CE6),  # DualSense
 	(0x054C, 0x0DF2),  # DualSense Edge
 }
+if sys.platform == "win32":
+	SKIPPED_DEVICES.update({(0x054C, 0x05C4), (0x054C, 0x09CC)})  # Dedicated DS4 driver
 
 SDL_BUTTON_NAMES = {
 	"a": SCButtons.A,
