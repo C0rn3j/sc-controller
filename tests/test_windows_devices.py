@@ -144,7 +144,7 @@ def test_daemon_discovery_filters_by_ancestry_even_with_saved_registration(windo
 	monkeypatch.setattr(
 		hidapi, "HIDAPIController", lambda driver, device, *args: opened.append(device["path"]) or object()
 	)
-	driver = hidapi.HIDAPIDriver(SimpleNamespace(), autodetect=False)
+	driver = hidapi.HIDAPIDriver(SimpleNamespace())
 	driver.configs[(0x045E, 0x028E)] = (str(tmp_path / "registered.json"), {"input_backend": "hidapi"})
 	driver.scan()
 	assert opened == [physical["path"]]

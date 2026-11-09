@@ -158,8 +158,9 @@ def test_descriptor_global_push_pop_restores_axis_range():
 	assert [field.minimum for field in raw.fields] == [-127, 0]
 
 
-@pytest.mark.parametrize("autodetect,prefix", [(True, "hid"), (False, "hidapi")])
-def test_registered_unknown_controller_is_loaded_polled_and_removed(tmp_path, monkeypatch, autodetect, prefix):
+@pytest.mark.parametrize("prefix", ["hid", "hidapi"])
+@pytest.mark.parametrize("vendor,product", [(0x1234, 0x5678), (0x054C, 0x05C4), (0x054C, 0x0CE6)])
+def test_registered_controller_is_loaded_polled_and_removed(tmp_path, monkeypatch, prefix, vendor, product):
 	from scc.drivers import hidapi
 
 	monkeypatch.setattr(hidapi, "should_skip_hid_device", lambda info: False)
@@ -184,17 +185,16 @@ def test_registered_unknown_controller_is_loaded_polled_and_removed(tmp_path, mo
 			self.closed = True
 
 	device = Device()
-	info = {"path": b"unknown-controller", "vendor_id": 0x1234, "product_id": 0x5678}
+	info = {"path": b"unknown-controller", "vendor_id": vendor, "product_id": product}
 	monkeypatch.setattr(hidapi, "hid", SimpleNamespace(enumerate=lambda: [info], device=lambda: device))
 	monkeypatch.setattr(hidapi, "get_config_path", lambda: str(tmp_path))
-	monkeypatch.setattr(hidapi, "load_gamecontroller_mapping", lambda *args: None)
 	devices = tmp_path / "devices"
 	devices.mkdir()
-	filename = devices / f"{prefix}-1234_5678-Unknown.json"
+	filename = devices / f"{prefix}-{vendor:04x}_{product:04x}-Unknown.json"
 	filename.write_text(json.dumps(configuration()))
 	active = []
 	daemon = SimpleNamespace(add_controller=active.append, remove_controller=active.remove, get_active_ids=lambda: [])
-	driver = hidapi.HIDAPIDriver(daemon, autodetect=autodetect)
+	driver = hidapi.HIDAPIDriver(daemon)
 	driver.start()
 	assert len(active) == 1
 	controller = active[0]
@@ -204,8 +204,8 @@ def test_registered_unknown_controller_is_loaded_polled_and_removed(tmp_path, mo
 	controller.poll()
 	assert len(events) == 2
 	assert events[1][0] == events[0][1]
-	assert controller._decoder.state.buttons == 0
-	assert controller._decoder.state.rtrig == 0
+	assert controller._state.buttons == 0
+	assert controller._state.rtrig == 0
 	# Saving revised assignments takes effect on rescan without restarting SCC.
 	config = configuration()
 	config["buttons"]["288"] = "B"
@@ -220,25 +220,27 @@ def test_registered_unknown_controller_is_loaded_polled_and_removed(tmp_path, mo
 	assert device.closed
 
 
-def test_optional_linux_backend_never_autodetects(monkeypatch):
+@pytest.mark.parametrize("platform", ["linux", "win32", "darwin"])
+def test_generic_backend_never_opens_unregistered_devices(monkeypatch, tmp_path, platform):
 	from scc.drivers import hidapi
 
-	monkeypatch.setattr(hidapi, "sys", SimpleNamespace(platform="linux"))
-	info = {"path": b"mapped-device", "vendor_id": 0x1234, "product_id": 0x5678}
-	monkeypatch.setattr(hidapi, "hid", SimpleNamespace(enumerate=lambda: [info]))
-
-	def database_lookup(*args):
-		pytest.fail("Linux HIDAPI backend must not look up automatic mappings")
-
-	monkeypatch.setattr(hidapi, "load_gamecontroller_mapping", database_lookup)
+	monkeypatch.setattr(hidapi, "sys", SimpleNamespace(platform=platform))
+	monkeypatch.setattr(hidapi, "get_config_path", lambda: str(tmp_path))
+	# These controllers have database entries, but no saved registrations.
+	infos = [{"path": str(product).encode(), "vendor_id": 0x054C, "product_id": product}
+		for product in (0x05C4, 0x09CC, 0x0CE6, 0x0DF2)]
+	monkeypatch.setattr(hidapi, "hid", SimpleNamespace(
+		enumerate=lambda: infos,
+		device=lambda: pytest.fail("Opened an unregistered HID device"),
+	))
 	callbacks = []
 	daemon = SimpleNamespace(
-		add_mainloop=callbacks.append, add_on_exit=callbacks.append, add_on_rescan=callbacks.append
+		add_mainloop=callbacks.append, add_on_exit=callbacks.append, add_on_rescan=callbacks.append,
 	)
 	monkeypatch.setattr(hidapi, "_driver", None)
 	assert hidapi.init(daemon, {})
-	assert not hidapi._driver.autodetect
 	assert len(callbacks) == 3
+	hidapi.start(daemon)
 	hidapi._driver.scan()
 	assert hidapi._driver.controllers == {}
 

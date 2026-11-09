@@ -48,17 +48,3 @@ def test_shared_hidapi_is_discovered_once(platform):
 	]
 	assert modules == ["scc.drivers.hidapi"]
 	assert drivers.MOD_INIT_ORDER.count("scc.drivers.hidapi") == 1
-
-
-@pytest.mark.parametrize("platform,autodetect", [("linux", False), ("win32", True), ("darwin", True)])
-def test_shared_hidapi_initialization_preserves_platform_behavior(monkeypatch, platform, autodetect):
-	from scc.drivers import hidapi
-
-	monkeypatch.setattr(hidapi, "sys", SimpleNamespace(platform=platform))
-	monkeypatch.setattr(hidapi, "hid", object())
-	monkeypatch.setattr(hidapi, "_driver", None)
-	callbacks = []
-	daemon = SimpleNamespace(add_mainloop=callbacks.append, add_on_exit=callbacks.append, add_on_rescan=callbacks.append)
-	assert hidapi.init(daemon, {})
-	assert hidapi._driver.autodetect is autodetect
-	assert len(callbacks) == 3
