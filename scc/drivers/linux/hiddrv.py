@@ -545,10 +545,10 @@ class USBHIDController(SCUSBDevice, Controller):
 
 	def __repr__(self) -> str:
 		vid, pid = self.device.getVendorID(), self.device.getProductID()
-		return "<HID %.4x%.4x>" % (vid, pid)
+		return f"<HID {vid:04x}{pid:04x}>"
 
-	def test_input(self, endpoint: int, data) -> None:
-		if not _lib.decode(ctypes.byref(self._decoder), data):
+	def test_input(self, endpoint: int, data: bytearray) -> None:
+		if not _lib.decode(ctypes.byref(self._decoder), bytes(data)):
 			# Returns True if anything changed
 			return
 		# Note: This is quite slow, but good enough for test mode
@@ -572,8 +572,8 @@ class USBHIDController(SCUSBDevice, Controller):
 				print("ButtonRelease", FIRST_BUTTON + j)
 				sys.stdout.flush()
 
-	def input(self, endpoint: int, data) -> None:
-		if _lib.decode(ctypes.byref(self._decoder), data):
+	def input(self, endpoint: int, data: bytearray) -> None:
+		if _lib.decode(ctypes.byref(self._decoder), bytes(data)):
 			if self.mapper:
 				self.mapper.input(self, self._decoder.old_state, self._decoder.state)
 
