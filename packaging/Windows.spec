@@ -35,7 +35,7 @@ scripts = {
 
 # These extensions are loaded through ctypes, so import analysis cannot discover them
 native_binaries = []
-for name in ("libhiddrv", "libsc_by_bt", "libremotepad", "libcemuhook"):
+for name in ("libsc_by_bt", "libremotepad", "libcemuhook"):
 	module = find_spec(name)
 	if module is None or module.origin is None:
 		raise ModuleNotFoundError(f"{name} is missing; build and install sc-controller before packaging")

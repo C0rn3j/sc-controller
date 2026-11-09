@@ -45,11 +45,11 @@ data_files = [
 ]
 
 extensions = [
-	Extension("libhiddrv", sources=["scc/drivers/hiddrv.c"]),
 	Extension("libsc_by_bt", sources=["scc/drivers/sc_by_bt.c"]),
 	Extension("libremotepad", sources=["scc/drivers/remotepad_controller.c"]),
 ]
 if sys.platform == "linux":
+	extensions.append(Extension("libhiddrv", sources=["scc/drivers/hiddrv.c"]))
 	extensions.extend([
 		Extension("libuinput", sources=["scc/uinput.c"]),
 		# TODO(Martin): Get this working on Windows
