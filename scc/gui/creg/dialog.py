@@ -741,11 +741,12 @@ class ControllerRegistration(Editor):
 		for fname in evdev.list_devices():
 			dev = evdev.InputDevice(fname)
 			is_gamepad = ControllerRegistration.does_he_looks_like_a_gamepad(dev)
-			# bustype 3 is BUS_USB, which is the type used for emulated
-			# gamepads. phys is blank for BUS_BLUETOOTH devices.
-			if dev.info.bustype == 3 and not dev.phys:
-				# Skipping over virtual devices so list doesn't show
-				# gamepads emulated by SCC
+			# Instead of BUS_VIRTUAL, we use BUS_USB for emulated controllers, which is also used for real hardware.
+			# phys is blank for BUS_BLUETOOTH devices, but also for some BUS_USB devices like the DualSense.
+			# Identify uinput output by device's sysfs location to counter the above.
+			syspath = os.path.realpath(os.path.join("/sys/class/input", os.path.basename(fname), "device"))
+			if dev.info.bustype == evdev.ecodes.BUS_USB and syspath.startswith("/sys/devices/virtual/input/"):
+				# Skipping over virtual devices so list doesn't show gamepads emulated by SCC
 				continue
 			if is_gamepad or cbShowAllDevices.get_active():
 				lstDevices.append((fname, dev.name, self._gamepad_icon if is_gamepad else self._other_icon))
