@@ -59,6 +59,16 @@ function testDeps() {
 		echo -e "${Red}uv not found, install it.${NoColor}"
 		exit 1
 	fi
+	# Windows also needs https://visualstudio.microsoft.com/visual-cpp-build-tools/
+	# winget install --exact --id Microsoft.VisualStudio.BuildTools `--override "--wait --passive --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"
+
+	# git config core.symlinks true # Otherwise SVGs are broken
+
+	# pacman -S mingw-w64-clang-x86_64-uv - < packaging/windows_x64_clang.txt
+
+	# Run like so to avoid https://gitlab.gnome.org/GNOME/pygobject/-/work_items/779:
+	#   /clang64/bin/python -m venv --system-site-packages .venv-clang64
+	#   source .venv-clang64/bin/activate
 }
 
 testDeps
@@ -85,7 +95,7 @@ else
 fi
 uv pip install . build
 # PYGOBJECT_STUB_CONFIG and --no-cache-dir is needed to build pygobject-stubs correctly
-PYGOBJECT_STUB_CONFIG=Gtk4,Gdk4 uv pip install --no-cache-dir ".[dev]"
+PYGOBJECT_STUB_CONFIG=Gtk4,Gdk4 uv pip install --no-cache-dir ".[dev,hidapi]"
 uv build --wheel
 #python -m installer --destdir=".venv" dist/*.whl
 uv pip install --prefix ".venv" dist/*.whl --force-reinstall
