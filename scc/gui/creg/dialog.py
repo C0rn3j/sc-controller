@@ -131,8 +131,7 @@ class ControllerRegistration(Editor):
 		Return True on success.
 		"""
 		if sys.platform != "linux" or self._tester.driver == "hidapi":
-			# SDL's Windows axis numbering differs from raw descriptor order.
-			return False
+			return self.load_hidapi_mappings()
 		# Build list of button and axes
 		buttons = self._tester.buttons
 		if self._tester.driver == "evdev":
@@ -223,6 +222,22 @@ class ControllerRegistration(Editor):
 			log.debug("Mappings for '%s' not found in gamecontrollerdb", weird_id)
 
 		return False
+
+	def load_hidapi_mappings(self) -> bool:
+		"""Apply the tester's database mapping translated into raw HID inputs."""
+		mapping = getattr(self._tester, "mapping", None)
+		if not mapping:
+			return False
+		for code, name in mapping["buttons"].items():
+			self._mappings[int(code)] = getattr(SCButtons, name)
+		for section in ("axes", "dpads"):
+			for code, binding in mapping[section].items():
+				axis = self._axis_data[next(i for i, (name, _) in enumerate(AXIS_ORDER) if name == binding["axis"])]
+				axis.min, axis.max = sorted((binding["min"], binding["max"]))
+				axis.invert = binding["min"] > binding["max"]
+				axis.pos = axis.min if binding["axis"] in ("ltrig", "rtrig") else (axis.min + axis.max) / 2
+				self._mappings[int(code)] = axis if section == "axes" else DPadEmuData(axis, binding["positive"])
+		return True
 
 	def generate_mappings(self) -> None:
 		"""Generates initial mappings, just to have some preset to show."""

@@ -3,6 +3,7 @@
 Class that interacts with `scc hid_test` and `scc evdev_test` commands.
 """
 
+import json
 import logging
 
 from gi.repository import Gio, GObject
@@ -40,6 +41,7 @@ class Tester(GObject.GObject):
 		self.buffer: bytes = b""
 		self.buttons: list[int] = []
 		self.axes = []
+		self.mapping = None
 		self.subprocess = None
 		self.driver = driver
 		self.device_id = device_id
@@ -106,6 +108,8 @@ class Tester(GObject.GObject):
 			self.emit("button", int(code), False)
 		elif line.startswith(b"Ready"):
 			self.emit("ready")
+		elif line.startswith(b"Mapping:"):
+			self.mapping = json.loads(line.split(b":", 1)[1])
 		elif line.startswith(b"Axes:"):
 			self.axes = [int(x) for x in line.split(b" ")[1:] if len(x.strip())]
 		elif line.startswith(b"Buttons:"):

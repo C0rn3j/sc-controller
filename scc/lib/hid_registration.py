@@ -4,12 +4,16 @@ The wizard and driver share input numbering: buttons start at 288, axes
 follow descriptor order, and each hat exposes two additional axes.
 """
 
+import json
+import re
 from dataclasses import dataclass
+from pathlib import Path
 from types import SimpleNamespace
 
 from scc.constants import SCButtons, STICK_PAD_MAX, STICK_PAD_MIN
 from scc.lib.hidparse import AXES, GenericDesktopPage, GlobalItem, ItemLength, ItemType, LocalItem, MainItem, UsagePage
 from scc.lib.hidparse import parse_report_descriptor
+from scc.paths import get_share_path
 
 FIRST_BUTTON = 288
 
@@ -53,6 +57,7 @@ class Field:
 	maximum: int
 	kind: str
 	code: int
+	usage: int
 
 
 class RawHIDInput:
@@ -119,7 +124,9 @@ class RawHIDInput:
 									kind = "hat"
 						if kind:
 							code = FIRST_BUTTON + len(self.buttons) if kind == "button" else len(self.axes)
-							self.fields.append(Field(report, bit, size, state["minimum"], state["maximum"], kind, code))
+							self.fields.append(
+								Field(report, bit, size, state["minimum"], state["maximum"], kind, code, usage)
+							)
 							if kind == "button":
 								self.buttons[code] = False
 							else:
@@ -133,6 +140,52 @@ class RawHIDInput:
 		if not gamepad or not self.fields:
 			raise ValueError("HID interface has no supported joystick/gamepad inputs")
 		self.report_sizes = {report: (bits + 7) // 8 + int(self.numbered) for report, bits in positions.items()}
+
+	def sdl_mapping(self, info: dict, database: Path) -> dict | None:
+		"""Translate Windows DirectInput database entries into raw HID codes.
+
+		SDL orders DirectInput axes by X/Y/Z/Rx/Ry/Rz usage, buttons by
+		button usage, and hats separately. Use that numbering on every OS;
+		Linux evdev and SDL's device-specific HIDAPI entries are different.
+		Keep raw codes unchanged so existing registrations remain valid.
+		"""
+		if any(field.usage is None for field in self.fields):
+			return None
+		axes = sorted((f for f in self.fields if f.kind == "axis"), key=lambda f: f.usage)
+		buttons = sorted((f for f in self.fields if f.kind == "button"), key=lambda f: f.usage)
+		hats = [f for f in self.fields if f.kind == "hat"]
+		# Duplicate usages across reports/collections cannot be translated uniquely.
+		if any(len({f.usage for f in fields}) != len(fields) for fields in (axes, buttons)):
+			return None
+		candidates = []
+		with database.open(encoding="utf-8") as db:
+			for line in db:
+				parts = line.strip().split(",")
+				if len(parts) < 3 or not re.fullmatch(r"[0-9a-fA-F]{32}", parts[0]):
+					continue
+				guid = bytes.fromhex(parts[0])
+				mapping = dict(token.split(":", 1) for token in parts[2:] if ":" in token)
+				if (
+					mapping.get("platform") != "Windows"
+					or guid[:4] != bytes.fromhex("03000000")
+					or guid[14:] != b"\0\0"
+				):
+					continue
+				if (int.from_bytes(guid[4:6], "little"), int.from_bytes(guid[8:10], "little")) != (
+					info["vendor_id"],
+					info["product_id"],
+				):
+					continue
+				version = int.from_bytes(guid[12:14], "little")
+				if version not in (0, info.get("release_number")):
+					continue
+				score = (version != 0, parts[1].casefold() == (info.get("product_string") or "").casefold())
+				candidates.append((score, mapping))
+		for _, mapping in sorted(candidates, key=lambda candidate: candidate[0], reverse=True):
+			translated = _translate_sdl_mapping(mapping, axes, buttons, hats)
+			if translated is not None:
+				return translated
+		return None
 
 	def read(self, data: bytes) -> bool:
 		if not data:
@@ -157,6 +210,80 @@ class RawHIDInput:
 			else:
 				self.axes[field.code] = value
 		return True
+
+
+def _translate_sdl_mapping(mapping: dict, axes: list[Field], buttons: list[Field], hats: list[Field]) -> dict | None:
+	"""Resolve supported SDL bindings; reject incompatible layouts atomically."""
+	axis_names = dict(
+		zip(
+			("leftx", "lefty", "rightx", "righty", "lefttrigger", "righttrigger"),
+			("lstick_x", "lstick_y", "rstick_x", "rstick_y", "ltrig", "rtrig"),
+			strict=True,
+		)
+	)
+	button_names = {
+		"a": "A",
+		"b": "B",
+		"x": "X",
+		"y": "Y",
+		"back": "BACK",
+		"start": "START",
+		"guide": "C",
+		"leftshoulder": "LB",
+		"rightshoulder": "RB",
+		"leftstick": "LSTICKPRESS",
+		"rightstick": "RSTICKPRESS",
+	}
+	dpad_names = {
+		"dpup": ("dpad_y", True, 1),
+		"dpdown": ("dpad_y", False, 4),
+		"dpleft": ("dpad_x", False, 8),
+		"dpright": ("dpad_x", True, 2),
+	}
+	result = {"buttons": {}, "axes": {}, "dpads": {}}
+	for name, binding in mapping.items():
+		if name not in axis_names and name not in button_names and name not in dpad_names:
+			continue
+		button = re.fullmatch(r"b(\d+)", binding)
+		axis = re.fullmatch(r"a(\d+)(~?)", binding)
+		hat = re.fullmatch(r"h(\d+)\.(\d+)", binding)
+		try:
+			if button:
+				code = str(buttons[int(button[1])].code)
+				if name in button_names:
+					result["buttons"][code] = button_names[name]
+				else:
+					target, positive = dpad_names[name][:2] if name in dpad_names else (axis_names[name], True)
+					if target not in ("dpad_x", "dpad_y", "ltrig", "rtrig"):
+						return None
+					result["dpads"][code] = {"axis": target, "positive": positive, "min": -1, "max": 1}
+			elif axis and name in axis_names:
+				field = axes[int(axis[1])]
+				lo, hi = field.minimum, field.maximum
+				if lo == hi or str(field.code) in result["axes"]:
+					return None
+				# SDL uses positive-down Y; SCC uses positive-up Y.
+				invert = bool(axis[2]) ^ axis_names[name].endswith("_y")
+				result["axes"][str(field.code)] = {
+					"axis": axis_names[name],
+					"min": hi if invert else lo,
+					"max": lo if invert else hi,
+					"deadzone": 0,
+				}
+			elif hat and name in dpad_names:
+				field = hats[int(hat[1])]
+				target, _, mask = dpad_names[name]
+				if int(hat[2]) != mask:
+					return None
+				code = str(field.code + int(target == "dpad_y"))
+				lo, hi = (1, -1) if target == "dpad_y" else (-1, 1)
+				result["axes"][code] = {"axis": target, "min": lo, "max": hi, "deadzone": 0}
+			else:
+				# Half-axis or axis-to-button bindings need additional input splitting.
+				return None
+		except IndexError:
+			return None
+	return result if any(result.values()) else None
 
 
 def map_inputs(raw: RawHIDInput, config: dict) -> dict:
@@ -213,6 +340,11 @@ def hiddrv_test(argv: list[str]) -> int:
 		device.set_nonblocking(False)
 		print("Axes:", *raw.axes)
 		print("Buttons:", *raw.buttons)
+		try:
+			mapping = raw.sdl_mapping(info, Path(get_share_path()) / "gamecontrollerdb.txt")
+		except OSError:
+			mapping = None
+		print("Mapping:", json.dumps(mapping))
 		print("Ready", flush=True)
 		while True:
 			old_axes, old_buttons = raw.axes.copy(), raw.buttons.copy()

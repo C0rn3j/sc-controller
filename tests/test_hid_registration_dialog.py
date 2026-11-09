@@ -16,7 +16,52 @@ from scc.constants import SCButtons
 from scc.gui.creg import dialog
 from scc.gui.creg.constants import AXIS_ORDER
 from scc.gui.creg.data import AxisData
+from scc.gui.creg.tester import Tester as RegistrationTester
 from scc.lib.hid_registration import registration_device
+
+
+@pytest.mark.parametrize("platform,driver", [("linux", "hidapi"), ("win32", "hid"), ("darwin", "hid")])
+def test_hidapi_database_mapping_reaches_saved_registration(monkeypatch, platform, driver):
+	from pathlib import Path
+
+	from tests.test_hid_registration import DUALSENSE_DESCRIPTOR
+	from scc.lib.hid_registration import RawHIDInput, map_inputs
+
+	monkeypatch.setattr(dialog, "sys", SimpleNamespace(platform=platform))
+	raw = RawHIDInput(DUALSENSE_DESCRIPTOR)
+	mapping = raw.sdl_mapping({"vendor_id": 0x054C, "product_id": 0x0CE6}, Path(__file__).parents[1] / "gamecontrollerdb.txt")
+	tester = SimpleNamespace(mapping=None, driver=driver)
+	RegistrationTester._on_line(tester, b"Mapping: " + json.dumps(mapping).encode())
+	registration = object.__new__(dialog.ControllerRegistration)
+	registration._tester = tester
+	registration._axis_data = [AxisData(name, xy) for name, xy in AXIS_ORDER]
+	registration._mappings = {}
+	assert registration.load_sdl_mappings()
+	assert registration._mappings[4].name == "ltrig"
+	assert registration._mappings[5].name == "rtrig"
+	assert registration._mappings[6].name == "dpad_x"
+	assert registration._mappings[7].name == "dpad_y"
+	buffer = SimpleNamespace(set_text=lambda text: setattr(buffer, "text", text))
+	combo = SimpleNamespace(get_model=lambda: [["test"]], get_active=lambda: 0)
+	widgets = {"cbControllerButtons": combo, "cbControllerType": combo, "buffRawData": buffer}
+	registration.builder = SimpleNamespace(get_object=widgets.get)
+	registration._groups = {"test": ["A", "B", "X", "Y"]}
+	registration.generate_raw_data()
+	saved = json.loads(buffer.text)
+	assert saved["input_backend"] == "hidapi"
+	report = bytearray(64)
+	report[:9] = bytes([1, 128, 0, 128, 0, 0, 255, 0, 0])
+	assert raw.read(report)
+	state = map_inputs(raw, saved)
+	assert state["dpad_y"] == 32767
+	assert state["lstick_y"] == state["rstick_y"] == 32767
+	report[2] = report[4] = 255
+	report[8] = 4
+	assert raw.read(report)
+	down = map_inputs(raw, saved)
+	assert down["dpad_y"] == down["lstick_y"] == down["rstick_y"] == -32767
+	assert state["ltrig"] == 0
+	assert state["rtrig"] == 255
 
 
 @pytest.mark.parametrize("area,button", [("LSTICK", SCButtons.LSTICKPRESS), ("RSTICK", SCButtons.RSTICKPRESS), ("DPAD", None)])
