@@ -401,7 +401,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			rvRestartWarning = self.builder.get_object("rvRestartWarning")
 			rvRestartWarning.set_reveal_child(True)
 
-	DRIVER_DEPS = {"ds4drv": ("evdevdrv", "hiddrv")}
+	DRIVER_DEPS = {"ds4drv": ("evdevdrv", "hiddrv")} if sys.platform == "linux" else {}
 
 	def on_cbEnableDriver_toggled(self, cb):
 		if self._recursing:
