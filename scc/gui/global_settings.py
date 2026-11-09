@@ -154,7 +154,8 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 
 		if sys.platform != "linux":
 			self.builder.get_object("cbEnableDriver_evdevdrv").set_sensitive(False)
-			self.builder.get_object("cbEnableDriver_hidapi").set_visible(False)
+			self.builder.get_object("cbEnableDriver_hiddrv").set_visible(False)
+			self.builder.get_object("cbEnableDriver_hidapi").set_label(_("Enable HIDAPI support"))
 		else:
 			try:
 				import evdev

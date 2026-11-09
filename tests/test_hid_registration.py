@@ -160,7 +160,7 @@ def test_descriptor_global_push_pop_restores_axis_range():
 
 @pytest.mark.parametrize("autodetect,prefix", [(True, "hid"), (False, "hidapi")])
 def test_registered_unknown_controller_is_loaded_polled_and_removed(tmp_path, monkeypatch, autodetect, prefix):
-	from scc.drivers.windows import hiddrv
+	from scc.drivers.windows import hidapi
 
 	class Device:
 		def __init__(self):
@@ -184,16 +184,16 @@ def test_registered_unknown_controller_is_loaded_polled_and_removed(tmp_path, mo
 
 	device = Device()
 	info = {"path": b"unknown-controller", "vendor_id": 0x1234, "product_id": 0x5678}
-	monkeypatch.setattr(hiddrv, "hid", SimpleNamespace(enumerate=lambda: [info], device=lambda: device))
-	monkeypatch.setattr(hiddrv, "get_config_path", lambda: str(tmp_path))
-	monkeypatch.setattr(hiddrv, "load_gamecontroller_mapping", lambda *args: None)
+	monkeypatch.setattr(hidapi, "hid", SimpleNamespace(enumerate=lambda: [info], device=lambda: device))
+	monkeypatch.setattr(hidapi, "get_config_path", lambda: str(tmp_path))
+	monkeypatch.setattr(hidapi, "load_gamecontroller_mapping", lambda *args: None)
 	devices = tmp_path / "devices"
 	devices.mkdir()
 	filename = devices / f"{prefix}-1234_5678-Unknown.json"
 	filename.write_text(json.dumps(configuration()))
 	active = []
 	daemon = SimpleNamespace(add_controller=active.append, remove_controller=active.remove, get_active_ids=lambda: [])
-	driver = hiddrv.WindowsHIDDriver(daemon, autodetect=autodetect)
+	driver = hidapi.WindowsHIDDriver(daemon, autodetect=autodetect)
 	driver.start()
 	assert len(active) == 1
 	controller = active[0]
@@ -221,15 +221,15 @@ def test_registered_unknown_controller_is_loaded_polled_and_removed(tmp_path, mo
 
 def test_optional_linux_backend_never_autodetects(monkeypatch):
 	from scc.drivers.linux import hidapi
-	from scc.drivers.windows import hiddrv
+	from scc.drivers.windows import hidapi as windows_hidapi
 
 	info = {"path": b"mapped-device", "vendor_id": 0x1234, "product_id": 0x5678}
-	monkeypatch.setattr(hiddrv, "hid", SimpleNamespace(enumerate=lambda: [info]))
+	monkeypatch.setattr(windows_hidapi, "hid", SimpleNamespace(enumerate=lambda: [info]))
 
 	def database_lookup(*args):
 		pytest.fail("Linux HIDAPI backend must not look up automatic mappings")
 
-	monkeypatch.setattr(hiddrv, "load_gamecontroller_mapping", database_lookup)
+	monkeypatch.setattr(windows_hidapi, "load_gamecontroller_mapping", database_lookup)
 	callbacks = []
 	daemon = SimpleNamespace(
 		add_mainloop=callbacks.append, add_on_exit=callbacks.append, add_on_rescan=callbacks.append
@@ -245,5 +245,5 @@ def test_optional_linux_backend_never_autodetects(monkeypatch):
 def test_optional_linux_backend_handles_missing_dependency(monkeypatch):
 	from scc.drivers.linux import hidapi
 
-	monkeypatch.setattr(hidapi.hiddrv, "hid", None)
+	monkeypatch.setattr(hidapi.hidapi, "hid", None)
 	assert not hidapi.init(SimpleNamespace(), {})

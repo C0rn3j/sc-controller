@@ -6,6 +6,7 @@ Handles loading, storing and querying config file
 import json
 import logging
 import os
+import sys
 
 from scc.paths import get_config_path
 from scc.profile import Encoder
@@ -35,8 +36,8 @@ class Config:
 			"steamdeck": True,
 			"sc2": True,  # Steam Controller (2026)
 			"fake": False,  # Used for developement
-			"hiddrv": True,
-			"hidapi": False,  # Optional Linux backend; only opens manually registered devices
+			**({"hiddrv": True} if sys.platform == "linux" else {}),
+			"hidapi": sys.platform != "linux",  # Optional on Linux; only opens manually registered devices there
 			"evdevdrv": True,
 			"ds4drv": True,  # At least one of hiddrv or evdevdrv has to be enabled as well
 			"ds5drv": True,
@@ -169,7 +170,12 @@ class Config:
 
 		Returns True if anything gets changed.
 		"""
-		rv = self._check_dict(self.values, self.DEFAULTS)
+		rv = False
+		if sys.platform in ("win32", "darwin") and "hiddrv" in self.values.get("drivers", {}):
+			# On these platforms the old hiddrv key controlled the HIDAPI driver.
+			self.values["drivers"]["hidapi"] = self.values["drivers"].pop("hiddrv")
+			rv = True
+		rv = self._check_dict(self.values, self.DEFAULTS) or rv
 		# Special check for autoswitcher after v0.2.17
 		if "autoswitch" in self.values:
 			for a in self.values["autoswitch"]:

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sc-controller\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 23:19+0100\n"
+"POT-Creation-Date: 2026-11-09 17:02+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -681,19 +681,19 @@ msgstr ""
 msgid "(no action)"
 msgstr ""
 
-#: scc/gui/creg/dialog.py:548
+#: scc/gui/creg/dialog.py:562
 msgid "Failed to open device"
 msgstr ""
 
-#: scc/gui/creg/dialog.py:573
+#: scc/gui/creg/dialog.py:587
 msgid "USB HID (recommended)"
 msgstr ""
 
-#: scc/gui/creg/dialog.py:573
+#: scc/gui/creg/dialog.py:587
 msgid "USB HID"
 msgstr ""
 
-#: scc/gui/creg/dialog.py:745
+#: scc/gui/creg/dialog.py:764
 msgid "Press stick or button..."
 msgstr ""
 
@@ -725,19 +725,23 @@ msgstr ""
 msgid "Move stick up and down..."
 msgstr ""
 
-#: scc/gui/global_settings.py:263
+#: scc/gui/global_settings.py:158
+msgid "Enable HIDAPI support"
+msgstr ""
+
+#: scc/gui/global_settings.py:264
 msgid "(customized)"
 msgstr ""
 
-#: scc/gui/global_settings.py:803
+#: scc/gui/global_settings.py:804
 msgid "Install the xdotool package to use this feature"
 msgstr ""
 
-#: scc/gui/global_settings.py:830
+#: scc/gui/global_settings.py:831
 msgid "Unregister controller?"
 msgstr ""
 
-#: scc/gui/global_settings.py:832
+#: scc/gui/global_settings.py:833
 msgid "You'll lose all settings for it"
 msgstr ""
 

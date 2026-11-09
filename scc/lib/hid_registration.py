@@ -323,7 +323,7 @@ def map_inputs(raw: RawHIDInput, config: dict) -> dict:
 	return result
 
 
-def hiddrv_test(argv: list[str]) -> int:
+def hidapi_test(argv: list[str]) -> int:
 	"""Stream raw inputs using the existing registration tester protocol."""
 	import hid
 

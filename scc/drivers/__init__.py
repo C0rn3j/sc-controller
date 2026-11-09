@@ -18,6 +18,6 @@ MOD_INIT_ORDER = (
 	"scc.drivers.linux.evdevdrv",
 	"scc.drivers.linux.hiddrv",
 	"scc.drivers.linux.hidapi",
-	"scc.drivers.windows.hiddrv",
-	"scc.drivers.macos.hiddrv",
+	"scc.drivers.windows.hidapi",
+	"scc.drivers.macos.hidapi",
 )
