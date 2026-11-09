@@ -10,9 +10,12 @@ Licensed under GPL 2.0
 """
 
 import ctypes
-import fcntl
 import struct
+import sys
 from enum import IntEnum
+
+if sys.platform == "linux":
+	import fcntl
 
 import ioctl_opt
 
@@ -108,6 +111,8 @@ _HIDIOCGFEATURE = lambda len: ioctl_opt.IOC(ioctl_opt.IOC_WRITE | ioctl_opt.IOC_
 
 
 def _ioctl(devfile, func, arg, mutate_flag=False):
+	if sys.platform != "linux":
+		raise OSError("hidraw ioctls are only available on Linux")
 	result = fcntl.ioctl(devfile, func, arg, mutate_flag)
 	if result < 0:
 		raise OSError(result)
@@ -298,6 +303,9 @@ def parse_report_descriptor(data, flat_list=False):
 	stack, col = [], rv
 	for it in _split_hid_items(data):
 		item = parse_item(it, page)
+		if isinstance(item, GlobalItem):
+			# Payload-free global items (Push/Pop) still need a tuple wrapper.
+			item = (item,)
 		if not flat_list and item[0] is MainItem.Collection:
 			item = [item]
 			col.append(item)

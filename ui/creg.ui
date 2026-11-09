@@ -14,6 +14,11 @@
     </columns>
     <data>
       <row>
+        <col id="0">hidapi</col>
+        <col id="1">HIDAPI</col>
+        <col id="2">False</col>
+      </row>
+      <row>
         <col id="0">hid</col>
         <col id="1">USB HID</col>
         <col id="2">False</col>
