@@ -7,6 +7,9 @@ Arrows follow input data from hardware through SC Controller (SCC) to applicatio
 Dashed arrows show related OS/application paths outside SCC or implementation alternatives.
 
 Feedback such as rumble and LEDs is omitted; support depends on the driver.
+Generic HIDAPI opens only explicitly registered controllers on every OS. The SDL
+database supplies initial mappings during registration; it does not authorize
+opening a device. Enabled dedicated drivers discover their supported controllers.
 
 ## Linux
 
@@ -133,7 +136,7 @@ imply full feature parity across operating systems.
 | HID | Device/report protocol family | Describes controller reports; not a single library or API |
 | HIDAPI / Python `hid` | Cross-platform HID report access library / Python binding | Generic input on Windows/macOS, optional on Linux; also Windows DualSense transport |
 | Linux `hiddrv` | SCC's generic USB HID driver | Direct libusb transport, Python descriptor parsing, SCC's C report decoder |
-| `libhiddrv` | SCC's own C report decoder in `scc/drivers/hiddrv.c` | Used by generic drivers; not an external transport library; registered HIDAPI input also has a Python decoding path |
+| `libhiddrv` | SCC's own C report decoder in `scc/drivers/hiddrv.c` | Used by Linux USB HID drivers; not an external transport library; generic HIDAPI input uses the Python parser |
 | libusb / Python `usb1` | USB access library / Python binding | Direct USB transport for Linux `hiddrv` and other USB drivers |
 | hidraw / Python `HIDRaw` | Linux raw HID device interface / separate wrapper | Raw reports for dedicated drivers; hidraw is also a possible HIDAPI backend |
 | evdev / python-evdev / `evdevdrv` | Linux event interface / binding / SCC driver | Kernel-decoded controller events into SCC |
