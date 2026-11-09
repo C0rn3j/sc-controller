@@ -20,7 +20,7 @@ except ImportError:
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, SCButtons
 from scc.controller import Controller
 from scc.device_config import load_device_config
-from scc.lib.hid_registration import RawHIDInput, map_inputs
+from scc.lib.hid_registration import RawHIDInput, map_inputs, should_skip_hid_device
 from scc.lib.hidparse import (
 	AXES,
 	GenericDesktopPage,
@@ -46,7 +46,6 @@ MAX_REPORTS_PER_TICK = 32
 ALLOWED_SIZES = (1, 2, 4, 8, 16, 32)
 
 SKIPPED_DEVICES = {
-	(0x045E, 0x028E),  # SCC/ViGEm Xbox 360 output; avoid an input feedback loop
 	(0x054C, 0x0CE6),  # DualSense
 	(0x054C, 0x0DF2),  # DualSense Edge
 }
@@ -652,6 +651,8 @@ class HIDAPIDriver:
 				path = info.get("path")
 				if path is None:
 					continue
+				if should_skip_hid_device(info):
+					continue
 				registration = self.configs.get(identity)
 				if registration:
 					config_file, config = registration
@@ -674,7 +675,7 @@ class HIDAPIDriver:
 						info.get("usage"),
 						path,
 					)
-				if identity == (0x045E, 0x028E) or (identity in SKIPPED_DEVICES and registration is None):
+				if identity in SKIPPED_DEVICES and registration is None:
 					if is_new:
 						log.debug("Leaving %04x:%04x to its dedicated driver", *identity)
 					continue
