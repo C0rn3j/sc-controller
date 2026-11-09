@@ -1,4 +1,4 @@
-"""SC Controller - Universal HID driver. For all three universal HID devices.
+"""SC Controller - Universal HID driver. For all three universal HIDs.
 
 Borrows bit of code and configuration from evdevdrv.
 """
@@ -612,7 +612,7 @@ class HIDDrv:
 		return None
 
 	def scan_files(self) -> None:
-		"""Go through ~/.config/scc/devices and enable hotplug callback for every known HID device."""
+		"""Go through ~/.config/scc/devices and enable hotplug callback for every known HID."""
 		path = os.path.join(get_config_path(), "devices")
 		if not os.path.exists(path):
 			# Nothing to do
@@ -653,7 +653,7 @@ class HIDDrv:
 def hiddrv_test(cls: type[USBHIDController], args: list[str]) -> int:
 	"""Small input test used by GUI while setting up the device.
 
-	Basically, if HID device works with this, it will work with daemon as well.
+	Basically, if HID works with this, it will work with daemon as well.
 	"""
 	from scc.drivers.usb import _usb
 	from scc.scripts import InvalidArguments
@@ -672,7 +672,7 @@ def hiddrv_test(cls: type[USBHIDController], args: list[str]) -> int:
 		try:
 			return cls(device, None, handle, None, None, test_mode=True)
 		except NotHIDDevice:
-			log.error(f"{vid:04x}:{pid:04x} is not a HID device")
+			log.error(f"{vid:04x}:{pid:04x} is not a HID")
 			fake_daemon.exitcode = 3
 		except UnparsableDescriptor as e:
 			log.error(f"Invalid or unparsable HID descriptor {e!s}")

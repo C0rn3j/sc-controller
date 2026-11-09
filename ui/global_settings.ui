@@ -1495,7 +1495,7 @@ or even crash.</property>
                             <property name="attributes">
                               0 -1 weight bold
                             </property>
-                            <property name="label" translatable="yes">Enable HID device support</property>
+                            <property name="label" translatable="yes">Enable HID support</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>

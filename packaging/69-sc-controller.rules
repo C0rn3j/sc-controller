@@ -4,7 +4,7 @@
 
 # Valve USB devices
 SUBSYSTEM=="usb", ATTRS{idVendor}=="28de", MODE="0666", TAG+="uaccess"
-# Valve HID devices over bluetooth hidraw
+# Valve HIDs over bluetooth hidraw
 KERNEL=="hidraw*", KERNELS=="*28DE:*", MODE="0666", TAG+="uaccess"
 # Sony USB devices
 SUBSYSTEM=="usb", ATTRS{idVendor}=="054c", MODE="0666", TAG+="uaccess"

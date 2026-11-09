@@ -680,7 +680,7 @@ If anything is assigned incorrectly, click on button on image to (re)assign phys
                             <child>
                               <object class="GtkLabel" id="lblHIDWarning">
                                 <property name="justify">fill</property>
-                                <property name="label" translatable="yes">Warning: evdev access mode was auto-selected for HID device.
+                                <property name="label" translatable="yes">Warning: evdev access mode was auto-selected for HID.
 
 That means your account lacks permissons needed to read controller exclusively. You can still use controller in evdev mode, but you may have trouble with some games detecting it twice.
 

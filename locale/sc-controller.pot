@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sc-controller\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-17 20:00+0200\n"
+"POT-Creation-Date: 2026-11-09 18:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -185,7 +185,7 @@ msgstr ""
 msgid "Key or Button"
 msgstr ""
 
-#: scc/gui/ae/custom.py:34 scc/gui/ring_editor.py:138 ui/ae/custom.ui:16
+#: scc/gui/ae/custom.py:33 scc/gui/ring_editor.py:138 ui/ae/custom.ui:16
 msgid "Custom Action"
 msgstr ""
 
@@ -203,25 +203,25 @@ msgid "Select DPAD Action"
 msgstr ""
 
 #: scc/gui/ae/first_page.py:97 scc/gui/ae/gyro_action.py:41
-#: scc/gui/modeshift_editor.py:35 ui/ae/dpad.ui:81 ui/ae/special_action.ui:120
+#: scc/gui/modeshift_editor.py:34 ui/ae/dpad.ui:81 ui/ae/special_action.ui:120
 #: ui/controller_settings.ui:67
 msgid "Left Grip"
 msgstr ""
 
 #: scc/gui/ae/first_page.py:98 scc/gui/ae/gyro_action.py:42
-#: scc/gui/modeshift_editor.py:36 ui/ae/dpad.ui:85 ui/ae/special_action.ui:124
+#: scc/gui/modeshift_editor.py:35 ui/ae/dpad.ui:85 ui/ae/special_action.ui:124
 #: ui/controller_settings.ui:71
 msgid "Right Grip"
 msgstr ""
 
 #: scc/gui/ae/first_page.py:99 scc/gui/ae/gyro_action.py:33
-#: scc/gui/modeshift_editor.py:37 ui/ae/dpad.ui:93 ui/ae/special_action.ui:132
+#: scc/gui/modeshift_editor.py:36 ui/ae/dpad.ui:93 ui/ae/special_action.ui:132
 #: ui/controller_settings.ui:79 ui/osk_binding_editor.ui:89
 msgid "Left Bumper"
 msgstr ""
 
 #: scc/gui/ae/first_page.py:100 scc/gui/ae/gyro_action.py:34
-#: scc/gui/modeshift_editor.py:38 ui/ae/dpad.ui:97 ui/ae/special_action.ui:136
+#: scc/gui/modeshift_editor.py:37 ui/ae/dpad.ui:97 ui/ae/special_action.ui:136
 #: ui/controller_settings.ui:83 ui/osk_binding_editor.ui:110
 msgid "Right Bumper"
 msgstr ""
@@ -283,19 +283,19 @@ msgstr ""
 msgid "Always Active"
 msgstr ""
 
-#: scc/gui/ae/gyro_action.py:36 scc/gui/modeshift_editor.py:49
+#: scc/gui/ae/gyro_action.py:36 scc/gui/modeshift_editor.py:48
 msgid "Left Pad Touched"
 msgstr ""
 
-#: scc/gui/ae/gyro_action.py:37 scc/gui/modeshift_editor.py:50
+#: scc/gui/ae/gyro_action.py:37 scc/gui/modeshift_editor.py:49
 msgid "Right Pad Touched"
 msgstr ""
 
-#: scc/gui/ae/gyro_action.py:38 scc/gui/modeshift_editor.py:47
+#: scc/gui/ae/gyro_action.py:38 scc/gui/modeshift_editor.py:46
 msgid "Left Pad Pressed"
 msgstr ""
 
-#: scc/gui/ae/gyro_action.py:39 scc/gui/modeshift_editor.py:48
+#: scc/gui/ae/gyro_action.py:39 scc/gui/modeshift_editor.py:47
 msgid "Right Pad Pressed"
 msgstr ""
 
@@ -303,43 +303,43 @@ msgstr ""
 msgid "Left Stick Tilted"
 msgstr ""
 
-#: scc/gui/ae/gyro_action.py:45 scc/gui/modeshift_editor.py:26
+#: scc/gui/ae/gyro_action.py:45 scc/gui/modeshift_editor.py:25
 #: ui/ae/axis_action.ui:250 ui/ae/dpad.ui:45 ui/ae/special_action.ui:84
 #: ui/controller_settings.ui:31 ui/osk_binding_editor.ui:17
 msgid "A"
 msgstr ""
 
-#: scc/gui/ae/gyro_action.py:46 scc/gui/modeshift_editor.py:27 ui/ae/dpad.ui:49
+#: scc/gui/ae/gyro_action.py:46 scc/gui/modeshift_editor.py:26 ui/ae/dpad.ui:49
 #: ui/ae/special_action.ui:88 ui/controller_settings.ui:35
 #: ui/osk_binding_editor.ui:27
 msgid "B"
 msgstr ""
 
-#: scc/gui/ae/gyro_action.py:47 scc/gui/modeshift_editor.py:28
+#: scc/gui/ae/gyro_action.py:47 scc/gui/modeshift_editor.py:27
 #: ui/action_editor.ui:506 ui/ae/dpad.ui:53 ui/ae/special_action.ui:92
 #: ui/controller_settings.ui:39 ui/creg.ui:479 ui/creg.ui:503 ui/creg.ui:515
 #: ui/osk_binding_editor.ui:37
 msgid "X"
 msgstr ""
 
-#: scc/gui/ae/gyro_action.py:48 scc/gui/modeshift_editor.py:29
+#: scc/gui/ae/gyro_action.py:48 scc/gui/modeshift_editor.py:28
 #: ui/action_editor.ui:552 ui/ae/dpad.ui:57 ui/ae/special_action.ui:96
 #: ui/controller_settings.ui:43 ui/creg.ui:491 ui/creg.ui:527 ui/creg.ui:539
 #: ui/osk_binding_editor.ui:47
 msgid "Y"
 msgstr ""
 
-#: scc/gui/ae/gyro_action.py:50 scc/gui/modeshift_editor.py:31 ui/ae/dpad.ui:65
+#: scc/gui/ae/gyro_action.py:50 scc/gui/modeshift_editor.py:30 ui/ae/dpad.ui:65
 #: ui/ae/special_action.ui:104 ui/controller_settings.ui:51
 msgid "Back (select)"
 msgstr ""
 
-#: scc/gui/ae/gyro_action.py:51 scc/gui/modeshift_editor.py:32 ui/ae/dpad.ui:69
+#: scc/gui/ae/gyro_action.py:51 scc/gui/modeshift_editor.py:31 ui/ae/dpad.ui:69
 #: ui/ae/special_action.ui:108 ui/controller_settings.ui:55
 msgid "Center"
 msgstr ""
 
-#: scc/gui/ae/gyro_action.py:52 scc/gui/modeshift_editor.py:33 ui/ae/dpad.ui:73
+#: scc/gui/ae/gyro_action.py:52 scc/gui/modeshift_editor.py:32 ui/ae/dpad.ui:73
 #: ui/ae/special_action.ui:112 ui/controller_settings.ui:59
 #: ui/osk_binding_editor.ui:68
 msgid "Start"
@@ -386,7 +386,7 @@ msgstr ""
 msgid "Really delete selected menu?"
 msgstr ""
 
-#: scc/gui/ae/menu_action.py:190 scc/gui/app.py:1448
+#: scc/gui/ae/menu_action.py:190 scc/gui/app.py:1451
 msgid "This action cannot be undone!"
 msgstr ""
 
@@ -458,68 +458,68 @@ msgstr ""
 msgid "Select Analog Axis"
 msgstr ""
 
-#: scc/gui/app.py:151 scc/gui/app.py:394 scc/gui/app.py:1644
+#: scc/gui/app.py:153 scc/gui/app.py:396 scc/gui/app.py:1648
 #: scc/gui/statusicon.py:83
 msgid "SC Controller"
 msgstr ""
 
-#: scc/gui/app.py:257
+#: scc/gui/app.py:259
 msgid "Edit Profile"
 msgstr ""
 
-#: scc/gui/app.py:420
+#: scc/gui/app.py:423
 msgid "uinput kernel module not loaded"
 msgstr ""
 
-#: scc/gui/app.py:421 scc/gui/app.py:441 scc/gui/app.py:448
+#: scc/gui/app.py:424 scc/gui/app.py:444 scc/gui/app.py:451
 msgid "Consult your distribution documentation to learn how to enable uinput"
 msgstr ""
 
-#: scc/gui/app.py:422 scc/gui/app.py:449
+#: scc/gui/app.py:425 scc/gui/app.py:452
 msgid ""
 "or click on \"Fix Temporary\" button to attempt fix that should work until "
 "next restart."
 msgstr ""
 
-#: scc/gui/app.py:426 scc/gui/app.py:453
+#: scc/gui/app.py:429 scc/gui/app.py:456
 msgid "Fix Temporary"
 msgstr ""
 
-#: scc/gui/app.py:432
+#: scc/gui/app.py:435
 msgid "This will load missing uinput module."
 msgstr ""
 
-#: scc/gui/app.py:438
+#: scc/gui/app.py:441
 msgid "/dev/uinput does not exist"
 msgstr ""
 
-#: scc/gui/app.py:439
+#: scc/gui/app.py:442
 msgid "uinput kernel module is loaded, but /dev/uinput is missing."
 msgstr ""
 
-#: scc/gui/app.py:446
+#: scc/gui/app.py:449
 msgid "You don't have required access to /dev/uinput."
 msgstr ""
 
-#: scc/gui/app.py:447
+#: scc/gui/app.py:450
 msgid "This will most likely prevent emulation from working."
 msgstr ""
 
-#: scc/gui/app.py:460
+#: scc/gui/app.py:463
 msgid ""
 "This will enable input emulation for <i>every application</i> and <i>all "
 "users</i> on this machine."
 msgstr ""
 
-#: scc/gui/app.py:478
+#: scc/gui/app.py:481
 msgid "sudo fix-my-pc"
 msgstr ""
 
-#: scc/gui/app.py:493
+#: scc/gui/app.py:496
 msgid "Command Failed"
 msgstr ""
 
-#: scc/gui/app.py:502
+#: scc/gui/app.py:505
 #, python-format
 msgid ""
 "Following command is going to be executed:\n"
@@ -529,76 +529,76 @@ msgid ""
 "%s"
 msgstr ""
 
-#: scc/gui/app.py:563
+#: scc/gui/app.py:566
 msgid "_Edit Pressed Action"
 msgstr ""
 
-#: scc/gui/app.py:605
+#: scc/gui/app.py:608
 msgid "Unable to hide the window to the system tray"
 msgstr ""
 
-#: scc/gui/app.py:608
+#: scc/gui/app.py:611
 msgid "Do you want to quit the application instead?"
 msgstr ""
 
-#: scc/gui/app.py:611 ui/creg.ui:871
+#: scc/gui/app.py:614 ui/creg.ui:871
 msgid "_Cancel"
 msgstr ""
 
-#: scc/gui/app.py:612
+#: scc/gui/app.py:615
 msgid "_Quit"
 msgstr ""
 
-#: scc/gui/app.py:803
+#: scc/gui/app.py:806
 msgid ""
 "You are about to save changes over template.\n"
 "Are you sure?"
 msgstr ""
 
-#: scc/gui/app.py:806
+#: scc/gui/app.py:809
 msgid "Create New Profile"
 msgstr ""
 
-#: scc/gui/app.py:879 scc/gui/app.py:883
+#: scc/gui/app.py:882 scc/gui/app.py:886
 #, python-format
 msgid "New Profile %s"
 msgstr ""
 
-#: scc/gui/app.py:892
+#: scc/gui/app.py:895
 #, python-format
 msgid "%s (copy)"
 msgstr ""
 
-#: scc/gui/app.py:896
+#: scc/gui/app.py:899
 #, python-format
 msgid "%s (copy %s)"
 msgstr ""
 
-#: scc/gui/app.py:1256
+#: scc/gui/app.py:1259
 #, python-format
 msgid "There was an error with enabling emulation: <b>%s</b>"
 msgstr ""
 
-#: scc/gui/app.py:1259
+#: scc/gui/app.py:1262
 msgid "Check whether the receiver dongle is connected to a USB port."
 msgstr ""
 
-#: scc/gui/app.py:1261
+#: scc/gui/app.py:1264
 msgid "You do not have access to the controller device."
 msgstr ""
 
-#: scc/gui/app.py:1264
+#: scc/gui/app.py:1267
 #, python-format
 msgid ""
 "Consult your distribution manual, try installing Steam package or <a "
 "href='%s'>install required udev rules manually</a>."
 msgstr ""
 
-#: scc/gui/app.py:1270
+#: scc/gui/app.py:1273
 msgid "Another application (most likely Steam) is using the controller."
 msgstr ""
 
-#: scc/gui/app.py:1273
+#: scc/gui/app.py:1276
 msgid ""
 "Background process responsible for emulation is not starting.\n"
 "\n"
@@ -608,45 +608,45 @@ msgid ""
 "GitHub</a> and copy output there."
 msgstr ""
 
-#: scc/gui/app.py:1277
+#: scc/gui/app.py:1280
 msgid "USB dongle was removed."
 msgstr ""
 
-#: scc/gui/app.py:1437
+#: scc/gui/app.py:1440
 msgid "Really revert current profile to default values?"
 msgstr ""
 
-#: scc/gui/app.py:1439
+#: scc/gui/app.py:1442
 msgid "Really delete current profile?"
 msgstr ""
 
-#: scc/gui/app.py:1647
+#: scc/gui/app.py:1651
 msgid "Emulation is active"
 msgstr ""
 
-#: scc/gui/app.py:1649
+#: scc/gui/app.py:1653
 msgid "Error enabling emulation"
 msgstr ""
 
-#: scc/gui/app.py:1651
+#: scc/gui/app.py:1655
 msgid "Emulation is inactive"
 msgstr ""
 
-#: scc/gui/app.py:1653
+#: scc/gui/app.py:1657
 msgid "Checking emulation status..."
-msgstr ""
-
-#: scc/gui/app.py:1784
-#, python-format
-msgid "<a href='%s'>Click here</a> to check what's new!"
 msgstr ""
 
 #: scc/gui/app.py:1788
 #, python-format
+msgid "<a href='%s'>Click here</a> to check what's new!"
+msgstr ""
+
+#: scc/gui/app.py:1792
+#, python-format
 msgid "Welcome to the version <b>%s</b>."
 msgstr ""
 
-#: scc/gui/app.py:1789
+#: scc/gui/app.py:1793
 #, python-format
 msgid "<a href='%s'>Click here</a> to read release notes."
 msgstr ""
@@ -693,7 +693,7 @@ msgstr ""
 msgid "USB HID"
 msgstr ""
 
-#: scc/gui/creg/dialog.py:721
+#: scc/gui/creg/dialog.py:726
 msgid "Press stick or button..."
 msgstr ""
 
@@ -725,28 +725,28 @@ msgstr ""
 msgid "Move stick up and down..."
 msgstr ""
 
-#: scc/gui/global_settings.py:257
+#: scc/gui/global_settings.py:256
 msgid "(customized)"
 msgstr ""
 
-#: scc/gui/global_settings.py:795
+#: scc/gui/global_settings.py:796
 msgid "Install the xdotool package to use this feature"
 msgstr ""
 
-#: scc/gui/global_settings.py:822
+#: scc/gui/global_settings.py:823
 msgid "Unregister controller?"
 msgstr ""
 
-#: scc/gui/global_settings.py:824
+#: scc/gui/global_settings.py:825
 msgid "You'll lose all settings for it"
 msgstr ""
 
-#: scc/gui/icon_chooser.py:102
+#: scc/gui/icon_chooser.py:101
 #, python-format
 msgid "Free-use icon created by %s"
 msgstr ""
 
-#: scc/gui/importexport/dialog.py:143 ui/import_export.ui:1002
+#: scc/gui/importexport/dialog.py:142 ui/import_export.ui:1002
 msgid "Next"
 msgstr ""
 
@@ -838,93 +838,93 @@ msgstr ""
 msgid "<b>Delay: %0.2fs</b>"
 msgstr ""
 
-#: scc/gui/macro_editor.py:275 scc/gui/modeshift_editor.py:224
+#: scc/gui/macro_editor.py:275 scc/gui/modeshift_editor.py:223
 #: scc/gui/ring_editor.py:91 scc/gui/ring_editor.py:96
 msgid "Edit Action"
 msgstr ""
 
-#: scc/gui/menu_editor.py:133
+#: scc/gui/menu_editor.py:131
 msgid "Edit Separator"
 msgstr ""
 
-#: scc/gui/menu_editor.py:135
+#: scc/gui/menu_editor.py:133
 msgid "Separator Name"
 msgstr ""
 
-#: scc/gui/menu_editor.py:137
+#: scc/gui/menu_editor.py:135
 msgid "Edit Submenu"
 msgstr ""
 
-#: scc/gui/menu_editor.py:145
+#: scc/gui/menu_editor.py:143
 msgid "Menu Label"
 msgstr ""
 
-#: scc/gui/menu_editor.py:151
+#: scc/gui/menu_editor.py:149
 msgid "Edit Menu Action"
 msgstr ""
 
-#: scc/gui/menu_editor.py:157
+#: scc/gui/menu_editor.py:155
 msgid "Edit Recent List"
 msgstr ""
 
-#: scc/gui/menu_editor.py:246
+#: scc/gui/menu_editor.py:244
 msgid "Invalid Menu ID: A menu with the same ID already exists."
 msgstr ""
 
-#: scc/gui/menu_editor.py:251
+#: scc/gui/menu_editor.py:249
 msgid "Invalid Menu ID: Do not use dots (.) or slashes (/)."
 msgstr ""
 
-#: scc/gui/menu_editor.py:258
+#: scc/gui/menu_editor.py:256
 msgid "New Menu"
 msgstr ""
 
-#: scc/gui/menu_editor.py:275
+#: scc/gui/menu_editor.py:273
 msgid "Menu Editor"
 msgstr ""
 
-#: scc/gui/menu_editor.py:382 ui/controller_settings.ui:202
+#: scc/gui/menu_editor.py:379 ui/controller_settings.ui:202
 #: ui/icon_chooser.ui:60
 msgid "Icon"
 msgstr ""
 
-#: scc/gui/menu_editor.py:387
+#: scc/gui/menu_editor.py:384
 msgid "(no icon)"
 msgstr ""
 
-#: scc/gui/modeshift_editor.py:40
+#: scc/gui/modeshift_editor.py:39
 msgid "Left Trigger (full)"
 msgstr ""
 
-#: scc/gui/modeshift_editor.py:41
+#: scc/gui/modeshift_editor.py:40
 msgid "Right Trigger (full)"
 msgstr ""
 
-#: scc/gui/modeshift_editor.py:42
+#: scc/gui/modeshift_editor.py:41
 msgid "Left Trigger (soft)"
 msgstr ""
 
-#: scc/gui/modeshift_editor.py:43
+#: scc/gui/modeshift_editor.py:42
 msgid "Right Trigger (soft)"
 msgstr ""
 
-#: scc/gui/modeshift_editor.py:45
+#: scc/gui/modeshift_editor.py:44
 msgid "Left Stick Pressed"
 msgstr ""
 
-#: scc/gui/modeshift_editor.py:46
+#: scc/gui/modeshift_editor.py:45
 msgid "Right Stick Pressed"
 msgstr ""
 
-#: scc/gui/modeshift_editor.py:217
+#: scc/gui/modeshift_editor.py:216
 msgid "Edit Macro"
 msgstr ""
 
-#: scc/gui/modeshift_editor.py:376 scc/gui/modeshift_editor.py:379
+#: scc/gui/modeshift_editor.py:375 scc/gui/modeshift_editor.py:378
 msgid "(no button pressed)"
 msgstr ""
 
-#: scc/gui/modeshift_editor.py:382 ui/modeshift_editor.ui:154
+#: scc/gui/modeshift_editor.py:381 ui/modeshift_editor.ui:154
 msgid "(pressed alone)"
 msgstr ""
 
@@ -981,11 +981,11 @@ msgstr ""
 msgid "Outer Ring"
 msgstr ""
 
-#: scc/i18n.py:65
+#: scc/i18n.py:68
 msgid "System Default"
 msgstr ""
 
-#: scc/i18n.py:65
+#: scc/i18n.py:68
 msgid "English"
 msgstr ""
 
@@ -1075,12 +1075,12 @@ msgstr ""
 msgid "Ball(%s)"
 msgstr ""
 
-#: scc/modifiers.py:1484
+#: scc/modifiers.py:1485
 #, python-format
 msgid "Circular %s"
 msgstr ""
 
-#: scc/modifiers.py:1561
+#: scc/modifiers.py:1562
 #, python-format
 msgid "Absolute Circular %s"
 msgstr ""
@@ -1089,16 +1089,16 @@ msgstr ""
 msgid "Run"
 msgstr ""
 
-#: scc/osd/menu_generators.py:46 scc/x11/autoswitcher.py:319
+#: scc/osd/menu_generators.py:45 scc/x11/autoswitcher.py:318
 msgid "[ All Profiles ]"
 msgstr ""
 
-#: scc/osd/menu_generators.py:74
+#: scc/osd/menu_generators.py:73
 #, python-format
 msgid "[ %s Recent Profiles ]"
 msgstr ""
 
-#: scc/osd/menu_generators.py:151
+#: scc/osd/menu_generators.py:149
 msgid "Switch To is not currently supported in Wayland"
 msgstr ""
 
@@ -1206,73 +1206,73 @@ msgstr ""
 msgid "CemuHook"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:155
+#: scc/x11/autoswitcher.py:154
 msgid "Switched to profile"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:231
+#: scc/x11/autoswitcher.py:230
 #, python-format
 msgid "title contains '%s'"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:233
+#: scc/x11/autoswitcher.py:232
 #, python-format
 msgid "title is '%s'"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:235
+#: scc/x11/autoswitcher.py:234
 #, python-format
 msgid "title matches '%s'"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:237
+#: scc/x11/autoswitcher.py:236
 #, python-format
 msgid "class is '%s'"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:239
+#: scc/x11/autoswitcher.py:238
 msgid " and "
 msgstr ""
 
-#: scc/x11/autoswitcher.py:240
+#: scc/x11/autoswitcher.py:239
 msgid "matches nothing"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:324
+#: scc/x11/autoswitcher.py:323
 msgid "Autoswitch currently requires an X11 display on Linux"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:330
+#: scc/x11/autoswitcher.py:329
 msgid "No active window"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:331 ui/app.ui:91
+#: scc/x11/autoswitcher.py:330 ui/app.ui:91
 msgid "Close"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:345
+#: scc/x11/autoswitcher.py:344
 msgid "No Title"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:346
+#: scc/x11/autoswitcher.py:345
 #, python-format
 msgid "Current Window: %s"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:348
+#: scc/x11/autoswitcher.py:347
 #, python-format
 msgid "Assigned Profile: %s"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:350
+#: scc/x11/autoswitcher.py:349
 msgid "No Profile Assigned"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:355
+#: scc/x11/autoswitcher.py:354
 msgid "Unassign Profile"
 msgstr ""
 
-#: scc/x11/autoswitcher.py:356
+#: scc/x11/autoswitcher.py:355
 msgid "Assign Current Profile"
 msgstr ""
 
@@ -2354,7 +2354,7 @@ msgstr ""
 
 #: ui/creg.ui:683
 msgid ""
-"Warning: evdev access mode was auto-selected for HID device.\n"
+"Warning: evdev access mode was auto-selected for HID.\n"
 "\n"
 "That means your account lacks permissons needed to read controller "
 "exclusively. You can still use controller in evdev mode, but you may have "
@@ -2685,7 +2685,7 @@ msgid ""
 msgstr ""
 
 #: ui/global_settings.ui:1498
-msgid "Enable HID device support"
+msgid "Enable HID support"
 msgstr ""
 
 #: ui/global_settings.ui:1520

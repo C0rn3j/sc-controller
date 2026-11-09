@@ -104,7 +104,7 @@ class DeviceMonitor(Monitor):
 	def _on_new_syspath(self, subsystem: str, syspath: str) -> None:
 		# Bluetooth adapters are reported as e.g. hci0, while actual device
 		# links are reported as hci0:<connection handle>. Only links can be
-		# resolved to a HID device and vendor/product pair.
+		# resolved to a HID and vendor/product pair.
 		if subsystem == "bluetooth" and ":" not in os.path.basename(syspath):
 			return
 		try:
