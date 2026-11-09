@@ -33,6 +33,7 @@ dependencies = [
 #platforms = ["Linux"]
 
 [project.optional-dependencies]
+	hidapi = ["hidapi"]
 	dev = [
 		# Needs PYGOBJECT_STUB_CONFIG=Gtk4,Gdk4 env var when being installed
 		# And also --no-cache-dir for pip install
@@ -65,8 +66,8 @@ packages = [
 	"scc.bin",
 	"scc.drivers",
 	"scc.drivers.linux",
-	#"scc.drivers.windows",
-	#"scc.drivers.macos",
+	"scc.drivers.windows",
+	"scc.drivers.macos",
 	"scc.lib",
 	"scc.x11",
 	"scc.osd",
