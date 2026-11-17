@@ -49,7 +49,7 @@ extensions = [
 	Extension("libremotepad", sources=["scc/drivers/remotepad_controller.c"]),
 ]
 if sys.platform == "linux":
-	extensions.append(Extension("libhiddrv", sources=["scc/drivers/hiddrv.c"]))
+	extensions.append(Extension("libhiddrv", sources=["scc/drivers/linux/hiddrv.c"]))
 	extensions.extend([
 		Extension("libuinput", sources=["scc/uinput.c"]),
 		# TODO(Martin): Get this working on Windows
