@@ -3,6 +3,7 @@
 Class that interacts with `scc hid_test` and `scc evdev_test` commands.
 """
 
+import json
 import logging
 
 from gi.repository import Gio, GObject
@@ -40,29 +41,33 @@ class Tester(GObject.GObject):
 		self.buffer: bytes = b""
 		self.buttons: list[int] = []
 		self.axes = []
+		self.mapping = None
 		self.subprocess = None
 		self.driver = driver
 		self.device_id = device_id
 		self.errorred: bool = False  # To prevent sending 'error' signal multiple times
+		self._stopping = False
 
 	def __del__(self):
 		if self.subprocess:
-			self.subprocess.send_signal(9)
+			self.subprocess.force_exit()
 
 	def start(self):
 		"""Starts driver test subprocess"""
+		self._stopping = False
 		cmd = [find_binary("scc")] + ["test_" + self.driver, self.device_id]
 		self.subprocess = Gio.Subprocess.new(cmd, Gio.SubprocessFlags.STDOUT_PIPE)
 		self.subprocess.wait_async(None, self._on_finished)
 		self.subprocess.get_stdout_pipe().read_bytes_async(32, 0, None, self._on_read)
 
 	def stop(self):
+		self._stopping = True
 		if self.subprocess:
-			self.subprocess.send_signal(2)  # Sigint
+			self.subprocess.force_exit()
 
 	def _on_finished(self, subprocess, result):
 		subprocess.wait_finish(result)
-		if self.errorred:
+		if self.errorred or self._stopping:
 			return
 		if subprocess.get_exit_status() == 0:
 			self.emit("finished")
@@ -103,6 +108,8 @@ class Tester(GObject.GObject):
 			self.emit("button", int(code), False)
 		elif line.startswith(b"Ready"):
 			self.emit("ready")
+		elif line.startswith(b"Mapping:"):
+			self.mapping = json.loads(line.split(b":", 1)[1])
 		elif line.startswith(b"Axes:"):
 			self.axes = [int(x) for x in line.split(b" ")[1:] if len(x.strip())]
 		elif line.startswith(b"Buttons:"):

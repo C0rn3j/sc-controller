@@ -43,10 +43,11 @@ if TYPE_CHECKING:
 	from scc.drivers.linux.evdevdrv import EvdevControllerInput
 	from scc.drivers.linux.hiddrv import HIDControllerInput
 	from scc.drivers.linux.sc_dongle import ControllerInput
+	from scc.drivers.windows.ds4drv import DS4ControllerInput
 	from scc.poller import Poller
 	from scc.profile import Profile
 	from scc.scheduler import Scheduler, Task
-	type CInput = DualSenseBTControllerInput | ControllerInput | HIDControllerInput | EvdevControllerInput
+	type CInput = DualSenseBTControllerInput | ControllerInput | HIDControllerInput | EvdevControllerInput | DS4ControllerInput
 
 log = logging.getLogger("Mapper")
 
