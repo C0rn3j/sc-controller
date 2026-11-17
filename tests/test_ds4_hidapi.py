@@ -6,11 +6,9 @@ from types import SimpleNamespace
 
 import pytest
 
-pytest.importorskip("hid")
-
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, HapticPos, SCButtons
 from scc.controller import HapticData
-from scc.drivers.windows import ds4drv
+from scc.drivers import ds4drv
 
 
 class HIDDevice:
@@ -54,8 +52,8 @@ def controller(monkeypatch):
 		remove_controller=active.remove,
 		get_active_ids=lambda: [c.get_id() for c in active],
 	)
-	driver = ds4drv.DS4WindowsDriver(daemon)
-	controller = ds4drv.WindowsDS4Controller(driver, {"path": b"usb-gamepad", "bus_type": 1})
+	driver = ds4drv.DS4Driver(daemon)
+	controller = ds4drv.DS4Controller(driver, {"path": b"usb-gamepad", "bus_type": 1})
 	driver.controllers[controller.path] = controller
 	return controller, device, driver, active
 
@@ -215,7 +213,7 @@ def test_discovery_hotplug_filtering_failure_retry_and_cleanup(monkeypatch):
 	monkeypatch.setattr(ds4drv, "hid", SimpleNamespace(device=lambda: device, enumerate=enumerate_devices))
 	active = []
 	daemon = SimpleNamespace(add_controller=active.append, remove_controller=active.remove, get_active_ids=lambda: [])
-	driver = ds4drv.DS4WindowsDriver(daemon)
+	driver = ds4drv.DS4Driver(daemon)
 	info = {"path": b"pad", "product_id": 0x05C4, "usage_page": 1, "usage": 5}
 	infos.extend([info, dict(info, path=b"keyboard", usage=6)])
 	device.open_error = True
@@ -245,9 +243,58 @@ def test_bluetooth_open_enables_extended_reports_and_unique_ids(monkeypatch):
 		remove_controller=active.remove,
 		get_active_ids=lambda: [p.get_id() for p in active],
 	)
-	driver = ds4drv.DS4WindowsDriver(daemon)
-	first = ds4drv.WindowsDS4Controller(driver, {"path": b"bth-pad1", "bus_type": 2})
-	second = ds4drv.WindowsDS4Controller(driver, {"path": b"bth-pad2", "bus_type": 2})
+	driver = ds4drv.DS4Driver(daemon)
+	first = ds4drv.DS4Controller(driver, {"path": b"bth-pad1", "bus_type": 2})
+	second = ds4drv.DS4Controller(driver, {"path": b"bth-pad2", "bus_type": 2})
 	assert first.get_id() == "ds4"
 	assert second.get_id() == "ds4:1"
 	assert first.device.writes[0][0] == second.device.writes[0][0] == 0x11
+
+
+@pytest.mark.parametrize("platform", ["linux", "win32", "darwin"])
+@pytest.mark.parametrize("bluetooth", [False, True])
+def test_shared_driver_lifecycle(monkeypatch, platform, bluetooth):
+	device = HIDDevice()
+	info = {"path": b"opaque-path", "bus_type": 2 if bluetooth else 1}
+	monkeypatch.setattr(ds4drv, "sys", SimpleNamespace(platform=platform))
+	monkeypatch.setattr(ds4drv, "hid", SimpleNamespace(
+		device=lambda: device,
+		enumerate=lambda vendor, product: [info] if product == ds4drv.PRODUCT_IDS[0] else [],
+	))
+	active = []
+	callbacks = {}
+	daemon = SimpleNamespace(
+		add_controller=active.append,
+		remove_controller=active.remove,
+		get_active_ids=lambda: [],
+		add_mainloop=lambda callback: callbacks.update(mainloop=callback),
+		add_on_exit=lambda callback: callbacks.update(close=callback),
+		add_on_rescan=lambda callback: callbacks.update(scan=callback),
+	)
+	assert ds4drv.init(daemon, {})
+	ds4drv.start(daemon)
+	pad = active[0]
+	assert pad.is_bluetooth() is bluetooth
+	pad.set_led_color(1, 2, 3)
+	assert device.writes[-1][0] == (0x11 if bluetooth else 0x05)
+	device.reports = [bluetooth_report(usb_report()) if bluetooth else usb_report()]
+	callbacks["mainloop"]()
+	assert pad.get_gyro_enabled()
+	callbacks["scan"]()
+	assert len(active) == 1
+	callbacks["close"]()
+	assert device.closed
+	assert not active
+
+
+def test_missing_optional_hidapi(monkeypatch):
+	monkeypatch.setattr(ds4drv, "hid", None)
+	assert not ds4drv.init(SimpleNamespace(), {})
+
+
+@pytest.mark.parametrize("platform,expected", [("linux", False), ("darwin", False), ("win32", True)])
+def test_windows_path_fallback(monkeypatch, platform, expected):
+	monkeypatch.setattr(ds4drv, "sys", SimpleNamespace(platform=platform))
+	assert ds4drv.DS4Controller._detect_bluetooth({"path": b"BTH-device"}) is expected
+	# Explicit bus metadata takes precedence over the legacy path fallback.
+	assert not ds4drv.DS4Controller._detect_bluetooth({"path": b"BTH-device", "bus_type": 1})

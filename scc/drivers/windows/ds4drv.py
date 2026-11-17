@@ -1,15 +1,19 @@
-"""DualShock 4 USB and Bluetooth input and output through Windows HIDAPI."""
+"""DualShock 4 USB and Bluetooth driver through HIDAPI on Linux, Windows and macOS."""
 
 from __future__ import annotations
 
 import colorsys
 import logging
+import sys
 import time
 import zlib
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, ClassVar
 
-import hid
+try:
+	import hid
+except ImportError:
+	hid = None
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, ControllerFlags, HapticPos, SCButtons
 from scc.controller import Controller
@@ -17,7 +21,7 @@ from scc.controller import Controller
 if TYPE_CHECKING:
 	from scc.sccdaemon import SCCDaemon
 
-log = logging.getLogger("DS4Windows")
+log = logging.getLogger("DS4HIDAPI")
 VENDOR_ID = 0x054C
 PRODUCT_IDS = (0x05C4, 0x09CC)
 SCAN_INTERVAL = 1.0
@@ -51,7 +55,7 @@ class DS4ControllerInput:
 	cpad_y: int = 0
 
 
-class WindowsDS4Controller(Controller):
+class DS4Controller(Controller):
 	"""A Sony DS4 v1/v2 opened by its HID interface path."""
 
 	flags = (
@@ -74,16 +78,14 @@ class WindowsDS4Controller(Controller):
 		(0, 0),
 	)
 
-	def __init__(self, driver: DS4WindowsDriver, info: dict) -> None:
+	def __init__(self, driver: DS4Driver, info: dict) -> None:
 		super().__init__()
 		self.driver = driver
 		self.daemon = driver.daemon
 		self.path = info["path"]
 		self._closed = False
 		self._old_state = DS4ControllerInput()
-		self._bluetooth = (
-			info.get("bus_type") == getattr(hid, "HID_API_BUS_BLUETOOTH", 2) or "BTH" in str(self.path).upper()
-		)
+		self._bluetooth = self._detect_bluetooth(info)
 		self._color = (0, 0, 0)
 		self._motors = [0, 0]  # Left (large), right (small).
 		self._motor_deadlines = [None, None]
@@ -107,6 +109,14 @@ class WindowsDS4Controller(Controller):
 			self._write_output()
 		self.daemon.add_controller(self)
 		log.info("Opened %s DS4 %s at %r", "Bluetooth" if self._bluetooth else "USB", self._id, self.path)
+
+	@staticmethod
+	def _detect_bluetooth(info: dict) -> bool:
+		bus_type = info.get("bus_type")
+		bluetooth_bus = getattr(hid, "HID_API_BUS_BLUETOOTH", 2)
+		if bus_type is not None:
+			return bus_type == bluetooth_bus
+		return sys.platform == "win32" and "BTH" in str(info.get("path", "")).upper()
 
 	@staticmethod
 	def _stick_axis(value: int, invert: bool = False) -> int:
@@ -276,12 +286,12 @@ class WindowsDS4Controller(Controller):
 			self.daemon.remove_controller(self)
 
 
-class DS4WindowsDriver:
+class DS4Driver:
 	"""Discover DS4 HID interfaces and poll controllers from the daemon loop."""
 
 	def __init__(self, daemon: SCCDaemon) -> None:
 		self.daemon = daemon
-		self.controllers: dict[bytes | str, WindowsDS4Controller] = {}
+		self.controllers: dict[bytes | str, DS4Controller] = {}
 		self._next_scan = 0.0
 
 	def start(self) -> None:
@@ -309,7 +319,7 @@ class DS4WindowsDriver:
 		for path, info in found.items():
 			if path not in self.controllers:
 				try:
-					self.controllers[path] = WindowsDS4Controller(self, info)
+					self.controllers[path] = DS4Controller(self, info)
 				except (OSError, ValueError):
 					log.exception("Failed to open DS4 at %r", path)
 		for path in set(self.controllers) - set(found):
@@ -320,12 +330,17 @@ class DS4WindowsDriver:
 			controller.close()
 
 
-_driver: DS4WindowsDriver | None = None
+_driver: DS4Driver | None = None
 
 
 def init(daemon: SCCDaemon, config: dict) -> bool:
 	global _driver
-	_driver = DS4WindowsDriver(daemon)
+	if sys.platform not in ("linux", "win32", "darwin"):
+		return False
+	if hid is None:
+		log.error("Install sccontroller[hidapi] to enable the DS4 HIDAPI driver")
+		return False
+	_driver = DS4Driver(daemon)
 	daemon.add_mainloop(_driver.mainloop)
 	daemon.add_on_exit(_driver.close)
 	daemon.add_on_rescan(_driver.scan)
