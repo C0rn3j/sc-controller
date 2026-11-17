@@ -39,7 +39,7 @@ elif sys.platform == "darwin":
 
 if TYPE_CHECKING:
 	from scc.controller import Controller
-	from scc.drivers.ds4drv import DS4ControllerInput
+	from scc.drivers.ds4drv_hidapi import DS4ControllerInput
 	from scc.drivers.linux.ds5drv import DualSenseBTControllerInput
 	from scc.drivers.linux.evdevdrv import EvdevControllerInput
 	from scc.drivers.linux.hiddrv import HIDControllerInput

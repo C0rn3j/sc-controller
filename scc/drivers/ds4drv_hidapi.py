@@ -320,7 +320,7 @@ class DS4Driver:
 		def enumerate_devices() -> None:
 			result.set_result(self._enumerate())
 
-		Thread(target=enumerate_devices, name="ds4drv-discovery", daemon=True).start()
+		Thread(target=enumerate_devices, name="ds4drv_hidapi-discovery", daemon=True).start()
 
 	def scan(self) -> None:
 		self._next_scan = time.monotonic() + SCAN_INTERVAL
@@ -366,7 +366,11 @@ _driver: DS4Driver | None = None
 
 def init(daemon: SCCDaemon, config: dict) -> bool:
 	global _driver
+	_driver = None
 	if sys.platform not in ("linux", "win32", "darwin"):
+		return False
+	if sys.platform == "linux" and config.get("drivers", {}).get("ds4drv", False):
+		log.error("Disable ds4drv before enabling ds4drv_hidapi")
 		return False
 	if hid is None:
 		log.error("Install sccontroller[hidapi] to enable the DS4 HIDAPI driver")

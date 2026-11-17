@@ -42,8 +42,8 @@ class Config:
 			"fake": False,  # Used for developement
 			**({"hiddrv": True, "evdevdrv": True} if sys.platform == "linux" else {}),
 			"hidapi": sys.platform != "linux",  # Optional on Linux; only opens manually registered devices there
-			"ds4drv": True,  # At least one of hiddrv or evdevdrv has to be enabled as well
-			"ds5drv": True,
+			"ds4drv": sys.platform == "linux",  # At least one of hiddrv or evdevdrv has to be enabled as well
+			"ds4drv_hidapi": sys.platform != "linux",
 		},
 		"fix_xinput": True,  # If True, attempt is done to deatach emulated controller
 		# from 'Virtual core pointer' core device.

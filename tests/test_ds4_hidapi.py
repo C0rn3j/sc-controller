@@ -8,7 +8,7 @@ import pytest
 
 from scc.constants import STICK_PAD_MAX, STICK_PAD_MIN, HapticPos, SCButtons
 from scc.controller import HapticData
-from scc.drivers import ds4drv
+from scc.drivers import ds4drv_hidapi as ds4drv
 
 
 class HIDDevice:
