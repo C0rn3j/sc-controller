@@ -30,9 +30,12 @@ class Config:
 		"drivers": {  # Map of drivers with values of True, Flase
 			# or additional driver config where needed.
 			# Anything but False means enabled here.
-			"sc_dongle": True,   # Steam Controller (2015)
-			"sc_by_cable": True, # Steam Controller (2015)
-			"sc_by_bt": True,    # Steam Controller (2015)
+			"sc_dongle": sys.platform == "linux",  # Steam Controller (2015)
+			"sc_dongle_hidapi": sys.platform != "linux",
+			"sc_by_cable": sys.platform == "linux",  # Steam Controller (2015)
+			"sc_by_cable_hidapi": sys.platform != "linux",
+			"sc_by_bt": sys.platform == "linux",  # Steam Controller (2015)
+			"sc_by_bt_hidapi": sys.platform != "linux",
 			"steamdeck": True,
 			"sc2": sys.platform == "linux",  # Steam Controller (2026), libusb backend
 			"sc2_hidapi": sys.platform != "linux",  # Alternative SC2 backend; enable only one
