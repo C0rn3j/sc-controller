@@ -8,6 +8,8 @@ import logging
 import sys
 import time
 import zlib
+from concurrent.futures import Future
+from threading import Thread
 from typing import TYPE_CHECKING, ClassVar
 
 try:
@@ -322,6 +324,7 @@ class DualSenseDriver:
 		self.daemon = daemon
 		self.controllers: dict[bytes | str, DualSenseController] = {}
 		self._next_scan = 0.0
+		self._scan_result: Future | None = None
 
 	def start(self) -> None:
 		if sys.platform == "win32":
@@ -334,12 +337,37 @@ class DualSenseDriver:
 	def mainloop(self) -> None:
 		for controller in tuple(self.controllers.values()):
 			controller.poll()
+		if self._scan_result is not None and self._scan_result.done():
+			result, self._scan_result = self._scan_result, None
+			found = result.result()
+			if found is not None:
+				self._apply_scan(found)
 		now = time.monotonic()
 		if now >= self._next_scan:
-			self.scan()
+			self._scan_async()
+
+	def _scan_async(self) -> None:
+		if self._scan_result is not None:
+			return
+		self._next_scan = time.monotonic() + SCAN_INTERVAL
+		result = self._scan_result = Future()
+
+		def enumerate_devices() -> None:
+			result.set_result(self._enumerate())
+
+		Thread(target=enumerate_devices, name="ds5drv-discovery", daemon=True).start()
 
 	def scan(self) -> None:
 		self._next_scan = time.monotonic() + SCAN_INTERVAL
+		# Reuse an outstanding periodic scan instead of enumerating concurrently.
+		if self._scan_result is not None:
+			return
+		found = self._enumerate()
+		if found is not None:
+			self._apply_scan(found)
+
+	@staticmethod
+	def _enumerate() -> dict | None:
 		found = {}
 		try:
 			for product_id in PRODUCT_IDS:
@@ -356,6 +384,9 @@ class DualSenseDriver:
 			return
 		# log.debug("Found %d DualSense HID interface(s)", len(found))
 
+		return found
+
+	def _apply_scan(self, found: dict) -> None:
 		for path, info in found.items():
 			if path in self.controllers:
 				continue
