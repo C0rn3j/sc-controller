@@ -1,15 +1,19 @@
-"""DualSense HIDAPI driver for non-Linux platforms."""
+"""DualSense USB and Bluetooth driver through HIDAPI on Linux, Windows and macOS."""
 
 from __future__ import annotations
 
 import colorsys
 import ctypes
 import logging
+import sys
 import time
 import zlib
 from typing import TYPE_CHECKING, ClassVar
 
-import hid
+try:
+	import hid
+except ImportError:
+	hid = None
 
 from scc.constants import (
 	DUALSENSE_CPAD_X_MAX,
@@ -26,7 +30,7 @@ if TYPE_CHECKING:
 	from scc.sccdaemon import SCCDaemon
 
 
-log = logging.getLogger("DS5Windows")
+log = logging.getLogger("DS5HIDAPI")
 
 VENDOR_ID = 0x054C
 PRODUCT_IDS = (0x0CE6, 0x0DF2)
@@ -63,7 +67,7 @@ class DualSenseControllerInput(ctypes.Structure):
 	]
 
 
-class WindowsDualSenseController(Controller):
+class DualSenseController(Controller):
 	"""A DualSense opened through HIDAPI's native platform backend."""
 
 	flags = (
@@ -87,7 +91,7 @@ class WindowsDualSenseController(Controller):
 		8: (0, 0),
 	}
 
-	def __init__(self, driver: DualSenseWindowsDriver, info: dict) -> None:
+	def __init__(self, driver: DualSenseDriver, info: dict) -> None:
 		super().__init__()
 		self.driver = driver
 		self.daemon = driver.daemon
@@ -97,8 +101,12 @@ class WindowsDualSenseController(Controller):
 		self._bluetooth = self._detect_bluetooth(info)
 
 		self.device = hid.device()
-		self.device.open_path(self.path)
-		self.device.set_nonblocking(True)
+		try:
+			self.device.open_path(self.path)
+			self.device.set_nonblocking(True)
+		except Exception:
+			self.device.close()
+			raise
 
 		serial = info.get("serial_number")
 		self._id = self._generate_id(str(serial) if serial else "ds5")
@@ -113,10 +121,10 @@ class WindowsDualSenseController(Controller):
 	@staticmethod
 	def _detect_bluetooth(info: dict) -> bool:
 		bus_type = info.get("bus_type")
-		bluetooth_bus = getattr(hid, "HID_API_BUS_BLUETOOTH", None)
+		bluetooth_bus = getattr(hid, "HID_API_BUS_BLUETOOTH", 2)
 		if bluetooth_bus is not None and bus_type is not None:
 			return bus_type == bluetooth_bus
-		return "BTH" in str(info.get("path", "")).upper()
+		return sys.platform == "win32" and "BTH" in str(info.get("path", "")).upper()
 
 	def _generate_id(self, preferred: str) -> str:
 		controller_id = preferred
@@ -309,17 +317,18 @@ class WindowsDualSenseController(Controller):
 			self.daemon.remove_controller(self)
 
 
-class DualSenseWindowsDriver:
+class DualSenseDriver:
 	def __init__(self, daemon: SCCDaemon) -> None:
 		self.daemon = daemon
-		self.controllers: dict[bytes | str, WindowsDualSenseController] = {}
+		self.controllers: dict[bytes | str, DualSenseController] = {}
 		self._next_scan = 0.0
 
 	def start(self) -> None:
-		log.warning(
-			"Windows cannot hide the physical DualSense by itself. To prevent double input, install HidHide, "
-			"add scc-daemon.exe to its Applications list, hide the DualSense under Devices, and enable cloaking.",
-		)
+		if sys.platform == "win32":
+			log.warning(
+				"Windows cannot hide the physical DualSense by itself. To prevent double input, install HidHide, "
+				"add scc-daemon.exe to its Applications list, hide the DualSense under Devices, and enable cloaking.",
+			)
 		self.scan()
 
 	def mainloop(self) -> None:
@@ -351,7 +360,7 @@ class DualSenseWindowsDriver:
 			if path in self.controllers:
 				continue
 			try:
-				self.controllers[path] = WindowsDualSenseController(self, info)
+				self.controllers[path] = DualSenseController(self, info)
 			except (OSError, ValueError):
 				log.exception("Failed to open DualSense at %r", path)
 
@@ -367,14 +376,20 @@ class DualSenseWindowsDriver:
 			controller.close()
 
 
-_driver: DualSenseWindowsDriver | None = None
+_driver: DualSenseDriver | None = None
 
 
 def init(daemon: SCCDaemon, config: dict) -> bool:
 	global _driver
-	_driver = DualSenseWindowsDriver(daemon)
+	if sys.platform not in ("linux", "win32", "darwin"):
+		return False
+	if hid is None:
+		log.error("Install sccontroller[hidapi] to enable the DualSense HIDAPI driver")
+		return False
+	_driver = DualSenseDriver(daemon)
 	daemon.add_mainloop(_driver.mainloop)
 	daemon.add_on_exit(_driver.close)
+	daemon.add_on_rescan(_driver.scan)
 	return True
 
 
