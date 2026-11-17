@@ -8,6 +8,31 @@ Status: **input report (`0x42`) mapped**; command channel (lizard-mode
 disable, gyro enable) and the IMU stream are **not yet reverse-engineered**.
 Captured live from real hardware on Linux (`hid-generic`, no Steam running).
 
+## Driver backends
+
+The original Linux libusb implementation remains in
+`scc/drivers/linux/sc2.py`. The alternative `scc/drivers/sc2_hidapi.py`
+uses HIDAPI for wired USB and the wireless Puck, with one handle per slot.
+The HIDAPI decoder in `scc/lib/sc2.py` is copied from the original to
+avoid Linux transport dependencies. Bluetooth remains unimplemented, as do
+real controller serial read-back and continuous rumble.
+
+Linux keeps the original backend enabled by default. To try HIDAPI, install
+the `hidapi` extra and set these entries inside `drivers` in `config.json`,
+then restart the daemon:
+
+```json
+"sc2": false,
+"sc2_hidapi": true
+```
+
+Enable only one SC2 backend at a time. The HIDAPI backend refuses to start
+on Linux while `sc2` is enabled. Its toggle is independent of the generic
+`hidapi` driver, which handles manually registered devices. Windows and
+macOS default to `sc2_hidapi`. HIDAPI controller IDs use the device
+serial/path and interface number, so per-controller settings from the
+libusb backend may need to be configured again.
+
 ## Device topology
 
 The controller ships with a wireless **"Controller Puck"** (dongle / charging

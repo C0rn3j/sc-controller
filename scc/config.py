@@ -34,7 +34,8 @@ class Config:
 			"sc_by_cable": True, # Steam Controller (2015)
 			"sc_by_bt": True,    # Steam Controller (2015)
 			"steamdeck": True,
-			"sc2": True,  # Steam Controller (2026)
+			"sc2": sys.platform == "linux",  # Steam Controller (2026), libusb backend
+			"sc2_hidapi": sys.platform != "linux",  # Alternative SC2 backend; enable only one
 			"fake": False,  # Used for developement
 			**({"hiddrv": True, "evdevdrv": True} if sys.platform == "linux" else {}),
 			"hidapi": sys.platform != "linux",  # Optional on Linux; only opens manually registered devices there
