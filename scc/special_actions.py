@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING, Self
 
 from scc.actions import (
 	Action,
+	ButtonAction,
 	HapticEnabledAction,
 	OSDEnabledAction,
 	SpecialAction,
@@ -264,6 +265,14 @@ class OSDAction(Action, SpecialAction):
 
 	def whole(self, mapper: Mapper, x, y, what) -> None:
 		if self.action:
+			if what in (LSTICK, RSTICK) and isinstance(self.action, ButtonAction):
+				# ButtonAction handles stick activation internally, bypassing this
+				# wrapper's button_press(). Show OSD only on the actual press edge.
+				was_pressed = self.action._pressed_key is not None
+				result = self.action.whole(mapper, x, y, what)
+				if not was_pressed and self.action._pressed_key is not None:
+					self.execute(mapper)
+				return result
 			return self.action.whole(mapper, x, y, what)
 
 

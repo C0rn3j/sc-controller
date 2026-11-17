@@ -6,6 +6,7 @@ Handles loading, storing and querying config file
 import json
 import logging
 import os
+import sys
 
 from scc.paths import get_config_path
 from scc.profile import Encoder
@@ -29,16 +30,22 @@ class Config:
 		"drivers": {  # Map of drivers with values of True, Flase
 			# or additional driver config where needed.
 			# Anything but False means enabled here.
-			"sc_dongle": True,   # Steam Controller (2015)
-			"sc_by_cable": True, # Steam Controller (2015)
-			"sc_by_bt": True,    # Steam Controller (2015)
+			"sc_dongle": sys.platform == "linux",  # Steam Controller (2015)
+			"sc_dongle_hidapi": sys.platform != "linux",
+			"sc_by_cable": sys.platform == "linux",  # Steam Controller (2015)
+			"sc_by_cable_hidapi": sys.platform != "linux",
+			"sc_by_bt": sys.platform == "linux",  # Steam Controller (2015)
+			"sc_by_bt_hidapi": sys.platform != "linux",
 			"steamdeck": True,
-			"sc2": True,  # Steam Controller (2026)
+			"sc2": sys.platform == "linux",  # Steam Controller (2026), libusb backend
+			"sc2_hidapi": sys.platform != "linux",  # Alternative SC2 backend; enable only one
 			"fake": False,  # Used for developement
-			"hiddrv": True,
-			"evdevdrv": True,
-			"ds4drv": True,  # At least one of hiddrv or evdevdrv has to be enabled as well
-			"ds5drv": True,
+			**({"hiddrv": True, "evdevdrv": True} if sys.platform == "linux" else {}),
+			"hidapi": sys.platform != "linux",  # Optional on Linux; only opens manually registered devices there
+			"ds4drv": sys.platform == "linux",  # At least one of hiddrv or evdevdrv has to be enabled as well
+			"ds4drv_hidapi": sys.platform != "linux",
+			"ds5drv": sys.platform == "linux",
+			"ds5drv_hidapi": sys.platform != "linux",
 		},
 		"fix_xinput": True,  # If True, attempt is done to deatach emulated controller
 		# from 'Virtual core pointer' core device.
@@ -168,7 +175,12 @@ class Config:
 
 		Returns True if anything gets changed.
 		"""
-		rv = self._check_dict(self.values, self.DEFAULTS)
+		rv = False
+		if sys.platform in ("win32", "darwin") and "hiddrv" in self.values.get("drivers", {}):
+			# On these platforms the old hiddrv key controlled the HIDAPI driver.
+			self.values["drivers"]["hidapi"] = self.values["drivers"].pop("hiddrv")
+			rv = True
+		rv = self._check_dict(self.values, self.DEFAULTS) or rv
 		# Special check for autoswitcher after v0.2.17
 		if "autoswitch" in self.values:
 			for a in self.values["autoswitch"]:
