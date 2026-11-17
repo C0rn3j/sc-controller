@@ -355,7 +355,7 @@ class DualSenseDriver:
 		def enumerate_devices() -> None:
 			result.set_result(self._enumerate())
 
-		Thread(target=enumerate_devices, name="ds5drv-discovery", daemon=True).start()
+		Thread(target=enumerate_devices, name="ds5drv_hidapi-discovery", daemon=True).start()
 
 	def scan(self) -> None:
 		self._next_scan = time.monotonic() + SCAN_INTERVAL
@@ -412,7 +412,11 @@ _driver: DualSenseDriver | None = None
 
 def init(daemon: SCCDaemon, config: dict) -> bool:
 	global _driver
+	_driver = None
 	if sys.platform not in ("linux", "win32", "darwin"):
+		return False
+	if sys.platform == "linux" and config.get("drivers", {}).get("ds5drv", False):
+		log.error("Disable ds5drv before enabling ds5drv_hidapi")
 		return False
 	if hid is None:
 		log.error("Install sccontroller[hidapi] to enable the DualSense HIDAPI driver")

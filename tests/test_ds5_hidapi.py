@@ -6,7 +6,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from scc.drivers import ds5drv
+from scc.drivers import ds5drv_hidapi as ds5drv
 
 
 @pytest.mark.parametrize("platform", ["linux", "win32", "darwin"])

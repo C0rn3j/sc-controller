@@ -44,6 +44,8 @@ class Config:
 			"hidapi": sys.platform != "linux",  # Optional on Linux; only opens manually registered devices there
 			"ds4drv": sys.platform == "linux",  # At least one of hiddrv or evdevdrv has to be enabled as well
 			"ds4drv_hidapi": sys.platform != "linux",
+			"ds5drv": sys.platform == "linux",
+			"ds5drv_hidapi": sys.platform != "linux",
 		},
 		"fix_xinput": True,  # If True, attempt is done to deatach emulated controller
 		# from 'Virtual core pointer' core device.
