@@ -8,6 +8,8 @@ import os
 import re
 import sys
 import time
+from concurrent.futures import Future
+from threading import Thread
 from typing import TYPE_CHECKING
 
 try:
@@ -161,6 +163,7 @@ class HIDAPIDriver:
 		self._seen_paths: set[bytes | str] = set()
 		self._did_initial_scan = False
 		self._next_scan = 0.0
+		self._scan_result: Future | None = None
 		self.configs = {}
 
 	def rescan(self) -> None:
@@ -191,15 +194,41 @@ class HIDAPIDriver:
 	def mainloop(self) -> None:
 		for controller in tuple(self.controllers.values()):
 			controller.poll()
+		if self._scan_result is not None and self._scan_result.done():
+			result, self._scan_result = self._scan_result, None
+			devices = result.result()
+			if devices is not None:
+				self._apply_scan(devices)
 		if time.monotonic() >= self._next_scan:
-			self.scan()
+			self._next_scan = time.monotonic() + SCAN_INTERVAL
+			if self.configs and self._scan_result is None:
+				result = self._scan_result = Future()
+
+				def enumerate_devices() -> None:
+					result.set_result(self._enumerate())
+
+				Thread(target=enumerate_devices, name="hidapi-discovery", daemon=True).start()
+
+	@staticmethod
+	def _enumerate() -> list | None:
+		try:
+			return hid.enumerate()
+		except Exception:
+			log.exception("Failed to enumerate generic HID controllers")
+			return None
 
 	def scan(self) -> None:
 		self._next_scan = time.monotonic() + SCAN_INTERVAL
+		if self._scan_result is not None:
+			return
+		devices = self._enumerate() if self.configs else []
+		if devices is not None:
+			self._apply_scan(devices)
+
+	def _apply_scan(self, devices: list) -> None:
 		found = {}
 		seen = set()
 		try:
-			devices = hid.enumerate()
 			if not self._did_initial_scan:
 				log.debug("HIDAPI enumerated %d interface(s)", len(devices))
 				self._did_initial_scan = True
