@@ -11,8 +11,9 @@ jobs:
   build-windows:
     uses: ./.github/workflows/Windows.yaml
 
-  build-macos:
-    uses: ./.github/workflows/macOS.yaml
+  # Temporarily disabled while GitHub resolves their capacity issues
+  # build-macos:
+  #   uses: ./.github/workflows/macOS.yaml
 
   get-info:
     runs-on: ubuntu-26.04
@@ -34,7 +35,7 @@ jobs:
 
   pre-release:
     if: github.ref == 'refs/heads/main' && github.repository == 'C0rn3j/sc-controller' && github.event_name == 'push'
-    needs: [get-info, build-linux, build-windows, build-macos]
+    needs: [get-info, build-linux, build-windows] # build-macos
     runs-on: ubuntu-26.04
     steps:
       - name: Download all artifacts
@@ -75,7 +76,7 @@ jobs:
           artifactErrorsFailBuild: true
           artifacts: |-
             ~/artifacts/*/*.7z
-            ~/artifacts/*/*.dmg
+          # Restore ~/artifacts/*/*.dmg when re-enabling macOS builds.
 
           #  ~/artifacts/*/*.exe
 
