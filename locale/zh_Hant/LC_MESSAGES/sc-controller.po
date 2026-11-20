@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: sc-controller\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-28 20:33+0200\n"
-"PO-Revision-Date: 2026-10-07 16:55+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2026-11-20 14:51+0000\n"
+"Last-Translator: Ma <horstyle0411@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
 "projects/sc-controller/sc-controller/zh_Hant/>\n"
 "Language: zh_Hant\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2026.10.1.dev0\n"
+"X-Generator: Weblate 2026.12.dev0\n"
 
 #: scc/actions.py:606
 msgid "Axis"
@@ -378,9 +378,8 @@ msgid "Stick deadzone"
 msgstr "搖桿 死區"
 
 #: scc/gui/ae/gyro.py:123 ui/ae/gyro_action.ui:243 ui/ae/gyro.ui:194
-#, fuzzy
 msgid "Trigger Pull Level"
-msgstr "扳機 全扣 Level"
+msgstr "扳機全扣觸發閥值"
 
 #: scc/gui/ae/menu_action.py:177
 msgid "Really delete selected global menu?"
@@ -504,7 +503,7 @@ msgstr "已載入 uinput 核心模組,但 /dev/uinput 遺失."
 
 #: scc/gui/app.py:437
 msgid "You don't have required access to /dev/uinput."
-msgstr ""
+msgstr "您沒有對 /dev/uinput 的必要存取權限。"
 
 #: scc/gui/app.py:438
 msgid "This will most likely prevent emulation from working."
@@ -593,11 +592,11 @@ msgstr ""
 
 #: scc/gui/app.py:1247
 msgid "Check whether the receiver dongle is connected to a USB port."
-msgstr ""
+msgstr "檢查接收器的是否已連接到 USB 埠。"
 
 #: scc/gui/app.py:1249
 msgid "You do not have access to the controller device."
-msgstr ""
+msgstr "你沒有存取該控制器裝置的權限."
 
 #: scc/gui/app.py:1252
 #, fuzzy, python-format
@@ -705,12 +704,12 @@ msgid "<a href='%s'>Click here</a> to read release notes."
 msgstr "<a href='%s'>點擊這裡</a> 來閱讀更新資訊."
 
 #: scc/gui/binding_editor.py:169
-#, fuzzy, python-format
+#, python-format
 msgid "Mode Shift for %s"
 msgstr "模式切換 for %s"
 
 #: scc/gui/binding_editor.py:179
-#, fuzzy, python-format
+#, python-format
 msgid "Macro for %s"
 msgstr "巨集 for %s"
 
@@ -845,22 +844,21 @@ msgstr "配置成功的匯入了"
 
 #: scc/gui/importexport/import_sccprofile.py:181
 #: scc/gui/importexport/import_vdf.py:280
-#, fuzzy
 msgid "Apply"
 msgstr "採用"
 
 #: scc/gui/importexport/import_sccprofile.py:188 ui/import_export.ui:804
-#, fuzzy, python-format
+#, python-format
 msgid "Import as hidden menus and profiles named \".%s:name\""
 msgstr "匯出為隱藏選單 並命名為 \".%s:name\""
 
 #: scc/gui/importexport/import_sccprofile.py:189 ui/import_export.ui:813
-#, fuzzy, python-format
+#, python-format
 msgid "Import normally, with names formatted as \"%s:name\""
 msgstr "正常匯出, 名稱已格式化為 \"%s:name\""
 
 #: scc/gui/importexport/import_vdf.py:137
-#, fuzzy, python-format
+#, python-format
 msgid "Unknown App ID %s"
 msgstr "未知 App ID %s"
 
@@ -869,21 +867,19 @@ msgid "(not found)"
 msgstr "(沒找到)"
 
 #: scc/gui/importexport/import_vdf.py:306
-#, fuzzy
 msgid "No game"
 msgstr "沒有 遊戲"
 
 #: scc/gui/importexport/import_vdf.py:306
 #, fuzzy
 msgid "Dropped profile"
-msgstr "放下 丟下 配置"
+msgstr "放棄 配置"
 
 #: scc/gui/importexport/import_vdf.py:381 ui/import_export.ui:939
 msgid "Import failed"
 msgstr "匯入失敗"
 
 #: scc/gui/importexport/import_vdf.py:397
-#, fuzzy
 msgid "Profile imported with warnings"
 msgstr "匯入有警告的配置"
 
@@ -927,12 +923,10 @@ msgid "Edit Recent List"
 msgstr "編輯 近期 清單"
 
 #: scc/gui/menu_editor.py:246
-#, fuzzy
 msgid "Invalid Menu ID: A menu with the same ID already exists."
 msgstr "無效的選單ID: 已存在具有相同ID的選單."
 
 #: scc/gui/menu_editor.py:251
-#, fuzzy
 msgid "Invalid Menu ID: Do not use dots (.) or slashes (/)."
 msgstr "無效的選單ID: 請勿使用點(.)或斜線(/)。"
 
@@ -1241,11 +1235,11 @@ msgstr ""
 
 #: scc/special_actions.py:218
 msgid "OSD Message"
-msgstr ""
+msgstr "OSD 顯示訊息"
 
 #: scc/special_actions.py:277 ui/ae/special_action.ui:57
 msgid "Hide all OSD Menus and Messages"
-msgstr "隱藏 所有 虛擬鍵盤 選單 及 訊息"
+msgstr "隱藏 所有 OSD 選單 及 訊息"
 
 #: scc/special_actions.py:466
 msgid "QuickMenu"
@@ -1388,7 +1382,7 @@ msgstr ""
 
 #: ui/action_editor.ui:101
 msgid "8-Way"
-msgstr ""
+msgstr "八-方向"
 
 #: ui/action_editor.ui:113
 msgid "Cut Down"
@@ -1403,7 +1397,6 @@ msgid "Linear"
 msgstr ""
 
 #: ui/action_editor.ui:125
-#, fuzzy
 msgid "Minimum Output Value"
 msgstr "最小 輸出 值"
 
@@ -1425,7 +1418,6 @@ msgstr ""
 
 #: ui/action_editor.ui:231 ui/macro_editor.ui:39 ui/modeshift_editor.ui:44
 #: ui/ring_editor.ui:47
-#, fuzzy
 msgid "Action Name"
 msgstr "動作 名稱"
 
@@ -1435,10 +1427,9 @@ msgstr "更多..."
 
 #: ui/action_editor.ui:286
 msgid "Display OSD"
-msgstr "顯示 虛擬鍵盤"
+msgstr "顯示OSD"
 
 #: ui/action_editor.ui:302
-#, fuzzy
 msgid "Input Rotation"
 msgstr "輸入 旋轉"
 
@@ -1495,7 +1486,6 @@ msgid "Frequency"
 msgstr "頻率"
 
 #: ui/action_editor.ui:850
-#, fuzzy
 msgid "Strength"
 msgstr "強度"
 
@@ -1504,21 +1494,18 @@ msgid "Side"
 msgstr ""
 
 #: ui/action_editor.ui:884
-#, fuzzy
 msgid "Feedback Enabled"
-msgstr "回饋 啟動"
+msgstr "觸覺回饋 啟動"
 
 #: ui/action_editor.ui:900
 msgid "Feedback"
 msgstr "回饋"
 
 #: ui/action_editor.ui:921
-#, fuzzy
 msgid "Upper"
 msgstr "上"
 
 #: ui/action_editor.ui:936
-#, fuzzy
 msgid "Lower"
 msgstr "下"
 
@@ -1535,7 +1522,6 @@ msgid "Deadzone"
 msgstr "死區"
 
 #: ui/action_editor.ui:1091
-#, fuzzy
 msgid "Filter"
 msgstr "篩選"
 
@@ -1548,12 +1534,10 @@ msgid "Level"
 msgstr ""
 
 #: ui/action_editor.ui:1236
-#, fuzzy
 msgid "Smoothing Enabled"
 msgstr "平滑 啟動"
 
 #: ui/action_editor.ui:1252
-#, fuzzy
 msgid "Smoothing"
 msgstr "平滑"
 
@@ -1571,13 +1555,11 @@ msgid "Macro"
 msgstr "巨集"
 
 #: ui/action_editor.ui:1351
-#, fuzzy
 msgid "Ring Bindings"
 msgstr "環 綁定"
 
 #: ui/action_editor.ui:1368 ui/macro_editor.ui:226 ui/modeshift_editor.ui:543
 #: ui/ring_editor.ui:329
-#, fuzzy
 msgid "_Clear"
 msgstr "_清除"
 
@@ -1634,30 +1616,26 @@ msgid "Relative to Bottom-Right Corner of Active Window"
 msgstr ""
 
 #: ui/ae/axis_action.ui:109
-#, fuzzy
 msgid "Mouse-like Joystick on LEFT Stick"
 msgstr "類滑鼠 搖桿 在 左側搖桿"
 
 #: ui/ae/axis_action.ui:114
-#, fuzzy
 msgid "Mouse-like Joystick on RIGHT Stick"
 msgstr "類滑鼠 搖桿 在右側搖桿"
 
 #: ui/ae/axis_action.ui:129 ui/ae/gyro_action.ui:28 ui/ae/osk_action.ui:14
 #: ui/ae/special_action.ui:33
-#, fuzzy
 msgid "None"
 msgstr "無"
 
 #: ui/ae/axis_action.ui:144
-#, fuzzy
 msgid "Single Button"
 msgstr "單鍵"
 
 #: ui/ae/axis_action.ui:149
 #, fuzzy
 msgid "Circular"
-msgstr "園"
+msgstr "圓"
 
 #: ui/ae/axis_action.ui:179 ui/ae/gyro_action.ui:43
 msgid "Mouse (Emulate Stick)"
@@ -1668,7 +1646,6 @@ msgid "Mouse (Trackpad or Trackball)"
 msgstr "滑鼠 (觸控板 或 軌跡球)"
 
 #: ui/ae/axis_action.ui:196
-#, fuzzy
 msgid "Output"
 msgstr "輸出"
 
@@ -1677,22 +1654,18 @@ msgid "Button"
 msgstr "按鈕"
 
 #: ui/ae/axis_action.ui:272
-#, fuzzy
 msgid "Region Options"
 msgstr "區域 設定"
 
 #: ui/ae/axis_action.ui:286 ui/menu_editor.ui:87
-#, fuzzy
 msgid "Type"
 msgstr "種類"
 
 #: ui/ae/axis_action.ui:322
-#, fuzzy
 msgid "Coordinates"
 msgstr "座標"
 
 #: ui/ae/axis_action.ui:345
-#, fuzzy
 msgid "Pressing the Pad Clicks"
 msgstr "按壓 觸控版 點擊"
 
@@ -1701,42 +1674,34 @@ msgid "Display Area While Pad is Being Touched"
 msgstr "顯示觸摸區域 當觸控板被觸摸"
 
 #: ui/ae/axis_action.ui:378
-#, fuzzy
 msgid "X1"
 msgstr "X1"
 
 #: ui/ae/axis_action.ui:412
-#, fuzzy
 msgid "X2"
 msgstr "X2"
 
 #: ui/ae/axis_action.ui:445
-#, fuzzy
 msgid "Y1"
 msgstr "Y1"
 
 #: ui/ae/axis_action.ui:479
-#, fuzzy
 msgid "Y2"
 msgstr "Y2"
 
 #: ui/ae/axis_action.ui:532
-#, fuzzy
 msgid "Output As"
 msgstr "輸出為"
 
 #: ui/ae/axis_action.ui:555
-#, fuzzy
 msgid "<a href=\"advanced://0#cbBallMode\">Setup or disable Trackball Mode</a>"
 msgstr "<a href=\"advanced://0#cbBallMode\">啟動 或 關閉 軌跡球模式</a>"
 
 #: ui/ae/axis_action.ui:617
-#, fuzzy
 msgid "Output Axis"
 msgstr "輸出軸"
 
 #: ui/ae/axis_action.ui:633
-#, fuzzy
 msgid "Output Buttons"
 msgstr "輸出按鈕"
 
@@ -1745,17 +1710,14 @@ msgid "click on axis or trigger"
 msgstr ""
 
 #: ui/ae/buttons.ui:32
-#, fuzzy
 msgid "Toggle Button"
 msgstr "切換按鈕"
 
 #: ui/ae/buttons.ui:47 ui/macro_editor.ui:18
-#, fuzzy
 msgid "Repeat"
 msgstr "重複"
 
 #: ui/ae/buttons.ui:71
-#, fuzzy
 msgid "click any button or..."
 msgstr "按 任何 按鈕 或..."
 
@@ -1764,89 +1726,76 @@ msgid "Grab a key"
 msgstr ""
 
 #: ui/ae/dpad.ui:37 ui/ae/special_action.ui:76 ui/ae/special_action.ui:176
-#, fuzzy
 msgid "(Controller Default)"
 msgstr "(控制器 預設)"
 
 #: ui/ae/dpad.ui:113 ui/ae/special_action.ui:152 ui/controller_settings.ui:104
-#, fuzzy
 msgid "Left Stick Press"
 msgstr "左 搖桿 按壓"
 
 #: ui/ae/dpad.ui:117 ui/ae/special_action.ui:156 ui/controller_settings.ui:108
-#, fuzzy
 msgid "Right Stick Press"
 msgstr "右 搖桿 按壓"
 
 #: ui/ae/dpad.ui:121 ui/ae/special_action.ui:160 ui/controller_settings.ui:112
-#, fuzzy
 msgid "Left Pad Press"
 msgstr "左 觸控板 按壓"
 
 #: ui/ae/dpad.ui:125 ui/ae/special_action.ui:164 ui/controller_settings.ui:116
-#, fuzzy
 msgid "Right Pad Press"
 msgstr "右 觸控板 按壓"
 
 #: ui/ae/dpad.ui:144 ui/ae/special_action.ui:211
-#, fuzzy
 msgid "From Left"
 msgstr "從左"
 
 #: ui/ae/dpad.ui:148 ui/ae/special_action.ui:215
-#, fuzzy
 msgid "From Right"
 msgstr "從右"
 
 #: ui/ae/dpad.ui:160 ui/ae/special_action.ui:227
-#, fuzzy
 msgid "From Top"
 msgstr "從上"
 
 #: ui/ae/dpad.ui:164 ui/ae/special_action.ui:231
-#, fuzzy
 msgid "From Bottom"
 msgstr "從下"
 
 #: ui/ae/dpad.ui:175 ui/ae/special_action.ui:242 ui/ae/tilt.ui:19
-#, fuzzy
 msgid "List"
 msgstr "清單"
 
 #: ui/ae/dpad.ui:179 ui/ae/special_action.ui:246 ui/ae/tilt.ui:23
-#, fuzzy
 msgid "Grid"
 msgstr "網格"
 
 #: ui/ae/dpad.ui:183 ui/ae/special_action.ui:250 ui/ae/tilt.ui:27
-#, fuzzy
 msgid "Radial"
 msgstr "放射"
 
 #: ui/ae/dpad.ui:187 ui/ae/special_action.ui:254
-#, fuzzy
 msgid "Horizontal Menu"
 msgstr "橫向選單"
 
 #: ui/ae/dpad.ui:199 ui/ae/tilt.ui:39
 msgid "Simple DPAD"
-msgstr ""
+msgstr "基本方向鍵"
 
 #: ui/ae/dpad.ui:203 ui/ae/tilt.ui:43
 msgid "8-Way DPAD"
-msgstr ""
+msgstr "八-方向 方向鍵"
 
 #: ui/ae/dpad.ui:207 ui/ae/tilt.ui:47
 msgid "WSAD (DPAD)"
-msgstr ""
+msgstr "WSAD (方向鍵)"
 
 #: ui/ae/dpad.ui:211 ui/ae/tilt.ui:51
 msgid "Arrows (DPAD)"
-msgstr ""
+msgstr "鍵盤上下左右 (方向鍵)"
 
 #: ui/ae/dpad.ui:215
 msgid "Emulated DPAD"
-msgstr ""
+msgstr "模擬類比 方向鍵"
 
 #: ui/ae/dpad.ui:251 ui/ae/dpad.ui:283 ui/ae/dpad.ui:315 ui/ae/dpad.ui:339
 #: ui/ae/dpad.ui:368 ui/ae/dpad.ui:384 ui/ae/dpad.ui:400 ui/ae/dpad.ui:416
@@ -1859,80 +1808,65 @@ msgstr "(...)"
 
 #: ui/ae/dpad.ui:435
 msgid "Diagonal Range"
-msgstr ""
+msgstr "斜角判定區域"
 
 #: ui/ae/dpad.ui:537 ui/ae/menu_only.ui:70 ui/ae/special_action.ui:574
-#, fuzzy
 msgid "_Edit"
 msgstr "_編輯"
 
 #: ui/ae/dpad.ui:559 ui/ae/special_action.ui:492
-#, fuzzy
 msgid "Menu Type"
 msgstr "選單 種類"
 
 #: ui/ae/dpad.ui:642 ui/ae/special_action.ui:599
-#, fuzzy
 msgid "Control Options..."
 msgstr "控制方式 選項..."
 
 #: ui/ae/dpad.ui:664 ui/ae/special_action.ui:633 ui/controller_settings.ui:517
-#, fuzzy
 msgid "Confirm Button"
 msgstr "確認 按鈕"
 
 #: ui/ae/dpad.ui:676 ui/ae/special_action.ui:645 ui/controller_settings.ui:528
-#, fuzzy
 msgid "Cancel Button"
 msgstr "取消 按鈕"
 
 #: ui/ae/dpad.ui:730
-#, fuzzy
 msgid "Confirm selection when pad is released"
 msgstr "確認 所選的 當 觸控板釋放"
 
 #: ui/ae/dpad.ui:749
-#, fuzzy
 msgid "Cancel menu when pad is released"
 msgstr "取消 選單 當 觸控板 釋放"
 
 #: ui/ae/dpad.ui:768
-#, fuzzy
 msgid "Confirm selection by clicking the pad"
 msgstr "確認 所選的 當 觸控板點擊"
 
 #: ui/ae/dpad.ui:800 ui/ae/special_action.ui:749
-#, fuzzy
 msgid "Menu Position..."
 msgstr "選單 位置..."
 
 #: ui/ae/dpad.ui:913
-#, fuzzy
 msgid "Output Type"
 msgstr "輸出 模式"
 
 #: ui/ae/dpad.ui:948 ui/ae/menu_only.ui:95 ui/ae/special_action.ui:859
-#, fuzzy
 msgid "_New Menu"
 msgstr "_新 選單"
 
 #: ui/ae/dpad.ui:955 ui/ae/menu_only.ui:102 ui/ae/special_action.ui:866
-#, fuzzy
 msgid "_Copy Menu"
 msgstr "_複製 選單"
 
 #: ui/ae/dpad.ui:962 ui/ae/menu_only.ui:109 ui/ae/special_action.ui:873
-#, fuzzy
 msgid "_Rename Menu"
 msgstr "_重命名 選單"
 
 #: ui/ae/dpad.ui:969 ui/ae/menu_only.ui:116 ui/ae/special_action.ui:880
-#, fuzzy
 msgid "_Delete Menu"
 msgstr "_取消 選單"
 
 #: ui/ae/gesture.ui:37
-#, fuzzy
 msgid "_Change"
 msgstr "_更改"
 
@@ -1958,47 +1892,40 @@ msgid "Action"
 msgstr ""
 
 #: ui/ae/gesture.ui:282
-#, fuzzy
 msgid "Edit"
 msgstr "編輯"
 
 #: ui/ae/gesture.ui:297 ui/menu_editor.ui:146
-#, fuzzy
 msgid "_Remove"
 msgstr "_移除"
 
 #: ui/ae/gesture.ui:306 ui/menu_editor.ui:157
-#, fuzzy
 msgid "_Add"
 msgstr "_新增"
 
 #: ui/ae/gyro_action.ui:33
-#, fuzzy
 msgid "Mouse (Desktop)"
 msgstr "滑鼠 (桌面)"
 
 #: ui/ae/gyro_action.ui:38
-#, fuzzy
 msgid "Mouse (Camera)"
 msgstr "滑鼠 (視角)"
 
 #: ui/ae/gyro_action.ui:48
-#, fuzzy
 msgid "Right Stick (Camera)"
 msgstr "右搖桿 (視角)"
 
 #: ui/ae/gyro_action.ui:53
 msgid "Right Stick (Absolute)"
-msgstr ""
+msgstr "右類比搖桿 (絕對位置)"
 
 #: ui/ae/gyro_action.ui:58
-#, fuzzy
 msgid "Left Stick (Camera)"
 msgstr "左搖桿 (視角)"
 
 #: ui/ae/gyro_action.ui:63
 msgid "Left Stick (Absolute)"
-msgstr ""
+msgstr "左類比搖桿 (絕對位置)"
 
 #: ui/ae/gyro_action.ui:68
 msgid "CemuHook motion provider"
@@ -2013,17 +1940,14 @@ msgid "X Axis Controlled by"
 msgstr ""
 
 #: ui/ae/gyro_action.ui:133
-#, fuzzy
 msgid "Output Mode"
 msgstr "輸出 模式"
 
 #: ui/ae/gyro_action.ui:204
-#, fuzzy
 msgid "Invert Y Axis"
 msgstr "反轉 Y 軸"
 
 #: ui/ae/gyro_action.ui:224 ui/ae/gyro.ui:224
-#, fuzzy
 msgid "Button disables Gyro"
 msgstr "按鈕 取消 陀螺儀"
 
@@ -2033,40 +1957,33 @@ msgstr ""
 
 #: ui/ae/gyro.ui:126 ui/ae/gyro.ui:137 ui/ae/gyro.ui:148
 msgid "Absolute"
-msgstr ""
+msgstr "絕對位置"
 
 #: ui/ae/osk_action.ui:42
-#, fuzzy
 msgid "Press LEFT mouse button"
 msgstr "按 左 滑鼠 按鈕"
 
 #: ui/ae/osk_action.ui:46
-#, fuzzy
 msgid "Press RIGHT mouse button"
 msgstr "按 右 滑鼠 按鈕"
 
 #: ui/ae/per_axis.ui:18
-#, fuzzy
 msgid "X Axis"
 msgstr "X 軸"
 
 #: ui/ae/per_axis.ui:46
-#, fuzzy
 msgid "Y Axis"
 msgstr "Y 軸"
 
 #: ui/ae/recent_list.ui:26
-#, fuzzy
 msgid "Number of Profiles to Display"
 msgstr "可顯示的配置數"
 
 #: ui/ae/special_action.ui:37 ui/global_settings.ui:2157
-#, fuzzy
 msgid "Turn Off Controller"
 msgstr "關掉 控制器"
 
 #: ui/ae/special_action.ui:41
-#, fuzzy
 msgid "Change Profile"
 msgstr "更改 配置"
 
@@ -2075,42 +1992,34 @@ msgid "Display Menu"
 msgstr "顯示 選單"
 
 #: ui/ae/special_action.ui:49
-#, fuzzy
 msgid "Display On-Screen Keyboard"
 msgstr "顯示 虛擬鍵盤"
 
 #: ui/ae/special_action.ui:53
-#, fuzzy
 msgid "Show OSD Message"
 msgstr "顯示 OSD 訊息"
 
 #: ui/ae/special_action.ui:61
-#, fuzzy
 msgid "Recenter gyro sensor"
 msgstr "置中 陀螺儀 感應器"
 
 #: ui/ae/special_action.ui:258
-#, fuzzy
 msgid "Quick Menu"
 msgstr "快速選單"
 
 #: ui/ae/special_action.ui:271
-#, fuzzy
 msgid "Smaller"
 msgstr "更小"
 
 #: ui/ae/special_action.ui:275
-#, fuzzy
 msgid "Small"
 msgstr "小"
 
 #: ui/ae/special_action.ui:279
-#, fuzzy
 msgid "Default"
 msgstr "預設"
 
 #: ui/ae/special_action.ui:344
-#, fuzzy
 msgid "Command"
 msgstr "指令"
 
@@ -2119,17 +2028,14 @@ msgid "Text to Display"
 msgstr ""
 
 #: ui/ae/special_action.ui:435
-#, fuzzy
 msgid "Display Time"
 msgstr "顯示 時間"
 
 #: ui/ae/special_action.ui:621 ui/controller_settings.ui:487
-#, fuzzy
 msgid "Control Menu With"
 msgstr "用...控制選單"
 
 #: ui/ae/special_action.ui:659
-#, fuzzy
 msgid "Confirm selection by releasing the button"
 msgstr "確認 選取 藉由 釋放 按鈕"
 
@@ -2142,7 +2048,6 @@ msgid "Normal - Exclusive Buttons"
 msgstr ""
 
 #: ui/ae/trigger.ui:54
-#, fuzzy
 msgid "Hip Fire"
 msgstr "腰射"
 
@@ -2155,12 +2060,10 @@ msgid "Hip fire - Sensible"
 msgstr ""
 
 #: ui/ae/trigger.ui:78
-#, fuzzy
 msgid "Partially Pressed Action"
 msgstr "輕 按 動作"
 
 #: ui/ae/trigger.ui:114
-#, fuzzy
 msgid "Fully Pressed Action"
 msgstr "全 按壓 動作"
 
@@ -2174,37 +2077,33 @@ msgstr ""
 
 #: ui/ae/trigger.ui:260
 msgid "Analog Range Start"
-msgstr ""
+msgstr "類比輸出起點"
 
 #: ui/ae/trigger.ui:310
 msgid "Analog Range End"
-msgstr ""
+msgstr "類比輸出終點"
 
 #: ui/ae/trigger.ui:375
 msgid "Fully Pressed Level"
-msgstr ""
+msgstr "全部 按壓 閥值"
 
 #: ui/ae/trigger.ui:407
 msgid "Partially Pressed Level"
-msgstr ""
+msgstr "部分 按壓 閥值"
 
 #: ui/ae/trigger.ui:422
-#, fuzzy
 msgid "Dual Stage Trigger Style"
 msgstr "二 階段 扳機 模式"
 
 #: ui/ae/trigger.ui:456
-#, fuzzy
 msgid "Hip Fire Delay"
 msgstr "腰射 延遲"
 
 #: ui/app.ui:29
-#, fuzzy
 msgid "Exit"
 msgstr "退出"
 
 #: ui/app.ui:50
-#, fuzzy
 msgid "Activate"
 msgstr "開啟"
 
@@ -2213,12 +2112,10 @@ msgid "OK"
 msgstr "確認"
 
 #: ui/app.ui:111
-#, fuzzy
 msgid "Save"
 msgstr "儲存"
 
 #: ui/app.ui:152 ui/app.ui:242
-#, fuzzy
 msgid "Profile name"
 msgstr "配置 名稱"
 
@@ -2227,22 +2124,18 @@ msgid "Empty profile"
 msgstr "空 配置"
 
 #: ui/app.ui:178
-#, fuzzy
 msgid "Copy current profile"
 msgstr "複製 目前 配置"
 
 #: ui/app.ui:277
-#, fuzzy
 msgid "_Rename"
 msgstr "_重命名"
 
 #: ui/app.ui:309 ui/app.ui:934
-#, fuzzy
 msgid "_Emulation Enabled"
 msgstr "_模擬 啟動"
 
 #: ui/app.ui:317
-#, fuzzy
 msgid "_Settings"
 msgstr "_設定"
 
@@ -2251,37 +2144,30 @@ msgid "Import/Export _Profile..."
 msgstr "匯出/匯入_配置..."
 
 #: ui/app.ui:338 ui/app.ui:946
-#, fuzzy
 msgid "About"
 msgstr "關於"
 
 #: ui/app.ui:346 ui/app.ui:953
-#, fuzzy
 msgid "Quit"
 msgstr "退出"
 
 #: ui/app.ui:680
-#, fuzzy
 msgid "Undo"
-msgstr "復原"
+msgstr "復原上一步"
 
 #: ui/app.ui:694
-#, fuzzy
 msgid "Redo"
-msgstr "復原"
+msgstr "重做下一步"
 
 #: ui/app.ui:724
-#, fuzzy
 msgid "_Filename"
 msgstr "_檔案名稱"
 
 #: ui/app.ui:742
-#, fuzzy
 msgid "_Description"
 msgstr "_描述"
 
 #: ui/app.ui:766
-#, fuzzy
 msgid "Profile is _template"
 msgstr "配置 是 _範本"
 
@@ -2290,22 +2176,18 @@ msgid "Change Sticks and Background"
 msgstr ""
 
 #: ui/app.ui:795
-#, fuzzy
 msgid "Symmetrical"
 msgstr "對稱式"
 
 #: ui/app.ui:800
-#, fuzzy
 msgid "Asymmetrical"
 msgstr "不對稱式"
 
 #: ui/app.ui:805
-#, fuzzy
 msgid "Touchpads"
 msgstr "觸控板"
 
 #: ui/app.ui:810
-#, fuzzy
 msgid "Change Buttons"
 msgstr "更改 按鈕"
 
@@ -2314,12 +2196,10 @@ msgid "PSx"
 msgstr "PSx"
 
 #: ui/app.ui:818
-#, fuzzy
 msgid "ABXY"
 msgstr "ABXY"
 
 #: ui/app.ui:824
-#, fuzzy
 msgid "Clear Above Settings"
 msgstr "清除 以上 設定"
 
@@ -2328,32 +2208,26 @@ msgid "C_lear"
 msgstr ""
 
 #: ui/app.ui:911
-#, fuzzy
 msgid "_Copy"
 msgstr "_複製"
 
 #: ui/app.ui:915
-#, fuzzy
 msgid "_Paste"
 msgstr "_貼上"
 
 #: ui/app.ui:927
-#, fuzzy
 msgid "Show/Hide _Window"
 msgstr "顯示/隱藏 _視窗"
 
 #: ui/app.ui:980
-#, fuzzy
 msgid "Welcome to the version <b>%s</b>"
 msgstr "歡迎 來 到版本 <b>%s</b>"
 
 #: ui/app.ui:996
-#, fuzzy
 msgid "SC Controller was upgraded"
 msgstr "SC Controller 已被 更新"
 
 #: ui/app.ui:1010
-#, fuzzy
 msgid "Display with each new version"
 msgstr "每個新版本都顯示"
 
@@ -2363,7 +2237,6 @@ msgid "LED brightness"
 msgstr "LED 亮度"
 
 #: ui/controller_settings.ui:198
-#, fuzzy
 msgid "Controller Name"
 msgstr "控制器 名稱"
 
@@ -2373,11 +2246,11 @@ msgstr ""
 
 #: ui/controller_settings.ui:285
 msgid "Automatically turn off when inactive for"
-msgstr ""
+msgstr "自動 關閉 當 閒置"
 
 #: ui/controller_settings.ui:318
 msgid "Touchpad Input Rotation"
-msgstr ""
+msgstr "觸控板輸入旋轉角度"
 
 #: ui/controller_settings.ui:339
 msgid ""
@@ -2386,17 +2259,14 @@ msgid ""
 msgstr ""
 
 #: ui/controller_settings.ui:354
-#, fuzzy
 msgid "Left Pad Angle"
 msgstr "左 觸控板 角度"
 
 #: ui/controller_settings.ui:367
-#, fuzzy
 msgid "Right Pad Angle"
 msgstr "右 觸控板 角度"
 
 #: ui/controller_settings.ui:453
-#, fuzzy
 msgid "Default Menu Controls"
 msgstr "預設 選單 控制"
 
@@ -2405,17 +2275,14 @@ msgid "Used to control menus unless the profile specifies something different"
 msgstr ""
 
 #: ui/creg.ui:45
-#, fuzzy
 msgid "Two sticks, symmetrical (PSx Controller)"
-msgstr "雙 搖桿, 對稱式 (PSx Controller)"
+msgstr "雙 搖桿, 對稱式 (PSx 控制器)"
 
 #: ui/creg.ui:49
-#, fuzzy
 msgid "Two sticks, asymmetrical (x360 pad)"
-msgstr "雙 搖桿, 不對稱式 (x360 pad)"
+msgstr "雙 搖桿, 不對稱式 (x360 控制器)"
 
 #: ui/creg.ui:53
-#, fuzzy
 msgid "Single stick"
 msgstr "單類比搖桿"
 
@@ -2424,7 +2291,6 @@ msgid "Single DPAD (NES/SNES controller)"
 msgstr ""
 
 #: ui/creg.ui:86
-#, fuzzy
 msgid "Controller Device"
 msgstr "控制器 裝置"
 
@@ -2440,17 +2306,14 @@ msgstr ""
 "請從下方的清單中選擇您的控制器,然後按一下 下一步."
 
 #: ui/creg.ui:166
-#, fuzzy
 msgid "Show All Devices"
 msgstr "顯示 所有 裝置"
 
 #: ui/creg.ui:188
-#, fuzzy
 msgid "_Refresh"
 msgstr "_重整"
 
 #: ui/creg.ui:220
-#, fuzzy
 msgid ""
 "<b>Input Configuration</b>\n"
 "Please, select options that are best describing controller you are "
@@ -2460,12 +2323,10 @@ msgstr ""
 "請選擇最適合描述您所設定控制器的選項."
 
 #: ui/creg.ui:255
-#, fuzzy
 msgid "Sticks"
 msgstr "類比搖桿"
 
 #: ui/creg.ui:270
-#, fuzzy
 msgid "Labels"
 msgstr "標籤"
 
@@ -2482,7 +2343,6 @@ msgid ""
 msgstr ""
 
 #: ui/creg.ui:387
-#, fuzzy
 msgid "Controls shown in red are not assigned."
 msgstr "按鍵 顯示 為 紅色 代表 未指派."
 
@@ -2495,17 +2355,14 @@ msgid "Invert Axes"
 msgstr ""
 
 #: ui/creg.ui:445
-#, fuzzy
 msgid "Left stick"
 msgstr "左 類比搖桿"
 
 #: ui/creg.ui:456
-#, fuzzy
 msgid "Right stick (right pad)"
 msgstr "右 搖桿 (右觸控板)"
 
 #: ui/creg.ui:467
-#, fuzzy
 msgid "DPAD (left pad)"
 msgstr "方向鍵 (左觸控板)"
 
@@ -2514,7 +2371,6 @@ msgid "Access Mode"
 msgstr ""
 
 #: ui/creg.ui:598
-#, fuzzy
 msgid "Advanced Options"
 msgstr "進階設定"
 
@@ -2545,7 +2401,6 @@ msgid ""
 msgstr ""
 
 #: ui/creg.ui:748
-#, fuzzy
 msgid "_Enable DS4 Controller Support"
 msgstr "_啟動 DS4 控制器 支援"
 
@@ -2558,7 +2413,6 @@ msgid ""
 msgstr ""
 
 #: ui/creg.ui:814
-#, fuzzy
 msgid "_Back"
 msgstr "_返回"
 
@@ -2567,7 +2421,6 @@ msgid "_Next"
 msgstr "_下一步"
 
 #: ui/creg.ui:854
-#, fuzzy
 msgid "Press button..."
 msgstr "按 按鈕..."
 
@@ -2604,7 +2457,6 @@ msgid "Blue"
 msgstr "藍"
 
 #: ui/global_settings.ui:65
-#, fuzzy
 msgid "Cyan"
 msgstr "青"
 
@@ -2642,10 +2494,9 @@ msgstr ""
 
 #: ui/global_settings.ui:142
 msgid "Shift and Ctrl"
-msgstr "Shift and Ctrl"
+msgstr "Shift 和 Ctrl"
 
 #: ui/global_settings.ui:147
-#, fuzzy
 msgid "Press Keyboard Buttons"
 msgstr "按 鍵盤 按鍵"
 
@@ -2662,32 +2513,26 @@ msgid "Restart Emulation"
 msgstr ""
 
 #: ui/global_settings.ui:218
-#, fuzzy
 msgid "Language"
 msgstr "語言"
 
 #: ui/global_settings.ui:242
-#, fuzzy
 msgid "The language change will take effect after restarting SC Controller."
 msgstr "語言切換 將會在重新啟動SC Controller生效."
 
 #: ui/global_settings.ui:265
-#, fuzzy
 msgid "Enable Rumble Support"
 msgstr "啟動 震動"
 
 #: ui/global_settings.ui:286
-#, fuzzy
 msgid "Enable System Tray Icon"
 msgstr "啟動 系統匣 圖示"
 
 #: ui/global_settings.ui:305
-#, fuzzy
 msgid "Minimize to tray instead of closing"
 msgstr "最小化到系統匣 而非關閉"
 
 #: ui/global_settings.ui:324
-#, fuzzy
 msgid "Minimize to tray on start"
 msgstr "最小化系統匣 於啟動時"
 
@@ -2696,7 +2541,6 @@ msgid "General"
 msgstr "一般"
 
 #: ui/global_settings.ui:357
-#, fuzzy
 msgid "On-Screen Keyboard Bindings"
 msgstr "螢幕鍵盤按鍵配置"
 
@@ -2705,12 +2549,10 @@ msgid "Triggers"
 msgstr ""
 
 #: ui/global_settings.ui:396
-#, fuzzy
 msgid "Advanced..."
 msgstr "更多設定..."
 
 #: ui/global_settings.ui:456
-#, fuzzy
 msgid "Pad Sensitivity"
 msgstr "觸控板 靈敏度"
 
@@ -2727,12 +2569,10 @@ msgid "Default Menu Items"
 msgstr ""
 
 #: ui/global_settings.ui:592
-#, fuzzy
 msgid "List of recent profiles"
 msgstr "列出 近期 配置"
 
 #: ui/global_settings.ui:614
-#, fuzzy
 msgid "Run Program..."
 msgstr "執行 程式..."
 
@@ -2741,12 +2581,10 @@ msgid "Autoswitch options"
 msgstr ""
 
 #: ui/global_settings.ui:656
-#, fuzzy
 msgid "Kill Current Window"
 msgstr "關閉 目前 視窗"
 
 #: ui/global_settings.ui:677
-#, fuzzy
 msgid "Window switcher"
 msgstr "視窗 切換"
 
@@ -2755,12 +2593,10 @@ msgid "Show Current Bindings"
 msgstr "顯示 目前 按鍵配置"
 
 #: ui/global_settings.ui:719
-#, fuzzy
 msgid "Games List"
 msgstr "遊戲 清單"
 
 #: ui/global_settings.ui:740
-#, fuzzy
 msgid "Turn Controller OFF"
 msgstr "關掉 控制器"
 
@@ -2789,7 +2625,6 @@ msgid "Selected Border"
 msgstr "選擇 邊框"
 
 #: ui/global_settings.ui:996
-#, fuzzy
 msgid "OSD Menu Colors"
 msgstr "OSD 選單 顏色"
 
@@ -2810,7 +2645,6 @@ msgid "Border"
 msgstr ""
 
 #: ui/global_settings.ui:1062
-#, fuzzy
 msgid "On-Screen Keyboard Colors"
 msgstr "虛擬鍵盤 顏色"
 
@@ -2819,7 +2653,6 @@ msgid "Normal Button"
 msgstr ""
 
 #: ui/global_settings.ui:1103
-#, fuzzy
 msgid "Pressed Button"
 msgstr "按 按鈕"
 
@@ -2832,9 +2665,8 @@ msgid "Highlight"
 msgstr ""
 
 #: ui/global_settings.ui:1237
-#, fuzzy
 msgid "OSD Style"
-msgstr "OSD 風格"
+msgstr "OSD 介面風格"
 
 #: ui/global_settings.ui:1275
 msgid "Color Preset"
@@ -2842,10 +2674,9 @@ msgstr ""
 
 #: ui/global_settings.ui:1312
 msgid "OSD Colors"
-msgstr ""
+msgstr "OSD 介面顏色"
 
 #: ui/global_settings.ui:1335
-#, fuzzy
 msgid "Enable Steam Controller support"
 msgstr "啟動 Steam Controller 支援"
 
@@ -2854,12 +2685,10 @@ msgid "Enable DualShock 4 (PS4 controller) support"
 msgstr "啟動 DualShock 4 (PS4 控制器) 支援"
 
 #: ui/global_settings.ui:1379
-#, fuzzy
 msgid "Enable DualSense (PS5 controller) support"
 msgstr "啟動 DualSense (PS5 控制器) 支援"
 
 #: ui/global_settings.ui:1391
-#, fuzzy
 msgid ""
 "If enabled, any connected DualSense controller will be automatically used by "
 "SC Controller"
@@ -2913,31 +2742,26 @@ msgid ""
 msgstr ""
 
 #: ui/global_settings.ui:1644
-#, fuzzy
 msgid "Controllers"
 msgstr "控制器"
 
 #: ui/global_settings.ui:1667
 msgid "Show _OSD notification when profile is switched automatically"
-msgstr ""
+msgstr "跳出 _OSD 通知 當自動切換配置檔時"
 
 #: ui/global_settings.ui:1683
-#, fuzzy
 msgid "Switching Rules"
 msgstr "切換規則"
 
 #: ui/global_settings.ui:1709
-#, fuzzy
 msgid "When window..."
 msgstr "當 視窗..."
 
 #: ui/global_settings.ui:1722
-#, fuzzy
 msgid "... then"
 msgstr "... 然後"
 
 #: ui/global_settings.ui:1753
-#, fuzzy
 msgid "Automatic Profile Switching Options"
 msgstr "自動 配置 切換 選項"
 
@@ -2950,7 +2774,6 @@ msgid "Autoswitcher"
 msgstr ""
 
 #: ui/global_settings.ui:1861
-#, fuzzy
 msgid "Enable Input Test Mode"
 msgstr "啟動 輸入 測試 模式"
 
@@ -2975,13 +2798,12 @@ msgid "Try disabling this option if your controller stops working randomly."
 msgstr ""
 
 #: ui/global_settings.ui:1957
-#, fuzzy
 msgid "Show the changelog after SC Controller is updated"
 msgstr "顯示 更新紀錄 在 SC Controller 更新完成後"
 
 #: ui/global_settings.ui:1973
 msgid "Advanced"
-msgstr ""
+msgstr "進階"
 
 #: ui/global_settings.ui:2017
 msgid "Condition"
@@ -3004,7 +2826,6 @@ msgid "Match Window Class"
 msgstr ""
 
 #: ui/global_settings.ui:2116
-#, fuzzy
 msgid "Activate Profile"
 msgstr "啟動 配置"
 
@@ -3013,27 +2834,22 @@ msgid "Restart Daemon"
 msgstr "重開 Daemon"
 
 #: ui/global_settings.ui:2203 ui/menu_editor.ui:317
-#, fuzzy
 msgid "_Save"
 msgstr "_儲存"
 
 #: ui/icon_chooser.ui:101
-#, fuzzy
 msgid "Category"
 msgstr "類別"
 
 #: ui/icon_chooser.ui:154
-#, fuzzy
 msgid "button"
 msgstr "按鈕"
 
 #: ui/import_export.ui:67
-#, fuzzy
 msgid "Select an option"
 msgstr "選擇 一個 選項"
 
 #: ui/import_export.ui:94
-#, fuzzy
 msgid "_Export Profile"
 msgstr "_輸出 配置"
 
@@ -3046,22 +2862,18 @@ msgid "Import _Steam Profile"
 msgstr "匯入 _Steam 配置"
 
 #: ui/import_export.ui:187
-#, fuzzy
 msgid "You can also drag and drop a profile file onto the main window"
 msgstr "你也可以拖放配置檔案到主要視窗裡來匯入"
 
 #: ui/import_export.ui:200
-#, fuzzy
 msgid "Import / Export"
 msgstr "匯入 / 匯出"
 
 #: ui/import_export.ui:217
-#, fuzzy
 msgid "Select Profile to Export"
 msgstr "選擇 配置 來 匯出"
 
 #: ui/import_export.ui:270 ui/import_export.ui:381
-#, fuzzy
 msgid "Export Profile"
 msgstr "匯出 配置"
 
@@ -3092,27 +2904,22 @@ msgid "Game"
 msgstr "遊戲"
 
 #: ui/import_export.ui:453
-#, fuzzy
 msgid "Select Profile to Import"
 msgstr "選擇 配置 來 匯入"
 
 #: ui/import_export.ui:465
-#, fuzzy
 msgid "Searching for profiles. This may take some time."
 msgstr "搜尋配置中. 這將會花點時間."
 
 #: ui/import_export.ui:480 ui/import_export.ui:633
-#, fuzzy
 msgid "Import Steam Profile"
 msgstr "匯入 Steam 配置"
 
 #: ui/import_export.ui:508 ui/import_export.ui:950
-#, fuzzy
 msgid "Error message:"
 msgstr "錯誤 訊息:"
 
 #: ui/import_export.ui:542 ui/import_export.ui:763
-#, fuzzy
 msgid "Enter a name for the imported profile and click \"Apply\""
 msgstr "輸入一個命名給匯入的配置 然後點擊\"採用\""
 
@@ -3151,7 +2958,6 @@ msgid ""
 msgstr ""
 
 #: ui/import_export.ui:735 ui/import_export.ui:923 ui/import_export.ui:982
-#, fuzzy
 msgid "Import"
 msgstr "匯入"
 
@@ -3185,12 +2991,10 @@ msgid "Original name"
 msgstr "原名稱"
 
 #: ui/import_export.ui:890
-#, fuzzy
 msgid "Import As"
 msgstr "匯入 為"
 
 #: ui/import_export.ui:1020
-#, fuzzy
 msgid "Save _As…"
 msgstr "儲存 _為…"
 
@@ -3219,32 +3023,26 @@ msgid "Run once"
 msgstr "執行單次"
 
 #: ui/macro_editor.ui:22
-#, fuzzy
 msgid "Cycle"
 msgstr "循環"
 
 #: ui/macro_editor.ui:66
-#, fuzzy
 msgid "Macro Type"
 msgstr "巨集 種類"
 
 #: ui/macro_editor.ui:112
-#, fuzzy
 msgid "Add Delay"
 msgstr "增加 延遲"
 
 #: ui/macro_editor.ui:120 ui/menu_editor.ui:178
-#, fuzzy
 msgid "Add _Action"
 msgstr "增加 _動作"
 
 #: ui/macro_editor.ui:209 ui/modeshift_editor.ui:557 ui/ring_editor.ui:343
-#, fuzzy
 msgid "Custom Editor"
 msgstr "自訂 編輯器"
 
 #: ui/macro_editor.ui:281
-#, fuzzy
 msgid "Click"
 msgstr "點擊"
 
@@ -3253,7 +3051,6 @@ msgid "No! Bad, bad user!"
 msgstr ""
 
 #: ui/menu_editor.ui:72
-#, fuzzy
 msgid "Menu ID"
 msgstr "選單 ID"
 
@@ -3262,7 +3059,6 @@ msgid "Global"
 msgstr "全域"
 
 #: ui/menu_editor.ui:114
-#, fuzzy
 msgid "Stored in Profile"
 msgstr "儲存在配置中"
 
@@ -3279,17 +3075,14 @@ msgid "Add Su_bmenu"
 msgstr ""
 
 #: ui/menu_editor.ui:204
-#, fuzzy
 msgid "Add List of All _Profiles"
 msgstr "增加至 清單 所有_配置"
 
 #: ui/menu_editor.ui:211
-#, fuzzy
 msgid "Add List of _Recent Profiles"
 msgstr "增加至 清單 _近期配置"
 
 #: ui/menu_editor.ui:218
-#, fuzzy
 msgid "Add List of _Games"
 msgstr "增加至 清單 _遊戲"
 
@@ -3302,12 +3095,10 @@ msgid "(held alone)"
 msgstr ""
 
 #: ui/modeshift_editor.ui:249
-#, fuzzy
 msgid "Hold Time"
-msgstr "等待 時間"
+msgstr "長按 所需時間"
 
 #: ui/modeshift_editor.ui:280
-#, fuzzy
 msgid "Play a haptic feedback effect when the Hold action is executed"
 msgstr "當 長按 動作執行時,觸發觸覺回饋效果"
 
@@ -3316,17 +3107,14 @@ msgid "Effect Amplitude"
 msgstr ""
 
 #: ui/modeshift_editor.ui:325
-#, fuzzy
 msgid "Hold"
 msgstr "按住"
 
 #: ui/modeshift_editor.ui:375
-#, fuzzy
 msgid "(double-clicked)"
 msgstr "(雙-擊)"
 
 #: ui/modeshift_editor.ui:401
-#, fuzzy
 msgid "Double-click Time"
 msgstr "雙-擊 時間"
 
@@ -3335,17 +3123,14 @@ msgid "Double-click"
 msgstr "雙擊"
 
 #: ui/modeshift_editor.ui:472
-#, fuzzy
 msgid "Soft Pull Level"
-msgstr "輕扣 Level"
+msgstr "輕扣 所需閥值"
 
 #: ui/osk_binding_editor.ui:234
-#, fuzzy
 msgid "C"
 msgstr "C"
 
 #: ui/osk_binding_editor.ui:256
-#, fuzzy
 msgid "Stick Movement"
 msgstr "搖桿 移動"
 
