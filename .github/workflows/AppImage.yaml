@@ -99,8 +99,9 @@ jobs:
             apk add coreutils
             find /appimage/ -type f -name '*.AppImage' | while read -r appimage; do
               chmod +x "${appimage}"
-              "${appimage}" dependency-check || exit 1
-              timeout 5 "${appimage}" daemon --alone --foreground start
+              ln -s "${appimage}" scc
+              ./scc dependency-check || exit 1
+              timeout 5 ./scc daemon --alone --foreground start
               rc="$?"
               if [ "$rc" -ne 124 ]; then
                 echo >&2 "AppImage returned unexpected code $rc."
