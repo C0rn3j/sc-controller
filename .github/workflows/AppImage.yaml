@@ -1,8 +1,8 @@
 name: Build and publish AppImages
 
 env:
-  # main at 2026-11-09
-  ANYLINUX_URL: https://github.com/pkgforge-dev/Anylinux-AppImages/raw/e089c046e2bd34309d5e450713f5ea448cb7df52/useful-tools
+  # main at 2026-11-21
+  ANYLINUX_URL: https://github.com/pkgforge-dev/Anylinux-AppImages/raw/c4d303a0df292c0b1477851d96381012c2b31dda/useful-tools
 
 on:
   release:
@@ -100,8 +100,9 @@ jobs:
             apk add coreutils
             find /appimage/ -type f -name '*.AppImage' | while read -r appimage; do
               chmod +x "${appimage}"
-              "${appimage}" dependency-check || exit 1
-              timeout 5 "${appimage}" daemon --alone --foreground start
+              ln -s "${appimage}" scc
+              ./scc dependency-check || exit 1
+              timeout 5 ./scc daemon --alone --foreground start
               rc="$?"
               if [ "$rc" -ne 124 ]; then
                 echo >&2 "AppImage returned unexpected code $rc."
