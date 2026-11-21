@@ -79,6 +79,8 @@ RUN <<EOR
     /usr/lib/libgtk4-layer-shell.so.* \
     "${input_event_codes}"
 
+  cp -a packaging/appimage.*.hook AppDir/bin/
+
   quick-sharun.sh --make-appimage
 EOR
 
