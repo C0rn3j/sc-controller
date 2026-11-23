@@ -174,15 +174,33 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			self.builder.get_object("cbEnableDriver_hiddrv").set_visible(False)
 			# HIDAPI is a hard requirement on Windows/macOS
 			self.builder.get_object("cbEnableDriver_hidapi").set_visible(False)
-		else:
+		self.update_registration_availability()
+
+	def update_registration_availability(self) -> None:
+		"""Determine if "Add Controller" button should get disabled.
+
+		The checks only need to run on Linux as elsewhere HIDAPI is a hard requirement.
+		"""
+		if sys.platform != "linux":
+			return
+		hidapi_available: bool = False
+		evdev_available: bool = False
+		if self.app.config["drivers"].get("hidapi"):
+			try:
+				import hid
+			except ImportError:
+				self.builder.get_object("cbEnableDriver_hidapi").set_sensitive(False)
+			else:
+				hidapi_available = True
+		if self.app.config["drivers"].get("evdevdrv"):
 			try:
 				import evdev
 			except ImportError:
-				# This block runs if evdev module is missing
 				self.builder.get_object("cbEnableDriver_evdevdrv").set_sensitive(False)
-				if not self.app.config["drivers"].get("hidapi"):
-					self.builder.get_object("btAddController").set_sensitive(False)
 				self.builder.get_object("txEvdevMissing").set_visible(True)
+			else:
+				evdev_available = True
+		self.builder.get_object("btAddController").set_sensitive(evdev_available or hidapi_available)
 
 	def load_languages(self) -> None:
 		model = self.builder.get_object("lstLanguages")
@@ -472,7 +490,7 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 				# Nothing is, make everything active just to be sure
 				self._recursing = True
 				for x in self.DRIVER_DEPS[drv]:
-					w = self.builder.get_object("cbEnableDriver_%s" % (x,))
+					w = self.builder.get_object(f"cbEnableDriver_{x}")
 					if w:
 						w.set_active(True)
 					self.app.config["drivers"][x] = True
@@ -483,13 +501,17 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			# disable anything that has no dependent drivers active
 			self._recursing = True
 			for x, deps in self.DRIVER_DEPS.items():
-				w = self.builder.get_object("cbEnableDriver_%s" % (x,))
+				w = self.builder.get_object(f"cbEnableDriver_{x}")
 				one_active = any([self.app.config["drivers"].get(y) for y in self.DRIVER_DEPS[x]])
 				if not one_active and w:
 					w.set_active(False)
 					self.app.config["drivers"][x] = False
 			self._recursing = False
 
+		# If it's evdev or hidapi, or a driver that can toggle one of them on
+		# recheck if Add Controller button should be enabled or not
+		if drv in ("hidapi", "evdevdrv") or drv in self.DRIVER_DEPS:
+			self.update_registration_availability()
 		self.save_config()
 		self._needs_restart()
 
