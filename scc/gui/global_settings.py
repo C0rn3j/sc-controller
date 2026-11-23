@@ -66,6 +66,21 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		# order: 0 - top, 1 - after 'options', 2 bottom
 	]
 
+	# The HIDdrv versions require evdev or HIDdrv enabled, HIDAPI doesn't
+	DRIVER_DEPS = {
+		"ds4drv": ("evdevdrv", "hiddrv"),
+		"ds5drv": ("evdevdrv", "hiddrv"),
+	}
+	# SC2015 has split drivers by connection type as opposed to everything else
+	STEAM2015_MODES = ("sc_by_bt", "sc_by_cable", "sc_dongle")
+	# (HIDdrv, HIDAPI) groups
+	CONTROLLER_DRIVER_GROUPS = {
+		"steam2015": tuple(d + suffix for d in STEAM2015_MODES for suffix in ("", "_hidapi")),
+		"steam2026": ("sc2", "sc2_hidapi"),
+		"dualshock4": ("ds4drv", "ds4drv_hidapi"),
+		"dualsense": ("ds5drv", "ds5drv_hidapi"),
+	}
+
 	def __init__(self, app: App):
 		UserDataManager.__init__(self)
 		self.app: App = app
@@ -153,9 +168,11 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		self._recursing = False
 
 		if sys.platform != "linux":
+			# These two are Linux exclusive
 			self.builder.get_object("cbEnableDriver_evdevdrv").set_visible(False)
 			self.builder.get_object("cbEnableDriver_hiddrv").set_visible(False)
-			self.builder.get_object("lblEnableDriver_hidapi").set_label(_("Enable HIDAPI support"))
+			# HIDAPI is a hard requirement on Windows/macOS
+			self.builder.get_object("cbEnableDriver_hidapi").set_visible(False)
 		else:
 			try:
 				import evdev
@@ -186,10 +203,30 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 		return self._language_codes[selected]
 
 	def load_drivers(self) -> None:
-		for key, value in self.app.config["drivers"].items():
-			w = self.builder.get_object("cbEnableDriver_%s" % (key,))
-			if w:
-				w.set_active(value)
+		was_recursing = self._recursing
+		self._recursing = True
+		try:
+			for key, value in self.app.config["drivers"].items():
+				w = self.builder.get_object(f"cbEnableDriver_{key}")
+				if w:
+					w.set_active(value)
+			for group, drivers in self.CONTROLLER_DRIVER_GROUPS.items():
+				w = self.builder.get_object(f"cbEnableDriver_{group}")
+				if w:
+					w.set_active(any(self.app.config["drivers"].get(d, False) for d in drivers))
+					w.set_visible(sys.platform != "linux")
+				self.builder.get_object(f"expDriver_{group}").set_visible(sys.platform == "linux")
+				for driver in drivers:
+					self.builder.get_object(f"cbEnableDriver_{driver}").set_sensitive(
+						sys.platform == "linux" or driver.endswith("_hidapi"),
+					)
+			self.builder.get_object("expPlatformSteam2015").set_visible(sys.platform != "linux")
+			for mode in self.STEAM2015_MODES:
+				self.builder.get_object(f"cbPlatformDriver_{mode}_hidapi").set_active(
+					bool(self.app.config["drivers"].get(mode + "_hidapi", False)),
+				)
+		finally:
+			self._recursing = was_recursing
 
 	def _load_color(self, w: Gtk.ColorDialogButton | None, dct: str, key: str) -> None:
 		"""Common part of load_colors"""
@@ -401,13 +438,31 @@ class GlobalSettings(Editor, UserDataManager, ComboSetter):
 			rvRestartWarning = self.builder.get_object("rvRestartWarning")
 			rvRestartWarning.set_reveal_child(True)
 
-	DRIVER_DEPS = {"ds4drv": ("evdevdrv", "hiddrv")} if sys.platform == "linux" else {}
-
 	def on_cbEnableDriver_toggled(self, cb):
 		if self._recursing:
 			return
 		drv = cb.get_name()
+		if drv in self.CONTROLLER_DRIVER_GROUPS:
+			use_hidapi = sys.platform != "linux"
+			for driver in self.CONTROLLER_DRIVER_GROUPS[drv]:
+				self.app.config["drivers"][driver] = cb.get_active() and (driver.endswith("_hidapi") == use_hidapi)
+			self.save_config()
+			self._needs_restart()
+			return
 		self.app.config["drivers"][drv] = cb.get_active()
+
+		# On Linux, when user enables a checkbox for HIDdrv or HIDAPI, make sure the other one is off
+		other = drv.removesuffix("_hidapi") if drv.endswith("_hidapi") else drv + "_hidapi"
+		if cb.get_active() and any(
+			drv in drivers and other in drivers for drivers in self.CONTROLLER_DRIVER_GROUPS.values()
+		):
+			self.app.config["drivers"][other] = False
+			self._recursing = True
+			try:
+				self.builder.get_object(f"cbEnableDriver_{other}").set_active(False)
+			finally:
+				self._recursing = False
+
 		if cb.get_active() and drv in self.DRIVER_DEPS:
 			# Driver has dependencies, make sure at least one of them is active
 			one_active = any([self.app.config["drivers"].get(x) for x in self.DRIVER_DEPS[drv]])

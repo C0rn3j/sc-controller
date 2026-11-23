@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 1.1.0 -->
+<!-- Created with Cambalache 1.2.0 -->
 <interface domain="sc-controller">
   <!-- interface-name global_settings.ui -->
   <requires lib="gtk" version="4.14"/>
@@ -1323,17 +1323,43 @@ or even crash.</property>
                     <property name="margin-start">10</property>
                     <property name="margin-top">10</property>
                     <child>
-                      <object class="GtkCheckButton" id="vbEnableDriverSteam">
-                        <property name="active">1</property>
-                        <property name="focusable">1</property>
-                        <property name="sensitive">0</property>
-                        <child>
-                          <object class="GtkLabel" id="lblKuaa19">
-                            <property name="attributes">
-                              0 -1 weight bold
-                            </property>
-                            <property name="label" translatable="yes">Enable Steam Controller support</property>
+                      <object class="GtkExpander" id="expPlatformSteam2015">
+                        <property name="label-widget">
+                          <object class="GtkLabel" id="lblPlatformSteam2015">
+                            <property name="attributes">0 -1 weight bold</property>
+                            <property name="label" translatable="yes">Steam Controller (2015) support</property>
                             <property name="xalign">0</property>
+                          </object>
+                        </property>
+                        <child>
+                          <object class="GtkBox" id="boxPlatformSteam2015">
+                            <property name="margin-bottom">5</property>
+                            <property name="margin-top">5</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <object class="GtkCheckButton" id="cbPlatformDriver_sc_by_bt_hidapi">
+                                <property name="label" translatable="yes">Bluetooth</property>
+                                <property name="margin-start">30</property>
+                                <property name="name">sc_by_bt_hidapi</property>
+                                <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="cbPlatformDriver_sc_by_cable_hidapi">
+                                <property name="label" translatable="yes">USB cable</property>
+                                <property name="margin-start">30</property>
+                                <property name="name">sc_by_cable_hidapi</property>
+                                <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="cbPlatformDriver_sc_dongle_hidapi">
+                                <property name="label" translatable="yes">Wireless dongle</property>
+                                <property name="margin-start">30</property>
+                                <property name="name">sc_dongle_hidapi</property>
+                                <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
+                              </object>
+                            </child>
                           </object>
                         </child>
                         <layout>
@@ -1344,17 +1370,189 @@ or even crash.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckButton" id="cbEnableDriver_ds4drv">
-                        <property name="focusable">1</property>
-                        <property name="margin-top">5</property>
-                        <property name="name">ds4drv</property>
+                      <object class="GtkExpander" id="expDriver_steam2015">
+                        <property name="label-widget">
+                          <object class="GtkLabel" id="lblKuaa19">
+                            <property name="attributes">0 -1 weight bold</property>
+                            <property name="label" translatable="yes">Steam Controller (2015) support</property>
+                            <property name="xalign">0</property>
+                          </object>
+                        </property>
+                        <child>
+                          <object class="GtkGrid" id="gridSteam2015Drivers">
+                            <property name="column-spacing">20</property>
+                            <property name="margin-bottom">5</property>
+                            <property name="margin-start">30</property>
+                            <property name="margin-top">5</property>
+                            <property name="row-spacing">5</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">HIDdrv</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">0</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">HIDAPI</property>
+                                <layout>
+                                  <property name="column">2</property>
+                                  <property name="row">0</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label" translatable="yes">Bluetooth</property>
+                                <property name="xalign">0</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">1</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="cbEnableDriver_sc_by_bt">
+                                <property name="halign">center</property>
+                                <property name="name">sc_by_bt</property>
+                                <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">1</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="cbEnableDriver_sc_by_bt_hidapi">
+                                <property name="halign">center</property>
+                                <property name="name">sc_by_bt_hidapi</property>
+                                <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
+                                <layout>
+                                  <property name="column">2</property>
+                                  <property name="row">1</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label" translatable="yes">USB cable</property>
+                                <property name="xalign">0</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="cbEnableDriver_sc_by_cable">
+                                <property name="halign">center</property>
+                                <property name="name">sc_by_cable</property>
+                                <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="cbEnableDriver_sc_by_cable_hidapi">
+                                <property name="halign">center</property>
+                                <property name="name">sc_by_cable_hidapi</property>
+                                <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
+                                <layout>
+                                  <property name="column">2</property>
+                                  <property name="row">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label" translatable="yes">Wireless dongle</property>
+                                <property name="xalign">0</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">3</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="cbEnableDriver_sc_dongle">
+                                <property name="halign">center</property>
+                                <property name="name">sc_dongle</property>
+                                <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">3</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="cbEnableDriver_sc_dongle_hidapi">
+                                <property name="halign">center</property>
+                                <property name="name">sc_dongle_hidapi</property>
+                                <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
+                                <layout>
+                                  <property name="column">2</property>
+                                  <property name="row">3</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="column-span">3</property>
+                          <property name="row">0</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkExpander" id="expDriver_steam2026">
+                        <property name="label-widget">
+                          <object class="GtkLabel">
+                            <property name="attributes">0 -1 weight bold</property>
+                            <property name="label" translatable="yes">Steam Controller (2026) support</property>
+                          </object>
+                        </property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="margin-bottom">5</property>
+                            <property name="margin-start">30</property>
+                            <property name="margin-top">5</property>
+                            <property name="spacing">20</property>
+                            <child>
+                              <object class="GtkCheckButton" id="cbEnableDriver_sc2">
+                                <property name="label">HIDdrv</property>
+                                <property name="name">sc2</property>
+                                <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="cbEnableDriver_sc2_hidapi">
+                                <property name="label">HIDAPI</property>
+                                <property name="name">sc2_hidapi</property>
+                                <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="column-span">3</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="cbEnableDriver_steam2026">
+                        <property name="name">steam2026</property>
                         <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
                         <child>
-                          <object class="GtkLabel" id="lblKuaa13">
-                            <property name="attributes">
-                              0 -1 weight bold
-                            </property>
-                            <property name="label" translatable="yes">Enable DualShock 4 (PS4 controller) support</property>
+                          <object class="GtkLabel">
+                            <property name="attributes">0 -1 weight bold</property>
+                            <property name="label" translatable="yes">Enable Steam Controller (2026) support</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>
@@ -1366,23 +1564,112 @@ or even crash.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckButton" id="cbEnableDriver_ds5drv">
-                        <property name="focusable">1</property>
-                        <property name="margin-top">5</property>
-                        <property name="name">ds5drv</property>
-                        <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
+                      <object class="GtkExpander" id="expDriver_dualshock4">
+                        <property name="label-widget">
+                          <object class="GtkLabel">
+                            <property name="attributes">0 -1 weight bold</property>
+                            <property name="label" translatable="yes">DualShock 4 (PS4 controller) support</property>
+                          </object>
+                        </property>
                         <child>
-                          <object class="GtkLabel" id="lblKuaa3">
-                            <property name="attributes">
-                              0 -1 weight bold
-                            </property>
-                            <property name="label" translatable="yes">Enable DualSense (PS5 controller) support</property>
+                          <object class="GtkBox">
+                            <property name="margin-bottom">5</property>
+                            <property name="margin-start">30</property>
+                            <property name="margin-top">5</property>
+                            <property name="spacing">20</property>
+                            <child>
+                              <object class="GtkCheckButton" id="cbEnableDriver_ds4drv">
+                                <property name="label">HIDdrv</property>
+                                <property name="name">ds4drv</property>
+                                <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="cbEnableDriver_ds4drv_hidapi">
+                                <property name="label">HIDAPI</property>
+                                <property name="name">ds4drv_hidapi</property>
+                                <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
+                              </object>
+                            </child>
                           </object>
                         </child>
                         <layout>
                           <property name="column">0</property>
                           <property name="column-span">3</property>
-                          <property name="row">3</property>
+                          <property name="row">2</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="cbEnableDriver_dualshock4">
+                        <property name="name">dualshock4</property>
+                        <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="attributes">0 -1 weight bold</property>
+                            <property name="label" translatable="yes">Enable DualShock 4 (PS4 controller) support</property>
+                            <property name="xalign">0</property>
+                          </object>
+                        </child>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="column-span">3</property>
+                          <property name="row">2</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkExpander" id="expDriver_dualsense">
+                        <property name="label-widget">
+                          <object class="GtkLabel">
+                            <property name="attributes">0 -1 weight bold</property>
+                            <property name="label" translatable="yes">DualSense (PS5 controller) support</property>
+                          </object>
+                        </property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="margin-bottom">5</property>
+                            <property name="margin-start">30</property>
+                            <property name="margin-top">5</property>
+                            <property name="spacing">20</property>
+                            <child>
+                              <object class="GtkCheckButton" id="cbEnableDriver_ds5drv">
+                                <property name="label">HIDdrv</property>
+                                <property name="name">ds5drv</property>
+                                <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="cbEnableDriver_ds5drv_hidapi">
+                                <property name="label">HIDAPI</property>
+                                <property name="name">ds5drv_hidapi</property>
+                                <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="column-span">3</property>
+                          <property name="row">4</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="cbEnableDriver_dualsense">
+                        <property name="name">dualsense</property>
+                        <signal name="toggled" handler="on_cbEnableDriver_toggled"/>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="attributes">0 -1 weight bold</property>
+                            <property name="label" translatable="yes">Enable DualSense (PS5 controller) support</property>
+                            <property name="xalign">0</property>
+                          </object>
+                        </child>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="column-span">3</property>
+                          <property name="row">4</property>
                         </layout>
                       </object>
                     </child>
@@ -1395,7 +1682,7 @@ or even crash.</property>
                         <layout>
                           <property name="column">0</property>
                           <property name="column-span">3</property>
-                          <property name="row">4</property>
+                          <property name="row">5</property>
                         </layout>
                       </object>
                     </child>
@@ -1411,7 +1698,7 @@ or even crash.</property>
                         <layout>
                           <property name="column">0</property>
                           <property name="column-span">3</property>
-                          <property name="row">10</property>
+                          <property name="row">11</property>
                         </layout>
                       </object>
                     </child>
@@ -1424,7 +1711,7 @@ or even crash.</property>
                         <layout>
                           <property name="column">0</property>
                           <property name="column-span">3</property>
-                          <property name="row">2</property>
+                          <property name="row">3</property>
                         </layout>
                       </object>
                     </child>
@@ -1436,7 +1723,7 @@ or even crash.</property>
                         <layout>
                           <property name="column">0</property>
                           <property name="column-span">3</property>
-                          <property name="row">11</property>
+                          <property name="row">12</property>
                         </layout>
                       </object>
                     </child>
@@ -1480,18 +1767,13 @@ or even crash.</property>
                         <layout>
                           <property name="column">0</property>
                           <property name="column-span">3</property>
-                          <property name="row">12</property>
+                          <property name="row">13</property>
                         </layout>
                       </object>
                     </child>
                     <child>
                       <object class="GtkBox" id="boxHIDBackends">
                         <property name="orientation">vertical</property>
-                        <layout>
-                          <property name="column">0</property>
-                          <property name="column-span">3</property>
-                          <property name="row">5</property>
-                        </layout>
                         <child>
                           <object class="GtkCheckButton" id="cbEnableDriver_hiddrv">
                             <property name="focusable">1</property>
@@ -1526,6 +1808,11 @@ or even crash.</property>
                             </child>
                           </object>
                         </child>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="column-span">3</property>
+                          <property name="row">6</property>
+                        </layout>
                       </object>
                     </child>
                     <child>
@@ -1546,7 +1833,7 @@ or even crash.</property>
                         <layout>
                           <property name="column">0</property>
                           <property name="column-span">3</property>
-                          <property name="row">6</property>
+                          <property name="row">7</property>
                         </layout>
                       </object>
                     </child>
@@ -1603,7 +1890,7 @@ or even crash.</property>
                         <layout>
                           <property name="column">0</property>
                           <property name="column-span">3</property>
-                          <property name="row">13</property>
+                          <property name="row">14</property>
                         </layout>
                       </object>
                     </child>
@@ -1616,7 +1903,7 @@ or even crash.</property>
                         <property name="visible">0</property>
                         <layout>
                           <property name="column">0</property>
-                          <property name="row">7</property>
+                          <property name="row">8</property>
                         </layout>
                       </object>
                     </child>
@@ -1638,7 +1925,7 @@ or even crash.</property>
                         <layout>
                           <property name="column">0</property>
                           <property name="column-span">3</property>
-                          <property name="row">8</property>
+                          <property name="row">9</property>
                         </layout>
                       </object>
                     </child>
@@ -1654,7 +1941,7 @@ on network can connect and remote-control this computer as additional gamepad.
                         <layout>
                           <property name="column">0</property>
                           <property name="column-span">3</property>
-                          <property name="row">9</property>
+                          <property name="row">10</property>
                         </layout>
                       </object>
                     </child>

@@ -175,12 +175,11 @@ class Config:
 
 		Returns True if anything gets changed.
 		"""
-		rv = False
-		if sys.platform in ("win32", "darwin") and "hiddrv" in self.values.get("drivers", {}):
-			# On these platforms the old hiddrv key controlled the HIDAPI driver.
-			self.values["drivers"]["hidapi"] = self.values["drivers"].pop("hiddrv")
+		rv = self._check_dict(self.values, self.DEFAULTS)
+		if sys.platform in ("win32", "darwin") and self.values["drivers"]["hidapi"] is not True:
+			# HIDAPI is a hard requirement on Windows and macOS
+			self.values["drivers"]["hidapi"] = True
 			rv = True
-		rv = self._check_dict(self.values, self.DEFAULTS) or rv
 		# Special check for autoswitcher after v0.2.17
 		if "autoswitch" in self.values:
 			for a in self.values["autoswitch"]:

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sc-controller\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-17 17:23+0100\n"
+"POT-Creation-Date: 2026-11-23 20:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -725,23 +725,19 @@ msgstr ""
 msgid "Move stick up and down..."
 msgstr ""
 
-#: scc/gui/global_settings.py:158
-msgid "Enable HIDAPI support"
-msgstr ""
-
-#: scc/gui/global_settings.py:264
+#: scc/gui/global_settings.py:301
 msgid "(customized)"
 msgstr ""
 
-#: scc/gui/global_settings.py:804
+#: scc/gui/global_settings.py:859
 msgid "Install the xdotool package to use this feature"
 msgstr ""
 
-#: scc/gui/global_settings.py:831
+#: scc/gui/global_settings.py:886
 msgid "Unregister controller?"
 msgstr ""
 
-#: scc/gui/global_settings.py:833
+#: scc/gui/global_settings.py:888
 msgid "You'll lose all settings for it"
 msgstr ""
 
@@ -1835,7 +1831,7 @@ msgid "Matching Precision"
 msgstr ""
 
 #: ui/ae/gesture.ui:259 ui/ae/osk_action.ui:61 ui/ae/special_action.ui:297
-#: ui/global_settings.ui:2123
+#: ui/global_settings.ui:2405
 msgid "Action"
 msgstr ""
 
@@ -1927,7 +1923,7 @@ msgstr ""
 msgid "Number of Profiles to Display"
 msgstr ""
 
-#: ui/ae/special_action.ui:37 ui/global_settings.ui:2179
+#: ui/ae/special_action.ui:37 ui/global_settings.ui:2461
 msgid "Turn Off Controller"
 msgstr ""
 
@@ -2654,65 +2650,93 @@ msgstr ""
 msgid "OSD Colors"
 msgstr ""
 
-#: ui/global_settings.ui:1335
-msgid "Enable Steam Controller support"
+#: ui/global_settings.ui:1331 ui/global_settings.ui:1372
+msgid "Steam Controller (2015) support"
 msgstr ""
 
-#: ui/global_settings.ui:1357
+#: ui/global_settings.ui:1338 ui/global_settings.ui:1403
+msgid "Bluetooth"
+msgstr ""
+
+#: ui/global_settings.ui:1346 ui/global_settings.ui:1435
+msgid "USB cable"
+msgstr ""
+
+#: ui/global_settings.ui:1354 ui/global_settings.ui:1467
+msgid "Wireless dongle"
+msgstr ""
+
+#: ui/global_settings.ui:1511
+msgid "Steam Controller (2026) support"
+msgstr ""
+
+#: ui/global_settings.ui:1550
+msgid "Enable Steam Controller (2026) support"
+msgstr ""
+
+#: ui/global_settings.ui:1566
+msgid "DualShock 4 (PS4 controller) support"
+msgstr ""
+
+#: ui/global_settings.ui:1605
 msgid "Enable DualShock 4 (PS4 controller) support"
 msgstr ""
 
-#: ui/global_settings.ui:1379
+#: ui/global_settings.ui:1621
+msgid "DualSense (PS5 controller) support"
+msgstr ""
+
+#: ui/global_settings.ui:1660
 msgid "Enable DualSense (PS5 controller) support"
 msgstr ""
 
-#: ui/global_settings.ui:1391
+#: ui/global_settings.ui:1673
 msgid ""
 "If enabled, any connected DualSense controller will be automatically used by "
 "SC Controller"
 msgstr ""
 
-#: ui/global_settings.ui:1407
+#: ui/global_settings.ui:1689
 msgid "Other registered controllers"
 msgstr ""
 
-#: ui/global_settings.ui:1420
+#: ui/global_settings.ui:1702
 msgid ""
 "If enabled, any connected DualShock 4 controller will be automatically used "
 "by SC Controller"
 msgstr ""
 
-#: ui/global_settings.ui:1433
+#: ui/global_settings.ui:1715
 msgid ""
 "Controllers listed here are automatically used by SC Controller whenever "
 "they are connected."
 msgstr ""
 
-#: ui/global_settings.ui:1506
+#: ui/global_settings.ui:1783
 msgid "Enable HID support"
 msgstr ""
 
-#: ui/global_settings.ui:1523
+#: ui/global_settings.ui:1800
 msgid "Enable HIDAPI support (experimental)"
 msgstr ""
 
-#: ui/global_settings.ui:1542
+#: ui/global_settings.ui:1824
 msgid "Enable evdev support"
 msgstr ""
 
-#: ui/global_settings.ui:1571
+#: ui/global_settings.ui:1853
 msgid "Register New Controller"
 msgstr ""
 
-#: ui/global_settings.ui:1615
+#: ui/global_settings.ui:1897
 msgid "The python-evdev package is required for non-Steam controller support"
 msgstr ""
 
-#: ui/global_settings.ui:1634
+#: ui/global_settings.ui:1916
 msgid "Enable Remote RetroPad protocol support"
 msgstr ""
 
-#: ui/global_settings.ui:1647
+#: ui/global_settings.ui:1929
 msgid ""
 "If enabled, any device or application compatibile with Retroarch's Remote "
 "RetroPad protocol\n"
@@ -2723,43 +2747,43 @@ msgid ""
 "</a>"
 msgstr ""
 
-#: ui/global_settings.ui:1666
+#: ui/global_settings.ui:1948
 msgid "Controllers"
 msgstr ""
 
-#: ui/global_settings.ui:1689
+#: ui/global_settings.ui:1971
 msgid "Show _OSD notification when profile is switched automatically"
 msgstr ""
 
-#: ui/global_settings.ui:1705
+#: ui/global_settings.ui:1987
 msgid "Switching Rules"
 msgstr ""
 
-#: ui/global_settings.ui:1731
+#: ui/global_settings.ui:2013
 msgid "When window..."
 msgstr ""
 
-#: ui/global_settings.ui:1744
+#: ui/global_settings.ui:2026
 msgid "... then"
 msgstr ""
 
-#: ui/global_settings.ui:1775
+#: ui/global_settings.ui:2057
 msgid "Automatic Profile Switching Options"
 msgstr ""
 
-#: ui/global_settings.ui:1799
+#: ui/global_settings.ui:2081
 msgid "Edit Condition"
 msgstr ""
 
-#: ui/global_settings.ui:1860
+#: ui/global_settings.ui:2142
 msgid "Autoswitcher"
 msgstr ""
 
-#: ui/global_settings.ui:1883
+#: ui/global_settings.ui:2165
 msgid "Enable Input Test Mode"
 msgstr ""
 
-#: ui/global_settings.ui:1896
+#: ui/global_settings.ui:2178
 msgid ""
 "Allows applications to <b>watch and possibly log</b> gamepad inputs.\n"
 "\n"
@@ -2767,55 +2791,55 @@ msgid ""
 "grips, triggers, finger positions on both pads and stick angle."
 msgstr ""
 
-#: ui/global_settings.ui:1922
+#: ui/global_settings.ui:2204
 msgid "Use Serial Numbers to Identify Controllers"
 msgstr ""
 
-#: ui/global_settings.ui:1943
+#: ui/global_settings.ui:2225
 msgid "Automatically Disable Emulation When Closing GUI"
 msgstr ""
 
-#: ui/global_settings.ui:1956
+#: ui/global_settings.ui:2238
 msgid "Try disabling this option if your controller stops working randomly."
 msgstr ""
 
-#: ui/global_settings.ui:1979
+#: ui/global_settings.ui:2261
 msgid "Show the changelog after SC Controller is updated"
 msgstr ""
 
-#: ui/global_settings.ui:1995
+#: ui/global_settings.ui:2277
 msgid "Advanced"
 msgstr ""
 
-#: ui/global_settings.ui:2039
+#: ui/global_settings.ui:2321
 msgid "Condition"
 msgstr ""
 
-#: ui/global_settings.ui:2054
+#: ui/global_settings.ui:2336
 msgid "Match Window Title"
 msgstr ""
 
-#: ui/global_settings.ui:2076
+#: ui/global_settings.ui:2358
 msgid "Match exact title"
 msgstr ""
 
-#: ui/global_settings.ui:2088
+#: ui/global_settings.ui:2370
 msgid "Use regular expression"
 msgstr ""
 
-#: ui/global_settings.ui:2106
+#: ui/global_settings.ui:2388
 msgid "Match Window Class"
 msgstr ""
 
-#: ui/global_settings.ui:2138
+#: ui/global_settings.ui:2420
 msgid "Activate Profile"
 msgstr ""
 
-#: ui/global_settings.ui:2194
+#: ui/global_settings.ui:2476
 msgid "Restart Daemon"
 msgstr ""
 
-#: ui/global_settings.ui:2225 ui/menu_editor.ui:317
+#: ui/global_settings.ui:2507 ui/menu_editor.ui:317
 msgid "_Save"
 msgstr ""
 
