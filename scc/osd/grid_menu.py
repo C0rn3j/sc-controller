@@ -74,6 +74,6 @@ class GridMenu(Menu):
 			if isinstance(item, Submenu):
 				item.callback = self.show_submenu
 			icon = MenuIcon(icon_file, has_colors)
-			widget.add(icon)
+			widget.set_child(icon)
 			return widget
 		return Menu.generate_widget(self, item)
