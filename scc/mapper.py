@@ -86,7 +86,7 @@ class Mapper:
 		log.debug(f"Keyboard: {self.keyboard}")
 		self.mouse: WindowsMouse | Mouse | Dummy = self.create_mouse(mouse) if mouse else Dummy()
 		log.debug(f"Mouse:    {self.mouse}")
-		self.gamepad: WindowsGamepad | UInput | Dummy | None = self.create_gamepad(gamepad, poller) if gamepad else Dummy()
+		self.gamepad: WindowsGamepad | UInput | Dummy = self.create_gamepad(gamepad, poller) if gamepad else Dummy()
 		log.debug(f"Gamepad:  {self.gamepad}")
 
 		# Set by SCCDaemon instance; Used to handle actions
@@ -112,13 +112,12 @@ class Mapper:
 		self._bt_stick_mouse_last_tick: float = 0.0
 		self._bt_stick_mouse_logged: bool = False
 
-	def create_gamepad(self, enabled: bool, poller: Poller | None) -> UInput | None:
+	def create_gamepad(self, enabled: bool, poller: Poller | None) -> UInput | Dummy:
 		"""Parses gamepad configuration and creates apropriate unput device"""
 		if not enabled or "SCC_NOGAMEPAD" in os.environ:
 			# Completly undocumented and for debuging purposes only.
 			# If set, no gamepad is emulated
-			self.gamepad = Dummy()
-			return None
+			return Dummy()
 		cfg = Config()
 		if sys.platform == "win32":
 			return WindowsGamepad(name=cfg["output"]["name"])
