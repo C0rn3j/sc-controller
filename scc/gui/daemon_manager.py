@@ -142,6 +142,17 @@ class DaemonManager(GObject.GObject):
 		# Try to reconnect
 		GLib.timeout_add_seconds(self.RECONNECT_INTERVAL, self._connect)
 
+	def _read_data(self) -> None:
+		"""read_bytes_async() with priority 200.
+
+		The low priority ironically helps GTK draw updates in a timely fashion.
+
+		TODO(Martin): We should probably split the rendering from event processing and put the priority back to 1.
+		"""
+		self.connection.get_input_stream().read_bytes_async(
+			102400, GLib.PRIORITY_DEFAULT_IDLE, None, self._on_read_data,
+		)
+
 	def _on_connected(self, sc, results) -> None:
 		"""Called when connection to daemon socket is initiated"""
 		self.connecting = False
@@ -154,7 +165,7 @@ class DaemonManager(GObject.GObject):
 			self._on_daemon_died()
 			return
 		self.buffer = b""
-		self.connection.get_input_stream().read_bytes_async(102400, 1, None, self._on_read_data)
+		self._read_data()
 
 	def _on_read_data(self, sc, results) -> None:
 		"""Called when daemon sends some data"""
@@ -242,7 +253,7 @@ class DaemonManager(GObject.GObject):
 				self.emit("unknown-msg", line)
 		# Connection is held forever to detect when daemon exits
 		if self.connection:
-			self.connection.get_input_stream().read_bytes_async(102400, 1, None, self._on_read_data)
+			self._read_data()
 
 	def is_alive(self) -> bool | None:
 		"""Returns True if daemon is running"""
