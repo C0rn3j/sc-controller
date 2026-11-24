@@ -38,6 +38,8 @@ jobs:
             libglib2.0-dev \
             libgtk-4-common \
             libgtk4-layer-shell0 \
+            libudev-dev \
+            libusb-1.0-0-dev \
             python3-gi-cairo \
             p7zip
 
@@ -49,7 +51,7 @@ jobs:
           python -m venv .venv
           source .venv/bin/activate
           pip install \
-            ".[all]" \
+            ".[hidapi]" \
             build \
             pyinstaller \
             pytest

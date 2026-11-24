@@ -3,7 +3,10 @@
 Class that interacts with `scc hid_test` and `scc evdev_test` commands.
 """
 
+import json
 import logging
+import signal
+import sys
 
 from gi.repository import Gio, GObject
 
@@ -40,29 +43,37 @@ class Tester(GObject.GObject):
 		self.buffer: bytes = b""
 		self.buttons: list[int] = []
 		self.axes = []
+		self.mapping = None # HIDAPI
 		self.subprocess = None
 		self.driver = driver
 		self.device_id = device_id
 		self.errorred: bool = False  # To prevent sending 'error' signal multiple times
+		self._stopping: bool = False
 
 	def __del__(self):
 		if self.subprocess:
-			self.subprocess.send_signal(9)
+			self.subprocess.force_exit()
 
 	def start(self):
 		"""Starts driver test subprocess"""
+		self._stopping = False
 		cmd = [find_binary("scc")] + ["test_" + self.driver, self.device_id]
 		self.subprocess = Gio.Subprocess.new(cmd, Gio.SubprocessFlags.STDOUT_PIPE)
 		self.subprocess.wait_async(None, self._on_finished)
 		self.subprocess.get_stdout_pipe().read_bytes_async(32, 0, None, self._on_read)
 
 	def stop(self):
+		self._stopping = True
 		if self.subprocess:
-			self.subprocess.send_signal(2)  # Sigint
+			if sys.platform in ("linux", "darwin"):
+				self.subprocess.send_signal(signal.SIGINT)
+			else:
+				# TODO(Martin): Maybe we should do this gracefully on Windows too?
+				self.subprocess.force_exit()
 
 	def _on_finished(self, subprocess, result):
 		subprocess.wait_finish(result)
-		if self.errorred:
+		if self.errorred or self._stopping:
 			return
 		if subprocess.get_exit_status() == 0:
 			self.emit("finished")
@@ -75,7 +86,7 @@ class Tester(GObject.GObject):
 			data = stream.read_bytes_finish(result).get_data()
 		except Exception as e:
 			log.exception(e)
-			self.subprocess.send_signal(2)
+			self.stop()
 			if not self.errorred:
 				self.errorred = True
 				self.emit("error", 1)
@@ -103,6 +114,8 @@ class Tester(GObject.GObject):
 			self.emit("button", int(code), False)
 		elif line.startswith(b"Ready"):
 			self.emit("ready")
+		elif line.startswith(b"Mapping:"):
+			self.mapping = json.loads(line.split(b":", 1)[1])
 		elif line.startswith(b"Axes:"):
 			self.axes = [int(x) for x in line.split(b" ")[1:] if len(x.strip())]
 		elif line.startswith(b"Buttons:"):

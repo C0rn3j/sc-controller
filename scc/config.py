@@ -6,6 +6,7 @@ Handles loading, storing and querying config file
 import json
 import logging
 import os
+import sys
 
 from scc.paths import get_config_path
 from scc.profile import Encoder
@@ -29,18 +30,24 @@ class Config:
 		"drivers": {  # Map of drivers with values of True, Flase
 			# or additional driver config where needed.
 			# Anything but False means enabled here.
-			"sc_dongle": True,   # Steam Controller (2015)
-			"sc_by_cable": True, # Steam Controller (2015)
-			"sc_by_bt": True,    # Steam Controller (2015)
+			"sc_dongle": sys.platform == "linux",  # Steam Controller (2015)
+			"sc_dongle_hidapi": sys.platform != "linux",
+			"sc_by_cable": sys.platform == "linux",  # Steam Controller (2015)
+			"sc_by_cable_hidapi": sys.platform != "linux",
+			"sc_by_bt": sys.platform == "linux",  # Steam Controller (2015)
+			"sc_by_bt_hidapi": sys.platform != "linux",
 			"steamdeck": True,
-			"sc2": True,  # Steam Controller (2026)
-			"fake": False,  # Used for developement
-			"hiddrv": True,
-			"evdevdrv": True,
-			"ds4drv": True,  # At least one of hiddrv or evdevdrv has to be enabled as well
-			"ds5drv": True,
+			"sc2": sys.platform == "linux",  # Steam Controller (2026)
+			"sc2_hidapi": sys.platform != "linux",
+			"fake": False,  # Used for development
+			**({"hiddrv": True, "evdevdrv": True} if sys.platform == "linux" else {}),
+			"hidapi": sys.platform != "linux",  # Optional and experimental on Linux
+			"ds4drv": sys.platform == "linux",  # At least one of hiddrv or evdevdrv has to be enabled as well
+			"ds4drv_hidapi": sys.platform != "linux",
+			"ds5drv": sys.platform == "linux",  # At least one of hiddrv or evdevdrv has to be enabled as well
+			"ds5drv_hidapi": sys.platform != "linux",
 		},
-		"fix_xinput": True,  # If True, attempt is done to deatach emulated controller
+		"fix_xinput": True,  # If True, attempt is done to detach the emulated controller
 		# from 'Virtual core pointer' core device.
 		"gui": {
 			# GUI-only settings
@@ -169,6 +176,10 @@ class Config:
 		Returns True if anything gets changed.
 		"""
 		rv = self._check_dict(self.values, self.DEFAULTS)
+		if sys.platform in ("win32", "darwin") and self.values["drivers"]["hidapi"] is not True:
+			# HIDAPI is a hard requirement on Windows and macOS
+			self.values["drivers"]["hidapi"] = True
+			rv = True
 		# Special check for autoswitcher after v0.2.17
 		if "autoswitch" in self.values:
 			for a in self.values["autoswitch"]:

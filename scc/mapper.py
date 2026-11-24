@@ -37,6 +37,7 @@ if sys.platform == "win32":
 
 if TYPE_CHECKING:
 	from scc.controller import Controller
+	from scc.drivers.ds4drv_hidapi import DS4ControllerInput
 	from scc.drivers.linux.ds5drv import DualSenseBTControllerInput
 	from scc.drivers.linux.evdevdrv import EvdevControllerInput
 	from scc.drivers.linux.hiddrv import HIDControllerInput
@@ -44,7 +45,7 @@ if TYPE_CHECKING:
 	from scc.poller import Poller
 	from scc.profile import Profile
 	from scc.scheduler import Scheduler, Task
-	type CInput = DualSenseBTControllerInput | ControllerInput | HIDControllerInput | EvdevControllerInput
+	type CInput = DualSenseBTControllerInput | ControllerInput | HIDControllerInput | EvdevControllerInput | DS4ControllerInput
 
 log = logging.getLogger("Mapper")
 

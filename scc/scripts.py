@@ -77,14 +77,18 @@ def cmd_test_hid(argv0: str, argv: list[str]) -> int:
 	  3 - device is not HID-compatibile
 	  4 - failed to parse HID descriptor
 	"""
-	if sys.platform == "linux":
-		from scc.drivers.linux.hiddrv import USBHIDController, hiddrv_test
-	elif sys.platform == "win32":
-		from scc.drivers.windows.hiddrv import USBHIDController, hiddrv_test
-	else:
-		raise OSError("Unknown platform")
+	if sys.platform != "linux":
+		raise OSError("HIDdrv is only available on Linux; use test-hidapi instead")
+	from scc.drivers.linux.hiddrv import USBHIDController, hiddrv_test
 
 	return hiddrv_test(USBHIDController, argv)
+
+
+def cmd_test_hidapi(argv0: str, argv: list[str]) -> int:
+	"""Test HIDAPI input using the encoded device path from registration."""
+	from scc.lib.hid_registration import hidapi_test
+
+	return hidapi_test(argv)
 
 
 def help_osd_keyboard() -> None:
