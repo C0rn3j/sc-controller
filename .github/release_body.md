@@ -13,7 +13,7 @@ Please report any issues either over at [Discord](https://discord.gg/d3G7dDJ2G7)
 **[List of all changes](https://github.com/C0rn3j/sc-controller/commits/main/)**
 
 > [!NOTE]
-> Windows Pre-Release builds can be wrongly flagged by Defender, it is safe to whitelist them.
+> Windows builds can be wrongly flagged by Defender, it is safe to whitelist them.
 > See https://github.com/pyinstaller/pyinstaller/issues/5854#issuecomment-846312429 for more information.
 
 
@@ -31,16 +31,17 @@ Please report any issues either over at [Discord](https://discord.gg/d3G7dDJ2G7)
 				<td>
 					<a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-Linux-arm64.7z"><img src="https://img.shields.io/badge/Portable-arm64-f84e29.svg?logo=linux"> </a><br>
 					<a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-Linux-x64.7z"><img src="https://img.shields.io/badge/Portable-x64-f84e29.svg?logo=linux"> </a><br>
-					<!-- <a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-noble-x64.7z"><img src="https://img.shields.io/badge/AppImage-x64-f84e29.svg?logo=linux"> </a><br> -->
+					<a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-noble-x86_64.AppImage"><img src="https://img.shields.io/badge/AppImage-x64-f84e29.svg?logo=linux"> </a><br>
+					<a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-noble-aarch64.AppImage"><img src="https://img.shields.io/badge/AppImage-arm64-f84e29.svg?logo=linux"> </a><br>
 					<!-- <a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-flatpak-x64.flatpak"><img src="https://img.shields.io/badge/Flatpak-x64-FF9966.svg?logo=flatpak"> </a><br> -->
 				</td>
 			</tr>
 			<tr>
- 				<td>Windows</td>
+				<td>Windows</td>
 				<td>
 					<!-- MS Logos were removed from Simpleicons so just ship the singular SVG here -->
- 					<a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-Windows-x64.7z"><img src="https://img.shields.io/badge/Portable-x64-0078d7.svg?logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTAgMGgxMS4zNzd2MTEuMzcySDBabTEyLjYyMyAwSDI0djExLjM3MkgxMi42MjNaTTAgMTIuNjIzaDExLjM3N1YyNEgwWm0xMi42MjMgMEgyNFYyNEgxMi42MjMiLz48L3N2Zz4="></a><br>
- 					<a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-Windows-arm64.7z"><img src="https://img.shields.io/badge/Portable-arm64-0078d7.svg?logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTAgMGgxMS4zNzd2MTEuMzcySDBabTEyLjYyMyAwSDI0djExLjM3MkgxMi42MjNaTTAgMTIuNjIzaDExLjM3N1YyNEgwWm0xMi42MjMgMEgyNFYyNEgxMi42MjMiLz48L3N2Zz4="></a><br>
+					<a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-Windows-x64.7z"><img src="https://img.shields.io/badge/Portable-x64-0078d7.svg?logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTAgMGgxMS4zNzd2MTEuMzcySDBabTEyLjYyMyAwSDI0djExLjM3MkgxMi42MjNaTTAgMTIuNjIzaDExLjM3N1YyNEgwWm0xMi42MjMgMEgyNFYyNEgxMi42MjMiLz48L3N2Zz4="></a><br>
+					<a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-Windows-arm64.7z"><img src="https://img.shields.io/badge/Portable-arm64-0078d7.svg?logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTAgMGgxMS4zNzd2MTEuMzcySDBabTEyLjYyMyAwSDI0djExLjM3MkgxMi42MjNaTTAgMTIuNjIzaDExLjM3N1YyNEgwWm0xMi42MjMgMEgyNFYyNEgxMi42MjMiLz48L3N2Zz4="></a><br>
 					<!--<a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-Windows-x64-installer.exe"><img src="https://img.shields.io/badge/Installer-x64-0078d7.svg?logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTAgMGgxMS4zNzd2MTEuMzcySDBabTEyLjYyMyAwSDI0djExLjM3MkgxMi42MjNaTTAgMTIuNjIzaDExLjM3N1YyNEgwWm0xMi42MjMgMEgyNFYyNEgxMi42MjMiLz48L3N2Zz4="></a><br> -->
 				</td>
 			</tr>
@@ -50,8 +51,8 @@ Please report any issues either over at [Discord](https://discord.gg/d3G7dDJ2G7)
 					<sub><i>Sequoia or later</i></sub><br>
 					<a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-macOS-arm64.dmg"><img src="https://img.shields.io/badge/DMG-arm64-ea005e.svg?logo=apple"></a><br>
 				<!--	<a href="https://github.com/C0rn3j/sc-controller/releases/download/RELEASE_TAG/sc-controller-macOS-Installer.pkg"><img src="https://img.shields.io/badge/PKG-Universal-bc544b.svg?logo=apple" /></a></a> -->
-<!-- 				</td>
-			</tr> -->
+				</td>
+			</tr>
 		</tbody>
 	</table>
 </div>

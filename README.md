@@ -16,8 +16,8 @@
 	<a href="https://github.com/C0rn3j/sc-controller/actions/workflows/Linux-tests.yaml">
 		<img src="https://img.shields.io/github/actions/workflow/status/C0rn3j/sc-controller/Linux-tests.yaml?branch=main&amp;style=for-the-badge&amp;label=CI%20tests" alt="CI tests">
 	</a>
-	<a href="https://github.com/C0rn3j/sc-controller/actions/workflows/AppImage.yaml">
-		<img src="https://img.shields.io/github/actions/workflow/status/C0rn3j/sc-controller/AppImage.yaml?event=release&amp;style=for-the-badge&amp;label=AppImage" alt="Build and publish AppImages">
+	<a href="https://github.com/C0rn3j/sc-controller/actions/workflows/Release.yaml">
+		<img src="https://img.shields.io/github/actions/workflow/status/C0rn3j/sc-controller/Release.yaml?event=release&amp;style=for-the-badge&amp;label=AppImage" alt="Build and publish releases">
 	</a>
 </p>
 

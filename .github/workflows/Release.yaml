@@ -1,0 +1,47 @@
+name: Build release
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build-linux:
+    uses: ./.github/workflows/Linux.yaml
+
+  build-windows:
+    uses: ./.github/workflows/Windows.yaml
+
+  # Capacity issues often make this fail
+  build-macos:
+    uses: ./.github/workflows/macOS.yaml
+
+  build-appimage:
+    uses: ./.github/workflows/AppImage.yaml
+
+  release:
+    if: github.repository == 'C0rn3j/sc-controller'
+    needs: [build-appimage, build-linux, build-windows] # , build-macos
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: ~/artifacts
+
+      - name: Publish release and all builds
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: ${{ github.ref_name }}
+          tag: ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          makeLatest: true
+          commit: ${{ github.sha }}
+          omitBody: true
+          allowUpdates: true
+          omitNameDuringUpdate: true
+          omitPrereleaseDuringUpdate: true
+          artifactErrorsFailBuild: false # Disabled to allow a failed macOS job
+          artifacts: |-
+            ~/artifacts/*/*.7z,~/artifacts/*/*.dmg,~/artifacts/*/*.AppImage,~/artifacts/*/*.AppImage.zsync
