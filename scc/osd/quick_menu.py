@@ -40,20 +40,20 @@ class QuickMenu(Menu):
 		if isinstance(item, (MenuItem, Submenu)):
 			widget = Gtk.Button.new_with_label(item.label)
 			widget.add_css_class("flat")
-			if hasattr(widget.observe_children()[0], "set_xalign"):
-				widget.observe_children()[0].set_xalign(0)
+			if hasattr(widget.get_child(), "set_xalign"):
+				widget.get_child().set_xalign(0)
 			else:
-				widget.observe_children()[0].set_halign(Gtk.Align.START)
+				widget.get_child().set_halign(Gtk.Align.START)
 			if isinstance(item, Submenu):
 				item.callback = self.show_submenu
-				label1 = widget.observe_children()[0]
+				label1 = widget.get_child()
 				label2 = Gtk.Label(label=_(">>"))
 				label2.set_property("margin-start", 30)
 				box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-				widget.remove(label1)
+				widget.set_child(None)
 				box.append(label1)
 				box.append(label2)
-				widget.add(box)
+				widget.set_child(box)
 				widget.set_name("osd-menu-item")
 			elif item.id is None:
 				# Ignored as well
@@ -66,14 +66,13 @@ class QuickMenu(Menu):
 
 			icon_file, has_colors = find_icon(f"buttons/{item.button}", False)
 			icon = MenuIcon(icon_file, has_colors)
-			label = widget.observe_children()[0]
-			for c in [] + widget.observe_children():
-				widget.remove(c)
+			label = widget.get_child()
+			widget.set_child(None)
 			self._icons.append(icon)
 			box = Gtk.Box()
 			box.append(icon)
 			box.append(label)
-			widget.add(box)
+			widget.set_child(box)
 			return widget
 		return None
 
