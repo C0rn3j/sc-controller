@@ -465,9 +465,9 @@ class MenuActionCofC(UserDataManager):
 	def on_spMenuSize_format_value(self, spinner):
 		val = int(spinner.get_adjustment().get_value())
 		if val < 1:
-			spinner.get_buffer().set_text(_("auto"), -1)
+			spinner.set_text(_("auto"))
 		else:
-			spinner.get_buffer().set_text(str(val), -1)
+			spinner.set_text(str(val))
 		return True
 
 	def on_sclMenuSize_format_value(self, scale, val, *a):
