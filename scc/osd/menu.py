@@ -591,7 +591,11 @@ class Menu(OSDWindow):
 			x, y = data
 			if self._use_cursor:
 				# Special case, both confirm_with and cancel_with can be set to (L/R)STICK
-				if self._control_with in (LSTICK, RSTICK) and self._cancel_with == self._control_with:
+				if (
+					what == self._control_with
+					and self._control_with in (LSTICK, RSTICK)
+					and self._cancel_with == self._control_with
+				):
 					if self._control_equals_cancel(daemon, x, y):
 						return None
 
