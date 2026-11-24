@@ -2,10 +2,16 @@ name: Build x64 Linux
 
 on:
   workflow_call:
+    outputs:
+      version:
+        description: Git-derived package version used in build filenames
+        value: ${{ jobs.build-linux-x64.outputs.version }}
 
 jobs:
   build-linux-x64:
     name: "PyInstaller Linux x64"
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     runs-on: ubuntu-26.04
     steps:
       - name: Checkout source code
@@ -100,11 +106,13 @@ jobs:
         run: find "dist/sc-controller"
 
       - name: Create 7Z
+        env:
+          PROJECT_VERSION: ${{ steps.version.outputs.version }}
         run: |
           APP_NAME="sc-controller"
           cd "dist/${APP_NAME}"
 
-          ARCHIVE_PATH="../../${APP_NAME}-Linux-x64.7z"
+          ARCHIVE_PATH="../../${APP_NAME}-${PROJECT_VERSION}-Linux-x64.7z"
 
           7z a -r -snl "${ARCHIVE_PATH}" "."
 
@@ -112,7 +120,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: sc-controller-Linux-x64
-          path: sc-controller-Linux-x64.7z
+          path: sc-controller-${{ steps.version.outputs.version }}-Linux-x64.7z
           archive: false
 
       # - name: Run SCC for testing
@@ -216,11 +224,13 @@ jobs:
         run: find "dist/sc-controller"
 
       - name: Create 7Z
+        env:
+          PROJECT_VERSION: ${{ steps.version.outputs.version }}
         run: |
           APP_NAME="sc-controller"
           cd "dist/${APP_NAME}"
 
-          ARCHIVE_PATH="../../${APP_NAME}-Linux-arm64.7z"
+          ARCHIVE_PATH="../../${APP_NAME}-${PROJECT_VERSION}-Linux-arm64.7z"
 
           7z a -r -snl "${ARCHIVE_PATH}" "."
 
@@ -228,7 +238,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: sc-controller-Linux-arm64
-          path: sc-controller-Linux-arm64.7z
+          path: sc-controller-${{ steps.version.outputs.version }}-Linux-arm64.7z
           archive: false
 
       # - name: Run SCC for testing

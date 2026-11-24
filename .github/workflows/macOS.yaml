@@ -17,6 +17,7 @@ jobs:
           # This is because it currently has patches that won't fly in main
           ref: windows
           submodules: true
+          fetch-depth: 0
 
       - name: Setup pip cache-key
         uses: actions/cache@v6
@@ -71,6 +72,18 @@ jobs:
         #  source .venv/bin/activate
         #  CFLAGS: "-I/opt/homebrew/include"
 
+      - name: Read git-derived project version
+        id: version
+        run: |
+          $(brew --prefix python)/libexec/bin/python - <<'PYTHON'
+          import os
+          from importlib.metadata import version as package_version
+          version = package_version("sccontroller")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+            fh.write(f"version={version}\n")
+          print(f"Detected version: {version}")
+          PYTHON
+
       - name: Build the project using python-build
         run: |
           $(brew --prefix python)/libexec/bin/python -m build --wheel
@@ -100,11 +113,13 @@ jobs:
         run: find "dist/sc-controller.app"
 
       - name: Create DMG
+        env:
+          PROJECT_VERSION: ${{ steps.version.outputs.version }}
         run: |
           mkdir -p dist/dmg
           APP_NAME="sc-controller"
           APP_PATH="dist/${APP_NAME}.app"
-          DMG_PATH="dist/dmg/${APP_NAME}-macOS-arm64.dmg"
+          DMG_PATH="dist/dmg/${APP_NAME}-${PROJECT_VERSION}-macOS-arm64.dmg"
           # This overengineered crap is necessary as GitHub refuses to fix their runners
           # See this issue for more info: https://github.com/actions/runner-images/issues/7522
           i=0
@@ -129,7 +144,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: sc-controller-macOS-arm64
-          path: dist/dmg/sc-controller-macOS-arm64.dmg
+          path: dist/dmg/sc-controller-${{ steps.version.outputs.version }}-macOS-arm64.dmg
           archive: false
 
       # - name: Run sc-controller for testing

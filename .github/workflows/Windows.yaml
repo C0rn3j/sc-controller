@@ -108,12 +108,14 @@ jobs:
         run: find "dist/sc-controller"
 
       - name: Create 7Z
+        env:
+          PROJECT_VERSION: ${{ steps.version.outputs.version }}
         shell: msys2 {0}
         run: |
           APP_NAME="sc-controller"
           cd "dist/${APP_NAME}"
 
-          ARCHIVE_PATH="../../${APP_NAME}-Windows-x64.7z"
+          ARCHIVE_PATH="../../${APP_NAME}-${PROJECT_VERSION}-Windows-x64.7z"
 
           7z a -r "${ARCHIVE_PATH}" "."
 
@@ -125,7 +127,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: sc-controller-Windows-x64
-          path: sc-controller-Windows-x64.7z
+          path: sc-controller-${{ steps.version.outputs.version }}-Windows-x64.7z
           archive: false
 
   build-windows-arm64:
@@ -237,12 +239,14 @@ jobs:
         run: find "dist/sc-controller"
 
       - name: Create 7Z
+        env:
+          PROJECT_VERSION: ${{ steps.version.outputs.version }}
         shell: msys2 {0}
         run: |
           APP_NAME="sc-controller"
           cd "dist/${APP_NAME}"
 
-          ARCHIVE_PATH="../../${APP_NAME}-Windows-arm64.7z"
+          ARCHIVE_PATH="../../${APP_NAME}-${PROJECT_VERSION}-Windows-arm64.7z"
 
           7z a -r "${ARCHIVE_PATH}" "."
 
@@ -254,5 +258,5 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: sc-controller-Windows-arm64
-          path: sc-controller-Windows-arm64.7z
+          path: sc-controller-${{ steps.version.outputs.version }}-Windows-arm64.7z
           archive: false
