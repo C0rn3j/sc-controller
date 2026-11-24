@@ -12,12 +12,11 @@ from math import atan2, cos, sin
 from math import pi as PI
 from typing import TYPE_CHECKING
 
-import cairo
+from gi.repository import Graphene, Gsk, Gtk
 
 from scc.config import Config
 from scc.constants import LSTICK, RSTICK, STICK_PAD_MAX
 from scc.gui.svg_widget import SVGEditor, SVGWidget
-from scc.lib import xwrappers as X
 from scc.menu_data import Separator, Submenu
 from scc.osd import OSDWindow
 from scc.osd.menu import Menu, MenuIcon
@@ -42,14 +41,9 @@ class RadialMenu(Menu):
 		self.rotation = 0
 		self.scale = 1.0
 		self.items_with_icon = []
-		if self.xdisplay is None:
-			# Compositors normally provide an RGBA visual, but the API can
-			# return null if it is not supported, so retain a rectangular fallback.
-			visual = self.get_screen().get_rgba_visual()
-			if visual is not None:
-				self.set_visual(visual)
-				self.set_app_paintable(True)
-				self.connect("draw", self._on_draw_clip_circle)
+		provider = Gtk.CssProvider()
+		provider.load_from_data(b"window { background: transparent; border: none; box-shadow: none; }")
+		self.get_style_context().add_provider(provider, Gtk.STYLE_PROVIDER_PRIORITY_USER + 1)
 
 	def scroll_wrap(self, parent):
 		"""Radial menus draw items on an SVG - no scroll viewport - return unchanged"""
@@ -58,10 +52,12 @@ class RadialMenu(Menu):
 	def create_parent(self) -> SVGWidget:
 		background = os.path.join(get_share_path(), "images", "radial-menu.svg")
 		self.b = SVGWidget(background)
-		self.b.connect("notify::width", self.on_size_allocate)
-		self.b.connect("notify::height", self.on_size_allocate)
 		self.recolor()
 		return self.b
+
+	def do_size_allocate(self, width: int, height: int, baseline: int) -> None:
+		Menu.do_size_allocate(self, width, height, baseline)
+		self.on_size_allocate()
 
 	def recolor(self):
 		config = Config()
@@ -143,7 +139,7 @@ class RadialMenu(Menu):
 		a1 = (-90.0 - item_offset * 0.5) * PI / 180.0
 		a2 = (-90.0 + item_offset * 0.5) * PI / 180.0
 		for i in self.items_with_icon:
-			i.icon_widget.get_parent().remove_child(i.icon_widget)
+			i.icon_widget.get_parent().remove(i.icon_widget)
 		self.items_with_icon = []
 		for i in items:
 			# Set size of each arc
@@ -168,7 +164,7 @@ class RadialMenu(Menu):
 				self.editor.remove_element(SVGEditor.get_element(i.widget, "line2"))
 				i.icon_widget = MenuIcon(icon_file, has_colors)
 				i.icon_widget.set_name("osd-radial-menu-icon")
-				i.icon_widget.set_size_request(self.ICON_SIZE * self.scale, self.ICON_SIZE * self.scale)
+				i.icon_widget.set_size_request(int(self.ICON_SIZE * self.scale), int(self.ICON_SIZE * self.scale))
 				self.b.get_parent().put(i.icon_widget, 200, 200)
 				self.items_with_icon.append(i)
 			else:
@@ -201,59 +197,28 @@ class RadialMenu(Menu):
 		self.editor.commit()
 		del self.editor
 
-	def _on_draw_clip_circle(self, widget: Gtk.Widget, cr: cairo.Context[cairo.Surface]) -> bool:
-		"""Wayland circular shaping
-
-		Clear the surface to transparent and clip all drawing (background, arcs, icons)
-		to a centered circle inscribed in the window.
-
-		The transparent corners give the same round appearance the X SHAPE extension produces on X11.
-
-		Returns False so the default handler then draws the children within this clip.
-		"""
-		cr.set_source_rgba(0, 0, 0, 0)
-		cr.set_operator(cairo.OPERATOR_SOURCE)
-		cr.paint()
-		cr.set_operator(cairo.OPERATOR_OVER)
-		w = widget.get_allocated_width()
-		h = widget.get_allocated_height()
-		cr.arc(w / 2.0, h / 2.0, min(w, h) / 2.0, 0, 2 * PI)
-		cr.clip()
-		return False
+	def do_snapshot(self, snapshot: Gtk.Snapshot) -> None:
+		"""Clip the background, icons, and cursor to a circle on every backend."""
+		width, height = self.get_width(), self.get_height()
+		diameter = min(width, height)
+		if diameter <= 0:
+			return
+		bounds = Graphene.Rect().init((width - diameter) / 2, (height - diameter) / 2, diameter, diameter)
+		clip = Gsk.RoundedRect()
+		clip.init_from_rect(bounds, diameter / 2)
+		snapshot.push_rounded_clip(clip)
+		try:
+			Menu.do_snapshot(self, snapshot)
+		finally:
+			snapshot.pop()
 
 	def show(self) -> None:
 		OSDWindow.show(self)
 
 		pb = self.b.get_pixbuf()
-
-		width = int(pb.get_width() * self.scale * self.get_scale_factor())
-		height = int(pb.get_height() * self.scale * self.get_scale_factor())
-		self.f.move(self.cursor, int(width / 2), int(height / 2))
-
-		if self.xdisplay is None:
-			# Clipping to circle on Wayland is handled in __init__()
-			return
-
-		win = X.XID(self.get_window().get_xid())
-		pixmap = X.create_pixmap(self.xdisplay, win, width, height, 1)
-
-		gc = X.create_gc(self.xdisplay, pixmap, 0, None)
-		X.set_foreground(self.xdisplay, gc, 0)
-		X.fill_rectangle(self.xdisplay, pixmap, gc, 0, 0, width, height)
-		X.set_foreground(self.xdisplay, gc, 1)
-		X.set_background(self.xdisplay, gc, 1)
-
-		r = int(width * 0.985)
-		x = int((width - r) / 2)
-
-		X.fill_arc(self.xdisplay, pixmap, gc, x, x, r, r, 0, 360 * 64)
-
-		X.flush_gc(self.xdisplay, gc)
-		X.flush(self.xdisplay)
-
-		X.shape_combine_mask(self.xdisplay, win, X.SHAPE_BOUNDING, 0, 0, pixmap, X.SHAPE_SET)
-
-		X.flush(self.xdisplay)
+		width = int(pb.get_width() * self.scale)
+		height = int(pb.get_height() * self.scale)
+		self.f.move(self.cursor, width / 2, height / 2)
 
 	def select(self, i) -> None:
 		if type(i) == int:
