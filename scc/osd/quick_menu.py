@@ -110,9 +110,11 @@ class QuickMenu(Menu):
 					for i in range(len(self._icons)):
 						icon = self._icons[i]
 						name = buttons[self.BUTTON_INDEXES[i]]
-						filename, trash = find_icon("buttons/%s" % name)
-						icon.set_filename(filename)
-						icon.queue_draw()
+						filename, has_colors = find_icon(f"buttons/{name}")
+						if filename is not None:
+							icon.has_colors = has_colors
+							icon.set_filename(filename)
+							icon.queue_draw()
 				except IndexError:
 					pass
 
