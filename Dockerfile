@@ -71,6 +71,7 @@ RUN <<EOR
   export OUTPATH=/appimage
   export DEPLOY_PYTHON=1
   export USE_HOST_DRIVERS=1
+  export SQUASHFS_METADATA_SIDECAR=1
 
   quick-sharun.sh \
     /usr/bin/sc-controller \

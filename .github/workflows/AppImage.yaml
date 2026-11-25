@@ -1,8 +1,8 @@
 name: Build AppImages
 
 env:
-  # main at 2026-11-21
-  ANYLINUX_URL: https://github.com/pkgforge-dev/Anylinux-AppImages/raw/c4d303a0df292c0b1477851d96381012c2b31dda/useful-tools
+  # main at 2026-11-25
+  ANYLINUX_URL: https://github.com/pkgforge-dev/Anylinux-AppImages/raw/caa2848cc06936e00429a73adbad944da049ffc1/useful-tools
 
 on:
   workflow_call:
