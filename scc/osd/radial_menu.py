@@ -131,6 +131,9 @@ class RadialMenu(Menu):
 			i.icon_widget.get_parent().remove(i.icon_widget)
 		self.items_with_icon = []
 		for i in items:
+			# Generated entries like profile selection can share a menu ID
+			# SVG IDs must be unique
+			i.widget.attrib["id"] = "menuitem_" + str(index)
 			# Set size of each arc
 			if SVGEditor.get_element(i.widget, "arc") is not None:
 				l = SVGEditor.get_element(i.widget, "arc")
@@ -160,7 +163,7 @@ class RadialMenu(Menu):
 				# No icon - rotate text in arc to other direction to keep it horizontal
 				if SVGEditor.get_element(i.widget, "menuitem_text") is not None:
 					l = SVGEditor.get_element(i.widget, "menuitem_text")
-					l.attrib["id"] = "text_" + i.id
+					l.attrib["id"] = "text_" + str(index)
 					l.attrib["transform"] = "%s rotate(%s)" % (l.attrib["transform"], -i.a)
 				# Place up to 3 lines of item label
 				label = i.label.split("\n")
@@ -210,7 +213,7 @@ class RadialMenu(Menu):
 		self.f.move(self.cursor, (width - self.cursor.get_width()) / 2, (height - self.cursor.get_height()) / 2)
 
 	def select(self, i) -> None:
-		if type(i) == int:
+		if type(i) is int:
 			i = self.items[i]
 		if self._selected and hasattr(self._selected, "icon_widget"):
 			if self._selected.icon_widget:
@@ -220,8 +223,8 @@ class RadialMenu(Menu):
 			self._selected.icon_widget.set_name("osd-radial-menu-icon-selected")
 		self.b.hilight(
 			{
-				"menuitem_" + i.id: "#" + self.config["osd_colors"]["menuitem_hilight"],
-				"text_" + i.id: "#" + self.config["osd_colors"]["menuitem_hilight_text"],
+				"menuitem_" + str(i.index): "#" + self.config["osd_colors"]["menuitem_hilight"],
+				"text_" + str(i.index): "#" + self.config["osd_colors"]["menuitem_hilight_text"],
 			},
 		)
 
@@ -271,5 +274,5 @@ if __name__ == "__main__":
 		sys.exit(1)
 	m.run()
 	if m.get_exit_code() == 0:
-		print(m.get_selected_item_id())
+		log.debug(m.get_selected_item_id())
 	sys.exit(m.get_exit_code())

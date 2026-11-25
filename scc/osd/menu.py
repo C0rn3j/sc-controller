@@ -321,7 +321,7 @@ class Menu(OSDWindow):
 	def enable_cursor(self):
 		if not self._use_cursor:
 			self.f.put(self.cursor, 0, 0)
-			self.f.show()
+			self.f.set_visible(True)
 			self._use_cursor = True
 
 	def generate_widget(self, item):
