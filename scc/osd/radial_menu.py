@@ -86,8 +86,8 @@ class RadialMenu(Menu):
 
 	def on_size_allocate(self, *a):
 		"""(Re)centers all icons when menu is displayed or size is changed"""
-		cx = self.b.get_width() * self.scale * 0.5
-		cy = self.b.get_height() * self.scale * 0.5
+		cx = self.b.get_width() * 0.5
+		cy = self.b.get_height() * 0.5
 		radius = min(cx, cy) * 2 / 3
 		for i in self.items_with_icon:
 			angle, icon = float(i.a) * PI / 180.0, i.icon_widget
@@ -95,13 +95,6 @@ class RadialMenu(Menu):
 			x = x - (self.ICON_SIZE * self.scale * 0.5)
 			y = y - (self.ICON_SIZE * self.scale * 0.5)
 			i.icon_widget.get_parent().move(i.icon_widget, x, y)
-
-	def get_window_size(self):
-		w, h = Menu.get_window_size(self)
-		if self.scale != 1.0:
-			w = int(w * self.scale)
-			h = int(h * self.scale)
-		return w, h
 
 	def _add_arguments(self):
 		Menu._add_arguments(self)
@@ -127,12 +120,8 @@ class RadialMenu(Menu):
 	def pack_items(self, trash, items):
 		if self._size > 0 and self._size < 100:
 			self.scale = self._size / 100.0
-			root = SVGEditor.get_element(self.editor, "root")
-			SVGEditor.scale(root, self.scale)
-		pb = self.b.get_pixbuf()
-		# Image width is not scaled as everything bellow operates
-		# in 'root' object coordinate space
-		image_width = pb.get_width()
+			self.b.resize(int(self.b.image_width * self.scale), int(self.b.image_height * self.scale))
+		image_width = self.b.image_width
 
 		index = 0
 		item_offset = 360.0 / len(self.items)
@@ -216,9 +205,9 @@ class RadialMenu(Menu):
 		OSDWindow.show(self)
 
 		pb = self.b.get_pixbuf()
-		width = int(pb.get_width() * self.scale)
-		height = int(pb.get_height() * self.scale)
-		self.f.move(self.cursor, width / 2, height / 2)
+		width= pb.get_width()
+		height = pb.get_height()
+		self.f.move(self.cursor, (width - self.cursor.get_width()) / 2, (height - self.cursor.get_height()) / 2)
 
 	def select(self, i) -> None:
 		if type(i) == int:
@@ -251,13 +240,11 @@ class RadialMenu(Menu):
 				ry = x * sin(self.rotation) + y * cos(self.rotation)
 				x, y = rx, ry
 
-			max_w = self.get_allocation().width * self.scale - (self.cursor.get_allocation().width * 1.0)
-			max_h = self.get_allocation().height * self.scale - (self.cursor.get_allocation().height * 1.0)
+			max_w = self.get_allocation().width - self.cursor.get_allocation().width
+			max_h = self.get_allocation().height - self.cursor.get_allocation().height
 			cx = ((x * 0.75 / (STICK_PAD_MAX * 2.0)) + 0.5) * max_w
 			cy = (0.5 - (y * 0.75 / (STICK_PAD_MAX * 2.0))) * max_h
 
-			cx -= self.cursor.get_allocation().width * 0.5
-			cy -= self.cursor.get_allocation().height * 0.5
 			self.f.move(self.cursor, int(cx), int(cy))
 
 			if abs(x) + abs(y) > RadialMenu.MIN_DISTANCE:
