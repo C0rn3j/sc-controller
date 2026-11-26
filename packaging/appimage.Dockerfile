@@ -23,7 +23,7 @@ RUN <<EOR
     python-cairo \
     python-evdev \
     python-gobject \
-    python-hidraw-pure \
+    python-hidapi \
     python-ioctl-opt \
     python-libusb1 \
     python-pip \
