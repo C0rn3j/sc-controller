@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 1.1.0 -->
+<!-- Created with Cambalache 1.2.0 -->
 <interface domain="sc-controller">
   <!-- interface-name special_action.ui -->
   <requires lib="gtk" version="4.14"/>
@@ -14,6 +14,11 @@
     <property name="step-increment">1</property>
     <property name="upper">4096</property>
     <property name="value">10</property>
+  </object>
+  <object class="GtkAdjustment" id="adjMenuSize">
+    <property name="page-increment">2</property>
+    <property name="step-increment">1</property>
+    <property name="upper">100</property>
   </object>
   <object class="GtkAdjustment" id="adjOSDTimeout">
     <property name="lower">0.10</property>
@@ -589,6 +594,51 @@
                   </object>
                 </child>
                 <child>
+                  <object class="GtkRevealer" id="rvMenuSize">
+                    <property name="child">
+                      <object class="GtkBox" id="vbMenuSize">
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkLabel" id="lblMenuSize">
+                            <property name="attributes">
+                              0 -1 weight bold
+                            </property>
+                            <property name="label" translatable="yes">Items per row</property>
+                            <property name="margin-bottom">5</property>
+                            <property name="margin-top">10</property>
+                            <property name="xalign">0</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSpinButton" id="spMenuSize">
+                            <property name="adjustment">adjMenuSize</property>
+                            <property name="focusable">1</property>
+                            <property name="vexpand">1</property>
+                            <property name="visible">0</property>
+                            <signal name="changed" handler="on_cbMenus_changed"/>
+                            <signal name="output" handler="on_spMenuSize_format_value"/>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkScale" id="sclMenuSize">
+                            <property name="adjustment">adjMenuSize</property>
+                            <property name="draw-value">1</property>
+                            <property name="focusable">1</property>
+                            <property name="round-digits">1</property>
+                            <property name="value-pos">right</property>
+                            <property name="visible">0</property>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="column-span">2</property>
+                      <property name="row">4</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
                   <object class="GtkExpander" id="exMenuControl">
                     <property name="focusable">1</property>
                     <property name="label-widget">
@@ -604,7 +654,7 @@
                     <layout>
                       <property name="column">0</property>
                       <property name="column-span">2</property>
-                      <property name="row">4</property>
+                      <property name="row">5</property>
                     </layout>
                   </object>
                 </child>
@@ -734,7 +784,7 @@
                     <layout>
                       <property name="column">0</property>
                       <property name="column-span">2</property>
-                      <property name="row">5</property>
+                      <property name="row">6</property>
                     </layout>
                   </object>
                 </child>
@@ -754,7 +804,7 @@
                     <layout>
                       <property name="column">0</property>
                       <property name="column-span">2</property>
-                      <property name="row">6</property>
+                      <property name="row">7</property>
                     </layout>
                   </object>
                 </child>
@@ -837,7 +887,7 @@
                     <layout>
                       <property name="column">0</property>
                       <property name="column-span">2</property>
-                      <property name="row">7</property>
+                      <property name="row">8</property>
                     </layout>
                   </object>
                 </child>

@@ -41,6 +41,7 @@ class SpecialActionComponent(AEComponent, MenuActionCofC):
 		if self.loaded:
 			return
 		AEComponent.load(self)
+		self.builder.get_object("sclMenuSize").set_format_value_func(self.on_sclMenuSize_format_value)
 		self.builder.get_object("sclOSDTimeout").set_format_value_func(self.on_sclOSDTimeout_format_value)
 		cbConfirmWith = self.builder.get_object("cbConfirmWith")
 		cbCancelWith = self.builder.get_object("cbCancelWith")
