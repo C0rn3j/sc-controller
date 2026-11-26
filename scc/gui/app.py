@@ -1474,7 +1474,7 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 			self._profile_menu_ps.get_controller().turnoff()
 
 	def on_window_key_press_event(self, controller, keyval, keycode, state) -> None:
-		if (state & Gdk.ModifierType.CONTROL_MASK) != 0:
+		if state & Gdk.ModifierType.CONTROL_MASK:
 			if keyval == 115:
 				self.on_save_clicked()
 		elif self.osd_mode and keyval == 65471:

@@ -493,15 +493,13 @@ class Keyboard(OSDWindow, TimerManager):
 		mt = (
 			self.keyboard_device.get_modifier_state()
 			if self.keyboard_device is not None
-			else Gdk.ModifierType(0)
+			else Gdk.ModifierType.NO_MODIFIER_MASK
 		)
 		# On Wayland a client does not necessarily observe modifier state from the uinput keyboard it created.
 		# Include modifiers held by the OSK's own virtual keyboard so its labels still match the keys it will emit.
 		if self.x11_dpy is None and self.mapper is not None:
 			for key in self.mapper.keyboard._pressed:
-				mt |= self.MODIFIER_MASKS.get(
-					key, Gdk.ModifierType(0),
-				)  # TODO(Martin): Change to GDK_NO_MODIFIER_MASK for Gdk4
+				mt |= self.MODIFIER_MASKS.get(key, Gdk.ModifierType.NO_MODIFIER_MASK)
 		for button in self.background.buttons:
 			if getattr(Keys, button.name, None) in KEY_TO_KEYCODE:
 				keycode = KEY_TO_KEYCODE[getattr(Keys, button.name)]
