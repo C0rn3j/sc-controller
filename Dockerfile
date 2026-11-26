@@ -1,5 +1,6 @@
 # syntax=docker/dockerfile:1
-FROM ghcr.io/pkgforge-dev/archlinux AS build-stage
+ARG BASE_IMAGE=ghcr.io/pkgforge-dev/archlinux
+FROM $BASE_IMAGE AS build-stage
 
 # Prepare Python build dependencies
 RUN <<EOR
@@ -34,14 +35,15 @@ RUN <<EOR
 EOR
 
 # Prepare AppImage Build dependencies
-ARG ANYLINUX_URL=https://github.com/pkgforge-dev/Anylinux-AppImages/raw/refs/heads/main/useful-tools
+ARG ANYLINUX_URL=https://github.com/pkgforge-dev/Anylinux-AppImages/raw/refs/heads/main
 RUN <<EOR
   set -eu
   pacman -Syu --noconfirm patchelf xorg-server-xvfb
-  curl -fsSL "${ANYLINUX_URL}/quick-sharun.sh" | install /dev/stdin /usr/local/bin/quick-sharun.sh
+  url=${ANYLINUX_URL}/useful-tools
+  curl -fsSL "${url}/quick-sharun.sh" | install /dev/stdin /usr/local/bin/quick-sharun.sh
 
   # Installs a debloated MESA, Vulkan, Qt, GTK, libicudata, and more
-  curl -fsSL "${ANYLINUX_URL}/get-debloated-pkgs.sh" | sh -s -- --add-common --add-mesa --prefer-nano
+  curl -fsSL "${url}/get-debloated-pkgs.sh" | sh -s -- --add-common --add-mesa --prefer-nano
 
   pacman -Scc
 EOR

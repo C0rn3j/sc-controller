@@ -1,8 +1,9 @@
 name: Build AppImages
 
 env:
-  # main at 2026-11-25
-  ANYLINUX_URL: https://github.com/pkgforge-dev/Anylinux-AppImages/raw/caa2848cc06936e00429a73adbad944da049ffc1/useful-tools
+  # pinned to 2026-11-26 snapshots
+  ANYLINUX_URL: https://github.com/pkgforge-dev/Anylinux-AppImages/raw/caa2848cc06936e00429a73adbad944da049ffc1
+  BASE_IMAGE: ghcr.io/pkgforge-dev/archlinux@sha256:22453b39680f9e84635a22733f0fbeeb06d7a5cc08a588d0d36506fca0b2e852
 
 on:
   workflow_call:
@@ -42,6 +43,7 @@ jobs:
           outputs: build
           build-args: |
             ANYLINUX_URL
+            BASE_IMAGE
             OWNER=${{ env.GITHUB_REPOSITORY_OWNER_PART }}
 
       - name: Slugify platform
