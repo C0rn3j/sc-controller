@@ -133,7 +133,7 @@ class InputDisplay(OSDWindow):
 				widget.set_visible(True)
 			# Grab values
 			ax, ay, aw, trash = self.background.get_area_position(area)
-			cw = widget.get_allocation().width
+			cw = widget.get_width()
 			# Compute center
 			x, y = ax + aw * 0.5 - cw * 0.5, ay + 1.0 - cw * 0.5
 			# Add pad position

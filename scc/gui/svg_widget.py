@@ -138,7 +138,7 @@ class SVGWidget(Gtk.Box):
 		#y *= self.image_height / pixbuf.get_height()
 
 		# Map through the picture assuming(!) it is centered
-		x_offset = (self.get_allocation().width - self.image_width) / 2
+		x_offset = (self.get_width() - self.image_width) / 2
 		x = x - x_offset
 
 		for a in self.areas:

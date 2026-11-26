@@ -243,8 +243,8 @@ class RadialMenu(Menu):
 				ry = x * sin(self.rotation) + y * cos(self.rotation)
 				x, y = rx, ry
 
-			max_w = self.get_allocation().width - self.cursor.get_allocation().width
-			max_h = self.get_allocation().height - self.cursor.get_allocation().height
+			max_w = self.get_width() - self.cursor.get_width()
+			max_h = self.get_height() - self.cursor.get_height()
 			cx = ((x * 0.75 / (STICK_PAD_MAX * 2.0)) + 0.5) * max_w
 			cy = (0.5 - (y * 0.75 / (STICK_PAD_MAX * 2.0))) * max_h
 

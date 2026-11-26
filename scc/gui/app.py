@@ -969,11 +969,10 @@ class App(Gtk.Application, UserDataManager, BindingEditor):
 		Centers buttons on background image
 		"""
 		main_area = self.builder.get_object("mainArea")
-		y = main_area.get_allocation().height - 5
+		y = main_area.get_height() - 5
 		w = self.builder.get_object("vbC")
-		allocation = w.get_allocation()
-		x = (self.background.get_allocation().width - allocation.width) / 2
-		y -= allocation.height
+		x = (self.background.get_width() - w.get_width()) / 2
+		y -= w.get_height()
 
 		if self.background.get_config()["gui"]["no_buttons_in_gui"]:
 			# no_buttons_in_gui is used to keep image without changes

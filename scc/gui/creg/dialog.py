@@ -698,7 +698,7 @@ class ControllerRegistration(Editor):
 				# Area not found
 				cursor.set_visible(False)
 				return
-			cw = cursor.get_allocation().width
+			cw = cursor.get_width()
 			# Compute center
 			x, y = ax + aw * 0.5 - cw * 0.5, ay + ah * 0.5 - cw * 0.5
 			# Add pad position

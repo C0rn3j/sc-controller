@@ -159,7 +159,6 @@ class ControllerStick(ControllerWidget):
 			self.app.show_editor(self.id)
 
 	def on_cursor_motion(self, controller, x, y):
-		# self.icon.get_allocation().x + self.icon.get_allocation().width	# yields nonsense
 		ix2 = 74
 		# Check if cursor is placed on icon
 		what = None

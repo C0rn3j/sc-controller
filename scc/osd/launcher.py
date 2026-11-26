@@ -9,14 +9,14 @@ Reuses styles from OSD Menu and OSD Dialog
 import logging
 import os
 
-from gi.repository import Gio, Gtk, Pango
+from gi.repository import Gio, Graphene, Gtk, Pango
 
 from scc.config import Config
 from scc.constants import DEFAULT, STICK_PAD_MAX, ControllerFlags, HapticPos, SCPads, SCSticks
 from scc.gui.daemon_manager import DaemonManager
 from scc.osd import OSDWindow, StickController
 from scc.paths import get_share_path
-from scc.tools import _, circle_to_square, clamp, point_in_gtkrect
+from scc.tools import _, circle_to_square, clamp
 
 log = logging.getLogger("osd.menu")
 
@@ -40,7 +40,7 @@ class Launcher(OSDWindow):
 	_app_db = None  # Static list of all know applications
 
 	def __init__(self, cls="osd-menu") -> None:
-		self._buttons = None
+		self._buttons: list[Gtk.Button] = []
 		self._string = ""
 
 		OSDWindow.__init__(self, cls)
@@ -387,32 +387,44 @@ class Launcher(OSDWindow):
 			cursor.set_visible(False)
 			return
 		cursor.set_visible(True)
-		pad_w = cursor.get_allocation().width * 0.5
-		pad_h = cursor.get_allocation().height * 0.5
-		max_w = self.grid.get_allocation().width - 2 * pad_w
-		max_h = self.grid.get_allocation().height - 2 * pad_h
+		valid, grid_bounds = self.grid.compute_bounds(self.f)
+		if not valid:
+			log.error("Cannot compute launcher grid bounds in cursor container")
+			return
+		pad_w = cursor.get_width() * 0.5
+		pad_h = cursor.get_height() * 0.5
+		max_w = self.grid.get_width() - 2 * pad_w
+		max_h = self.grid.get_height() - 2 * pad_h
 
 		x, y = x / (STICK_PAD_MAX * 2.0), y / (STICK_PAD_MAX * 2.0)
 		if self.controller.get_flags() & ControllerFlags.LPAD_RPAD_IS_CIRCLE:
 			x, y = circle_to_square(x, y)
 		x = clamp(pad_w, (pad_w + max_w) * 0.5 + x * max_w, max_w - pad_w)
 		y = clamp(pad_h, (pad_h + max_h) * 0.5 + y * max_h * -1, max_h - pad_h)
-		x += self.grid.get_allocation().x
-		y += self.grid.get_allocation().y
+		x += grid_bounds.get_x()
+		y += grid_bounds.get_y()
 		self.f.move(cursor, int(x), int(y))
 
-		for i in self._buttons:
-			if point_in_gtkrect(i.get_allocation(), x, y):
-				if cursor.selected:
-					cursor.selected.set_name("osd-key-buton")
-				cursor.selected = i
-				cursor.selected.set_name("osd-key-buton-hilight")
-				break
+		button = self._button_at(x, y)
+		if button is not None:
+			if cursor.selected:
+				cursor.selected.set_name("osd-key-buton")
+			cursor.selected = button
+			cursor.selected.set_name("osd-key-buton-hilight")
 
 	def _get_under_cursor(self, cursor):
 		x, y = self.f.get_child_position(cursor)
+		return self._button_at(x, y)
+
+	def _button_at(self, x: float, y: float) -> Gtk.Button | None:
+		"""Return the self._buttons button at a point in the cursor container's coordinates"""
+		point = Graphene.Point().init(x, y)
 		for i in self._buttons:
-			if point_in_gtkrect(i.get_allocation(), x, y):
+			valid, bounds = i.compute_bounds(self.f)
+			if not valid:
+				log.error("Cannot compute launcher button bounds in cursor container: %r", i)
+				continue
+			if bounds.contains_point(point):
 				return i
 		return None
 

@@ -167,10 +167,6 @@ def quat2euler(q0: float, q1: float, q2: float, q3: float) -> tuple[float, float
 	return pitch, yaw, roll
 
 
-def point_in_gtkrect(rect, x: float, y: float) -> bool:
-	return x > rect.x and y > rect.y and x < rect.x + rect.width and y < rect.y + rect.height
-
-
 def anglediff(a1: float, a2: float) -> float:
 	"""Expects values in radians"""
 	return (a2 - a1 + PI) % (2.0 * PI) - PI

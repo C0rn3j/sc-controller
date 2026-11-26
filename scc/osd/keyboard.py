@@ -664,8 +664,8 @@ class Keyboard(OSDWindow, TimerManager):
 		"""Moves cursor image."""
 		if cursor not in self._hovers or self._controller is None:
 			return
-		w = limit[2] - (cursor.get_allocation().width * 0.5)
-		h = limit[3] - (cursor.get_allocation().height * 0.5)
+		w = limit[2] - (cursor.get_width() * 0.5)
+		h = limit[3] - (cursor.get_height() * 0.5)
 		x = x / float(STICK_PAD_MAX)
 		y = y / float(STICK_PAD_MAX) * -1.0
 
@@ -673,19 +673,19 @@ class Keyboard(OSDWindow, TimerManager):
 			x, y = circle_to_square(x, y)
 
 		x = clamp(
-			cursor.get_allocation().width * 0.5,
+			cursor.get_width() * 0.5,
 			(limit[0] + w * 0.5) + x * w * 0.5,
-			self.get_allocation().width - cursor.get_allocation().width,
+			self.get_width() - cursor.get_width(),
 		)
 
 		y = clamp(
-			cursor.get_allocation().height * 0.5,
+			cursor.get_height() * 0.5,
 			(limit[1] + h * 0.5) + y * h * 0.5,
-			self.get_allocation().height - cursor.get_allocation().height,
+			self.get_height() - cursor.get_height(),
 		)
 
 		cursor.position = int(x), int(y)
-		self.f.move(cursor, x - cursor.get_allocation().width * 0.5, y - cursor.get_allocation().height * 0.5)
+		self.f.move(cursor, x - cursor.get_width() * 0.5, y - cursor.get_height() * 0.5)
 		for button in self.background.buttons:
 			if button.contains(x, y):
 				if button != self._hovers[cursor]:

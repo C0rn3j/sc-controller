@@ -161,11 +161,14 @@ class Menu(OSDWindow):
 		adj = sw.get_vadjustment()
 		if adj is None:
 			return
-		alloc = widget.get_allocation()
-		page = adj.get_page_size()
-		if alloc.height <= 0 or page <= 0:
+		valid, bounds = widget.compute_bounds(self.parent)
+		if not valid:
+			log.error("Cannot compute selected menu item bounds in menu container: %r", widget)
 			return
-		top = alloc.y
+		page = adj.get_page_size()
+		if bounds.get_height() <= 0 or page <= 0:
+			return
+		top = bounds.get_y()
 		section_starts_menu = False
 		try:
 			index = next(i for i, item in enumerate(self.items) if item.widget is widget)
@@ -173,16 +176,18 @@ class Menu(OSDWindow):
 			# selectable item in a section, keep those rows visible as context.
 			while index > 0 and self.items[index - 1].id is None:
 				index -= 1
-				heading_alloc = self.items[index].widget.get_allocation()
-				if heading_alloc.height > 0:
-					top = min(top, heading_alloc.y)
+				valid, heading_bounds = self.items[index].widget.compute_bounds(self.parent)
+				if not valid:
+					log.error("Cannot compute menu heading bounds in menu container: %r", self.items[index].widget)
+				elif heading_bounds.get_height() > 0:
+					top = min(top, heading_bounds.get_y())
 			section_starts_menu = index == 0
 		except StopIteration:
 			pass
 		lower = adj.get_lower()
 		upper = adj.get_upper()
 		top = lower if section_starts_menu else max(lower, top - self.SCROLL_MARGIN)
-		bottom = min(upper, alloc.y + alloc.height + self.SCROLL_MARGIN)
+		bottom = min(upper, bounds.get_y() + bounds.get_height() + self.SCROLL_MARGIN)
 		val = adj.get_value()
 		if top < val:
 			adj.set_value(top)
@@ -599,10 +604,10 @@ class Menu(OSDWindow):
 					if self._control_equals_cancel(daemon, x, y):
 						return None
 
-				pad_w = self.cursor.get_allocation().width * 0.5
-				pad_h = self.cursor.get_allocation().height * 0.5
-				max_w = self.get_allocation().width - 2 * pad_w
-				max_h = self.get_allocation().height - 2 * pad_h
+				pad_w = self.cursor.get_width() * 0.5
+				pad_h = self.cursor.get_height() * 0.5
+				max_w = self.get_width() - 2 * pad_w
+				max_h = self.get_height() - 2 * pad_h
 
 				x, y = x / (STICK_PAD_MAX * 2.0), y / (STICK_PAD_MAX * 2.0)
 				if self.controller.get_flags() & ControllerFlags.LPAD_RPAD_IS_CIRCLE:
@@ -610,10 +615,6 @@ class Menu(OSDWindow):
 				x = clamp(pad_w, (pad_w + max_w) * 0.5 + x * max_w, max_w - pad_w)
 				y = clamp(pad_h, (pad_h + max_h) * 0.5 + y * max_h * -1, max_h - pad_h)
 				self.f.move(self.cursor, int(x), int(y))
-
-				# for i in self.items:
-				# if point_in_gtkrect(i.widget.get_allocation(), x, y):
-				# self.select(self.items.index(i))
 			else:
 				self._scon.set_stick(x, y)
 		elif what == self._confirm_with:
