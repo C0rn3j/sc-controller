@@ -59,10 +59,6 @@ RUN <<EOR
   pip install --break-system-packages --root-user-action ignore .
   python -m pytest tests
 
-  # Provide input-event-codes.h as fallback for runtime systems without linux headers
-  input_event_codes="$(find /usr/lib/python*/site-packages/scc -type f -name uinput.py -printf '%h\n' -quit)/input-event-codes.h"
-  cp -a /usr/include/linux/input-event-codes.h "${input_event_codes}"
-
   arch=$(uname -m)
   export APPNAME=sc-controller
   export DESKTOP="packaging/io.github.c0rn3j.${APPNAME}.desktop"
@@ -79,8 +75,7 @@ RUN <<EOR
     /usr/bin/sc-controller \
     /usr/bin/scc* \
     /usr/lib/libbluetooth.so* \
-    /usr/lib/libgtk4-layer-shell.so.* \
-    "${input_event_codes}"
+    /usr/lib/libgtk4-layer-shell.so.*
 
   cp -a packaging/appimage.*.hook AppDir/bin/
 
