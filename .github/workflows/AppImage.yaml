@@ -39,6 +39,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: . # explicit path context is required for git-based version detection
+          file: packaging/appimage.Dockerfile
           platforms: ${{ matrix.platform }}
           outputs: build
           build-args: |
