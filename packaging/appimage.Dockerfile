@@ -2,23 +2,19 @@
 ARG BASE_IMAGE=ghcr.io/pkgforge-dev/archlinux
 FROM $BASE_IMAGE AS build-stage
 
-# Prepare Python build dependencies
+# Download build dependencies
+ARG ANYLINUX_URL=https://github.com/pkgforge-dev/Anylinux-AppImages/raw/refs/heads/main
 RUN <<EOR
   set -eu
 
   pacman -Syu --noconfirm \
     base-devel \
     bluez-libs \
-    cairo \
-    gettext \
     git \
     gobject-introspection \
-    gtk4 \
     gtk4-layer-shell \
     librsvg \
     libxfixes \
-    linux-headers \
-    python \
     python-build \
     python-cairo \
     python-evdev \
@@ -29,23 +25,15 @@ RUN <<EOR
     python-pip \
     python-pytest \
     python-pyusb \
-    python-vdf
+    python-vdf \
+    patchelf xorg-server-xvfb    # patchelf and xvfb are for AnyLinux
 
-  pacman -Scc
-EOR
-
-# Prepare AppImage Build dependencies
-ARG ANYLINUX_URL=https://github.com/pkgforge-dev/Anylinux-AppImages/raw/refs/heads/main
-RUN <<EOR
-  set -eu
-  pacman -Syu --noconfirm patchelf xorg-server-xvfb
-  url=${ANYLINUX_URL}/useful-tools
+  # Download AnyLinux tools
+  url="${ANYLINUX_URL}/useful-tools"
   curl -fsSL "${url}/quick-sharun.sh" | install /dev/stdin /usr/local/bin/quick-sharun.sh
 
-  # Installs a debloated MESA, Vulkan, Qt, GTK, libicudata, and more
+  # Install debloated MESA, Vulkan, Qt, GTK, libicudata, and more
   curl -fsSL "${url}/get-debloated-pkgs.sh" | sh -s -- --add-common --add-mesa --prefer-nano
-
-  pacman -Scc
 EOR
 
 # Build and install
