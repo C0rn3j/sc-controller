@@ -1,0 +1,5 @@
+#!/bin/false
+
+if [ "${ARG0_OVERRIDE-}" ]; then
+  export ARG0="${ARG0_OVERRIDE}"
+fi
