@@ -482,7 +482,7 @@ class ControllerRegistration(Editor):
 			self._tester.start()
 			return
 
-		def retry_with_evdev(tester, code):
+		def retry_with_evdev(tester: Tester | None, code: int):
 			if tester:
 				for s in tester.__signals:
 					tester.disconnect(s)
@@ -493,7 +493,7 @@ class ControllerRegistration(Editor):
 			if code == 2:
 				# Special case, device may be usable, but there is no access
 				rvHIDWarning = self.builder.get_object("rvHIDWarning")
-				rvHIDWarning.set_reveal_child(False)
+				rvHIDWarning.set_reveal_child(True)
 			log.debug(f"Trying to use '{dev.path}' with evdev driver...")
 			self._tester = Tester("evdev", dev.path)
 			self._tester.__signals = [
@@ -504,7 +504,7 @@ class ControllerRegistration(Editor):
 
 		# Check VID+PID info and whether HID driver support is enabled
 		if (dev.info.vendor == 0 and dev.info.product == 0) or not self.app.config["drivers"].get("hiddrv"):
-			# Not an USB device, skip HID test altogether
+			# Not a USB device, skip HID test altogether
 			retry_with_evdev(None, 0)
 		else:
 			log.debug("Trying to use %.4x:%.4x with HID driver...", dev.info.vendor, dev.info.product)
@@ -580,7 +580,7 @@ class ControllerRegistration(Editor):
 				tester.disconnect(s)
 			tester.stop()
 
-	def set_hid_enabled(self, enabled):
+	def set_hid_enabled(self, enabled: bool) -> None:
 		"""Enables or disables option to use HID driver"""
 		cbAccessMode = self.builder.get_object("cbAccessMode")
 		for x in cbAccessMode.get_model():
