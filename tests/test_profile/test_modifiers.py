@@ -1,7 +1,7 @@
 import inspect
 
 from scc.actions import AxisAction, GyroAction
-from scc.constants import HapticPos, SCButtons
+from scc.constants import HapticEffect, HapticPos, SCButtons
 from scc.modifiers import *
 from scc.uinput import Axes
 
@@ -51,6 +51,13 @@ class TestModifiers:
 		"""Tests if ReleasedModifier is parsed correctly from json."""
 		a = parser.from_json_data({"action": "released(axis(ABS_X))"})
 		assert isinstance(a, ReleasedModifier)
+		assert _is_axis_with_value(a.action)
+
+	def test_inverted(self):
+		"""Tests if InvertedButtonModifier is parsed correctly from json.
+		"""
+		a = parser.from_json_data({"action": "inverted(axis(ABS_X))"})
+		assert isinstance(a, InvertedButtonModifier)
 		assert _is_axis_with_value(a.action)
 
 	def test_touched(self):
@@ -169,6 +176,33 @@ class TestModifiers:
 		assert a.haptic.get_amplitude() == 1024
 		assert a.haptic.get_frequency() == 8
 		assert a.haptic.get_period() == 2048
+		assert _is_axis_with_value(a.action)
+
+	def test_feedbacktone(self):
+		"""Tests if FeedbackToneModifier is parsed correctly from json."""
+		a = parser.from_json_data({"action": "axis(ABS_X)", "feedbacktone": ["RIGHT", 512, 220, 300, 4, 128]})
+		assert isinstance(a, FeedbackToneModifier)
+		assert a.haptic.effect == HapticEffect.TONE
+		assert a.haptic.tone_frequency == 220
+		assert a.haptic.duration == 300
+		assert a.haptic.lfo_depth == 128
+		assert _is_axis_with_value(a.action)
+
+	def test_feedbacksweep(self):
+		"""Tests if FeedbackSweepModifier is parsed correctly from json."""
+		a = parser.from_json_data({"action": "axis(ABS_X)", "feedbacksweep": ["LEFT", 512, 400, 80, 250]})
+		assert isinstance(a, FeedbackSweepModifier)
+		assert a.haptic.effect == HapticEffect.SWEEP
+		assert a.haptic.tone_frequency == 400
+		assert a.haptic.end_frequency == 80
+		assert _is_axis_with_value(a.action)
+
+	def test_feedbackscript(self):
+		"""Tests if FeedbackScriptModifier is parsed correctly from json."""
+		a = parser.from_json_data({"action": "axis(ABS_X)", "feedbackscript": ["RIGHT", 512, 3]})
+		assert isinstance(a, FeedbackScriptModifier)
+		assert a.haptic.effect == HapticEffect.SCRIPT
+		assert a.haptic.script_id == 3
 		assert _is_axis_with_value(a.action)
 
 	def test_rotate(self):

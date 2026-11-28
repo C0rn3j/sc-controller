@@ -170,12 +170,71 @@ same shape as the v1/Deck command packets. The `packetType` opcodes match
 Haptics: **Output report `0x82`** on the **interrupt-OUT** endpoint (its number
 equals the interface, e.g. EP `0x02` for slot 1) — the device **stalls it over
 SET_REPORT control**, so it must go to the interrupt endpoint. Layout
-`82 <side> <effect> <amplitude>`: `side` 0=left / 1=right / 2=both; `effect`
-`0x01`=click (`0x02`=longer click); `amplitude` `0x00`(medium)…`0xff`(strong).
-This is a single *click* per report (verified live). Continuous variable rumble,
-if the controller supports it, likely uses a different report (not yet captured;
-the connect-time `0x80` report is **not** felt). The `0x81` output reports seen
-at connect are unrelated (not haptic).
+`82 <side> <command> <gain>`: `side` 0=left / 1=right / 2=both; `command`
+`0x01`=click, `0x02`=strong click; `gain` a **signed i8 in decibels**, clamped
+by the firmware to -23…+24. Note the last byte is NOT a 0..255 amplitude -- we
+sent it as one until v0.6.0.7, which made the strength control non-monotonic.
+
+The full haptic report family is documented by Valve themselves: they upstreamed
+this controller ("Triton") to SDL3, so `src/joystick/hidapi/SDL_hidapi_steam_triton.c`
+is a reference implementation. Corroborated independently by iczero's RE, collected
+at <https://github.com/CouchTurtle/sc2-research> (`docs/HAPTICS.md`):
+
+| report | name | payload |
+| --- | --- | --- |
+| `0x80` | `HAPTIC_RUMBLE` | `type u8, intensity u16, left{speed u16, gain i8}, right{speed u16, gain i8}` — **verified live** |
+| `0x81` | `HAPTIC_PULSE` | `side u8, on_us u16, off_us u16, repeat u16` |
+| `0x82` | `HAPTIC_COMMAND` | `side u8, command u8 (0=stop all, 1=click, 2=strong click), gain i8 dB` |
+| `0x83` | `HAPTIC_LFO_TONE` | `side u8, gain i8, frequency u16 Hz, duration u16, lfo_freq u16 Hz, lfo_depth u8` — **verified live** |
+| `0x84` | `HAPTIC_LOG_SWEEP` | `side u8, gain i8, duration u16, start_freq u16, end_freq u16` — **verified live** |
+| `0x85` | `HAPTIC_SCRIPT` | `side u8, script_id u8, gain i8` — **verified live**, ids below |
+
+Firmware preset ids for `0x85`, names from the same RE (the list may be partial;
+nothing says `0x10` is the last). Played on hardware: the ids are real and the
+names broadly describe what you feel. CONTROLLER_VERY_ON, CONTROLLER_OFF and
+PHONE_RINGING_1 are strong and unmistakable; several others are subtle.
+WILHELM_SCREAM is barely perceptible even at maximum gain -- it is a long
+sample, so this is most likely the preset itself rather than anything we send:
+
+| id | name | id | name |
+| --- | --- | --- | --- |
+| `0x01` | CONTROLLER_ON | `0x09` | DOWN_SIX |
+| `0x02` | CONTROLLER_VERY_ON | `0x0a` | WHOOP_UP_3 |
+| `0x03` | TRILL_UP | `0x0b` | WHOOP_DOWN |
+| `0x04` | TRILL_DOWN | `0x0c` | PHONE_RINGING_1 |
+| `0x05` | CONTROLLER_OFF | `0x0d` | RINGBACK_TONE |
+| `0x06` | UP_FIVE | `0x0e` | PHONE_RINGING_2 |
+| `0x07` | DOWN_FIVE | `0x0f` | PHONE_RINGING_3 |
+| `0x08` | UP_SIX | `0x10` | WILHELM_SCREAM |
+| `0x86`–`0x89` | audio stream | actuator PCM / u-law streaming |
+
+`0x83` and `0x84` are hardware-verified too. A sweep is clearly distinguishable
+from a flat tone, so `start_freq`/`end_freq` do what they say. The LFO fields
+work but are weak: at `lfo_freq` 4 / `lfo_depth` 128 the modulation is barely
+there, and only at 10 / 255 is it obvious. Depth may not be a percentage.
+
+`0x80` is hardware-verified: `type`, `intensity` and both `gain` fields at 0,
+the two `speed` fields driving their own actuator independently. Confirmed with
+`fftest` on the emulated pad, whose "strong rumble (heavy motor)" and "weak
+rumble (light motor)" arrive as the two Linux FF_RUMBLE magnitudes and come out
+on the left and right actuators respectively:
+
+    strong=32768 weak=0      -> 80 00 00 00 00 80 00 00 00 00   (left only)
+    strong=0     weak=49152  -> 80 00 00 00 00 00 00 00 c0 00   (right only)
+
+**Open question:** the field is named `speed`, not amplitude, and `gain` is a
+separate i8 in dB. The second case above carries the LARGER number yet is
+clearly weaker in the hand, so `speed` is probably not linear amplitude -- more
+likely a motor speed, where higher means a lighter, higher-frequency buzz. Both
+gains are 0 dB here because that is what Valve's driver sends; exposing gain
+per side, and the `intensity` field, is untried and may be the better volume
+control.
+
+So **continuous variable rumble is `0x80`**, and the earlier note here that it was
+"not yet captured" was wrong -- the connect-time `0x80` traffic is that report,
+sent with zero speeds, which is why nothing was felt. SDL sends the two SDL rumble
+magnitudes straight through as `left.speed` / `right.speed` (u16) with `gain` 0.
+Layouts for `0x83`-`0x89` are from RE and not verified here.
 
 **Implication:** the existing `sc_dongle.py` command builders port over; the
 differences are the **transport** (SET_REPORT/feature to a per-slot interface
