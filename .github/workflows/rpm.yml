@@ -1,0 +1,34 @@
+name: Build RPM (Fedora)
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  rpm:
+    name: Fedora ${{ matrix.fedora }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        fedora: ["45"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history + tags so the version can be derived
+      - name: Build RPM in Fedora ${{ matrix.fedora }} container
+        run: CONTAINER_ENGINE=docker packaging/rpm/build-rpm.sh ${{ matrix.fedora }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sc-controller-fedora${{ matrix.fedora }}-rpm
+          path: rpm-out/*.rpm
+      - name: Attach RPMs to release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: rpm-out/*.rpm

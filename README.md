@@ -179,6 +179,17 @@ Note that building without git history (e.g. from GitHub .zip) will set version 
   - `python3 -m installer --destdir="./build" dist/*.whl`
   - Run the app via: `SCC_SHARED="${PWD}" PYTHONPATH="./build/usr/lib/python3.14/site-packages" PATH="${PWD}/build/usr/bin:${PATH}" ./build/usr/bin/sc-controller`
 
+### Fedora RPM (local or CI)
+Builds inside a Fedora container, so only podman or docker is needed on the host:
+
+```bash
+packaging/rpm/build-rpm.sh        # Fedora 45 (default), or pass another release, e.g. 44
+sudo dnf install ./rpm-out/sc-controller-*.x86_64.rpm
+```
+
+The same script is used by `.github/workflows/rpm.yml`, which uploads the RPMs as artifacts and attaches them to `v*` releases.
+`ioctl-opt` is not packaged in Fedora, so it is bundled from PyPI during the build; pass `--without bundled_ioctl_opt` to `rpmbuild` if your repo provides it.
+
 ### Via Docker
 A test build with Docker can be created using the following way:
 
