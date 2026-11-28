@@ -31,11 +31,11 @@ rm -rf dist-rpm rpm-out; mkdir -p dist-rpm rpm-out
 if git rev-parse --git-dir >/dev/null 2>&1; then
 	git ls-files -z --cached --others --exclude-standard \
 		| tar --null -T - --ignore-failed-read 2>/dev/null \
-			--transform "s,^,sc-controller-${version}/," \
+			--transform "flags=r;s,^,sc-controller-${version}/," \
 			-czf "dist-rpm/sc-controller-${version}.tar.gz"
 else
 	tar --exclude=./dist-rpm --exclude=./rpm-out --exclude=./.venv --exclude=./build --exclude=./dist \
-		--transform "s,^\.,sc-controller-${version}," \
+		--transform "flags=r;s,^\.,sc-controller-${version}," \
 		-czf "dist-rpm/sc-controller-${version}.tar.gz" .
 fi
 
