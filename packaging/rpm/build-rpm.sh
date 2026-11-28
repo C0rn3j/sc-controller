@@ -11,18 +11,22 @@ cd "$repo"
 engine="${CONTAINER_ENGINE:-$(command -v podman || command -v docker || true)}"
 [ -n "$engine" ] || { echo "Need podman or docker installed" >&2; exit 1; }
 
-# Derive version from git tags (v0.6.2 or v0.6.2-15-gabcdef), else fall back.
-version="0.0.0"; snapshot=""; scm="0.0.0"
-if desc="$(git describe --tags --long --match 'v[0-9]*' 2>/dev/null)"; then
-	if [[ "$desc" =~ ^v([0-9][0-9.]*)-([0-9]+)-g([0-9a-f]+)$ ]]; then
-		version="${BASH_REMATCH[1]}"
-		if [ "${BASH_REMATCH[2]}" != "0" ]; then
-			snapshot="${BASH_REMATCH[2]}.git${BASH_REMATCH[3]}"
-			scm="${version}.post${BASH_REMATCH[2]}+g${BASH_REMATCH[3]}"
-		else
-			scm="$version"
-		fi
-	fi
+# Derive version from git tags (v0.6.2 or v0.6.2-15-gabcdef).
+# With no usable tag (e.g. a fork without upstream tags) fall back to 0.0.1.post<commits>.
+version="0.0.1"; snapshot=""; scm="0.0.1"
+if desc="$(git describe --tags --long --match 'v[0-9]*' 2>/dev/null)" \
+		&& [[ "$desc" =~ ^v([0-9][0-9.]*)-([0-9]+)-g([0-9a-f]+)$ ]]; then
+	version="${BASH_REMATCH[1]}"; n="${BASH_REMATCH[2]}"; h="${BASH_REMATCH[3]}"
+elif git rev-parse --git-dir >/dev/null 2>&1; then
+	n="$(git rev-list --count HEAD)"; h="$(git rev-parse --short HEAD)"
+else
+	n=0; h=""
+fi
+if [ "${n:-0}" != "0" ]; then
+	snapshot="${n}.git${h}"
+	scm="${version}.post${n}+g${h}"
+else
+	scm="$version"
 fi
 echo "Building sc-controller ${version} ${snapshot} for Fedora ${FEDORA} using $(basename "$engine")"
 

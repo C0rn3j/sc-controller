@@ -3,7 +3,9 @@
 #   scc_version   - upstream version, e.g. 0.6.2
 #   scc_snapshot  - optional, e.g. 15.gabcdef1 for builds past a tag
 #   scc_scm_version - exact PEP 440 version handed to setuptools-scm
-%{!?scc_version: %global scc_version 0.0.0}
+# Untagged builds must not normalise to 0 or rpm refuses to build
+%global _python_dist_allow_version_zero 1
+%{!?scc_version: %global scc_version 0.0.1}
 %{!?scc_scm_version: %global scc_scm_version %{scc_version}}
 
 # ioctl-opt is not packaged in Fedora, so by default it is pulled from PyPI
@@ -87,8 +89,6 @@ rm -f %{buildroot}%{python3_sitelib}/ioctl_opt-*.dist-info/{INSTALLER,REQUESTED,
 %py_byte_compile %{python3} %{buildroot}%{python3_sitelib}/ioctl_opt*
 %endif
 
-%find_lang %{name}
-
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/io.github.c0rn3j.sc-controller.desktop
 appstreamcli validate --no-net %{buildroot}%{_metainfodir}/io.github.c0rn3j.sc-controller.metainfo.xml || :
@@ -104,7 +104,7 @@ xvfb-run -a %{python3} -m pytest tests
 %postun
 %udev_rules_update
 
-%files -f %{name}.lang
+%files
 %license LICENSE ADDITIONAL-LICENSES
 %doc README.md
 %{_bindir}/sc-controller
@@ -117,6 +117,7 @@ xvfb-run -a %{python3} -m pytest tests
 %{python3_sitelib}/ioctl_opt*
 %endif
 %{_datadir}/scc/
+%{_datadir}/locale/*/LC_MESSAGES/sc-controller.mo
 %{_datadir}/applications/io.github.c0rn3j.sc-controller.desktop
 %{_datadir}/icons/hicolor/*/*/*
 %{_metainfodir}/io.github.c0rn3j.sc-controller.metainfo.xml
