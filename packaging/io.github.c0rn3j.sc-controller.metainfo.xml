@@ -11,7 +11,7 @@
   <description>
     <p>
       User-mode driver, mapper, and GTK 4 based GUI for game controllers,
-      including but not limited to the Steam Controller (2015 & 2026).
+      including but not limited to the Steam Controller (2015 &amp; 2026).
     </p>
   </description>
   <launchable type="desktop-id">io.github.c0rn3j.sc-controller.desktop</launchable>
